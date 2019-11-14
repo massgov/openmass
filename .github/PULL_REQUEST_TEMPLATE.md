@@ -17,4 +17,4 @@ Use something like [licecap](http://www.cockos.com/licecap/) to capture gifs to 
 
 ---
 
-[Peer Review Checklist](https://github.com/massgov/mass/blob/develop/docs/peer_review_checklist.md)
+[Peer Review Checklist](https://github.com/massgov/opemass/blob/develop/docs/peer_review_checklist.md)
