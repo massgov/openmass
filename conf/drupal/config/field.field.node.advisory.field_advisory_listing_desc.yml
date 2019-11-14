@@ -1,0 +1,32 @@
+uuid: b3d7b987-8e69-478a-9526-0d32b89d648a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_advisory_listing_desc
+    - node.type.advisory
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.advisory.field_advisory_listing_desc
+field_name: field_advisory_listing_desc
+entity_type: node
+bundle: advisory
+label: 'Listing description'
+description: 'Enter a short description (< 320 characters) that may be used in curated lists and search results.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

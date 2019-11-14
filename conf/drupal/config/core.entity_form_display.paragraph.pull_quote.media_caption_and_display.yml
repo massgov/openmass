@@ -1,0 +1,29 @@
+uuid: a792e5c0-4608-427e-8734-976f72b97c7d
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.paragraph.media_caption_and_display
+    - field.field.paragraph.pull_quote.field_name
+    - field.field.paragraph.pull_quote.field_quote
+    - field.field.paragraph.pull_quote.field_title
+    - paragraphs.paragraphs_type.pull_quote
+id: paragraph.pull_quote.media_caption_and_display
+targetEntityType: paragraph
+bundle: pull_quote
+mode: media_caption_and_display
+content:
+  field_quote:
+    weight: 0
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+hidden:
+  created: true
+  field_name: true
+  field_title: true
+  status: true
+  uid: true

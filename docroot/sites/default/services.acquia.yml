@@ -1,0 +1,11 @@
+services:
+  monolog.handler.acquia_syslog:
+    class: Drupal\mass_utility\Logger\AcquiaSyslogHandler
+  monolog.handler.acquia_newrelic:
+    class: Drupal\mass_utility\Logger\AcquiaNewRelicHandler
+    # Set error as the minimum level
+    arguments: ['%monolog.level.error%']
+parameters:
+  monolog.channel_handlers:
+    # Log to syslog and NewRelic
+    default: ['acquia_syslog', 'acquia_newrelic']

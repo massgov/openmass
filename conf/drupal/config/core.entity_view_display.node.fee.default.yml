@@ -1,0 +1,67 @@
+uuid: dbc3ed73-9aaf-404e-a002-29e88bf70dcf
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.fee.field_fee_fee
+    - field.field.node.fee.field_fee_name
+    - field.field.node.fee.field_fee_unit
+    - field.field.node.fee.field_organizations
+    - field.field.node.fee.field_state_organization_tax
+    - node.type.fee
+  module:
+    - user
+id: node.fee.default
+targetEntityType: node
+bundle: fee
+mode: default
+content:
+  content_moderation_control:
+    weight: -20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_fee_fee:
+    weight: 3
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_fee_name:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_fee_unit:
+    weight: 4
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_organizations:
+    weight: 5
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_state_organization_tax: true

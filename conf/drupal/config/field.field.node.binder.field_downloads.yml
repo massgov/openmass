@@ -1,0 +1,28 @@
+uuid: 95e01839-2192-448e-b825-d8e27b8ab857
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_downloads
+    - media.type.document
+    - node.type.binder
+id: node.binder.field_downloads
+field_name: field_downloads
+entity_type: node
+bundle: binder
+label: Downloads
+description: 'These downloads appear below the binder and appendix content.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      document: document
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

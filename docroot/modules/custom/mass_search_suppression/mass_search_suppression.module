@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_search_suppression.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function mass_search_suppression_help($route_name, RouteMatchInterface $route_match) {
+  $output = '';
+  switch ($route_name) {
+    // Main module help for the mass_search module.
+    case 'help.page.mass_search_suppression':
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('This module allows to configure which pages should suppress the header search.') . '</p>';
+      $output .= '<h3>' . t('Uses') . '</h3>';
+      $output .= '<dl>';
+      $output .= '<dt>' . t('Adding pages that should suppress the header search') . '</dt>';
+      $output .= '<dd>' . t("You can add any number of pages in the <em>Pages not showing Search Header</em> area in the <a href=':url'>Configuration</a> page. You should add a valid path per line. You can use the path alias (for example \'/some-path-alias\') or also its raw path (for example in the case of a node '/node/%nid%'). You can use patterns also (for example '/some-path-alias/*'). If the &lt;front&gt; page setting was changed you would need to clear the cache to see the changes.", [':url' => \Drupal::url('mass_search_suppression.admin_settings')]) . '</dd>';
+      $output .= '<dt>' . t('Removing pages from the list') . '</dt>';
+      $output .= '<dd>' . t("You can delete one or all pages from the <em>Pages not showing Search Header</em> area in the <a href=':url'>Configuration</a> page. If the values are empty, then the Search Header will be shown in all pages by default. If the &lt;front&gt; page setting was changed you would need to clear the cache to see the changes.", [':url' => \Drupal::url('mass_search_suppression.admin_settings')]) . '</dd>';
+      $output .= '</dl>';
+      break;
+
+    default:
+  }
+  return $output;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * The preprocess html is needed to set the value
+ * "search_header_suppression_flag" for the home page since
+ * html--front.html.twig template is used.
+ */
+function mass_search_suppression_preprocess_html(&$variables) {
+  // Check if front-page is in the "suppression_urls" config variable.
+  // and print (or not) the search header accordingly.
+  $suppression_urls = \Drupal::config('mass_search_suppression.settings')->get('suppression_urls');
+  $variables['search_header_suppression_flag'] = ((\Drupal::service('path.matcher')->isFrontPage()) && (strpos($suppression_urls, '<front>') !== FALSE)) ? TRUE : FALSE;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_search_suppression_preprocess_page(&$variables) {
+  $suppression_urls = \Drupal::config('mass_search_suppression.settings')->get('suppression_urls');
+  // Allow match with /node/nid or path alias.
+  $current_path = \Drupal::service('path.current')->getPath();
+  $current_uri = \Drupal::request()->getRequestUri();
+
+  // Print Search Header by default.
+  $variables['search_header_suppression_flag'] = FALSE;
+
+  // Check if Uri or Path matches.
+  $path_matcher = \Drupal::service('path.matcher');
+  if ($path_matcher->matchPath($current_uri, $suppression_urls) || $path_matcher->matchPath($current_path, $suppression_urls)) {
+    $variables['search_header_suppression_flag'] = TRUE;
+  }
+}

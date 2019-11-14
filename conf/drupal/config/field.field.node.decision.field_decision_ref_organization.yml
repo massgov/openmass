@@ -1,0 +1,29 @@
+uuid: 1f32667e-5b09-4ddd-865c-15f911fe2d83
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_decision_ref_organization
+    - node.type.decision
+    - node.type.org_page
+id: node.decision.field_decision_ref_organization
+field_name: field_decision_ref_organization
+entity_type: node
+bundle: decision
+label: 'Issuing organization'
+description: 'The organization that issued the decision.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

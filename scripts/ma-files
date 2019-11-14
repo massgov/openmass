@@ -1,0 +1,197 @@
+#!/usr/bin/env bash
+#
+# Description:
+#          A script to sync Drupal's 'files' folder to an Amazon S3 bucket.
+#
+# Log files:
+#         'ma-files' creates and rotates its own logs, tracks its
+#         execution time which may be helpful in tracking sync metrics.
+#
+# Usage:
+#         From the command line
+#         $ ./ma-files
+#
+#         From the command line and send to background
+#         $ nohup ./ma-files >/dev/null 2>&1 &
+#
+# Cron:
+#         Specify 'bash' interpreter if running on Acquia's 'Scheduled Tasks'.
+#         $ bash ma-files >/dev/null 2>&1
+#
+# Help:
+#         $ ma-files -h
+#         Run 'ma-files -h' to get help and a list of options
+#
+################################################################################
+
+source $HOME/.bash_profile
+
+# script specific vars
+AWSCLI=/home/massgov/.local/bin/aws
+TIMESTAMP_SHORT=`date +%Y%m%d`
+SCRIPT_LOG_RETENTION_DAYS=15          # How long the script keeps its logs.
+SCRIPT_NAME=`basename $0`             # Script name.
+LOGFILE_HOME=/var/log/sites/${AH_SITE_GROUP}.${AH_SITE_ENVIRONMENT}/logs/`hostname --short`
+LOGFILE_NAME=${LOGFILE_HOME}/${SCRIPT_NAME%\.*}_${TIMESTAMP_SHORT}.log
+# hardcoding path so as not to run/backup other environments
+SOURCE_DIR=/var/www/html/massgov.prod/docroot/files
+S3_PATH='s3://acquia-files-backup.digital.mass.gov/massgov/files'
+S3_PROFILE='acquia-files-sync'
+#
+# general var
+ART_COL=`tput setaf 035`              # A Mayflower like theme color.
+OK_MSG=`tput setaf 2`                 # Green.
+WARN_MSG=`tput setaf 3`               # Yellow.
+ERR_MSG=`tput setaf 9`                # Red.
+HEADING=`tput setaf 6`                # Blue.
+TEXTRESET=`tput sgr0`                 # Reset text to original color.
+BOLD_TXT=`tput bold`                  # Bold text.
+START_COUNTER=`date +%s`              # Start time in seconds.
+
+
+function show_help() {
+    # Display help.
+    echo "Usage:"
+    echo "\
+    A script to sync Drupal's 'files' folder to an Amazon S3 bucket."
+    echo
+    echo "Usage:"
+    echo "    ${SCRIPT_NAME} [options]"
+    echo
+    echo "    ${SCRIPT_NAME}                       Sync files to S3 bucket."
+    echo "    ${SCRIPT_NAME} -h, --help            Shows this help screen."
+    echo
+}
+
+
+function show_usage() {
+    # Show usage.
+    echo "[+] Usage: '${SCRIPT_NAME}' to sync files to S3 bucket."
+    echo
+}
+
+
+function ma_monitor_script() {
+    # build vars
+    # script name is $0
+    # !!!!!!!!!! keep "ma_cron_job" as the category. !!!!!!!!!!
+    MA_SCRIPT_NAME=`basename $0`
+    MA_INSIGHTS_CATEGORY="ma_cron_job"
+    MA_CRON_ACTION="S3 Files sync"
+    MA_CRON_ENVIRONMENT=${MA_NEWRELIC_INSIGHTS_ENVIR}
+
+    # build json for newrelic
+    MA_NEWRELIC_INSIGHTS_JSON='[
+    { "eventType": "'"${MA_INSIGHTS_CATEGORY}"'",
+    "action": "'"${MA_CRON_ACTION}"'",
+    "script_name": "'"${MA_SCRIPT_NAME}"'",
+    "envir": "'"${MA_CRON_ENVIRONMENT}"'" } ]'
+
+    # read json and post to newrelic insights
+    echo ${MA_NEWRELIC_INSIGHTS_JSON} | curl -d @- -X POST -H "Content-Type: application/json" -H "X-Insert-Key: ${MA_NEWRELIC_INSIGHTS_INSERT_KEY}" https://insights-collector.newrelic.com/v1/accounts/${MA_NEWRELIC_INSIGHTS_ACCOUNT_ID}/events
+
+    # capture return code and exit (on non-zero).
+    RC=$?
+    if (( $RC )); then
+        exit $RC;
+    fi
+}
+
+
+function log_retention() {
+  # The script rotates its own logs. Each run generates a separate log file.
+  # Deletes any that are older than '$SCRIPT_LOG_RETENTION_DAYS'.
+  find $LOGFILE_HOME -name "${SCRIPT_NAME%\.*}_*" -mtime +${SCRIPT_LOG_RETENTION_DAYS} -exec rm -f {} \; > /dev/null 2>&1
+  return 0
+}
+
+
+function increment() {
+    # When multiple logfiles/runs in the same day.
+    if [[ -e ${LOGFILE_NAME} ]] ; then
+        i=1
+        while [[ -e ${LOGFILE_NAME}_${i} ]] ; do
+            let i++
+        done
+        LOGFILE_NAME=${LOGFILE_NAME}_${i}
+    fi
+}
+
+
+function sync_files_2_s3() {
+    # Sync files to s3
+    ${AWSCLI} --profile ${S3_PROFILE} s3 sync ${SOURCE_DIR} ${S3_PATH} --exclude "*styles/*" --exclude "*js/*" --exclude "*css/*" --exclude "*datajson/*" --delete >> $LOGFILE_NAME
+}
+
+
+function maint() {
+    # Cleanup old logs.
+    log_retention
+}
+
+
+function counter() {
+    # Show script execution time.
+    END_COUNTER=`date +%s`      # End time.
+    RUN_DURATION=$((END_COUNTER-START_COUNTER))
+    echo
+    echo "${OK_MSG} Completed in $(($RUN_DURATION/60)) minutes. ${TEXTRESET}"
+    echo "`date "+%Y-%m-%d %H:%M:%S"` Completed in $(($RUN_DURATION/60)) minutes."  >> $LOGFILE_NAME
+    echo
+}
+
+
+function nonzero_exit() {
+    # Capture return code and exit (on non-zero).
+    RC=$?
+    if (( $RC )); then
+        # Capture parent function name that failed.
+        echo "${ERR_MSG}[!] '${FUNCNAME[ 1 ]}' operation failed. ${TEXTRESET}"
+        echo "${ERR_MSG}[!] '${SCRIPT_NAME}' issued non-zero return code: ${RC} ${TEXTRESET}"
+        echo
+        exit $RC;
+    fi
+}
+
+
+function main() {
+    increment
+    echo "${WARN_MSG}[!] If you have a large amount of data, it is recommended to run
+    the script in the background. If your ssh session times out
+    before sync completion, your files sync to S3 will be aborted. ${TEXTRESET}"
+    echo
+    echo "[i] Run 'tail -f ${LOGFILE_NAME}' to watch sync to S3 progress."
+
+    # When no args are passed.
+    if [[ "$#" -eq 0 ]]; then
+        echo
+        # Print date and message to stdout and log file.
+        echo "`date "+%Y-%m-%d %H:%M:%S"` Logging started" >> $LOGFILE_NAME
+        echo "`date "+%Y-%m-%d %H:%M:%S"` Files sync to S3 started" >> $LOGFILE_NAME
+        echo "Files sync to S3 started"
+        echo "Sync to S3 in progress..."
+        # sync files to S3
+        sync_files_2_s3
+        echo "Files sync to S3 completed"
+        counter
+        echo "`date "+%Y-%m-%d %H:%M:%S"` Logging ended" >> $LOGFILE_NAME
+
+    # If help is needed.
+    elif [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]] ; then
+        show_help
+        echo
+
+    # Otherwise, an unknown arg was passed.
+    else
+        echo
+        echo "${ERR_MSG}[!] '${1}' is an unknown option. ${TEXTRESET}"
+        show_usage
+        exit 1;
+    fi
+}
+
+
+# Run main function & wrap up.
+main $*
+maint
+ma_monitor_script

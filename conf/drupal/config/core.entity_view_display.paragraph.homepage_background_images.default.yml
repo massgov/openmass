@@ -1,0 +1,42 @@
+uuid: 0977275d-046b-4a12-8ed9-0b0468bcaeee
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.homepage_background_images.field_caption
+    - field.field.paragraph.homepage_background_images.field_image
+    - field.field.paragraph.homepage_background_images.field_name
+    - image.style.thumbnail_40_x_40
+    - paragraphs.paragraphs_type.homepage_background_images
+  module:
+    - image
+id: paragraph.homepage_background_images.default
+targetEntityType: paragraph
+bundle: homepage_background_images
+mode: default
+content:
+  field_caption:
+    weight: 2
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_image:
+    weight: 0
+    label: inline
+    settings:
+      image_style: thumbnail_40_x_40
+    third_party_settings: {  }
+    type: image_url
+    region: content
+  field_name:
+    weight: 1
+    label: inline
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

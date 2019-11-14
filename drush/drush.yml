@@ -1,0 +1,32 @@
+command:
+  sql:
+    sync:
+      options:
+        structure-tables-key: common
+    dump:
+      options:
+        structure-tables-key: common
+  core:
+    rsync:
+      options:
+        exclude-paths: css:js:styles:config*:php
+sql:
+  # List of tables whose *data* is skipped by the 'sql-dump' and 'sql-sync'
+  # commands when the "--structure-tables-key=common" option is provided.
+  # You may add specific tables to the existing array or add a new element.
+  structure-tables:
+    common:
+      - cache
+      - 'cache_*'
+      - history
+      - 'search_*'
+      - 'sessions'
+      - 'watchdog'
+      - 'migrate*'
+      - 'config_log'
+      - 'key_value_expire'
+ssh:
+  # Specify options to pass to ssh in backend invoke.  The default is to prohibit
+  # password authentication, and is included here, so you may add additional
+  # parameters without losing the default configuration.
+  options: -o ForwardAgent=yes

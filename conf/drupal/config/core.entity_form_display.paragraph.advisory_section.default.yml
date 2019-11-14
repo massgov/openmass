@@ -1,0 +1,35 @@
+uuid: d7657773-a35b-4afc-a4fb-43ef50407f08
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.advisory_section.field_advisory_section_body
+    - field.field.paragraph.advisory_section.field_advisory_section_title
+    - paragraphs.paragraphs_type.advisory_section
+  module:
+    - text
+id: paragraph.advisory_section.default
+targetEntityType: paragraph
+bundle: advisory_section
+mode: default
+content:
+  field_advisory_section_body:
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_advisory_section_title:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

@@ -1,0 +1,47 @@
+uuid: b0ebf4fa-e3ec-4687-897d-371c297d3890
+langcode: en
+status: false
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.legacy_redirects.body
+    - field.field.node.legacy_redirects.field_legacy_redirect_env
+    - field.field.node.legacy_redirects.field_legacy_redirect_hashed_url
+    - field.field.node.legacy_redirects.field_legacy_redirects_legacyurl
+    - field.field.node.legacy_redirects.field_legacy_redirects_ref_conte
+    - field.field.node.legacy_redirects.field_organizations
+    - field.field.node.legacy_redirects.field_state_organization_tax
+    - node.type.legacy_redirects
+  module:
+    - text
+    - user
+id: node.legacy_redirects.teaser
+targetEntityType: node
+bundle: legacy_redirects
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  field_legacy_redirect_env: true
+  field_legacy_redirect_hashed_url: true
+  field_legacy_redirects_legacyurl: true
+  field_legacy_redirects_ref_conte: true
+  field_organizations: true
+  field_state_organization_tax: true

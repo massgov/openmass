@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * File Entity Delete module code.
+ */
+
+/**
+ * Implements hook_entity_type_build().
+ */
+function file_entity_delete_entity_type_build(array &$entity_types) {
+  /** @var \Drupal\Core\Entity\ContentEntityType $file */
+  $file = $entity_types['file'];
+  $file->setFormClass('delete', 'Drupal\\file_entity_delete\\Form\\FileDeleteForm');
+  $file->setLinkTemplate('delete-form', '/file/{file}/delete');
+  $file->setAccessClass('Drupal\\file_entity_delete\\Access\\FileAccessControlHandler');
+
+  // Now comes the nasty part.  We need to access a nested handler, which
+  // EntityType provides no mechanism for.  This is an alternative to patching
+  // core.
+  $obj = new ReflectionObject($file);
+  $prop = $obj->getProperty('handlers');
+  $prop->setAccessible(TRUE);
+  $handlers = $file->getHandlerClasses();
+  $handlers['route_provider']['html'] = 'Drupal\Core\Entity\Routing\AdminHtmlRouteProvider';
+  $prop->setValue($file, $handlers);
+}

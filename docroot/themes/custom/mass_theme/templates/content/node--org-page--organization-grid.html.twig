@@ -1,0 +1,22 @@
+{#
+/**
+ * @file
+ * Theme override to display the organizational grid view mode.
+ */
+ #}
+{% set image = false %}
+{% if node.field_org_page_thumbnail is not empty %}
+  {% set image = {
+    'src': file_url(node.field_org_page_thumbnail.entity.fileuri),
+    'alt': node.field_org_page_thumbnail.alt
+  } %}
+{% endif %}
+{% include "@molecules/image-link.twig" with {
+  'imageLink': {
+    'text': label|field_value,
+    'href': path('entity.node.canonical', {'node': node.id}),
+    'block': true,
+    'image': image
+  }
+}%}
+{{ content }}

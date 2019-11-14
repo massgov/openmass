@@ -1,0 +1,28 @@
+uuid: 902df81f-1d9c-489e-bd8d-7c335ac2bdef
+langcode: en
+status: true
+dependencies:
+  module:
+    - ctools
+    - mass_decision_tree
+  theme:
+    - mass_theme
+id: decisiontreeadmin
+theme: mass_theme
+region: post_content
+weight: -7
+provider: null
+plugin: mass_decision_tree_admin_block
+settings:
+  id: mass_decision_tree_admin_block
+  label: 'Customize Decision Tree'
+  provider: mass_decision_tree
+  label_display: visible
+visibility:
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    bundles:
+      decision_tree: decision_tree
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'

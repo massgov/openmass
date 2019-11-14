@@ -1,0 +1,23 @@
+uuid: 79686cd8-a61a-4aa7-b9e7-8aae3996536e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_alert_severity
+    - node.type.alert
+  module:
+    - options
+id: node.alert.field_alert_severity
+field_name: field_alert_severity
+entity_type: node
+bundle: alert
+label: 'Alert severity'
+description: 'The headline of an emergency alert is preceded by the words "Emergency Alert." Informational alerts use the word "Alert" only.'
+required: true
+translatable: false
+default_value:
+  -
+    value: informational_notice
+default_value_callback: ''
+settings: {  }
+field_type: list_string

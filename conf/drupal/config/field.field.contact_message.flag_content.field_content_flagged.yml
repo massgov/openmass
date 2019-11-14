@@ -1,0 +1,77 @@
+uuid: 85bbe62c-4635-4f45-9349-1baa7d21deca
+langcode: en
+status: true
+dependencies:
+  config:
+    - contact.form.flag_content
+    - field.storage.contact_message.field_content_flagged
+    - node.type.action
+    - node.type.advisory
+    - node.type.contact_information
+    - node.type.decision
+    - node.type.error_page
+    - node.type.event
+    - node.type.executive_order
+    - node.type.fee
+    - node.type.form_page
+    - node.type.guide_page
+    - node.type.how_to_page
+    - node.type.interstitial
+    - node.type.legacy_redirects
+    - node.type.location
+    - node.type.location_details
+    - node.type.news
+    - node.type.org_page
+    - node.type.page
+    - node.type.person
+    - node.type.service_details
+    - node.type.service_page
+    - node.type.stacked_layout
+    - node.type.topic_page
+    - node.type.utility_drawer
+  module:
+    - entity_reference_revisions
+id: contact_message.flag_content.field_content_flagged
+field_name: field_content_flagged
+entity_type: contact_message
+bundle: flag_content
+label: 'Content Being Flagged'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      advisory: advisory
+      page: page
+      contact_information: contact_information
+      decision: decision
+      error_page: error_page
+      event: event
+      executive_order: executive_order
+      fee: fee
+      form_page: form_page
+      guide_page: guide_page
+      how_to_page: how_to_page
+      interstitial: interstitial
+      legacy_redirects: legacy_redirects
+      location_details: location_details
+      location: location
+      news: news
+      org_page: org_page
+      person: person
+      action: action
+      service_details: service_details
+      service_page: service_page
+      stacked_layout: stacked_layout
+      topic_page: topic_page
+      utility_drawer: utility_drawer
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: page
+field_type: entity_reference_revisions

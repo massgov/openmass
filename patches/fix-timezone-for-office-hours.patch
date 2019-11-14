@@ -1,0 +1,13 @@
+diff --git a/src/Element/OfficeHoursSelect.php b/src/Element/OfficeHoursSelect.php
+index 7125c24..a642f9b 100644
+--- a/src/Element/OfficeHoursSelect.php
++++ b/src/Element/OfficeHoursSelect.php
+@@ -154,7 +154,7 @@ class OfficeHoursSelect extends Datelist { // { Datelist | Datetime | FormElemen
+       '#date_time_callbacks' => array(), // Can be used to add a jQuery timepicker or an 'All day' checkbox.
+       '#date_year_range' => '1900:2050',
+       // @see Drupal\Core\Datetime\Element\DateElementBase.
+-      '#date_timezone' => NULL, // new \DateTimezone(DATETIME_STORAGE_TIMEZONE),
++      '#date_timezone' => '+0000', // new \DateTimezone(DATETIME_STORAGE_TIMEZONE),
+     );
+ 
+     $parent_info = parent::getInfo();

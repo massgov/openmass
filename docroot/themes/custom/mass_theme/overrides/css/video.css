@@ -1,0 +1,22 @@
+/**
+ * CSS overrides for service page videos, when used in a stacked row with no sidebar.
+ * Bug introduced in Mayflower 5.7.0
+ * @see: https://www.mass.gov/massachusetts-one-stop-career-centers
+ */
+
+.ma__services .main-content--full .page-content > .ma__video--right {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@media (min-width: 911px) {
+  .ma__services .main-content--full .page-content > .ma__video--right {
+    max-width: 400px;
+  }
+}
+
+@media (min-width: 1321px) {
+  .ma__services .main-content--full .page-content > .ma__video--right {
+    margin-right: calc(50vw - (1320px/2) + 40px); /* IE11 supports calc */
+  }
+}

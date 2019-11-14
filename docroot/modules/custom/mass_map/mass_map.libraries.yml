@@ -1,0 +1,23 @@
+mass-map-page-renderer:
+  js:
+    js/mass_map.page.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupal.announce
+    - mass_map/google-map-api
+
+mass-map-field-renderer:
+  js:
+    js/mass_map.field.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - core/drupal
+    - mass_map/google-map-api
+
+google-map-api:
+  js:
+    js/initGoogleMaps.js: {}
+    # Note: There is a dynamic addition of the Google Maps Javascript API
+    # in mass_map_library_info_alter().

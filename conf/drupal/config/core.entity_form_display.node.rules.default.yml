@@ -1,0 +1,389 @@
+uuid: 8da79f15-3cd5-4682-8bd5-4e8a751ec437
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.rules.field_intended_audience
+    - field.field.node.rules.field_organizations
+    - field.field.node.rules.field_reusable_label
+    - field.field.node.rules.field_rules_adopted_date
+    - field.field.node.rules.field_rules_courts
+    - field.field.node.rules.field_rules_download
+    - field.field.node.rules.field_rules_effective_date
+    - field.field.node.rules.field_rules_footnotes
+    - field.field.node.rules.field_rules_listing_desc
+    - field.field.node.rules.field_rules_metatags
+    - field.field.node.rules.field_rules_overview
+    - field.field.node.rules.field_rules_ref_contact
+    - field.field.node.rules.field_rules_referenced_sources
+    - field.field.node.rules.field_rules_related
+    - field.field.node.rules.field_rules_related_collections
+    - field.field.node.rules.field_rules_section
+    - field.field.node.rules.field_rules_standing
+    - field.field.node.rules.field_rules_status
+    - field.field.node.rules.field_rules_subheading
+    - field.field.node.rules.field_rules_type
+    - field.field.node.rules.field_rules_updates
+    - field.field.node.rules.field_state_organization_tax
+    - node.type.rules
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - datetime
+    - entity_browser_entity_form
+    - field_group
+    - inline_entity_form
+    - link
+    - metatag
+    - paragraphs
+    - scheduler
+    - scheduler_content_moderation_integration
+    - text
+third_party_settings:
+  field_group:
+    group_rules_overview:
+      children:
+        - title
+        - field_rules_subheading
+        - field_rules_type
+        - field_rules_standing
+        - field_rules_status
+        - field_rules_courts
+        - field_rules_overview
+        - field_rules_listing_desc
+        - field_reusable_label
+        - field_organizations
+        - field_intended_audience
+      parent_name: group_rules_edit_form
+      weight: 0
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: true
+      label: Overview
+    group_rules_details:
+      children:
+        - field_rules_adopted_date
+        - field_rules_effective_date
+        - field_rules_referenced_sources
+        - group_updates
+        - group_sections
+        - field_rules_footnotes
+        - field_rules_download
+      parent_name: group_rules_edit_form
+      weight: 1
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Details
+    group_rules_related:
+      children:
+        - field_rules_ref_contact
+        - field_rules_related
+        - field_rules_related_collections
+      parent_name: group_rules_edit_form
+      weight: 3
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Related
+    group_rules_edit_form:
+      children:
+        - group_rules_overview
+        - group_rules_details
+        - group_rules_related
+      parent_name: ''
+      weight: 0
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Rules of court edit form'
+    group_updates:
+      children:
+        - field_rules_updates
+      parent_name: group_rules_details
+      weight: 13
+      format_type: fieldset
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: true
+      label: ''
+    group_sections:
+      children:
+        - field_rules_section
+      parent_name: group_rules_details
+      weight: 14
+      format_type: fieldset
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: true
+      label: ''
+id: node.rules.default
+targetEntityType: node
+bundle: rules
+mode: default
+content:
+  field_intended_audience:
+    weight: 14
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_organizations:
+    weight: 13
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_reusable_label:
+    weight: 12
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_rules_adopted_date:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_rules_courts:
+    weight: 9
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_rules_download:
+    weight: 16
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+      collapsible: false
+      collapsed: false
+      allow_duplicate: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: media_browser
+    type: inline_entity_form_complex
+    region: content
+  field_rules_effective_date:
+    weight: 11
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_rules_footnotes:
+    weight: 15
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_rules_listing_desc:
+    weight: 11
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_rules_metatags:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_rules_overview:
+    weight: 10
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_rules_ref_contact:
+    weight: 19
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_rules_referenced_sources:
+    weight: 12
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - contact_information
+          - fee
+          - legacy_redirects
+    type: link_default
+    region: content
+  field_rules_related:
+    weight: 20
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_rules_related_collections:
+    weight: 21
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_rules_section:
+    type: entity_reference_paragraphs
+    weight: 15
+    settings:
+      title: Section
+      title_plural: Sections
+      edit_mode: open
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_rules_standing:
+    weight: 7
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_rules_status:
+    weight: 8
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_rules_subheading:
+    weight: 5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_rules_type:
+    weight: 6
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_rules_updates:
+    type: entity_reference_paragraphs
+    weight: 18
+    settings:
+      title: Update
+      title_plural: Updates
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_state_organization_tax:
+    weight: 6
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 100
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 4
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 2
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

@@ -1,0 +1,30 @@
+uuid: 4e8442ba-d8f0-4299-b75b-8855db8ed96d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_true_answer_path
+    - node.type.decision_tree_branch
+    - node.type.decision_tree_conclusion
+    - paragraphs.paragraphs_type.answers
+id: paragraph.answers.field_true_answer_path
+field_name: field_true_answer_path
+entity_type: paragraph
+bundle: answers
+label: 'Option A Answer Path'
+description: 'Start typing to choose the Decision Tree Branch or Decision Tree Conclusion that this answer leads to. '
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      decision_tree_branch: decision_tree_branch
+      decision_tree_conclusion: decision_tree_conclusion
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: decision_tree_branch
+field_type: entity_reference

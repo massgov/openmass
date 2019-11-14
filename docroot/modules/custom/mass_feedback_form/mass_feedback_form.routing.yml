@@ -1,0 +1,8 @@
+#Route for Node feedback form.
+mass_feedback_form.feedback:
+  path: '/admin/edit-blocks/mass-feedback'
+  defaults:
+    _form: '\Drupal\mass_feedback_form\Form\NodeFeedbackForm'
+    _title: "Node Feedback"
+  requirements:
+    _permission: 'administer form for node feedback block'

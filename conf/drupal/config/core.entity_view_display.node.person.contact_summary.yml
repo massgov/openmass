@@ -1,0 +1,134 @@
+uuid: 408c4f7b-19a9-495d-b063-3e50608e0519
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.contact_summary
+    - field.field.node.person.body
+    - field.field.node.person.field_contact
+    - field.field.node.person.field_contact_source
+    - field.field.node.person.field_medium_image
+    - field.field.node.person.field_metatags
+    - field.field.node.person.field_organizations
+    - field.field.node.person.field_person_email
+    - field.field.node.person.field_person_first_name
+    - field.field.node.person.field_person_headshot
+    - field.field.node.person.field_person_last_name
+    - field.field.node.person.field_person_phone
+    - field.field.node.person.field_person_profile_image
+    - field.field.node.person.field_person_ref_org
+    - field.field.node.person.field_person_role_title
+    - field.field.node.person.field_person_type
+    - field.field.node.person.field_plain_description
+    - field.field.node.person.field_publish_bio_page
+    - field.field.node.person.field_ref_fax
+    - field.field.node.person.field_ref_links
+    - field.field.node.person.field_ref_phone
+    - field.field.node.person.field_ref_single_address
+    - field.field.node.person.field_reusable_label
+    - field.field.node.person.field_short_bio
+    - field.field.node.person.field_social_links
+    - field.field.node.person.field_state_organization_tax
+    - node.type.person
+  module:
+    - entity_reference_revisions
+    - user
+id: node.person.contact_summary
+targetEntityType: node
+bundle: person
+mode: contact_summary
+content:
+  field_contact:
+    weight: 0
+    label: above
+    settings:
+      view_mode: contact_groups_only
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_person_ref_org:
+    type: entity_reference_label
+    weight: 7
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_person_role_title:
+    type: string
+    weight: 6
+    region: content
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_plain_description:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_ref_fax:
+    type: entity_reference_revisions_entity_view
+    weight: 3
+    label: above
+    settings:
+      view_mode: directory
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_ref_links:
+    weight: 4
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    type: entity_reference_revisions_entity_view
+    region: content
+  field_ref_phone:
+    type: entity_reference_revisions_entity_view
+    weight: 1
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_ref_single_address:
+    type: entity_reference_revisions_entity_view
+    weight: 5
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+hidden:
+  body: true
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  field_contact_source: true
+  field_medium_image: true
+  field_metatags: true
+  field_organizations: true
+  field_person_email: true
+  field_person_first_name: true
+  field_person_headshot: true
+  field_person_last_name: true
+  field_person_phone: true
+  field_person_profile_image: true
+  field_person_type: true
+  field_publish_bio_page: true
+  field_reusable_label: true
+  field_short_bio: true
+  field_social_links: true
+  field_state_organization_tax: true
+  links: true
+  person_is_featured: true
+  person_org_role: true
+  position_is_vacant: true
+  workbench_moderation_control: true

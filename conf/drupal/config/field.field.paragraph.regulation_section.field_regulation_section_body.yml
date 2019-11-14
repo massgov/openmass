@@ -1,0 +1,29 @@
+uuid: 19880c92-8661-4525-9d9c-d6a274c379c6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_regulation_section_body
+    - paragraphs.paragraphs_type.regulation_section
+  module:
+    - allowed_formats
+    - text
+third_party_settings:
+  allowed_formats:
+    basic_html: basic_html
+    restricted_html: restricted_html
+    full_html: full_html
+    rules_of_court_section: '0'
+    plain_text: '0'
+id: paragraph.regulation_section.field_regulation_section_body
+field_name: field_regulation_section_body
+entity_type: paragraph
+bundle: regulation_section
+label: 'Section Body'
+description: 'Enter the text of this regulation section.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

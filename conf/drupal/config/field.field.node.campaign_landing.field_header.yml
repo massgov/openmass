@@ -1,0 +1,362 @@
+uuid: e03c8905-4cf6-4051-9a3a-de29ebeaea00
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_header
+    - node.type.campaign_landing
+    - paragraphs.paragraphs_type.custom_html
+    - paragraphs.paragraphs_type.key_message
+    - paragraphs.paragraphs_type.video_with_header
+  module:
+    - entity_reference_revisions
+id: node.campaign_landing.field_header
+field_name: field_header
+entity_type: node
+bundle: campaign_landing
+label: Header
+description: 'Choose the type of header that will appear at the top of the campaign page. The header requires a title and uses markup to designate the primary heading (H1) on the page.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    negate: 0
+    target_bundles:
+      key_message: key_message
+      video_with_header: video_with_header
+      custom_html: custom_html
+    target_bundles_drag_drop:
+      key_message:
+        enabled: true
+        weight: 0
+      video_with_header:
+        enabled: true
+        weight: 1
+      1up_stacked_band:
+        weight: 3
+        enabled: false
+      2up_stacked_band:
+        weight: 4
+        enabled: false
+      3_up_content:
+        weight: 5
+        enabled: false
+      3_up_text:
+        weight: 6
+        enabled: false
+      about:
+        weight: 7
+        enabled: false
+      action_address:
+        weight: 8
+        enabled: false
+      action_address_info:
+        weight: 9
+        enabled: false
+      action_area:
+        weight: 10
+        enabled: false
+      action_set:
+        weight: 11
+        enabled: false
+      action_step:
+        weight: 12
+        enabled: false
+      action_step_numbered:
+        weight: 13
+        enabled: false
+      action_step_numbered_list:
+        weight: 14
+        enabled: false
+      activities:
+        weight: 15
+        enabled: false
+      activity:
+        weight: 16
+        enabled: false
+      address:
+        weight: 17
+        enabled: false
+      adjustment_type:
+        weight: 18
+        enabled: false
+      advisory_issuer:
+        weight: 19
+        enabled: false
+      advisory_section:
+        weight: 20
+        enabled: false
+      answers:
+        weight: 21
+        enabled: false
+      board_member:
+        weight: 22
+        enabled: false
+      callout_alert:
+        weight: 23
+        enabled: false
+      callout_button:
+        weight: 24
+        enabled: false
+      callout_link:
+        weight: 25
+        enabled: false
+      completion_time:
+        weight: 26
+        enabled: false
+      contact:
+        weight: 27
+        enabled: false
+      search_banner:
+        weight: 28
+        enabled: false
+      contact_group:
+        weight: 29
+        enabled: false
+      contact_info:
+        weight: 30
+        enabled: false
+      campaign_features:
+        weight: 31
+        enabled: false
+      content_card_group:
+        weight: 32
+        enabled: false
+      decision_participants:
+        weight: 33
+        enabled: false
+      decision_section:
+        weight: 34
+        enabled: false
+      emergency_alert:
+        weight: 35
+        enabled: false
+      event_agenda_section:
+        weight: 36
+        enabled: false
+      event_minutes_section:
+        weight: 37
+        enabled: false
+      external_organization:
+        weight: 38
+        enabled: false
+      fax_number:
+        weight: 39
+        enabled: false
+      featured_item:
+        weight: 40
+        enabled: false
+      featured_item_mosaic:
+        weight: 41
+        enabled: false
+      file_download:
+        weight: 42
+        enabled: false
+      file_download_single:
+        weight: 43
+        enabled: false
+      footnotes:
+        weight: 44
+        enabled: false
+      featured_content_2up_item:
+        weight: 45
+        enabled: false
+      full_bleed:
+        weight: 46
+        enabled: false
+      featured_content_single_item:
+        weight: 47
+        enabled: false
+      guide_section:
+        weight: 48
+        enabled: false
+      guide_section_3up:
+        weight: 49
+        enabled: false
+      homepage_background_images:
+        weight: 50
+        enabled: false
+      hours:
+        weight: 51
+        enabled: false
+      icon:
+        weight: 52
+        enabled: false
+      icon_link:
+        weight: 53
+        enabled: false
+      icon_links:
+        weight: 54
+        enabled: false
+      iframe:
+        weight: 55
+        enabled: false
+      image:
+        weight: 56
+        enabled: false
+      image_credit:
+        weight: 57
+        enabled: false
+      issuer:
+        weight: 58
+        enabled: false
+      link_group:
+        weight: 59
+        enabled: false
+      link_group_document:
+        weight: 60
+        enabled: false
+      link_group_link:
+        weight: 61
+        enabled: false
+      links:
+        weight: 62
+        enabled: false
+      links_downloads:
+        weight: 63
+        enabled: false
+      list_board_members:
+        weight: 64
+        enabled: false
+      list_dynamic:
+        weight: 65
+        enabled: false
+      list_item_contact:
+        weight: 66
+        enabled: false
+      list_item_document:
+        weight: 67
+        enabled: false
+      list_item_link:
+        weight: 68
+        enabled: false
+      list_item_person:
+        weight: 69
+        enabled: false
+      list_manual_directory:
+        weight: 70
+        enabled: false
+      list_static:
+        weight: 71
+        enabled: false
+      location_information:
+        weight: 72
+        enabled: false
+      manage_account_link:
+        weight: 73
+        enabled: false
+      map:
+        weight: 74
+        enabled: false
+      map_row:
+        weight: 75
+        enabled: false
+      media_contact:
+        weight: 76
+        enabled: false
+      method:
+        weight: 77
+        enabled: false
+      more_info:
+        weight: 78
+        enabled: false
+      next_step:
+        weight: 79
+        enabled: false
+      online_email:
+        weight: 80
+        enabled: false
+      organization_grid:
+        weight: 81
+        enabled: false
+      page:
+        weight: 82
+        enabled: false
+      page_group:
+        weight: 83
+        enabled: false
+      phone_number:
+        weight: 84
+        enabled: false
+      pull_quote:
+        weight: 85
+        enabled: false
+      quick_action:
+        weight: 86
+        enabled: false
+      recommended_activity:
+        weight: 87
+        enabled: false
+      regulation_section:
+        weight: 88
+        enabled: false
+      related_content:
+        weight: 89
+        enabled: false
+      related_link:
+        weight: 90
+        enabled: false
+      rules_section:
+        weight: 91
+        enabled: false
+      rules_updates:
+        weight: 92
+        enabled: false
+      search_band:
+        weight: 93
+        enabled: false
+      section:
+        weight: 94
+        enabled: false
+      section_board_members:
+        weight: 95
+        enabled: false
+      section_heading_text:
+        weight: 96
+        enabled: false
+      section_long_form:
+        weight: 97
+        enabled: false
+      section_with_heading:
+        weight: 98
+        enabled: false
+      slideshow:
+        weight: 99
+        enabled: false
+      stacked_band:
+        weight: 100
+        enabled: false
+      start_button:
+        weight: 101
+        enabled: false
+      stat:
+        weight: 102
+        enabled: false
+      state_organization:
+        weight: 103
+        enabled: false
+      subhead:
+        weight: 104
+        enabled: false
+      target_pages:
+        weight: 105
+        enabled: false
+      video:
+        weight: 106
+        enabled: false
+      key_message_section:
+        weight: 107
+        enabled: false
+      video_with_section:
+        weight: 108
+        enabled: false
+      custom_html:
+        enabled: true
+        weight: 140
+      rich_text:
+        weight: 201
+        enabled: false
+field_type: entity_reference_revisions

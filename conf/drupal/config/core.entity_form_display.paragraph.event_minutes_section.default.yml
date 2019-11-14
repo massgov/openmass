@@ -1,0 +1,35 @@
+uuid: cc5dc0bd-0c73-4146-88f3-6fa514d2a98e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.event_minutes_section.field_event_minutes_body
+    - field.field.paragraph.event_minutes_section.field_event_minutes_title
+    - paragraphs.paragraphs_type.event_minutes_section
+  module:
+    - text
+id: paragraph.event_minutes_section.default
+targetEntityType: paragraph
+bundle: event_minutes_section
+mode: default
+content:
+  field_event_minutes_body:
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_event_minutes_title:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

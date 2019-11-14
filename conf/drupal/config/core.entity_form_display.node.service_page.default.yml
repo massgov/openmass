@@ -1,0 +1,639 @@
+uuid: 2b189fc4-11e9-47b0-914b-72e3c05943a4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.service_page.field_event_quantity
+    - field.field.node.service_page.field_image_credit
+    - field.field.node.service_page.field_intended_audience
+    - field.field.node.service_page.field_link_group
+    - field.field.node.service_page.field_location_button_label
+    - field.field.node.service_page.field_location_button_short_desc
+    - field.field.node.service_page.field_log_in_links
+    - field.field.node.service_page.field_organizations
+    - field.field.node.service_page.field_ref_contact_info
+    - field.field.node.service_page.field_related_organization_type
+    - field.field.node.service_page.field_service_bg_narrow
+    - field.field.node.service_page.field_service_bg_wide
+    - field.field.node.service_page.field_service_body
+    - field.field.node.service_page.field_service_eligibility_info
+    - field.field.node.service_page.field_service_file
+    - field.field.node.service_page.field_service_key_info_links_6
+    - field.field.node.service_page.field_service_lede
+    - field.field.node.service_page.field_service_links
+    - field.field.node.service_page.field_service_metatags
+    - field.field.node.service_page.field_service_offered_by
+    - field.field.node.service_page.field_service_ref_actions
+    - field.field.node.service_page.field_service_ref_actions_2
+    - field.field.node.service_page.field_service_ref_guide_page_1
+    - field.field.node.service_page.field_service_ref_locations
+    - field.field.node.service_page.field_service_ref_services_6
+    - field.field.node.service_page.field_service_video
+    - field.field.node.service_page.field_services_social_links
+    - field.field.node.service_page.field_state_organization_tax
+    - field.field.node.service_page.field_template
+    - image.style.thumbnail
+    - node.type.service_page
+    - workflows.workflow.editorial
+  module:
+    - conditional_fields
+    - content_moderation
+    - entity_browser_entity_form
+    - field_group
+    - image
+    - inline_entity_form
+    - link
+    - metatag
+    - paragraphs
+    - scheduler
+    - scheduler_content_moderation_integration
+third_party_settings:
+  field_group:
+    group_service_edit_form:
+      children:
+        - group_banner
+        - group_overview
+        - group_tasks_key_info
+        - group_map
+        - group_additional_info
+      parent_name: ''
+      weight: 1
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Service Edit Form'
+    group_banner:
+      children:
+        - title
+        - field_service_lede
+        - field_template
+        - field_service_bg_wide
+        - field_service_bg_narrow
+        - field_image_credit
+        - field_organizations
+        - field_intended_audience
+      parent_name: group_service_edit_form
+      weight: 20
+      format_type: tab
+      format_settings:
+        label: Banner
+        formatter: open
+        description: 'Service pages bring together related actions and information that your organization provides constituents, businesses, or other state organizations. <a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/services-and-info/service-page" target="_blank">Learn about authoring Service pages.</a>'
+        required_fields: true
+        id: ''
+        classes: ''
+      label: Banner
+    group_overview:
+      children:
+        - field_service_body
+        - field_service_video
+        - field_services_social_links
+        - field_service_ref_guide_page_1
+        - field_service_eligibility_info
+        - field_ref_contact_info
+        - field_service_offered_by
+        - field_log_in_links
+      parent_name: group_service_edit_form
+      weight: 21
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Overview
+    group_tasks_key_info:
+      children:
+        - group_what_would_you_like_to_do_
+        - field_link_group
+        - group_what_you_need_to_know
+      parent_name: group_service_edit_form
+      weight: 22
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: 'This is where you add items to the “What would you like to do?” section.'
+        required_fields: true
+      label: 'Tasks and key info'
+    group_map:
+      children:
+        - field_service_ref_locations
+        - field_location_button_label
+        - field_location_button_short_desc
+        - field_related_organization_type
+      parent_name: group_service_edit_form
+      weight: 23
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Map
+    group_additional_info:
+      children:
+        - field_event_quantity
+        - field_service_ref_services_6
+        - group_additional_resources
+      parent_name: group_service_edit_form
+      weight: 25
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: 'Optional. Add other resources that are less critical but may be helpful to users of this service.'
+        required_fields: true
+      label: 'Additional info'
+    group_what_would_you_like_to_do_:
+      children:
+        - field_service_ref_actions_2
+        - field_service_ref_actions
+      parent_name: group_tasks_key_info
+      weight: 42
+      format_type: fieldset
+      format_settings:
+        label: 'What would you like to do?'
+        description: 'This section provides links to all transactions related to this service.'
+        required_fields: true
+        id: what-would-you-like-to-do
+        classes: ''
+      label: 'What would you like to do?'
+    group_what_you_need_to_know:
+      children:
+        - field_service_key_info_links_6
+      parent_name: group_tasks_key_info
+      weight: 44
+      format_type: fieldset
+      format_settings:
+        label: 'What you need to know'
+        description: 'This section provides links to key information needed to use this service.'
+        required_fields: true
+        id: what-you-need-to-know
+        classes: ''
+      label: 'What you need to know'
+    group_additional_resources:
+      children:
+        - field_service_links
+        - field_service_file
+      parent_name: group_additional_info
+      weight: 50
+      format_type: fieldset
+      format_settings:
+        label: 'Additional resources'
+        description: 'Optional. If there are additional resources that contain helpful information, add them here. A maximum of 6 links and downloads (combined) will appear on the service page. Work is underway to allow all Additional Resources to appear on a ''more'' page'
+        required_fields: true
+        id: additional-resources
+        classes: ''
+      label: 'Additional resources'
+id: node.service_page.default
+targetEntityType: node
+bundle: service_page
+mode: default
+content:
+  field_event_quantity:
+    weight: 48
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_image_credit:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_intended_audience:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_link_group:
+    type: entity_reference_paragraphs
+    weight: 43
+    settings:
+      title: 'Link group'
+      title_plural: 'Link groups'
+      edit_mode: open
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings:
+      conditional_fields:
+        241e3d22-b728-4984-9028-593fd9646c5c:
+          dependee: field_template
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: custom
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    region: content
+  field_location_button_label:
+    weight: 45
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_location_button_short_desc:
+    weight: 46
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_log_in_links:
+    weight: 41
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_organizations:
+    weight: 1
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_ref_contact_info:
+    weight: 39
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_related_organization_type:
+    weight: 47
+    settings:
+      display_label: false
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_service_bg_narrow:
+    weight: -1
+    settings:
+      preview_image_style: thumbnail
+      progress_indicator: throbber
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_service_bg_wide:
+    weight: -2
+    settings:
+      preview_image_style: thumbnail
+      progress_indicator: throbber
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_service_body:
+    weight: 34
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+  field_service_eligibility_info:
+    weight: 38
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        7931e70d-a78b-4cec-a527-30237d712636:
+          dependee: field_template
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: default
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: entity_reference_autocomplete
+    region: content
+  field_service_file:
+    weight: 4
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+      collapsible: false
+      collapsed: false
+      allow_duplicate: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: media_browser
+      conditional_fields:
+        261f5b95-fd22-4d3d-bac3-bd778e653614:
+          dependee: field_template
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: default
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: inline_entity_form_complex
+    region: content
+  field_service_key_info_links_6:
+    weight: 47
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      conditional_fields:
+        0b155678-04da-48b7-ad0e-d83a4c054b82:
+          dependee: field_template
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: default
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: link_default
+    region: content
+  field_service_lede:
+    weight: -4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_service_links:
+    weight: 3
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      conditional_fields:
+        a0bc6929-b26a-479a-a27f-c83782609d35:
+          dependee: field_template
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: default
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: link_default
+    region: content
+  field_service_metatags:
+    weight: 6
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_service_offered_by:
+    weight: 40
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_service_ref_actions:
+    weight: 24
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      conditional_fields:
+        909148ea-9d8d-4500-811a-5f0cdebcd1b1:
+          dependee: field_template
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: default
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: link_default
+    region: content
+  field_service_ref_actions_2:
+    weight: 23
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_service_ref_guide_page_1:
+    weight: 37
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        c61775d4-fa36-46aa-a752-2111f459d311:
+          dependee: field_template
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: default
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: entity_reference_autocomplete
+    region: content
+  field_service_ref_locations:
+    weight: 44
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_service_ref_services_6:
+    weight: 49
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_service_video:
+    weight: 35
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+      collapsible: false
+      collapsed: false
+      allow_duplicate: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: video_browser
+    type: inline_entity_form_complex
+    region: content
+  field_services_social_links:
+    weight: 36
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      conditional_fields: {  }
+    type: link_default
+    region: content
+  field_state_organization_tax:
+    weight: 7
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_template:
+    weight: -3
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 10
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 8
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: -5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  uid:
+    type: entity_reference_autocomplete
+    weight: 0
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 9
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

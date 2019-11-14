@@ -1,0 +1,28 @@
+uuid: 288278b4-3ee2-459d-97c4-cf715b1ad043
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_service_ref_services_6
+    - node.type.decision_tree
+    - node.type.service_page
+id: node.decision_tree.field_service_ref_services_6
+field_name: field_service_ref_services_6
+entity_type: node
+bundle: decision_tree
+label: 'Related services'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      service_page: service_page
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: service_details
+field_type: entity_reference

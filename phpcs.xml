@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ruleset name="drupal-project">
+  <description>Default PHP CodeSniffer configuration for Drupal project.</description>
+  <file>docroot/modules/custom</file>
+  <file>docroot/themes/custom</file>
+  <file>docroot/profiles/custom</file>
+  <arg name="extensions" value="inc,install,module,php,profile,test,theme"/>
+
+  <!--Exclude third party code.-->
+  <exclude-pattern>./app/*</exclude-pattern>
+  <exclude-pattern>./bin/*</exclude-pattern>
+  <exclude-pattern>./build/*</exclude-pattern>
+  <exclude-pattern>./vendor/*</exclude-pattern>
+  <exclude-pattern>*/fontello/*</exclude-pattern>
+  <exclude-pattern>docroot/themes/custom/mass_admin_theme/css/base/fonts.css</exclude-pattern>
+
+  <!-- Drupal sniffs -->
+  <rule ref="vendor/drupal/coder/coder_sniffer/Drupal/ruleset.xml"/>
+  <rule ref="vendor/drupal/coder/coder_sniffer/DrupalPractice/ruleset.xml"/>
+
+
+</ruleset>

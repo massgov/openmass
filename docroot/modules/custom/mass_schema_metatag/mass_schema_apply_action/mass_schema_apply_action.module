@@ -1,0 +1,111 @@
+<?php
+
+/**
+ * @file
+ * Contains schema_article.module.
+ */
+
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_metatag_groups_alter().
+ *
+ * Every module should implement this to add a flag to the object types they
+ * create.
+ */
+function mass_schema_apply_action_metatag_groups_alter(&$data) {
+  $module_name = basename(__FILE__, '.module');
+  foreach ($data as $key => $value) {
+    if ($value['provider'] == $module_name) {
+      $data[$key]['schema_metatag'] = TRUE;
+    }
+  }
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function mass_schema_apply_action_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+
+  if ($type == 'node' && !empty($data['node'])) {
+    /** @var \Drupal\node\NodeInterface $node */
+    $node = $data['node'];
+
+    // The following logic is to be applied only to guide pages.
+    if ($node->getType() !== 'how_to_page') {
+      return;
+    }
+
+    // Iterate through all the tokens.
+    foreach ($tokens as $name => $original) {
+      // If node does not have the field, continue.
+      if (!$node->hasField($name)) {
+        continue;
+      }
+
+      // Check if the field is a reference revisions field - this indicates that
+      // it references other entities, such as paragaphs.
+      if ($node->get($name)->getFieldDefinition()->getType() == 'entity_reference' && $node->get($name)->getFieldDefinition()->getItemDefinition()->getSetting('target_type') == 'node') {
+        $referenced_entities = $node->get($name)->referencedEntities();
+        $addresses = [];
+        foreach ($referenced_entities as $referenced_entity) {
+          if ($referenced_entity->getType() == 'contact_information') {
+            $address_paragraph_entities = [];
+            // Get the address from the 'contact_information' node. The address
+            // field references the 'address' paragraph, so we need to get it
+            // from the paragraph entity.
+            if ($referenced_entity->hasField('field_ref_address') && !empty($referenced_entity->get('field_ref_address')->getValue())) {
+              $address_paragraph_entities = array_merge($address_paragraph_entities, $referenced_entity->field_ref_address->referencedEntities());
+            }
+
+            // Iterate through each 'address' paragraph entity to retrieve the
+            // address from the 'field_address_text' field.
+            foreach ($address_paragraph_entities as $paragraph) {
+              if ($paragraph->hasField('field_address_address') && !empty($paragraph->field_address_address->getValue()[0])) {
+                $addresses[] = $paragraph->get('field_address_address')->getValue()[0];
+              }
+            }
+          }
+        }
+        $replacements[$original] = json_encode($addresses);
+      }
+
+      // For tokens that reference a 'link' field, we want to update the
+      // replacement value, so that it contains the 'name' and the 'url' of the
+      // link.
+      if ($node->get($name)->getFieldDefinition()->getType() == 'link') {
+        $data = [];
+        // Get the link value. This value will be an array containing the link's
+        // attributes - such as the 'name' and 'uri'.
+        $value = $node->get($name)->getValue();
+        foreach ($value as $link) {
+          $name = !empty($link['title']) ? $link['title'] : '';
+          $url = '';
+          if (!empty($link['uri'])) {
+            // Compute the absolute URL given the uri.
+            $url = Url::fromUri($link['uri'], ['absolute' => TRUE])->toString();
+          }
+
+          if (empty($name) && empty($url)) {
+            continue;
+          }
+
+          // Store everything in the array object.
+          $data[] = [
+            'name' => $name,
+            'url' => $url,
+          ];
+        }
+
+        // For each replacement token, JSON-encode the data. This data will be
+        // set as the value of the field token - for which it will need to be
+        // JSON-decoded before use.
+        $replacements[$original] = json_encode($data);
+      }
+    }
+  }
+
+  return $replacements;
+}

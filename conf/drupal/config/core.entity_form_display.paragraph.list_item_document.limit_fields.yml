@@ -1,0 +1,42 @@
+uuid: 4402364c-4f34-497d-a4ef-74020ca5d7dc
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.paragraph.limit_fields
+    - field.field.paragraph.list_item_document.field_listitemdoc_desc_manual
+    - field.field.paragraph.list_item_document.field_listitemdoc_desc_type
+    - field.field.paragraph.list_item_document.field_liststaticdoc_item
+    - paragraphs.paragraphs_type.list_item_document
+  module:
+    - entity_browser_entity_form
+    - inline_entity_form
+id: paragraph.list_item_document.limit_fields
+targetEntityType: paragraph
+bundle: list_item_document
+mode: limit_fields
+content:
+  field_liststaticdoc_item:
+    weight: 0
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+      collapsible: false
+      collapsed: false
+      allow_duplicate: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: media_browser
+    type: inline_entity_form_complex
+    region: content
+hidden:
+  created: true
+  field_listitemdoc_desc_manual: true
+  field_listitemdoc_desc_type: true
+  status: true
+  uid: true

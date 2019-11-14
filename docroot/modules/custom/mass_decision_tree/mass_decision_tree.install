@@ -1,0 +1,81 @@
+<?php
+
+/**
+ * @file
+ * Utility methods and helpers.
+ */
+
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+
+/**
+ * Remove field_how_to_link_1 from the decision tree conclusion CT.
+ *
+ * Create the new field_decision_actions field, then copy data for decision tree
+ * conclusions from field_how_to_link_1 to field_decision_actions.  Delete the
+ * field when we are done.
+ */
+function mass_decision_tree_update_8001() {
+  $old_instance = FieldConfig::load('node.decision_tree_conclusion.field_how_to_link_1');
+  $old_storage = $old_instance->getFieldStorageDefinition();
+
+  $new_storage = FieldStorageConfig::create([
+    // UUID must match what's stored in config.
+    'uuid' => '4fae78e9-6780-4cfb-9371-b72c532d8099',
+    'entity_type' => 'node',
+    'field_name' => 'field_decision_actions',
+    'cardinality' => -1,
+    'type' => $old_storage->getType(),
+  ]);
+  $new_storage->save();
+  $new_instance = FieldConfig::create([
+    // UUID must match what's stored in config.
+    'uuid' => '5fefe019-a6db-466a-8f89-f8530daed90b',
+    'field_storage' => $new_storage,
+    'bundle' => $old_instance->getTargetBundle(),
+    'label' => $old_instance->getLabel(),
+    'description' => $old_instance->getDescription(),
+    'translatable' => $old_instance->isTranslatable(),
+    'required' => $old_instance->isRequired(),
+  ]);
+  $new_instance->save();
+
+  // Migrate the data over using a direct INSERT ... FROM query.
+  $base_from = db_select('node__field_how_to_link_1', 's')
+    ->fields('s', [
+      'bundle',
+      'deleted',
+      'entity_id',
+      'revision_id',
+      'langcode',
+      'delta',
+    ])
+    ->condition('bundle', 'decision_tree_conclusion');
+  $base_from->addField('s', 'field_how_to_link_1_uri', 'field_decision_actions_uri');
+  $base_from->addField('s', 'field_how_to_link_1_title', 'field_decision_actions_title');
+  $base_from->addField('s', 'field_how_to_link_1_options', 'field_decision_actions_options');
+  db_insert('node__field_decision_actions')
+    ->from($base_from)
+    ->execute();
+
+  $revision_from = db_select('node_revision__field_how_to_link_1', 's')
+    ->fields('s', [
+      'bundle',
+      'deleted',
+      'entity_id',
+      'revision_id',
+      'langcode',
+      'delta',
+    ])
+    ->condition('bundle', 'decision_tree_conclusion');
+  $revision_from->addField('s', 'field_how_to_link_1_uri', 'field_decision_actions_uri');
+  $revision_from->addField('s', 'field_how_to_link_1_title', 'field_decision_actions_title');
+  $revision_from->addField('s', 'field_how_to_link_1_options', 'field_decision_actions_options');
+  db_insert('node_revision__field_decision_actions')
+    ->from($revision_from)
+    ->execute();
+
+  // Finally, clean up the old instance.  We'll do the data migration in
+  // a hook_post_update().
+  $old_instance->delete();
+}

@@ -1,0 +1,32 @@
+uuid: f5505e33-cfa7-4aeb-aae7-41af568981b3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.icon.field_para_icon_term
+    - field.field.paragraph.icon.field_title
+    - paragraphs.paragraphs_type.icon
+id: paragraph.icon.default
+targetEntityType: paragraph
+bundle: icon
+mode: default
+content:
+  field_para_icon_term:
+    weight: 1
+    label: visually_hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_title:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  created: true
+  uid: true

@@ -1,0 +1,116 @@
+uuid: ced351eb-27b2-4e62-ba08-a8fab7a33cce
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.guide_section.field_guide_ref_contacts_3
+    - field.field.paragraph.guide_section.field_guide_section_alert_text
+    - field.field.paragraph.guide_section.field_guide_section_body
+    - field.field.paragraph.guide_section.field_guide_section_downloads
+    - field.field.paragraph.guide_section.field_guide_section_label
+    - field.field.paragraph.guide_section.field_guide_section_link
+    - field.field.paragraph.guide_section.field_guide_section_links_4
+    - field.field.paragraph.guide_section.field_guide_section_name
+    - field.field.paragraph.guide_section.field_guide_section_stat
+    - field.field.paragraph.guide_section.field_guide_section_time
+    - paragraphs.paragraphs_type.guide_section
+  module:
+    - mass_content
+    - text
+id: paragraph.guide_section.default
+targetEntityType: paragraph
+bundle: guide_section
+mode: default
+content:
+  field_guide_ref_contacts_3:
+    weight: 8
+    label: above
+    settings:
+      view_mode: contact_us_guide_page
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_guide_section_alert_text:
+    weight: 5
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_guide_section_body:
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_guide_section_downloads:
+    weight: 9
+    label: above
+    settings:
+      view_mode: media_download_link
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_guide_section_label:
+    weight: 4
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_guide_section_link:
+    weight: 7
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: dynamic_link_separate
+    region: content
+  field_guide_section_links_4:
+    weight: 6
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: dynamic_link_separate
+    region: content
+  field_guide_section_name:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_guide_section_stat:
+    weight: 3
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_guide_section_time:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  created: true
+  uid: true

@@ -1,0 +1,705 @@
+<?php
+
+/**
+ * @file
+ * Utility methods and helpers.
+ */
+
+use Drupal\media\Entity\Media;
+use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\block\Entity\Block;
+use Drupal\Core\Database\Database;
+use Drupal\user\Entity\User;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\Core\Entity\EntityStorageException;
+
+/**
+ * Implements hook_install().
+ *
+ * We want to remove a view that is currently in the production database.
+ */
+function mass_utility_install() {
+  try {
+    $view_to_delete = \Drupal::entityTypeManager()->getStorage('view')
+      ->loadMultiple(['section_topics']);
+
+    foreach ($view_to_delete as $view) {
+      $view->delete();
+    }
+
+    // Delete the field_contact_group field.
+    $properties = [
+      'entity_type' => 'node',
+      'bundle' => 'action',
+      'field_name' => 'field_contact_group',
+    ];
+    $field_to_delete = \Drupal::entityManager()->getStorage('field_config')->loadByProperties($properties);
+    foreach ($field_to_delete as $field) {
+      $field->delete();
+    }
+  }
+  catch (Exception $e) {
+    return;
+  }
+
+}
+
+/**
+ * Implements hook_update_dependencies().
+ *
+ * Control the order of update hooks by specifying dependencies.
+ */
+function mass_utility_update_dependencies() {
+  $dependencies = [];
+
+  // Clear the discovery cache before the 8.5 views update.
+  $dependencies['views'][8500] = [
+    'mass_utility' => 8020,
+  ];
+  return $dependencies;
+}
+
+/**
+ * Remove mass_theme blocks from the mass_admin_theme.
+ */
+function mass_utility_update_8001(&$sandbox) {
+  $block_ids = [
+    'mass_admin_theme_views_block__subtopics_all_actions_block_1',
+    'mass_admin_theme_views_block__subtopics_ordered_subtopic_list_block',
+    'mass_admin_theme_views_block__ordered_topics_ordered_topic_list_block',
+    'mass_admin_theme_footer1',
+    'mass_admin_theme_pilotmenu',
+    'mass_admin_theme_footer2',
+    'mass_admin_theme_footer3',
+  ];
+
+  foreach ($block_ids as $id) {
+    $blocks = \Drupal::entityTypeManager()
+      ->getStorage('block')
+      ->loadByProperties(['theme' => 'mass_admin_theme', 'id' => $id]);
+
+    foreach ($blocks as $key => $block) {
+      $block = Block::load($key);
+      $block->delete();
+    }
+  }
+}
+
+/**
+ * Add icon taxo terms.
+ */
+function mass_utility_update_8002(&$sandbox) {
+  // Machine name of the Taxonomy vocabulary.
+  $vocab = 'icons';
+
+  // Term names to be added.
+  $items = [
+    'Picnic Table (Large)'        => 'lg-picnic-table',
+    'Apple (Large)'               => 'lg-apple',
+    'Binders (Large)'             => 'lg-binders',
+    'Bookshelf (Large)'           => 'lg-bookshelf',
+    'Clipboard (Large)'           => 'lg-clipboard',
+    'Family (Large)'              => 'lg-family',
+    'Fishing (Large)'             => 'lg-fishing',
+    'Governor Desk (Large)'       => 'lg-governor-desk',
+    'Government Building (Large)' => 'lg-govt-building',
+    'Hard Hat (Large)'            => 'lg-hard-hat',
+    'Home (Large)'                => 'lg-home',
+    'Houses (Large)'              => 'lg-houses',
+    'Laptop (Large)'              => 'lg-laptop',
+    'License (Large)'             => 'lg-license',
+    'List (Large)'                => 'lg-list',
+    'Map Location (Large)'        => 'lg-map-location',
+    'Open Book (Large)'           => 'lg-open-book',
+    'Park (Large)'                => 'lg-park',
+    'Scales (Large)'              => 'lg-scales',
+    'School (Large)'              => 'lg-school',
+    'Scroll (Large)'              => 'lg-scroll',
+    'Shield (Large)'              => 'lg-shield',
+    'State Building (Large)'      => 'lg-state-building',
+    'State House (Large)'         => 'lg-state-house',
+    'Toy Blocks (Large)'          => 'lg-toy-blocks',
+    'Transportation (Large)'      => 'lg-transportation',
+    'Tree (Large)'                => 'lg-tree',
+    'Alert'                       => 'alert',
+    'Arrow'                       => 'arrow',
+    'Apple'                       => 'apple',
+    'Application'                 => 'application',
+    'Bag Search'                  => 'bag-search',
+    'Blog'                        => 'blog',
+    'Campfire'                    => 'campfire',
+    'Castle'                      => 'castle',
+    'Clock'                       => 'clock',
+    'Crossroads'                  => 'crossroads',
+    'Document (General)'          => 'doc-generic',
+    'Excel'                       => 'doc-xlsx',
+    'Dog'                         => 'dog',
+    'Flickr'                      => 'flickr',
+    'Globe'                       => 'lat-lon-globe',
+    'Instagram'                   => 'instagram',
+    'Search'                      => 'search',
+    'Wheelchair'                  => 'wheelchair',
+    'Youtube'                     => 'youtube',
+
+  ];
+  foreach ($items as $name => $file_name) {
+    $term = Term::create([
+      'parent'            => [],
+      'name'              => $name,
+      'field_sprite_name' => $file_name,
+      'vid'               => $vocab,
+    ])->save();
+  }
+}
+
+/**
+ * Re-install XML-Sitemap to re-generate right context values.
+ */
+function mass_utility_update_8003(&$sandbox) {
+  // We can not remove only site id config. This will not work since there
+  // is no context generated.
+  $module_handler = \Drupal::service('module_handler');
+  $module_installer = \Drupal::service('module_installer');
+
+  // Uninstall module to clean up config.
+  if ($module_handler->moduleExists('xmlsitemap')) {
+    $module_installer->uninstall(['xmlsitemap']);
+  }
+
+  // Install module and the context will be generated with right
+  // values for domain.
+  if (!$module_handler->moduleExists('xmlsitemap')) {
+    $module_installer->install(['xmlsitemap']);
+  }
+}
+
+/**
+ * Select default languages.
+ */
+function mass_utility_update_8004(&$sandbox) {
+  $config_factory = \Drupal::configFactory();
+  $config = $config_factory->getEditable('mass_theme.settings');
+  $config->set('languages', [
+    'ar',
+    'es',
+    'fr',
+    'pt',
+    'ht',
+    'it',
+    'km',
+    'ko',
+    'ru',
+    'vi',
+    'zh-CN',
+  ]);
+  $config->save(TRUE);
+}
+
+/**
+ * Delete the agency content type.
+ */
+function mass_utility_update_8005(&$sandbox) {
+  $content_type = \Drupal::entityManager()->getStorage('node_type')->load('agency');
+  $content_type->delete();
+}
+
+/**
+ * Add action type taxo terms.
+ */
+function mass_utility_update_8006(&$sandbox) {
+  // Machine name of the Taxonomy vocabulary.
+  $vocab = 'action_type';
+
+  // Term names to be added.
+  $items = [
+    'apply',
+    'file',
+    'register',
+    'respond',
+    'pay',
+    'order',
+    'check',
+    'log in',
+    'manage',
+    'update',
+    'renew',
+    'replace',
+    'schedule',
+    'report',
+    'request',
+    'calculate',
+    'find',
+    'appeal',
+    'cancel',
+    'view',
+  ];
+  foreach ($items as $name) {
+    $term = Term::create([
+      'parent'            => [],
+      'name'              => $name,
+      'vid'               => $vocab,
+    ])->save();
+  }
+}
+
+/**
+ * Remove old location more info and facilities fields.
+ */
+function mass_utility_update_8007(&$sandbox) {
+
+  // Delete empty tables preventing field deletion.
+  Database::getConnection()->schema()->dropTable('field_deleted_data_c932aee570');
+  Database::getConnection()->schema()->dropTable('field_deleted_revision_c932aee570');
+  Database::getConnection()->schema()->dropTable('field_deleted_data_58c31a4b25');
+  Database::getConnection()->schema()->dropTable('field_deleted_revision_58c31a4b25');
+
+  // Delete the locations facilities and more info fields.
+  $properties = [
+    [
+      'entity_type' => 'node',
+      'bundle' => 'location',
+      'field_name' => 'field_facilities',
+    ],
+    [
+      'entity_type' => 'node',
+      'bundle' => 'location',
+      'field_name' => 'field_more_information',
+    ],
+  ];
+
+  foreach ($properties as $property) {
+    $field_to_delete = \Drupal::entityManager()->getStorage('field_config')->loadByProperties($property);
+    foreach ($field_to_delete as $field) {
+      $field->delete();
+    }
+  }
+}
+
+/**
+ * Remove Service content field.
+ */
+function mass_utility_update_8008(&$sandbox) {
+
+  // Delete empty tables preventing field deletion.
+  Database::getConnection()->schema()->dropTable('field_deleted_data_91211fa377');
+  Database::getConnection()->schema()->dropTable('field_deleted_revision_91211fa377');
+
+  // Delete the field_action_contacts field.
+  $properties = [
+    'entity_type' => 'node',
+    'bundle' => 'service_page',
+    'field_name' => 'field_service_ref_details_6',
+  ];
+  $fields = \Drupal::entityManager()->getStorage('field_config')->loadByProperties($properties);
+  foreach ($fields as $field) {
+    $field->delete();
+  }
+}
+
+/**
+ * Remove topic_ref_content_cards field.
+ */
+function mass_utility_update_8009(&$sandbox) {
+
+  // Delete empty tables preventing field deletion.
+  Database::getConnection()->schema()->dropTable('field_deleted_data_55e9be20f6');
+  Database::getConnection()->schema()->dropTable('field_deleted_revision_55e9be20f6');
+
+  // Delete the field_topic_ref_content_cards field.
+  $properties = [
+    'entity_type' => 'node',
+    'bundle' => 'topic_page',
+    'field_name' => 'field_topic_ref_content_cards',
+  ];
+  $fields = \Drupal::entityManager()->getStorage('field_config')->loadByProperties($properties);
+  foreach ($fields as $field) {
+    $field->delete();
+  }
+}
+
+/**
+ * Create new user with arbitrarily large uid.
+ *
+ * Users created in the future will have larger uids.
+ */
+function mass_utility_update_8010(&$sandbox) {
+  // REDACTED.
+}
+
+/**
+ * Delete press release content type.
+ */
+function mass_utility_update_8011(&$sandbox) {
+  $content_type = \Drupal::entityManager()->getStorage('node_type')->load('press_release');
+  $content_type->delete();
+}
+
+/**
+ * Remove field_adjustment_type_related field.
+ */
+function mass_utility_update_8012(&$sandbox) {
+  // Delete the field_adjustment_type_related field.
+  $properties = [
+    'entity_type' => 'paragraph',
+    'bundle' => 'adjustment_type',
+    'field_name' => 'field_adjustment_type_related',
+  ];
+  $fields = \Drupal::entityManager()->getStorage('field_config')->loadByProperties($properties);
+  foreach ($fields as $field) {
+    $field->delete();
+  }
+}
+
+/**
+ * Update paragraphs field_video values.
+ */
+function mass_utility_update_8013() {
+  // Return message.
+  $message = '';
+
+  // Select all video paragraph that has empty field_video value.
+  $p_query = "SELECT p.id AS pid, p.revision_id, p.parent_type, p.parent_id, p.parent_field_name, p_video_caption.field_video_caption_value AS video_caption, p_video_id.field_video_id_value AS video_id
+    FROM paragraphs_item_field_data p
+    LEFT JOIN paragraph__field_video_id p_video_id ON p.id = p_video_id.entity_id AND (p_video_id.deleted = '0' AND p_video_id.langcode = p.langcode)
+    LEFT JOIN paragraph__field_video_caption p_video_caption ON p.id = p_video_caption.entity_id AND (p_video_caption.deleted = '0' AND p_video_caption.langcode = p.langcode)
+    WHERE (p.type IN ('video')) AND (p_video_id.field_video_id_value IS NOT NULL)";
+
+  // Select all video media object to check for embedded field.
+  $m_query = "SELECT media_data.name AS media_name, media_data.mid AS mid, media_embed.field_media_video_embed_field_value AS video_url
+    FROM media_field_data media_data
+    LEFT JOIN media__field_media_video_embed_field media_embed ON media_data.mid = media_embed.entity_id AND (media_embed.deleted = '0' AND media_embed.langcode = media_data.langcode)
+    WHERE media_data.bundle IN ('media_video')";
+
+  // No more than 150 results are expected in each query.
+  $db = Database::getConnection();
+  // Get the paragraphs data.
+  $p_results = $db->query($p_query)->fetchAll();
+  // Get the media data.
+  $m_results = $db->query($m_query)->fetchAll();
+
+  foreach ($p_results as $p_data) {
+    $p_data->mid = $p_data->video_url = NULL;
+    // Check for existent media entity.
+    foreach ($m_results as $m_data) {
+      if (strpos($m_data->video_url, $p_data->video_id) !== FALSE) {
+        // Store existent media id corresponding to paragraph.
+        $p_data->mid = $m_data->mid;
+        $p_data->video_url = $m_data->video_url;
+        // Once the media was found break inner loop and continue with next
+        // paragraph (outer loop).
+        break;
+      }
+    }
+
+    $paragraph = Paragraph::load($p_data->pid);
+    if (empty($p_data->mid)) {
+      // Create new media to update paragraph.
+      // We have to use watch for embed media, not working with embed format.
+      $embed_media = strpos($p_data->video_id, 'https') !== FALSE
+        ? $p_data->video_id
+        : sprintf('https://www.youtube.com/watch?v=%s', $p_data->video_id);
+      $video_media = Media::create([
+        'name' => $p_data->video_caption,
+        'bundle' => 'media_video',
+        'uid' => '1',
+        'status' => Media::PUBLISHED,
+        'field_media_video_embed_field' => $embed_media,
+      ]);
+      $video_media->save();
+      $p_data->mid = $video_media->id();
+      $p_data->video_url = $embed_media;
+      $message .= t('\n -- New media entity (Video) created with id = @id. You can check for this in "media/@id" or search in "admin/content/media" for a Video with name = "@video_name".', [
+        '@id' => $p_data->mid,
+        '@video_name' => $p_data->video_caption,
+      ]);
+    }
+
+    // Update paragraph if field_video is empty.
+    /** @var \Drupal\Core\Field\EntityReferenceFieldItemList $field_video */
+    $field_video = $paragraph->get('field_video');
+    if (empty($field_video->referencedEntities())) {
+      $paragraph->set('field_video', ['target_id' => $p_data->mid]);
+      $paragraph->save();
+      $message .= t('\n -- The paragraph with id = @id was updated. You can check this in "@parent_type/@parent_id" ("@parent_field_name" field).', [
+        '@id' => $p_data->pid,
+        '@parent_type' => $p_data->parent_type,
+        '@parent_id' => $p_data->parent_id,
+        '@parent_field_name' => $p_data->parent_field_name,
+      ]);
+    }
+  }
+  return $message;
+}
+
+/**
+ * Convert plain text WYSIWYG fields on location to formatted text fields.
+ */
+function mass_utility_update_8015() {
+  // Mapping of field names to recreate, along with the uuids of the field
+  // storage entities. Matching UUIDs to exported config prevents the fields
+  // from being deleted/recreated on the next config import.
+  $field_names = [
+    'field_parking' => [
+      'storage' => '245ce718-6c36-494c-b926-c29e8f0d83c5',
+      'instance' => '4b1c2ee1-0d21-4d46-a3a9-497ea201a0ec',
+    ],
+    'field_restrictions' => [
+      'storage' => 'd668a981-8632-4718-8772-59e2730b3e65',
+      'instance' => '60a06c13-5376-403a-abda-7fdfb0b03bcd',
+    ],
+    'field_accessibility' => [
+      'storage' => 'ef166199-37ae-4014-b351-5bd2d61ebb7e',
+      'instance' => '8271341f-a97a-4fbe-b1b7-0fec828f2e31',
+    ],
+    'field_services' => [
+      'storage' => '8153c3d7-5453-4cc8-83d8-eb532129af52',
+      'instance' => '38c289d4-73ae-4a2c-b6cd-018c3121ab20',
+    ],
+  ];
+
+  foreach ($field_names as $field_name => $uuids) {
+    /** @var \Drupal\field\Entity\FieldConfig[] $instances */
+    $instances = \Drupal::entityManager()
+      ->getStorage('field_config')
+      ->loadByProperties([
+        'entity_type' => 'node',
+        'bundle' => 'location',
+        'field_name' => $field_name,
+      ]);
+    foreach ($instances as $instance) {
+      $instance->delete();
+    }
+
+    $storages = \Drupal::entityManager()
+      ->getStorage('field_storage_config')
+      ->loadByProperties([
+        'entity_type' => 'node',
+        'bundle' => 'location',
+        'field_name' => $field_name,
+      ]);
+    foreach ($storages as $storage) {
+      $storage->delete();
+    }
+    $newStorage = FieldStorageConfig::create([
+      'uuid' => $uuids['storage'],
+      'entity_type' => 'node',
+      'field_name' => $field_name,
+      'type' => 'text_long',
+      'cardinality' => 1,
+    ]);
+    $newStorage->save();
+    // This looks like a loop, but there's only ever 1 here.
+    foreach ($instances as $instance) {
+      $newInstance = FieldConfig::create([
+        'uuid' => $uuids['instance'],
+        'entity_type' => 'node',
+        'field_storage' => $newStorage,
+        'bundle' => 'location',
+        'label' => $instance->label(),
+        'description' => $instance->getDescription(),
+        'translatable' => $instance->isTranslatable(),
+        'required' => $instance->isRequired(),
+      ]);
+      $newInstance->save();
+    }
+  }
+}
+
+/**
+ * Add rules of court type terms.
+ */
+function mass_utility_update_8016(&$sandbox) {
+  // Machine name of the Taxonomy vocabulary.
+  $vocab = 'rules_of_court_type';
+
+  // Term names to be added.
+  $items = [
+    'Rules of Civil Procedure',
+    'Rules of Criminal Procedure',
+    'Rules of Appellate Procedure',
+    'District/Municipal Courts Supplemental Rules of Civil Procedure',
+    'Rules of Domestic Relations Procedure',
+    'District/Municipal Courts Supplemental Rules of Civil Procedure',
+    'District/Municipal Courts Rules of Criminal Procedure',
+    'Trial Court Rules',
+    'Superior Court Rules',
+    'Supreme Judicial Court Rules',
+    'Appeals Court Rules',
+    'District/Municipal Court Rules',
+    'Probate and Family Court Rules',
+    'Housing Court Rules',
+    'Juvenile Court Rules',
+    'Land Court Rules',
+    'Guide to Evidence',
+  ];
+  foreach ($items as $name) {
+    $term = Term::create([
+      'parent'            => [],
+      'name'              => $name,
+      'vid'               => $vocab,
+    ])->save();
+  }
+}
+
+/**
+ * Add rules of court standing order terms.
+ */
+function mass_utility_update_8017(&$sandbox) {
+  // Machine name of the Taxonomy vocabulary.
+  $vocab = 'rules_of_court_standing_order';
+
+  // Term names to be added.
+  $items = [
+    'Standing Order',
+    'Joint Standing Order',
+  ];
+  foreach ($items as $name) {
+    $term = Term::create([
+      'parent'            => [],
+      'name'              => $name,
+      'vid'               => $vocab,
+    ])->save();
+  }
+}
+
+/**
+ * DP8348: Empty hook to trigger a cache rebuild after json_api update.
+ */
+function mass_utility_update_8018() {
+  // Empty update hook to trigger cache rebuild.
+}
+
+/**
+ * DP-8384: Empty hook to trigger a cache rebuild after simpler_twig removal.
+ */
+function mass_utility_update_8019() {
+  // Empty update hook to trigger cache rebuild.
+}
+
+/**
+ * Uninstall Better Field Desriptions.
+ */
+function mass_utility_update_8020(&$sandbox) {
+  // Removed duplicated uninstall.
+  // Has been handled by disabling module in config.
+}
+
+/**
+ * DP-8238: Clear discovery cache during 8.5 update.
+ */
+function mass_utility_update_8021() {
+  \Drupal::cache('discovery')->deleteAll();
+}
+
+/**
+ * Delete old "funnel_or_endpoint" taxonomy terms.
+ */
+function mass_utility_update_8022() {
+  $termStorage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $terms = $termStorage->loadByProperties(['vid' => 'funnel_or_endpoint']);
+  $termStorage->delete($terms);
+}
+
+/**
+ * Delete old "document_agencies" taxonomy terms.
+ */
+function mass_utility_update_8023() {
+  $termStorage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $terms = $termStorage->loadByProperties(['vid' => 'document_agencies']);
+  $termStorage->delete($terms);
+}
+
+/**
+ * Force uninstall media_entity_document.
+ *
+ * This module could not be uninstalled normally during the contrib -> core
+ * media switch, so we have to manually remove the reference to it here.
+ */
+function mass_utility_update_8024() {
+  // Uninstall the schema for media_entity_document.
+  \Drupal::keyValue('system.schema')->delete('media_entity_document');
+}
+
+/**
+ * Add custom icon for file browser entity embed button.
+ */
+function mass_utility_update_8025() {
+  // Add an icon for File Browser.
+  $data = file_get_contents(drupal_get_path('theme', 'mass_admin_theme') . '/icons/embed_image.png');
+  $file = file_save_data($data, 'public://file_browser_icon.png', FILE_EXISTS_REPLACE);
+  $configuration = \Drupal::configFactory()->get('embed.button.file_browser');
+  $uuid = $configuration->get('icon_uuid');
+
+  // Set file uuid same as default config.
+  $file->set('uuid', $uuid);
+  $file->save();
+}
+
+/**
+ * Adds terms to Document Category vocabulary.
+ */
+function mass_utility_update_8026() {
+  $items = [
+    'laws-regulations',
+    'services',
+    'state-organizations',
+    'news',
+  ];
+  foreach ($items as $name) {
+    try {
+      Term::create([
+        'parent' => [],
+        'name' => $name,
+        'vid' => 'document_category',
+      ])->save();
+    }
+    catch (EntityStorageException $e) {
+      return;
+    }
+  }
+}
+
+/**
+ * Add terms to "Announcement Type" and "Document Other Type" vocabularies.
+ */
+function mass_utility_update_8027() {
+  $items = [
+    'Speech',
+    'News',
+    'Press Release',
+    'Press Statement',
+  ];
+  foreach ($items as $name) {
+    Term::create([
+      'parent' => [],
+      'name' => $name,
+      'vid' => 'announcement_type',
+    ])->save();
+  }
+  $items = [
+    'Executive Order',
+    'Regulation',
+  ];
+  foreach ($items as $name) {
+    Term::create([
+      'parent' => [],
+      'name' => $name,
+      'vid' => 'document_other_type',
+    ])->save();
+  }
+}
+
+/**
+ * Avoid running an unwanted post_update during upgrade to Drupal 8.6.
+ *
+ * This post_update changes config which causes a failure at CircleCI.
+ */
+function mass_utility_update_8028() {
+  $key_value = \Drupal::keyValue('post_update');
+  $key = 'existing_updates';
+  $update_list = $key_value->get($key);
+  $update_list[] = 'taxonomy_post_update_handle_publishing_status_addition_in_views';
+  $key_value->set($key, $update_list);
+}

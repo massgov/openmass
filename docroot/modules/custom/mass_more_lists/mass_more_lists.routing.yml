@@ -1,0 +1,33 @@
+mass_more_lists.mass_more_lists_buildList:
+  path: '/node/{node}/resources'
+  defaults:
+    _controller: '\Drupal\mass_more_lists\Controller\MassMoreLists::buildList'
+  requirements:
+    _permission: 'access content'
+    _custom_access: '\Drupal\mass_more_lists\Controller\MassMoreLists::access'
+  options:
+    parameters:
+      node:
+        type: entity:node
+
+mass_more_lists.events_upcoming:
+  path: '/node/{node}/events'
+  defaults:
+    _title: 'Events'
+    _controller: 'Drupal\mass_more_lists\Controller\EventsController::upcomingPage'
+  requirements:
+    _permission: 'access content'
+    _entity_access: 'node.view'
+  options:
+    parameters: {node: {type: 'entity:node'}}
+
+mass_more_lists.events_past:
+  path: '/node/{node}/events/past'
+  defaults:
+    _title: 'Events'
+    _controller: 'Drupal\mass_more_lists\Controller\EventsController::pastPage'
+  requirements:
+    _permission: 'access content'
+    _entity_access: 'node.view'
+  options:
+    parameters: {node: {type: 'entity:node'}}

@@ -1,0 +1,31 @@
+uuid: e49205dd-1c2c-4182-9b5e-5ec02dcc9b84
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.decision_section.field_decision_section_body
+    - field.field.paragraph.decision_section.field_decision_section_title
+    - paragraphs.paragraphs_type.decision_section
+  module:
+    - text
+id: paragraph.decision_section.default
+targetEntityType: paragraph
+bundle: decision_section
+mode: default
+content:
+  field_decision_section_body:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_decision_section_title:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

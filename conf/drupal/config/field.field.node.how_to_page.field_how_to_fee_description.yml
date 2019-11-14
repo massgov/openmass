@@ -1,0 +1,29 @@
+uuid: faa1b353-674e-4d38-8d6d-86d128eaf64c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_how_to_fee_description
+    - node.type.how_to_page
+  module:
+    - allowed_formats
+    - text
+third_party_settings:
+  allowed_formats:
+    basic_html: basic_html
+    restricted_html: restricted_html
+    full_html: full_html
+    rules_of_court_section: '0'
+    plain_text: '0'
+id: node.how_to_page.field_how_to_fee_description
+field_name: field_how_to_fee_description
+entity_type: node
+bundle: how_to_page
+label: 'Fee description'
+description: 'Optional. Use only if your fees require a detailed explanation or cannot be presented using the structured fees below.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

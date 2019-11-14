@@ -1,0 +1,52 @@
+uuid: ab0712a7-d8ea-40b8-a7bc-b454b37646b7
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.emergency_alert_banner
+    - field.field.paragraph.emergency_alert.field_emergency_alert_content
+    - field.field.paragraph.emergency_alert.field_emergency_alert_link
+    - field.field.paragraph.emergency_alert.field_emergency_alert_message
+    - field.field.paragraph.emergency_alert.field_emergency_alert_timestamp
+    - paragraphs.paragraphs_type.emergency_alert
+  module:
+    - datetime
+    - link
+id: paragraph.emergency_alert.emergency_alert_banner
+targetEntityType: paragraph
+bundle: emergency_alert
+mode: emergency_alert_banner
+content:
+  field_emergency_alert_link:
+    weight: 2
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_emergency_alert_message:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_emergency_alert_timestamp:
+    weight: 1
+    label: hidden
+    settings:
+      timezone_override: America/New_York
+      date_format: 'm.d.y, g:i a'
+    third_party_settings: {  }
+    type: datetime_custom
+    region: content
+hidden:
+  created: true
+  field_emergency_alert_content: true
+  uid: true

@@ -1,0 +1,31 @@
+uuid: b424c969-4874-41af-a6a1-886e73ec05c7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.event_agenda_section.field_event_agenda_body
+    - field.field.paragraph.event_agenda_section.field_event_agenda_title
+    - paragraphs.paragraphs_type.event_agenda_section
+  module:
+    - text
+id: paragraph.event_agenda_section.default
+targetEntityType: paragraph
+bundle: event_agenda_section
+mode: default
+content:
+  field_event_agenda_body:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_event_agenda_title:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

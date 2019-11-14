@@ -1,0 +1,23 @@
+{#
+/**
+ * @file
+ * Build markdown for changelog.md. See scripts/build-changelog.php
+ *
+ * Available variables:
+ * - type of change that is taking place (Changed, Added, Removed, Security, and Deprecated).
+ * - item.issue each Jira ticket number.
+ * - item.description is a description of what the ticket is about.
+ *
+ */
+#}
+
+
+## [{{ version }}] - {{ release_date }}
+
+{% for type, items in changes %}
+### {{ type }}
+{% for item in items  %}
+  - {% if item.issue %}{{ item.issue }}: {% endif %}{{ item.description|raw }}
+{% endfor %}
+  
+{% endfor %}

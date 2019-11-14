@@ -1,0 +1,42 @@
+name: mass_theme
+type: theme
+description: Custom theme for Mass.gov
+package: Custom
+core: 8.x
+libraries:
+  - mass_theme/modernizr
+  - mass_theme/global-styling
+
+base theme: false
+
+regions:
+  flag_links: Flag Links
+  emergency_alert: Emergency Alert
+  header: Header
+  pre_content: Pre Content
+  content: Content
+  post_content: Post Content
+  section_topics: Section topics
+  footer: Footer
+  footer_navigation: Footer Navigation
+libraries-override:
+  # Apply library overrides. This prevents duplicate versions of
+  # modernizr, jquery and picturefill from being added to the page.
+  core/modernizr: mayflower/modernizr
+  core/jquery: mayflower/global
+  core/picturefill: mayflower/global
+
+
+libraries-extend:
+  views/views.ajax: [mass_theme/views.ajax.extension]
+
+component-libraries:
+  custom_includes:
+    paths:
+      - templates/includes
+  custom_templates:
+    paths:
+      - templates
+  custom_fields:
+    paths:
+      - templates/field

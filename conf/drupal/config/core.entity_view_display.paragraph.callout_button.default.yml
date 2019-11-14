@@ -1,0 +1,29 @@
+uuid: 4991c3f0-e015-400a-8291-eb0685aeab3a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.callout_button.field_link
+    - paragraphs.paragraphs_type.callout_button
+  module:
+    - link
+id: paragraph.callout_button.default
+targetEntityType: paragraph
+bundle: callout_button
+mode: default
+content:
+  field_link:
+    weight: 0
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+hidden:
+  created: true
+  uid: true

@@ -1,0 +1,29 @@
+uuid: dc25a512-519f-4906-9ec8-32e409b0ec51
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_reusable_label
+    - node.type.contact_information
+    - taxonomy.vocabulary.label
+id: node.contact_information.field_reusable_label
+field_name: field_reusable_label
+entity_type: node
+bundle: contact_information
+label: Label(s)
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      label: label
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

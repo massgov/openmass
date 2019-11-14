@@ -1,0 +1,32 @@
+uuid: f60bd3d4-04ba-4e29-8770-eb4dcc5cd341
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_decision_docket_number
+    - node.type.decision
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.decision.field_decision_docket_number
+field_name: field_decision_docket_number
+entity_type: node
+bundle: decision
+label: 'Docket Number'
+description: 'Optional. The unique identifier for the decision.  You may include letters, numbers and special characters.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

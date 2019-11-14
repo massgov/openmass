@@ -1,0 +1,31 @@
+uuid: 35e6e185-f2d8-430a-ab4b-289f8f6913c6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.icon.field_para_icon_term
+    - field.field.paragraph.icon.field_title
+    - paragraphs.paragraphs_type.icon
+id: paragraph.icon.default
+targetEntityType: paragraph
+bundle: icon
+mode: default
+content:
+  field_para_icon_term:
+    weight: 7
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_title:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

@@ -1,0 +1,26 @@
+uuid: 155d701a-3ddb-4f64-9a3e-a91100697682
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_admin_pages
+    - system
+  theme:
+    - mass_admin_theme
+id: updates
+theme: mass_admin_theme
+region: sidebar_second
+weight: -8
+provider: null
+plugin: updates_block
+settings:
+  id: updates_block
+  label: Updates
+  provider: mass_admin_pages
+  label_display: visible
+visibility:
+  request_path:
+    id: request_path
+    pages: /admin/home
+    negate: false
+    context_mapping: {  }

@@ -1,0 +1,37 @@
+{#
+/**
+ * @file
+ * Partial for location banner header. To be included at the node template level.
+ */
+#}
+<section class="ma__location-banner">
+  <style>
+    #GUID24872901570 {
+      background-image: url('{{ locationBanner.image }}');
+    }
+
+    @media (min-width: 801px) {
+      #GUID24872901570 {
+        background-image: url('{{ locationBanner.imageLarge }}');
+      }
+    }
+  </style>
+  {% if map is not empty %}
+    <div class="ma__location-banner__map">
+      <div
+          class="ma__google-map"
+          aria-hidden="true"
+          role="presentation">
+        <div class="ma__google-map__map js-google-map google-map-field">
+          {{ map }}
+        </div>
+       </div>
+    </div>
+  {% endif %}
+  <div
+      class="ma__location-banner__image"
+      id="GUID24872901570"
+      role="image"
+      title="{{ locationBanner.alt }}">
+  </div>
+</section>

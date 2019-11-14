@@ -1,0 +1,60 @@
+id: item_file_content
+label: Items Files Migration.
+langcode: en
+status: true
+dependencies: {  }
+migration_group: massdocs_content
+migration_tags:
+  - CSV
+dependencies:
+  enforced:
+    module:
+      - mass_migration
+      - file
+source:
+  constants:
+    destination_directory: 'public://documents'
+  plugin: csv
+  path: 'public://migration/percussion_metadata_05_25_2017.csv'
+  header_row_count: 1
+  keys:
+    - item_file_name
+  fields:
+    item_file_name: Unique file name for the item.
+    item_massgov_url: Mass.gov url.
+    rec_release_date: Release date of the record.
+destination:
+  plugin: 'entity:file'
+process:
+  uid:
+    plugin: default_value
+    default_value: 1
+  langcode:
+    plugin: default_value
+    default_value: langcode
+  status:
+    plugin: default_value
+    default_value: 1
+  release_date:
+    plugin: format_date
+    from_format: 'Y-m-d'
+    to_format: 'Y/m'
+    source: rec_release_date
+  filename: item_file_name
+  source_path: item_massgov_url
+  destination_path:
+    -
+      plugin: mass_migration_file_path
+      delimiter: /
+      count: 2500
+      source:
+        - constants/destination_directory
+        - '@release_date'
+        - item_file_name
+    -
+      plugin: urlencode
+  uri:
+    plugin: file_copy
+    source:
+      - '@source_path'
+      - '@destination_path'

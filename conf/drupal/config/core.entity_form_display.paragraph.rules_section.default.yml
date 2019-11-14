@@ -1,0 +1,35 @@
+uuid: 0850b1ae-1345-41ea-892f-fbd8e1d598f7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.rules_section.field_rules_section_body
+    - field.field.paragraph.rules_section.field_rules_section_title
+    - paragraphs.paragraphs_type.rules_section
+  module:
+    - text
+id: paragraph.rules_section.default
+targetEntityType: paragraph
+bundle: rules_section
+mode: default
+content:
+  field_rules_section_body:
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_rules_section_title:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

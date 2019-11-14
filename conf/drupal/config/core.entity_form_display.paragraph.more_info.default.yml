@@ -1,0 +1,35 @@
+uuid: c5d93cab-3ee4-4ecd-b717-92840d4e32a7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.more_info.field_more_info_text
+    - field.field.paragraph.more_info.field_more_info_title
+    - paragraphs.paragraphs_type.more_info
+  module:
+    - text
+id: paragraph.more_info.default
+targetEntityType: paragraph
+bundle: more_info
+mode: default
+content:
+  field_more_info_text:
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_more_info_title:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

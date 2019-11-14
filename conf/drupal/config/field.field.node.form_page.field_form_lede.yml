@@ -1,0 +1,32 @@
+uuid: 591ec642-6e24-408a-9361-c1469485f348
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_form_lede
+    - node.type.form_page
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.form_page.field_form_lede
+field_name: field_form_lede
+entity_type: node
+bundle: form_page
+label: 'Short description'
+description: "A 1-2 sentence, high-level description that should describe what the form will do. Also note if it is specific to a service, season, region, and/or a subset of people.\r\n"
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

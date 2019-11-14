@@ -1,0 +1,366 @@
+uuid: 87accc67-ac64-48fd-aba6-cc14f2030fe1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.news.field_image_credit
+    - field.field.node.news.field_intended_audience
+    - field.field.node.news.field_news_body
+    - field.field.node.news.field_news_date
+    - field.field.node.news.field_news_image
+    - field.field.node.news.field_news_lede
+    - field.field.node.news.field_news_links
+    - field.field.node.news.field_news_location
+    - field.field.node.news.field_news_media_contac
+    - field.field.node.news.field_news_metatags
+    - field.field.node.news.field_news_sections
+    - field.field.node.news.field_news_signees
+    - field.field.node.news.field_news_summary
+    - field.field.node.news.field_news_type
+    - field.field.node.news.field_news_video
+    - field.field.node.news.field_organizations
+    - field.field.node.news.field_state_organization_tax
+    - image.style.thumbnail
+    - node.type.news
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - datetime
+    - field_group
+    - image
+    - link
+    - mass_validation
+    - metatag
+    - paragraphs
+    - scheduler
+    - scheduler_content_moderation_integration
+    - text
+third_party_settings:
+  field_group:
+    group_overview:
+      children:
+        - title
+        - field_news_type
+        - field_news_date
+        - field_news_lede
+        - field_news_summary
+        - field_organizations
+        - field_intended_audience
+      parent_name: group_node_edit_form
+      weight: 1
+      format_type: tab
+      format_settings:
+        formatter: closed
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+      label: Overview
+    group_signees:
+      children:
+        - field_news_signees
+      parent_name: group_node_edit_form
+      weight: 2
+      format_type: tab
+      format_settings:
+        label: Signees
+        formatter: closed
+        description: 'Please select at least one state organization signing this release. Your selection will populate the related tag at the top of the page, which links back to the organization’s page. You may add additional State or External organizations. If you’d like include a state leader by name, you may edit the name and description after selecting the organization.'
+        required_fields: true
+        id: ''
+        classes: ''
+      label: Signees
+    group_main_content:
+      children:
+        - field_news_image
+        - field_news_location
+        - field_news_video
+        - field_news_body
+        - field_news_sections
+        - field_image_credit
+      parent_name: group_node_edit_form
+      weight: 3
+      format_type: tab
+      format_settings:
+        formatter: closed
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+      label: 'Main Content'
+    group_contacts:
+      children:
+        - field_news_media_contac
+      parent_name: group_node_edit_form
+      weight: 4
+      format_type: tab
+      format_settings:
+        formatter: closed
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+      label: Contacts
+    group_related:
+      children:
+        - field_news_links
+      parent_name: group_node_edit_form
+      weight: 6
+      format_type: tab
+      format_settings:
+        formatter: closed
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+      label: Related
+    group_node_edit_form:
+      children:
+        - group_overview
+        - group_signees
+        - group_main_content
+        - group_contacts
+        - group_related
+      parent_name: ''
+      weight: 1
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Node edit form'
+id: node.news.default
+targetEntityType: node
+bundle: news
+mode: default
+content:
+  field_image_credit:
+    weight: 35
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_intended_audience:
+    weight: 8
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_news_body:
+    weight: 32
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_news_date:
+    weight: 4
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_news_image:
+    weight: 29
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_news_lede:
+    weight: 5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_news_links:
+    weight: 5
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - contact_information
+          - fee
+          - legacy_redirects
+    type: link_default
+    region: content
+  field_news_location:
+    weight: 30
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_news_media_contac:
+    type: entity_reference_paragraphs
+    weight: 2
+    settings:
+      title: 'Media contact'
+      title_plural: 'Media contacts'
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_news_metatags:
+    weight: 5
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_news_sections:
+    type: entity_reference_paragraphs
+    weight: 33
+    settings:
+      title: Section
+      title_plural: Sections
+      edit_mode: closed
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings:
+      conditional_fields:
+        69ab3612-33bb-4631-85c0-e62e11d6b7fc:
+          dependee: field_news_type
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 3
+            value: ''
+            values: "speech\r\npress_release"
+            value_form:
+              -
+                value: press_release
+            effect: show
+            effect_options: {  }
+            selector: ''
+            field_news_type:
+              -
+                value: press_release
+          entity_type: node
+          bundle: news
+    region: content
+  field_news_signees:
+    type: entity_reference_paragraphs
+    weight: 1
+    settings:
+      title: Signee
+      title_plural: Signees
+      edit_mode: closed
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_news_summary:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_news_type:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_news_video:
+    type: entity_reference_paragraphs
+    weight: 31
+    settings:
+      title: Video
+      title_plural: Videos
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_organizations:
+    weight: 7
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_state_organization_tax:
+    weight: 6
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 100
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  uid:
+    type: entity_reference_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

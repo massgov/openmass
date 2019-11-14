@@ -1,0 +1,60 @@
+uuid: 64215170-a7dd-450b-b9dd-2fcb7439db73
+langcode: en
+status: true
+dependencies:
+  config:
+    - entity_browser.browser.browse_files_modal
+    - field.field.paragraph.activity.field_image
+    - field.field.paragraph.activity.field_link
+    - field.field.paragraph.activity.field_teaser
+    - field.field.paragraph.activity.field_title
+    - paragraphs.paragraphs_type.activity
+  module:
+    - entity_browser
+    - link
+id: paragraph.activity.default
+targetEntityType: paragraph
+bundle: activity
+mode: default
+content:
+  field_image:
+    weight: 7
+    settings:
+      entity_browser: browse_files_modal
+      field_widget_remove: true
+      selection_mode: selection_append
+      preview_image_style: thumbnail
+      field_widget_edit: true
+      open: false
+      view_mode: default
+    third_party_settings: {  }
+    type: entity_browser_file
+    region: content
+  field_link:
+    weight: 9
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_teaser:
+    weight: 8
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+  field_title:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

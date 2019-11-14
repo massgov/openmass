@@ -1,0 +1,31 @@
+uuid: 1cd7f0f3-dd5c-4ab6-9f2f-f534354f92c0
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.decision_participants.field_decision_participant_name
+    - field.field.paragraph.decision_participants.field_ref_participant_type
+    - paragraphs.paragraphs_type.decision_participants
+id: paragraph.decision_participants.default
+targetEntityType: paragraph
+bundle: decision_participants
+mode: default
+content:
+  field_decision_participant_name:
+    weight: 8
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_ref_participant_type:
+    weight: 9
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

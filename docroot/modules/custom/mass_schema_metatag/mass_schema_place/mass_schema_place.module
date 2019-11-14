@@ -1,0 +1,114 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_schema_place.module.
+ */
+
+use Drupal\Core\Render\BubbleableMetadata;
+
+/**
+ * Implements hook_metatag_groups_alter().
+ *
+ * Every module should implement this to add a flag to the object types they
+ * create.
+ */
+function mass_schema_place_metatag_groups_alter(&$data) {
+  $module_name = basename(__FILE__, '.module');
+  foreach ($data as $key => $value) {
+    if ($value['provider'] == $module_name) {
+      $data[$key]['schema_metatag'] = TRUE;
+    }
+  }
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function mass_schema_place_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  /** @var \Drupal\token\Token $token_service */
+  $token_service = \Drupal::token();
+
+  $replacements = [];
+
+  if (!empty($data['node'])) {
+    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+    $entity = $data['node'];
+
+    // The following logic is to be applied only to guide pages.
+    if ($entity->getType() !== 'location') {
+      return;
+    }
+
+    // Iterate through all the tokens.
+    foreach ($tokens as $name => $original) {
+      $property_name = $name;
+      $value = $filtered_tokens = [];
+
+      // Check for the [entity:field_name] token.
+      if (strpos($name, ':') !== FALSE) {
+        list($field_name, $delta) = explode(':', $name);
+
+        // Handle [entity:field_name:entity].
+        $filtered_tokens = $token_service->findWithPrefix($tokens, $field_name);
+        if (!empty(array_keys($filtered_tokens)[0])) {
+          // Handle [entity:field_name].
+          $property_name = array_keys($token_service->findWithPrefix($filtered_tokens, $delta))[0];
+        }
+
+        $name = $field_name;
+      }
+
+      // If the node entity doesn't have the field, continue.
+      if (!$entity->hasField($name)) {
+        continue;
+      }
+
+      $data = [];
+
+      $field_type = $entity->get($name)->getFieldDefinition()->getType();
+
+      if ($field_type == 'image') {
+        $referenced_entities = $entity->get($name)->referencedEntities();
+        foreach ($referenced_entities as $referenced_entity) {
+          $file_uri = $referenced_entity->getFileUri();
+          $url = file_create_url($file_uri);
+          if ($url && !in_array($url, $data)) {
+            $data[] = $url;
+          }
+        }
+
+        // For each replacement token, JSON-encode the data. This data will be
+        // set as the value of the field token - for which it will need to be
+        // JSON-decoded before use.
+        $replacements[$original] = json_encode($data);
+      }
+      elseif ($field_type == 'entity_reference' && $property_name == 'field_ref_contact_info_1') {
+        $referenced_entities = $entity->get($name)->referencedEntities();
+        $addresses = [];
+        foreach ($referenced_entities as $referenced_entity) {
+          if ($referenced_entity->getType() == 'contact_information') {
+            $address_paragraph_entities = [];
+            // Get the address from the 'contact_information' node. The address
+            // field references the 'address' paragraph, so we need to get it
+            // from the paragraph entity.
+            if ($referenced_entity->hasField('field_ref_address') && !empty($referenced_entity->get('field_ref_address')->getValue())) {
+              $address_paragraph_entities = array_merge($address_paragraph_entities, $referenced_entity->field_ref_address->referencedEntities());
+            }
+
+            // Iterate through each 'address' paragraph entity to retrieve the
+            // address from the 'field_address_text' field.
+            foreach ($address_paragraph_entities as $paragraph) {
+              if ($paragraph->hasField('field_address_address') && !empty($paragraph->field_address_address->getValue()[0])) {
+                $addresses[] = $paragraph->get('field_address_address')->getValue()[0];
+              }
+            }
+          }
+        }
+        $replacements[$original] = json_encode($addresses);
+      }
+    }
+  }
+
+  return $replacements;
+}

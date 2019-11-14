@@ -1,0 +1,293 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_flagging.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\Entity\Node;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
+use Drupal\flag\Entity\Flag;
+
+const WATCH_FLAG = 'watch_content';
+
+/**
+ * Implements hook_help().
+ */
+function mass_flagging_help($route_name, RouteMatchInterface $route_match) {
+  module_load_include('inc', 'mass_flagging');
+  switch ($route_name) {
+    // Main module help for the mass_flagging module.
+    case 'help.page.mass_flagging':
+      return get_mass_flagging_help_text();
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function mass_flagging_node_update(Node $node) {
+  // We need a way to bypass notifications (eg when we do bulk updates via drush).
+  $bypass_notification = isset($_ENV['MASS_FLAGGING_BYPASS']) ? (bool) $_ENV['MASS_FLAGGING_BYPASS'] : FALSE;
+
+  // Sends Watch notifications on local and Prod environments only when
+  // there is no bypass flag.
+  if ((!isset($_ENV['AH_SITE_ENVIRONMENT']) || $_ENV['AH_SITE_ENVIRONMENT'] == 'prod')
+    && !$bypass_notification) {
+    mass_flagging_node_update_insert_send_notifications($node);
+  }
+  mass_flagging_node_update_insert_add_watcher($node);
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function mass_flagging_node_insert(Node $node) {
+  mass_flagging_node_update_insert_add_watcher($node);
+}
+
+/**
+ * Send notifications to users who are watchers.
+ *
+ * @param Drupal\node\Entity\Node $node
+ *   The node object that is being updated or inserted.
+ *
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+ */
+function mass_flagging_node_update_insert_send_notifications(Node $node) {
+  // Only send notifications after a node has been published.
+  // This excludes any nodes in one of multiple 'prepublished' states.
+  if (!MassModeration::isPrepublish($node)) {
+    $flag_service = \Drupal::service('flag');
+    $watch_flag = \Drupal::entityTypeManager()
+      ->getStorage('flag')
+      ->load(WATCH_FLAG);
+
+    $node_watcher_users = $flag_service->getFlaggingUsers($node, $watch_flag);
+
+    if ($node_watcher_users) {
+
+      // Create diff url, @see \modules\contrib\diff\diff.routing.yml.
+      $route_parameters = [
+        'node' => $node->id(),
+        // Compare previous revision (left) to current revision (right).
+        'left_revision' => $node->getLoadedRevisionId(),
+        'right_revision' => $node->getRevisionId(),
+        'filter' => 'split_fields',
+      ];
+
+      $diff_url = Url::fromRoute('diff.revisions_diff', $route_parameters)
+        ->setAbsolute()->toString();
+
+      // Create Message.
+      $author_user = $node->getRevisionUser();
+      $author_username = $author_user->getDisplayName();
+      $author_email = $author_user->get('mail')->value;
+      $params['node_title'] = $node->label();
+      $node_edit_time = \Drupal::service('date.formatter')
+        ->format(\Drupal::time()->getRequestTime());
+
+      // Checks whether moderation state has been changed between revisions.
+      $entity_type_manager = \Drupal::entityTypeManager();
+      $node_storage = $entity_type_manager->getStorage('node');
+      $previous_revision = $node_storage->loadRevision($node->getLoadedRevisionId());
+      $current_revision = $node_storage->loadRevision($node->getRevisionId());
+      $has_new_moderation_state = FALSE;
+      $previous_moderation_state = '';
+      $current_moderation_state = '';
+      if ($previous_revision->get('moderation_state')->getString() != $current_revision->get('moderation_state')->getString()) {
+        $has_new_moderation_state = TRUE;
+        $previous_moderation_state = $previous_revision->get('moderation_state')->getString();
+        $current_moderation_state = $current_revision->get('moderation_state')->getString();
+      }
+      $is_published_has_new_draft = $previous_revision->get('moderation_state')->getString() == MassModeration::PUBLISHED && $node->get('moderation_state')->getString() == MassModeration::DRAFT;
+
+      // Gets revision log message.
+      $author_message = \Drupal::service('mass_flagging.entity_comparison')->getRevisionDescription($current_revision, $previous_revision);
+
+      // Create queue to process email for watchers.
+      $queue = \Drupal::queue('mass_flagging_email_queue');
+      $queue->createQueue();
+
+      // Do not notify the user who creates draft or publishes node.
+      $do_not_send_list = [
+        \Drupal::currentUser()->id(),
+      ];
+
+      foreach ($node_watcher_users as $watcher) {
+        if ($watcher->isActive() && !in_array($watcher->id(), $do_not_send_list)) {
+          if ($is_published_has_new_draft) {
+            $moderation_state_msg = 'There is now a "latest" draft version in addition to the currently published version.';
+          }
+          elseif ($has_new_moderation_state) {
+            $moderation_state_msg = "The latest revision changed from {$previous_moderation_state} to {$current_moderation_state}.";
+          }
+          else {
+            $moderation_state_msg = "The latest revision has not changed moderation state.";
+          }
+          $params['message'] = t("Hello,\n\nUser @author_username added a new revision of the @node_type '@node_title' at @node_edit_time. You can email @author_username at @author_email.@moderation_state_changelog@author_message\n\nTo see content changes (if any) made in this revision, go to:\n\n:diff_url\n\nTo get more information about the watch feature, please see the documentation here :help_url\n\nIf you would like to unwatch this or other content, please go here:\n\n:watched_content\n\nWant to give feedback on these emails and the Watch feature? Click the below link to go to our feedback form:\n\nhttps://massgov.formstack.com/forms/mass_gov_watching_feedback",
+            [
+              '@current_username' => \Drupal::currentUser()->getDisplayName(),
+              '@author_username' => $author_username,
+              '@author_email' => $author_email,
+              '@node_type' => node_get_type_label($node),
+              '@node_title' => $params['node_title'],
+              '@node_edit_time' => $node_edit_time,
+              ':diff_url' => $diff_url,
+              '@author_message' => $author_message ? "\n\nRevision log message:\n\n" . $author_message : '',
+              ':help_url' => Url::fromRoute('help.page', ['name' => 'mass_flagging'])->setAbsolute()->toString(),
+              ':watched_content' => Url::fromRoute('view.watched_content.page')->setAbsolute()->toString(),
+              '@moderation_state_changelog' => "\n\nModeration state change: {$moderation_state_msg}",
+            ]
+          );
+          $data['params'] = $params;
+          $data['user'] = $watcher;
+          $queue->createItem($data);
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Add a user as a watcher for updates or inserts.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $node
+ *   The node object that is being updated or inserted.
+ */
+function mass_flagging_node_update_insert_add_watcher(EntityInterface $node) {
+  // Add flag for the user editing or creating the node.
+  $watch_flag = \Drupal::entityTypeManager()->getStorage('flag')->load(WATCH_FLAG);
+  $flag_service = \Drupal::service('flag');
+  $current_user = \Drupal::currentUser();
+  $owner = $node->getOwner();
+  $is_vbo = Drupal::routeMatch()->getRouteName() == 'system.batch_page.json';
+  // Prevent adding a flag/watcher with the VBO module for change author by.
+  // Check to see the owner of the node and the VBO module.
+  if ($owner->id() && $is_vbo) {
+    $flag_owner = $flag_service->getEntityFlaggings($watch_flag, $node, $owner);
+    if (empty($flag_owner)) {
+      // Check if the node is flagged by $owner if so don't do anything.
+      $flag_service->flag($watch_flag, $node, $owner);
+    }
+  }
+  // If the current user edits or creates a new node it will add the flag to node for current_user.
+  if (!$current_user->isAnonymous() && !$is_vbo) {
+    $flagging = $flag_service->getEntityFlaggings($watch_flag, $node, $current_user);
+    if (empty($flagging)) {
+      // Adds the flag.
+      $flag_service->flag($watch_flag, $node, $current_user);
+
+      $unwatch_flag = get_unwatch_flag_link($watch_flag, $node);
+
+      // Notifies user that they are now automatically watching the node.
+      drupal_set_message(t('You are now watching @node_type %node_title. You will be notified of any future changes made to this content. <a href=":help_url" title="Mass Flagging help page">Learn more about this functionality</a>, <a href=":flag_url" title="@flag_title">stop watching this content</a>, or <a href=":watched_content" title="View all watched content">view all content you are currently watching</a>.', [
+        '@node_type' => node_get_type_label($node),
+        '%node_title' => $node->label(),
+        ':help_url' => Url::fromRoute('mass_flagging.help')->toString(),
+        ':flag_url' => $unwatch_flag['flag_url'],
+        '@flag_title' => $unwatch_flag['flag_title'],
+        ':watched_content' => Url::fromRoute('view.watched_content.page')->toString(),
+      ]));
+    }
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function mass_flagging_mail($key, &$message, $params) {
+  $options = ['langcode' => $message['langcode']];
+  switch ($key) {
+    case 'email_queue':
+      $system_site_mail = \Drupal::config('system.site')->get('mail');
+      // Ensures email headers match the From field.
+      $message['from'] = $message['headers']['From'] = $message['headers']['Sender'] = $message['headers']['Reply-to'] = $message['headers']['Return-Path'] = $system_site_mail;
+      $message['subject'] = t('Watch Report: @title', ['@title' => $params['node_title']], $options);
+      $message['body'][] = $params['message'];
+      break;
+  }
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function mass_flagging_form_contact_message_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Alters `flag_content` form used by mass_flagging module.
+  if ($form_id == 'contact_message_flag_content_form') {
+    $intro_text = [
+      '#markup' => '<h1>Flag this page</h1><p>Use this form to let the Mass.gov team know of an issue on this page and what solution you would suggest. Our team will prioritize your request and be in touch on next steps.</p>',
+    ];
+
+    $form['field_content_flagged']['#disabled'] = TRUE;
+    $form['actions']['preview']['#access'] = FALSE;
+
+    $form = array_merge($intro_text, $form);
+  }
+}
+
+/**
+ * Implements hook_mail_alter().
+ */
+function mass_flagging_mail_alter(&$message) {
+  // Alters emails sent by `flag_content` form used by mass_flagging module.
+  if (!empty($message['id']) && $message['id'] == 'contact_page_mail' && $message['params']['contact_form']->id() == 'flag_content') {
+    // Gets entities for accessing submitted field values from contact form.
+    $contact_message = $message['params']['contact_message'];
+    $sender = $message['params']['sender'];
+    $content_flagged = $contact_message->field_content_flagged->entity;
+
+    // Sets email subject line.
+    $message['subject'] .= t('"@node_title"', ['@node_title' => $content_flagged->label()]);
+
+    // Resets email body.
+    $message['body'] = [];
+
+    // Sets new email body.
+    $body = t("Flagger Name: @name\n\nFlagger Email: @email\n\nNode URL: @url\n\nFlagger Feedback:\n\n@feedback", [
+      '@name' => $sender->getAccountName(),
+      '@email' => $sender->getEmail(),
+      '@url' => Url::fromRoute(
+        'entity.node.canonical',
+        ['node' => $content_flagged->id()],
+        ['absolute' => TRUE]
+      )->toString(),
+      '@feedback' => $contact_message->field_reason_flagged->value,
+    ]);
+    $message['body'][] = $body;
+  }
+}
+
+/**
+ * Returns an array of title or url for unwatch link.
+ *
+ * @param Drupal\flag\Entity\Flag $watch_flag
+ *   The flag that we are building links for.
+ * @param Drupal\node\Entity\Node $node
+ *   The node we are building the link for.
+ * @param array $options
+ *   Optional Options array.
+ *
+ * @return array
+ *   Array with flag_title and flag_url
+ */
+function get_unwatch_flag_link(Flag $watch_flag, Node $node, array $options = []) {
+  // Gets flag link for unwatching content.
+  $flag_link_type_plugin = $watch_flag->getLinkTypePlugin();
+  $flag_url = $flag_link_type_plugin->getAsLink($watch_flag, $node)->getUrl();
+  $flag_url->setOption('query', ['destination' => $node->toUrl()->toString()]);
+  $flag_url = array_key_exists('set_absolute', $options) ? $flag_url->setAbsolute()->toString() : $flag_url->toString();
+  $flag_title = $watch_flag->getShortText('unflag');
+
+  return [
+    'flag_url' => $flag_url,
+    'flag_title' => $flag_title,
+  ];
+}

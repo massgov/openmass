@@ -1,0 +1,45 @@
+uuid: dac1f6b7-8e62-42c7-9c22-0052382891ef
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.list_item_link.field_listitemlink_desc_manual
+    - field.field.paragraph.list_item_link.field_listitemlink_desc_type
+    - field.field.paragraph.list_item_link.field_listitemlink_item
+    - paragraphs.paragraphs_type.list_item_link
+  module:
+    - link
+    - options
+id: paragraph.list_item_link.default
+targetEntityType: paragraph
+bundle: list_item_link
+mode: default
+content:
+  field_listitemlink_desc_manual:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_listitemlink_desc_type:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_listitemlink_item:
+    weight: 0
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+hidden: {  }

@@ -1,0 +1,64 @@
+uuid: f9c1a12d-c845-4609-ba8b-e60aa0c37f1f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.emergency_alert.field_emergency_alert_content
+    - field.field.paragraph.emergency_alert.field_emergency_alert_link
+    - field.field.paragraph.emergency_alert.field_emergency_alert_link_type
+    - field.field.paragraph.emergency_alert.field_emergency_alert_message
+    - field.field.paragraph.emergency_alert.field_emergency_alert_timestamp
+    - paragraphs.paragraphs_type.emergency_alert
+  module:
+    - datetime
+    - link
+    - paragraphs
+id: paragraph.emergency_alert.default
+targetEntityType: paragraph
+bundle: emergency_alert
+mode: default
+content:
+  field_emergency_alert_content:
+    type: entity_reference_paragraphs
+    weight: 4
+    settings:
+      title: 'Details content'
+      title_plural: 'Details content'
+      edit_mode: open
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_emergency_alert_link:
+    weight: 3
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_emergency_alert_link_type:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_emergency_alert_message:
+    weight: 0
+    settings:
+      size: 80
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_emergency_alert_timestamp:
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

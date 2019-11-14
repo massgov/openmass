@@ -1,0 +1,43 @@
+uuid: 8ecd87b0-79f7-47e5-921f-de1ad4e00c37
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.paragraph.limit_fields
+    - field.field.paragraph.list_item_link.field_listitemlink_desc_manual
+    - field.field.paragraph.list_item_link.field_listitemlink_desc_type
+    - field.field.paragraph.list_item_link.field_listitemlink_item
+    - paragraphs.paragraphs_type.list_item_link
+  module:
+    - link
+    - mass_validation
+id: paragraph.list_item_link.limit_fields
+targetEntityType: paragraph
+bundle: list_item_link
+mode: limit_fields
+content:
+  field_listitemlink_item:
+    weight: 0
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - alert
+          - contact_information
+          - decision_tree_branch
+          - decision_tree_conclusion
+          - error_page
+          - fee
+          - interstitial
+          - legacy_redirects
+          - utility_drawer
+    type: link_default
+    region: content
+hidden:
+  created: true
+  field_listitemlink_desc_manual: true
+  field_listitemlink_desc_type: true
+  status: true
+  uid: true

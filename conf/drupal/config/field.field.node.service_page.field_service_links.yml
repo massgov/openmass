@@ -1,0 +1,23 @@
+uuid: 5ff63077-332f-4d45-8979-7f0ca833706b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_service_links
+    - node.type.service_page
+  module:
+    - link
+id: node.service_page.field_service_links
+field_name: field_service_links
+entity_type: node
+bundle: service_page
+label: Links
+description: 'If you''ve chosen a page on Mass.gov, leave the Link text empty to automatically use the title of that page. If you prefer to use a different title, or for any external link, please enter the text for the link.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 1
+field_type: link

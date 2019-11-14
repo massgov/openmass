@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Un-installation functions for Mass Migration module.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function mass_migration_uninstall() {
+  Drupal::configFactory()->getEditable('migrate_plus.migration.item_record_content')->delete();
+  Drupal::configFactory()->getEditable('migrate_plus.migration_group.massdocs_content')->delete();
+  Drupal::configFactory()->getEditable('migrate_plus.migration.item_record_abcc')->delete();
+  Drupal::configFactory()->getEditable('migrate_plus.migration_group.massdocs_abcc')->delete();
+}

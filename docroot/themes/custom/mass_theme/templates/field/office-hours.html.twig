@@ -1,0 +1,11 @@
+{% for item in items %}
+<p>
+  {{ item.label }}
+  {% if item.slots %}
+    <br>{{ item.slots }}
+  {% endif %}
+  {% if item.comment %}
+    <br>{{ item.comment }}
+  {% endif %}
+</p>
+{% endfor %}

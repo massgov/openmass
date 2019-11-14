@@ -1,0 +1,88 @@
+uuid: 516cf847-0aaa-45c0-82f6-02297543a8a6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.section.field_section_body
+    - field.field.paragraph.section.field_section_downloads
+    - field.field.paragraph.section.field_section_links
+    - field.field.paragraph.section.field_section_title
+    - paragraphs.paragraphs_type.section
+  module:
+    - entity_browser_entity_form
+    - field_group
+    - inline_entity_form
+    - link
+    - mass_validation
+    - text
+third_party_settings:
+  field_group:
+    group_additional_resources:
+      children:
+        - field_section_links
+        - field_section_downloads
+      parent_name: ''
+      weight: 2
+      format_type: fieldset
+      format_settings:
+        label: 'Additional Resources'
+        description: 'Add up to 6 additional resources.'
+        required_fields: true
+        id: additional-resources-tab
+        classes: ''
+      label: 'Additional Resources'
+id: paragraph.section.default
+targetEntityType: paragraph
+bundle: section
+mode: default
+content:
+  field_section_body:
+    weight: 1
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_section_downloads:
+    weight: 5
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+      collapsible: false
+      collapsed: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: media_browser
+    type: inline_entity_form_complex
+    region: content
+  field_section_links:
+    weight: 4
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - contact_information
+          - fee
+          - legacy_redirects
+    type: link_default
+    region: content
+  field_section_title:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

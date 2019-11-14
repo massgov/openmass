@@ -1,0 +1,42 @@
+uuid: b5797057-f1d4-4c7b-9a07-e45137b64e17
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.location_information.field_description
+    - field.field.paragraph.location_information.field_email
+    - field.field.paragraph.location_information.field_phone
+    - paragraphs.paragraphs_type.location_information
+  module:
+    - telephone
+id: paragraph.location_information.default
+targetEntityType: paragraph
+bundle: location_information
+mode: default
+content:
+  field_description:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_email:
+    weight: 1
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: email_mailto
+    region: content
+  field_phone:
+    weight: 2
+    label: hidden
+    settings:
+      title: ''
+    third_party_settings: {  }
+    type: telephone_link
+    region: content
+hidden:
+  created: true
+  uid: true

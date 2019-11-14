@@ -1,0 +1,26 @@
+id: mass_moderation_migration_restore
+deriver: '\Drupal\mass_moderation_migration\Plugin\Deriver\RestoreDeriver'
+source:
+  # This must be a valid plugin in order for the migration to be discoverable
+  # at all, but it will be changed by the deriver.
+  plugin: embedded_data
+  key: default
+  keys:
+    - id
+    - revision
+    - moderation_state
+process:
+  moderation_state:
+    -
+      # The plugin configuration will be filled in by the deriver.
+      plugin: migration_lookup
+      no_stub: true
+    -
+      plugin: skip_on_empty
+      no_stub: true
+      method: row
+      message: 'The moderation state could not be found in the ID map.'
+destination:
+  # This must be a valid plugin in order for the migration to be discoverable
+  # at all, but it will be changed by the deriver.
+  plugin: null

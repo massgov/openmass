@@ -1,0 +1,75 @@
+uuid: f2d8b6cf-0932-41dd-83e3-889090ab10b3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.error_page.field_error_code
+    - field.field.node.error_page.field_error_label
+    - field.field.node.error_page.field_error_message
+    - field.field.node.error_page.field_error_title
+    - field.field.node.error_page.field_helpful_links
+    - field.field.node.error_page.field_include_search
+    - node.type.error_page
+  module:
+    - link
+    - user
+id: node.error_page.default
+targetEntityType: node
+bundle: error_page
+mode: default
+content:
+  field_error_code:
+    weight: 102
+    label: visually_hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_error_label:
+    weight: 103
+    label: visually_hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_error_message:
+    weight: 105
+    label: visually_hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_error_title:
+    weight: 104
+    label: visually_hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_helpful_links:
+    weight: 107
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link_separate
+    region: content
+  field_include_search:
+    weight: 106
+    label: hidden
+    settings:
+      format: true-false
+      format_custom_true: ''
+      format_custom_false: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+hidden:
+  links: true

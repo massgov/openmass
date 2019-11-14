@@ -1,0 +1,30 @@
+uuid: 9dd3268f-229f-43a6-8bdc-e2f023cb67fb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.1up_stacked_band.field_main
+    - paragraphs.paragraphs_type.1up_stacked_band
+  module:
+    - paragraphs
+id: paragraph.1up_stacked_band.default
+targetEntityType: paragraph
+bundle: 1up_stacked_band
+mode: default
+content:
+  field_main:
+    type: entity_reference_paragraphs
+    weight: 6
+    settings:
+      title: 'Action step'
+      title_plural: 'Action steps'
+      edit_mode: preview
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

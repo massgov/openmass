@@ -1,0 +1,32 @@
+uuid: 2491ca58-6e5e-47a6-b32d-61b247dd9226
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_decision_location
+    - node.type.decision
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.decision.field_decision_location
+field_name: field_decision_location
+entity_type: node
+bundle: decision
+label: Location
+description: 'Optional. The location where the decision was issued.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

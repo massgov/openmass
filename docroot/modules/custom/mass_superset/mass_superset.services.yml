@@ -1,0 +1,10 @@
+services:
+  superset.storage:
+    class: Drupal\mass_superset\SupersetStorage
+    arguments: ['@database', '@superset.database_client', '@config.factory', '@entity_type.manager', '@queue', '@settings', '@logger.factory']
+  superset.database_client:
+    class: Drupal\mass_superset\SupersetDatabaseClient
+  superset.database:
+    class: Drupal\Core\Database\Connection
+    factory: 'Drupal\Core\Database\Database::getConnection'
+    arguments: ['default']

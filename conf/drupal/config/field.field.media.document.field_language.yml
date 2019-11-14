@@ -1,0 +1,28 @@
+uuid: 16c3adff-933c-430d-a388-b5c9726bc6c1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_language
+    - media.type.document
+    - taxonomy.vocabulary.language
+id: media.document.field_language
+field_name: field_language
+entity_type: media
+bundle: document
+label: Language
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: mass_select_filter
+  handler_settings:
+    target_bundles:
+      language: language
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

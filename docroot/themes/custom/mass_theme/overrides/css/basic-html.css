@@ -1,0 +1,46 @@
+/**
+ * Override css for the basic html.
+ */
+iframe {
+  border: 0px none;
+}
+
+figure figcaption {
+  font-weight: 300;
+  font-family: "Texta", "Century Gothic", "Helvetica", "Arial", "sans-serif";
+  font-size: 1.125rem;
+  font-style: italic;
+  line-height: 1.57;
+  margin-bottom: .25em;
+}
+
+.align-right,
+.align-left {
+  float: none;
+  margin: 0;
+}
+
+.align-right img,
+.align-left img {
+  width: 100%;
+}
+
+/*make google-map-field same height as parent*/
+.map-container.ma__action-map__google-map.js-google-map {
+  height: inherit;
+}
+
+@media (min-width: 621px) {
+  .align-right {
+    float: right;
+    margin-left: .5em;
+    margin-bottom: 1em;
+    width: 50%;
+  }
+  .align-left {
+    float: left;
+    margin-right: .5em;
+    margin-bottom: 1em;
+    width: 50%;
+  }
+}

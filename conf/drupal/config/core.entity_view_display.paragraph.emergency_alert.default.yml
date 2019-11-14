@@ -1,0 +1,69 @@
+uuid: ba373497-58fb-418d-975c-3078aeb9d9a5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.emergency_alert.field_emergency_alert_content
+    - field.field.paragraph.emergency_alert.field_emergency_alert_link
+    - field.field.paragraph.emergency_alert.field_emergency_alert_link_type
+    - field.field.paragraph.emergency_alert.field_emergency_alert_message
+    - field.field.paragraph.emergency_alert.field_emergency_alert_timestamp
+    - paragraphs.paragraphs_type.emergency_alert
+  module:
+    - datetime
+    - entity_reference_revisions
+    - link
+    - options
+id: paragraph.emergency_alert.default
+targetEntityType: paragraph
+bundle: emergency_alert
+mode: default
+content:
+  field_emergency_alert_content:
+    type: entity_reference_revisions_entity_view
+    weight: 3
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_emergency_alert_link:
+    weight: 2
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_emergency_alert_link_type:
+    weight: 4
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_emergency_alert_message:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_emergency_alert_timestamp:
+    weight: 1
+    label: hidden
+    settings:
+      timezone_override: ''
+      date_format: 'M. jS, Y, g:i a'
+    third_party_settings: {  }
+    type: datetime_custom
+    region: content
+hidden:
+  created: true
+  uid: true

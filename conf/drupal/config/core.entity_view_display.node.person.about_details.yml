@@ -1,0 +1,90 @@
+uuid: f876077d-4c17-4b14-99d7-c2fca2332504
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.about_details
+    - field.field.node.person.body
+    - field.field.node.person.field_contact
+    - field.field.node.person.field_contact_source
+    - field.field.node.person.field_medium_image
+    - field.field.node.person.field_metatags
+    - field.field.node.person.field_organizations
+    - field.field.node.person.field_person_email
+    - field.field.node.person.field_person_first_name
+    - field.field.node.person.field_person_headshot
+    - field.field.node.person.field_person_last_name
+    - field.field.node.person.field_person_phone
+    - field.field.node.person.field_person_profile_image
+    - field.field.node.person.field_person_ref_org
+    - field.field.node.person.field_person_role_title
+    - field.field.node.person.field_person_type
+    - field.field.node.person.field_plain_description
+    - field.field.node.person.field_publish_bio_page
+    - field.field.node.person.field_ref_fax
+    - field.field.node.person.field_ref_links
+    - field.field.node.person.field_ref_phone
+    - field.field.node.person.field_ref_single_address
+    - field.field.node.person.field_reusable_label
+    - field.field.node.person.field_short_bio
+    - field.field.node.person.field_social_links
+    - field.field.node.person.field_state_organization_tax
+    - image.style.250x250
+    - node.type.person
+  module:
+    - image
+    - user
+id: node.person.about_details
+targetEntityType: node
+bundle: person
+mode: about_details
+content:
+  field_person_profile_image:
+    weight: 2
+    label: hidden
+    settings:
+      image_style: 250x250
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  body: true
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  field_contact: true
+  field_contact_source: true
+  field_medium_image: true
+  field_metatags: true
+  field_organizations: true
+  field_person_email: true
+  field_person_first_name: true
+  field_person_headshot: true
+  field_person_last_name: true
+  field_person_phone: true
+  field_person_ref_org: true
+  field_person_role_title: true
+  field_person_type: true
+  field_plain_description: true
+  field_publish_bio_page: true
+  field_ref_fax: true
+  field_ref_links: true
+  field_ref_phone: true
+  field_ref_single_address: true
+  field_reusable_label: true
+  field_short_bio: true
+  field_social_links: true
+  field_state_organization_tax: true
+  person_is_featured: true
+  person_org_role: true
+  position_is_vacant: true

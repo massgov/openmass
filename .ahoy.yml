@@ -1,0 +1,77 @@
+ahoyapi: v2
+commands:
+  exec:
+      # These env variables come from https://github.com/wodby/docker4drupal/issues/273
+      cmd: docker-compose exec -e COLUMNS=$(tput cols) -e LINES=$(tput lines) -e TERM=$TERM drupal "$@"
+      usage: Run a command in the container
+
+  bash:
+    cmd: ahoy exec bash
+    usage: Open a shell inside the container.
+
+  up:
+    cmd: docker-compose up -d "$@"
+    usage: Start the containers.
+
+  down:
+    cmd: docker-compose down --remove-orphans "$@"
+    usage: Stop and delete the containers.
+
+  stop:
+    cmd: docker-compose stop "$@"
+    usage: Stop the containers.
+
+  pull:
+    cmd: docker-compose down --remove-orphans && docker-compose pull && docker-compose up -d
+    usage: Refresh the database.
+
+  start:
+    cmd: |
+        ahoy up
+        ahoy comi
+        ahoy drush si --existing-config -n -v
+    usage: Start Docker, assemble a codebase, and install a fresh site.
+
+  updatedb:
+    cmd: ahoy exec scripts/ma-refresh-local --skip-db-prep
+    usage: Run after a git pull, so that pending updates are run.
+
+  prune:
+    cmd: docker system prune "$@"
+    usage: Prune unused images, etc. to gain back disk space.
+
+  comi:
+    cmd: ahoy exec composer install -o "$@"
+    usage: Run 'composer install' in the container.
+
+  yarn:
+    cmd: ahoy exec yarn "$@"
+    usage: Run 'yarn install' in the container.
+
+  drush:
+    cmd: ahoy exec vendor/bin/drush "$@"
+    usage: Run Drush in the container
+
+  uli:
+    cmd: open $(ahoy drush uli "$@" | tr -d '\r')
+    usage: Run uli in the container and then open local browser.
+
+  test:
+    cmd: ahoy exec scripts/ma-test "$@"
+    usage: Run all tests in the container.
+
+  tail:
+    cmd: docker-compose logs -f drupal
+    usage: Tail the Apache + PHP logs.
+
+  blackfire:
+    cmd: ahoy exec blackfire "$@"
+    usage: "Profile CLI requests. Usages: blackfire curl http://mass.local OR blackfire run --samples=10 drush st"
+
+  backstop:
+    usage: Run BackstopJS visual regression tests.
+    cmd: docker-compose run backstop "$@"
+
+  nightcrawler:
+    usage: Run NightcrawlerJS fatal error tests.
+    cmd: ahoy exec node_modules/.bin/nightcrawler --config=.circleci/nightcrawler/nightcrawler $@

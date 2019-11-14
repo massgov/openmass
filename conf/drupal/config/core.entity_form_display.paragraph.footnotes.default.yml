@@ -1,0 +1,33 @@
+uuid: f60b61c4-13df-4a99-b0b1-946f7213596d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.footnotes.field_footnotes_desc
+    - field.field.paragraph.footnotes.field_footnotes_title
+    - paragraphs.paragraphs_type.footnotes
+id: paragraph.footnotes.default
+targetEntityType: paragraph
+bundle: footnotes
+mode: default
+content:
+  field_footnotes_desc:
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+  field_footnotes_title:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

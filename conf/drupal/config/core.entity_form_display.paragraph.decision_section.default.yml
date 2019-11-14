@@ -1,0 +1,35 @@
+uuid: db598580-c6ff-44d3-9bcb-6a48fa0d71ba
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.decision_section.field_decision_section_body
+    - field.field.paragraph.decision_section.field_decision_section_title
+    - paragraphs.paragraphs_type.decision_section
+  module:
+    - text
+id: paragraph.decision_section.default
+targetEntityType: paragraph
+bundle: decision_section
+mode: default
+content:
+  field_decision_section_body:
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_decision_section_title:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

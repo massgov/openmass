@@ -1,0 +1,35 @@
+uuid: 4f7fdadf-60a6-4415-8164-777b9d28ed1b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.3_up_text.field_content
+    - field.field.paragraph.3_up_text.field_heading
+    - paragraphs.paragraphs_type.3_up_text
+  module:
+    - text
+id: paragraph.3_up_text.default
+targetEntityType: paragraph
+bundle: 3_up_text
+mode: default
+content:
+  field_content:
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_heading:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

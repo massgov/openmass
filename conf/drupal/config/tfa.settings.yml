@@ -1,0 +1,60 @@
+enabled: 1
+send_plugins: {  }
+login_plugins: {  }
+validation_plugin: tfa_totp
+validation_plugin_settings:
+  tfa_totp:
+    time_skew: 30
+    site_name_prefix: 0
+    name_prefix: MASS
+    issuer: MASS.GOV
+  tfa_hotp:
+    counter_window: 10
+    site_name_prefix: 1
+    name_prefix: TFA
+    issuer: Drupal
+fallback_plugins:
+  tfa_totp:
+    tfa_recovery_code:
+      enable: 1
+      settings:
+        recovery_codes_amount: 9
+      weight: -2
+  tfa_hotp:
+    tfa_recovery_code:
+      enable: 1
+      settings:
+        recovery_codes_amount: 9
+      weight: -2
+help_text: 'Contact support to reset your access'
+validation_skip: 3
+encryption: real_aes
+trust_cookie_expiration: 2592000
+cookie_name: TFA
+tfa_flood_uid_only: 1
+tfa_flood_window: 300
+tfa_flood_threshold: 6
+_core:
+  default_config_hash: MhrA-cxuU_zfd1goV-WFbz-4AFXhlvniyVyDdNBcims
+required_roles:
+  author: author
+  editor: editor
+  emergency_alert_publisher: emergency_alert_publisher
+  executive_orders: executive_orders
+  redirect_creators: redirect_creators
+  content_team: content_team
+  developer: developer
+  administrator: administrator
+  tester: tester
+  authenticated: '0'
+  doc_deletion: '0'
+allowed_validation_plugins:
+  tfa_totp: tfa_totp
+default_validation_plugin: tfa_totp
+mail:
+  tfa_enabled_configuration:
+    subject: 'Mass.gov two-factor authentication enabled'
+    body: "Dear [user:account-name],\r\n\r\nThank you for setting up two-factor validation on your account at Mass.gov.\r\n\r\nPlease remember that you will need your authentication method (your cell phone or desktop software) ready when you log in again.\r\n\r\nIf you lose your device, you can use one of your recovery codes to log in. \r\n\r\n Once you have logged in, you can disable your existing two-factor setup and re-enable two-factor with a new device.  If you have not taken note of your recovery codes, please do so the next time you log in.  Store them in a safe place!\r\n\r\nMass.gov"
+  tfa_disabled_configuration:
+    subject: 'Mass.gov two-factor authentication disabled'
+    body: "Dear [user:account-name],\r\n\r\nYour two-factor authentication on Mass.gov has been disabled.\r\n\r\nYou will need to re-enable two-factor authentication the next time you log in.\r\n\r\nMass.gov"

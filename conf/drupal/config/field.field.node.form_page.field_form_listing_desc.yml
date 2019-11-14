@@ -1,0 +1,32 @@
+uuid: 9e8efacd-ffe5-4643-900c-df34a2428b32
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_form_listing_desc
+    - node.type.form_page
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.form_page.field_form_listing_desc
+field_name: field_form_listing_desc
+entity_type: node
+bundle: form_page
+label: 'Listing description'
+description: 'Enter a short description (< 320) characters that may be used in curated lists and search results.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

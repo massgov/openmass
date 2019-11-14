@@ -1,0 +1,45 @@
+uuid: ad6d6fac-f77f-4364-85e3-faf7c8cc901b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_regulation_related
+    - node.type.regulation
+  module:
+    - link
+id: node.regulation.field_regulation_related
+field_name: field_regulation_related
+entity_type: node
+bundle: regulation
+label: Related
+description: 'Link to any content that may be related to the regulation.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 1
+  entity_bundles:
+    advisory: advisory
+    binder: binder
+    curated_list: curated_list
+    decision: decision
+    event: event
+    executive_order: executive_order
+    form_page: form_page
+    guide_page: guide_page
+    how_to_page: how_to_page
+    info_details: info_details
+    location: location
+    location_details: location_details
+    news: news
+    org_page: org_page
+    page: page
+    regulation: regulation
+    rules: rules
+    service_details: service_details
+    service_page: service_page
+    stacked_layout: stacked_layout
+    topic_page: topic_page
+field_type: link

@@ -1,0 +1,23 @@
+{#
+/**
+ * @file
+ * Theme implementation for the Ref Phone Number field for the side column Contact(Key Organization) in Guide page.
+ */
+#}
+
+{# Set top heading level for the component. #}
+{% set level = 5 %}
+
+{% embed "@molecules/contact-group.twig" with {
+  "contactGroup": {
+    "name": "Phone",
+    "icon": "phone",
+    "level": level
+  }
+} %}
+  {% block groupItems %}
+    {% for item in items %}
+      {{ item.content }}
+    {% endfor %}
+  {% endblock %}
+{% endembed %}

@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Update hooks for the mass_map module.
+ */
+
+use Drupal\image\Entity\ImageStyle;
+
+/**
+ * Flush the thumbnail_190_107 image style so changes take effect.
+ */
+function mass_map_update_8001() {
+  $style = ImageStyle::load('thumbnail_190_107');
+  $style->flush();
+}

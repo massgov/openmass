@@ -1,0 +1,45 @@
+uuid: 54fac00e-064b-4e53-8db6-b17db60ffa3d
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_content_api
+    - mass_admin_pages
+    - menu_ui
+    - node_title_help_text
+    - scheduler
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - utility
+    parent: 'utility:'
+  scheduler:
+    expand_fieldset: when_required
+    fields_display_mode: vertical_tab
+    publish_enable: true
+    publish_past_date: error
+    publish_required: false
+    publish_revision: true
+    publish_touch: false
+    unpublish_enable: true
+    unpublish_required: false
+    unpublish_revision: true
+  mass_content_api:
+    parents: null
+    children: null
+    linking_pages:
+      - field_links
+  node_title_help_text:
+    title_help: null
+  mass_admin_pages:
+    node_type_long_description: ''
+    node_type_url: ''
+    node_type_category: other
+    node_type_thumbnail_path: ''
+name: 'Utility Drawer'
+type: utility_drawer
+description: '<p>Admin use only.</p>'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: true

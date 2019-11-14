@@ -1,0 +1,351 @@
+uuid: 3c36cd3f-1e3f-4585-84cc-3ce7a062ed98
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.topic_page.field_image_credit
+    - field.field.node.topic_page.field_intended_audience
+    - field.field.node.topic_page.field_organizations
+    - field.field.node.topic_page.field_state_organization_tax
+    - field.field.node.topic_page.field_topic_bg_narrow
+    - field.field.node.topic_page.field_topic_bg_wide
+    - field.field.node.topic_page.field_topic_content_cards
+    - field.field.node.topic_page.field_topic_display_links
+    - field.field.node.topic_page.field_topic_lede
+    - field.field.node.topic_page.field_topic_metatags
+    - field.field.node.topic_page.field_topic_ref_icon
+    - field.field.node.topic_page.field_topic_ref_related_topics
+    - field.field.node.topic_page.field_topic_section_bg_narrow
+    - field.field.node.topic_page.field_topic_section_bg_wide
+    - field.field.node.topic_page.field_topic_type
+    - image.style.thumbnail
+    - node.type.topic_page
+    - workflows.workflow.editorial
+  module:
+    - conditional_fields
+    - content_moderation
+    - field_group
+    - image
+    - metatag
+    - paragraphs
+    - scheduler
+    - scheduler_content_moderation_integration
+third_party_settings:
+  field_group:
+    group_topic_page_edit_form:
+      children:
+        - group_overview
+        - group_content_cards
+        - group_related_list
+      parent_name: ''
+      weight: 2
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Topic Page Edit Form'
+    group_overview:
+      children:
+        - title
+        - field_topic_type
+        - field_topic_lede
+        - field_topic_ref_icon
+        - field_topic_bg_wide
+        - field_topic_bg_narrow
+        - field_topic_section_bg_wide
+        - field_topic_section_bg_narrow
+        - field_image_credit
+        - field_organizations
+        - field_intended_audience
+      parent_name: group_topic_page_edit_form
+      weight: 20
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: true
+      label: Overview
+    group_content_cards:
+      children:
+        - field_topic_display_links
+        - field_topic_content_cards
+      parent_name: group_topic_page_edit_form
+      weight: 21
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: 'Content cards'
+    group_related_list:
+      children:
+        - field_topic_ref_related_topics
+      parent_name: group_topic_page_edit_form
+      weight: 22
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: 'Related list'
+id: node.topic_page.default
+targetEntityType: node
+bundle: topic_page
+mode: default
+content:
+  field_image_credit:
+    weight: 3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_intended_audience:
+    weight: 5
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_organizations:
+    weight: 4
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_state_organization_tax:
+    weight: 6
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_topic_bg_narrow:
+    weight: 0
+    settings:
+      preview_image_style: thumbnail
+      progress_indicator: throbber
+    third_party_settings:
+      conditional_fields:
+        613aa4c0-b2bd-4a70-86a2-a70b23f9b8fa:
+          dependee: field_topic_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: topic
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: topic_page
+    type: image_image
+    region: content
+  field_topic_bg_wide:
+    weight: -1
+    settings:
+      preview_image_style: thumbnail
+      progress_indicator: throbber
+    third_party_settings:
+      conditional_fields:
+        b50ee6a9-15bd-4f50-8f89-4702d6daa7b9:
+          dependee: field_topic_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: topic
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: topic_page
+    type: image_image
+    region: content
+  field_topic_content_cards:
+    type: entity_reference_paragraphs
+    weight: 38
+    settings:
+      title: 'Content card group'
+      title_plural: 'Content card groups'
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_topic_display_links:
+    weight: 37
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_topic_lede:
+    weight: -3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields: {  }
+    type: string_textfield
+    region: content
+  field_topic_metatags:
+    weight: 5
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_topic_ref_icon:
+    weight: -2
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_topic_ref_related_topics:
+    weight: 36
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_topic_section_bg_narrow:
+    weight: 2
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings:
+      conditional_fields:
+        8a493627-bf2b-4406-bf53-41b7288d6316:
+          dependee: field_topic_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: 'section landing'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: topic_page
+    type: image_image
+    region: content
+  field_topic_section_bg_wide:
+    weight: 1
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings:
+      conditional_fields:
+        db3199b3-3041-4394-a5d8-7d0c9b7cbd82:
+          dependee: field_topic_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: 'section landing'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: topic_page
+    type: image_image
+    region: content
+  field_topic_type:
+    weight: -4
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 100
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: -5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  uid:
+    type: entity_reference_autocomplete
+    weight: 0
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

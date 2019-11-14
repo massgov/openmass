@@ -1,0 +1,22 @@
+uuid: 18972a3b-81f1-40b0-bf55-d1538711199a
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: form_page
+label: 'Form page'
+type: 'canonical_entities:node'
+pattern: '/forms/[node:title]'
+selection_criteria:
+  5ff649cc-e209-4441-a298-5e3e536b5d7c:
+    id: node_type
+    bundles:
+      form_page: form_page
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 5ff649cc-e209-4441-a298-5e3e536b5d7c
+selection_logic: and
+weight: -5
+relationships: {  }

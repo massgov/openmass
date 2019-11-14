@@ -1,0 +1,27 @@
+uuid: 5f12bc38-fd7a-43e7-9b92-900014860fc1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.link_group_link.field_link_group_link
+    - paragraphs.paragraphs_type.link_group_link
+  module:
+    - mass_content
+id: paragraph.link_group_link.default
+targetEntityType: paragraph
+bundle: link_group_link
+mode: default
+content:
+  field_link_group_link:
+    weight: 0
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: dynamic_link_separate
+    region: content
+hidden: {  }

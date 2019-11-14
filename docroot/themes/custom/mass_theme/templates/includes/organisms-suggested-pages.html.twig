@@ -1,0 +1,28 @@
+{#
+/**
+ * @file
+ * Partial for suggested pages finder. To be included at the node level.
+ */
+#}
+<section class="ma__suggested-pages">
+  <div class="ma__suggested-pages__container">
+    <h2 class="ma__suggested-pages__title">{{ suggestedPages.title }}<span class="visually-hidden"> {{ suggestedPages.titleContext }}</span></h2>
+    <div class="ma__suggested-pages__items">
+      {% for page in suggestedPages.pages %}
+        {% set illustratedLink = {
+        "text": page.link.text,
+        "type": page.link.type,
+        "href": page.link.href,
+        "image": page.link.image,
+        "label": page.link.label } %}
+        <div class="ma__suggested-pages__item ma__suggested-pages__item--guide">
+          {% include "@molecules/illustrated-link.twig" %}
+        </div>
+      {% endfor %}
+    </div>
+    {% set buttonMinor = suggestedPages.buttonMinor %}
+    {% if buttonMinor.href %}
+      {% include "@atoms/01-buttons/button-link2-sm.twig" %}
+    {% endif %}
+  </div>
+</section>

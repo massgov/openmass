@@ -1,0 +1,89 @@
+{#
+  SITE LEVEL DATA:
+  WEBSITE
+  - add to home (front) page only.
+  - about can be added when its content is ready.
+  - keywords can be added when its content is ready.
+#}
+{% if pageMetaData.schemaPageType == "Home" %}
+    <script type="application/ld+json">
+        {
+          "@context": "http://schema.org",
+          "@type": "WebSite",
+          "url": "{{ pageMetaData.urlDomain }}",
+          "name": "{{ pageMetaData.siteName }}",
+          "alternateName": "{{ pageMetaData.siteAltName }}", {% if pageMetaData.siteDescription %}
+          "about": "{{ pageMetaData.siteDescription }}",{% endif %}
+          "copyrightHolder": "{{ pageMetaData.siteCopyright }}", {% if pageMetaData.siteKeywords %}
+          "keywords": "{{ pageMetaData.siteKeywords }}",{% endif %}
+          "potentialAction": {
+             "@type": "SearchAction",
+             "target": "{{ pageMetaData.urlDomain }}/search?q={search_term_string}",
+             "query-input": "required name=search_term_string"}
+        }
+    </script>
+{% endif %}
+{#
+  SITE LEVEL COMMON DATA:
+  ORGANIZATION
+  - alternateName can be added later if helpful.
+#}
+    <script type="application/ld+json">
+      {
+          "@context": "http://schema.org",
+          "@type": "Organization",
+          "@id": "{{ pageMetaData.id }}",
+          "url": "{{ pageMetaData.urlDomain }}",
+          {% if pageMetaData.logo %}"logo": "{{ pageMetaData.logo }}",{% endif %}
+          "name": "{{ pageMetaData.orgName }}"{% if pageMetaData.socialMediaLinks %},
+          "sameAs":
+            {{ pageMetaData.socialMediaLinks|raw }}
+            {% endif %}
+      }
+    </script>
+{#
+  SITE LEVEL COMMON DATA:
+  PAGE STRUCTURE - they match with the ids assigned to the area elements in the
+  <body>.
+  - header area
+  - footer area
+  - main navigation area
+#}
+    <script type="application/ld+json">
+      {
+          "@context": "http://schema.org",
+          "@type": "WPHeader",
+          "@id": "{{ pageMetaData.urlDomain ~ pageMetaData.urlPath ~ '#header' }}"
+      }
+    </script>
+    <script type="application/ld+json">
+      {
+          "@context": "http://schema.org",
+          "@type": "WPFooter",
+          "@id": "{{ pageMetaData.urlDomain ~ pageMetaData.urlPath ~ '#footer' }}"
+      }
+    </script>
+    <script type="application/ld+json">
+        {
+          "@context": "http://schema.org",
+          "@type": "SiteNavigationElement",
+          "@id": "{{ pageMetaData.urlDomain ~ pageMetaData.urlPath ~ '#main-navigation'}}"
+        }
+    </script>
+
+{# Google Optimize Snippet #}
+    <style>.async-hide { opacity: 0 !important} </style>
+    <script>
+      (function(a,s,y,n,c,h,i,d,e){s.className+=' '+y;h.start=1*new Date;
+        h.end=i=function(){s.className=s.className.replace(RegExp(' ?'+y),'')};
+        (a[n]=a[n]||[]).hide=h;setTimeout(function(){i();h.end=null},c);h.timeout=c;
+      })(window,document.documentElement,'async-hide','dataLayer',2000,
+        {'GTM-TBBFWGN':true});
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+      ga('create', 'UA-12471675-5', 'auto');
+      ga('require', 'GTM-TBBFWGN');
+    </script>

@@ -1,0 +1,31 @@
+uuid: e417b575-eddd-42aa-acde-800f94249146
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.advisory_section.field_advisory_section_body
+    - field.field.paragraph.advisory_section.field_advisory_section_title
+    - paragraphs.paragraphs_type.advisory_section
+  module:
+    - text
+id: paragraph.advisory_section.default
+targetEntityType: paragraph
+bundle: advisory_section
+mode: default
+content:
+  field_advisory_section_body:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_advisory_section_title:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

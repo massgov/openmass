@@ -1,0 +1,50 @@
+uuid: 2ce1469d-0cc4-48a8-8b78-6e554a8edaeb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.address.field_address_address
+    - field.field.paragraph.address.field_address_text
+    - field.field.paragraph.address.field_geofield
+    - field.field.paragraph.address.field_label
+    - field.field.paragraph.address.field_lat_long
+    - paragraphs.paragraphs_type.address
+  module:
+    - geofield
+    - mass_fields
+id: paragraph.address.default
+targetEntityType: paragraph
+bundle: address
+mode: default
+content:
+  field_address_address:
+    weight: 1
+    label: hidden
+    settings:
+      link_text: directions
+    third_party_settings: {  }
+    type: address_full_link
+    region: content
+  field_geofield:
+    type: geofield_default
+    weight: 2
+    label: above
+    settings:
+      output_format: wkt
+    third_party_settings: {  }
+    region: content
+  field_label:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  created: true
+  field_address_text: true
+  field_geofield_7: true
+  field_lat_long: true
+  field_new_geofield: true
+  uid: true

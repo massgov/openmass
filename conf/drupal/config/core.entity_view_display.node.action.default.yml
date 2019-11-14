@@ -1,0 +1,131 @@
+uuid: 26dc8f08-facd-4524-99c7-a4a8a5d8d9a1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.action.field_action_banner
+    - field.field.node.action.field_action_details
+    - field.field.node.action.field_action_header
+    - field.field.node.action.field_action_sidebar
+    - field.field.node.action.field_alert_dropdown
+    - field.field.node.action.field_alert_link
+    - field.field.node.action.field_alert_text
+    - field.field.node.action.field_external_url
+    - field.field.node.action.field_header_cta
+    - field.field.node.action.field_image_credit
+    - field.field.node.action.field_lede
+    - field.field.node.action.field_metatags
+    - field.field.node.action.field_organizations
+    - field.field.node.action.field_search
+    - field.field.node.action.field_state_organization_tax
+    - node.type.action
+  module:
+    - entity_reference_revisions
+    - options
+    - user
+_core:
+  default_config_hash: _vJOq2rUrEQJBPFkonPBFXe6IGhZEPxgUhhbDP1eDgs
+id: node.action.default
+targetEntityType: node
+bundle: action
+mode: default
+content:
+  content_moderation_control:
+    weight: -20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_org_feedback_form:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_action_details:
+    type: entity_reference_revisions_entity_view
+    weight: 4
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_action_sidebar:
+    type: entity_reference_revisions_entity_view
+    weight: 5
+    label: above
+    settings:
+      view_mode: sidebar
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_alert_dropdown:
+    weight: 6
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_alert_link:
+    weight: 9
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_alert_text:
+    weight: 7
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_header_cta:
+    type: entity_reference_revisions_entity_view
+    weight: 8
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_image_credit:
+    weight: 10
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_lede:
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_organizations:
+    weight: 11
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_action_banner: true
+  field_action_header: true
+  field_external_url: true
+  field_metatags: true
+  field_search: true
+  field_state_organization_tax: true

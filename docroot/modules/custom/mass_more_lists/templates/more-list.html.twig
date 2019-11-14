@@ -1,0 +1,45 @@
+{#
+/**
+ * @file
+ * Template for more_list render element defined in mass_more_lists.module.
+ */
+#}
+
+{% set stackedRowSections = [{
+  "pageContent": [
+    {
+      "path": "@molecules/results-heading.twig",
+      "data": {
+        "resultsHeading": resultsHeading
+      }
+    },
+    {
+      "path": "@organisms/by-author/form-downloads.twig",
+      "data": {
+        "formDownloads": formDownloads
+      }
+    }
+  ]
+}] %}
+
+{% extends 'node.html.twig' %}
+
+{% block preContent %}
+  {% include "@organisms/by-template/content-eyebrow.twig" %}
+  {% include "@organisms/by-template/page-header.twig" %}
+{% endblock %}
+{% block main %}
+  <section class="ma__stacked-row-section">
+    <div class="main-content main-content--full">
+      <div class="page-content">
+        {% block pageContent %}
+          {% for stackedRowSection in stackedRowSections %}
+            {% include "@organisms/by-author/stacked-row-section.twig" %}
+          {% endfor %}
+          {{ pager }}
+        {% endblock %}
+      </div>
+    </div>
+  </section>
+{% endblock %}
+{% block postContent %}{% endblock %}

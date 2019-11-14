@@ -1,0 +1,7 @@
+services:
+  mass_flagging.flag_content.link_builder:
+    class: Drupal\mass_flagging\Service\MassFlaggingFlagContentLinkBuilder
+    arguments: ['@current_user']
+  mass_flagging.entity_comparison:
+    class: Drupal\mass_flagging\Service\MassFlaggingEntityComparison
+    arguments: ['@config.factory', '@diff.diff.formatter', '@plugin.manager.field.field_type', '@diff.entity_parser', '@plugin.manager.diff.builder']

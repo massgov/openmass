@@ -1,0 +1,64 @@
+uuid: 468b5ac3-810f-45b5-80a5-212d90cb9841
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.paragraph.media_caption
+    - field.field.paragraph.iframe.field_caption
+    - field.field.paragraph.iframe.field_height
+    - field.field.paragraph.iframe.field_iframe_accessibility_title
+    - field.field.paragraph.iframe.field_iframe_admin_title
+    - field.field.paragraph.iframe.field_media_display
+    - field.field.paragraph.iframe.field_url
+    - paragraphs.paragraphs_type.iframe
+  module:
+    - link
+id: paragraph.iframe.media_caption
+targetEntityType: paragraph
+bundle: iframe
+mode: media_caption
+content:
+  field_caption:
+    type: string_textfield
+    weight: 4
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_height:
+    weight: 2
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_iframe_accessibility_title:
+    weight: 3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_iframe_admin_title:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_url:
+    weight: 1
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+hidden:
+  created: true
+  field_media_display: true
+  status: true
+  uid: true

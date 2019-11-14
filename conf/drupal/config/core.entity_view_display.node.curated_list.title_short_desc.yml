@@ -1,0 +1,61 @@
+uuid: 88b6df04-82f1-4946-8659-12cfba930b9b
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.title_short_desc
+    - field.field.node.curated_list.field_contact
+    - field.field.node.curated_list.field_curatedlist_lede
+    - field.field.node.curated_list.field_curatedlist_list_section
+    - field.field.node.curated_list.field_curatedlist_metatags
+    - field.field.node.curated_list.field_curatedlist_overview
+    - field.field.node.curated_list.field_list_directory_section
+    - field.field.node.curated_list.field_list_type
+    - field.field.node.curated_list.field_organizations
+    - field.field.node.curated_list.field_related_links
+    - field.field.node.curated_list.field_state_organization_tax
+    - node.type.curated_list
+  module:
+    - user
+id: node.curated_list.title_short_desc
+targetEntityType: node
+bundle: curated_list
+mode: title_short_desc
+content:
+  extra_node_pager:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_sidebar_contact:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_curatedlist_lede:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  field_contact: true
+  field_curatedlist_list_section: true
+  field_curatedlist_metatags: true
+  field_curatedlist_overview: true
+  field_intended_audience: true
+  field_list_directory_section: true
+  field_list_type: true
+  field_organizations: true
+  field_related_links: true
+  field_state_organization_tax: true
+  links: true
+  page_next: true
+  page_previous: true
+  referencing_binders: true
+  workbench_moderation_control: true

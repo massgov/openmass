@@ -1,0 +1,31 @@
+uuid: a287a26d-983c-4b4d-ac99-2cd69f3a0634
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.method.field_method_details
+    - field.field.paragraph.method.field_method_type
+    - paragraphs.paragraphs_type.method
+  module:
+    - options
+    - text
+id: paragraph.method.default
+targetEntityType: paragraph
+bundle: method
+mode: default
+content:
+  field_method_details:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_method_type:
+    weight: 0
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+hidden: {  }

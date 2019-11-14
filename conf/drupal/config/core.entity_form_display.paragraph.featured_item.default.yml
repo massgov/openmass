@@ -1,0 +1,73 @@
+uuid: a4d7a7c6-51c2-4022-8385-893c550d35ef
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.featured_item.field_featured_item_highlight
+    - field.field.paragraph.featured_item.field_featured_item_image
+    - field.field.paragraph.featured_item.field_featured_item_link
+    - image.style.thumbnail
+    - paragraphs.paragraphs_type.featured_item
+  module:
+    - field_group
+    - image
+    - link
+    - mass_validation
+third_party_settings:
+  field_group:
+    group_featured_item:
+      children:
+        - field_featured_item_highlight
+        - field_featured_item_image
+        - field_featured_item_link
+      parent_name: ''
+      weight: 0
+      format_type: details
+      format_settings:
+        label: ''
+        open: true
+        required_fields: true
+        id: ''
+        classes: ''
+      label: ''
+id: paragraph.featured_item.default
+targetEntityType: paragraph
+bundle: featured_item
+mode: default
+content:
+  field_featured_item_highlight:
+    weight: 1
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_featured_item_image:
+    weight: 2
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_featured_item_link:
+    weight: 3
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - contact_information
+          - decision_tree
+          - decision_tree_branch
+          - decision_tree_conclusion
+          - fee
+          - person
+    type: link_default
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

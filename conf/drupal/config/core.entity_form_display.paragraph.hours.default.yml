@@ -1,0 +1,100 @@
+uuid: 2d86ccd3-14dd-4ede-ab14-4f824e78984b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.hours.field_hours
+    - field.field.paragraph.hours.field_hours_description
+    - field.field.paragraph.hours.field_hours_group_title
+    - field.field.paragraph.hours.field_hours_structured
+    - field.field.paragraph.hours.field_label
+    - field.field.paragraph.hours.field_time_frame
+    - paragraphs.paragraphs_type.hours
+  module:
+    - field_group
+    - office_hours
+third_party_settings:
+  field_group:
+    group_typical_hours:
+      children:
+        - field_hours_structured
+      parent_name: group_hours
+      weight: 2
+      format_type: details
+      format_settings:
+        label: 'Typical Hours'
+        open: true
+        required_fields: true
+        id: ''
+        classes: ma--white-bg
+      label: 'Typical Hours'
+    group_non_typical_hours:
+      children:
+        - field_hours_description
+      parent_name: group_hours
+      weight: 3
+      format_type: details
+      format_settings:
+        label: 'Non-Typical hours'
+        open: true
+        required_fields: true
+        id: ''
+        classes: ma--white-bg
+      label: 'Non-Typical hours'
+    group_hours:
+      children:
+        - group_typical_hours
+        - group_non_typical_hours
+      parent_name: ''
+      weight: 1
+      format_type: fieldset
+      format_settings:
+        label: Hours
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ma--grey-bg
+      label: Hours
+id: paragraph.hours.default
+targetEntityType: paragraph
+bundle: hours
+mode: default
+content:
+  field_hours_description:
+    type: string_textfield
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  field_hours_group_title:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_hours_override:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_hours_structured:
+    weight: 2
+    settings:
+      date_element_type: datelist
+    third_party_settings: {  }
+    type: office_hours_list
+    region: content
+hidden:
+  created: true
+  field_hours: true
+  field_label: true
+  field_time_frame: true
+  status: true
+  uid: true

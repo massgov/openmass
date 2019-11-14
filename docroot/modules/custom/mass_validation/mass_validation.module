@@ -1,0 +1,1530 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_validation.module.
+ */
+
+use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\WidgetInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\Entity\Node;
+use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_help().
+ */
+function mass_validation_help($route_name, RouteMatchInterface $route_match) {
+  $output = '';
+  switch ($route_name) {
+    case 'help.page.mass_validation':
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('This module allows validation to be applied to custom content types and fields.') . '</p>';
+      break;
+
+    default:
+  }
+  return $output;
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function mass_validation_entity_type_alter(array &$entity_types) {
+  // We only want to perform validation on nodes and paragraphs.
+  $validated_type_names = ['node', 'paragraph'];
+  foreach ($validated_type_names as $type_name) {
+    if (isset($entity_types[$type_name])) {
+      $type = $entity_types[$type_name];
+      $type->addConstraint('PreventEditGovLink');
+      $type->addConstraint('PreventEmptyStateOrg');
+      $type->addConstraint('BinderDownloadsOrPages');
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_bundle_field_info_alter().
+ */
+function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
+  /** @var Drupal\field\Entity\FieldConfig $field_social_links */
+  if ($entity_type->id() == 'node' && array_key_exists('field_social_links', $fields) && !empty($fields['field_social_links'])) {
+    $field_social_links = &$fields['field_social_links'];
+    $field_social_links->addConstraint('SocialLink', [
+      'allowedValues' => [
+        'twitter.com',
+        'flickr.com',
+        'facebook.com',
+        'instagram.com',
+        'linkedin.com',
+        'youtube.com',
+        'medium.com',
+        'blog.mass.gov',
+      ],
+    ]);
+  }
+  if ($entity_type->id() === 'paragraph' && $bundle === 'iframe') {
+    $url_field =& $fields['field_url'];
+    $url_field->addConstraint('AllowedIframeUrl');
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_alert_form_validate';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_alert_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_alert_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_alert_form_validate(array &$form, FormStateInterface $form_state) {
+  _mass_link_validate($form_state, 'field_alert_related_links_5');
+
+  // Ensure link and content values match the selected link type.
+  // Get the field on the node and then load its emergency_alert paragraph fields below.
+  $field_name = 'field_alert';
+  $alert = $form_state->getValue($field_name);
+
+  if (isset($alert[0]) && isset($alert[0]['subform'])) {
+    $alert_fields = $alert[0]['subform'];
+    $link_type = $alert_fields['field_emergency_alert_link_type'][0]['value'];
+    $link = $alert_fields['field_emergency_alert_link'][0]['uri'];
+    if (isset($alert_fields['field_emergency_alert_content'][0]) && isset($alert_fields['field_emergency_alert_content'][0]['subform'])) {
+      $link_content = $alert_fields['field_emergency_alert_content'][0]['subform']['field_body'][0]['value'];
+    }
+
+    // Check each case.
+    switch ($link_type) {
+      // Only field_emergency_alert_content.
+      // No field_emergency_alert_link.
+      case 0:
+        break;
+
+      // Only field_emergency_alert_link.
+      // No field_emergency_alert_content.
+      case 1:
+        // Ensure link field exists.
+        if (!$link) {
+          $key = $field_name . '][0][subform][field_emergency_alert_link';
+          $form_state->setErrorByName($key, 'Must set link value for this link type.');
+        }
+        break;
+
+      // No field_emergency_alert_content.
+      // No field_emergency_alert_link.
+      case 2:
+        break;
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter.
+ */
+function mass_validation_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_field_organizations_validate';
+  // For 5 content types, setup field synchronization from a source field to field_organizations.
+
+  $fields = [
+    'node_binder_form' => 'field_binder_ref_organization',
+    'node_binder_edit_form' => 'field_binder_ref_organization',
+    'node_decision_form' => 'field_decision_ref_organization',
+    'node_decision_edit_form' => 'field_decision_ref_organization',
+    'node_executive_order_form' => 'field_issuer_issuers',
+    'node_executive_order_edit_form' => 'field_issuer_issuers',
+    'node_person_form' => 'field_person_ref_org',
+    'node_person_edit_form' => 'field_person_ref_org',
+  ];
+  if (in_array($form_id, array_keys($fields))) {
+    $form['#attached']['library'][] = 'mass_validation/synced_fields';
+    $form['#attached']['drupalSettings']['massValidation']['sourceField'] = $fields[$form_id];
+    if ($form_id === 'node_executive_order_edit_form') {
+      foreach ($form['field_executive_order_issuer']['widget'] as $key => &$issuer) {
+        if (is_int($key)) {
+          if (!empty($issuer['subform']['field_issuer_issuers']['widget'][0]['target_id']['#default_value']->type->target_id)) {
+            $type = $issuer['subform']['field_issuer_issuers']['widget'][0]['target_id']['#default_value']->type->target_id;
+            $issuer['subform']['field_issuer_issuers']['widget'][0]['target_id']['#attributes']['data-bundle'] = $type;
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Validates to ensure at least one value is filled out for field_organizations.
+ */
+function _mass_validation_field_organizations_validate(array &$form, FormStateInterface $form_state) {
+  if ($form_state->hasValue('field_organizations')) {
+    if (isset($form['field_organizations']['widget'][0]['target_id']) && $form['field_organizations']['widget'][0]['target_id']['#required'] == TRUE) {
+      // field_organizations is a multi value field, on which we get a false error if one or more
+      // values are present, but the first value is missing. If such a false error is present then
+      // we remove that error, but we keep other genuine errors connected to the form submission.
+      // The way we do this is inspired by code in the conditional_fields module.
+      // SEE: https://git.drupalcode.org/project/conditional_fields/blob/b855e9dd79fd362d5861fd31f1179dc1885fb6b2/conditional_fields.api.inc#L491-516
+      $errors = $form_state->getErrors();
+      $error_key = 'field_organizations][0][target_id';
+      if (isset($errors[$error_key])) {
+        // Since Drupal provides no clean way to selectively remove error messages,
+        // we have to store all current form errors and error messages, clear them,
+        // filter out from our stored values the errors originating from field_organizations
+        // and then reinstate remaining errors and messages.
+        unset($errors[$error_key]);
+        $form_state->clearErrors();
+        // Reinstate remaining errors.
+        foreach ($errors as $name => $error) {
+          $form_state->setErrorByName($name, $error);
+        }
+      }
+
+      // Make sure at least one of the organizations if filled in by looping through multiple values of that field.
+      $multiple_ogranizations = $form_state->getValue('field_organizations');
+      $org_count = count($multiple_ogranizations) - 1;
+
+      // Unset the NULL ones as you loop.
+      for ($x = 0; $x < $org_count; $x++) {
+        if ($multiple_ogranizations[0]['target_id'] == NULL) {
+          array_splice($multiple_ogranizations, 0, 1);
+        }
+      }
+      // For true error condition, confirm that either there are no more ORG fields present (because they were all null
+      // and got unset), or that the top ORG field now left (indexed 0) does not have any target id.
+      // If such true error condition is met then set the error on field_organizations.
+      if ((count($multiple_ogranizations) == 1 && isset($multiple_ogranizations['add_more'])) || $multiple_ogranizations[0]['target_id'] == NULL) {
+        $form_state->setErrorByName($error_key, t('At least one organization value must be filled out.'));
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function mass_validation_entity_presave(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() === 'node') {
+    $type = $entity->bundle();
+    $fields = [
+      'binder' => 'field_binder_ref_organization',
+      'decision' => 'field_decision_ref_organization',
+      'executive_order' => 'field_executive_order_issuer',
+      'person' => 'field_person_ref_org',
+    ];
+    if (in_array($type, array_keys($fields))) {
+      $values = [];
+      if ($type === 'executive_order') {
+        $issuers = $entity->{$fields['executive_order']}->referencedEntities();
+        foreach ($issuers as $issuer) {
+          $issuer_entity = $issuer->field_issuer_issuers->entity;
+          if ($issuer_entity->bundle() === 'org_page') {
+            array_push($values, $issuer_entity->id());
+          }
+        }
+      }
+      else {
+        foreach ($entity->{$fields[$type]} as $reference) {
+          array_push($values, $reference->target_id);
+        }
+      }
+      // Ignore any values set to field_organization and use the source field instead.
+      $entity->field_organizations = [];
+      foreach ($values as $value) {
+        $entity->field_organizations[] = ['target_id' => $value];
+      }
+    }
+
+    if ($type === 'fee') {
+      $fee = $entity->field_fee_fee->value;
+      // Remove any non-integers except the decimal.
+      $fee = preg_replace('/[^\d|\.]/', '', $fee);
+      $entity->set('field_fee_fee', $fee);
+    }
+  }
+
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_guide_page_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_guide_page_form_validate';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_guide_page_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_guide_page_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_guide_page_form_validate(array &$form, FormStateInterface $form_state) {
+
+  // Verify links have titles.
+  _mass_link_validate_paragraph($form_state, 'field_guide_page_sections', ['field_guide_section_links_4', 'field_guide_section_link']);
+
+  // Validate that the Links and Downloads fields
+  // have no more than 6 values between them.
+  if ($form_state->hasValue('field_guide_page_sections')) {
+    // Look at each section.
+    $sections = $form_state->getValue('field_guide_page_sections');
+    unset($sections['add_more']);
+    $num_links = 0;
+    foreach ($sections as $key => $section) {
+      if (in_array('subform', $section)) {
+        $num_links = 0;
+        // Count the links.
+        foreach ($section['subform']['field_guide_section_link'] as $link) {
+          if (is_array($link)) {
+            if (!empty($link['uri'])) {
+              $num_links += 1;
+            }
+          }
+        }
+      }
+      $num_docs = 0;
+      // Count the documents.
+      if (!empty($section['subform']['field_guide_section_downloads']['entities'])) {
+        $num_docs = count($section['subform']['field_guide_section_downloads']['entities']);
+      }
+      // Throw an error is there are more than 6.
+      if (($num_links + $num_docs) > 6) {
+        $form_state->setErrorByName('field_guide_page_sections][' . $key . '][subform][field_guide_section_link', t('You can only have max 6 values between the Links and Downloads fields in a section.'));
+        $form_state->setErrorByName('field_guide_page_sections][' . $key . '][subform][field_guide_section_downloads', t('You can only have max 6 values between the Links and Downloads fields in a section.'));
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_service_page_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  mass_validation_service_page_alter_helper($form);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_service_page_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  mass_validation_service_page_alter_helper($form);
+}
+
+/**
+ * For logic needed by both flavors of Service Page node form alter.
+ *
+ * @param array $form
+ *   The form array passed by reference.
+ */
+function mass_validation_service_page_alter_helper(array &$form) {
+  $form['#validate'][] = '_mass_validation_form_node_service_page_form_validate';
+  $form['#attached']['library'][] = 'mass_validation/service_page_edit_form';
+  // Hide the Service page template field except for specific permissions.
+  // @todo Remove once all authors are allowed to edit this field.
+  $user = \Drupal::currentUser();
+  if (!$user->hasPermission('set service page template')) {
+    $form['field_template']['#attributes']['class'][] = 'js-hide';
+  }
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_service_page_form_validate(array &$form, FormStateInterface $form_state) {
+  _mass_link_validate($form_state, 'field_service_ref_actions_2');
+  _mass_link_validate($form_state, 'field_service_ref_actions');
+  _mass_link_validate($form_state, 'field_service_links');
+  _mass_link_validate($form_state, 'field_service_key_info_links_6');
+  $template = $form_state->getValue('field_template');
+  $template_value = isset($template[0]['value']) ? $template[0]['value'] : '';
+  if ($template_value === 'custom') {
+    $link_groups = $form_state->getvalue('field_link_group');
+    if (count($link_groups) <= 1) {
+      $form_state->setErrorByName('field_link_group', t('A service page using a custom link groups template requires at least one link group.'));
+    }
+  }
+  // Require only specific permission to update the Service Page Template.
+  // @todo Remove once all authors are allowed to edit this field.
+  $user = \Drupal::currentUser();
+  if (!$user->hasPermission('set service page template')) {
+    $entity = $form_state->getFormObject()->getEntity();
+    $is_new = $entity->isNew();
+    $is_custom = $template_value === 'custom';
+    $changed = $template_value !== $entity->field_template->value;
+    if ($is_new && $is_custom || $changed) {
+      $form_state->setError($form, t('You do not have permission to change the Service Page Template'));
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_curated_list_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_curated_list_form_validate';
+  $form['#attached']['library'][] = 'mass_validation/curated_list_edit_form';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_curated_list_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_curated_list_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_curated_list_form_validate(array &$form, FormStateInterface $form_state) {
+  // Get the paragraphs field that contain the link fields.
+  if ($form_state->hasValue('field_curatedlist_list_section')) {
+    $paragraphs = $form_state->getValue('field_curatedlist_list_section');
+    // Validate each paragraph.
+    foreach ($paragraphs as $key => $paragraph) {
+      // Verify this is a paragraph with fields.
+      if (array_key_exists('subform', $paragraph) && !empty($paragraph['subform']['field_liststatic_items'])) {
+        // Look at each link field in the paragraph.
+        foreach ($paragraph['subform']['field_liststatic_items'] as $field_key => $field) {
+          if (isset($field['subform']['field_listitemlink_item']) && is_array($field['subform']['field_listitemlink_item'])) {
+            $links = $field['subform']['field_listitemlink_item'];
+            foreach ($links as $link_key => $link) {
+              if (is_array($link) && !empty($link['uri']) && empty($link['title'])) {
+                $title = mass_validation_get_title_from_uri($link['uri']);
+                if (!$title) {
+                  // If the link has no title and is external throw an error.
+                  $form_state->setErrorByName('field_curatedlist_list_section][' . $key . '][subform][field_liststatic_items][[subform][field_listitemlink_item][' . $link_key . ']', t('External links require a title.'));
+                }
+              }
+            }
+          }
+          // Prevent List Item Documents from having more than one file.
+          elseif (isset($field['subform']['field_liststaticdoc_item']) && is_array($field['subform']['field_liststaticdoc_item'])) {
+            $docs = $field['subform']['field_liststaticdoc_item'];
+            // This only applies to manual description types.
+            if ($field['subform']['field_listitemdoc_desc_type'][0]['value'] == 'manual' && !empty($docs['entities'])
+              && count($docs['entities']) > 1) {
+              $form_state->setErrorByName('field_curatedlist_list_section][' . $key . '][subform][field_liststatic_items][' . $field_key . '][subform][field_liststaticdoc_item', t('Manual description can only be used when there is one document in a List item group. If you want manual descriptions for each document, you should remove all but the first document in a list of documents and add them one at a time using the "Add list item document(s)" button.'));
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_how_to_page_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_how_to_page_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_how_to_page_form_validate(array &$form, FormStateInterface $form_state) {
+  _mass_link_validate($form_state, 'field_how_to_links_5');
+  _mass_link_validate($form_state, 'field_how_to_link_1');
+  _mass_link_validate_paragraph($form_state, 'field_how_to_next_steps', ['field_next_step_link']);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the Service Details form.
+ */
+function mass_validation_form_node_service_details_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_service_details_form_validate';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the Service Details edit form.
+ */
+function mass_validation_form_node_service_details_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_service_details_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_service_details_form_validate(array &$form, FormStateInterface $form_state) {
+  // Verify links have titles.
+  _mass_link_validate_paragraph($form_state, 'field_service_detail_sections', ['field_section_links']);
+  _mass_link_validate($form_state, 'field_service_detail_links_5');
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_location_details_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_location_details_form_validate';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_location_details_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_location_details_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_location_details_form_validate(array &$form, FormStateInterface $form_state) {
+
+  // Verify links have titles.
+  _mass_link_validate_paragraph($form_state, 'field_location_details_sections', ['field_section_links']);
+  _mass_link_validate($form_state, 'field_location_details_links_5');
+
+  // Validate that the Related Links fields
+  // have no more than 5 values between them.
+  if ($form_state->hasValue('field_location_details_links_5')) {
+    // Count the links.
+    $links = $form_state->getValue('field_location_details_links_5');
+    $num_links = 0;
+    foreach ($links as $link) {
+      if (is_array($link)) {
+        if (!empty($link['uri'])) {
+          $num_links += 1;
+        }
+      }
+    }
+    // Throw an error is there are more than 12.
+    if (($num_links) > 5) {
+      $form_state->setErrorByName('field_location_details_links_5', t('You can only have max 5 values to Related Links.'));
+    }
+  }
+
+  // Validate that the Links and Downloads fields
+  // have no more than 6 values between them.
+  if ($form_state->hasValue('field_location_details_sections')) {
+    // Look at each section.http://mass.local/admin/appearance
+    $sections = $form_state->getValue('field_location_details_sections');
+    unset($sections['add_more']);
+    foreach ($sections as $key => $section) {
+      if (array_key_exists('subform', $section)) {
+        // Validate that the Links and Downloads fields
+        // have no more than 6 values between them.
+        $num_links = 0;
+        // Count the links.
+        foreach ($section['subform']['field_section_links'] as $link) {
+          if (is_array($link)) {
+            if (!empty($link['uri'])) {
+              $num_links += 1;
+            }
+          }
+        }
+        $num_docs = 0;
+        // Count the documents.
+        if (!empty($section['subform']['field_section_downloads']['entities'])) {
+          $num_docs = count($section['subform']['field_section_downloads']['entities']);
+        }
+      }
+      // Throw an error is there are more than 6.
+      if (($num_links + $num_docs) > 6) {
+        $form_state->setErrorByName('field_location_details_sections][' . $key . '][subform][field_section_links', t('You can only have max 6 values between the Links and Downloads fields in a section.'));
+        $form_state->setErrorByName('field_location_details_sections][' . $key . '][subform][field_section_downloads', t('You can only have max 6 values between the Links and Downloads fields in a section.'));
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_executive_order_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_executive_order_form_validate';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_executive_order_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_executive_order_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_executive_order_form_validate(array &$form, FormStateInterface $form_state) {
+  _mass_link_validate($form_state, 'field_executive_order_related');
+
+  // Get the paragraphs field that contain the link fields.
+  if ($form_state->hasValue('field_executive_order_adjustment')) {
+    $paragraphs = $form_state->getValue('field_executive_order_adjustment');
+    $is_updated = FALSE;
+    // Validate each paragraph.
+    foreach ($paragraphs as $key => $paragraph) {
+      // Verify this is a paragraph with fields.
+      if (array_key_exists('subform', $paragraph)) {
+        // Look at each link field in the paragraph.
+        foreach ($paragraph['subform']['field_adjustment_type_link'] as $field_key => $field) {
+          if (is_array($field)) {
+            // If the field has a uri but no title, get one if possible.
+            if (!empty($field['uri']) && empty($field['title'])) {
+              $uri = $field['uri'];
+              $title = t('');
+              // If a link is to a node, get the node title.
+              if (stripos($uri, 'entity:node') === 0) {
+                // Get the node from the uri.
+                $uri_parts = explode('/', $uri);
+                $nid = count($uri_parts) > 1 ? intval($uri_parts[1]) : NULL;
+                if ($nid) {
+                  $node = Node::load($nid);
+                  if (!is_null($node)) {
+                    if ($node->field_executive_order_number->value) {
+                      $title = t('Executive Order No. ') . $node->field_executive_order_number->value;
+                    }
+                    else {
+                      $title = $node->getTitle();
+                    }
+                  }
+                }
+              }
+              if ($title) {
+                $paragraphs[$key]['subform']['field_adjustment_type_link'][$field_key]['title'] = $title;
+                $is_updated = TRUE;
+              }
+              else {
+                // If the link has no title and is external throw an error.
+                $form_state->setErrorByName('field_executive_order_adjustment' . '][' . $key . '][subform][' . 'field_adjustment_type_link' . '][' . $field_key, t('External links require a title.'));
+              }
+            }
+          }
+        }
+      }
+    }
+    if ($is_updated) {
+      // Update the paragraph with new values.
+      $form_state->setValueForElement(['#parents' => ['field_executive_order_adjustment']], $paragraphs);
+    }
+  }
+
+  if ($form_state->hasValue('body') || $form_state->hasValue('field_executive_order_downloads')) {
+    $body = $form_state->getValue('body');
+    $downloads = $form_state->getValue('field_executive_order_downloads');
+
+    // If both fields are empty, throw error.
+    if (empty($body[0]['value']) && empty($downloads['entities'])) {
+      $form_state->setErrorByName('body', t('Either the body field or downloads must be filled out.'));
+      $form_state->setErrorByName('field_executive_order_downloads', t('Either the body field or downloads must be filled out.'));
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_campaign_landing_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_campaign_landing_form_validate';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_campaign_landing_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_campaign_landing_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_campaign_landing_form_validate(array &$form, FormStateInterface $form_state) {
+  // Get the value from the unpublished date.
+  $unpublished_date = $form_state->getValue(['unpublish_on', 0, 'value']);
+  // Add 14 months to today date.
+  $today_date = new DrupalDateTime("now +14 months");
+  // If the unpublished date is greater than 14 months than validation error is displayed.
+  if ($unpublished_date > $today_date) {
+    $form_state->setErrorByName('unpublish_on][0][value', t('An unpublish date within the next 14 months must be provided.'));
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_decision_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_decision_form_validate';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_decision_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_decision_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_decision_form_validate(array &$form, FormStateInterface $form_state) {
+
+  // Link fields.
+  _mass_link_validate($form_state, 'field_decision_related');
+  _mass_link_validate($form_state, 'field_decision_sources');
+
+  $section = $form_state->getValue('field_decision_section');
+  $downloads = $form_state->getValue('field_decision_download');
+  $overview = $form_state->getValue('field_decision_overview');
+
+  // If all three fields are empty, throw an error.
+  if (!is_int(key($section)) && empty($downloads['entities']) && empty($overview['0']['value'])) {
+    $form_state->setErrorByName('field_decision_section', t('Either the section field, overview field, or downloads must be filled out.'));
+    $form_state->setErrorByName('field_decision_downloads', t('Either the section field, overview field, or downloads must be filled out.'));
+    $form_state->setErrorByName('field_decision_overview', t('Either the section field, overview field, or downloads must be filled out.'));
+  }
+
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_rules_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_rules_form_validate';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_rules_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_rules_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_rules_form_validate(array &$form, FormStateInterface $form_state) {
+
+  // Link fields.
+  _mass_link_validate($form_state, 'field_rules_courts');
+  _mass_link_validate($form_state, 'field_rules_referenced_sources');
+  _mass_link_validate($form_state, 'field_rules_related');
+  _mass_link_validate($form_state, 'field_rules_related_collections');
+
+  $section = $form_state->getValue('field_rules_section');
+  $downloads = $form_state->getValue('field_rules_download');
+  $overview = $form_state->getValue('field_rules_overview');
+
+  // If all three fields are empty, throw an error.
+  if (!is_int(key($section)) && empty($downloads['entities']) && empty($overview['0']['value'])) {
+    $form_state->setErrorByName('field_rules_section', t('Either the section field, overview field, or downloads must be filled out.'));
+    $form_state->setErrorByName('field_rules_download', t('Either the section field, overview field, or downloads must be filled out.'));
+    $form_state->setErrorByName('field_rules_overview', t('Either the section field, overview field, or downloads must be filled out.'));
+  }
+
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_advisory_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_advisory_form_validate';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_advisory_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_advisory_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_advisory_form_validate(array &$form, FormStateInterface $form_state) {
+  // Link fields.
+  _mass_link_validate($form_state, 'field_advisory_links');
+  _mass_link_validate($form_state, 'field_advisory_ref_sources');
+
+  $section = $form_state->getValue('field_advisory_section');
+  $downloads = $form_state->getValue('field_advisory_download');
+  $overview = $form_state->getValue('field_advisory_overview');
+
+  // If all three fields are empty, throw an error.
+  if (!is_int(key($section)) && empty($downloads['entities']) && empty($overview['0']['value'])) {
+    $form_state->setErrorByName('field_advisory_section', t('Either the section field, overview field, or downloads must be filled out.'));
+    $form_state->setErrorByName('field_advisory_downloads', t('Either the section field, overview field, or downloads must be filled out.'));
+    $form_state->setErrorByName('field_advisory_overview', t('Either the section field, overview field, or downloads must be filled out.'));
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_regulation_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_regulation_form_validate';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_regulation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_regulation_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_regulation_form_validate(array &$form, FormStateInterface $form_state) {
+  $reg_status = $form_state->getValue('field_regulation_ref_state_tax')[0]['target_id'];
+  $official_version = $form_state->getValue('field_regluation_official_ver');
+
+  // Link fields.
+  _mass_link_validate($form_state, 'field_regulation_reg_authority');
+  // If official version link is submitted, make sure title text is added.
+  if (!empty($official_version)) {
+    _mass_link_validate($form_state, 'field_regluation_official_ver');
+  }
+
+  // Get Regulation type taxonomy terms that make field optional: "Draft",
+  // "Working Draft" and "Proposed".
+  $regulation_type_term_ids = \Drupal::entityQuery('taxonomy_term')
+    ->condition('vid', 'advisory_publish_state')
+    ->condition('name', 'Future Effective Date', '!=')
+    ->execute();
+
+  // If Regulation Status is "Future Effective Date" run normal and require url
+  // field.
+  if (isset($regulation_type_term_ids[$reg_status])) {
+    // Clear all errors to remove required error and add back all other errors.
+    $errors = $form_state->getErrors();
+    // Missing bracket typo is correct.
+    $conditional_field = 'field_regluation_official_ver][0][uri';
+    $form_state->clearErrors();
+    foreach ($errors as $element => $error) {
+      if ($element != $conditional_field) {
+        $form_state->setErrorByName($element, $error);
+      }
+    }
+  }
+  _mass_link_validate($form_state, 'field_regulation_related');
+  _mass_link_validate($form_state, 'field_regulation_link_org');
+
+  $agency_cmr = $form_state->getValue('field_regulation_agency_cmr');
+
+  if (!is_numeric($agency_cmr[0]['value'])) {
+    $form_state->setErrorByName('field_regulation_agency_cmr', t('The value must be a numeric value.'));
+  }
+
+  $section = $form_state->getValue('field_regulation_section');
+  $downloads = $form_state->getValue('field_regulation_download');
+
+  // If both fields are empty, throw error.
+  if (!is_int(key($section)) && empty($downloads['entities'])) {
+    $form_state->setErrorByName('field_regulation_section', t('Either the section field or downloads must be filled out.'));
+    $form_state->setErrorByName('field_regulation_download', t('Either the section field or downloads must be filled out.'));
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_event_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_event_form_validate';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_event_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_event_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_event_form_validate(array &$form, FormStateInterface $form_state) {
+
+  _mass_link_validate($form_state, 'field_event_links');
+  _mass_link_validate($form_state, 'field_event_participating_orgs');
+  _mass_link_validate($form_state, 'field_event_link_sign_up');
+
+  $num_links = 0;
+  // Validate that the Links and Downloads fields
+  // have no more than 6 values between them.
+  if ($form_state->hasValue('field_event_links') || $form_state->hasValue('field_event_ref_downloads')) {
+    // Count the links.
+    $links = $form_state->getValue('field_event_links');
+    foreach ($links as $link) {
+      if (is_array($link)) {
+        if (!empty($link['uri'])) {
+          $num_links += 1;
+        }
+      }
+    }
+    // Count the documents.
+    $docs = $form_state->getValue('field_event_ref_downloads');
+    $num_docs = 0;
+    if (!empty($docs['entities'])) {
+      $num_docs = count($docs['entities']);
+    }
+    // Throw an error is there are more than 6.
+    if (($num_links + $num_docs) > 6) {
+      $form_state->setErrorByName('field_event_links', t('You can only have max 6 values between the Links and Downloads fields.'));
+      $form_state->setErrorByName('field_event_ref_downloads', t('You can only have max 6 values between the Links and Downloads fields.'));
+    }
+  }
+
+  // Check if the Associated Pages field is required and make sure filled in.
+  $assc_pages = $form_state->getValue('field_event_ref_parents');
+  $pages_count = count($assc_pages) - 1;
+
+  // Loop through the elements and unset the NULL ones.
+  for ($x = 0; $x < $pages_count; $x++) {
+    if ($assc_pages[0]['target_id'] == NULL) {
+      array_splice($assc_pages, 0, 1);
+    }
+  }
+
+  if ($assc_pages[0]['target_id'] == NULL) {
+    $form_state->setErrorByName('field_event_ref_parents', t('The associated pages field must be filled out.'));
+  }
+
+  // Check if the address field was required, and make sure it was filled in.
+  $address_type = $form_state->getValue('field_event_address_type');
+  if (!empty($address_type[0]['value'])) {
+    $address_type = $address_type[0]['value'];
+
+    // The 'unique address' option was selected.
+    if ($address_type == 'unique') {
+      $unique_address = $form_state->getValue('field_event_ref_unique_address');
+
+      // Validate each paragraph.
+      $set_error = FALSE;
+      foreach ($unique_address as $key => $paragraph) {
+        // Verify this is a paragraph with fields.
+        if (array_key_exists('subform', $paragraph)) {
+          if (!array_key_exists('field_address_address', $paragraph['subform'])) {
+            $set_error = TRUE;
+          }
+        }
+        else {
+          $set_error = TRUE;
+        }
+      }
+
+      // If both fields are empty, throw error.
+      if ($set_error == TRUE) {
+        $form_state->setErrorByName('field_event_ref_unique_address', t('When using a "Unique address" the address field must be filled out.'));
+      }
+    }
+
+    // The 'contact information' option was selected.
+    elseif ($address_type == 'contact info') {
+      $contact_address = $form_state->getValue('field_event_ref_contact');
+      if (empty($contact_address[0]['target_id'])) {
+        $form_state->setErrorByName('field_event_ref_contact', t('A contact item must be selected.'));
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_topic_page_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  mass_validation_topic_page_alter_helper($form);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_topic_page_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  mass_validation_topic_page_alter_helper($form);
+}
+
+/**
+ * For logic needed by both flavors of Topic Page node form alter.
+ *
+ * @param array $form
+ *   The form array passed by reference.
+ */
+function mass_validation_topic_page_alter_helper(array &$form) {
+  $form['#attached']['library'][] = 'mass_validation/topic_page_edit_form';
+  $form['#validate'][] = '_mass_validation_form_node_topic_page_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_topic_page_form_validate(array &$form, FormStateInterface $form_state) {
+  if ($form_state->hasValue('field_topic_type')) {
+    $subtype = $form_state->getValue('field_topic_type');
+    if ($subtype[0]['value'] == 'topic') {
+      $lede = $form_state->getValue('field_topic_lede');
+      if (empty($lede[0]['value'])) {
+        $form_state->setErrorByName('field_topic_lede', t('The Short Description is required.'));
+      }
+    }
+  }
+
+  // Verify links have titles.
+  _mass_link_validate_paragraph($form_state, 'field_topic_content_cards', ['field_content_card_link_cards']);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_legacy_redirects_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_legacy_redirects_form_validate';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_legacy_redirects_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_legacy_redirects_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_legacy_redirects_form_validate(array &$form, FormStateInterface $form_state) {
+  if ($form_state->hasValue('field_legacy_redirects_legacyurl')) {
+    $legacy_urls = $form_state->getValue('field_legacy_redirects_legacyurl');
+    // Passes each URL by reference to allow for permanent trimming.
+    foreach ($legacy_urls as $key => $legacy_url) {
+      if (is_array($legacy_url)) {
+        if (!empty($legacy_url['value'])) {
+          // Trim trailing slashes from URL during validation process.
+          $legacy_url['value'] = rtrim($legacy_url['value'], '/');
+
+          // Verify Legacy URL is mass.gov link and does not link to the portal.
+          $illegal_urls = [
+            'http://www.mass.gov/portal/',
+            'http://www.mass.gov/portal',
+            'http://www.mass.gov',
+            'http://www.mass.gov/',
+          ];
+          if (strpos($legacy_url['value'], "http://www.mass.gov") !== 0) {
+            $form_state->setErrorByName('field_legacy_redirects_legacyurl][' . $key, t('Legacy URL must start with "http://www.mass.gov".'));
+          }
+          elseif (in_array($legacy_url['value'], $illegal_urls)) {
+            $form_state->setErrorByName('field_legacy_redirects_legacyurl][' . $key, t('Legacy URL cannot be "http://www.mass.gov/portal" or "http://www.mass.gov".'));
+          }
+
+          // Verify Legacy URL contains a valid legacy site name.
+          try {
+            $legacy_site_names = \Drupal::getContainer()->getParameter('mass_validation.field_legacy_redirects_legacyurl.legacy_site_names');
+            $legacy_site_names_regex = '/^\/(' . implode('|', $legacy_site_names) . ')(?=\/|$)/';
+            // Checks URL path against list of possible legacy path beginnings.
+            if (!preg_match($legacy_site_names_regex, parse_url($legacy_url['value'], PHP_URL_PATH))) {
+              $form_state->setErrorByName('field_legacy_redirects_legacyurl][' . $key, t('Please enter a valid URL from the legacy Mass.gov system. URLs for pages on the new Mass.gov are not permitted here.'));
+            }
+          }
+          catch (\InvalidArgumentException $e) {
+            // Logs error if parameter containing legacy site names is missing.
+            $message = t('Parameter `mass_validation.field_legacy_redirects_legacyurl.legacy_site_names` has not been set in mass_validation.services.yml.');
+            \Drupal::logger('mass_validation')->error($message);
+          }
+
+          // Verify Legacy Urls are unique.
+          $query = \Drupal::entityQuery('node')
+            ->condition('type', 'legacy_redirects')
+            // Check for this redirect with or without a trailing slash.
+            ->condition('field_legacy_redirects_legacyurl', [$legacy_url['value'], "{$legacy_url['value']}/"], 'IN');
+          // If the node has been saved exclude current node.
+          if ($curr_id = $form_state->getFormObject()->getEntity()->id()) {
+            $query->condition('nid', $curr_id, '<>');
+          }
+          $duplicates = $query->execute();
+          if (!empty($duplicates)) {
+            $nid = reset($duplicates);
+            $form_state->setErrorByName('field_legacy_redirects_legacyurl][' . $key, t('The Legacy URL must be unique, this url is already being used at <a href=/node/@nid/edit >@nid</a>', ['@nid' => $nid]));
+          }
+
+          if (!UrlHelper::isValid($legacy_url['value'], TRUE)) {
+            $form_state->setErrorByName('field_legacy_redirects_legacyurl][' . $key, t('The Legacy URL must be in a valid format.'));
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_news_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_news_form_validate';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_news_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_validation_form_node_news_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_news_form_validate(array &$form, FormStateInterface $form_state) {
+  // Require Media contacts for Press releases and Press statements.
+  $news_type = $form_state->getValue('field_news_type');
+  $media_contact = $form_state->getValue('field_news_media_contac');
+  unset($media_contact['add_more']);
+  $news_type = reset($news_type);
+  $news_type = $news_type['value'];
+  $required_news_types = [
+    'press_release',
+    'press_statement',
+  ];
+  if (in_array($news_type, $required_news_types) && empty($media_contact)) {
+    $form_state->setErrorByName('field_news_media_contac', t('Nodes of type Press Release and Press Statement require a Media contact'));
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_person_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#attached']['library'][] = 'mass_validation/person_edit_form';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_person_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#attached']['library'][] = 'mass_validation/person_edit_form';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_org_page_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  mass_validation_org_page_alter_helper($form);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_org_page_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  mass_validation_org_page_alter_helper($form);
+}
+
+/**
+ * For logic needed by both flavors of Org Page node form alter.
+ *
+ * @param array $form
+ *   The form array passed by reference.
+ */
+function mass_validation_org_page_alter_helper(array &$form) {
+  $form['#attached']['library'][] = 'mass_validation/org_page_edit_form';
+  $form['#validate'][] = '_mass_validation_form_node_org_page_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_org_page_form_validate(array &$form, FormStateInterface $form_state) {
+  if ($form_state->hasValue('field_org_featured_items')) {
+    $featured_items_paragraphs = $form_state->getValue('field_org_featured_items');
+    if (isset($featured_items_paragraphs[0])) {
+      if (isset($featured_items_paragraphs[0]['subform']['field_featured_item_mosaic_items']['add_more'])) {
+        $form_state->setErrorByName('', t('You must provide 5 featured items.'));
+      }
+      // Find the item with the lowest weight.
+      foreach ($featured_items_paragraphs[0]['subform']['field_featured_item_mosaic_items'] as $mosaic_key => $mosaic_array) {
+        if (isset($mosaic_array['_weight'])) {
+          $weight = (int) $mosaic_array['_weight'];
+          if (!isset($lowest) || $weight < $lowest) {
+            $lowest = $weight;
+            $first = $mosaic_array;
+          }
+        }
+      }
+
+      if (isset($first) && empty($first['subform']['field_featured_item_highlight'][0]['fids'])) {
+        $form_state->setErrorByName('',
+          t('You must provide a value for the Highlight Image of the first Featured Item.'));
+      }
+    }
+  }
+  if ($form_state->hasValue('field_subtype')) {
+    $subtype = $form_state->getValue('field_subtype');
+    if ($subtype[0]['value'] == 'Elected Official') {
+      $banner = $form_state->getValue('field_banner_image');
+      if (empty($banner[0]['fids'])) {
+        $form_state->setErrorByName('field_banner_image', t('The Banner Image is required.'));
+      }
+      $bio = $form_state->getValue('field_person_bio');
+      if (empty($bio[0]['target_id'])) {
+        $form_state->setErrorByName('field_person_bio', t('The Person / Bio is required.'));
+      }
+    }
+    elseif ($subtype[0]['value'] == 'General Organization') {
+      $banner = $form_state->getValue('field_bg_wide');
+      if (empty($banner[0]['fids'])) {
+        $form_state->setErrorByName('field_bg_wide', t('The Banner Image (Desktop) is required.'));
+      }
+      elseif ($subtype[0]['value'] == 'Boards') {
+        if (empty($form_state->getValue('field_boards')[0])) {
+          $form_state->setErrorByName('field_boards', t('Boards is required.'));
+        }
+      }
+    }
+  }
+  if ($form_state->hasValue('field_constituent_communication')) {
+    $option = $form_state->getValue('field_constituent_communication');
+    if ($option[0]['value'] === 'contact') {
+      $verification = $form_state->getValue('field_verification', FALSE);
+      $approver = $form_state->getValue('field_approver', FALSE);
+      $response_expectations = $form_state->getValue('field_response_expectations', FALSE);
+      if (empty($verification['value']) || $verification['value'] === 0) {
+        $form_state->setErrorByName('field_verification', t('You must agree to respond to feedback.'));
+      }
+      if (empty($approver[0]['value'])) {
+        $form_state->setErrorByName('field_approver', t('You must provide an approver.'));
+      }
+      if (empty($response_expectations[0]['value'])) {
+        $form_state->setErrorByName('field_response_expectations', t('You must provide a response expectations message.'));
+      }
+    }
+    if ($option[0]['value'] !== 'none') {
+      $field_org_sentence_phrasing = $form_state->getValue('field_org_sentence_phrasing', FALSE);
+      if (empty($field_org_sentence_phrasing[0]['value'])) {
+        $form_state->setErrorByName('field_org_sentence_phrasing', t('For this selection of constituent communication options, you must provide a sentence phrasing of org.'));
+      }
+    }
+    if ($option[0]['value'] === 'link') {
+      $field_feedback_com_link = $form_state->getValue('field_feedback_com_link', FALSE);
+      if (empty($field_feedback_com_link[0]['uri'])) {
+        $form_state->setErrorByName('field_feedback_com_link', t('A communications page must be selected.'));
+      }
+    }
+  }
+}
+
+/**
+ * Validate link fields in a paragraph have titles for each uri.
+ *
+ * @param Drupal\Core\Form\FormStateInterface $form_state
+ *   The form we are validating.
+ * @param string $field_name
+ *   The name of the link field to validate.
+ */
+function _mass_link_validate(FormStateInterface &$form_state, $field_name) {
+  // Fetch the field values.
+  if ($form_state->hasValue($field_name)) {
+    $featured_tasks = $form_state->getValue($field_name);
+
+    // Look at each field value.
+    foreach ($featured_tasks as $key => $task) {
+      if (is_array($task)) {
+        // If we have a uri but no title, fix or show an error.
+        if (!empty($task['uri']) && empty($task['title'])) {
+          $title = mass_validation_get_title_from_uri($task['uri']);
+          if (!$title) {
+            $form_state->setErrorByName($field_name . '][' . $key, t('External links require a title.'));
+          }
+
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Validate link fields in a paragraph have titles for each uri.
+ *
+ * @param Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state object we are updating.
+ * @param string $paragraph_field_name
+ *   The name of the paragraph field we are checking.
+ * @param array $field_names
+ *   An array of link field titles in the paragraph to check.
+ */
+function _mass_link_validate_paragraph(FormStateInterface &$form_state, $paragraph_field_name, array $field_names) {
+  // Get the paragraphs field that contain the link fields.
+  if ($form_state->hasValue($paragraph_field_name)) {
+    $paragraphs = $form_state->getValue($paragraph_field_name);
+    // Validate each paragraph.
+    foreach ($paragraphs as $key => $paragraph) {
+      // Verify this is a paragraph with fields.
+      if (array_key_exists('subform', $paragraph)) {
+        // Look at each link field in the paragraph.
+        foreach ($field_names as $field_name) {
+          if (!empty($paragraph['subform'][$field_name])) {
+            foreach ($paragraph['subform'][$field_name] as $field_key => $field) {
+              if (is_array($field)) {
+                // If the link has no title and is external throw an error.
+                if (!empty($field['uri']) && empty($field['title'])) {
+                  $title = mass_validation_get_title_from_uri($field['uri']);
+                  if (!$title) {
+                    $form_state->setErrorByName($paragraph_field_name . '][' . $key . '][subform][' . $field_name . '][' . $field_key, t('External links require a title.'));
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Retrieves title given an internal uri.
+ *
+ * Only works for nodes at present.
+ *
+ * @param string $uri
+ *   A uri created by the link widget.
+ *
+ * @return null|string
+ *   Returns NULL if title not found.
+ */
+function mass_validation_get_title_from_uri($uri) {
+  // If a link is to a node, get the node title.
+  if (stripos($uri, 'entity:node') === 0) {
+    // Get the node from the uri.
+    $uri_parts = explode('/', $uri);
+    $nid = count($uri_parts) > 1 ? intval($uri_parts[1]) : NULL;
+    if ($nid) {
+      $node = Node::load($nid);
+      if (!is_null($node)) {
+        return $node->getTitle();
+      }
+    }
+  }
+  return NULL;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function mass_validation_node_presave($node) {
+  /** @var Drupal\node\Entity\Node $node */
+  if ($node->bundle() == 'legacy_redirects') {
+    // Removes previous hashed values.
+    $node->set('field_legacy_redirect_hashed_url', NULL);
+    $urls = $node->field_legacy_redirects_legacyurl;
+    $hash_values = $node->field_legacy_redirect_hashed_url;
+    foreach ($urls as $key => $url) {
+      // Converts any `https` schemes to `http`.
+      // Legacy Redirect URLs should never require an `https` scheme.
+      $url->value = preg_replace('/^https(?=:\/{2})/', 'http', $url->value);
+      $urls->set($key, $url);
+      // Creates and sets hashed value.
+      $hash = md5($url->value);
+      $hash_values->set($key, $hash);
+    }
+  }
+
+  if ($node->getType() == 'org_page' && !empty($node->get('field_title_sub_text')->value)) {
+    $acronym = $node->get('field_title_sub_text')->value;
+    // Add parenthesis and remove any previously existing ones.
+    // Also assure the use of capital letters.
+    $acronym = Unicode::strtoupper(strtr($acronym, ['(' => '', ')' => '']));
+    $node->get('field_title_sub_text')->setValue('(' . trim($acronym) . ')');
+  }
+}
+
+/**
+ * Implements hook_field_widget_third_party_settings_form().
+ */
+function mass_validation_field_widget_third_party_settings_form(WidgetInterface $plugin, FieldDefinitionInterface $field_definition, $form_mode, $form, FormStateInterface $form_state) {
+  $element = [];
+  // Adds third-party settings to default Link field widget.
+  if ($plugin->getPluginId() == 'link_default') {
+    // Gets a list of content types.
+    $content_types = \Drupal::service('entity_type.manager')->getStorage('node_type')->loadMultiple();
+    $content_types_list = [];
+    foreach ($content_types as $content_type) {
+      $content_types_list[$content_type->id()] = $content_type->label();
+    }
+    // Builds form element to blacklist content types in entity_autocomplete.
+    $element['internal_link_content_type_blacklist'] = [
+      '#type' => 'select',
+      '#title' => t('Internal Link Content Type Blacklist'),
+      '#description' => t('Select any content type(s) that should not appear in the autocomplete results for internal links in this field.<br />Any content of the same type(s) will be excluded from the autocomplete results when users search for internal links in this field.'),
+      '#multiple' => TRUE,
+      '#options' => $content_types_list,
+      '#default_value' => $plugin->getThirdPartySetting('mass_validation', 'internal_link_content_type_blacklist'),
+    ];
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ */
+function mass_validation_field_widget_link_default_form_alter(&$element, FormStateInterface $form_state, $context) {
+  // Alters any default Link field widgets using entity_autocomplete.
+  if ($element['uri']['#type'] == 'entity_autocomplete') {
+    /** @var \Drupal\link\Plugin\Field\FieldWidget\LinkWidget $widget */
+    $widget = $context['widget'];
+    $blacklist = $widget->getThirdPartySetting('mass_validation', 'internal_link_content_type_blacklist');
+    // Checks for content type blacklist for current autocomplete link field.
+    // @see mass_validation_field_widget_third_party_settings_form()
+    if (!empty($blacklist)) {
+      // Checks if field explicitly lists allowed autocomplete content types.
+      if (isset($element['uri']['#selection_settings']['target_bundles'])) {
+        // Removes blacklisted content types if present in list.
+        $element['uri']['#selection_settings']['target_bundles'] = array_diff($element['uri']['#selection_settings']['target_bundles'], $blacklist);
+      }
+      // Field is set to (implicitly) allow all content types by default.
+      else {
+        // Gets a list of content types.
+        $content_types = \Drupal::service('entity_type.manager')->getStorage('node_type')->loadMultiple();
+        // Removes blacklisted content types from list.
+        $content_types_list = [];
+        foreach ($content_types as $content_type) {
+          // Excludes the blacklisted content types.
+          if (!in_array($content_type->id(), $blacklist)) {
+            $content_types_list[$content_type->id()] = $content_type->id();
+          }
+        }
+        // Sets up target_bundles list for use with entity_autocomplete.
+        $element['uri']['#selection_settings']['target_bundles'] = $content_types_list;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_input().
+ */
+function mass_validation_preprocess_input(&$variables) {
+  // 1. We proceed with changing render attributes within $variable only if we are on a node/edit page.
+  if (\Drupal::service('router.admin_context')->isAdminRoute()) {
+    // On every node/edit authors must enter one or more organizations, which is an unlimited `entity_reference` field.
+    // Because it is a requried field class RenderElement adds a `required` HTML5 attribute to that field, causing
+    // broswers to complain even if of say 4 organizations the author only deletes the first one (since all separate
+    // input fields have a `required` HTML5 attribute added to them.
+    // See: https://jira.mass.gov/browse/DP-13971.
+    $field = $variables['element'];
+    if ($field['#type'] == 'entity_autocomplete' && strpos($field['#id'], 'field-organizations') !== FALSE) {
+      if (isset($field['#attributes']['required'])) {
+        unset($variables['element']['#attributes']['required']);
+        unset($variables['attributes']['required']);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_contact_information_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  mass_validation_contact_information_alter_helper($form);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_validation_form_node_contact_information_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  mass_validation_contact_information_alter_helper($form);
+}
+
+/**
+ * For logic needed by both flavors of Topic Page node form alter.
+ *
+ * @param array $form
+ *   The form array passed by reference.
+ */
+function mass_validation_contact_information_alter_helper(array &$form) {
+  $form['#validate'][] = '_mass_validation_form_node_contact_information_form_validate';
+}
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_contact_information_form_validate(array &$form, FormStateInterface $form_state) {
+  $contact_fields = [
+    'field_ref_address',
+    'field_ref_fax_number',
+    'field_ref_hours',
+    'field_ref_links',
+    'field_ref_phone_number',
+  ];
+  $contact_is_empty = TRUE;
+  foreach ($contact_fields as $contact_field) {
+    $value = $form_state->getValue($contact_field);
+    unset($value['add_more']);
+    if (!empty($value)) {
+      $contact_is_empty = FALSE;
+      break;
+    }
+  }
+  if ($contact_is_empty) {
+    $form_state->setError($form, t('At least one contact detail field should be filled out (address, fax number, hours, links, or phone number).'));
+  }
+
+}
+
+/**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ *
+ * Since conditional fields via the module don't yet work for forms injected
+ * via ajax, this is a work around for the campaign landing pages.
+ */
+function mass_validation_field_widget_paragraphs_form_alter(array &$element, FormStateInterface &$form_state, $context) {
+  // Apply the following logic to both Key Message paragraph types.
+  $paragraph_types = [
+    'key_message',
+    'key_message_section',
+  ];
+  if (in_array($element['#paragraph_type'], $paragraph_types)) {
+    $form = &$element['subform'];
+    $layout = '';
+    $field_status = [];
+    if (isset($element['#prefix'])) {
+      $prefix = '#' . str_replace(['<div id="', '">'], '', $element['#prefix']) . ' ';
+    }
+
+    // Handle show/hide of the image field when the background color selected
+    // is "Solid color".
+    $bgd_style = 'color';
+    if (isset($form['field_background_type'])) {
+      $bgd_style = $form['field_background_type']['widget']['#default_value'];
+      $field_status['field_background_type'] = [
+        'field_image' => [
+          'visible' => 'image',
+        ],
+        'field_text_overlay_color' => [
+          'visible' => 'image',
+        ],
+        'field_section_text_overlay_color' => [
+          'visible' => 'image'
+        ],
+        'field_background_color' => [
+          'visible' => 'color',
+        ],
+        'field_section_background_color' => [
+          'visible' => 'color',
+        ],
+      ];
+    }
+    // Apply default load states and then the actual States API state value
+    // so that changes made by the user to the content layout field will show
+    // or hide the appropriate fields once the paragraph is loaded.
+    foreach ($field_status as $trigger_field_name => $state_field) {
+      foreach ($state_field as $field_name => $state) {
+        $form[$field_name]['#states'] = [
+          'visible' => [
+            $prefix . ':input[name*="' . $trigger_field_name . '"]' => ['value' => $state['visible']],
+          ],
+        ];
+        if ($layout !== $state['visible']) {
+          $form[$field_name]['#attributes']['style'] = 'display:none;';
+        }
+      }
+    }
+  }
+}

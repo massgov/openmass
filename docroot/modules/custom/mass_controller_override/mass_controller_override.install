@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Install config.
+ */
+
+use Drupal\redirect\Entity\Redirect;
+
+/**
+ * Implements hook_install().
+ */
+function mass_controller_override_install() {
+  Redirect::create([
+    'redirect_source' => 'node/add/document',
+    'redirect_redirect' => 'internal:/media/add/document',
+    'language' => 'und',
+    'status_code' => '301',
+  ])->save();
+}

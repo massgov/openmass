@@ -1,0 +1,28 @@
+uuid: 06bd7b07-dea2-4e7b-b092-cc0e67f59a02
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - node.type.campaign_landing
+  module:
+    - user
+id: node.campaign_landing.teaser
+targetEntityType: node
+bundle: campaign_landing
+mode: teaser
+content:
+  content_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  field_header: true
+  field_organizations: true
+  field_sections: true

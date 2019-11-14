@@ -1,0 +1,41 @@
+uuid: 1872284e-e080-4423-aade-89e19d183b6c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.manage_account_link.field_manage_account_link
+    - field.field.paragraph.manage_account_link.field_manage_account_link_body
+    - paragraphs.paragraphs_type.manage_account_link
+  module:
+    - link
+    - maxlength
+id: paragraph.manage_account_link.default
+targetEntityType: paragraph
+bundle: manage_account_link
+mode: default
+content:
+  field_manage_account_link:
+    weight: 7
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_manage_account_link_body:
+    weight: 6
+    settings:
+      rows: 3
+      placeholder: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: null
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: false
+        maxlength_js_truncate_html: false
+    type: string_textarea
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

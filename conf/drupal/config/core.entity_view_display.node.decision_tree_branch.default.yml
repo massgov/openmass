@@ -1,0 +1,87 @@
+uuid: 051ae316-0713-4535-954c-e86fd8cd08d5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.decision_tree_branch.field_answers
+    - field.field.node.decision_tree_branch.field_branch_disclaimer
+    - field.field.node.decision_tree_branch.field_decision_root_ref
+    - field.field.node.decision_tree_branch.field_description
+    - field.field.node.decision_tree_branch.field_more_info
+    - field.field.node.decision_tree_branch.field_organizations
+    - field.field.node.decision_tree_branch.field_state_organization_tax
+    - node.type.decision_tree_branch
+  module:
+    - entity_reference_revisions
+    - text
+    - user
+id: node.decision_tree_branch.default
+targetEntityType: node
+bundle: decision_tree_branch
+mode: default
+content:
+  content_moderation_control:
+    weight: -20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_answers:
+    type: entity_reference_revisions_entity_view
+    weight: 4
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_branch_disclaimer:
+    weight: 5
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_decision_root_ref:
+    weight: 6
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_description:
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_more_info:
+    type: entity_reference_revisions_entity_view
+    weight: 3
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_organizations:
+    weight: 7
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_state_organization_tax: true

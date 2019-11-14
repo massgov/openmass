@@ -1,0 +1,19 @@
+{#
+/**
+ * @file
+ * Theme to display the full view mode of the Compaign Landing content type.
+ */
+ #}
+
+{% extends 'node.html.twig' %}
+
+{% block preContent %}
+  {{ content.field_header }}
+{% endblock %}
+{% block main %}
+  <div class="main-content  main-content--full">
+    <div class="page-content">
+      {{ content.field_sections }}
+    </div>
+  </div>
+{% endblock %}

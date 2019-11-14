@@ -1,0 +1,32 @@
+uuid: 56f85c89-292c-4c92-9f58-339edcf8f7a4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.icons.field_sprite_name
+    - field.field.taxonomy_term.icons.field_sprite_type
+    - taxonomy.vocabulary.icons
+  module:
+    - options
+id: taxonomy_term.icons.default
+targetEntityType: taxonomy_term
+bundle: icons
+mode: default
+content:
+  field_sprite_name:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_sprite_type:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+hidden:
+  description: true

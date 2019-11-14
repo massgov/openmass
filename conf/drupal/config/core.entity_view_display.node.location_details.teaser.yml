@@ -1,0 +1,41 @@
+uuid: 9202034f-6f61-493a-a767-5c1de219cbd7
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.location_details.field_location_details_lede
+    - field.field.node.location_details.field_location_details_links_5
+    - field.field.node.location_details.field_location_details_metatags
+    - field.field.node.location_details.field_location_details_sections
+    - field.field.node.location_details.field_organizations
+    - field.field.node.location_details.field_state_organization_tax
+    - node.type.location_details
+  module:
+    - user
+id: node.location_details.teaser
+targetEntityType: node
+bundle: location_details
+mode: teaser
+content:
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  field_intended_audience: true
+  field_location_details_lede: true
+  field_location_details_links_5: true
+  field_location_details_metatags: true
+  field_location_details_sections: true
+  field_organizations: true
+  field_state_organization_tax: true

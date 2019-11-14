@@ -1,0 +1,34 @@
+uuid: df7cb753-ec9f-4841-a689-5dba8f3ad199
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.extended_header
+    - field.field.paragraph.icon.field_para_icon_term
+    - field.field.paragraph.icon.field_title
+    - paragraphs.paragraphs_type.icon
+id: paragraph.icon.extended_header
+targetEntityType: paragraph
+bundle: icon
+mode: extended_header
+content:
+  field_para_icon_term:
+    weight: 1
+    label: hidden
+    settings:
+      view_mode: extended_header
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_title:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  created: true
+  uid: true

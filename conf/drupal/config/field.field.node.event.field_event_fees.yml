@@ -1,0 +1,32 @@
+uuid: 2e5d70a4-868c-4a40-9eb1-0921f9eca9cb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_event_fees
+    - node.type.event
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.event.field_event_fees
+field_name: field_event_fees
+entity_type: node
+bundle: event
+label: Fees
+description: 'Optional. If your event has fees, please list them here. If your fee does not need a decimal, please do not use one. For example, forty dollars would be $40 (not $40.00).  '
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

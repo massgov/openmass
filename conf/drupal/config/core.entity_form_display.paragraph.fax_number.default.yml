@@ -1,0 +1,43 @@
+uuid: c7c21078-7ceb-4958-9cb1-a961da662542
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.fax_number.field_caption
+    - field.field.paragraph.fax_number.field_fax
+    - field.field.paragraph.fax_number.field_label
+    - paragraphs.paragraphs_type.fax_number
+  module:
+    - telephone
+id: paragraph.fax_number.default
+targetEntityType: paragraph
+bundle: fax_number
+mode: default
+content:
+  field_caption:
+    weight: 8
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_fax:
+    weight: 7
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: telephone_default
+    region: content
+  field_label:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

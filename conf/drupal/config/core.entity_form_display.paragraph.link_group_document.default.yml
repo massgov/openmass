@@ -1,0 +1,37 @@
+uuid: b8d92de3-595d-4e8e-a05d-3fde380cccef
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.link_group_document.field_file_download_single
+    - paragraphs.paragraphs_type.link_group_document
+  module:
+    - entity_browser_entity_form
+    - inline_entity_form
+id: paragraph.link_group_document.default
+targetEntityType: paragraph
+bundle: link_group_document
+mode: default
+content:
+  field_file_download_single:
+    weight: 0
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+      collapsible: false
+      collapsed: false
+      allow_duplicate: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: media_browser
+    type: inline_entity_form_complex
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

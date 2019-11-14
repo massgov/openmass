@@ -1,0 +1,35 @@
+uuid: 106942ab-8330-471a-8a02-440a0870e64a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.content_card_group.field_content_card_category
+    - field.field.paragraph.content_card_group.field_content_card_link_cards
+    - paragraphs.paragraphs_type.content_card_group
+  module:
+    - link
+id: paragraph.content_card_group.default
+targetEntityType: paragraph
+bundle: content_card_group
+mode: default
+content:
+  field_content_card_category:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_content_card_link_cards:
+    weight: 7
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

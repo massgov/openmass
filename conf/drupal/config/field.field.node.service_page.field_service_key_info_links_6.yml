@@ -1,0 +1,37 @@
+uuid: aa584fed-ac9f-4975-a95e-6a51775e66d0
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_service_key_info_links_6
+    - node.type.service_page
+  module:
+    - link
+id: node.service_page.field_service_key_info_links_6
+field_name: field_service_key_info_links_6
+entity_type: node
+bundle: service_page
+label: 'Key information links'
+description: 'Pages on Mass.gov that are important to this service. A maximum of 6 links will appear on the service page. The following types may be used: advisory, binder, curated list, decision, decision tree, executive order, form, guide, information detail, news, regulation, rules of court, and service detail.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 1
+  entity_bundles:
+    advisory: advisory
+    binder: binder
+    curated_list: curated_list
+    decision: decision
+    decision_tree: decision_tree
+    executive_order: executive_order
+    form_page: form_page
+    guide_page: guide_page
+    info_details: info_details
+    news: news
+    regulation: regulation
+    rules: rules
+    service_details: service_details
+field_type: link

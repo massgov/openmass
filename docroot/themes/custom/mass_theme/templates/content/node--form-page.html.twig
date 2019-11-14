@@ -1,0 +1,88 @@
+{#
+/**
+ * @file
+ * Theme override to display the full view mode of the Form content type.
+ */
+ #}
+{% extends 'node.html.twig' %}
+
+{# Set top heading level for the page. #}
+{% set level = 1 %}
+
+{% block preContent %}
+  {# If the contextual navigation should be set for this node, then add it. #}
+  {% if node.computed_log_in_links is not empty %}
+    {{ contextual_log_in_links }}
+  {% endif %}
+  {% set secondaryIndicators = false %}
+  {% if node.computed_related_to is not empty %}
+    {% set secondaryIndicators = {
+      "label": "related to"
+    } %}
+  {% endif %}
+
+  {% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "primary": {
+        "label": "offered by"
+      },
+      "secondary": secondaryIndicators
+    }
+  } %}
+    {% block primaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.computed_related_to }}
+    {% endblock %}
+  {% endembed %}
+  {% include "@organisms/by-template/page-header.twig" %}
+{% endblock %}
+
+{% block main %}
+  {# Increase heading number by 1 from the parent heading. #}
+  {% set level = level + 1 %}
+  <div class="main-content main-content--two">
+    <div class="page-content">
+    {% block pageContent %}
+      {% if formRequirements %}
+        {% set formRequirements = formRequirements|merge({'level': level}) %}
+        {% include "@organisms/by-author/form-requirements.twig" %}
+      {% endif %}
+      <div aria-live="polite" aria-relevant="all" class="form_embed feedback">
+        <script type="text/javascript" src="{{ form_url }}"></script>
+        <noscript><a href="{{ form_url_noscript }}" title="{{ node.title.value }}">Online Form - {{ node.title.value }}</a></noscript>
+      </div>
+      <script>
+        (function() {
+          var root = document.querySelector('.form_embed.feedback');
+          root.addEventListener('click', function(event) {
+            //find target element, if submit button, scroll to top of form.
+            if(event.target.tagName === 'INPUT' && event.target.type === 'submit') {
+              root.scrollIntoView();
+            }
+          });
+        })();
+      </script>
+    {% endblock %}
+    </div>
+    <aside class="sidebar">
+      {% if sideContent.contactList %}
+        {% set contactList = sideContent.contactList %}
+        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
+        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
+        {% include "@organisms/by-author/contact-list.twig" %}
+      {% endif %}
+      {% if sideContent.mediaContact %}
+        {% set contactList = sideContent.mediaContact %}
+        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
+        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
+        {% include "@organisms/by-author/contact-list.twig" %}
+      {% endif %}
+    </aside>
+  </div>
+{% endblock %}
+
+{% block postContent %}
+  {{ content.extra_org_feedback_form }}
+{% endblock %}

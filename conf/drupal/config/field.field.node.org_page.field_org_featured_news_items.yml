@@ -1,0 +1,28 @@
+uuid: 495f7625-db27-4088-a3c1-fced60c16482
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_org_featured_news_items
+    - node.type.news
+    - node.type.org_page
+id: node.org_page.field_org_featured_news_items
+field_name: field_org_featured_news_items
+entity_type: node
+bundle: org_page
+label: 'Featured news items'
+description: 'Choose up to 2 featured news items. They will remain on the page until removed.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      news: news
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

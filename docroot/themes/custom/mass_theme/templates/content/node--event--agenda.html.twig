@@ -1,0 +1,121 @@
+{#
+/**
+ * @file
+ * Theme override to display the full view mode of the Press Release content type.
+ */
+ #}
+{% extends 'node--event.html.twig' %}
+
+{% block preContent %}
+  {% set secondaryIndicators = false %}
+  {% if node.computed_related_to is not empty %}
+    {% set secondaryIndicators = {
+      "label": "related to"
+    } %}
+  {% endif %}
+
+  {% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "primary": {
+        "label": "offered by"
+      },
+      "secondary": secondaryIndicators
+    }
+  } %}
+    {% block primaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.computed_related_to }}
+    {% endblock %}
+  {% endembed %}
+  {# Update header to only print the properties needed for Agenda page, eg title and time of event. #}
+  {% set pageHeader = pageHeader|merge({'title': "Agenda for " ~ (pageHeader.title)}) %}
+  {% set pageHeader = pageHeader|merge({'category': ""}) %}
+  {% set pageHeader = pageHeader|merge({'optionalContents': (pageHeader.optionalContents|slice(0,1)) }) %}
+  {% set pageHeader = pageHeader|merge({'divider': false}) %}
+
+  {% include "@organisms/by-template/page-header.twig" %}
+
+{% endblock %}
+
+{% block pageContent %}
+  {% if sideContent.contactList %}
+    {% set contactList = sideContent.contactList|merge({'compHeading': sideContent.contactList.sidebarHeading, 'sidebarHeading': null}) %}
+    {% include "@organisms/by-author/contact-list.twig" %}
+  {% endif %}
+
+  {% if sideContent.mediaContact %}
+    {% set contactList = sideContent.mediaContact|merge({'compHeading': sideContent.mediaContact.sidebarHeading, 'sidebarHeading': null}) %}
+    {% include "@organisms/by-author/contact-list.twig" %}
+  {% endif %}
+
+  {{ content.field_event_meeting_agenda_sect }}
+  {{ content.field_event_agenda_download }}
+
+{% endblock %}
+
+{% block sidebarContent %}
+  {% if sideContent.contactList %}
+    {% set contactList = sideContent.contactList %}
+    {% include "@organisms/by-author/contact-list.twig" %}
+  {% endif %}
+  {% if sideContent.mediaContact %}
+    {% set contactList = sideContent.mediaContact %}
+    {% include "@organisms/by-author/contact-list.twig" %}
+  {% endif %}
+
+  {# Render only the contactUs section in the optionalContents. #}
+  {% for optionSection in pageHeader.optionalContents %}
+    {% if 'contact-us' in optionSection.path %}
+      {# Set variables to be passed to the twig template. #}
+      {% set date = pageHeader.optionalContents[0].data.eventTeaser.date.startDate %}
+      {% set location = render_var(optionSection.data.contactUs.groups[0].items[0].value) %}
+      {% set sideContentEventListing = {
+        "sidebarHeading":{
+        "title": "Related Event"
+        },
+        "events":[{
+          "title": {
+            "href": render_var(url('<current>')),
+            "text": node.label,
+            "info": "",
+            "property": ""
+          },
+          "location": location,
+          "date": {
+            "summary": date
+          },
+          "time": null,
+          "description": content.field_event_lede|field_value
+        }],
+        "more": null
+      } %}
+      {% set eventListing = sideContentEventListing %}
+      {% include "@organisms/by-author/event-listing.twig" %}
+    {% endif %}
+  {% endfor %}
+
+  {% if content.field_event_meeting_minutes[0] %}
+    {# Create url for minutes link. #}
+    {% set minutes_url = render_var(url('<current>')) ~ '/minutes' %}
+
+    {% set sideContentRelated = {
+      'sidebarHeading': {
+        'title' : "Related",
+      },
+      'stacked': true,
+      'links': [
+        {
+        "href": minutes_url,
+        "text": node.label ~ " Meeting Minutes",
+        "info": "",
+        "property": ""
+        }
+      ]
+    } %}
+    {% set linkList = sideContentRelated %}
+    {% include "@organisms/by-author/link-list.twig"%}
+  {% endif %}
+  {{ content.extra_org_feedback_form }}
+{% endblock %}

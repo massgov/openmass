@@ -1,0 +1,106 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a paragraph.
+ *
+ * Available variables:
+ * - paragraph: Full paragraph entity.
+ *   - id: The paragraph ID.
+ *   - bundle: The type of the paragraph, for example, "image" or "text".
+ *   - authorid: The user ID of the paragraph author.
+ *   - createdtime: Formatted creation date. Preprocess functions can
+ *     reformat it by calling format_date() with the desired parameters on
+ *     $variables['paragraph']->getCreatedTime().
+ * - content: All paragraph items. Use {{ content }} to print them all,
+ *   or print a subset such as {{ content.field_example }}. Use
+ *   {{ content|without('field_example') }} to temporarily suppress the printing
+ *   of a given child element.
+ * - attributes: HTML attributes for the containing element.
+ *   The attributes.class element may contain one or more of the following
+ *   classes:
+ *   - paragraphs: The current template type (also known as a "theming hook").
+ *   - paragraphs--type-[type]: The current paragraphs type. For example, if the paragraph is an
+ *     "Image" it would result in "paragraphs--type--image". Note that the machine
+ *     name will often be in a short form of the human readable label.
+ *   - paragraphs--view-mode--[view_mode]: The View Mode of the paragraph; for example, a
+ *     preview would result in: "paragraphs--view-mode--preview", and
+ *     default: "paragraphs--view-mode--default".
+ * - view_mode: View mode; for example, "preview" or "full".
+ * - logged_in: Flag for authenticated user status. Will be true when the
+ *   current user is a logged-in member.
+ * - is_admin: Flag for admin user status. Will be true when the current user
+ *   is an administrator.
+ *
+ * @see template_preprocess_paragraph()
+ *
+ * @ingroup themeable
+ */
+#}
+<div class="ma__contact-group">
+  {% if content.field_type|render|trim is not empty %}
+    <h5 class="ma__contact-group__name">
+      {% if svg_type is not empty %}
+        {{ icon(svg_type.svg|lower) }}
+      {% endif %}
+      <span>{{ content.field_type|field_value }}</span>
+    </h5>
+  {% endif %}
+  {% if content.field_address|render|trim is not empty %}
+    {% set address_values = content.field_address[0]['#context']['value']|split(', ') %}
+    {% set location_name =  address_values[0] %}
+    <p>{{ content.field_address|field_value }}</p>
+    <a class="ma__content-link " href="{{ address_url }}" title="{{ 'Directions to '|t ~ location_name }}">{{ 'Directions'|t }} <span class="visually-hidden">to {{ location_name }}</span></a>
+  {% elseif content.field_phone|render|trim is not empty %}
+    <div>
+      {% if content.field_label|render|trim is not empty %}
+        <span class="ma__contact-group__label">{{ content.field_label|field_value }}:</span>
+      {% endif %}
+      {% if paragraph.field_type.value == 'phone' %}
+        <a href="tel:{{ content.field_phone|field_value }}" class="ma__content-link ma__content-link--phone">{{ content.field_phone|field_value }}</a>
+      {% else %}
+        {{ content.field_phone|field_value }}
+      {% endif %}
+      {% if content.field_caption|render|trim is not empty %}
+        <div class="ma__contact-group__details">
+          {{ content.field_caption|field_value }}
+        </div>
+      {% endif %}
+    </div>
+  {% elseif content.field_email|render|trim is not empty %}
+    <div>
+      {% if content.field_label|render|trim is not empty %}
+        <span class="ma__contact-group__label">{{ content.field_label|field_value }}:</span>
+      {% endif %}
+      <a href="mailto:{{ content.field_email|field_value }}" class="ma__content-link">{{ content.field_email|field_value }}</a>
+      {% if content.field_caption|render|trim is not empty %}
+        <div class="ma__contact-group__details">
+          {{ content.field_caption|field_value }}
+        </div>
+      {% endif %}
+    </div>
+  {% elseif content.field_link|render|trim is not empty %}
+    <div>
+      {% if content.field_label|render|trim is not empty %}
+        <span class="ma__contact-group__label">{{ content.field_label|field_value }}:</span>
+      {% endif %}
+      {{ content.field_link|field_value }}
+      {% if content.field_caption|render|trim is not empty %}
+        <div class="ma__contact-group__details">
+          {{ content.field_caption|field_value }}
+        </div>
+      {% endif %}
+    </div>
+  {% elseif content.field_branch_locations|render|trim is not empty %}
+    <div>
+      {% if content.field_label|render|trim is not empty %}
+        <span class="ma__contact-group__label">{{ content.field_label|field_value }}:</span>
+      {% endif %}
+      {{ content.field_branch_locations|field_value }}
+      {% if content.field_caption|render|trim is not empty %}
+        <div class="ma__contact-group__details">
+          {{ content.field_caption|field_value }}
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>

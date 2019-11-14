@@ -1,0 +1,29 @@
+uuid: 657dbc6f-ceeb-4575-b21d-6da221184375
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_organizations
+    - node.type.decision
+    - node.type.org_page
+id: node.decision.field_organizations
+field_name: field_organizations
+entity_type: node
+bundle: decision
+label: Organization(s)
+description: 'Choose the organization(s) that offers this information. The organization(s) will be displayed at the top of this page, and when users search for information by organization, this page will appear in the results for the organization(s) listed here. The organization(s) for this content type are determined by the "Issuing organization" field. To change the organization, please change the value(s) in that field.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

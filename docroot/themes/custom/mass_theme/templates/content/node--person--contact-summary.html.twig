@@ -1,0 +1,79 @@
+{#
+/**
+ * @file
+ * Theme override for the 'contact summary' view mode of the Person content type.
+ */
+ #}
+
+{# Set top heading level for the page. #}
+{% set level = 2 %}
+
+{% set source = node.field_contact_source.value %}
+{% set org_title = FALSE %}
+{% if node.field_person_ref_org is not empty %}
+  {% set org_title = {
+    "text": content.field_person_ref_org[0]['#title']
+  } %}
+{% endif %}
+{% embed "@organisms/by-author/curated-person.twig" with {
+  "curatedPerson": {
+    "name" : {
+      "text": node.field_person_first_name.value ~ ' ' ~ node.field_person_last_name.value,
+      "href": node.field_publish_bio_page.value ? url,
+      "info": "",
+      "level": ""
+    },
+    "title" : {
+      "text": content.field_person_role_title
+    },
+    "org": org_title,
+    "desc" : {
+      "text": content.field_plain_description
+    }
+  }
+} %}
+  {% block curatedPersonGroups %}
+    {# Increase heading number by 1 from the parent heading. #}
+    {% set level = level + 1 %}
+
+    {# Display details from the Person node itself. #}
+    {% if source == 'node' %}
+      {{ content.field_ref_single_address }}
+
+      {% if (node.field_ref_phone is not empty) or (node.field_ref_fax is not empty) %}
+        {% embed "@molecules/contact-group.twig" with {
+          "contactGroup": {
+            "name": "Phone",
+            "icon": "phone",
+            "level": level
+          }
+        } %}
+          {% block groupItems %}
+            {{ content.field_ref_phone }}
+            {{ content.field_ref_fax }}
+          {% endblock %}
+        {% endembed %}
+      {% endif %}
+
+      {% if node.field_ref_links is not empty %}
+        {% embed "@molecules/contact-group.twig" with {
+          "contactGroup": {
+            "name": "Online",
+            "icon": "laptop",
+            "level": level
+          }
+        } %}
+          {% block groupItems %}
+            {# Pass through the level setting with Drupal render array values. #}
+            {{ content.field_ref_links|merge({'#level': level }) }}
+          {% endblock %}
+        {% endembed %}
+      {% endif %}
+
+    {# Display details from the referenced Contact node. #}
+    {% else %}
+      {{ content.field_contact }}
+    {% endif %}
+  {% endblock %}
+{% endembed %}
+{{ content | without('field_person_ref_org', 'field_person_role_title', 'field_plain_description', 'field_ref_single_address', 'field_ref_phone', 'field_ref_fax', 'field_ref_links', 'field_contact') }}

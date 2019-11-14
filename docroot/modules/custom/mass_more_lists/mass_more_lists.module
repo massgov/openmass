@@ -1,0 +1,32 @@
+<?php
+
+/**
+ * @file
+ * Custom code for mass_more_lists module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function mass_more_lists_theme($existing, $type, $theme, $path) {
+  return [
+    // @see more-list.html.twig for further documentation.
+    'more_list' => [
+      'variables' => [
+        'contentEyebrow' => NULL,
+        'pageHeader' => NULL,
+        'resultsHeading' => NULL,
+        'formDownloads' => NULL,
+        'pager' => NULL,
+      ],
+    ],
+    'events_page' => [
+      'variables' => [
+        'title' => '',
+        'more_link' => FALSE,
+        'related' => [],
+        'events' => [],
+      ]
+    ]
+  ];
+}

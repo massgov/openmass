@@ -1,0 +1,28 @@
+uuid: 496e1933-564e-4c05-af70-db55b2793415
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_decision_root_ref
+    - node.type.decision_tree
+    - node.type.decision_tree_conclusion
+id: node.decision_tree_conclusion.field_decision_root_ref
+field_name: field_decision_root_ref
+entity_type: node
+bundle: decision_tree_conclusion
+label: 'Decision tree'
+description: 'Start typing to choose the Decision Tree this conclusion belongs to. '
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      decision_tree: decision_tree
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

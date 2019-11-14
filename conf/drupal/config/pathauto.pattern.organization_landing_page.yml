@@ -1,0 +1,22 @@
+uuid: 8aadb5a8-3cd7-4ec6-8855-7d6ffe3edf10
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: organization_landing_page
+label: 'Organization Landing Page'
+type: 'canonical_entities:node'
+pattern: '/orgs/[node:title]'
+selection_criteria:
+  8922f645-2f6d-4c60-9bf9-b00f1d4276ce:
+    id: node_type
+    bundles:
+      org_page: org_page
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 8922f645-2f6d-4c60-9bf9-b00f1d4276ce
+selection_logic: and
+weight: -5
+relationships: {  }

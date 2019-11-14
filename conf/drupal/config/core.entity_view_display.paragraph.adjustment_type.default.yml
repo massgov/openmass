@@ -1,0 +1,38 @@
+uuid: 1d3450bd-a37f-4045-8da3-ebd09533f393
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.adjustment_type.field_adjustment_type
+    - field.field.paragraph.adjustment_type.field_adjustment_type_link
+    - field.field.paragraph.adjustment_type.field_adjustment_type_term
+    - paragraphs.paragraphs_type.adjustment_type
+  module:
+    - link
+id: paragraph.adjustment_type.default
+targetEntityType: paragraph
+bundle: adjustment_type
+mode: default
+content:
+  field_adjustment_type_link:
+    weight: 1
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_adjustment_type_term:
+    weight: 0
+    label: above
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+hidden:
+  field_adjustment_type: true

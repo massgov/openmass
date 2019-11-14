@@ -1,0 +1,46 @@
+uuid: 29d09f32-fd45-4769-a744-56ae55660081
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_event_ref_parents
+    - node.type.advisory
+    - node.type.binder
+    - node.type.decision
+    - node.type.event
+    - node.type.executive_order
+    - node.type.location
+    - node.type.news
+    - node.type.org_page
+    - node.type.regulation
+    - node.type.rules
+    - node.type.service_page
+id: node.event.field_event_ref_parents
+field_name: field_event_ref_parents
+entity_type: node
+bundle: event
+label: 'Associated pages'
+description: "Select the page(s) where this event should appear. When you add an associated page, a link will appear at the top of the event to that associated page, and a link to this event will be added to the associated pages you select. \r\n\r\nYou may select any published Organization, Location, Decision, Advisory, Regulation or Executive Order page. "
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      advisory: advisory
+      binder: binder
+      decision: decision
+      executive_order: executive_order
+      location: location
+      news: news
+      org_page: org_page
+      regulation: regulation
+      rules: rules
+      service_page: service_page
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: org_page
+field_type: entity_reference

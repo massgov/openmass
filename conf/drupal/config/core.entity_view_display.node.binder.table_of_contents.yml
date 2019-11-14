@@ -1,0 +1,79 @@
+uuid: e849a46c-ac1f-4e3f-bad1-79a968c5bbb4
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.table_of_contents
+    - field.field.node.binder.field_binder_appendix
+    - field.field.node.binder.field_binder_banner_image
+    - field.field.node.binder.field_binder_binder_type
+    - field.field.node.binder.field_binder_date_published
+    - field.field.node.binder.field_binder_last_updated
+    - field.field.node.binder.field_binder_metatags
+    - field.field.node.binder.field_binder_overview
+    - field.field.node.binder.field_binder_pages
+    - field.field.node.binder.field_binder_ref_organization
+    - field.field.node.binder.field_binder_related
+    - field.field.node.binder.field_binder_serial_number
+    - field.field.node.binder.field_binder_short_desc
+    - field.field.node.binder.field_binder_volume
+    - field.field.node.binder.field_contact
+    - field.field.node.binder.field_downloads
+    - field.field.node.binder.field_organizations
+    - field.field.node.binder.field_reusable_label
+    - field.field.node.binder.field_state_organization_tax
+    - node.type.binder
+  module:
+    - entity_reference_revisions
+    - user
+id: node.binder.table_of_contents
+targetEntityType: node
+bundle: binder
+mode: table_of_contents
+content:
+  field_binder_appendix:
+    type: entity_reference_revisions_entity_view
+    weight: 1
+    region: content
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+  field_binder_pages:
+    type: entity_reference_revisions_entity_view
+    weight: 0
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  extra_page_flipper: true
+  extra_sidebar_contact: true
+  field_binder_banner_image: true
+  field_binder_binder_type: true
+  field_binder_date_published: true
+  field_binder_last_updated: true
+  field_binder_metatags: true
+  field_binder_overview: true
+  field_binder_ref_organization: true
+  field_binder_related: true
+  field_binder_serial_number: true
+  field_binder_short_desc: true
+  field_binder_volume: true
+  field_contact: true
+  field_downloads: true
+  field_intended_audience: true
+  field_organizations: true
+  field_reusable_label: true
+  field_state_organization_tax: true
+  links: true
+  page_flipper_next: true
+  page_flipper_previous: true
+  referencing_services_more_about: true
+  workbench_moderation_control: true

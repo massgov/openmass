@@ -1,0 +1,37 @@
+uuid: c9f3b091-9e77-4b9f-b4a5-b69cbb10c186
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_document_type
+    - media.type.document
+    - taxonomy.vocabulary.advisory_type
+    - taxonomy.vocabulary.announcement_type
+    - taxonomy.vocabulary.decision_type
+    - taxonomy.vocabulary.document_other_type
+    - taxonomy.vocabulary.rules_of_court_type
+id: media.document.field_document_type
+field_name: field_document_type
+entity_type: media
+bundle: document
+label: Type
+description: 'Used to categorize files by type such as "regulation", "technical information release", "press release", etc. so that they are filterable by type in search.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      advisory_type: advisory_type
+      announcement_type: announcement_type
+      decision_type: decision_type
+      document_other_type: document_other_type
+      rules_of_court_type: rules_of_court_type
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: advisory_type
+field_type: entity_reference

@@ -1,0 +1,48 @@
+uuid: 97716388-a12b-4681-9d27-9fa02e661570
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.issuer.field_issuer_content_id
+    - field.field.paragraph.issuer.field_issuer_display_name
+    - field.field.paragraph.issuer.field_issuer_issuers
+    - field.field.paragraph.issuer.field_issuer_title
+    - paragraphs.paragraphs_type.issuer
+id: paragraph.issuer.default
+targetEntityType: paragraph
+bundle: issuer
+mode: default
+content:
+  field_issuer_content_id:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_issuer_display_name:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_issuer_issuers:
+    weight: 0
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_issuer_title:
+    type: string
+    weight: 3
+    region: content
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+hidden: {  }

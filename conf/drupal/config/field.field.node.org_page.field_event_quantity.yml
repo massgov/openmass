@@ -1,0 +1,23 @@
+uuid: 6ba7a396-5ff0-459b-95aa-0dc4bead54a2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_event_quantity
+    - node.type.org_page
+  module:
+    - options
+id: node.org_page.field_event_quantity
+field_name: field_event_quantity
+entity_type: node
+bundle: org_page
+label: 'Event Quantity'
+description: 'Choose the maximum number of events to display on this organization page.  Only events that are related to this organization will be shown.'
+required: true
+translatable: false
+default_value:
+  -
+    value: '2'
+default_value_callback: ''
+settings: {  }
+field_type: list_string

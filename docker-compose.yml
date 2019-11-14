@@ -1,0 +1,134 @@
+version: '3.1'
+
+services:
+  drupal:
+    image: "massgov/drupal-container:php72alpha-dev"
+    hostname: mass.local
+    volumes:
+      # Non OSX users may want to set VOLUME_FLAGS via the .env file.
+      - .:/var/www/mass.local:${VOLUME_FLAGS-cached}
+      # Configures SSH
+      - .docker/config:/root/.ssh/config:${VOLUME_FLAGS-cached}
+      - .docker/.bashrc:/root/.bashrc
+    # Get Acquia SSH keys into container.
+    secrets:
+      - mass_id_rsa
+    environment:
+      - DOCKER_ENV=devel
+      - APACHE_DOCROOT=/var/www/mass.local/docroot
+      - MYSQL_USER=circle
+      - MYSQL_PASSWORD=circle
+      - MYSQL_DATABASE=circle
+      - MYSQL_HOST=mysql
+      - MEMCACHED_HOST=memcached
+      - DRUSH_OPTIONS_URI=http://mass.local:${WEB_PORT-80}
+      # always use port 80 inside the container.
+      # 'drupal' is the hostname thats reachable from the chrome container.
+      - DTT_BASE_URL=http://mass.local
+      - DTT_API_URL=http://chrome:9222
+      - BROWSERTEST_OUTPUT_DIRECTORY=/tmp
+      - XDEBUG_ENABLE
+      - XDEBUG_CONFIG
+      - SENDMAIL_PATH=mhsendmail --smtp-addr="mailhog:1025"
+      - COMPOSER_ALLOW_SUPERUSER=1
+      # Suggested by https://confluence.jetbrains.com/display/PhpStorm/Debugging+PHP+CLI+scripts+with+PhpStorm#DebuggingPHPCLIscriptswithPhpStorm-2.StarttheScriptwithDebuggerOptions
+      # Create a PHP Server in PHPStorm called mass.local. Add path mappings.
+      - PHP_IDE_CONFIG=serverName=mass.local
+      # Needed here per https://blackfire.io/docs/integrations/docker#using-the-client-for-cli-profiling
+      - BLACKFIRE_CLIENT_ID
+      - BLACKFIRE_CLIENT_TOKEN
+      # Acquia Cloud
+      - AC_API_KEY
+      - AC_API_USER
+      # New Relic. Needed for deployments.
+      - MASS_NEWRELIC_APPLICATION
+      - MASS_NEWRELIC_KEY
+      # Acquia basic auth.  Needed for tests on Acquia environments.
+      - LOWER_ENVIR_AUTH_USER
+      - LOWER_ENVIR_AUTH_PASS
+      # For Cloudflare Terraform.
+      - CLOUDFLARE_EMAIL
+      - CLOUDFLARE_TOKEN
+
+    links:
+      - mysql
+      - mailhog
+      - memcached
+    networks:
+      default:
+        # Expose this container internally as mass.local.
+        aliases: [mass.local]
+    depends_on:
+      - traefik
+    working_dir: /var/www/mass.local
+    labels:
+      - 'traefik.frontend.rule=Host:mass.local'
+
+  # USE: `ahoy start` to spin up a brand new drupal 8 site with massgov code, below DB, and default placeholder content.
+  # USE: The private override steps listed in DP-15515 to work with sanitized www.mass.gov data instead of starter placeholder content.
+  mysql:
+    image: mariadb:10.4.8
+    environment:
+      MYSQL_USER: circle
+      MYSQL_PASSWORD: circle
+      MYSQL_DATABASE: circle
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+    command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
+    ports:
+      - '3206:3306'
+    volumes:
+      - mysql-datavolume:/var/lib/mysql
+
+  memcached:
+    image: memcached:1-alpine
+    command: memcached -m 128
+
+  chrome:
+    image: previousnext/chrome-headless:65
+
+  blackfire:
+    image: "blackfire/blackfire"
+    environment:
+      - BLACKFIRE_SERVER_ID
+      - BLACKFIRE_SERVER_TOKEN
+
+  backstop:
+    image: "backstopjs/backstopjs:v3.2.17"
+    volumes:
+      - ./backstop:/src
+    shm_size: 1gb
+    entrypoint: [backstop, --config=/src/backstop.js]
+    environment:
+      # Pass auth variables to container.
+      LOWER_ENVIR_AUTH_USER:
+      LOWER_ENVIR_AUTH_PASS:
+
+  mailhog:
+    image: mailhog/mailhog
+    labels:
+      - 'traefik.port=8025'
+      - 'traefik.frontend.rule=Host:mailhog.mass.local'
+
+  portainer:
+    image: portainer/portainer
+    command: --no-auth -H unix:///var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - 'traefik.frontend.rule=Host:portainer.mass.local'
+
+  traefik:
+    image: traefik:1.7.4
+    command: -c /dev/null --web --docker --logLevel=INFO
+    ports:
+      - '${WEB_PORT-80}:80'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+secrets:
+  mass_id_rsa:
+    # Specify alternative key via your .env file.
+    file: ${PRIVATE_KEY:-~/.ssh/id_rsa}
+
+volumes:
+  mysql-datavolume:

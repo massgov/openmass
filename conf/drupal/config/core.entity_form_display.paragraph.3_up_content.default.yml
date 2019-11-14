@@ -1,0 +1,29 @@
+uuid: bc64efa6-5ed6-4312-8d3e-ac5688fe0fad
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.3_up_content.field_3_up_rows
+    - paragraphs.paragraphs_type.3_up_content
+  module:
+    - paragraphs
+id: paragraph.3_up_content.default
+targetEntityType: paragraph
+bundle: 3_up_content
+mode: default
+content:
+  field_3_up_rows:
+    type: entity_reference_paragraphs
+    weight: 6
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: preview
+      add_mode: dropdown
+      form_display_mode: default
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

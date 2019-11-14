@@ -1,0 +1,211 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_alerts.module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Access\AccessResult;
+use Drupal\node\NodeInterface;
+use Drupal\Core\Session\AccountInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
+  $form['#validate'][] = 'mass_alerts_validate_alert_placement';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
+  $form['#validate'][] = 'mass_alerts_validate_alert_placement';
+}
+
+/**
+ * Validate that a page specific alert has pages specified.
+ *
+ * @param array $form
+ *   A form array.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form's state.
+ */
+function mass_alerts_validate_alert_placement(array &$form, FormStateInterface $form_state) {
+  $field_alert_display = $form_state->getValue('field_alert_display');
+  if ($field_alert_display[0]['value'] == 'specific_target_pages') {
+    $para_ref = $form_state->getValue('field_target_pages_para_ref');
+    unset($para_ref['add_more']);
+    if (!empty($para_ref)) {
+      // The paragraph can be index 0 or index 1 in my testing. So just use current() to get the first one.
+      $subform = current($para_ref)['subform'];
+      if (empty($subform['field_target_content_ref'][0]['target_id'])) {
+        // No bueno. Set an error below.
+      }
+      else {
+        // Requirements are satisfied.
+        return;
+      }
+    }
+    else {
+      // No bueno. Set an error below.
+    }
+    $form_state->setErrorByName('field_alert_display', t("An 'On specific pages' alert must show on at least one page. Instead of removing all Target pages, please unpublish the alert."));
+  }
+}
+
+/**
+ * Validates site wide alert creation.
+ */
+function _mass_alerts_validate_site_wide_alert_creation(array &$form, FormStateInterface $form_state) {
+  $alert_display_scope = $form_state->getValue('field_alert_display');
+  if ($alert_display_scope[0]["value"] == "site_wide") {
+    // Only users with permission should be allowed site wide alert creation.
+    if (!\Drupal::currentUser()->hasPermission('create site wide alerts')) {
+      $form_state->setErrorByName('field_alert_display', t('Only users with elevated permissions can manage sitewide alerts.'));
+    }
+
+    // A maximum of only 1 site wide alert should be publishable at any given time.
+    // Only prevent publishing, not drafting.
+    $trigger = $form_state->getTriggeringElement();
+    if (array_key_exists('#moderation_state', $trigger) && $trigger['#moderation_state'] == "published") {
+      $thisFormsAlertNode = $form_state->getFormObject()->getEntity();
+      $query = \Drupal::entityQuery('node')
+        ->condition('status', NODE_PUBLISHED)
+        ->condition('type', 'alert')
+        ->condition('field_alert_display', 'site_wide');
+      $result = $query->execute();
+      $existingAlertNodeIds = array_values($result);
+      if (count($existingAlertNodeIds) > 1) {
+        drupal_set_message(t("Multiple site wide alerts are already published."), 'error');
+        $form_state->setRebuild();
+      }
+      else {
+        if (count($existingAlertNodeIds) == 1 && $existingAlertNodeIds[0] != $thisFormsAlertNode->id()) {
+          drupal_set_message(t("A published site wide alert already exists."), 'error');
+          $form_state->setRebuild();
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_bundle_field_info_alter().
+ */
+function mass_alerts_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
+  if ($entity_type->id() == 'node'  && !empty($fields['field_alert_display'])) {
+    $fields['field_alert_display']->addConstraint('SitewideAlert', []);
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info_alter().
+ */
+function mass_alerts_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
+  if ($entity_type->id() == 'node'  && !empty($fields['moderation_state'])) {
+    $fields['moderation_state']->addConstraint('SitewideAlert', []);
+  }
+}
+
+/**
+ * Implements hook_entity_operation_alter().
+ */
+function mass_alerts_entity_operation_alter(array &$operations, EntityInterface $entity) {
+  if ($entity->getEntityTypeId() === "node" && $entity->bundle() === "alert") {
+    $alert_placement = $entity->get("field_alert_display")->getValue();
+    if (!empty($alert_placement) && $alert_placement[0]['value'] === 'site_wide') {
+      if (!\Drupal::currentUser()->hasPermission('create site wide alerts')) {
+        $operations = [];
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_node_access().
+ */
+function mass_alerts_node_access(NodeInterface $node, $operation, AccountInterface $account) {
+  if ($operation === "update" && $node->bundle() === "alert") {
+    $alert_placement = $node->get("field_alert_display")->getValue();
+    if (!empty($alert_placement) && $alert_placement[0]['value'] === 'site_wide') {
+      return AccessResult::forbiddenIf(!$account->hasPermission("create site wide alerts"));
+    }
+  }
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function mass_alerts_node_update(EntityInterface $node) {
+  // Send notifications on local and Prod environments only.
+  if ((!isset($_ENV['AH_SITE_ENVIRONMENT']) || $_ENV['AH_SITE_ENVIRONMENT'] == 'prod')) {
+    mass_alerts_sitewide_alert_send_notifications($node);
+  }
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function mass_alerts_node_insert(EntityInterface $node) {
+  // Send notifications on local and Prod environments only.
+  if ((!isset($_ENV['AH_SITE_ENVIRONMENT']) || $_ENV['AH_SITE_ENVIRONMENT'] == 'prod')) {
+    mass_alerts_sitewide_alert_send_notifications($node);
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function mass_alerts_mail($key, &$message, $params) {
+  $options = ['langcode' => $message['langcode']];
+  switch ($key) {
+    case 'mass_alerts_sitewide':
+      $system_site_mail = \Drupal::config('system.site')->get('mail');
+      // Ensures email headers match the From field.
+      $message['from'] = $message['headers']['From'] = $message['headers']['Sender'] = $message['headers']['Reply-to'] = $message['headers']['Return-Path'] = $system_site_mail;
+      $message['subject'] = t('Sitewide alert on Mass.gov: @title', ['@title' => $params['subject']], $options);
+      $message['body'][] = $params['message'];
+      break;
+  }
+}
+
+/**
+ * Send notifications to users who are watchers.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $node
+ *   The node object that is being updated or inserted.
+ */
+function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
+  // Only send notifications after an alert has been published.
+  if ($node->bundle() === "alert" && $node->moderation_state->target_id === 'published') {
+    // Only send notifications if the alert is site-wide.
+    $alert_placement = $node->get("field_alert_display")->getValue();
+    if (!empty($alert_placement) && $alert_placement[0]['value'] === 'site_wide') {
+      $langcode = $node->language()->getId();
+      $email_addresses = \Drupal::state()->get('mass_alerts.alert_emails');
+      if (!empty($email_addresses)) {
+        $message_body = 'A sitewide alert was added or updated on Mass.gov (https://www.mass.gov):' . "\r\n\r\n" . $node->title->value . "\r\n\r\n";
+        if ($node->hasField('field_alert')) {
+          $paragraph = $node->get('field_alert')->referencedEntities();
+          foreach ($paragraph as $p) {
+            if ($p->hasField('field_emergency_alert_message')) {
+              $value[] = $p->get('field_emergency_alert_message')->value;
+            }
+          }
+          $message_body .= implode("\r\n", $value);
+        }
+        foreach ($email_addresses as $to_email) {
+          \Drupal::service('plugin.manager.mail')->mail('mass_alerts',
+            'mass_alerts_sitewide', $to_email, $langcode,
+            ['message' => $message_body, 'subject' => $node->title->value]);
+        }
+      }
+    }
+  }
+}

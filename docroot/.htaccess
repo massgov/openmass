@@ -1,0 +1,249 @@
+#
+# Apache/PHP/Drupal settings:
+#
+
+# Protect files and directories from prying eyes.  Drupal standard, less twig, plus package.json & yarn.lock.
+<FilesMatch "\.(engine|inc|install|make|module|profile|po|sh|.*sql|theme|tpl(\.php)?|xtmpl|yml)(~|\.sw[op]|\.bak|\.orig|\.save)?$|^(\.(?!well-known).*|Entries.*|Repository|Root|Tag|Template|composer\.(json|lock))$|package.json|yarn.lock|^#.*#$|\.php(~|\.sw[op]|\.bak|\.orig|\.save)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+  </IfModule>
+</FilesMatch>
+
+# Force download of .twig files.
+<FilesMatch "\.(twig)$">
+  ForceType application/octet-stream
+  <IfModule headers_module>
+    Header set Content-Disposition attachment
+  </IfModule>
+</FilesMatch>
+
+# Don't show directory listings for URLs which map to a directory.
+Options -Indexes
+
+# Set the default handler.
+DirectoryIndex index.php index.html index.htm
+
+# Add correct encoding for SVGZ.
+AddType image/svg+xml svg svgz
+AddEncoding gzip svgz
+
+# Add type for downloadable AutoCAD, .prx, and .mpp files.
+AddType application/acad .dwg
+AddType application/octet-stream .prx
+AddType application/octet-stream .mpp
+
+# Add type for downloadable Revit, .rfa and .rte files.
+AddType application/octet-stream .rfa
+AddType application/octet-stream .rte
+
+# Gzip JSONAPI responses.
+# See https://varvy.com/pagespeed/enable-compression.html
+<IfModule mod_filter.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    #JSONAPI responses
+    AddOutputFilterByType DEFLATE application/vnd.api+json
+</IfModule>
+
+# Most of the following PHP settings cannot be changed at runtime. See
+# sites/default/default.settings.php and
+# Drupal\Core\DrupalKernel::bootEnvironment() for settings that can be
+# changed at runtime.
+
+# PHP 5, Apache 1 and 2.
+<IfModule mod_php5.c>
+  php_value assert.active                   0
+  php_flag session.auto_start               off
+  php_value mbstring.http_input             pass
+  php_value mbstring.http_output            pass
+  php_flag mbstring.encoding_translation    off
+  # PHP 5.6 has deprecated $HTTP_RAW_POST_DATA and produces warnings if this is
+  # not set.
+  php_value always_populate_raw_post_data   -1
+</IfModule>
+
+# Requires mod_expires to be enabled.
+<IfModule mod_expires.c>
+  # Enable expirations.
+  ExpiresActive On
+
+  # Cache all files for 2 weeks after access (A).
+  ExpiresDefault A1209600
+
+  <FilesMatch \.php$>
+    # Do not allow PHP scripts to be cached unless they explicitly send cache
+    # headers themselves. Otherwise all scripts would have to overwrite the
+    # headers set by mod_expires if they want another caching behavior. This may
+    # fail if an error occurs early in the bootstrap process, and it may cause
+    # problems if a non-Drupal PHP file is installed in a subdirectory.
+    ExpiresActive Off
+  </FilesMatch>
+</IfModule>
+
+# Set a fallback resource if mod_rewrite is not enabled. This allows Drupal to
+# work without clean URLs. This requires Apache version >= 2.2.16. If Drupal is
+# not accessed by the top level URL (i.e.: http://example.com/drupal/ instead of
+# http://example.com/), the path to index.php will need to be adjusted.
+<IfModule !mod_rewrite.c>
+  FallbackResource /index.php
+</IfModule>
+
+# Various rewrite rules.
+<IfModule mod_rewrite.c>
+  RewriteEngine on
+
+
+  # Redirect HTTP to HTTPS in all Acquia environments.
+  RewriteCond %{ENV:AH_SITE_ENVIRONMENT} !^$ [NC]
+  RewriteCond %{HTTPS} off
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
+  # Make sure Authorization HTTP header is available to PHP
+  # even when running as CGI or FastCGI.
+  RewriteRule ^ - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+  # Block access to "hidden" directories whose names begin with a period. This
+  # includes directories used by version control systems such as Subversion or
+  # Git to store control files. Files whose names begin with a period, as well
+  # as the control files used by CVS, are protected by the FilesMatch directive
+  # above.
+  RewriteRule "(^|/)\.(?!well-known)" - [F]
+
+  #--- START: CDN Verification and edit access ----#
+  # In certain settings, we only want to allow requests through if they
+  # come directly from our CDN.  We control this access using a shared
+  # token, which must be present in the `mass-cdn-fwd` header. This is
+  # where we validate that token.  The `cdnverify` environment variable
+  # is used as a flag to indicate whether we need to verify it or not.
+  #
+  # Also, for security, we require that certain actions (user login, any
+  # admin action) goes through a special "edit" domain.  This is enforced
+  # at the CDN level, but we also enforce it here for defense in depth.
+  # The `allowedit` environment variable is used as a flag to indicate
+  # whether we should allow this level of access or not.
+
+  # Start with default values:
+  RewriteRule ^ - [E=cdnverify]
+  RewriteRule ^ - [E=allowedit:0]
+
+  # Verify CDN in production always.
+  RewriteCond %{ENV:AH_SITE_ENVIRONMENT} ^prod$
+  RewriteRule ^ - [E=cdnverify:1]
+
+  # Allow edit access in production on edit domain
+  RewriteCond %{ENV:AH_SITE_ENVIRONMENT} ^prod$
+  RewriteCond %{HTTP_HOST} ^edit\.mass\.gov$
+  RewriteRule ^ - [E=allowedit:1]
+
+  # In non-prod Acquia environments, allow edit access on any domain
+  RewriteCond ${ENV:AH_SITE_ENVIRONMENT} !^prod$
+  RewriteRule ^ - [E=allowedit:1]
+
+  # (addendum to previous rule) - Block edit access in pre-production www mirror domains
+  RewriteCond ${ENV:AH_SITE_ENVIRONMENT} !^prod$
+  RewriteCond %{HTTP_HOST} ^stage.mass\.gov$ [OR]
+  RewriteCond %{HTTP_HOST} ^wwwcf\.digital\.mass.gov$
+  RewriteRule ^ - [E=allowedit:0]
+
+  # In non-prod Acquia environments, verify our CDN token only on the custom domains:
+  # cdnverify enforcement happens in settings.acquia.php
+  RewriteCond %{ENV:AH_SITE_ENVIRONMENT} !^prod$
+  RewriteCond %{HTTP_HOST} .*.mass.gov$
+  RewriteRule ^ - [E=cdnverify:1]
+
+  # In non-Acquia contexts, allow edit anywhere.
+  RewriteCond %{ENV:AH_SITE_ENVIRONMENT} ^$
+  RewriteRule ^ - [E=allowedit:1]
+
+  # And block access on non-edit domains:
+  RewriteCond %{ENV:allowedit} !^1$
+  RewriteRule ^((scripts|profile|includes|\.php|install\.php|update\.php|xmlrpc\.php)/?(.*)?)$ - [F]
+  #---- END: CDN Verification and edit access ----#
+
+
+  #---- START: Hardening rules ----
+  # Specific, well-known documentation files that can expose version data.
+  RewriteCond %{REQUEST_URI} !^/files/
+  RewriteCond %{REQUEST_URI} !^/sites/.+/files/
+  RewriteRule (README|readme|INSTALL|INSTALL\.[a-z]+|CHANGELOG|COPYRIGHT|LICENSE|license|MAINTAINERS|UPDATE|UPGRADE|PATCHES)\.(txt|html) - [L,R=404]
+
+  # Markdown and pdf files, which are used for documentation files with many names.
+  RewriteCond %{REQUEST_URI} !^/files/
+  RewriteCond %{REQUEST_URI} !^/sites/.+/files/
+  RewriteCond %{REQUEST_URI} !^/hq2/
+  RewriteRule (.*)\.(md|MD|pdf|markdown) - [L,R=404]
+
+  # Misc specific files.
+  RewriteCond %{REQUEST_URI} !^/files/
+  RewriteCond %{REQUEST_URI} !^/sites/.+/files/
+  RewriteRule web\.config - [L,R=404]
+
+  # All files in the core directory, period (covers .dist files and future changes).
+  RewriteRule "^core/([^/\0]+)?$" - [L,R=404]
+  #---- END: Hardening rules ----#
+
+
+  # Disallow crawling on any domain that isn't www.mass.gov.
+  RewriteCond %{HTTP_HOST} !^www.mass.gov$
+  RewriteRule ^robots.txt /robots-none.txt [NC,L]
+
+  # Pass all requests not referring directly to files in the filesystem to
+  # index.php.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !=/favicon.ico
+  RewriteRule ^ index.php [L]
+
+  # Additional Hardening.
+  # Block direct access to all PHP files other than index.php and hq2/*.php.
+  # This replaces the standard Drupal deny block.
+  # Note: this will deny access to any php file that bypasses Drupal bootstrap
+  # and may need to be modified for some authentication or other API methods.
+  RewriteCond %{REQUEST_URI} !^/hq2/[a-z]+.php$
+  RewriteCond %{REQUEST_URI} !^/index.php$
+  RewriteRule "^(.+/.*|autoload)\.php($|/)" - [F]
+
+  # Rules to correctly serve gzip compressed CSS and JS files.
+  # Requires both mod_rewrite and mod_headers to be enabled.
+  <IfModule mod_headers.c>
+    # Serve gzip compressed CSS files if they exist and the client accepts gzip.
+    RewriteCond %{HTTP:Accept-encoding} gzip
+    RewriteCond %{REQUEST_FILENAME}\.gz -s
+    RewriteRule ^(.*)\.css $1\.css\.gz [QSA]
+
+    # Serve gzip compressed JS files if they exist and the client accepts gzip.
+    RewriteCond %{HTTP:Accept-encoding} gzip
+    RewriteCond %{REQUEST_FILENAME}\.gz -s
+    RewriteRule ^(.*)\.js $1\.js\.gz [QSA]
+
+    # Serve correct content types, and prevent mod_deflate double gzip.
+    RewriteRule \.css\.gz$ - [T=text/css,E=no-gzip:1]
+    RewriteRule \.js\.gz$ - [T=text/javascript,E=no-gzip:1]
+
+    <FilesMatch "(\.js\.gz|\.css\.gz)$">
+      # Serve correct encoding type.
+      Header set Content-Encoding gzip
+      # Force proxies to cache gzipped & non-gzipped css/js files separately.
+      Header append Vary Accept-Encoding
+    </FilesMatch>
+  </IfModule>
+</IfModule>
+
+# Various header fixes.
+<IfModule mod_headers.c>
+  # Disable content sniffing, since it's an attack vector.
+  Header always set X-Content-Type-Options nosniff
+  # Disable Proxy header, since it's an attack vector.
+  RequestHeader unset Proxy
+</IfModule>

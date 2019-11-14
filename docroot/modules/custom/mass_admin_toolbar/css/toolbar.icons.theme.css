@@ -1,0 +1,183 @@
+/**
+ * @file
+ * Styling for toolbar module icons.
+ */
+
+/*
+ * Site logo
+ */
+.toolbar .admin-home-toolbar-tab {
+  background-color: #43956f;
+  width: 185px;
+  padding: 0 20px;
+}
+.toolbar .admin-home-toolbar-tab a {
+  text-indent: -9999px;
+  background: url(../images/header_logo.svg) center/contain no-repeat;
+}
+[dir="rtl"] .toolbar .admin-home-toolbar-tab a {
+  background-image: url(../images/header_logo.svg);
+}
+
+/**
+ * Handle.
+ */
+.toolbar .toolbar-icon.toolbar-handle {
+  width: 51px;
+  text-indent: -9999px;
+}
+.toolbar .toolbar-icon.toolbar-handle:before {
+  left: 1.6667em; /* LTR */
+}
+[dir="rtl"] .toolbar .toolbar-icon.toolbar-handle:before {
+  left: auto;
+  right: 1.6667em;
+}
+.toolbar .toolbar-icon.toolbar-handle:before {
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  text-indent: 0;
+  display: block;
+  float: left;
+  font-family: fontello;
+  font-size: 14px;
+  padding: 12px 20px 10px 20px;
+}
+.toolbar .toolbar-icon.toolbar-handle:before {
+  content: '\e80b';
+}
+.toolbar .toolbar-icon.toolbar-handle.open:before {
+  content: '\e80c';
+}
+.toolbar .toolbar-menu .toolbar-menu .toolbar-icon.toolbar-handle:before {
+  content: '\e80b';
+}
+.toolbar .toolbar-menu .toolbar-menu .toolbar-icon.toolbar-handle.open:before {
+  content: '\e80c';
+}
+
+/**
+ * Orientation toggle.
+ */
+.toolbar .toolbar-toggle-orientation button {
+  height: 58px;
+  padding: 0;
+  text-indent: -999em;
+  width: 58px;
+  border: none;
+  background-color: #d9eae2;
+  color: #535353;
+}
+.toolbar .toolbar-toggle-orientation button:hover {
+  background-color: #a1cab7;
+  color: #141414;
+}
+.toolbar .toolbar-toggle-orientation button:before {
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  text-indent: 0;
+  display: block;
+  float: left;
+  font-family: fontello;
+  content: '\e809';
+  font-size: 21px;
+  padding: 20px 20px;
+}
+.toolbar .toolbar-toggle-orientation button:before:hover {
+  color: #141414;
+}
+[dir="rtl"] .toolbar .toolbar-toggle-orientation .toolbar-icon {
+  padding: 0;
+}
+
+.toolbar .toolbar-toggle-orientation [value="vertical"]:before {
+  transform: rotate(270deg);
+  padding: 15px 20px;
+}
+
+[dir="rtl"] .toolbar .toolbar-toggle-orientation [value="vertical"]:before {
+  transform: rotate(90deg);
+}
+
+/**
+ *  Accessibility/focus
+ */
+.toolbar-tab a:focus {
+  outline: none;
+}
+.toolbar-lining button:focus {
+  outline: none;
+}
+.toolbar-tray-horizontal a:focus,
+.toolbar-box a:focus {
+  outline: none;
+}
+.toolbar .toolbar-icon.toolbar-handle:focus {
+  outline: none;
+}
+
+/*
+ * Tour button
+ */
+.toolbar .toolbar-item.toolbar-icon-help {
+  background-color: #a1cab7;
+  border-bottom-width: 0;
+}
+.toolbar .toolbar-item.toolbar-icon-help:focus {
+  outline: none;
+}
+.toolbar .toolbar-item.toolbar-icon-help:before {
+  font-family: fontello;
+  content: '\e80a';
+  font-size: 0.9375rem;
+  padding-right: 5px;
+  color: #535353;
+}
+.toolbar .toolbar-item.toolbar-icon-help:hover:before {
+  color: #fff;
+}
+
+.toolbar .toolbar-item.toolbar-icon-help.is-active:before {
+  color: #fff;
+}
+
+
+/*
+ * User button
+ */
+.toolbar .user-toolbar-tab .toolbar-icon-user:before {
+  background-image: none;
+  font-family: fontello;
+  content: '\e811';
+  font-size: 0.9375rem;
+  padding-right: 5px;
+  color: #535353;
+  font-weight: lighter;
+  -webkit-font-smoothing: antialiased;
+}
+.toolbar .user-toolbar-tab .toolbar-icon-user:hover:before {
+  color: #fff;
+}
+.toolbar .user-toolbar-tab .toolbar-icon-user.is-active:hover:before {
+  color: #535353;
+}
+
+/* We need to add !important here to override icon styles coming in from the stable theme. */
+.toolbar-bar .toolbar-icon-user:active:before,
+.toolbar-bar .toolbar-icon-user.is-active:before {
+  background-image: none !important;
+}
+
+/*
+ * Add content/document buttons
+ */
+#toolbar-link-node-add_page:before,
+#toolbar-link-entity-media-add_form:before,
+.toolbar .toolbar-bar .button--add-content:before {
+  font-family: fontello;
+  content: '\e800';
+  font-size: 0.9375rem;
+  padding-right: 0.3125rem;
+}

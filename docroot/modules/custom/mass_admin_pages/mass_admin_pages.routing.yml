@@ -1,0 +1,26 @@
+#Route for Author Homepage
+mass_admin_pages.author_home:
+  path: '/admin/home'
+  defaults:
+    _controller: '\Drupal\mass_admin_pages\Controller\AuthorHomePageController::authorHome'
+    _title: 'Welcome'
+  requirements:
+    _permission: 'use mass dashboard'
+
+#Route for Help & Support block form.
+mass_admin_pages.help_block_form:
+  path: '/admin/edit-blocks/support-block'
+  defaults:
+    _form: '\Drupal\mass_admin_pages\Form\HelpBlockForm'
+    _title: 'Help and Support'
+  requirements:
+    _permission: 'administer form for support block'
+
+#Route for Updates block form.
+mass_admin_pages.updates_block_form:
+  path: '/admin/edit-blocks/updates-block'
+  defaults:
+    _form: '\Drupal\mass_admin_pages\Form\UpdatesBlockForm'
+    _title: 'Updates and Alert messages'
+  requirements:
+    _permission: 'administer form for updates block'

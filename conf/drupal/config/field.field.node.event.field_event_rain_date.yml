@@ -1,0 +1,32 @@
+uuid: 873eb52c-ec06-4faa-ab52-e88a2988c13d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_event_rain_date
+    - node.type.event
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.event.field_event_rain_date
+field_name: field_event_rain_date
+entity_type: node
+bundle: event
+label: 'Rain date'
+description: 'Optional. If there is a known rain date, please list it here. If this is an outdoor event and there is no rain date, please note “This event is rain or shine.”'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

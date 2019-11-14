@@ -1,0 +1,14 @@
+services:
+  mayflower.twig_loader:
+    class: Drupal\mayflower\Twig\MayflowerLoader
+    tags:
+      - { name: twig.loader, priority: 100 }
+  mayflower.twig_extension:
+    class: Drupal\mayflower\Twig\MayflowerExtension
+    tags:
+      - { name: twig.extension }
+  html_response.attachments_processor.mayflower_inline_svg:
+    public: false
+    class: Drupal\mayflower\Render\SvgProcessor
+    decorates: html_response.attachments_processor
+    arguments: ['@html_response.attachments_processor.mayflower_inline_svg.inner']

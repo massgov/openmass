@@ -1,0 +1,8 @@
+services:
+  mass_moderation_migration.commands:
+    class: '\Drupal\mass_moderation_migration\Commands\MassModerationMigrationCommands'
+    arguments:
+      - '@mass_moderation_migration.migration_controller'
+      - '@module_installer'
+    tags:
+      - { name: drush.command }

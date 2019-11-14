@@ -1,0 +1,28 @@
+uuid: 06c0a904-757e-456a-94df-cc79baaab631
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_organizations
+    - node.type.decision_tree_branch
+    - node.type.org_page
+id: node.decision_tree_branch.field_organizations
+field_name: field_organizations
+entity_type: node
+bundle: decision_tree_branch
+label: Organization(s)
+description: 'Please choose the organization most closely associated with this content. This is used only for filtering in the CMS and does not display on the page.'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

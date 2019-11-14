@@ -1,0 +1,55 @@
+{#
+/**
+ * @file
+ * Theme override to display the Page Flipper view mode of the Binder content type.
+ */
+ #}
+{% set prev = false %}
+{% set next = false %}
+{% if content.page_flipper_previous[0]['#url_title'] %}
+  {% set prev = {
+    "arrowButton": {
+      "href": content.page_flipper_previous[0]['#url_title'],
+      "info": "",
+      "direction": "left"
+    },
+    "label": "Previous",
+    "title": "",
+    "link": {
+      "href": content.page_flipper_previous[0]['#url_title'],
+      "text": content.page_flipper_previous[0]['#title'],
+      "info": ""
+    }
+  } %}
+{% endif %}
+{% if content.page_flipper_next[0]['#url_title'] %}
+  {% set next = {
+    "arrowButton": {
+      "href": content.page_flipper_next[0]['#url_title'],
+      "info": "",
+      "direction": "right"
+    },
+    "label": "Next",
+    "title": "",
+    "link": {
+      "href": content.page_flipper_next[0]['#url_title'],
+      "text": content.page_flipper_next[0]['#title'],
+      "info": ""
+    }
+  } %}
+{% endif %}
+{% include "@organisms/by-author/page-flipper.twig" with {
+  "pageFlipper": {
+    "context": {
+      "label": "This is part of:",
+      "link": {
+        "href": url,
+        "info": "",
+        "text": label
+      }
+    },
+    "prev": prev,
+    "next": next
+  }
+} %}
+{{ content | without('page_flipper_previous', 'page_flipper_next') }}

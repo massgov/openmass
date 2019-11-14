@@ -1,0 +1,15 @@
+services:
+  mass_utility.exception_page_cacheability_enhancer:
+    class: Drupal\mass_utility\EventSubscriber\ErrorPageCachingSubscriber
+    tags:
+      - { name: event_subscriber }
+  mass_utility.new_relic_metadata_subscriber:
+    class: Drupal\mass_utility\EventSubscriber\NewRelicTransactionSubscriber
+    tags:
+      - { name: event_subscriber }
+    arguments: ['@current_user']
+  mass_utility.lazy_builder:
+    class: Drupal\mass_utility\LazyBuilder
+    arguments: ['@current_route_match']
+  monolog.processor.backtrace_removal:
+    class: Drupal\mass_utility\Logger\Processor\BacktraceRemovalProcessor

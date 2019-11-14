@@ -1,0 +1,35 @@
+# Note: `mayflower/global` is the main entrypoint into Mayflower.
+# It is provided by mayflower_library_info_build().
+
+init:
+  version: 1.0
+  js:
+    js/mayflower.init.js: {}
+  drupalSettings:
+    # Empty placeholder replaced in mayflower_library_info_alter().
+    mayflower:
+      namespaces: []
+      svg: null
+      js: null
+
+behaviors:
+  version: 1.x
+  js:
+    js/array-include-polyfill.js: {}
+    js/ajax-pattern-alerts.js: {}
+  dependencies:
+    - mayflower/global
+
+modernizr:
+  # Custom build of Modernizr that combines Mayflower and Drupal
+  # tests.  Also removes html5 shiv, which Mayflower provides.
+  # This should be kept in sync with both Core and Mayflower.
+  header: true
+  remote: https://github.com/Modernizr/Modernizr
+  license:
+    name: MIT
+    url: http://modernizr.com/license/
+    gpl-compatible: true
+  version: "v3.6.0"
+  js:
+    js/modernizr.min.js: { preprocess: 0, weight: -21, minified: true }

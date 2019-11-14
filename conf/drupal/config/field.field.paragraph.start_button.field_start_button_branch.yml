@@ -1,0 +1,28 @@
+uuid: cf5734b6-45e9-4c31-b936-1f8651344821
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_start_button_branch
+    - node.type.decision_tree_branch
+    - paragraphs.paragraphs_type.start_button
+id: paragraph.start_button.field_start_button_branch
+field_name: field_start_button_branch
+entity_type: paragraph
+bundle: start_button
+label: 'Start Button Branch'
+description: 'Start typing to choose the Decision Tree Branch page that will be the first question in the Tree. '
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      decision_tree_branch: decision_tree_branch
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

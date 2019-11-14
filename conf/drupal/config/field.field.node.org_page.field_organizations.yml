@@ -1,0 +1,27 @@
+uuid: 1abf09f2-e94d-4898-8076-b31e77c2847e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_organizations
+    - node.type.org_page
+id: node.org_page.field_organizations
+field_name: field_organizations
+entity_type: node
+bundle: org_page
+label: Organization(s)
+description: 'This field is used for content filtering in the CMS and is not displayed on the page. It is not necessary to add the current organization page as it will always be shown when filtering by organization. Add parent organizations only if you want this organization page to show when someone filters for content within that parent organization, otherwise leave blank.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

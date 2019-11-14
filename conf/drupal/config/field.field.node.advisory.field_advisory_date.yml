@@ -1,0 +1,24 @@
+uuid: e6cfb676-39b8-4614-87a7-93cee072f959
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_advisory_date
+    - node.type.advisory
+  module:
+    - datetime
+id: node.advisory.field_advisory_date
+field_name: field_advisory_date
+entity_type: node
+bundle: advisory
+label: Date
+description: 'The date that the advisory was issued.'
+required: true
+translatable: false
+default_value:
+  -
+    default_date_type: now
+    default_date: now
+default_value_callback: ''
+settings: {  }
+field_type: datetime

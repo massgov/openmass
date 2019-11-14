@@ -1,0 +1,164 @@
+uuid: 501e7c39-b40c-47c8-8c5f-471c4031c8e6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.legacy_redirects.body
+    - field.field.node.legacy_redirects.field_legacy_redirect_env
+    - field.field.node.legacy_redirects.field_legacy_redirect_hashed_url
+    - field.field.node.legacy_redirects.field_legacy_redirects_legacyurl
+    - field.field.node.legacy_redirects.field_legacy_redirects_ref_conte
+    - field.field.node.legacy_redirects.field_organizations
+    - field.field.node.legacy_redirects.field_state_organization_tax
+    - node.type.legacy_redirects
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - field_group
+    - scheduler
+    - scheduler_content_moderation_integration
+    - text
+third_party_settings:
+  field_group:
+    group_legacy_:
+      children:
+        - group_legacy_redirect
+      parent_name: ''
+      weight: 0
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Legacy redirect edit form'
+    group_legacy_redirect:
+      children:
+        - field_legacy_redirects_legacyurl
+        - field_legacy_redirects_ref_conte
+        - field_legacy_redirect_env
+        - body
+        - field_organizations
+        - title
+      parent_name: group_legacy_
+      weight: 0
+      format_type: tab
+      format_settings:
+        label: 'Legacy redirect'
+        formatter: open
+        description: 'The information entered here will be used to generate redirects from legacy Percussion pages to the new Mass.gov. Redirects will happen within several hours.'
+        required_fields: true
+        id: ''
+        classes: ''
+      label: 'Legacy redirect'
+id: node.legacy_redirects.default
+targetEntityType: node
+bundle: legacy_redirects
+mode: default
+content:
+  body:
+    type: text_textarea_with_summary
+    weight: 4
+    settings:
+      rows: 9
+      summary_rows: 3
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  created:
+    type: datetime_timestamp
+    weight: 5
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_legacy_redirect_env:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_legacy_redirects_legacyurl:
+    weight: 1
+    settings:
+      size: 75
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_legacy_redirects_ref_conte:
+    weight: 2
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_organizations:
+    weight: 5
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_state_organization_tax:
+    weight: 31
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 100
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 6
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_legacy_redirect_hashed_url: true
+  path: true
+  promote: true
+  status: true
+  sticky: true
+  title: true

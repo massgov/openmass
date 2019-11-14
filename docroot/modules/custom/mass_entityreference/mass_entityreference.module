@@ -1,0 +1,39 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_entityreference.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\NodeInterface;
+use Drupal\user\Entity\User;
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function mass_entityreference_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Only perform this action on new node forms.
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if ($node instanceof NodeInterface) {
+    return;
+  }
+
+  // Get user's organization taxonomy term.
+  $user = User::load(\Drupal::currentUser()->id());
+  $org = $user->get('field_user_org');
+
+  if ($org->first()) {
+    $org_item = $org->first()->getValue();
+    if (isset($org_item['target_id'])) {
+      $org_id = $org_item['target_id'];
+      $org_term = taxonomy_term_load($org_id);
+
+      // Auto-Populate organization field.
+      if (isset($form['field_state_organization_tax'])) {
+        $form['field_state_organization_tax']['widget'][0]['target_id']['#default_value'] = $org_term;
+      }
+    }
+  }
+}

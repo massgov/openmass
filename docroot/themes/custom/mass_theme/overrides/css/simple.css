@@ -1,0 +1,52 @@
+main {
+  margin: 1rem 0;
+}
+.user-login {
+  padding: 1rem;/*20px 20px;*/
+  max-width: 1320px;/* $max-width: 1320px  */
+}
+.main-content--two h2 {/* page title for basic page */
+  margin-bottom: 0.4em;/* .ma__page-header__title */
+}
+@media (min-width: 781px) {/* $bp-medium-min: $bp-m(780px) + 1; */
+  main {
+    margin: 2rem 0;
+  }
+  .user-login {
+    padding-left: 30px;
+    padding-right: 30px;
+  }
+}
+@media (min-width: 901px) {/* $bp-large-min: $bp-l(910px) + 1 */
+  main {
+    margin: 3rem 0;
+  }
+  .user-login {
+    padding: 0 2.5rem;/*40px 40px;*/
+  }
+}
+
+@media (min-width: 901px) and (max-width: 1320px) {/* $bp-large-min: $bp-l(910px) + 1,  $bp-page-width-max: $max-width(1320px)  */
+  .user-login {
+    margin-left: 0;
+    margin-right: 0;
+    max-width: 820px;/* $l-max-content-width: 820px */
+  }
+}
+@media (min-width: 1321px) {/* $bp-page-width-min: $max-width(1320px) + 1 */
+  .user-login {
+    margin: 0 auto;
+  }
+}
+.user-login div[role^='contentinfo'],
+.user-login .form-item,
+.user-login input.button {
+  margin: 1.5rem 0;
+}
+.user-login div[role^='contentinfo'],
+.user-login .form-item:first-of-type {
+  margin-top: 0;
+}
+input.button {
+  margin-bottom: 0;
+}

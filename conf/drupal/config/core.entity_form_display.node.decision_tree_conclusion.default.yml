@@ -1,0 +1,171 @@
+uuid: 037023af-d00b-4398-8514-c8832dd05c6f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.decision_tree_conclusion.field_add_video
+    - field.field.node.decision_tree_conclusion.field_decision_actions
+    - field.field.node.decision_tree_conclusion.field_decision_root_ref
+    - field.field.node.decision_tree_conclusion.field_description
+    - field.field.node.decision_tree_conclusion.field_organizations
+    - field.field.node.decision_tree_conclusion.field_state_organization_tax
+    - node.type.decision_tree_conclusion
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - field_group
+    - link
+    - paragraphs
+    - scheduler
+    - scheduler_content_moderation_integration
+    - text
+third_party_settings:
+  field_group:
+    group_decision_tree_conclusion_e:
+      children:
+        - group_decision_tree_conclusion
+      parent_name: ''
+      weight: 0
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Decision tree conclusion edit form'
+    group_decision_tree_conclusion:
+      children:
+        - title
+        - uid
+        - field_description
+        - field_add_video
+        - field_decision_actions
+        - field_decision_root_ref
+        - field_organizations
+      parent_name: group_decision_tree_conclusion_e
+      weight: 0
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: true
+      label: 'Decision tree conclusion'
+id: node.decision_tree_conclusion.default
+targetEntityType: node
+bundle: decision_tree_conclusion
+mode: default
+content:
+  field_add_video:
+    type: entity_reference_paragraphs
+    weight: 3
+    settings:
+      title: Video
+      title_plural: Videos
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_decision_actions:
+    type: link_default
+    weight: 4
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_decision_root_ref:
+    weight: 5
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_description:
+    weight: 2
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_organizations:
+    weight: 6
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_state_organization_tax:
+    weight: 31
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 100
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 1
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

@@ -1,0 +1,92 @@
+id: pilot_menu
+label: Pilot Menu Links
+
+migration_group: mass_content
+
+source:
+  plugin: embedded_data
+  keys:
+    - title
+  data_rows:
+    -
+      title: 'Top Actions'
+      path: 'internal:/'
+      weight: '0'
+      parent: ''
+    -
+      title: 'Health & Social Services'
+      path: 'internal:/'
+      weight: '1'
+      parent: 'Top Actions'
+    -
+      title: 'Family & Children'
+      path: 'internal:/'
+      weight: '2'
+      parent: 'Top Actions'
+    -
+      title: 'Housing'
+      path: 'internal:/'
+      weight: '3'
+      parent: 'Top Actions'
+    -
+      title: 'Transportation'
+      path: 'internal:/'
+      weight: '4'
+      parent: 'Top Actions'
+    -
+      title: 'Legal & Justice'
+      path: 'internal:/'
+      weight: '5'
+      parent: 'Top Actions'
+    -
+      title: 'Public Safety'
+      path: 'internal:/'
+      weight: '6'
+      parent: 'Top Actions'
+    -
+      title: 'Voting'
+      path: 'internal:/'
+      weight: '7'
+      parent: 'Top Actions'
+    -
+      title: 'Taxes'
+      path: 'internal:/'
+      weight: '8'
+      parent: 'Top Actions'
+    -
+      title: 'Feedback'
+      path: 'internal:/'
+      weight: '9'
+      parent: ''
+    -
+      title: 'FAQ'
+      path: 'internal:/'
+      weight: '10'
+      parent: ''
+  ids:
+    title:
+      type: string
+
+  constants:
+    bundle: menu_link_content
+    menu_name: pilot-menu
+
+process:
+  bundle: 'constants/bundle'
+  title: title
+  menu_name: 'constants/menu_name'
+  'link/uri': path
+  weight: weight
+  expanded:
+    plugin: default_value
+    default_value: 1
+  parent:
+    plugin: menu_link_parent
+    source:
+     - parent
+
+destination:
+  plugin: entity:menu_link_content
+  no_stub: true
+
+migration_dependencies: {}

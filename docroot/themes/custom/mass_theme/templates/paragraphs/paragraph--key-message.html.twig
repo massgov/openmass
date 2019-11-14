@@ -1,0 +1,58 @@
+{#
+/**
+ * @file
+ * Template for the Key Message paragraph type.
+ *
+ * @see template_preprocess_paragraph()
+ *
+ * @ingroup themeable
+ */
+#}
+{% set subtitle = '' %}
+{% set description = {} %}
+{% if paragraph.field_sub_heading is not empty %}
+  {% set subtitle = paragraph.field_sub_heading.value %}
+{% endif %}
+{% if paragraph.field_rich_text_description is not empty %}
+  {% set description = {
+    "rteElements": [{
+      "path": "@atoms/11-text/raw-html.twig",
+      "data": {
+        "rawHtml": {
+          "content": content.field_rich_text_description
+        }
+      }
+    }]
+  }
+  %}
+{% endif %}
+{% if paragraph.field_main_heading %}
+  {% set level = 1 %}
+  {% set positionTop = TRUE %}
+{% endif %}
+{% set bgImage = (paragraph.field_background_type.value == 'image') ? file_url(backgroundImage.desktop)|t : NULL  %}
+{% set mobileBgImage = (paragraph.field_background_type.value == 'image') ? file_url(backgroundImage.mobile)|t : NULL %}
+{# Based on background type option, define variable for background color.
+   When background has a solid color, not image, use backgroundColor value. #}
+{% if paragraph.field_background_type.value == 'color' %}
+  {% set textOverlay = backgroundColor ? backgroundColor : textOverlay %}
+{% endif %}
+{%
+set keyMessage = {
+  "keyMessage": {
+    "id": componentId,
+    "positionTop": positionTop,
+    "compHeading": {
+      "title": paragraph.field_main_heading.value,
+      "level": level
+    },
+    "textOverlay": textOverlay,
+    "bgImage": bgImage,
+    "mobileBgImage": mobileBgImage,
+    "subtitle": subtitle,
+    "description": description,
+    "button": button
+  }
+}
+%}
+{% include '@organisms/by-template/key-message.twig' with keyMessage %}

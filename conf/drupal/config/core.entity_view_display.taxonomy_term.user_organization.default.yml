@@ -1,0 +1,30 @@
+uuid: ffe3b764-751f-4389-afd8-c5ad3437b650
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.user_organization.field_state_organization
+    - taxonomy.vocabulary.user_organization
+  module:
+    - text
+id: taxonomy_term.user_organization.default
+targetEntityType: taxonomy_term
+bundle: user_organization
+mode: default
+content:
+  description:
+    label: hidden
+    type: text_default
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_state_organization:
+    weight: 1
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+hidden: {  }

@@ -1,0 +1,51 @@
+uuid: 57b84380-45de-4320-b4ea-363779e0b1e8
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_admin_pages
+    - mass_content_api
+    - menu_ui
+    - node_title_help_text
+    - scheduler
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+  scheduler:
+    expand_fieldset: when_required
+    fields_display_mode: vertical_tab
+    publish_enable: true
+    publish_past_date: error
+    publish_required: false
+    publish_revision: true
+    publish_touch: false
+    unpublish_enable: true
+    unpublish_required: false
+    unpublish_revision: true
+  mass_content_api:
+    parents:
+      - field_event_ref_parents
+    children: null
+    linking_pages:
+      - field_event_contact_general
+      - field_event_link_sign_up
+      - field_event_links
+      - field_event_ref_contact
+      - field_event_ref_downloads
+      - field_event_ref_event_2
+      - field_event_ref_parents
+  mass_admin_pages:
+    node_type_long_description: "<ul>\r\n\t<li>General events: Tell users about where they’ll need to be and when, and give details about how to prepare</li>\r\n\t<li>Public meetings: Includes “Public Meeting” at the top, and allows you to specify a posted date and info about public testimony\r\n</ul>"
+    node_type_url: ''
+    node_type_category: news_events
+    node_type_thumbnail_path: /modules/custom/mass_admin_pages/images/add-thumbnail_event.svg
+  node_title_help_text:
+    title_help: 'The title should describe the subject of the event. Keep it as short as possible and use plain language.'
+name: Event
+type: event
+description: '<p>Spread the word about your organization’s public events, course offerings, and meetings.</p><p><a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/news-and-events/events" target="_blank">Learn more about authoring Events.</a></p>'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false

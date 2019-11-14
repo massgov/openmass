@@ -1,0 +1,69 @@
+uuid: 16d931e1-17ed-4a28-8ada-9ed35ba4c227
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.paragraph.media_caption_and_display
+    - field.field.paragraph.iframe.field_caption
+    - field.field.paragraph.iframe.field_height
+    - field.field.paragraph.iframe.field_iframe_accessibility_title
+    - field.field.paragraph.iframe.field_iframe_admin_title
+    - field.field.paragraph.iframe.field_media_display
+    - field.field.paragraph.iframe.field_url
+    - paragraphs.paragraphs_type.iframe
+  module:
+    - link
+id: paragraph.iframe.media_caption_and_display
+targetEntityType: paragraph
+bundle: iframe
+mode: media_caption_and_display
+content:
+  field_caption:
+    weight: 5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_height:
+    weight: 3
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_iframe_accessibility_title:
+    weight: 4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_iframe_admin_title:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_media_display:
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_url:
+    weight: 2
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

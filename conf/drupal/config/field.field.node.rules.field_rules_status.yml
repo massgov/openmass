@@ -1,0 +1,28 @@
+uuid: 0536ac2e-23cb-42f7-b0a7-184dd89d924b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_rules_status
+    - node.type.rules
+    - taxonomy.vocabulary.advisory_publish_state
+id: node.rules.field_rules_status
+field_name: field_rules_status
+entity_type: node
+bundle: rules
+label: Status
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      advisory_publish_state: advisory_publish_state
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: advisory_publish_state
+field_type: entity_reference

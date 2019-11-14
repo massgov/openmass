@@ -1,0 +1,27 @@
+uuid: bab97670-3410-4525-ad95-f460c9ea62f7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_service_ref_actions
+    - node.type.service_page
+  module:
+    - link
+id: node.service_page.field_service_ref_actions
+field_name: field_service_ref_actions
+entity_type: node
+bundle: service_page
+label: 'All tasks'
+description: 'Add the remaining tasks related to this service. Up to 6 will be shown on the service page with any additional tasks on a "more" page.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 1
+  entity_bundles:
+    form_page: form_page
+    guide_page: guide_page
+    how_to_page: how_to_page
+field_type: link

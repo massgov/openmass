@@ -1,0 +1,32 @@
+uuid: dda12472-7ccf-4248-86a7-e0f4de5203a1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_person_last_name
+    - node.type.person
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.person.field_person_last_name
+field_name: field_person_last_name
+entity_type: node
+bundle: person
+label: 'Last name'
+description: 'The public will see this last name.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

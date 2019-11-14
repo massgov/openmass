@@ -1,0 +1,33 @@
+uuid: 0978dae0-7613-4bc7-987b-4c04f1d72b7b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.online_email.field_email
+    - field.field.paragraph.online_email.field_label
+    - paragraphs.paragraphs_type.online_email
+id: paragraph.online_email.default
+targetEntityType: paragraph
+bundle: online_email
+mode: default
+content:
+  field_email:
+    weight: 7
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: email_default
+    region: content
+  field_label:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

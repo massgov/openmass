@@ -1,0 +1,48 @@
+uuid: 2e5c7078-45ed-4055-aab4-8b442072ea89
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.billing_organizations.field_billing_customer_code
+    - field.field.taxonomy_term.billing_organizations.field_billing_customer_group
+    - field.field.taxonomy_term.billing_organizations.field_billing_customer_name
+    - taxonomy.vocabulary.billing_organizations
+  module:
+    - text
+id: taxonomy_term.billing_organizations.default
+targetEntityType: taxonomy_term
+bundle: billing_organizations
+mode: default
+content:
+  description:
+    label: hidden
+    type: text_default
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_billing_customer_code:
+    weight: 3
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_billing_customer_group:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_billing_customer_name:
+    weight: 4
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

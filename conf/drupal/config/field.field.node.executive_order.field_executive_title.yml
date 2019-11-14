@@ -1,0 +1,32 @@
+uuid: 08a6e162-3cbd-432d-8bfa-560b3aec6ca1
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_executive_title
+    - node.type.executive_order
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.executive_order.field_executive_title
+field_name: field_executive_title
+entity_type: node
+bundle: executive_order
+label: Title
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

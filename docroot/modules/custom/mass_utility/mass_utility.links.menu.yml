@@ -1,0 +1,35 @@
+mass_utility.configuration:
+  title: 'Mass.gov'
+  route_name: mass_utility.configuration
+  parent: system.admin_config
+  description: 'Configure functionality for Mass.gov'
+  position: right
+  weight: -100
+
+mass_utility.iframe:
+  title: 'iFrame'
+  route_name: mass_utility.iframe
+  parent: mass_utility.configuration
+  description: 'Controls for iFrame widget.'
+  weight: 10
+
+mass_utility.clean_file_managed:
+  title: 'File Managed Cleanup'
+  route_name: mass_utility.clean_file_managed.configuration
+  parent: mass_utility.configuration
+  description: 'Toggle cron job.'
+  weight: 20
+
+mass_utility.missing_files:
+  title: 'Missing Files'
+  route_name: mass_utility.missing_files
+  parent: system.admin_reports
+  description: 'List of files missing from the file system'
+  weight: 10
+
+mass_utility.extra_files:
+  title: 'Extra Files'
+  route_name: mass_utility.extra_files
+  parent: system.admin_reports
+  description: 'List of files on the file system that are unknown to Drupal'
+  weight: 11

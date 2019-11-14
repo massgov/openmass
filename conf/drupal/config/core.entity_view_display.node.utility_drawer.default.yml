@@ -1,0 +1,61 @@
+uuid: 684f9179-aec6-44dc-a8e8-af726c6977b7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.utility_drawer.body
+    - field.field.node.utility_drawer.field_aria_label
+    - field.field.node.utility_drawer.field_icon_term
+    - field.field.node.utility_drawer.field_links
+    - node.type.utility_drawer
+  module:
+    - link
+    - text
+    - user
+id: node.utility_drawer.default
+targetEntityType: node
+bundle: utility_drawer
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_aria_label:
+    weight: 4
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_icon_term:
+    weight: 0
+    label: hidden
+    settings:
+      link: true
+      view_mode: default
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_links:
+    weight: 2
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link_separate
+    region: content
+  links:
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

@@ -1,0 +1,39 @@
+uuid: 93694bf5-f720-4adc-a20c-617d671fc119
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.list_manual_directory.field_liststatic_items
+    - field.field.paragraph.list_manual_directory.field_title
+    - paragraphs.paragraphs_type.list_manual_directory
+  module:
+    - paragraphs
+id: paragraph.list_manual_directory.default
+targetEntityType: paragraph
+bundle: list_manual_directory
+mode: default
+content:
+  field_liststatic_items:
+    weight: 7
+    settings:
+      title: 'List item'
+      title_plural: 'List items'
+      edit_mode: closed
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    type: entity_reference_paragraphs
+    region: content
+  field_title:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

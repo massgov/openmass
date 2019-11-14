@@ -1,0 +1,121 @@
+{#
+/**
+ * @file
+ * Theme override to display the full view mode of the Rules content type.
+ */
+ #}
+{% extends 'node.html.twig' %}
+
+{# Set top heading level for the page. #}
+{% set level = 1 %}
+
+{% block preContent %}
+  {% set secondaryIndicators = false %}
+  {% if node.field_rules_related_collections is not empty %}
+    {% set secondaryIndicators = {
+      "label": "related to"
+    } %}
+  {% endif %}
+
+  {% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "primary": {
+        "label": "offered by"
+      },
+      "secondary": secondaryIndicators
+    }
+  } %}
+    {% block primaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.field_rules_related_collections }}
+    {% endblock %}
+  {% endembed %}
+  {{ content.referencing_binders }}
+  {% include "@organisms/by-template/page-header.twig" %}
+{% endblock %}
+
+{% block main %}
+  {# Increase heading number by 1 from the parent heading. #}
+  {% set level = level + 1 %}
+
+  <div class="main-content main-content--two">
+    <div class="page-content">
+      {% block pageContent %}
+        {% if sideContent.contactList %}
+          {% set contactList = sideContent.contactList %}
+          {% include "@organisms/by-author/contact-list.twig" %}
+        {% endif %}
+      {% endblock %}
+    </div>
+   </div>
+<div class="ma__court-rules__content">
+  {% include "@organisms/by-template/sticky-toc.twig" with {
+    "stickyTOC": {
+      "title": "Table of Contents"|t,
+      "parent": ".ma__court-rules__content",
+      "sections": ".page-content h2"
+    }
+  } %}
+  <div class="main-content main-content--two">
+    <div class="page-content">
+        {% for richText in mainContent.contents %}
+          {% include "@organisms/by-author/rich-text.twig" %}
+        {% endfor %}
+        {% if content.field_rules_download|render is not empty %}
+          {# Using the field_rules_download view mode to display the URL for doucments in this section. #}
+          {%  embed "@organisms/by-author/form-downloads.twig" with {
+            "formDownloads": {
+              "compHeading": {
+                "title": "Downloads",
+                "id": "downloads",
+                "level": level,
+                "titleContext": "for " ~ node.title.value
+             }
+            }
+          } %}
+            {% block formDownloadLinks %}
+              {{ content.field_rules_download }}
+            {% endblock %}
+          {% endembed %}
+        {% endif %}
+        {% if mainContent.contactList %}
+          {% set contactList = mainContent.contactList %}
+          {% include "@organisms/by-author/contact-list.twig" %}
+        {% endif %}
+        {% if mainContent.footnoteList %}
+          {% set footnoteList = mainContent.footnoteList %}
+          {% include "@organisms/by-author/footnote-list.twig" %}
+        {% endif %}
+        {% if mainContent.references %}
+          {% set headerTags = mainContent.references %}
+          {% include "@molecules/header-tags.twig" %}
+        {% endif %}
+        {% if mainContent.updates %}
+          {% set listingTable = mainContent.updates %}
+          {% include "@molecules/listing-table.twig" %}
+        {% endif %}
+    </div>
+    <aside class="sidebar">
+      {% if sideContent.contactList %}
+        {% set contactList = sideContent.contactList %}
+        {% include "@organisms/by-author/contact-list.twig" %}
+      {% endif %}
+      {% if sideContent.pressListing %}
+        {% set pressListing = sideContent.pressListing %}
+        {% include "@organisms/by-author/press-listing.twig" %}
+      {% endif %}
+      {% if sideContent.eventListing %}
+        {% set eventListing = sideContent.eventListing %}
+        {% include "@organisms/by-author/event-listing.twig" %}
+      {% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}
+
+{% block postContent %}
+  {{ content.extra_node_pager }}
+  {{ content.extra_org_feedback_form }}
+{% endblock %}

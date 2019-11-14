@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @file
+ * Contains schema_article.module.
+ */
+
+/**
+ * Implements hook_metatag_groups_alter().
+ *
+ * Every module should implement this to add a flag to the object types they
+ * create.
+ */
+function mass_schema_unit_price_specification_metatag_groups_alter(&$data) {
+  $module_name = basename(__FILE__, '.module');
+  foreach ($data as $key => $value) {
+    if ($value['provider'] == $module_name) {
+      $data[$key]['schema_metatag'] = TRUE;
+    }
+  }
+}

@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * Installation file for Scheduler module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function scheduler_media_install() {
+  $schema = \Drupal::service('database')->schema();
+  $spec = [
+    'type' => 'int',
+    'not null' => FALSE,
+  ];
+
+  if (!$schema->fieldExists('media_field_data', 'publish_on') &&
+      !$schema->fieldExists('media_field_revision', 'publish_on')) {
+    $schema->addField('media_field_data', 'publish_on', $spec);
+    $schema->addField('media_field_revision', 'publish_on', $spec);
+  }
+  if (!$schema->fieldExists('media_field_data', 'unpublish_on') &&
+      !$schema->fieldExists('media_field_revision', 'unpublish_on')) {
+    $schema->addField('media_field_data', 'unpublish_on', $spec);
+    $schema->addField('media_field_revision', 'unpublish_on', $spec);
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function scheduler_media_uninstall() {
+  // Remove our base fields from the schema.
+  \Drupal::service('entity.definition_update_manager')->applyUpdates();
+  // Delete the scheduled content view.
+  \Drupal::configFactory()->getEditable('views.view.scheduler_scheduled_content')->delete();
+}

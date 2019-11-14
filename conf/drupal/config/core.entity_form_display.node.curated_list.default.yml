@@ -1,0 +1,282 @@
+uuid: cfdcbc5c-d82d-4e80-b21a-da687858f126
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.curated_list.field_contact
+    - field.field.node.curated_list.field_curatedlist_lede
+    - field.field.node.curated_list.field_curatedlist_list_section
+    - field.field.node.curated_list.field_curatedlist_metatags
+    - field.field.node.curated_list.field_curatedlist_overview
+    - field.field.node.curated_list.field_intended_audience
+    - field.field.node.curated_list.field_list_directory_section
+    - field.field.node.curated_list.field_list_type
+    - field.field.node.curated_list.field_organizations
+    - field.field.node.curated_list.field_related_links
+    - field.field.node.curated_list.field_state_organization_tax
+    - node.type.curated_list
+    - workflows.workflow.editorial
+  module:
+    - conditional_fields
+    - content_moderation
+    - field_group
+    - link
+    - metatag
+    - paragraphs
+    - scheduler
+    - scheduler_content_moderation_integration
+    - text
+third_party_settings:
+  field_group:
+    group_curated_list_edit_form:
+      children:
+        - group_overview
+        - group_sections
+        - group_related
+      parent_name: ''
+      weight: 0
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Curated list edit form'
+    group_overview:
+      children:
+        - field_list_type
+        - title
+        - field_curatedlist_lede
+        - field_curatedlist_overview
+        - field_organizations
+        - field_intended_audience
+      parent_name: group_curated_list_edit_form
+      weight: 8
+      format_type: tab
+      format_settings:
+        label: Overview
+        formatter: open
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+      label: Overview
+    group_sections:
+      children:
+        - field_curatedlist_list_section
+        - field_list_directory_section
+      parent_name: group_curated_list_edit_form
+      weight: 9
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: true
+      label: Sections
+    group_related:
+      children:
+        - field_contact
+        - field_related_links
+      parent_name: group_curated_list_edit_form
+      weight: 10
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: true
+      label: Related
+id: node.curated_list.default
+targetEntityType: node
+bundle: curated_list
+mode: default
+content:
+  field_contact:
+    weight: 29
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_curatedlist_lede:
+    weight: 5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_curatedlist_list_section:
+    type: entity_reference_paragraphs
+    weight: 2
+    settings:
+      title: 'List section'
+      title_plural: 'List sections'
+      edit_mode: open
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings:
+      conditional_fields:
+        07644135-f0df-4a8e-8e7a-640aeae23b66:
+          dependee: field_list_type
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: directory
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: curated_list
+    region: content
+  field_curatedlist_metatags:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_curatedlist_overview:
+    weight: 6
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_intended_audience:
+    weight: 8
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_list_directory_section:
+    type: entity_reference_paragraphs
+    weight: 3
+    settings:
+      title: 'List section'
+      title_plural: 'List sections'
+      edit_mode: open
+      add_mode: button
+      form_display_mode: directory
+      default_paragraph_type: _none
+    third_party_settings:
+      conditional_fields:
+        b8b97057-8f95-421e-b505-0465753eafa8:
+          dependee: field_list_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: directory
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: curated_list
+    region: content
+  field_list_type:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_organizations:
+    weight: 7
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_related_links:
+    weight: 30
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_state_organization_tax:
+    weight: 7
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 100
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 4
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 1
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

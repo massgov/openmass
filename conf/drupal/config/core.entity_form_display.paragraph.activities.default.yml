@@ -1,0 +1,29 @@
+uuid: b98f5825-6b4a-4f61-be4c-330f7d34c639
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.activities.field_activities
+    - paragraphs.paragraphs_type.activities
+  module:
+    - paragraphs
+id: paragraph.activities.default
+targetEntityType: paragraph
+bundle: activities
+mode: default
+content:
+  field_activities:
+    type: entity_reference_paragraphs
+    weight: 7
+    settings:
+      title: Molecule
+      title_plural: Molecules
+      edit_mode: preview
+      add_mode: dropdown
+      form_display_mode: default
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

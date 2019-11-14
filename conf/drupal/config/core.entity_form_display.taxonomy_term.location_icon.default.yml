@@ -1,0 +1,31 @@
+uuid: d7cc5f04-8741-4e84-a243-14b592a8e872
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.location_icon.field_sprite_name
+    - taxonomy.vocabulary.location_icon
+id: taxonomy_term.location_icon.default
+targetEntityType: taxonomy_term
+bundle: location_icon
+mode: default
+content:
+  field_sprite_name:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  name:
+    type: string_textfield
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+hidden:
+  description: true
+  path: true

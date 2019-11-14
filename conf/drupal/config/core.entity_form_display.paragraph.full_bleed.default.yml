@@ -1,0 +1,30 @@
+uuid: 100c593c-2a69-4a23-b8e6-9422456faf9c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.full_bleed.field_full_bleed_ref
+    - paragraphs.paragraphs_type.full_bleed
+  module:
+    - paragraphs
+id: paragraph.full_bleed.default
+targetEntityType: paragraph
+bundle: full_bleed
+mode: default
+content:
+  field_full_bleed_ref:
+    type: entity_reference_paragraphs
+    weight: 6
+    settings:
+      title: Item
+      title_plural: Items
+      edit_mode: closed
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

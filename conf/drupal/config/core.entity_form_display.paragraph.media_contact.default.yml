@@ -1,0 +1,52 @@
+uuid: 2d37a8e5-b291-4861-af6b-19841de8db40
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.media_contact.field_media_contact_email
+    - field.field.paragraph.media_contact.field_media_contact_name
+    - field.field.paragraph.media_contact.field_media_contact_phone
+    - field.field.paragraph.media_contact.field_media_contact_ref_person
+    - paragraphs.paragraphs_type.media_contact
+id: paragraph.media_contact.default
+targetEntityType: paragraph
+bundle: media_contact
+mode: default
+content:
+  field_media_contact_email:
+    weight: 3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: email_default
+    region: content
+  field_media_contact_name:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_media_contact_phone:
+    weight: 4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_media_contact_ref_person:
+    weight: 0
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

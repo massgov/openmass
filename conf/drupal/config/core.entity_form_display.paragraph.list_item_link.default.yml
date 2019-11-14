@@ -1,0 +1,42 @@
+uuid: 9e6af894-2572-4dcd-a09f-ea071f933819
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.list_item_link.field_listitemlink_desc_manual
+    - field.field.paragraph.list_item_link.field_listitemlink_desc_type
+    - field.field.paragraph.list_item_link.field_listitemlink_item
+    - paragraphs.paragraphs_type.list_item_link
+  module:
+    - link
+id: paragraph.list_item_link.default
+targetEntityType: paragraph
+bundle: list_item_link
+mode: default
+content:
+  field_listitemlink_desc_manual:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_listitemlink_desc_type:
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_listitemlink_item:
+    weight: 0
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

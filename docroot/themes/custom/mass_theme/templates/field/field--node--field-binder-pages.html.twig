@@ -1,0 +1,16 @@
+ {% embed "@organisms/by-template/table-of-contents-hierarchy.twig" with {
+  "tableOfContentsHierarchy": {
+    "title": {
+      "text": "Table of Contents",
+      "colored": true
+    }
+  }
+} %}
+
+  {% block binderSection %}
+    {% for item in items %}
+      {{ item.content }}
+    {% endfor %}
+  {% endblock %}
+
+{% endembed %}

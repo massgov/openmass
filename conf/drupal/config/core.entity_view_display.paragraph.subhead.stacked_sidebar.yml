@@ -1,0 +1,24 @@
+uuid: d40276f9-cf69-4b78-9f45-08b5ebd252fc
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.stacked_sidebar
+    - field.field.paragraph.subhead.field_title
+    - paragraphs.paragraphs_type.subhead
+id: paragraph.subhead.stacked_sidebar
+targetEntityType: paragraph
+bundle: subhead
+mode: stacked_sidebar
+content:
+  field_title:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  created: true
+  uid: true

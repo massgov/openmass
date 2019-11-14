@@ -1,0 +1,70 @@
+uuid: 984946dd-9a95-4026-bead-2f40b1086716
+langcode: en
+status: true
+dependencies:
+  config:
+    - filter.format.rules_of_court_section
+  module:
+    - ckeditor
+format: rules_of_court_section
+editor: ckeditor
+settings:
+  toolbar:
+    rows:
+      -
+        -
+          name: Formatting
+          items:
+            - Bold
+            - Italic
+            - Strike
+            - Superscript
+            - Subscript
+            - RemoveFormat
+        -
+          name: Linking
+          items:
+            - Linkit
+            - DrupalUnlink
+            - MediaEntityDownload
+        -
+          name: Lists
+          items:
+            - BulletedList
+            - NumberedList
+        -
+          name: Media
+          items:
+            - Blockquote
+            - file_browser
+            - Table
+            - HorizontalRule
+        -
+          name: 'Block Formatting'
+          items:
+            - Format
+            - Styles
+        -
+          name: Tools
+          items:
+            - Maximize
+            - ShowBlocks
+            - SpecialChar
+            - Source
+  plugins:
+    stylescombo:
+      styles: ul.ma__checklist|Checklist
+    language:
+      language_list: un
+    linkit:
+      linkit_profile: author
+    mediaentitydownload:
+      entity_browser: media_browser
+image_upload:
+  status: false
+  scheme: public
+  directory: inline-images
+  max_size: ''
+  max_dimensions:
+    width: null
+    height: null

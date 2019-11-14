@@ -1,0 +1,55 @@
+uuid: 23002e7b-f728-4de2-b712-6c7670a997e7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.next_step.field_next_step_details
+    - field.field.paragraph.next_step.field_next_step_downloads
+    - field.field.paragraph.next_step.field_next_step_link
+    - field.field.paragraph.next_step.field_next_step_title
+    - paragraphs.paragraphs_type.next_step
+  module:
+    - mass_content
+    - text
+id: paragraph.next_step.default
+targetEntityType: paragraph
+bundle: next_step
+mode: default
+content:
+  field_next_step_details:
+    weight: 3
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_next_step_downloads:
+    weight: 2
+    label: above
+    settings:
+      view_mode: media_download_link
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_next_step_link:
+    weight: 1
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: dynamic_link_separate
+    region: content
+  field_next_step_title:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

@@ -1,0 +1,161 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_docs.module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\user\Entity\User;
+use Drupal\taxonomy\Entity\Term;
+
+/**
+ * Implements hook_help().
+ */
+function mass_docs_help($route_name, RouteMatchInterface $route_match) {
+  $output = '';
+  switch ($route_name) {
+    case 'help.page.mass_docs':
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('This module provides integration functionality with Mass Docs.') . '</p>';
+      break;
+
+    default:
+  }
+  return $output;
+}
+
+/**
+ * Implements MODULE_preprocess_HOOK().
+ *
+ * @param array $variables
+ *   Hook variables.
+ */
+function mass_docs_preprocess_input__submit(array &$variables) {
+  /** @var \Drupal\Core\StringTranslation\TranslatableMarkup $attr_value */
+  $attr_value = &$variables['attributes']['value'];
+
+  if ($attr_value instanceof TranslatableMarkup) {
+    // Change "Add new media" button to "Add new file".
+    if ($attr_value->getUntranslatedString() == 'Add new @type_singular' && in_array('media', array_values($attr_value->getArguments()))) {
+      $attr_value = t('Add new file');
+    }
+
+    // Change "Add existing media" button to "Add existing file".
+    if ($attr_value->getUntranslatedString() == 'Add existing @type_singular' && in_array('media', array_values($attr_value->getArguments()))) {
+      $attr_value = t('Add existing file');
+    }
+
+    // Hide "Add media" button from selection of existing files since it is
+    // replaced by "Select Entities" button.
+    if ($attr_value->getUntranslatedString() == 'Add @type_singular'
+      && in_array('media', array_values($attr_value->getArguments()))
+      && strpos($variables['attributes']['id'], 'form-actions-ief-reference-save') !== FALSE) {
+      $variables['attributes']['class'][] = 'visually-hidden';
+    }
+
+    // Change "Create media" button to "Save file" and
+    // add blue background color to button.
+    if ($attr_value->getUntranslatedString() == 'Create @type_singular' && in_array('media', array_values($attr_value->getArguments()))) {
+      $attr_value = t('Save file');
+      $variables['attributes']['class'][] = 'button--primary';
+    }
+
+    // Change "Add another item" by "Add another geographic place".
+    if ($attr_value->getUntranslatedString() == 'Add another item' && in_array('field_geographic_place', $variables['element']['#parents'], TRUE)) {
+      $attr_value = t('Add another geographic place');
+    }
+  }
+}
+
+/**
+ * Implements MODULE_preprocess_HOOK().
+ *
+ * @param array $variables
+ *   Hook variables.
+ */
+function mass_docs_preprocess_fieldset(array &$variables) {
+  /** @var \Drupal\Core\StringTranslation\TranslatableMarkup $legend_title */
+  $legend_title = &$variables['legend']['title']['#markup'];
+  if ($legend_title instanceof TranslatableMarkup) {
+    // Change "Add existing media" button to "Add existing file".
+    if ($legend_title->getUntranslatedString() == 'Add existing @type_singular' && in_array('media', array_values($legend_title->getArguments()))) {
+      $legend_title = t('Add existing file');
+    }
+  }
+}
+
+/**
+ * Implements hook_inline_entity_form_table_fields_alter().
+ */
+function mass_docs_inline_entity_form_table_fields_alter(&$fields, $context) {
+  // Only change documents (not videos or any other media entity).
+  if ($context['entity_type'] = 'media' && in_array('document', $context['allowed_bundles'])) {
+    // Remove Media Name from table.
+    unset($fields['label']);
+
+    // Add Title to the $fields array.
+    $fields['field_title'] = [
+      'type' => 'field',
+      'label' => t('Title'),
+      'weight' => 2,
+    ];
+
+    // Apply image style to thumbnail.
+    $fields['thumbnail']['display_options']['settings']['image_style'] = 'thumbnail_40_x_40';
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_docs_form_media_document_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Auto-populate fields in media document with user defined values.
+  _mass_docs_auto_populate_user_fields($form);
+}
+
+/**
+ * Auto-populate fields in media document with user defined values.
+ *
+ * @param array $form
+ *   The form to populate.
+ */
+function _mass_docs_auto_populate_user_fields(array &$form) {
+  // Load organization value from user field.
+  $user = User::load(Drupal::currentUser()->id());
+  /** @var \Drupal\Core\Field\EntityReferenceFieldItemList $org_entity */
+  $org_entity = $user->get('field_user_org');
+  $organization_id = empty($org_entity->referencedEntities()) ? NULL : current($org_entity->referencedEntities())->id();
+
+  $form['field_contributing_organization']['widget'][0]['target_id']['#default_value'] = empty($organization_id) ? NULL : Term::load($organization_id);
+  $form['field_creator']['widget']['target_id']['#default_value'] = (empty($data) || empty($data['authors'])) ? NULL : Term::loadMultiple($data['authors']);
+  $form['field_contact_name']['widget'][0]['target_id']['#default_value'] = (empty($data) || empty($data['contact_name'])) ? NULL : Term::load($data['contact_name']);
+  $form['field_contact_information']['widget'][0]['value']['#default_value'] = empty($data) || empty($data['contact_info']) ? NULL : $data['contact_info'];
+}
+
+/**
+ * Implements hook_entity_type_update().
+ */
+function mass_docs_media_update(EntityInterface $entity) {
+  drupal_set_message('Your changes have been successfully made.', 'status', TRUE);
+}
+
+/**
+ * Implements hook_entity_type_insert().
+ */
+function mass_docs_media_insert(EntityInterface $entity) {
+  drupal_set_message('Your changes have been successfully made.', 'status', TRUE);
+}
+
+/**
+ * Implements hook_inline_entity_form_entity_form_alter().
+ */
+function mass_docs_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
+  if ($entity_form['#entity_type'] == 'media' && $entity_form['#bundle'] == 'document') {
+    // Auto-populate fields in media document with user defined values.
+    _mass_docs_auto_populate_user_fields($entity_form);
+  }
+}

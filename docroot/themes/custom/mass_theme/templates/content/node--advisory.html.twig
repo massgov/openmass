@@ -1,0 +1,142 @@
+{#
+/**
+ * @file
+ * Theme override to display the full view mode of the Advisory content type.
+ */
+ #}
+{% extends 'node.html.twig' %}
+
+{# Set top heading level for the page. #}
+{% set level = 1 %}
+
+{% block preContent %}
+  {% set secondaryIndicators = false %}
+  {% if node.computed_related_to is not empty %}
+    {% set secondaryIndicators = {
+      "label": "related to"
+    } %}
+  {% endif %}
+
+  {% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "primary": {
+        "label": "offered by"
+      },
+      "secondary": secondaryIndicators
+    }
+  } %}
+    {% block primaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.computed_related_to }}
+    {% endblock %}
+  {% endembed %}
+  {{ content.referencing_binders }}
+  {% include "@organisms/by-template/page-header.twig" %}
+{% endblock %}
+
+{% block main %}
+  {# Increase heading number by 1 from the parent heading. #}
+  {% set level = level + 1 %}
+  <div class="main-content main-content--two">
+    <div class="page-content">
+      {% block pageContent %}
+        {% if sideContent.contactList %}
+          {% set contactList = sideContent.contactList %}
+          {% include "@organisms/by-author/contact-list.twig" %}
+        {% endif %}
+      {% endblock %}
+    </div>
+  </div>
+<div class="ma__policy-advisory__content">
+  {% include "@organisms/by-template/sticky-toc.twig" with {
+    "stickyTOC": {
+      "title": "Table of Contents"|t,
+      "parent": ".ma__policy-advisory__content",
+      "sections": ".page-content h2"
+    }
+  } %}
+  <div class="main-content main-content--two">
+    <div class="page-content">
+      {% if numOfSections %}
+         {% for i in range(1, numOfSections) %}
+          {% set richText = sections[i] %}
+          {% if richText.title %}
+             {% set richText = richText|merge({'compHeading': {
+              'title': richText.title.compHeading.title,
+              'titleContext': richText.title.compHeading.titleContext,
+              'level': level,
+              'sub': '',
+              'id': richText.title.compHeading.id,
+              'centered': '' }}) %}
+          {% endif %}
+          {% if richText.richTextContent %}
+              {% set richText = richText|merge({'rteElements': richText.richTextContent.rteElements }) %}
+          {% endif %}
+          {% include "@organisms/by-author/rich-text.twig" %}
+        {% endfor %}
+      {% endif %}
+        {% if content.field_advisory_download|render is not empty %}
+        {# Using the field_advisory_download view mode to display the URL for doucments in this section. #}
+          {%  embed "@organisms/by-author/form-downloads.twig" with {
+            "formDownloads": {
+              "compHeading": {
+                "title": "Downloads",
+                "id": "downloads",
+                "level": level,
+                "titleContext": "for " ~ node.title.value
+              }
+            }
+          } %}
+            {% block formDownloadLinks %}
+              {{ content.field_advisory_download }}
+            {% endblock %}
+          {% endembed %}
+        {% endif %}
+        {% if mainContent.contactList %}
+          {% set contactList = mainContent.contactList %}
+          {% set contactList = contactList|merge({'compHeading': {
+            'title': contactList.compHeading.title,
+            'titleContext': contactList.compHeading.titleContext,
+            'level': level,
+            'id': contactList.compHeading.id }}) %}
+          {% include "@organisms/by-author/contact-list.twig" %}
+        {% endif %}
+        {% if mainContent.footnoteList %}
+          {% set footnoteList = mainContent.footnoteList %}
+          {% include "@organisms/by-author/footnote-list.twig" %}
+        {% endif %}
+        {% if mainContent.references %}
+          {% set headerTags = mainContent.references %}
+          {% include "@molecules/header-tags.twig" %}
+        {% endif %}
+    </div>
+    <aside class="sidebar">
+      {% if sideContent.contactList %}
+        {% set contactList = sideContent.contactList %}
+        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
+        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
+        {% include "@organisms/by-author/contact-list.twig" %}
+      {% endif %}
+      {% if sideContent.pressListing %}
+        {% set pressListing = sideContent.pressListing %}
+        {% set sidebarHeading = pressListing.sidebarHeading|merge({'level': level }) %}
+        {% set pressListing = pressListing|merge({'sidebarHeading': sidebarHeading }) %}
+        {% include "@organisms/by-author/press-listing.twig" %}
+      {% endif %}
+      {% if sideContent.eventListing %}
+        {% set eventListing = sideContent.eventListing %}
+        {% set sidebarHeading = eventListing.sidebarHeading|merge({'level': level }) %}
+        {% set eventListing = eventListing|merge({'sidebarHeading': sidebarHeading }) %}
+        {% include "@organisms/by-author/event-listing.twig" %}
+      {% endif %}
+    </aside>
+  </div>
+</div>
+{% endblock %}
+
+{% block postContent %}
+  {{ content.extra_node_pager }}
+  {{ content.extra_org_feedback_form }}
+{% endblock %}

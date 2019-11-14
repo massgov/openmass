@@ -1,0 +1,33 @@
+uuid: fcf2d327-a565-4f60-b547-251bd873cc29
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.action_step_numbered.field_content
+    - field.field.paragraph.action_step_numbered.field_title
+    - paragraphs.paragraphs_type.action_step_numbered
+  module:
+    - text
+id: paragraph.action_step_numbered.default
+targetEntityType: paragraph
+bundle: action_step_numbered
+mode: default
+content:
+  field_content:
+    weight: 1
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_title:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  created: true
+  uid: true

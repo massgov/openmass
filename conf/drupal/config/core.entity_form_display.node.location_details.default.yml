@@ -1,0 +1,206 @@
+uuid: 5e460864-43cb-4c4a-aeed-82047ddc3141
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.location_details.field_intended_audience
+    - field.field.node.location_details.field_location_details_lede
+    - field.field.node.location_details.field_location_details_links_5
+    - field.field.node.location_details.field_location_details_metatags
+    - field.field.node.location_details.field_location_details_sections
+    - field.field.node.location_details.field_organizations
+    - field.field.node.location_details.field_state_organization_tax
+    - node.type.location_details
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - field_group
+    - link
+    - mass_validation
+    - metatag
+    - paragraphs
+    - scheduler
+    - scheduler_content_moderation_integration
+third_party_settings:
+  field_group:
+    group_location_detail_node_edit:
+      children:
+        - group_overview
+        - group_sections
+        - group_related
+      parent_name: ''
+      weight: 0
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Location Detail Node Edit'
+    group_overview:
+      children:
+        - title
+        - field_location_details_lede
+        - field_organizations
+        - field_intended_audience
+      parent_name: group_location_detail_node_edit
+      weight: 20
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: true
+      label: Overview
+    group_sections:
+      children:
+        - field_location_details_sections
+      parent_name: group_location_detail_node_edit
+      weight: 22
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Sections
+    group_related:
+      children:
+        - field_location_details_links_5
+      parent_name: group_location_detail_node_edit
+      weight: 23
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Related
+id: node.location_details.default
+targetEntityType: node
+bundle: location_details
+mode: default
+content:
+  field_intended_audience:
+    weight: -2
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_location_details_lede:
+    weight: -4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_location_details_links_5:
+    weight: 32
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - contact_information
+          - fee
+          - legacy_redirects
+    type: link_default
+    region: content
+  field_location_details_metatags:
+    weight: 33
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_location_details_sections:
+    weight: 31
+    settings:
+      title: Section
+      title_plural: Sections
+      edit_mode: open
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    type: entity_reference_paragraphs
+    region: content
+  field_organizations:
+    weight: -3
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_state_organization_tax:
+    weight: 34
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 100
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: -5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  uid:
+    type: entity_reference_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

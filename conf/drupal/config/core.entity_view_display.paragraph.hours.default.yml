@@ -1,0 +1,63 @@
+uuid: 6eadcfc4-fae5-4f67-b0c6-f96650d1c2fa
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.hours.field_hours_description
+    - field.field.paragraph.hours.field_hours_group_title
+    - field.field.paragraph.hours.field_hours_structured
+    - paragraphs.paragraphs_type.hours
+  module:
+    - office_hours
+id: paragraph.hours.default
+targetEntityType: paragraph
+bundle: hours
+mode: default
+content:
+  field_hours_description:
+    weight: 4
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_hours_group_title:
+    weight: 5
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_hours_structured:
+    weight: 3
+    label: hidden
+    settings:
+      show_closed: open
+      office_hours_first_day: ''
+      day_format: long
+      time_format: g
+      grouped: '1'
+      closed_format: ''
+      separator:
+        days: '<br />'
+        grouped_days: ' - '
+        day_hours: ': '
+        hours_hours: '-'
+        more_hours: ', '
+      current_status:
+        position: hide
+        open_text: Open
+        closed_text: Closed
+      compress: 0
+      timezone_field: ''
+    third_party_settings: {  }
+    type: office_hours
+    region: content
+hidden:
+  created: true
+  field_hours: true
+  field_label: true
+  field_time_frame: true
+  uid: true

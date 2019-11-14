@@ -1,0 +1,62 @@
+uuid: 1298f98a-62b4-4601-9d19-43c0f8f49f41
+langcode: en
+status: true
+dependencies:
+  config:
+    - entity_browser.browser.browse_files_modal
+    - field.field.paragraph.action_set.field_featured_content
+    - field.field.paragraph.action_set.field_image
+    - field.field.paragraph.action_set.field_link_single
+    - field.field.paragraph.action_set.field_related_content
+    - paragraphs.paragraphs_type.action_set
+  module:
+    - entity_browser
+    - link
+id: paragraph.action_set.default
+targetEntityType: paragraph
+bundle: action_set
+mode: default
+content:
+  field_featured_content:
+    weight: 7
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_image:
+    weight: 6
+    settings:
+      entity_browser: browse_files_modal
+      field_widget_remove: true
+      selection_mode: selection_append
+      preview_image_style: thumbnail
+      field_widget_edit: true
+      open: false
+      view_mode: default
+    third_party_settings: {  }
+    type: entity_browser_file
+    region: content
+  field_link_single:
+    weight: 9
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_related_content:
+    weight: 8
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

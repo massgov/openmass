@@ -1,0 +1,32 @@
+uuid: f67d97f1-f2e9-43d1-8c28-cf294f83e6ad
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.list_item_person.field_contact_values_to_display
+    - field.field.paragraph.list_item_person.field_person
+    - paragraphs.paragraphs_type.list_item_person
+id: paragraph.list_item_person.default
+targetEntityType: paragraph
+bundle: list_item_person
+mode: default
+content:
+  field_contact_values_to_display:
+    type: options_buttons
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_person:
+    type: entity_reference_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true
+  uid: true

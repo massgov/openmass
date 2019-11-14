@@ -1,0 +1,62 @@
+uuid: 52417181-fd42-44d0-b4df-258aad76b49a
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.action.field_action_banner
+    - field.field.node.action.field_action_details
+    - field.field.node.action.field_action_header
+    - field.field.node.action.field_action_sidebar
+    - field.field.node.action.field_alert_dropdown
+    - field.field.node.action.field_alert_link
+    - field.field.node.action.field_alert_text
+    - field.field.node.action.field_external_url
+    - field.field.node.action.field_header_cta
+    - field.field.node.action.field_image_credit
+    - field.field.node.action.field_lede
+    - field.field.node.action.field_metatags
+    - field.field.node.action.field_search
+    - field.field.node.action.field_state_organization_tax
+    - node.type.action
+  module:
+    - user
+_core:
+  default_config_hash: uSY2w6GyTDDnAnGYGodDDgDlPb7xBipUTuevEv03mT0
+id: node.action.teaser
+targetEntityType: node
+bundle: action
+mode: teaser
+content:
+  extra_org_feedback_form:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  workbench_moderation_control:
+    weight: -20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  content_moderation_control: true
+  field_action_banner: true
+  field_action_details: true
+  field_action_header: true
+  field_action_sidebar: true
+  field_alert_dropdown: true
+  field_alert_link: true
+  field_alert_text: true
+  field_external_url: true
+  field_header_cta: true
+  field_image_credit: true
+  field_lede: true
+  field_metatags: true
+  field_organizations: true
+  field_search: true
+  field_state_organization_tax: true

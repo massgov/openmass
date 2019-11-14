@@ -1,0 +1,23 @@
+uuid: 764f4c53-1226-4254-9bc5-aa72ffec1381
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: service_page_all_tasks
+label: 'Service Page All Tasks'
+type: 'canonical_entities:node'
+pattern: '%/tasks'
+view_mode: all_tasks
+selection_criteria:
+  911971ef-73f9-40ed-9d97-1c80fa250e18:
+    id: node_type
+    bundles:
+      service_page: service_page
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 911971ef-73f9-40ed-9d97-1c80fa250e18
+selection_logic: and
+weight: -5
+relationships: {  }

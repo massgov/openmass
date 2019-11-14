@@ -1,0 +1,32 @@
+uuid: 79b02e58-cd2f-4aa0-8b76-75f551259313
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_how_to_time
+    - node.type.how_to_page
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.how_to_page.field_how_to_time
+field_name: field_how_to_time
+entity_type: node
+bundle: how_to_page
+label: 'Time callout'
+description: 'Optional. If there is a consistent, expected amount of time to complete this action, add it here. Make this a complete statement (e.g. “''Most people hear back 4-6 weeks after submitting their application.”)'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

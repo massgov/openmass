@@ -1,0 +1,26 @@
+uuid: 3ece95e0-33d0-46f6-9fb7-0830f1becf2d
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_admin_pages
+    - system
+  theme:
+    - mass_admin_theme
+id: alerts
+theme: mass_admin_theme
+region: header
+weight: -9
+provider: null
+plugin: alerts_block
+settings:
+  id: alerts_block
+  label: Alerts
+  provider: mass_admin_pages
+  label_display: visible
+visibility:
+  request_path:
+    id: request_path
+    pages: "\r\n"
+    negate: true
+    context_mapping: {  }

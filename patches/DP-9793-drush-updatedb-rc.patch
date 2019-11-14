@@ -1,0 +1,13 @@
+diff --git a/src/Commands/core/UpdateDBCommands.php b/src/Commands/core/UpdateDBCommands.php
+index 2e3299a4..a8a481c9 100644
+--- a/src/Commands/core/UpdateDBCommands.php
++++ b/src/Commands/core/UpdateDBCommands.php
+@@ -186,7 +186,7 @@ class UpdateDBCommands extends DrushCommands
+                 $ret['results']['success'] = true;
+             } // @TODO We may want to do different error handling for different exception
+             // types, but for now we'll just print the message.
+-            catch (\Exception $e) {
++            catch (\Throwable $e) {
+                 $ret['#abort'] = ['success' => false, 'query' => $e->getMessage()];
+                 $this->logger()->error($e->getMessage());
+             }

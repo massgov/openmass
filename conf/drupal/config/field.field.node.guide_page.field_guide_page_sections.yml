@@ -1,0 +1,164 @@
+uuid: 6a28403b-2e81-47fc-837d-d8a6c0abf20f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_guide_page_sections
+    - node.type.guide_page
+    - paragraphs.paragraphs_type.guide_section
+    - paragraphs.paragraphs_type.guide_section_3up
+  module:
+    - entity_reference_revisions
+id: node.guide_page.field_guide_page_sections
+field_name: field_guide_page_sections
+entity_type: node
+bundle: guide_page
+label: Sections
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      guide_section: guide_section
+      guide_section_3up: guide_section_3up
+    target_bundles_drag_drop:
+      1up_stacked_band:
+        weight: 46
+        enabled: false
+      2up_stacked_band:
+        weight: 47
+        enabled: false
+      3_up_content:
+        weight: 48
+        enabled: false
+      3_up_text:
+        weight: 49
+        enabled: false
+      action_address:
+        weight: 50
+        enabled: false
+      action_address_info:
+        weight: 51
+        enabled: false
+      action_area:
+        weight: 52
+        enabled: false
+      action_set:
+        weight: 53
+        enabled: false
+      action_step:
+        weight: 54
+        enabled: false
+      action_step_numbered:
+        weight: 55
+        enabled: false
+      action_step_numbered_list:
+        weight: 56
+        enabled: false
+      activities:
+        weight: 57
+        enabled: false
+      activity:
+        weight: 58
+        enabled: false
+      callout_alert:
+        weight: 59
+        enabled: false
+      callout_button:
+        weight: 60
+        enabled: false
+      callout_link:
+        weight: 61
+        enabled: false
+      completion_time:
+        weight: 62
+        enabled: false
+      contact:
+        weight: 63
+        enabled: false
+      contact_group:
+        weight: 64
+        enabled: false
+      contact_info:
+        weight: 65
+        enabled: false
+      emergency_alert:
+        weight: 66
+        enabled: false
+      file_download:
+        weight: 67
+        enabled: false
+      full_bleed:
+        weight: 68
+        enabled: false
+      guide_section:
+        enabled: true
+        weight: 69
+      guide_section_3up:
+        enabled: true
+        weight: 70
+      hours:
+        weight: 71
+        enabled: false
+      icon:
+        weight: 72
+        enabled: false
+      icon_link:
+        weight: 73
+        enabled: false
+      icon_links:
+        weight: 74
+        enabled: false
+      iframe:
+        weight: 75
+        enabled: false
+      image:
+        weight: 76
+        enabled: false
+      location_information:
+        weight: 77
+        enabled: false
+      map:
+        weight: 78
+        enabled: false
+      map_row:
+        weight: 79
+        enabled: false
+      pull_quote:
+        weight: 80
+        enabled: false
+      quick_action:
+        weight: 81
+        enabled: false
+      related_content:
+        weight: 82
+        enabled: false
+      related_link:
+        weight: 83
+        enabled: false
+      rich_text:
+        weight: 84
+        enabled: false
+      search_band:
+        weight: 85
+        enabled: false
+      slideshow:
+        weight: 86
+        enabled: false
+      stacked_band:
+        weight: 87
+        enabled: false
+      stat:
+        weight: 88
+        enabled: false
+      subhead:
+        weight: 89
+        enabled: false
+      video:
+        weight: 90
+        enabled: false
+field_type: entity_reference_revisions

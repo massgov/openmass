@@ -1,0 +1,383 @@
+/**
+ * @file
+ * Form element style overrides for Mass Admin.
+ */
+
+input.form-autocomplete,
+input.form-text,
+input.form-tel,
+input.form-email,
+input.form-url,
+input.form-search,
+input.form-number,
+input.form-color,
+input.form-file,
+input.form-date,
+input.form-time,
+textarea.form-textarea {
+  width: 100%;
+  font-size: 1.125rem;
+  line-height: 1.3125rem;
+  background: #fff;
+  border: 1px solid #14558f;
+  border-radius: 3px;
+  box-shadow: none;
+  padding: 0.5rem 0.5rem 0.5rem 0.75rem;
+  color: #535353;
+}
+
+ul.tips,
+div.description,
+.description p,
+.description div,
+.form-item .description {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  margin: 0.75rem;
+}
+
+.form-item {
+  margin-bottom: 0;
+}
+
+div[class^="field--type-"] {
+  padding-bottom: 2.25rem;
+  border-top: 0.5rem solid #f2f2f2;
+}
+div.field--type-metatag,
+div.field--type-language {
+  padding: 0;
+  border-top: 0;
+}
+
+div[class^="field--type-"] .form-item label {
+  font-size: 1.3125rem;
+  line-height: 1.5625rem;
+}
+
+label {
+  margin: 1.5rem 0 0.75rem;
+  font-weight: bold;
+  font-size: 1.3125rem;
+  line-height: 1.5625rem;
+  color: #141414;
+}
+
+.form-composite > legend,
+.label {
+  display: block;
+  font-size: 1.3125rem;
+  line-height: 1.5625rem;
+  font-weight: bold;
+  color: #141414;
+  margin: 1.5rem 0 0.75rem;
+  padding: 0;
+}
+
+.form-disabled label {
+  color: #737373;
+}
+.form-text:focus,
+.form-tel:focus,
+.form-email:focus,
+.form-url:focus,
+.form-search:focus,
+.form-number:focus,
+.form-color:focus,
+.form-file:focus,
+.form-textarea:focus,
+.form-date:focus,
+.form-time:focus {
+  border-color: #43956f;
+  outline: 0;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .05), 0 0 8px #43956f;
+  background-color: #fff;
+}
+
+/**
+ * Select elements
+ */
+select {
+  -moz-appearance: none;
+  font-size: 1.125rem;
+  line-height: 1.3125rem;
+  padding: 0.5rem 1.5625rem 0.5rem 0.5rem; /* LTR */
+  border: 1px solid #14558f;
+  border-radius: 3px;
+  background: url(../../icons/333333/caret-down.svg) no-repeat 99% 63%, #fff; /* LTR */
+  text-shadow: none;
+  -webkit-transition: all 0.1s;
+  transition: all 0.1s;
+  -webkit-font-smoothing: antialiased;
+}
+
+select::-ms-expand {
+  display: none;
+}
+
+[dir="rtl"] select {
+  padding: 0.5rem 0.5rem 0.5rem 1.5625rem;
+  background-position: 1% 63%, 0 0;
+}
+select:focus,
+select:hover {
+  background: url(../../icons/333333/caret-down.svg) no-repeat 99% 63%, #fff; /* LTR */
+  -moz-appearance: none;
+}
+select:focus {
+  border-color: #43956f;
+  outline: 0;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, .05), 0 0 8px #43956f;
+}
+
+.form--inline {
+  background-color: #fff;
+  border-radius: 6px;
+  padding: 0 0.75rem;
+  margin-bottom: 3rem;
+}
+.views-exposed-form .form--inline {
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+/* Field layout special cases */
+/* ToDo: Move these to their own stylesheets.*/
+
+/* widget area/add iframe */
+.field--name-field-iframe {
+  margin-top: 1.5rem;
+}
+.field--name-field-iframe strong {
+  font-size: 1.3125rem;
+  line-height: 1.5625rem;
+}
+.field--name-field-iframe .paragraph-type-title {
+  font-size: 1.3125rem;
+  line-height: 1.5625rem;
+  font-weight: bold;
+}
+.field--name-field-iframe-admin-title,
+.field--name-field-iframe-accessibility-title,
+.field--name-field-iframe .field--name-moderation-state {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+/* Image credits field */
+.field--name-field-image-credit thead tr {
+  border-bottom: none;
+}
+.field--name-field-image-credit th.field-label {
+  font-size: 1.3125rem;
+  line-height: 1.5625rem;
+}
+.field--name-field-image-credit td {
+  padding: 1.5rem 0;
+}
+
+.field--type-entity-reference.field--name-moderation-state {
+  padding: 0;
+  border: none;
+}
+
+/* Date and time field */
+.field--type-daterange fieldset {
+  border-top: 0;
+}
+
+.field--type-daterange .container-inline {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.field--type-daterange .container-inline > .form-type-select {
+  flex: 1 0 auto;
+  margin-right: 0.75rem;
+}
+
+.field--type-daterange .container-inline select {
+  width: 100%;
+}
+
+.entity-browser-media-browser-form {
+  background-color: #fff;
+}
+
+/* end Field layout special cases */
+
+/* FIELD GROUP TABS */
+.field-group-tab {
+  padding: 0;
+}
+
+/* FIELDSETS */
+fieldset {
+  border: none;
+}
+
+fieldset:not(.fieldgroup) {
+  background-color: #fff;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  position: relative;
+}
+
+fieldset:not(.fieldgroup) > legend {
+  font-size: 1.3125rem;
+  line-height: 1.5625rem;
+  font-weight: bold;
+  letter-spacing: normal;
+  position: relative;
+  text-transform: none;
+  margin: 1.5rem 0;
+  top: 1.5rem;
+}
+
+.form-composite > .fieldset-wrapper > .description,
+.form-item .description {
+  font-size: 1.125rem;
+  margin-left: 0;
+}
+
+fieldset .fieldset-wrapper .container-inline input {
+  margin-bottom: 1.5rem;
+}
+
+.ief-form .node-edit-protection-processed {
+  margin-top: 1.5rem;
+  margin-left: 0;
+}
+.ief-form .fieldset-legend {
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+/* DRAGGABLE TABLE ROWS */
+form .field-multiple-table thead > tr {
+  padding: 0;
+  font-size: 1.3125rem;
+  line-height: 1.5625rem;
+  border: none;
+}
+.field-multiple-table td.mass-description {
+  font-size: 1.125rem;
+  line-height: 1.5rem;
+  padding: 0.75rem 0 0 0;
+}
+.form-item .field-multiple-table thead .field-label {
+  padding: 0;
+}
+.form-item .field-multiple-table thead h4 {
+  margin-top: 0;
+  margin-bottom: 0;
+}
+div.js-form-item  .field-multiple-table tr.draggable {
+  border-top: 1.25rem solid #fff;
+  border-bottom: 1.5rem solid #fff;
+}
+
+form .field-multiple-table tr.draggable td > div,
+form .field-multiple-table tr.draggable td > .ajax-new-content > div {
+  padding: 0.375rem 1.5rem 0.375rem 0.75rem;
+}
+form .field-multiple-table tr.draggable td > div.ajax-new-content {
+  padding: 0;
+}
+form .field-multiple-table .field-multiple-drag {
+  width: auto;
+  padding: 0;
+  vertical-align: top;
+  border-right: 8px solid #f2f2f2;
+}
+form .field-multiple-table tr.draggable,
+form .field-multiple-table td label {
+  margin-top: 0;
+}
+
+form .field-multiple-table tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 0;
+}
+
+form .field-multiple-table .form-item label {
+  color: #535353;
+  font-size: 1.125rem;
+  line-height: 1.375rem;
+  margin-bottom: 0.5rem;
+}
+
+form .field-multiple-table .field-multiple-drag .tabledrag-handle {
+  padding-right: 0.75rem;
+  padding-left: 1.5rem;
+}
+
+form .field-add-more-submit {
+  margin: 0 .5rem;
+}
+
+form .field-add-more-submit:first-child {
+  margin-right: 0.5rem;
+}
+
+/* DRAGGABLE TABLE ROWS INSIDE OF FIELDSETS */
+fieldset tr.draggable .field--type-entity-reference,
+fieldset tr.draggable .field--type-string {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+fieldset.js-form-item tr.draggable td + td,
+div.js-form-item tr.draggable td + td {
+  padding: 0;
+  width: 100%;
+}
+
+/*
+ * Style overrides for inline entity forms
+ */
+
+/* Above rule on td's in draggable tr's needs to be refactored. In the meantime we need an override for ief's. */
+fieldset.js-form-item .ief-entity-table tr.ief-row-entity td,
+div.js-form-item .ief-entity-table tr.ief-row-entity td {
+  width: auto;
+}
+
+.ief-row-entity td .ief-entity-operations {
+  padding: 0.25rem;
+}
+
+@media screen and (max-width: 600px) {
+  .entity-browser-media-browser-form .form-wrapper input[type="submit"] {
+    width: auto;
+  }
+  .entity-browser-media-browser-form .form-wrapper .is-entity-browser-submit {
+    margin-left: 0.5rem;
+  }
+  .form-actions input:first-child,
+  .form-wrapper input[type="submit"]:first-child {
+    margin-top: 1rem;
+  }
+}
+
+/* Entity browser form elements  */
+.entity-browser-browse-files-form .js-form-item-upload {
+  padding: 0 1.25rem;
+}
+.entity-browser-browse-files-form .field-prefix {
+  font-size: 1.3125rem;
+  line-height: 1.5rem;
+}
+
+/*
+ * Overrides styles for layout and other misc. node add/edit page styles.
+ * TODO move this to a better location.
+ */
+
+.layout-region-node-footer__content {
+  border-top: 1px solid #14558f;
+  padding-top: 0.5em;
+  margin-top: 1.5em;
+}

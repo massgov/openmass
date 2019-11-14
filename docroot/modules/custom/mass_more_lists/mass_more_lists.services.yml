@@ -1,0 +1,7 @@
+services:
+  mass_more_lists.list_builder:
+    class: Drupal\mass_more_lists\Service\MassMoreListsListBuilder
+    arguments: ['@string_translation', '%mass_more_lists.list_builder.page_limit%']
+
+parameters:
+  mass_more_lists.list_builder.page_limit: 15

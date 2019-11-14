@@ -1,0 +1,31 @@
+version: '3'
+
+services:
+  drupal:
+    image: "massgov/drupal-container:1.0.11-ci"
+    volumes:
+      - .:/var/www:${VOLUME_FLAGS-rw}
+    environment:
+      DOCKER_ENV: ci
+      APACHE_DOCROOT: /var/www/docroot
+      MYSQL_USER: circle
+      MYSQL_PASSWORD: circle
+      MYSQL_DATABASE: circle
+      MYSQL_HOST: mysql
+      # Copy vars from host to the container.
+      AC_API_KEY:  $AC_API_KEY
+      AC_API_USER: $AC_API_USER
+    links:
+      - mysql
+    working_dir: /var/www
+
+  mysql:
+    build: .
+    environment:
+      MYSQL_USER: circle
+      MYSQL_PASSWORD: circle
+      MYSQL_DATABASE: circle
+      MYSQL_RANDOM_ROOT_PASSWORD: 1
+    command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
+
+

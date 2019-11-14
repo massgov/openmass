@@ -1,0 +1,39 @@
+{#
+/**
+ * @file
+ * Theme implementation for a document in the linked desc view mode.
+ *
+ * Available variables:
+ * - name: Name of the media.
+ * - content: Media content.
+ *
+ * @see template_preprocess_media()
+ *
+ * @ingroup themeable
+ */
+#}
+{% include "@molecules/download-link.twig" with {
+  "downloadLink": {
+    "iconSize": '',
+    "icon": content.extra_file_icon['#markup'],
+    "decorativeLink": {
+      "href": url('media_entity_download.download', {'media': elements['#media'].mid.value}),
+      "text": content.field_title|field_value,
+      "info": '',
+      "property": ''
+    },
+    "size": content.calculated_file_size,
+    "format": content.extra_file_extension,
+    "description": {
+      "rteElements": [{
+        "path": "@atoms/11-text/paragraph.twig",
+        "data": {
+          "paragraph" : {
+            "text": elements['#options']['manual_description']
+          }
+        }
+      }]
+    }
+  }
+} %}
+{{ content | without('field_title', 'calculated_file_size', 'extra_file_extension', 'extra_file_icon') }}

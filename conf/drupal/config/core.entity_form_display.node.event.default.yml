@@ -1,0 +1,653 @@
+uuid: 6bb0de1d-fff1-4b0d-a6af-385f7fc7bbda
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.event.field_event_address_type
+    - field.field.node.event.field_event_agenda_download
+    - field.field.node.event.field_event_capacity
+    - field.field.node.event.field_event_contact_general
+    - field.field.node.event.field_event_date
+    - field.field.node.event.field_event_description
+    - field.field.node.event.field_event_fees
+    - field.field.node.event.field_event_image
+    - field.field.node.event.field_event_lede
+    - field.field.node.event.field_event_link_sign_up
+    - field.field.node.event.field_event_links
+    - field.field.node.event.field_event_logo
+    - field.field.node.event.field_event_meeting_agenda_sect
+    - field.field.node.event.field_event_meeting_minutes
+    - field.field.node.event.field_event_metatags
+    - field.field.node.event.field_event_minutes_download
+    - field.field.node.event.field_event_participating_orgs
+    - field.field.node.event.field_event_posted_date
+    - field.field.node.event.field_event_public_testimony
+    - field.field.node.event.field_event_rain_date
+    - field.field.node.event.field_event_ref_contact
+    - field.field.node.event.field_event_ref_downloads
+    - field.field.node.event.field_event_ref_event_2
+    - field.field.node.event.field_event_ref_parents
+    - field.field.node.event.field_event_ref_unique_address
+    - field.field.node.event.field_event_time
+    - field.field.node.event.field_event_type_list
+    - field.field.node.event.field_event_you_will_need
+    - field.field.node.event.field_intended_audience
+    - field.field.node.event.field_organizations
+    - field.field.node.event.field_state_organization_tax
+    - image.style.thumbnail
+    - node.type.event
+    - workflows.workflow.editorial
+  module:
+    - conditional_fields
+    - content_moderation
+    - datetime
+    - datetime_range
+    - entity_browser_entity_form
+    - field_group
+    - image
+    - inline_entity_form
+    - link
+    - metatag
+    - paragraphs
+    - scheduler
+    - scheduler_content_moderation_integration
+    - text
+third_party_settings:
+  field_group:
+    group_event_edit_form:
+      children:
+        - group_overview
+        - group_details
+        - group_address
+        - group_contacts
+        - group_event_agenda
+        - group_event_meeting_minutes
+        - group_related
+      parent_name: ''
+      weight: 1
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Event Page Edit Form'
+    group_details:
+      children:
+        - field_event_rain_date
+        - field_event_link_sign_up
+        - field_event_image
+        - field_event_fees
+        - field_event_capacity
+        - field_event_description
+        - field_event_you_will_need
+        - group_additional_resources
+      parent_name: group_event_edit_form
+      weight: 21
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Details
+    group_overview:
+      children:
+        - title
+        - field_event_type_list
+        - field_event_lede
+        - field_event_participating_orgs
+        - field_event_logo
+        - field_event_time
+        - field_event_date
+        - field_event_posted_date
+        - field_event_public_testimony
+        - field_organizations
+        - field_intended_audience
+      parent_name: group_event_edit_form
+      weight: 20
+      format_type: tab
+      format_settings:
+        label: Overview
+        formatter: open
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+      label: Overview
+    group_contacts:
+      children:
+        - field_event_contact_general
+      parent_name: group_event_edit_form
+      weight: 23
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Contacts
+    group_related:
+      children:
+        - field_event_ref_parents
+        - field_event_ref_event_2
+      parent_name: group_event_edit_form
+      weight: 26
+      format_type: tab
+      format_settings:
+        label: Related
+        formatter: closed
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+      label: Related
+    group_additional_resources:
+      children:
+        - field_event_links
+        - field_event_ref_downloads
+      parent_name: group_details
+      weight: 44
+      format_type: fieldset
+      format_settings:
+        label: 'Additional Resources (optional)'
+        description: 'Add up to 6 additional resources.'
+        id: additional-resources-tab
+        classes: ''
+        required_fields: false
+      label: 'Additional Resources (optional)'
+    group_address:
+      children:
+        - field_event_address_type
+        - field_event_ref_contact
+        - field_event_ref_unique_address
+      parent_name: group_event_edit_form
+      weight: 22
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Address
+    group_event_meeting_minutes:
+      children:
+        - field_event_meeting_minutes
+        - field_event_minutes_download
+      parent_name: group_event_edit_form
+      weight: 25
+      format_type: tab
+      format_settings:
+        label: Minutes
+        formatter: closed
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+      label: Minutes
+    group_event_agenda:
+      children:
+        - field_event_meeting_agenda_sect
+        - field_event_agenda_download
+      parent_name: group_event_edit_form
+      weight: 24
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Agenda
+id: node.event.default
+targetEntityType: node
+bundle: event
+mode: default
+content:
+  field_event_address_type:
+    weight: 46
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_event_agenda_download:
+    weight: 28
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+      collapsible: false
+      collapsed: false
+      allow_duplicate: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: media_browser
+      conditional_fields: {  }
+    type: inline_entity_form_complex
+    region: content
+  field_event_capacity:
+    weight: 41
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_event_contact_general:
+    weight: 35
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_event_date:
+    weight: 56
+    settings: {  }
+    third_party_settings: {  }
+    type: daterange_default
+    region: content
+  field_event_description:
+    weight: 42
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_event_fees:
+    weight: 40
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_event_image:
+    weight: 39
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_event_lede:
+    weight: 52
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_event_link_sign_up:
+    weight: 38
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_event_links:
+    weight: 29
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - contact_information
+          - fee
+          - legacy_redirects
+    type: link_default
+    region: content
+  field_event_logo:
+    weight: 54
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_event_meeting_agenda_sect:
+    type: entity_reference_paragraphs
+    weight: 27
+    settings:
+      title: 'Agenda section'
+      title_plural: 'Agenda sections'
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings:
+      conditional_fields: {  }
+    region: content
+  field_event_meeting_minutes:
+    type: entity_reference_paragraphs
+    weight: 57
+    settings:
+      title: 'Minutes section'
+      title_plural: 'Minutes sections'
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings:
+      conditional_fields: {  }
+    region: content
+  field_event_metatags:
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_event_minutes_download:
+    weight: 59
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+      collapsible: false
+      collapsed: false
+      allow_duplicate: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: media_browser
+      conditional_fields: {  }
+    type: inline_entity_form_complex
+    region: content
+  field_event_participating_orgs:
+    weight: 53
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      conditional_fields: {  }
+    type: link_default
+    region: content
+  field_event_posted_date:
+    weight: 57
+    settings:
+      date_order: YMD
+      time_type: '12'
+      increment: 1
+    third_party_settings:
+      conditional_fields:
+        d895c354-79d0-47ca-a96a-d11b0e8c2aa5:
+          dependee: field_event_type_list
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: public_meeting
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: event
+    type: datetime_datelist
+    region: content
+  field_event_public_testimony:
+    weight: 58
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        7ef8bfea-438d-485e-9f71-7fb6224c24f6:
+          dependee: field_event_type_list
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: public_meeting
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: event
+    type: string_textfield
+    region: content
+  field_event_rain_date:
+    weight: 36
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_event_ref_contact:
+    weight: 47
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        c0b31f59-7f24-419f-bf1c-1c669e65e491:
+          dependee: field_event_address_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: 'contact info'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: event
+    type: entity_reference_autocomplete
+    region: content
+  field_event_ref_downloads:
+    weight: 30
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+      collapsible: false
+      collapsed: false
+      allow_duplicate: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: media_browser
+    type: inline_entity_form_complex
+    region: content
+  field_event_ref_event_2:
+    weight: 62
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_event_ref_parents:
+    weight: 61
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        b53bc81c-083e-4fc2-9205-3c663808fc60:
+          dependee: field_event_type_list
+          settings:
+            state: required
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: general_meeting
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: event
+    type: entity_reference_autocomplete
+    region: content
+  field_event_ref_unique_address:
+    type: entity_reference_paragraphs
+    weight: 48
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings:
+      conditional_fields:
+        fff1c2c2-d79f-4d85-bfb0-134140077a73:
+          dependee: field_event_address_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: unique
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: event
+    region: content
+  field_event_time:
+    weight: 55
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_event_type_list:
+    weight: 51
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_event_you_will_need:
+    weight: 43
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_intended_audience:
+    weight: 60
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_organizations:
+    weight: 59
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_state_organization_tax:
+    weight: 6
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 100
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 50
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  uid:
+    type: entity_reference_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

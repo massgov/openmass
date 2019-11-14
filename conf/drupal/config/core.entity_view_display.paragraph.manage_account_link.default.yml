@@ -1,0 +1,35 @@
+uuid: a8884111-8b5f-44f1-91ac-8c5897ec9226
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.manage_account_link.field_manage_account_link
+    - field.field.paragraph.manage_account_link.field_manage_account_link_body
+    - paragraphs.paragraphs_type.manage_account_link
+  module:
+    - link
+id: paragraph.manage_account_link.default
+targetEntityType: paragraph
+bundle: manage_account_link
+mode: default
+content:
+  field_manage_account_link:
+    weight: 1
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_manage_account_link_body:
+    weight: 0
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+hidden: {  }

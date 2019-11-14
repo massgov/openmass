@@ -1,0 +1,38 @@
+uuid: aee0beb8-aa70-4280-aba7-fdf6a058ae4f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_image
+    - paragraphs.paragraphs_type.key_message
+  module:
+    - image
+id: paragraph.key_message.field_image
+field_name: field_image
+entity_type: paragraph
+bundle: key_message
+label: 'Background Image'
+description: 'Recommended image size is 1920x1080.  Choose a decorative image that does not need text explanation.  This is a background image and no ALT text is provided for visitors using a screenreader. If there is any text in the image, the text should be repeated in the content of the key message row.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  file_directory: '[date:custom:Y]-[date:custom:m]'
+  file_extensions: 'png gif jpg jpeg'
+  max_filesize: ''
+  max_resolution: ''
+  min_resolution: 1920x1080
+  alt_field: false
+  alt_field_required: true
+  title_field: false
+  title_field_required: false
+  default_image:
+    uuid: ''
+    alt: ''
+    title: ''
+    width: null
+    height: null
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: image

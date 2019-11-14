@@ -1,0 +1,33 @@
+uuid: e9a0207b-ff07-4398-bcd3-b9fa340ae86b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.method.field_method_details
+    - field.field.paragraph.method.field_method_type
+    - paragraphs.paragraphs_type.method
+  module:
+    - text
+id: paragraph.method.default
+targetEntityType: paragraph
+bundle: method
+mode: default
+content:
+  field_method_details:
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_method_type:
+    weight: 6
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

@@ -1,0 +1,66 @@
+uuid: 25afa994-5df6-4a06-9d78-e0ed6e0502a8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.search_band.field_caption
+    - field.field.paragraph.search_band.field_description
+    - field.field.paragraph.search_band.field_home_bckgrnd_img_paragraph
+    - field.field.paragraph.search_band.field_image
+    - field.field.paragraph.search_band.field_link
+    - field.field.paragraph.search_band.field_link_six
+    - field.field.paragraph.search_band.field_name
+    - field.field.paragraph.search_band.field_title
+    - paragraphs.paragraphs_type.search_band
+  module:
+    - entity_reference_revisions
+    - link
+id: paragraph.search_band.default
+targetEntityType: paragraph
+bundle: search_band
+mode: default
+content:
+  field_description:
+    weight: 2
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_home_bckgrnd_img_paragraph:
+    type: entity_reference_revisions_entity_view
+    weight: 0
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_link_six:
+    weight: 3
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_title:
+    weight: 1
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  created: true
+  field_caption: true
+  field_image: true
+  field_link: true
+  field_name: true
+  uid: true

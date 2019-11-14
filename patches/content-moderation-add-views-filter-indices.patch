@@ -1,0 +1,20 @@
+diff --git a/core/modules/content_moderation/src/Plugin/views/filter/ModerationStateFilter.php b/core/modules/content_moderation/src/Plugin/views/filter/ModerationStateFilter.php
+index c658ef8759..29ceb9eddb 100644
+--- a/core/modules/content_moderation/src/Plugin/views/filter/ModerationStateFilter.php
++++ b/core/modules/content_moderation/src/Plugin/views/filter/ModerationStateFilter.php
+@@ -133,6 +133,15 @@ public function ensureMyTable() {
+             'field' => 'content_entity_type_id',
+             'value' => $left_entity_type->id(),
+           ],
++          [
++            'field' => 'content_entity_id',
++            'left_table' => $table_alias,
++            'left_field' => $left_entity_type->getKey('id'),
++          ],
++          [
++            'field' => 'workflow',
++            'value' => $this->getWorkflowIds(),
++          ],
+         ],
+       ];
+       if ($left_entity_type->isTranslatable()) {

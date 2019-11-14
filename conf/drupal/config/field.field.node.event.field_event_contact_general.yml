@@ -1,0 +1,30 @@
+uuid: 218c1b7c-7594-4338-abc1-426680882f2f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_event_contact_general
+    - node.type.contact_information
+    - node.type.event
+    - node.type.person
+id: node.event.field_event_contact_general
+field_name: field_event_contact_general
+entity_type: node
+bundle: event
+label: 'General contact'
+description: 'Optional. Select the contact(s) or person(s) people should use if they have questions about this event. The first contact listed will also appear in the sidebar as “Contact."'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      contact_information: contact_information
+      person: person
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: contact_information
+field_type: entity_reference

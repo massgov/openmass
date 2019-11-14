@@ -1,0 +1,63 @@
+uuid: d057c539-afdf-40b1-a213-a223e967a73e
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_admin_pages
+    - mass_content_api
+    - menu_ui
+    - node_title_help_text
+    - scheduler
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+  scheduler:
+    expand_fieldset: when_required
+    fields_display_mode: vertical_tab
+    publish_enable: true
+    publish_past_date: error
+    publish_required: false
+    publish_revision: true
+    publish_touch: false
+    unpublish_enable: true
+    unpublish_required: false
+    unpublish_revision: true
+  mass_content_api:
+    parents: null
+    children:
+      - field_org_ref_locations
+      - field_ref_actions_6
+      - field_about>field_read_more_page
+      - field_person_bio
+      - field_links_actions_3
+      - field_org_featured_items>field_featured_item_mosaic_items>field_featured_item_link
+      - 'field_org_our_orgs>*'
+    linking_pages:
+      - field_links_actions_3
+      - field_org_featured_news_items
+      - field_org_ref_locations
+      - field_ref_actions_6
+      - field_ref_card_view_6
+      - field_ref_card_view_6>field_topic_content_cards>field_content_card_link_cards
+      - field_org_featured_news_items
+      - field_ref_contact_info
+      - field_ref_contact_info_1
+      - field_ref_orgs
+      - field_person_bio
+      - field_org_featured_items>field_featured_item_mosaic_items>field_featured_item_link
+      - 'field_org_our_orgs>*'
+  mass_admin_pages:
+    node_type_long_description: " <ul> \r\n<li>Organizations</li>\r\n<li>Elected officials</li>\r\n<li>Commissions</li>\r\n<li>Boards</li>\r\n</ul>"
+    node_type_url: ''
+    node_type_category: organization
+    node_type_thumbnail_path: /modules/custom/mass_admin_pages/images/add-thumbnail_organizational-landing.svg
+  node_title_help_text:
+    title_help: ''
+name: Organization
+type: org_page
+description: '<p>Connect readers with your agency’s Services, Locations, News, and Events.</p><p><a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/orgs-and-contact-info/organization-pages/general-org-page" target="_blank">Learn more about authoring Organization Pages.</a></p>'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false

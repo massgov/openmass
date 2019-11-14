@@ -1,0 +1,58 @@
+{#
+/**
+ * @file
+ * Theme override to display the Full view mode of the Error Page content type.
+ */
+ #}
+
+{%
+  set narrowTemplate = {
+  'side': 'left',
+  'color': 'green',
+  }
+%}
+
+{% if narrowTemplate.side %}
+  {% set side = "ma__narrow-template--" ~ narrowTemplate.side %}
+{% endif %}
+
+{% if narrowTemplate.color %}
+  {% set color = "ma__narrow-template--" ~ narrowTemplate.color %}
+{% endif %}
+
+<main id="main-content" class="ma__narrow-template {{side}} {{color}}" tabindex="-1">
+  <header class="ma__narrow-template__header">
+    <div class="ma__site-logo">
+      <a href="/" title="Mass.gov home page">
+        <img src="/{{ directory }}/overrides/images/mass-logo.png" alt="Mass.gov" width="164" height="75" />
+      </a>
+    </div>
+  </header>
+  <div class="ma__narrow-template__container">
+    <div class="ma__narrow-template__content">
+      {% block narrowContent %}
+        {%
+          set transitionPage = {
+            'icon': '@atoms/05-icons/svg-crossroads.twig',
+            'message': content.field_message|field_value,
+            'href': 'http://www.mass.gov',
+            'submit': 'Continue',
+            'back': 'Back',
+            'inputCheckbox': {
+              'value': 'hide-transition-page',
+              'id': 'hide-transition-page',
+              'label': content.field_interstitial_checkbox_msg|field_value,
+              'checked': '',
+            }
+          }
+        %}
+        {% include "@organisms/by-template/transition-page.twig" with { 'transitionPage': transitionPage } %}
+        {{ attach_library('mass_theme/interstitial-page') }}
+      {% endblock %}
+    </div>
+  </div>
+  {% block schemaContent %}
+  {% endblock %}
+</main>
+
+

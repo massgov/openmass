@@ -1,0 +1,48 @@
+diff --git a/src/Entity/Media.php b/src/Entity/Media.php
+index a73200a..5dd802c 100644
+--- a/src/Entity/Media.php
++++ b/src/Entity/Media.php
+@@ -19,6 +19,7 @@ use Drupal\user\UserInterface;
+  *   bundle_label = @Translation("Media bundle"),
+  *   handlers = {
+  *     "storage" = "Drupal\media_entity\MediaStorage",
++ *     "storage_schema" = "Drupal\media_entity\MediaStorageSchema",
+  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+  *     "list_builder" = "Drupal\Core\Entity\EntityListBuilder",
+  *     "access" = "Drupal\media_entity\MediaAccessController",
+diff --git a/src/MediaStorageSchema.php b/src/MediaStorageSchema.php
+new file mode 100644
+index 0000000..0c10b66
+--- /dev/null
++++ b/src/MediaStorageSchema.php
+@@ -0,0 +1,30 @@
++<?php
++
++namespace Drupal\media_entity;
++
++use Drupal\Core\Entity\Sql\SqlContentEntityStorageSchema;
++use Drupal\Core\Entity\ContentEntityTypeInterface;
++
++/**
++ * Media entity storage schema.
++ */
++class MediaStorageSchema extends SqlContentEntityStorageSchema {
++
++  /**
++   * {@inheritdoc}
++   *
++   * Add an index on the changed and created fields to speed up listings.
++   */
++  protected function getEntitySchema(ContentEntityTypeInterface $entity_type, $reset = FALSE) {
++    $schema = parent::getEntitySchema($entity_type, $reset);
++
++    if(!isset($schema['media_field_data']['indexes']['media__changed'])) {
++      $schema['media_field_data']['indexes']['media__changed'] = ['changed'];
++    }
++    if(!isset($schema['media_field_data']['indexes']['media__created'])) {
++      $schema['media_field_data']['indexes']['media__created'] = ['created'];
++    }
++
++    return $schema;
++  }
++}

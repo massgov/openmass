@@ -1,0 +1,282 @@
+uuid: 0b60c6f8-5a17-4181-8755-798ee34b0101
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.location.field_accessibility
+    - field.field.node.location.field_bg_narrow
+    - field.field.node.location.field_bg_wide
+    - field.field.node.location.field_iframe
+    - field.field.node.location.field_image_credit
+    - field.field.node.location.field_intended_audience
+    - field.field.node.location.field_links
+    - field.field.node.location.field_location_activity_detail
+    - field.field.node.location.field_location_all_activities
+    - field.field.node.location.field_location_facilities
+    - field.field.node.location.field_location_icons
+    - field.field.node.location.field_location_icons_park
+    - field.field.node.location.field_location_metatags
+    - field.field.node.location.field_location_more_information
+    - field.field.node.location.field_location_subtitle
+    - field.field.node.location.field_location_type
+    - field.field.node.location.field_organizations
+    - field.field.node.location.field_overview
+    - field.field.node.location.field_parking
+    - field.field.node.location.field_ref_contact_info
+    - field.field.node.location.field_ref_contact_info_1
+    - field.field.node.location.field_related_locations
+    - field.field.node.location.field_restrictions
+    - field.field.node.location.field_services
+    - field.field.node.location.field_state_organization_tax
+    - node.type.location
+  module:
+    - entity_reference_revisions
+    - image
+    - link
+    - metatag
+    - options
+    - text
+    - user
+id: node.location.default
+targetEntityType: node
+bundle: location
+mode: default
+content:
+  computed_related_locations:
+    type: entity_reference_entity_view
+    weight: 11
+    region: content
+    label: above
+    settings:
+      view_mode: organization_grid
+      link: false
+    third_party_settings: {  }
+  computed_related_to:
+    type: entity_reference_label
+    weight: 25
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+  content_moderation_control:
+    weight: -20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_contact_info_static_map:
+    weight: 28
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_org_feedback_form:
+    weight: 27
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_accessibility:
+    weight: 9
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_bg_narrow:
+    weight: 4
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_bg_wide:
+    weight: 3
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_iframe:
+    type: entity_reference_revisions_entity_view
+    weight: 5
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_image_credit:
+    weight: 19
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_intended_audience:
+    weight: 23
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_links:
+    weight: 13
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_location_activity_detail:
+    type: entity_reference_revisions_entity_view
+    weight: 15
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_location_all_activities:
+    weight: 20
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_location_facilities:
+    weight: 17
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_location_icons:
+    weight: 16
+    label: above
+    settings:
+      link: true
+      view_mode: default
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_location_icons_park:
+    weight: 26
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_location_metatags:
+    weight: 22
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_empty_formatter
+    region: content
+  field_location_more_information:
+    weight: 18
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_location_subtitle:
+    weight: 24
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_location_type:
+    weight: 21
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_organizations:
+    type: entity_reference_label
+    weight: 23
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_overview:
+    weight: 6
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_parking:
+    weight: 7
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_ref_contact_info:
+    weight: 14
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_ref_contact_info_1:
+    weight: 2
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_related_locations:
+    weight: 12
+    label: above
+    settings:
+      link: true
+      view_mode: default
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_restrictions:
+    weight: 10
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_services:
+    weight: 8
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_facilities: true
+  field_more_information: true
+  field_state_organization_tax: true

@@ -1,0 +1,28 @@
+uuid: 0c6b1923-eaea-4bb8-bd78-f90c0a1e6506
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.directory
+    - field.field.paragraph.fax_number.field_caption
+    - field.field.paragraph.fax_number.field_fax
+    - field.field.paragraph.fax_number.field_label
+    - paragraphs.paragraphs_type.fax_number
+id: paragraph.fax_number.directory
+targetEntityType: paragraph
+bundle: fax_number
+mode: directory
+content:
+  field_caption:
+    type: string
+    weight: 0
+    region: content
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+hidden:
+  created: true
+  field_fax: true
+  field_label: true
+  uid: true

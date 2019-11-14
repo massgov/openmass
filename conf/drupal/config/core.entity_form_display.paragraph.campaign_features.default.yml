@@ -1,0 +1,101 @@
+uuid: bfc8f8b0-1843-4429-80db-6ca051215277
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.campaign_features.field_2up_featured_item
+    - field.field.paragraph.campaign_features.field_2up_featured_item_2
+    - field.field.paragraph.campaign_features.field_full_width_featured_item
+    - field.field.paragraph.campaign_features.field_main_heading
+    - field.field.paragraph.campaign_features.field_url
+    - paragraphs.paragraphs_type.campaign_features
+  module:
+    - link
+    - paragraphs
+id: paragraph.campaign_features.default
+targetEntityType: paragraph
+bundle: campaign_features
+mode: default
+content:
+  field_2up_featured_item:
+    type: paragraphs
+    weight: 2
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: closed_expand_nested
+      closed_mode: summary
+      autocollapse: none
+      closed_mode_threshold: 0
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: featured_content_2up_item
+      features:
+        collapse_edit_all: collapse_edit_all
+        duplicate: '0'
+        add_above: '0'
+    third_party_settings: {  }
+    region: content
+  field_2up_featured_item_2:
+    type: paragraphs
+    weight: 3
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: closed_expand_nested
+      closed_mode: summary
+      autocollapse: none
+      closed_mode_threshold: 0
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: featured_content_2up_item
+      features:
+        collapse_edit_all: collapse_edit_all
+        duplicate: '0'
+        add_above: '0'
+    third_party_settings: {  }
+    region: content
+  field_full_width_featured_item:
+    type: paragraphs
+    weight: 1
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: closed_expand_nested
+      closed_mode: summary
+      autocollapse: none
+      closed_mode_threshold: 0
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: featured_content_single_item
+      features:
+        collapse_edit_all: collapse_edit_all
+        duplicate: '0'
+        add_above: '0'
+    third_party_settings: {  }
+    region: content
+  field_main_heading:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_url:
+    weight: 3
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  paragraphs_type_help__default:
+    weight: -100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true
+  uid: true

@@ -1,0 +1,32 @@
+uuid: 3ae3c290-795b-4d82-bdd1-ec627bc69a18
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_curatedlist_lede
+    - node.type.curated_list
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.curated_list.field_curatedlist_lede
+field_name: field_curatedlist_lede
+entity_type: node
+bundle: curated_list
+label: 'Short description'
+description: 'Give a brief overview of what a user could find in this list.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

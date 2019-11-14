@@ -1,0 +1,35 @@
+uuid: cc7c1447-f807-4de5-95ae-dcd375fc569a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.links.field_label
+    - field.field.paragraph.links.field_link_single
+    - paragraphs.paragraphs_type.links
+  module:
+    - link
+id: paragraph.links.default
+targetEntityType: paragraph
+bundle: links
+mode: default
+content:
+  field_label:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_link_single:
+    weight: 7
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

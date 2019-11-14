@@ -1,0 +1,28 @@
+uuid: 01eb954a-403e-429e-9f7b-1c573c813c6f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_regulation_contact
+    - node.type.contact_information
+    - node.type.regulation
+id: node.regulation.field_regulation_contact
+field_name: field_regulation_contact
+entity_type: node
+bundle: regulation
+label: Contact
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      contact_information: contact_information
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

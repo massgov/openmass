@@ -1,0 +1,27 @@
+uuid: 1a02f482-9b08-4eac-8421-e903d678c513
+langcode: en
+status: false
+dependencies:
+  module:
+    - mass_admin_pages
+    - system
+  theme:
+    - mass_admin_theme
+id: introtextblock
+theme: mass_admin_theme
+region: content
+weight: 0
+provider: null
+plugin: intro_text_block
+settings:
+  id: intro_text_block
+  label: 'Add content page intro text'
+  provider: mass_admin_pages
+  label_display: '0'
+  block_intro_text_string: "<p>Select a content type by entering text in the filter or choosing a category. The list will automatically update to show only items that match what you've chosen.</p>\r\n"
+visibility:
+  request_path:
+    id: request_path
+    pages: /node/add
+    negate: false
+    context_mapping: {  }

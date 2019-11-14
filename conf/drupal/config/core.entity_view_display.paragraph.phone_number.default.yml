@@ -1,0 +1,40 @@
+uuid: b7268b92-78a4-4f52-85a7-0a091304cd21
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.phone_number.field_caption
+    - field.field.paragraph.phone_number.field_label
+    - field.field.paragraph.phone_number.field_phone
+    - paragraphs.paragraphs_type.phone_number
+id: paragraph.phone_number.default
+targetEntityType: paragraph
+bundle: phone_number
+mode: default
+content:
+  field_caption:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_label:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_phone:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+hidden:
+  created: true
+  uid: true

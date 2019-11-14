@@ -1,0 +1,44 @@
+uuid: d408de5d-526b-4b18-b44c-78c3063162df
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.title_short_desc
+    - field.field.node.service_details.field_organizations
+    - field.field.node.service_details.field_service_detail_contact
+    - field.field.node.service_details.field_service_detail_lede
+    - field.field.node.service_details.field_service_detail_links_5
+    - field.field.node.service_details.field_service_detail_metatags
+    - field.field.node.service_details.field_service_detail_overview
+    - field.field.node.service_details.field_service_detail_sections
+    - field.field.node.service_details.field_state_organization_tax
+    - node.type.service_details
+  module:
+    - user
+id: node.service_details.title_short_desc
+targetEntityType: node
+bundle: service_details
+mode: title_short_desc
+content:
+  field_service_detail_lede:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  field_intended_audience: true
+  field_organizations: true
+  field_service_detail_contact: true
+  field_service_detail_links_5: true
+  field_service_detail_metatags: true
+  field_service_detail_overview: true
+  field_service_detail_sections: true
+  field_state_organization_tax: true
+  links: true
+  workbench_moderation_control: true

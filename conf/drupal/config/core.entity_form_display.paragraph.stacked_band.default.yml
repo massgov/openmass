@@ -1,0 +1,32 @@
+uuid: 8ca44124-e1ab-4b00-b6ba-c6c0cb96a62f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.stacked_band.field_band
+    - paragraphs.paragraphs_type.stacked_band
+  module:
+    - inline_entity_form
+id: paragraph.stacked_band.default
+targetEntityType: paragraph
+bundle: stacked_band
+mode: default
+content:
+  field_band:
+    weight: 6
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+    third_party_settings: {  }
+    type: inline_entity_form_complex
+    region: content
+hidden:
+  created: true
+  field_band: true
+  status: true
+  uid: true

@@ -1,0 +1,10 @@
+services:
+  mass_content.event_manager:
+    class: Drupal\mass_content\EventManager
+    arguments: ['@entity_type.manager']
+  mass_content.entity_sorter:
+    class: Drupal\mass_content\EntitySorter
+    arguments: ['@entity_type.manager']
+  mass_content.log_in_links_builder:
+    class: Drupal\mass_content\LogInLinksBuilder
+    arguments: ['@descendant_manager']

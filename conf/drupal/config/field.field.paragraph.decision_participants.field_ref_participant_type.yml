@@ -1,0 +1,28 @@
+uuid: ac1beada-81cf-44a8-b979-47d242171f6d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_ref_participant_type
+    - paragraphs.paragraphs_type.decision_participants
+    - taxonomy.vocabulary.decision_participant_type
+id: paragraph.decision_participants.field_ref_participant_type
+field_name: field_ref_participant_type
+entity_type: paragraph
+bundle: decision_participants
+label: 'Participant type'
+description: 'Choose the participant type.  If you do not see the type you need, please <a href="https://massgov.formstack.com/forms/request_new_decision_or_advisory_type">request it</a>.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      decision_participant_type: decision_participant_type
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

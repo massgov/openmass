@@ -1,0 +1,51 @@
+uuid: b789f14e-81d1-490c-8a89-e54d168de65d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.list_item_document.field_listitemdoc_desc_manual
+    - field.field.paragraph.list_item_document.field_listitemdoc_desc_type
+    - field.field.paragraph.list_item_document.field_liststaticdoc_item
+    - paragraphs.paragraphs_type.list_item_document
+  module:
+    - options
+id: paragraph.list_item_document.default
+targetEntityType: paragraph
+bundle: list_item_document
+mode: default
+content:
+  extra_list_linked_desc:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_list_manual_desc:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_listitemdoc_desc_manual:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_listitemdoc_desc_type:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_liststaticdoc_item:
+    weight: 0
+    label: hidden
+    settings:
+      view_mode: media_download_link
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+hidden: {  }

@@ -1,0 +1,52 @@
+uuid: c902ea7d-9431-4e80-85d4-2f29ca4f6033
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_admin_pages
+    - mass_content_api
+    - menu_ui
+    - node_title_help_text
+    - scheduler
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+  scheduler:
+    expand_fieldset: when_required
+    fields_display_mode: vertical_tab
+    publish_enable: true
+    publish_past_date: error
+    publish_required: false
+    publish_revision: true
+    publish_touch: false
+    unpublish_enable: true
+    unpublish_required: false
+    unpublish_revision: true
+  mass_content_api:
+    parents:
+      - field_decision_ref_organization
+    children: null
+    linking_pages:
+      - referencing_binders
+      - page_next
+      - page_previous
+      - field_decision_download
+      - field_decision_ref_contact
+      - field_decision_ref_organization
+      - field_decision_related
+      - field_decision_sources
+  mass_admin_pages:
+    node_type_long_description: "<ul>\r\n<li>Temporary orders</li>\r\n<li>Mandates</li>\r\n<li>Settlements</li>\r\n</ul>"
+    node_type_url: ''
+    node_type_category: laws_regulations
+    node_type_thumbnail_path: /modules/custom/mass_admin_pages/images/add-thumbnail_decision.svg
+  node_title_help_text:
+    title_help: ''
+name: Decision
+type: decision
+description: '<p>Document official decisions, rulings, or opinions. Choose from many Decision types.</p>'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

@@ -1,0 +1,46 @@
+uuid: ccd45381-b11a-4d1c-bd35-20214b642e99
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.external_organization.field_external_org_description
+    - field.field.paragraph.external_organization.field_external_org_name
+    - field.field.paragraph.external_organization.field_external_org_photo
+    - image.style.thumbnail
+    - paragraphs.paragraphs_type.external_organization
+  module:
+    - image
+    - text
+id: paragraph.external_organization.default
+targetEntityType: paragraph
+bundle: external_organization
+mode: default
+content:
+  field_external_org_description:
+    weight: 1
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_external_org_name:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_external_org_photo:
+    weight: 2
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

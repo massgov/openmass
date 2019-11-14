@@ -1,0 +1,30 @@
+uuid: 8626f454-4ac1-436a-81b0-5abc42b7b5c5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.start_button.field_start_button_branch
+    - field.field.paragraph.start_button.field_start_button_label
+    - paragraphs.paragraphs_type.start_button
+id: paragraph.start_button.default
+targetEntityType: paragraph
+bundle: start_button
+mode: default
+content:
+  field_start_button_branch:
+    weight: 1
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_start_button_label:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

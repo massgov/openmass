@@ -1,0 +1,26 @@
+uuid: a9b0c97c-45d0-4995-92da-573e3d2c4375
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.board_member.field_eyebrow
+    - field.field.paragraph.board_member.field_person
+    - field.field.paragraph.board_member.field_position_is_vacant
+    - paragraphs.paragraphs_type.board_member
+id: paragraph.board_member.default
+targetEntityType: paragraph
+bundle: board_member
+mode: default
+content:
+  field_person:
+    weight: 0
+    label: hidden
+    settings:
+      view_mode: preview_card
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+hidden:
+  field_eyebrow: true
+  field_position_is_vacant: true

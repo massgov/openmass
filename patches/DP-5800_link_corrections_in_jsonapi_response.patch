@@ -1,0 +1,52 @@
+diff --git a/src/Normalizer/EntityNormalizer.php b/src/Normalizer/EntityNormalizer.php
+index ffd94e6..5afd30f 100644
+--- a/src/Normalizer/EntityNormalizer.php
++++ b/src/Normalizer/EntityNormalizer.php
+@@ -100,6 +100,9 @@ class EntityNormalizer extends NormalizerBase implements DenormalizerInterface {
+       $normalizer_values[$field_name] = $this->serializeField($field, $context, $format);
+     }
+ 
++    $normalizer_values["entity_url"] = $this->serializer->normalize($entity->url(), $format, $context);
++    $normalizer_values["entity_url"]->setPropertyType("attributes");
++
+     $link_context = ['link_manager' => $this->linkManager];
+     $output = new EntityNormalizerValue($normalizer_values, $context, $entity, $link_context);
+     // Add the entity level cacheability metadata.
+diff --git a/src/Normalizer/FieldItemNormalizer.php b/src/Normalizer/FieldItemNormalizer.php
+index 673f3b0..e0e15ec 100644
+--- a/src/Normalizer/FieldItemNormalizer.php
++++ b/src/Normalizer/FieldItemNormalizer.php
+@@ -2,6 +2,7 @@
+ 
+ namespace Drupal\jsonapi\Normalizer;
+ 
++use Drupal\Core\Url;
+ use Drupal\Core\Field\FieldItemInterface;
+ use Drupal\jsonapi\Normalizer\Value\FieldItemNormalizerValue;
+ use Symfony\Component\Serializer\Exception\UnexpectedValueException;
+@@ -34,7 +35,24 @@ class FieldItemNormalizer extends NormalizerBase {
+     // We normalize each individual property, so each can do their own casting,
+     // if needed.
+     foreach ($field_item as $property_name => $property) {
+-      $values[$property_name] = $this->serializer->normalize($property, $format, $context);
++      // Jsonapi module normalizes links as URIs (entity:node/[nid])
++      // but we need URL's of the form /orgs/governors-office.
++
++      // 1. If we have a routeable link URI
++      if ($property_name == "uri") {
++        $url = Url::fromUri($property->getString());
++        if ($url->isRouted()) {
++          // 2. Normalize it as URL string
++          $values[$property_name] = $url->toString();
++        } else {
++          // 3. Use default object normalizer for non-routeable links.
++          $values[$property_name] = $this->serializer->normalize($property, $format, $context);
++        }
++      }
++      else {
++        // 4. Use default object normalizer for non-link/non-uri properties.
++        $values[$property_name] = $this->serializer->normalize($property, $format, $context);
++      }
+     }
+ 
+     if (isset($context['langcode'])) {

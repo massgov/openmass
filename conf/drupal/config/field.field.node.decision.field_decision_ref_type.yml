@@ -1,0 +1,28 @@
+uuid: b3828e9f-d066-4242-b08b-0368656b0115
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_decision_ref_type
+    - node.type.decision
+    - taxonomy.vocabulary.decision_type
+id: node.decision.field_decision_ref_type
+field_name: field_decision_ref_type
+entity_type: node
+bundle: decision
+label: Type
+description: 'Choose what type of document this will be.  If you do not see the type you need, please <a href="https://massgov.formstack.com/forms/request_new_decision_or_advisory_type">request it</a>.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      decision_type: decision_type
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

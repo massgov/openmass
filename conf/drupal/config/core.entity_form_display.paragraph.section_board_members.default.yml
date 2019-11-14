@@ -1,0 +1,56 @@
+uuid: ab007c87-65ed-4833-95b9-aae6ef851d7e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.section_board_members.field_add_heading_description
+    - field.field.paragraph.section_board_members.field_board_members
+    - field.field.paragraph.section_board_members.field_description
+    - field.field.paragraph.section_board_members.field_heading
+    - paragraphs.paragraphs_type.section_board_members
+  module:
+    - paragraphs
+id: paragraph.section_board_members.default
+targetEntityType: paragraph
+bundle: section_board_members
+mode: default
+content:
+  field_add_heading_description:
+    weight: 5
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_board_members:
+    weight: 8
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: list_board_members
+    third_party_settings: {  }
+    type: entity_reference_paragraphs
+    region: content
+  field_description:
+    weight: 7
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_heading:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

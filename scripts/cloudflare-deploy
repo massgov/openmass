@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+####
+#
+# cloudflare-deploy
+#
+# This shell script encapsulates the commands needed to deploy our Cloudflare configuration.
+# The only thing you need to run this script are AWS credentials, which must be made available
+# outside of this script, usually by executing `aws-vault`.
+#
+# Example usage:
+#    aws-vault exec massgov -- ./scripts/cloudflare-deploy cf
+#    aws-vault exec massgov -- ./scripts/cloudflare-deploy stage
+#    aws-vault exec massgov -- ./scripts/cloudflare-deploy prod
+#    aws-vault exec massgov -- ./scripts/cloudflare-deploy global
+#
+#
+# The only argument this script takes is the name of the "target" you want to deploy to.
+#
+# The targets are:
+#   cf - The wwwcf.digital.mass.gov and editcf.digital.mass.gov domains
+#   stage - The stage.mass.gov and edit.stage.mass.gov domains.
+#   prod - The www.mass.gov and edit.mass.gov domains.
+#   global - Global configuration that affects all domains.
+#
+###
+
+set -e
+
+TFVERSION="v0.12.3"
+
+ROOT_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+case $1 in
+  cf)
+    TARGET="environment"
+    WORKSPACE=$1;;
+  stage)
+    TARGET="environment"
+    WORKSPACE=$1;;
+  prod)
+    TARGET="environment"
+    WORKSPACE=$1;;
+  global)
+    TARGET="global";;
+  *)
+    echo "Invalid target name $1. Target must be one of (cf, stage, prod, global)"
+    exit 1
+    ;;
+esac
+
+# Run pre-apply checks to be sure we have all the things we need.
+which chamber > /dev/null 2>&1 || {
+  echo "Chamber binary not found. Please install Chamber: https://github.com/segmentio/chamber"; exit 1;
+}
+which terraform > /dev/null 2>&1 || {
+  echo "Terraform not found. Please install Terraform $TFVERSION: https://www.terraform.io/downloads.html"; exit 1;
+}
+terraform --version | grep -q "$TFVERSION" || {
+  echo "Terraform was found, but is not the right version. Please use Terraform $TFVERSION"; exit 1;
+}
+
+
+pushd "$ROOT_DIR/cloudflare"
+  if [ "$TARGET" == "environment" ]; then
+    echo "Building cloudflare worker"
+    npm ci
+    # Use Chamber when building worker to pull in CDN token.
+    chamber exec tf/massgov-cloudflare-deployment -- npm run build
+  fi
+  pushd "$ROOT_DIR/cloudflare/terraform/${TARGET}"
+    terraform init -upgrade
+    if [ "$WORKSPACE" ]; then
+      terraform workspace select "$WORKSPACE"
+    fi
+    chamber exec tf/massgov-cloudflare-deployment -- terraform apply
+  popd
+popd

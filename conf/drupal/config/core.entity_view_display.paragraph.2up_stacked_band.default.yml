@@ -1,0 +1,36 @@
+uuid: 2c187be6-c58f-484e-9604-2e102431609d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.2up_stacked_band.field_main
+    - field.field.paragraph.2up_stacked_band.field_right_rail
+    - paragraphs.paragraphs_type.2up_stacked_band
+  module:
+    - entity_reference_revisions
+id: paragraph.2up_stacked_band.default
+targetEntityType: paragraph
+bundle: 2up_stacked_band
+mode: default
+content:
+  field_main:
+    weight: 2
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    type: entity_reference_revisions_entity_view
+    region: content
+  field_right_rail:
+    type: entity_reference_revisions_entity_view
+    weight: 1
+    label: above
+    settings:
+      view_mode: stacked_sidebar
+      link: ''
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  uid: true

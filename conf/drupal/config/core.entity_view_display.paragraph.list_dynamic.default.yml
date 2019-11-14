@@ -1,0 +1,126 @@
+uuid: 1822208e-24c5-4a70-bbcb-48d9e7c21d11
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.list_dynamic.field_contact_values_to_display
+    - field.field.paragraph.list_dynamic.field_list_dynamic_desc_setting
+    - field.field.paragraph.list_dynamic.field_listdynamic_label
+    - field.field.paragraph.list_dynamic.field_listdynamic_sort
+    - field.field.paragraph.list_dynamic.field_listdynamic_title
+    - paragraphs.paragraphs_type.list_dynamic
+  module:
+    - dynamic_entity_reference
+    - options
+id: paragraph.list_dynamic.default
+targetEntityType: paragraph
+bundle: list_dynamic
+mode: default
+content:
+  computed_dynamic_list:
+    type: dynamic_entity_reference_entity_view
+    weight: 5
+    region: content
+    label: hidden
+    settings:
+      access_token:
+        view_mode: default
+      node:
+        view_mode: link_only
+      menu_link_content:
+        view_mode: default
+      file:
+        view_mode: default
+      flagging:
+        view_mode: default
+      media:
+        view_mode: media_download_link
+      paragraph:
+        view_mode: default
+      redirect:
+        view_mode: default
+      taxonomy_term:
+        view_mode: default
+      user:
+        view_mode: default
+      user_ref_access:
+        view_mode: default
+      contact_message:
+        view_mode: default
+        link: false
+    third_party_settings: {  }
+  computed_dynamic_list_w_desc:
+    type: dynamic_entity_reference_entity_view
+    weight: 6
+    region: content
+    label: hidden
+    settings:
+      access_token:
+        view_mode: default
+      node:
+        view_mode: link_and_description
+      menu_link_content:
+        view_mode: default
+      file:
+        view_mode: default
+      flagging:
+        view_mode: default
+      media:
+        view_mode: linked_desc
+      paragraph:
+        view_mode: default
+      redirect:
+        view_mode: default
+      taxonomy_term:
+        view_mode: default
+      user:
+        view_mode: default
+      user_ref_access:
+        view_mode: default
+      contact_message:
+        view_mode: default
+        link: false
+    third_party_settings: {  }
+  field_contact_values_to_display:
+    weight: 4
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_list_dynamic_desc_setting:
+    type: boolean
+    weight: 3
+    region: content
+    label: hidden
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+  field_listdynamic_label:
+    weight: 2
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_listdynamic_sort:
+    weight: 1
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_listdynamic_title:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  computed_dynamic_directory: true
+  computed_section_id: true

@@ -1,0 +1,163 @@
+uuid: e52dbfd9-cd7e-4120-aac5-f18ea0b9a51f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.curated_list.field_contact
+    - field.field.node.curated_list.field_curatedlist_lede
+    - field.field.node.curated_list.field_curatedlist_list_section
+    - field.field.node.curated_list.field_curatedlist_metatags
+    - field.field.node.curated_list.field_curatedlist_overview
+    - field.field.node.curated_list.field_intended_audience
+    - field.field.node.curated_list.field_list_directory_section
+    - field.field.node.curated_list.field_list_type
+    - field.field.node.curated_list.field_organizations
+    - field.field.node.curated_list.field_related_links
+    - field.field.node.curated_list.field_state_organization_tax
+    - node.type.curated_list
+  module:
+    - entity_reference_revisions
+    - mass_content
+    - metatag
+    - options
+    - text
+    - user
+id: node.curated_list.default
+targetEntityType: node
+bundle: curated_list
+mode: default
+content:
+  computed_related_to:
+    type: entity_reference_label
+    weight: 10
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+  content_moderation_control:
+    weight: -20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_node_pager:
+    weight: 13
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_org_feedback_form:
+    weight: 16
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_sidebar_contact:
+    weight: 11
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_contact:
+    weight: 14
+    label: hidden
+    settings:
+      view_mode: contact_list
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_curatedlist_lede:
+    weight: 3
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_curatedlist_list_section:
+    type: entity_reference_revisions_entity_view
+    weight: 4
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_curatedlist_metatags:
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_empty_formatter
+    region: content
+  field_curatedlist_overview:
+    weight: 5
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_intended_audience:
+    weight: 8
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_list_directory_section:
+    type: entity_reference_revisions_entity_view
+    weight: 9
+    label: above
+    settings:
+      view_mode: directory
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_list_type:
+    weight: 6
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_organizations:
+    type: entity_reference_label
+    weight: 7
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_related_links:
+    weight: 15
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: dynamic_link_separate
+    region: content
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  referencing_binders:
+    type: entity_reference_entity_view
+    weight: 12
+    region: content
+    label: hidden
+    settings:
+      view_mode: table_of_contents
+      link: false
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_state_organization_tax: true
+  page_next: true
+  page_previous: true

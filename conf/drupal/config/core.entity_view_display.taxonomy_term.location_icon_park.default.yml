@@ -1,0 +1,30 @@
+uuid: 3283c28a-cdae-4ab8-8d03-61829b506f0d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.location_icon_park.field_sprite_name
+    - taxonomy.vocabulary.location_icon_park
+  module:
+    - text
+id: taxonomy_term.location_icon_park.default
+targetEntityType: taxonomy_term
+bundle: location_icon_park
+mode: default
+content:
+  description:
+    label: hidden
+    type: text_default
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_sprite_name:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

@@ -1,0 +1,28 @@
+uuid: 53d0ae22-c7d5-4a43-a650-5dd8ffa04b5d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_organizations
+    - media.type.document
+    - node.type.org_page
+id: media.document.field_organizations
+field_name: field_organizations
+entity_type: media
+bundle: document
+label: Organization(s)
+description: 'Choose the organization(s) that offers this information. The organization(s) will be displayed when users search for information by organization and this document will be searchable by all organization(s) listed here.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

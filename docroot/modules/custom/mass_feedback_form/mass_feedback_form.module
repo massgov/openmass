@@ -1,0 +1,124 @@
+<?php
+
+/**
+ * @file
+ * Contains ma_feedback_form.module..
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Render\Markup;
+
+/**
+ * Implements hook_help().
+ */
+function mass_feedback_form_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the ma_feedback_form module.
+    case 'help.page.ma_feedback_form':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Module to manage feedback form through a Block') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Defines twig templates for two feedback form blocks, one called by PageFeedbackForm and the other by NodeFeedbackContainer.
+ */
+function mass_feedback_form_theme() {
+  return [
+    'mass_feedback_form' => [
+      'variables' => ['node_id' => NULL],
+    ],
+    'block__node_feedback_container' => [
+      'render element' => 'elements',
+      'template' => 'block--node-feedback-container',
+      'base hook' => 'block',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_node_update()
+ */
+function mass_feedback_form_node_update(EntityInterface $node) {
+  $notification = \Drupal::state()->get('mass_feedback_form.notification', '');
+  drupal_set_message(Markup::create($notification));
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert()
+ */
+function mass_feedback_form_node_insert(EntityInterface $node) {
+  $notification = \Drupal::state()->get('mass_feedback_form.notification', '');
+  drupal_set_message(Markup::create($notification));
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function mass_feedback_form_entity_extra_field_info() {
+  $extra = [];
+
+  $types = [
+    'advisory',
+    'action',
+    'binder',
+    'curated_list',
+    'decision',
+    'decision_tree',
+    'event',
+    'executive_order',
+    'form_page',
+    'guide_page',
+    'how_to_page',
+    'info_details',
+    'location',
+    'location_details',
+    'news',
+    'org_page',
+    'person',
+    'regulation',
+    'rules',
+    'service_page',
+    'service_details',
+    'stacked_layout',
+    'topic_page',
+  ];
+  foreach ($types as $type) {
+    $extra['node'][$type]['display']['extra_org_feedback_form'] = [
+      'label' => t('Extra Organization Feedback Form'),
+      'description' => t('Uses data from the organization from which this page belongs to produce a feedback form.'),
+      'weight' => 100,
+      'visible' => TRUE,
+    ];
+  }
+
+  return $extra;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ */
+function mass_feedback_form_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if ($display->getComponent('extra_org_feedback_form')) {
+    $entityTypeManager = \Drupal::entityTypeManager();
+    $viewBuilder = $entityTypeManager->getViewBuilder('node');
+    if ($entity->bundle() === 'org_page') {
+      $item = $viewBuilder->view($entity, 'feedback');
+    }
+    else {
+      if ($entity->field_organizations->count() > 0 && !empty($entity->field_organizations[0]->entity)) {
+        $item = $viewBuilder->view($entity->field_organizations[0]->entity, 'feedback');
+      }
+    }
+    $item['#field_name'] = 'extra_org_feedback_form';
+    $build['extra_org_feedback_form'][] = $item;
+  }
+}

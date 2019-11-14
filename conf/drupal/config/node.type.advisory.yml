@@ -1,0 +1,52 @@
+uuid: 3f0e8549-6ead-48a1-9b51-1a74641fee93
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_admin_pages
+    - mass_content_api
+    - menu_ui
+    - node_title_help_text
+    - scheduler
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+  scheduler:
+    expand_fieldset: when_required
+    fields_display_mode: vertical_tab
+    publish_enable: true
+    publish_past_date: error
+    publish_required: false
+    publish_revision: true
+    publish_touch: false
+    unpublish_enable: true
+    unpublish_required: false
+    unpublish_revision: true
+  mass_content_api:
+    parents:
+      - field_advisory_issuer>field_issuer_issuers
+    children: null
+    linking_pages:
+      - field_advisory_download
+      - referencing_binders
+      - page_next
+      - page_previous
+      - 'field_advisory_issuer>*'
+      - field_advisory_links
+      - field_advisory_ref_contact
+      - field_advisory_ref_sources
+  mass_admin_pages:
+    node_type_long_description: "<ul><li>Memos</li>\r\n<li>Letter rulings</li>\r\n<li>Administrative procedures\r\n<li>Directives</li>\r\n</ul>"
+    node_type_url: ''
+    node_type_category: laws_regulations
+    node_type_thumbnail_path: /modules/custom/mass_admin_pages/images/add-thumbnail_advisory.svg
+  node_title_help_text:
+    title_help: ''
+name: Advisory
+type: advisory
+description: '<p>Publish an official announcement or warning from your organization. Choose from many Advisory types.</p>'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

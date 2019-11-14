@@ -1,0 +1,32 @@
+uuid: 087971cb-ceb2-40ad-87be-12477f6f1b8c
+langcode: en
+status: true
+dependencies:
+  config:
+    - entity_browser.browser.browse_files_modal
+    - field.field.paragraph.slideshow.field_slideshow
+    - paragraphs.paragraphs_type.slideshow
+  module:
+    - entity_browser
+id: paragraph.slideshow.default
+targetEntityType: paragraph
+bundle: slideshow
+mode: default
+content:
+  field_slideshow:
+    weight: 6
+    settings:
+      entity_browser: browse_files_modal
+      field_widget_remove: true
+      selection_mode: selection_edit
+      preview_image_style: thumbnail
+      field_widget_edit: true
+      open: false
+      view_mode: default
+    third_party_settings: {  }
+    type: entity_browser_file
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

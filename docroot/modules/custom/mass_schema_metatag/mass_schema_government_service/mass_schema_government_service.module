@@ -1,0 +1,85 @@
+<?php
+
+/**
+ * @file
+ * Contains schema_article.module.
+ */
+
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_metatag_groups_alter().
+ *
+ * Every module should implement this to add a flag to the object types they
+ * create.
+ */
+function mass_schema_government_service_metatag_groups_alter(&$data) {
+  $module_name = basename(__FILE__, '.module');
+  foreach ($data as $key => $value) {
+    if ($value['provider'] == $module_name) {
+      $data[$key]['schema_metatag'] = TRUE;
+    }
+  }
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function mass_schema_government_service_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  /** @var \Drupal\token\Token $token_service */
+  $token_service = \Drupal::token();
+
+  $replacements = [];
+
+  if (!empty($data['node'])) {
+    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+    $entity = $data['node'];
+
+    // Iterate through all the tokens.
+    foreach ($tokens as $name => $original) {
+
+      // Check for the [entity:field_name] token.
+      if (strpos($name, ':') !== FALSE) {
+        list($name) = explode(':', $name);
+      }
+
+      // If the node entity doesn't have the field, continue.
+      if (!$entity->hasField($name)) {
+        continue;
+      }
+
+      $field_type = $entity->get($name)->getFieldDefinition()->getType();
+
+      // Otherwise, just get the value from the field.
+      if ($field_type == 'link') {
+        $value = $entity->get($name)->getValue();
+        if (!empty($value)) {
+          $data = [];
+          // Get the link value, which will be an array containing the link's
+          // attributes - such as the 'name' and 'uri'.
+          foreach ($value as $link) {
+            $name = !empty($link['title']) ? $link['title'] : '';
+            $url = '';
+            if (!empty($link['uri'])) {
+              // Compute the absolute URL given the uri.
+              $url = Url::fromUri($link['uri'], ['absolute' => TRUE])
+                ->toString();
+            }
+            // Store everything in the array object.
+            $data[] = [
+              'name' => $name,
+              'url' => $url,
+            ];
+          }
+          // For each replacement token, JSON-encode the data. This data will be
+          // set as the value of the field token - for which it will need to be
+          // JSON-decoded before use.
+          $replacements[$original] = json_encode($data);
+        }
+      }
+    }
+  }
+
+  return $replacements;
+}

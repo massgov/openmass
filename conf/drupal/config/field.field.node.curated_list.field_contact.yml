@@ -1,0 +1,28 @@
+uuid: 809aa358-7e67-4e9a-b9a7-621d08004d4d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_contact
+    - node.type.contact_information
+    - node.type.curated_list
+id: node.curated_list.field_contact
+field_name: field_contact
+entity_type: node
+bundle: curated_list
+label: Contact
+description: 'Select the contact(s) people should use if they have questions about this information. You may need to <a href="/node/add/contact_information" target ="_blank">create a Contact Information</a> item before referencing it here.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: mass_select_filter
+  handler_settings:
+    target_bundles:
+      contact_information: contact_information
+    sort:
+      field: _none
+    auto_create: 0
+    auto_create_bundle: ''
+field_type: entity_reference

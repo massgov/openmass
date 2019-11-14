@@ -1,0 +1,44 @@
+uuid: a2f774b8-f1d6-4638-8e52-a7abc5b792de
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.paragraph.media_caption_and_display
+    - field.field.paragraph.image.field_caption
+    - field.field.paragraph.image.field_image
+    - field.field.paragraph.image.field_media_display
+    - image.style.thumbnail
+    - paragraphs.paragraphs_type.image
+  module:
+    - image
+id: paragraph.image.media_caption_and_display
+targetEntityType: paragraph
+bundle: image
+mode: media_caption_and_display
+content:
+  field_caption:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_image:
+    weight: 1
+    settings:
+      preview_image_style: thumbnail
+      progress_indicator: throbber
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_media_display:
+    weight: 0
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

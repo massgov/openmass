@@ -1,0 +1,43 @@
+uuid: a98f5cfc-a990-486e-9a7f-880d1a77338c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.2up_stacked_band.field_main
+    - field.field.paragraph.2up_stacked_band.field_right_rail
+    - paragraphs.paragraphs_type.2up_stacked_band
+  module:
+    - paragraphs
+id: paragraph.2up_stacked_band.default
+targetEntityType: paragraph
+bundle: 2up_stacked_band
+mode: default
+content:
+  field_main:
+    weight: 8
+    settings:
+      title: 'Action step'
+      title_plural: 'Action steps'
+      edit_mode: preview
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    type: entity_reference_paragraphs
+    region: content
+  field_right_rail:
+    type: entity_reference_paragraphs
+    weight: 7
+    settings:
+      title: 'Contact group'
+      title_plural: 'Contact groups'
+      edit_mode: preview
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

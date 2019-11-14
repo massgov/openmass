@@ -1,0 +1,29 @@
+uuid: af5a3a77-96bf-41db-af5d-8a64e6474b83
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.location_activities
+  module:
+    - path
+id: taxonomy_term.location_activities.default
+targetEntityType: taxonomy_term
+bundle: location_activities
+mode: default
+content:
+  name:
+    type: string_textfield
+    weight: -5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  path:
+    type: path
+    weight: 30
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  description: true

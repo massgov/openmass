@@ -1,0 +1,36 @@
+uuid: c3d608f2-c1f6-44d7-838b-f76d617790a1
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.utility_drawer.body
+    - field.field.node.utility_drawer.field_aria_label
+    - field.field.node.utility_drawer.field_icon_term
+    - field.field.node.utility_drawer.field_links
+    - node.type.utility_drawer
+  module:
+    - text
+    - user
+id: node.utility_drawer.teaser
+targetEntityType: node
+bundle: utility_drawer
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_aria_label: true
+  field_icon_term: true
+  field_links: true

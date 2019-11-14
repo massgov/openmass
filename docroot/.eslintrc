@@ -1,0 +1,25 @@
+{
+  "extends": "./core/.eslintrc.legacy.json",
+  "globals": {
+    "google": true,
+    "moment": true
+  },
+  "rules": {
+    // Override this rule from core, make warning instead of error
+    "no-unused-vars": [
+      1,
+      {
+	"vars": "all",
+	"args": "none"
+      }
+    ],
+    "no-console": [
+      "error",
+      { "allow": ["warn", "error"] }
+    ],
+    "no-extend-native": [
+      "error",
+      { "exceptions": ["Array"] }
+    ]
+  }
+}

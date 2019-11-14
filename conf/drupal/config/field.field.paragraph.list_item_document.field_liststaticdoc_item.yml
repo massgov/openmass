@@ -1,0 +1,29 @@
+uuid: 955a8acf-43b4-4e56-9322-47cb29ea9698
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_liststaticdoc_item
+    - media.type.document
+    - paragraphs.paragraphs_type.list_item_document
+id: paragraph.list_item_document.field_liststaticdoc_item
+field_name: field_liststaticdoc_item
+entity_type: paragraph
+bundle: list_item_document
+label: 'List item'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      document: document
+    sort:
+      field: created
+      direction: DESC
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

@@ -1,0 +1,68 @@
+uuid: 1d62d558-8393-440f-96f4-4c457ba5e328
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.section_with_heading.field_section_body
+    - field.field.paragraph.section_with_heading.field_section_downloads
+    - field.field.paragraph.section_with_heading.field_section_key_actions
+    - field.field.paragraph.section_with_heading.field_section_links
+    - field.field.paragraph.section_with_heading.field_section_title
+    - paragraphs.paragraphs_type.section_with_heading
+  module:
+    - link
+    - text
+id: paragraph.section_with_heading.default
+targetEntityType: paragraph
+bundle: section_with_heading
+mode: default
+content:
+  field_section_body:
+    weight: 8
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_section_downloads:
+    weight: 5
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_section_key_actions:
+    weight: 6
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_section_links:
+    weight: 7
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_section_title:
+    weight: 9
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  field_downloads: true

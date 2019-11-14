@@ -1,0 +1,52 @@
+{#
+/**
+ * @file
+ * Theme override to display the Full view mode of the Error Page content type.
+ */
+ #}
+{%
+  set narrowTemplate = {
+    'side': 'right',
+    'color': 'yellow',
+  }
+%}
+
+{% if narrowTemplate.side %}
+  {% set side = "ma__narrow-template--" ~ narrowTemplate.side %}
+{% endif %}
+
+{% if narrowTemplate.color %}
+  {% set color = "ma__narrow-template--" ~ narrowTemplate.color %}
+{% endif %}
+
+<main id="main-content" class="ma__narrow-template {{side}} {{color}}" tabindex="-1">
+  <header class="ma__narrow-template__header">
+    {% include "@atoms/09-media/site-logo.twig" %}
+  </header>
+
+  <div class="ma__narrow-template__container">
+    <div class="ma__narrow-template__content">
+      {% block narrowContent %}
+        {%
+          set errorPage = {
+            'type': content.field_error_code|field_value,
+            'label': content.field_error_label|field_value,
+            'title': content.field_error_title|field_value,
+            'message': content.field_error_message|field_value,
+          }
+        %}
+        {% include "@organisms/by-template/error-page.twig" with { 'errorPage': errorPage } %}
+        {% if content.field_include_search|render|striptags|trim == 'True' %}
+          {% include "@custom_includes/molecules-header-search.html.twig" with { 'searchFormId': "cse-header-search-form" } %}
+        {% endif %}
+        {% if content.field_helpful_links is not empty %}
+          {{ content.field_helpful_links }}
+        {% endif %}
+      {% endblock %}
+    </div>
+  </div>
+  {% block schemaContent %}
+  {% endblock %}
+</main>
+
+

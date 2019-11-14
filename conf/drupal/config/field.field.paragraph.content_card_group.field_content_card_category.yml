@@ -1,0 +1,32 @@
+uuid: 22d43034-c70f-457b-b831-e2fbbea6b2ac
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_content_card_category
+    - paragraphs.paragraphs_type.content_card_group
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.content_card_group.field_content_card_category
+field_name: field_content_card_category
+entity_type: paragraph
+bundle: content_card_group
+label: Category
+description: 'Optional. Categories are only for the Your Government section. Categories allow grouping Topic pages under section headers on the page.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

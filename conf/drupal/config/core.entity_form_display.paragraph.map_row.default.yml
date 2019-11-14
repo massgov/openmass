@@ -1,0 +1,25 @@
+uuid: 3183eae6-7e3b-494a-b7ab-6d50c0facaef
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.map_row.field_map_locations
+    - paragraphs.paragraphs_type.map_row
+id: paragraph.map_row.default
+targetEntityType: paragraph
+bundle: map_row
+mode: default
+content:
+  field_map_locations:
+    weight: 6
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

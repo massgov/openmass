@@ -1,0 +1,48 @@
+{#
+/**
+ * @file
+ * Theme override to display the full view mode of the Org page content type.
+ */
+ #}
+{% extends '@templates/two-column.twig' %}
+
+{% block preContent %}
+  {% include "@organisms/by-template/page-header.twig" with {
+    "pageHeader": {
+      "category": "",
+      "divider": false,
+      "prefix": "",
+      "title": "What would you like to do?",
+      "subTitle": {
+        "#type" : 'inline_template',
+        "#template": 'For <a href="{{ url }}">{{ title }}</a>',
+        "#context": {
+          'url': url,
+          'title': node.title.value
+        }
+      },
+      "headerTags": {
+        "label": "Related to:",
+        "taxonomyTerms": [{
+          "href": url,
+          "text": node.title.value
+        }]
+      }
+    }
+  } %}
+{% endblock %}
+
+{% block pageContent %}
+  {% include "@molecules/results-heading.twig" %}
+  {% embed "@organisms/by-author/image-promos.twig" %}
+    {% block imagePromos %}
+      {{ content.extra_node_all_actions }}
+    {% endblock %}
+  {% endembed %}
+{% endblock %}
+
+{% block header %}{% endblock %}
+{% block sidebar %}{% endblock %}
+{% block postContent %}{% endblock %}
+{% block schemaContent %}{% endblock %}
+{% block footer %}{% endblock %}

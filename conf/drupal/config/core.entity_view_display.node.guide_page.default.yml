@@ -1,0 +1,119 @@
+uuid: 3dad235c-ab6f-47a4-9edb-98340fafbc4d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.guide_page.field_guide_page_bg_wide
+    - field.field.node.guide_page.field_guide_page_lede
+    - field.field.node.guide_page.field_guide_page_metatags
+    - field.field.node.guide_page.field_guide_page_related_guides
+    - field.field.node.guide_page.field_guide_page_sections
+    - field.field.node.guide_page.field_image_credit
+    - field.field.node.guide_page.field_intended_audience
+    - field.field.node.guide_page.field_organizations
+    - field.field.node.guide_page.field_state_organization_tax
+    - image.style.800x400
+    - node.type.guide_page
+  module:
+    - entity_reference_revisions
+    - mass_formatters
+    - metatag
+    - options
+    - user
+id: node.guide_page.default
+targetEntityType: node
+bundle: guide_page
+mode: default
+content:
+  computed_related_to:
+    type: entity_reference_label
+    weight: 10
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+  content_moderation_control:
+    weight: -20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_org_feedback_form:
+    weight: 11
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_guide_page_bg_wide:
+    weight: 2
+    label: above
+    settings:
+      image_style: 800x400
+    third_party_settings: {  }
+    type: image_safe_string_url
+    region: content
+  field_guide_page_lede:
+    type: basic_string
+    weight: 7
+    region: content
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+  field_guide_page_metatags:
+    weight: 6
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_empty_formatter
+    region: content
+  field_guide_page_related_guides:
+    weight: 3
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_guide_page_sections:
+    type: entity_reference_revisions_entity_view
+    weight: 4
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_image_credit:
+    weight: 5
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_intended_audience:
+    weight: 9
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_organizations:
+    type: entity_reference_label
+    weight: 8
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_state_organization_tax: true

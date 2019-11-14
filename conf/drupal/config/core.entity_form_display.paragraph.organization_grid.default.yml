@@ -1,0 +1,34 @@
+uuid: 39344b24-4086-49f8-a95a-eaf06d601bc5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.organization_grid.field_org_grid_org
+    - field.field.paragraph.organization_grid.field_summary
+    - paragraphs.paragraphs_type.organization_grid
+id: paragraph.organization_grid.default
+targetEntityType: paragraph
+bundle: organization_grid
+mode: default
+content:
+  field_org_grid_org:
+    weight: 1
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_summary:
+    weight: 0
+    settings:
+      rows: 3
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

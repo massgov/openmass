@@ -1,0 +1,61 @@
+uuid: 521fe7e0-9cab-4d71-84c2-d4bf0352251b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.about.field_read_more_page
+    - field.field.paragraph.about.field_summary
+    - paragraphs.paragraphs_type.about
+  module:
+    - link
+    - mass_content
+id: paragraph.about.default
+targetEntityType: paragraph
+bundle: about
+mode: default
+content:
+  computed_bio_page:
+    type: entity_reference_entity_view
+    weight: 2
+    region: content
+    label: hidden
+    settings:
+      view_mode: about_details
+      link: false
+    third_party_settings: {  }
+  computed_secondary_bio_page:
+    type: entity_reference_entity_view
+    weight: 3
+    region: content
+    label: hidden
+    settings:
+      view_mode: about_details
+      link: false
+    third_party_settings: {  }
+  computed_social_links:
+    type: link
+    weight: 1
+    region: content
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+  field_read_more_page:
+    weight: 4
+    label: hidden
+    settings:
+      trim_length: ''
+      url_only: false
+      url_plain: false
+      rel: 0
+      target: 0
+    third_party_settings: {  }
+    type: dynamic_link_separate
+    region: content
+hidden:
+  computed_short_name: true
+  field_summary: true

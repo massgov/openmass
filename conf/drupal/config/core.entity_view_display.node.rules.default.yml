@@ -1,0 +1,281 @@
+uuid: 1b7ac336-0e03-4a54-9266-eba9a60255fd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.rules.field_intended_audience
+    - field.field.node.rules.field_organizations
+    - field.field.node.rules.field_reusable_label
+    - field.field.node.rules.field_rules_adopted_date
+    - field.field.node.rules.field_rules_courts
+    - field.field.node.rules.field_rules_download
+    - field.field.node.rules.field_rules_effective_date
+    - field.field.node.rules.field_rules_footnotes
+    - field.field.node.rules.field_rules_listing_desc
+    - field.field.node.rules.field_rules_metatags
+    - field.field.node.rules.field_rules_overview
+    - field.field.node.rules.field_rules_ref_contact
+    - field.field.node.rules.field_rules_referenced_sources
+    - field.field.node.rules.field_rules_related
+    - field.field.node.rules.field_rules_related_collections
+    - field.field.node.rules.field_rules_section
+    - field.field.node.rules.field_rules_standing
+    - field.field.node.rules.field_rules_status
+    - field.field.node.rules.field_rules_subheading
+    - field.field.node.rules.field_rules_type
+    - field.field.node.rules.field_rules_updates
+    - field.field.node.rules.field_state_organization_tax
+    - node.type.rules
+  module:
+    - datetime
+    - entity_reference_revisions
+    - link
+    - mass_content
+    - metatag
+    - options
+    - text
+    - user
+id: node.rules.default
+targetEntityType: node
+bundle: rules
+mode: default
+content:
+  computed_related_to:
+    type: entity_reference_label
+    weight: 26
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  content_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_node_pager:
+    weight: 22
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_org_feedback_form:
+    weight: 25
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_intended_audience:
+    weight: 24
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_organizations:
+    type: entity_reference_label
+    weight: 23
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_reusable_label:
+    weight: 19
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_rules_adopted_date:
+    weight: 6
+    label: above
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_rules_courts:
+    weight: 17
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_rules_download:
+    weight: 12
+    label: above
+    settings:
+      view_mode: media_download_link
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_rules_effective_date:
+    weight: 7
+    label: above
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_rules_footnotes:
+    weight: 11
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_rules_listing_desc:
+    weight: 20
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_rules_metatags:
+    weight: 18
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_empty_formatter
+    region: content
+  field_rules_overview:
+    weight: 9
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_rules_ref_contact:
+    weight: 13
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_rules_referenced_sources:
+    weight: 5
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_rules_related:
+    weight: 14
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_rules_related_collections:
+    weight: 15
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: dynamic_link_separate
+    region: content
+  field_rules_section:
+    type: entity_reference_revisions_entity_view
+    weight: 10
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_rules_standing:
+    weight: 3
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_rules_status:
+    weight: 4
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_rules_subheading:
+    weight: 16
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_rules_type:
+    weight: 2
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_rules_updates:
+    type: entity_reference_revisions_entity_view
+    weight: 8
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  referencing_binders:
+    type: entity_reference_entity_view
+    weight: 21
+    region: content
+    label: hidden
+    settings:
+      view_mode: table_of_contents
+      link: false
+    third_party_settings: {  }
+  referencing_binders_page_flipper:
+    type: entity_reference_label
+    weight: 22
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_state_organization_tax: true
+  page_next: true
+  page_previous: true

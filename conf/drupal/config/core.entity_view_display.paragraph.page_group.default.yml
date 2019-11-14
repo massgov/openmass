@@ -1,0 +1,36 @@
+uuid: 52c284ba-1b2e-4e80-acc9-dc1c263773cc
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.page_group.field_page_group_name
+    - field.field.paragraph.page_group.field_page_group_page
+    - paragraphs.paragraphs_type.page_group
+  module:
+    - mass_formatters
+id: paragraph.page_group.default
+targetEntityType: paragraph
+bundle: page_group
+mode: default
+content:
+  field_page_group_name:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_page_group_page:
+    weight: 1
+    label: hidden
+    settings:
+      trim_length: '80'
+      url_only: false
+      url_plain: false
+      rel: 0
+      target: 0
+    third_party_settings: {  }
+    type: mass_link_title_separated
+    region: content
+hidden: {  }

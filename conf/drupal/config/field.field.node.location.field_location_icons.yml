@@ -1,0 +1,28 @@
+uuid: 8f1c0a51-e576-4fb5-9351-98091718629f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_location_icons
+    - node.type.location
+    - taxonomy.vocabulary.location_icon
+id: node.location.field_location_icons
+field_name: field_location_icons
+entity_type: node
+bundle: location
+label: 'Location Icons'
+description: 'Choose features that apply to your location. Note: "Dogs Allowed" is specific to state parks.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      location_icon: location_icon
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

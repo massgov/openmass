@@ -1,0 +1,33 @@
+uuid: 80b3426b-f4b5-4ab0-9057-4f71535be783
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.icon_link.field_link_single
+    - field.field.paragraph.icon_link.field_para_icon_term
+    - paragraphs.paragraphs_type.icon_link
+  module:
+    - link
+id: paragraph.icon_link.default
+targetEntityType: paragraph
+bundle: icon_link
+mode: default
+content:
+  field_link_single:
+    weight: 7
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_para_icon_term:
+    weight: 6
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

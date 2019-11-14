@@ -1,0 +1,29 @@
+uuid: 1929c251-f70e-488d-b1c7-d63b52f6471e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_advisory_ref_contact
+    - node.type.advisory
+    - node.type.contact_information
+id: node.advisory.field_advisory_ref_contact
+field_name: field_advisory_ref_contact
+entity_type: node
+bundle: advisory
+label: Contact
+description: 'Optional. Select a Contact information item to show contact information on this page. You may need to <a href="/node/add/contact_information" target="_blank">create it</a> before referencing it here.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      contact_information: contact_information
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

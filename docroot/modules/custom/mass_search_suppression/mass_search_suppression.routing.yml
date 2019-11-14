@@ -1,0 +1,17 @@
+# @file
+# define custom search suppression module routes.
+
+# In order to to create pages it is necessary to define routes for them.
+# A route maps a URL path to a controller. It defines what function
+# or method will be called when a URL is accessed.
+# If the user accesses "admin/config/custom/mass-search-suppression/settings",
+# the routing system will look for a route with that path. In this case it will
+# find a match, and execute the _controller callback. In this case the callback
+# is defined as a class name ("\Drupal\mass_search_suppression\Form\SettingsForm").
+mass_search_suppression.admin_settings:
+  path: 'admin/config/mass-search-suppression/settings'
+  defaults:
+    _form:  '\Drupal\mass_search_suppression\Form\SettingsForm'
+    _title: 'Mass Header Search Suppression'
+  requirements:
+    _permission: 'administer site content'

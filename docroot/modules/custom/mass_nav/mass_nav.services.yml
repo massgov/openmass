@@ -1,0 +1,9 @@
+services:
+  mass_nav.route_subscriber:
+    class: Drupal\mass_nav\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }
+  mass_nav.twig.MenuExtension:
+    class: Drupal\mass_nav\Twig\MenuExtension
+    tags:
+      - { name: twig.extension }

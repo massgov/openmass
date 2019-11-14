@@ -1,0 +1,41 @@
+uuid: a31a42b1-1b02-416b-a32f-eb2ba3806571
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.about.field_read_more_page
+    - field.field.paragraph.about.field_summary
+    - paragraphs.paragraphs_type.about
+  module:
+    - link
+    - maxlength
+id: paragraph.about.default
+targetEntityType: paragraph
+bundle: about
+mode: default
+content:
+  field_read_more_page:
+    weight: 6
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_summary:
+    weight: 0
+    settings:
+      rows: 3
+      placeholder: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: 400
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: false
+        maxlength_js_truncate_html: false
+    type: string_textarea
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

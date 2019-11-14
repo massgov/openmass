@@ -1,0 +1,32 @@
+uuid: 0c535f8b-db23-44cb-8301-db2f6b66a1ff
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_legacy_redirect_hashed_url
+    - node.type.legacy_redirects
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.legacy_redirects.field_legacy_redirect_hashed_url
+field_name: field_legacy_redirect_hashed_url
+entity_type: node
+bundle: legacy_redirects
+label: 'Hashed URL'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -1,0 +1,62 @@
+uuid: 08422ca4-da2a-4623-bdc7-4f5d2b908a87
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.search_banner.field_main_heading
+    - field.field.paragraph.search_banner.field_search_button_label
+    - field.field.paragraph.search_banner.field_search_querystring
+    - field.field.paragraph.search_banner.field_sub_heading
+    - field.field.paragraph.search_banner.field_url
+    - paragraphs.paragraphs_type.search_banner
+  module:
+    - link
+id: paragraph.search_banner.default
+targetEntityType: paragraph
+bundle: search_banner
+mode: default
+content:
+  field_main_heading:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_search_button_label:
+    weight: 4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_search_querystring:
+    weight: 3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_sub_heading:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_url:
+    weight: 2
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

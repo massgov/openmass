@@ -1,0 +1,26 @@
+uuid: 7be10647-698d-46fa-be15-9a8046f0a2a6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.action_area.field_area_action_ref
+    - paragraphs.paragraphs_type.action_area
+  module:
+    - entity_reference_revisions
+id: paragraph.action_area.default
+targetEntityType: paragraph
+bundle: action_area
+mode: default
+content:
+  field_area_action_ref:
+    type: entity_reference_revisions_entity_view
+    weight: 0
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  uid: true

@@ -1,0 +1,15 @@
+diff --git a/datalayer.module b/datalayer.module
+index 14f597c..83b942f 100644
+--- a/datalayer.module
++++ b/datalayer.module
+@@ -281,6 +281,10 @@ function _datalayer_get_entity_data($entity) {
+     if (isset($entity->{$entity_keys['id']})) {
+       $output_data['entityId'] = $entity->{$entity_keys['id']}->getString();
+     }
++    // Entity uuid.
++    if (isset($entity->{$entity_keys['uuid']})) {
++      $output_data['entityUuid'] = $entity->{$entity_keys['uuid']}->getString();
++    }
+ 
+     // Entity title.
+     if (isset($entity_keys['label']) &&

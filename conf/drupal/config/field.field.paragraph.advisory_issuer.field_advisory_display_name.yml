@@ -1,0 +1,32 @@
+uuid: aad75738-79d2-4d06-8a56-c91f407d635e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_advisory_display_name
+    - paragraphs.paragraphs_type.advisory_issuer
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.advisory_issuer.field_advisory_display_name
+field_name: field_advisory_display_name
+entity_type: paragraph
+bundle: advisory_issuer
+label: 'Display Name'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

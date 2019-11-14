@@ -1,0 +1,44 @@
+uuid: aa75b246-cd3a-4f3c-a5db-ad909431019a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.action_step.field_content
+    - field.field.paragraph.action_step.field_icon
+    - field.field.paragraph.action_step.field_para_icon_term
+    - field.field.paragraph.action_step.field_title
+    - paragraphs.paragraphs_type.action_step
+  module:
+    - text
+id: paragraph.action_step.default
+targetEntityType: paragraph
+bundle: action_step
+mode: default
+content:
+  field_content:
+    weight: 2
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_para_icon_term:
+    weight: 0
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_title:
+    weight: 1
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  created: true
+  field_icon: true
+  uid: true

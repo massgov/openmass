@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+# exit when any command fails
+set -e
+
+# Find the last tag on master branch
+latest=$(git describe --abbrev=0 --tags)
+
+# Use the last tag on master and increase minor by 1.
+version=(${latest//./ })
+major=${version[0]}
+minor=${version[1]}
+patch='0'
+TAG=${major}.$((minor+1)).${patch}
+
+# Display the new tag version.
+echo $TAG
+
+# Tag the master branch
+git tag $TAG
+
+# Create post data
+generate_post_data()
+{
+  cat <<EOF
+{
+    "tag_name":"${TAG}",
+    "target_commitish": "master", 
+    "name": "${TAG}", 
+    "body": "Please paste notes from changelog."
+ }
+EOF
+}
+
+# Create a release on GitHub for the tag that was just created.
+curl --fail -u massgov-bot:${GITHUB_MASSGOV_BOT_TOKEN} -H "Content-Type:application/json" -X POST https://api.github.com/repos/massgov/mass/releases --data "$(generate_post_data)"

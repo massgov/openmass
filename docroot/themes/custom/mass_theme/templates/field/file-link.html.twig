@@ -1,0 +1,27 @@
+{#
+/**
+ * @file
+ * Theme override for a link to a file.
+ *
+ * Available variables:
+ * - attributes: The HTML attributes for the containing element.
+ * - link: A link to the file.
+ *
+ * @see template_preprocess_file_link()
+ */
+#}
+
+{% embed "@molecules/download-link.twig" with {
+  "downloadLink": {
+    "iconSize": "",
+    "icon": download.iconName|lower,
+    "decorativeLink": {
+      "text": download.linktext,
+      "href": download.link,
+      "info": ""
+    },
+    "size": download.size,
+    "format": download.filetype|upper
+  }
+}%}
+{% endembed %}

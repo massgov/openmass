@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_nav.module.
+ */
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function mass_nav_menu_local_tasks_alter(&$data, $route_name) {
+
+  // All local tasks that could display the subtopic reorder view.
+  $node_tabs = [
+    'entity.node.edit_form',
+    'entity.node.canonical',
+    'entity.node.delete_form',
+    'entity.node.devel_load',
+    'entity.node.devel_definition',
+    'entity.node.devel_render',
+    'entity.node.devel_tokens',
+    'entity.node.version_history',
+    'entity.node.latest_version',
+  ];
+
+  // If we are on a local node task.
+  if (in_array($route_name, $node_tabs)) {
+    $node = \Drupal::routeMatch()->getParameter('node');
+    // And it is not a topic.
+    if (!in_array($node->getType(), ['topic'])) {
+      // Remove the subtopic reorder view.
+      unset($data['tabs'][0]['views_view:view.subtopics.subtopic_reorder']);
+    }
+    // And it is not a topic.
+    if (!in_array($node->getType(), ['section_landing'])) {
+      // Remove the subtopic reorder view.
+      unset($data['tabs'][0]['views_view:view.ordered_topics.topic_reorder']);
+    }
+  }
+
+  // If we're on a reorder page (either section landings or topics), we need
+  // to unset the other tab.
+  if ($route_name == 'view.subtopics.subtopic_reorder') {
+    unset($data['tabs'][0]['views_view:view.ordered_topics.topic_reorder']);
+  }
+
+  if ($route_name == 'view.ordered_topics.topic_reorder') {
+    unset($data['tabs'][0]['views_view:view.ordered_topics.topic_reorder']);
+  }
+}

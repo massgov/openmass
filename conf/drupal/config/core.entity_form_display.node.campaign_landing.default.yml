@@ -1,0 +1,246 @@
+uuid: 63cabdbf-e979-47a8-bc09-1bb13d600bf9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.campaign_landing.field_campaign_landing_metatags
+    - field.field.node.campaign_landing.field_header
+    - field.field.node.campaign_landing.field_kpi_ctr_button_links
+    - field.field.node.campaign_landing.field_kpi_ctr_key_msg
+    - field.field.node.campaign_landing.field_kpi_pageviews
+    - field.field.node.campaign_landing.field_kpi_pct_video_50
+    - field.field.node.campaign_landing.field_kpi_pct_video_play
+    - field.field.node.campaign_landing.field_meta_description
+    - field.field.node.campaign_landing.field_organizations
+    - field.field.node.campaign_landing.field_sections
+    - node.type.campaign_landing
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - field_group
+    - metatag
+    - paragraphs
+    - path
+    - scheduler
+    - scheduler_content_moderation_integration
+third_party_settings:
+  field_group:
+    group_overview:
+      children:
+        - title
+        - field_meta_description
+        - field_organizations
+      parent_name: group_campaign_landing_edit_form
+      weight: 6
+      format_type: tab
+      format_settings:
+        label: Overview
+        formatter: open
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+      label: Overview
+    group_campaign_landing_edit_form:
+      children:
+        - group_overview
+        - group_content
+        - group_kpis
+      parent_name: ''
+      weight: 0
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Campaign Landing Edit Form'
+    group_content:
+      children:
+        - field_header
+        - field_sections
+      parent_name: group_campaign_landing_edit_form
+      weight: 7
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: true
+      label: Content
+    group_kpis:
+      children:
+        - field_kpi_ctr_key_msg
+        - field_kpi_ctr_button_links
+        - field_kpi_pageviews
+        - field_kpi_pct_video_play
+        - field_kpi_pct_video_50
+      parent_name: group_campaign_landing_edit_form
+      weight: 8
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: 'KPIs allow you to define what counts as success for this page.  You may set goals for up to 3 metrics. At least 1 is required.  You''ll then be able to see your results on your page''s dashboard.'
+        required_fields: true
+      label: 'Key Performance Indicators'
+id: node.campaign_landing.default
+targetEntityType: node
+bundle: campaign_landing
+mode: default
+content:
+  field_campaign_landing_metatags:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_header:
+    type: paragraphs
+    weight: 2
+    settings:
+      title: Header
+      title_plural: Header
+      edit_mode: closed_expand_nested
+      closed_mode: summary
+      autocollapse: none
+      closed_mode_threshold: 0
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+      features:
+        duplicate: duplicate
+        collapse_edit_all: collapse_edit_all
+        add_above: '0'
+    third_party_settings: {  }
+    region: content
+  field_kpi_ctr_button_links:
+    weight: 2
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_kpi_ctr_key_msg:
+    weight: 1
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_kpi_pageviews:
+    weight: 3
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_kpi_pct_video_50:
+    weight: 5
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_kpi_pct_video_play:
+    weight: 4
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_meta_description:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: 160
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+    type: string_textfield
+    region: content
+  field_organizations:
+    weight: 5
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_sections:
+    type: paragraphs
+    weight: 3
+    settings:
+      title: Section
+      title_plural: Sections
+      edit_mode: closed_expand_nested
+      closed_mode: summary
+      autocollapse: none
+      closed_mode_threshold: 0
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+      features:
+        duplicate: duplicate
+        collapse_edit_all: collapse_edit_all
+        add_above: add_above
+    third_party_settings: {  }
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 8
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 20
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  title:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 7
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  promote: true
+  status: true
+  sticky: true
+  uid: true

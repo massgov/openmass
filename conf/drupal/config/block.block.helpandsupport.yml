@@ -1,0 +1,26 @@
+uuid: c1c9f2c4-f88a-4ad9-8de0-7b13fcefc276
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_admin_pages
+    - system
+  theme:
+    - mass_admin_theme
+id: helpandsupport
+theme: mass_admin_theme
+region: sidebar_second
+weight: -7
+provider: null
+plugin: help_support_block
+settings:
+  id: help_support_block
+  label: 'Help and support'
+  provider: mass_admin_pages
+  label_display: visible
+visibility:
+  request_path:
+    id: request_path
+    pages: /admin/home
+    negate: false
+    context_mapping: {  }

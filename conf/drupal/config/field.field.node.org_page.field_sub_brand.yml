@@ -1,0 +1,38 @@
+uuid: 3382e506-d491-457d-ad58-a6be4954defb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_sub_brand
+    - node.type.org_page
+  module:
+    - image
+id: node.org_page.field_sub_brand
+field_name: field_sub_brand
+entity_type: node
+bundle: org_page
+label: 'Logo (Optional)'
+description: "Logos should have a white or transparent background. Your logo should be at least 230 pixels wide.\r\nThis area is only for organization-specific logos (not the state seal)."
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  file_directory: '[date:custom:Y]-[date:custom:m]'
+  file_extensions: 'png gif jpg jpeg'
+  max_filesize: ''
+  max_resolution: ''
+  min_resolution: ''
+  alt_field: true
+  alt_field_required: true
+  title_field: true
+  title_field_required: true
+  default_image:
+    uuid: ''
+    alt: ''
+    title: ''
+    width: null
+    height: null
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: image

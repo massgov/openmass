@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * Default theme implementation to present a media entity.
+ *
+ * Available variables:
+ * - name: Name of the media.
+ * - content: Media content.
+ *
+ * @see template_preprocess_media()
+ *
+ * @ingroup themeable
+ */
+#}
+{% block preContent %}
+  {#{% include "@organisms/by-template/breadcrumbs.twig" %}#}
+  {% include "@organisms/by-template/page-header.twig" %}
+{% endblock %}
+{% block main %}
+  <div class="main-content main-content--two">
+    <div class="page-content">
+      {% block pageContent %}
+        {% include "@organisms/by-author/rich-text.twig" %}
+        {% if backButton %}
+          {% include "@molecules/back-button.twig" %}
+        {% endif %}
+        {% include "@atoms/09-media/video.twig" %}
+        {% if backButton %}
+          {% include "@molecules/back-button.twig" %}
+        {% endif %}
+      {% endblock %}
+    </div>
+  </div>
+{% endblock %}

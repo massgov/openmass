@@ -1,0 +1,30 @@
+uuid: 902d336e-19ce-4260-b434-4504e3ae3896
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_rules_courts
+    - node.type.rules
+  module:
+    - link
+id: node.rules.field_rules_courts
+field_name: field_rules_courts
+entity_type: node
+bundle: rules
+label: Courts
+description: 'Optional. Choose any court(s) that this ruling is related to.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 1
+  entity_bundles:
+    how_to_page: how_to_page
+    location: location
+    org_page: org_page
+    service_details: service_details
+    service_page: service_page
+    topic_page: topic_page
+field_type: link

@@ -1,0 +1,30 @@
+uuid: 73727f67-f666-4cf3-816d-591518fa5887
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_rules_section_body
+    - paragraphs.paragraphs_type.rules_section
+  module:
+    - allowed_formats
+    - text
+third_party_settings:
+  allowed_formats:
+    rules_of_court_section: rules_of_court_section
+    basic_html: '0'
+    restricted_html: '0'
+    full_html: '0'
+    plain_text: '0'
+id: paragraph.rules_section.field_rules_section_body
+field_name: field_rules_section_body
+entity_type: paragraph
+bundle: rules_section
+label: 'Section body'
+description: 'To indent sections of text below, apply a Heading from the Format dropdown. Start at level 3 for 1 level of indent; subsequent levels will indent further.'
+required: true
+translatable: false
+default_value:
+  format: rules_of_court_section
+default_value_callback: ''
+settings: {  }
+field_type: text_long

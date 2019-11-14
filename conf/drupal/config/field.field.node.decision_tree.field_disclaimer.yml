@@ -1,0 +1,32 @@
+uuid: 4df78acd-a971-43dc-b0ed-b75df5c2b1ce
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_disclaimer
+    - node.type.decision_tree
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.decision_tree.field_disclaimer
+field_name: field_disclaimer
+entity_type: node
+bundle: decision_tree
+label: Disclaimer
+description: 'Example: This is an informational tool and should not be taken as legal advice. '
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

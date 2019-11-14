@@ -1,0 +1,30 @@
+uuid: ec4ee3dc-145b-4eb6-87ec-5d11d63dd6a8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.action_step_numbered_list.field_action_step_numbered_items
+    - paragraphs.paragraphs_type.action_step_numbered_list
+  module:
+    - paragraphs
+id: paragraph.action_step_numbered_list.default
+targetEntityType: paragraph
+bundle: action_step_numbered_list
+mode: default
+content:
+  field_action_step_numbered_items:
+    type: entity_reference_paragraphs
+    weight: 0
+    settings:
+      title: 'Numbered Item'
+      title_plural: 'Numbered Items'
+      edit_mode: preview
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

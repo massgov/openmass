@@ -1,0 +1,45 @@
+uuid: 8185c34b-5de5-4363-a762-a7a4d351ca79
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.image_credit.field_image_credit_caption
+    - field.field.paragraph.image_credit.field_image_credit_link
+    - field.field.paragraph.image_credit.field_image_credit_source
+    - paragraphs.paragraphs_type.image_credit
+  module:
+    - link
+id: paragraph.image_credit.default
+targetEntityType: paragraph
+bundle: image_credit
+mode: default
+content:
+  field_image_credit_caption:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_image_credit_link:
+    weight: 2
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_image_credit_source:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

@@ -1,0 +1,50 @@
+uuid: f9b7bad9-4d35-4a2c-8467-050063c03b6a
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.service_details.field_organizations
+    - field.field.node.service_details.field_service_detail_contact
+    - field.field.node.service_details.field_service_detail_lede
+    - field.field.node.service_details.field_service_detail_links_5
+    - field.field.node.service_details.field_service_detail_metatags
+    - field.field.node.service_details.field_service_detail_overview
+    - field.field.node.service_details.field_service_detail_sections
+    - field.field.node.service_details.field_state_organization_tax
+    - node.type.service_details
+  module:
+    - user
+id: node.service_details.teaser
+targetEntityType: node
+bundle: service_details
+mode: teaser
+content:
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  field_info_details_lede: true
+  field_info_details_sections: true
+  field_intended_audience: true
+  field_lede: true
+  field_organizations: true
+  field_promo_content: true
+  field_service_detail_contact: true
+  field_service_detail_lede: true
+  field_service_detail_links_5: true
+  field_service_detail_metatags: true
+  field_service_detail_overview: true
+  field_service_detail_sections: true
+  field_service_details_parent: true
+  field_state_organization_tax: true

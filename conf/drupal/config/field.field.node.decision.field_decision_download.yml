@@ -1,0 +1,28 @@
+uuid: 290161c4-232a-492b-b0a0-f896867e3e30
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_decision_download
+    - media.type.document
+    - node.type.decision
+id: node.decision.field_decision_download
+field_name: field_decision_download
+entity_type: node
+bundle: decision
+label: Download
+description: 'An optional download of the decision in PDF format.  If you are not going to offer this, you should offer the full text of the decision and fill out at least 1 section.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      document: document
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

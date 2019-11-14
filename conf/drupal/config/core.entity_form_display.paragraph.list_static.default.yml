@@ -1,0 +1,39 @@
+uuid: ecb811ca-32b2-4480-bc04-d4e8603f5ccb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.list_static.field_liststatic_items
+    - field.field.paragraph.list_static.field_liststatic_title
+    - paragraphs.paragraphs_type.list_static
+  module:
+    - paragraphs
+id: paragraph.list_static.default
+targetEntityType: paragraph
+bundle: list_static
+mode: default
+content:
+  field_liststatic_items:
+    type: paragraphs
+    weight: 6
+    settings:
+      title: 'List item'
+      title_plural: 'List items'
+      edit_mode: preview
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_liststatic_title:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

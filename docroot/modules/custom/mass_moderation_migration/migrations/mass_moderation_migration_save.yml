@@ -1,0 +1,19 @@
+id: mass_moderation_migration_save
+deriver: '\Drupal\mass_moderation_migration\Plugin\Deriver\SaveDeriver'
+source:
+  # This must be a valid plugin in order for the migration to be discoverable
+  # at all, but it will be changed by the deriver.
+  key: default
+  plugin: embedded_data
+  keys:
+    - id
+    - revision
+  fields:
+    - moderation_state
+process:
+  moderation_state: moderation_state
+destination:
+  plugin: id_map
+  keys:
+    moderation_state:
+      type: string

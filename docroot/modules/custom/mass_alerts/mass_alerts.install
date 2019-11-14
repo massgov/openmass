@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Utility methods and helpers for mass_alerts module.
+ */
+
+/**
+ * Updates `mass_alerts.alert_emails` state data in `key_value` table.
+ */
+function mass_alerts_update_8001(&$sandbox) {
+  // Converts data from string to array.
+  $state = \Drupal::state();
+  $prev_data = $state->get('mass_alerts.alert_emails');
+  if (!empty($prev_data) && is_string($prev_data)) {
+    $data = preg_split('/[\r\n]{1,2}/', $prev_data);
+    $state->set('mass_alerts.alert_emails', $data);
+  }
+}

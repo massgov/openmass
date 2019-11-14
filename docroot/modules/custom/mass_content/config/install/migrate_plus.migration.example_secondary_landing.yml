@@ -1,0 +1,25 @@
+id: example_secondary_landing
+label: Secondary Landing (L1)
+
+migration_group: mass_content
+
+source:
+  plugin: csv
+  path: 'modules/custom/mass_content/data/MSG Content - L1 - Secondary Landing Page.csv'
+  header_row_count: 1
+  keys:
+    - Title
+  constants:
+    bundle: secondary_landing
+
+process:
+  type: 'constants/bundle'
+  title: Title
+  field_lede: Lede
+  field_primary_landing_parent:
+    plugin: migration
+    migration: example_primary_landing
+    source: Parent
+
+destination:
+  plugin: entity:node

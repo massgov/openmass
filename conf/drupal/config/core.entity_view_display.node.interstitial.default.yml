@@ -1,0 +1,37 @@
+uuid: 757a146f-3798-49a0-8838-68f998615b98
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.interstitial.field_interstitial_checkbox_msg
+    - field.field.node.interstitial.field_message
+    - node.type.interstitial
+  module:
+    - text
+    - user
+id: node.interstitial.default
+targetEntityType: node
+bundle: interstitial
+mode: default
+content:
+  field_interstitial_checkbox_msg:
+    weight: 103
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_message:
+    weight: 102
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

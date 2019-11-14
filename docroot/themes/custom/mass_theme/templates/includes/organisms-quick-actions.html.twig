@@ -1,0 +1,13 @@
+{#
+/**
+ * @file
+ * Partial for action finder. To be included at the node level.
+ */
+#}
+{% if quick_actions is not empty %}
+  <section class="ma__quick-actions">
+    {% for action in quick_actions %}
+      {{ action }}
+    {% endfor %}
+  </section>
+{% endif %}

@@ -1,0 +1,30 @@
+uuid: ec3b75e9-13f4-4244-ad3e-f6d2a4221387
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_related_content
+    - node.type.action
+    - node.type.stacked_layout
+    - paragraphs.paragraphs_type.action_set
+id: paragraph.action_set.field_related_content
+field_name: field_related_content
+entity_type: paragraph
+bundle: action_set
+label: 'Actions & Guides'
+description: 'Select Content'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      action: action
+      stacked_layout: stacked_layout
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: action
+field_type: entity_reference

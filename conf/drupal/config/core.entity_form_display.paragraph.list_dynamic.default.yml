@@ -1,0 +1,73 @@
+uuid: e9029255-7cf6-49b5-91fe-af12f13f781f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.list_dynamic.field_contact_values_to_display
+    - field.field.paragraph.list_dynamic.field_list_dynamic_desc_setting
+    - field.field.paragraph.list_dynamic.field_listdynamic_label
+    - field.field.paragraph.list_dynamic.field_listdynamic_sort
+    - field.field.paragraph.list_dynamic.field_listdynamic_title
+    - paragraphs.paragraphs_type.list_dynamic
+  module:
+    - field_group
+third_party_settings:
+  field_group:
+    group_description:
+      children:
+        - field_list_dynamic_desc_setting
+      parent_name: ''
+      weight: 2
+      format_type: html_element
+      format_settings:
+        label: Description
+        element: div
+        show_label: true
+        label_element: label
+        required_fields: true
+        attributes: ''
+        effect: none
+        speed: fast
+        id: ''
+        classes: ''
+      label: Description
+id: paragraph.list_dynamic.default
+targetEntityType: paragraph
+bundle: list_dynamic
+mode: default
+content:
+  field_list_dynamic_desc_setting:
+    weight: 2
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_listdynamic_label:
+    weight: 3
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_listdynamic_sort:
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_listdynamic_title:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  field_contact_values_to_display: true
+  status: true
+  uid: true

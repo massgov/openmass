@@ -1,0 +1,40 @@
+uuid: 4cad40ca-4df2-4c60-a6c3-191a1a643264
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_regulation_reg_authority
+    - node.type.regulation
+  module:
+    - link
+id: node.regulation.field_regulation_reg_authority
+field_name: field_regulation_reg_authority
+entity_type: node
+bundle: regulation
+label: 'Regulatory authority'
+description: 'The law that gives the organization the authority to create the regulation.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 1
+  entity_bundles:
+    regulation: regulation
+    action: action
+    advisory: advisory
+    decision: decision
+    event: event
+    executive_order: executive_order
+    guide_page: guide_page
+    how_to_page: how_to_page
+    location: location
+    location_details: location_details
+    news: news
+    org_page: org_page
+    page: page
+    service_details: service_details
+    service_page: service_page
+    topic_page: topic_page
+field_type: link

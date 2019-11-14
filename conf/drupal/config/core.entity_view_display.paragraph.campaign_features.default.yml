@@ -1,0 +1,68 @@
+uuid: 4bb2a337-e6c3-49cd-8cb2-f3a571151d32
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.campaign_features.field_2up_featured_item
+    - field.field.paragraph.campaign_features.field_2up_featured_item_2
+    - field.field.paragraph.campaign_features.field_full_width_featured_item
+    - field.field.paragraph.campaign_features.field_main_heading
+    - field.field.paragraph.campaign_features.field_url
+    - paragraphs.paragraphs_type.campaign_features
+  module:
+    - entity_reference_revisions
+    - mass_content
+id: paragraph.campaign_features.default
+targetEntityType: paragraph
+bundle: campaign_features
+mode: default
+content:
+  field_2up_featured_item:
+    type: entity_reference_revisions_entity_view
+    weight: 2
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_2up_featured_item_2:
+    type: entity_reference_revisions_entity_view
+    weight: 3
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_full_width_featured_item:
+    type: entity_reference_revisions_entity_view
+    weight: 1
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_main_heading:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_url:
+    weight: 3
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: dynamic_link_separate
+    region: content
+hidden:
+  paragraphs_type_help__default: true

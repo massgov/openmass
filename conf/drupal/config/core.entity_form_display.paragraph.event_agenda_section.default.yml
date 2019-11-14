@@ -1,0 +1,35 @@
+uuid: a33e735f-36ed-46bd-a6cc-faa30cc53c24
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.event_agenda_section.field_event_agenda_body
+    - field.field.paragraph.event_agenda_section.field_event_agenda_title
+    - paragraphs.paragraphs_type.event_agenda_section
+  module:
+    - text
+id: paragraph.event_agenda_section.default
+targetEntityType: paragraph
+bundle: event_agenda_section
+mode: default
+content:
+  field_event_agenda_body:
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_event_agenda_title:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

@@ -1,0 +1,28 @@
+uuid: 31d5ca1c-6904-4183-89c1-8a51f9fba85f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_advisory_publish_state_tax
+    - node.type.advisory
+    - taxonomy.vocabulary.advisory_publish_state
+id: node.advisory.field_advisory_publish_state_tax
+field_name: field_advisory_publish_state_tax
+entity_type: node
+bundle: advisory
+label: 'Advisory Status'
+description: 'Optional. Indicate the status of this advisory, such as Draft, Working Draft, or Proposed.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      advisory_publish_state: advisory_publish_state
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

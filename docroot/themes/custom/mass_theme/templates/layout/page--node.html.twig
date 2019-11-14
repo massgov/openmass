@@ -1,0 +1,20 @@
+{#
+/**
+ * @file
+ * Theme override to display a single node page.
+ *
+ * This file removes the output of the
+ * pre_content and post_content regions, otherwise rendered
+ * at the page level.
+ *
+ * @see template_preprocess_node()
+ * @see page.html.twig
+ *
+ */
+#}
+
+{% extends 'page.html.twig' %}
+{% block preContent %}{% endblock %}
+{% block postContent %}
+  {{ post_content }}
+{% endblock %}

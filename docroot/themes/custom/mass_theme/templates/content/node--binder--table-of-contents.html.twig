@@ -1,0 +1,20 @@
+{#
+/**
+ * @file
+ * Theme override to display the Table of Contents view mode of the Binder content type.
+ */
+ #}
+{% embed "@organisms/by-template/table-of-contents-overlay.twig" with {
+  "tableOfContentsOverlay" : {
+    "id": "overlay-toc-" ~ node.id,
+    "title": {
+      "text": label,
+      "href": url,
+      "info": ""
+    }
+  }
+}%}
+  {% block tableOfContentsOverlaySections %}
+    {{ content }}
+  {% endblock %}
+{% endembed %}

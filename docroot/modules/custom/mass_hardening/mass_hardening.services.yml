@@ -1,0 +1,10 @@
+services:
+  mass_hardening.route_subscriber:
+    class: Drupal\mass_hardening\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }
+  mass_hardening.access_checker:
+    class: Drupal\mass_hardening\Access\MassHardeningHashCheck
+    arguments: ['@entity_type.manager']
+    tags:
+      - { name: access_check, applies_to: _mass_hardening_hash_check }

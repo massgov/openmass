@@ -1,0 +1,111 @@
+{#
+/**
+ * @file
+ * Theme override to display the full view mode of the Location Details content type.
+ */
+ #}
+{% extends 'node.html.twig' %}
+
+{# Set top heading level for the page. #}
+{% set level = 1 %}
+
+{% block preContent %}
+  {# If the contextual navigation should be set for this node, then add it. #}
+  {% if node.computed_log_in_links is not empty %}
+    {{ contextual_log_in_links }}
+  {% endif %}
+  {% set secondaryIndicators = false %}
+  {% if node.computed_related_to is not empty %}
+    {% set secondaryIndicators = {
+      "label": "related to"
+    } %}
+  {% endif %}
+  {% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "primary": {
+        "label": "offered by"
+      },
+      "secondary": secondaryIndicators
+    }
+  } %}
+    {% block primaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.computed_related_to }}
+    {% endblock %}
+  {% endembed %}
+  {% include "@organisms/by-template/page-header.twig" %}
+{% endblock %}
+
+{% block pageContent %}
+  {# Increase heading number by 1 from the parent heading (= section heading: 2) for child items in sections(= 3). #}
+  {% set level = level + 2 %}
+  {% for i in range(1, numOfSections) %}
+    {% if pageContent[i]['video'] %}
+      {% set video = pageContent[i]['video'] %}
+      {% include "@atoms/09-media/video.twig" %}
+    {% endif %}
+    {% if pageContent[i]['iframe'] %}
+      {% set iframe = pageContent[i]['iframe'] %}
+      {% include "@atoms/09-media/iframe.twig" %}
+    {% endif %}
+    {% if pageContent[i]['title'] %}
+      {% set richText = pageContent[i]['title'] %}
+      {% include "@organisms/by-author/rich-text.twig" %}
+    {% endif %}
+    {% if pageContent[i]['richText'] %}
+      {% set richText = pageContent[i]['richText'] %}
+      {% include "@organisms/by-author/rich-text.twig" %}
+    {% endif %}
+    {% if pageContent[i]['keyActions'] %}
+      {% set keyActions = pageContent[i]['keyActions'] %}
+      {% set keyActions = keyActions|merge({'compHeading': {
+            'title': keyActions.compHeading.title,
+            'titleContext': keyActions.compHeading.titleContext,
+            'level': level,
+            'id': keyActions.compHeading.id }}) %}
+      {% include "@organisms/by-author/key-actions.twig" %}
+    {% endif %}
+    {% if pageContent[i]['formDownloads'] %}
+      {% set formDownloads = pageContent[i]['formDownloads'] %}
+      {% set formDownloads = formDownloads|merge({'compHeading': {
+            'title': formDownloads.compHeading.title,
+            'titleContext': formDownloads.compHeading.titleContext,
+            'level': level,
+            'id': formDownloads.compHeading.id }}) %}
+      {% include "@organisms/by-author/form-downloads.twig" %}
+    {% endif %}
+    {% if pageContent[i]['actionMap'] %}
+      {% set googleMap = pageContent[i]['actionMap'] %}
+      {% set googleMap = googleMap|merge({'compHeading': {
+            'title': googleMap.compHeading.title,
+            'titleContext': googleMap.compHeading.titleContext,
+            'level': level,
+            'id': googleMap.compHeading.id }}) %}
+      {% include "@molecules/google-map.twig" %}
+      {{ attach_library('mass_map/google-map-api') }}
+    {% endif %}
+  {% endfor %}
+{% endblock %}
+
+{% block sidebar %}
+  {# Increase heading number by 1 from the parent heading. #}
+  {% set level = level + 1 %}
+  {% if sidebar.linkList %}
+    {% set linkList = sidebar.linkList %}
+    {% set compHeading = linkList.compHeading|merge({
+      'level': level,
+      'titleContext': linkList.compHeading.titleContext,
+      'sidebar': true
+     }) %}
+    {% set linkList = linkList|merge({'compHeading': compHeading }) %}
+    {% include "@organisms/by-author/link-list.twig" %}
+  {% endif %}
+{% endblock %}
+
+{% block postContent %}
+  {# Increase heading number by 1 from the parent heading. #}
+  {% set level = level + 1 %}
+  {{ content.extra_org_feedback_form }}
+{% endblock %}

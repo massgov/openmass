@@ -1,0 +1,28 @@
+uuid: 241b0a09-af71-4fb3-82ea-c7fdfd0491cf
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_service_offered_by
+    - node.type.org_page
+    - node.type.service_page
+id: node.service_page.field_service_offered_by
+field_name: field_service_offered_by
+entity_type: node
+bundle: service_page
+label: 'Offered by'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

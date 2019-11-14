@@ -1,0 +1,37 @@
+uuid: 8f4f9cf4-4c79-4d0e-9451-f1973e8024f7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.links_downloads.field_links_downloads_down
+    - field.field.paragraph.links_downloads.field_links_downloads_link
+    - paragraphs.paragraphs_type.links_downloads
+  module:
+    - mass_content
+id: paragraph.links_downloads.default
+targetEntityType: paragraph
+bundle: links_downloads
+mode: default
+content:
+  field_links_downloads_down:
+    weight: 1
+    label: hidden
+    settings:
+      view_mode: media_download_link
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_links_downloads_link:
+    weight: 0
+    label: hidden
+    settings:
+      url_only: false
+      url_plain: false
+      rel: 0
+      target: 0
+      trim_length: ''
+    third_party_settings: {  }
+    type: dynamic_link_separate
+    region: content
+hidden: {  }

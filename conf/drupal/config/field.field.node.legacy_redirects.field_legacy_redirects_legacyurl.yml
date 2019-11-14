@@ -1,0 +1,32 @@
+uuid: e33ef78e-0bc3-40ba-851d-40ef81ade93b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_legacy_redirects_legacyurl
+    - node.type.legacy_redirects
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: false
+      log: false
+id: node.legacy_redirects.field_legacy_redirects_legacyurl
+field_name: field_legacy_redirects_legacyurl
+entity_type: node
+bundle: legacy_redirects
+label: 'Legacy URL'
+description: 'Enter one or more URLs from the legacy Mass.gov site (Percussion). Choose "Add another item" to direct additional legacy site URLs to the same page on the new Mass.gov.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

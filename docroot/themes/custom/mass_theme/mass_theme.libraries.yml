@@ -1,0 +1,37 @@
+global-styling:
+  version: 1.x
+  css:
+    theme:
+      overrides/css/action-finder.css: {}
+      overrides/css/basic-html.css: {}
+      overrides/css/binder-nav.css: {}
+      overrides/css/fixed-feedback-button.css: {}
+      overrides/css/homepage.css: {}
+      overrides/css/sticky-toc.css: {}
+      overrides/css/video.css: {}
+      overrides/css/search-autocomplete.css: {}
+      overrides/css/suggested-locations.css: {}
+      overrides/css/hotfix.css: {}
+  js:
+    overrides/js/fixed-feedback-button.js: {}
+  dependencies:
+    - mayflower/global
+    - core/drupal
+
+views-view--image-promos:
+  css:
+    theme:
+      overrides/css/page-header.css: {}
+
+simple:
+  css:
+    theme:
+        overrides/css/simple.css: {}
+
+views.ajax.extension:
+  js:
+    overrides/js/ajaxViewsExt.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupal.announce
+    - core/jquery.once

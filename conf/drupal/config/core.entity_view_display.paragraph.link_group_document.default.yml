@@ -1,0 +1,22 @@
+uuid: 9ddb1c13-f55e-4662-93a0-3a2bef1b2c78
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.link_group_document.field_file_download_single
+    - paragraphs.paragraphs_type.link_group_document
+id: paragraph.link_group_document.default
+targetEntityType: paragraph
+bundle: link_group_document
+mode: default
+content:
+  field_file_download_single:
+    weight: 0
+    label: above
+    settings:
+      view_mode: media_download_link
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+hidden: {  }

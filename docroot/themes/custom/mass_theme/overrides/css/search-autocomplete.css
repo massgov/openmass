@@ -1,0 +1,36 @@
+/* autocomplete */
+/* makes homepage search form layout behave */
+.ma__suggestions-container {
+  display: inline;
+}
+
+.ma__suggestions {
+  position: relative;
+}
+
+.ma__suggestions [role='listbox'] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  z-index: 10;
+  font-size: 1rem;
+  text-align: left;
+}
+
+.ma__suggestions [role='option'] {
+  padding: 0.25rem 1rem;
+  color: #141414;
+  border: 2px solid #dcdcdc;
+  border-top: 0;
+}
+
+.ma__suggestions [role='option'].selected {
+  background: #f2f2f2;
+}
+
+/* Always hide google embedded autocomplete */
+.gssb_c {
+  display: none;
+}

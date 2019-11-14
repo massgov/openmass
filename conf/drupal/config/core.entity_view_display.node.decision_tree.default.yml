@@ -1,0 +1,132 @@
+uuid: cc0b7ec1-cfb9-474b-b96a-847cd3b71db7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.decision_tree.field_bg_narrow
+    - field.field.node.decision_tree.field_bg_wide
+    - field.field.node.decision_tree.field_campaign_logo
+    - field.field.node.decision_tree.field_decision_tree_metatags
+    - field.field.node.decision_tree.field_description
+    - field.field.node.decision_tree.field_disclaimer
+    - field.field.node.decision_tree.field_organizations
+    - field.field.node.decision_tree.field_service_ref_services_6
+    - field.field.node.decision_tree.field_start_button
+    - field.field.node.decision_tree.field_state_organization_tax
+    - node.type.decision_tree
+  module:
+    - entity_reference_revisions
+    - image
+    - metatag
+    - text
+    - user
+id: node.decision_tree.default
+targetEntityType: node
+bundle: decision_tree
+mode: default
+content:
+  computed_related_to:
+    type: entity_reference_label
+    weight: 12
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  content_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_org_feedback_form:
+    weight: 11
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_bg_narrow:
+    weight: 8
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_bg_wide:
+    weight: 7
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_campaign_logo:
+    weight: 6
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_decision_tree_metatags:
+    weight: 9
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_empty_formatter
+    region: content
+  field_description:
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_disclaimer:
+    weight: 3
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_organizations:
+    type: entity_reference_label
+    weight: 10
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_service_ref_services_6:
+    weight: 4
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_start_button:
+    type: entity_reference_revisions_entity_view
+    weight: 5
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  computed_log_in_links: true
+  field_state_organization_tax: true

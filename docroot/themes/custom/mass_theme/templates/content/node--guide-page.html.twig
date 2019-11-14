@@ -1,0 +1,97 @@
+{#
+/**
+ * @file
+ * Theme override to display the full view mode of the Guide page content type.
+ *
+ */
+ #}
+{% extends '@templates/stacked-row-template.twig' %}
+
+{% block header %}
+{% endblock %}
+
+{# Set top heading level for the page. #}
+{% set level = 1 %}
+
+{% block preContent %}
+  {# If the contextual navigation should be set for this node, then add it. #}
+  {% if node.computed_log_in_links is not empty %}
+    {{ contextual_log_in_links }}
+  {% endif %}
+
+  {% set secondaryIndicators = false %}
+  {% if node.computed_related_to is not empty %}
+    {% set secondaryIndicators = {
+      "label": "related to"
+    } %}
+  {% endif %}
+
+  {% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "primary": {
+        "label": "offered by"
+      },
+      "secondary": secondaryIndicators
+    }
+  } %}
+    {% block primaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.computed_related_to }}
+    {% endblock %}
+  {% endembed %}
+  {% include "@organisms/by-template/illustrated-header.twig" with {
+    "illustratedHeader": {
+      "bgImage": content.field_guide_page_bg_wide[0],
+      "bgCentered": true,
+      "category": "Guide",
+      "pageHeader": {
+        "title": node.title.value,
+        "subTitle": "",
+        "optionalContents": [{
+          "path": "@organisms/by-author/rich-text.twig",
+          "data": {
+            "richText": {
+              "rteElements": [{
+                "path": "@atoms/11-text/paragraph.twig",
+                "data": {
+                  "paragraph" : {
+                    "text": content.field_guide_page_lede | render
+                  }
+                }
+              }]
+            }
+          }
+        }],
+        "headerTags": null
+      }
+    }
+  } %}
+  {% include "@organisms/by-template/sticky-toc.twig" with {
+    "stickyTOC": {
+      "title": "Table of Contents"|t,
+      "parent": "#main-content",
+      "sections": ".ma__stacked-row__title h2"
+    },
+  } %}
+{% endblock %}
+
+{% block stackedRowContent %}
+  {# Increase heading number by 1 from the parent heading. #}
+  {% set level = level + 1 %}
+    {{ content.field_guide_page_sections }}
+{% endblock %}
+
+{% block postContent %}
+  {% if content.field_image_credit is not empty %}
+    {{ content.field_image_credit }}
+  {% endif %}
+  {% if node.field_guide_page_related_guides.value %}
+    {% include "@organisms/by-author/suggested-pages.twig" %}
+  {% endif %}
+  {{ content.extra_org_feedback_form }}
+{% endblock %}
+
+{% block footer %}
+{% endblock %}

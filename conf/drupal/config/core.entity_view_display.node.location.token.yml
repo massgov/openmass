@@ -1,0 +1,207 @@
+uuid: 448aaed5-b4b9-4a71-82d2-fd5b8777cf21
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.token
+    - field.field.node.location.field_accessibility
+    - field.field.node.location.field_bg_narrow
+    - field.field.node.location.field_bg_wide
+    - field.field.node.location.field_iframe
+    - field.field.node.location.field_image_credit
+    - field.field.node.location.field_links
+    - field.field.node.location.field_location_activity_detail
+    - field.field.node.location.field_location_all_activities
+    - field.field.node.location.field_location_facilities
+    - field.field.node.location.field_location_icons
+    - field.field.node.location.field_location_icons_park
+    - field.field.node.location.field_location_metatags
+    - field.field.node.location.field_location_more_information
+    - field.field.node.location.field_location_subtitle
+    - field.field.node.location.field_location_type
+    - field.field.node.location.field_organizations
+    - field.field.node.location.field_overview
+    - field.field.node.location.field_parking
+    - field.field.node.location.field_ref_contact_info
+    - field.field.node.location.field_ref_contact_info_1
+    - field.field.node.location.field_related_locations
+    - field.field.node.location.field_restrictions
+    - field.field.node.location.field_services
+    - field.field.node.location.field_state_organization_tax
+    - node.type.location
+  module:
+    - entity_reference_revisions
+    - image
+    - link
+    - text
+    - user
+id: node.location.token
+targetEntityType: node
+bundle: location
+mode: token
+content:
+  extra_contact_info_static_map:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_accessibility:
+    weight: 9
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_bg_narrow:
+    weight: 4
+    label: above
+    settings:
+      image_style: ''
+    third_party_settings: {  }
+    type: image_url
+    region: content
+  field_bg_wide:
+    weight: 3
+    label: above
+    settings:
+      image_style: ''
+      image_link: file
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_iframe:
+    type: entity_reference_revisions_entity_view
+    weight: 5
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_image_credit:
+    weight: 18
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_links:
+    weight: 12
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_location_activity_detail:
+    type: entity_reference_revisions_entity_view
+    weight: 14
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_location_facilities:
+    weight: 16
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_location_icons:
+    weight: 15
+    label: above
+    settings:
+      link: true
+      view_mode: default
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_location_more_information:
+    weight: 17
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_overview:
+    weight: 6
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_parking:
+    weight: 7
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_ref_contact_info:
+    weight: 13
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: entity_reference_entity_id
+    region: content
+  field_ref_contact_info_1:
+    weight: 2
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_related_locations:
+    weight: 11
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_restrictions:
+    weight: 10
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_services:
+    weight: 8
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  field_facilities: true
+  field_intended_audience: true
+  field_location_all_activities: true
+  field_location_icons_park: true
+  field_location_metatags: true
+  field_location_subtitle: true
+  field_location_type: true
+  field_more_information: true
+  field_organizations: true
+  field_state_organization_tax: true

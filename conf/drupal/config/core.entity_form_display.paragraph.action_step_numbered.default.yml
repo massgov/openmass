@@ -1,0 +1,35 @@
+uuid: 9944574c-339b-4498-bee9-513e84631106
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.action_step_numbered.field_content
+    - field.field.paragraph.action_step_numbered.field_title
+    - paragraphs.paragraphs_type.action_step_numbered
+  module:
+    - text
+id: paragraph.action_step_numbered.default
+targetEntityType: paragraph
+bundle: action_step_numbered
+mode: default
+content:
+  field_content:
+    weight: 1
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_title:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

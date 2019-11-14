@@ -1,0 +1,92 @@
+<?php
+
+/**
+ * @file
+ * Installation functions for Mass Superset module.
+ */
+
+use Drupal\Core\Config\Entity\ConfigEntityStorage;
+use Drupal\Core\Database\Database;
+
+/**
+ * Implements hook_schema().
+ */
+function mass_superset_schema() {
+  $spec['mass_superset_data'] = [
+    'description' => 'Store the superset data.',
+    'fields' => [
+      'nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The node ID.',
+      ],
+      'pageviews' => [
+        'type' => 'int',
+        'description' => 'The pageviews of the node.',
+      ],
+      'score' => [
+        'type' => 'float',
+        'description' => 'The grade of the node.',
+      ],
+      'last_updated' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'The UNIX time stamp representing when the node was last updated.',
+      ],
+    ],
+    'indexes' => [
+      'nid' => ['nid'],
+      'last_updated' => ['last_updated'],
+    ],
+  ];
+
+  // Snooze table.
+  $spec['snooze'] = [
+    'description' => 'Snooze data for Top Priorities Block',
+    'fields' => [
+      'entity_id' => [
+        'description' => 'The unique ID of the flagged entity, for example the uid, cid, or nid.',
+        'type' => 'varchar_ascii',
+        'length' => ConfigEntityStorage::MAX_ID_LENGTH,
+        'not null' => TRUE,
+      ],
+      'last_updated' => [
+        'description' => 'The UNIX time stamp representing when the flag was last updated.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-size' => 11,
+      ],
+    ],
+    'primary key' => ['entity_id'],
+  ];
+
+  return $spec;
+}
+
+/**
+ * Create new database table to hold snooze information for Top Priorties Block.
+ */
+function mass_superset_update_8001() {
+  if (!db_table_exists('snooze')) {
+    $spec = [
+      'description' => 'Snooze data for Top Priorities Block',
+      'fields' => [
+        'entity_id' => [
+          'description' => 'The unique ID of the flagged entity, for example the uid, cid, or nid.',
+          'type' => 'varchar_ascii',
+          'length' => ConfigEntityStorage::MAX_ID_LENGTH,
+          'not null' => TRUE,
+        ],
+        'last_updated' => [
+          'description' => 'The UNIX time stamp representing when the flag was last updated.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'disp-size' => 11,
+        ],
+      ],
+      'primary key' => ['entity_id'],
+    ];
+    $schema = Database::getConnection()->schema();
+    $schema->createTable('snooze', $spec);
+  }
+}

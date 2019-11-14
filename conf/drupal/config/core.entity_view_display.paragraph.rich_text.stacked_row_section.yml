@@ -1,0 +1,25 @@
+uuid: b5173ec6-ab66-496f-b8c7-ff2cf918abe6
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.stacked_row_section
+    - field.field.paragraph.rich_text.field_body
+    - paragraphs.paragraphs_type.rich_text
+  module:
+    - text
+id: paragraph.rich_text.stacked_row_section
+targetEntityType: paragraph
+bundle: rich_text
+mode: stacked_row_section
+content:
+  field_body:
+    weight: 0
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+hidden:
+  created: true
+  uid: true

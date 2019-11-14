@@ -1,0 +1,23 @@
+uuid: 336edf73-89ed-4cf8-9f43-e5ea93f5a72f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_related_organization_type
+    - node.type.org_page
+id: node.org_page.field_related_organization_type
+field_name: field_related_organization_type
+entity_type: node
+bundle: org_page
+label: 'Related organization type'
+description: 'Related locations that you choose on each location page will be labeled as "Related locations" or "Related parks". Select “Nearby” below if the related location pages you’re linking to from each location are geographically close to each other. Selecting this option will make it so that users who are looking for locations that are close-by will recognize this as a useful resource.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: Nearby
+  off_label: 'Off'
+field_type: boolean

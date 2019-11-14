@@ -1,0 +1,28 @@
+uuid: d9eaccff-bbfb-46a0-b675-a9209def00a5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.related_link.field_description
+    - field.field.paragraph.related_link.field_link
+    - paragraphs.paragraphs_type.related_link
+  module:
+    - link
+id: paragraph.related_link.default
+targetEntityType: paragraph
+bundle: related_link
+mode: default
+content:
+  field_link:
+    weight: 6
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+hidden:
+  created: true
+  field_description: true
+  status: true
+  uid: true

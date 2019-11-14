@@ -1,0 +1,13 @@
+diff --git a/src/SchedulerManager.php b/src/SchedulerManager2.php
+index 983a573..1e276eb 100644
+--- a/src/SchedulerManager.php
++++ b/src/SchedulerManager.php
+@@ -347,7 +347,7 @@ public function unpublish() {
+         $dispatcher->dispatch(SchedulerEvents::UNPUBLISH, $event);
+         $event->getNode()->save();
+         // Use the actions system to publish the node.
+-        $this->entityManager->getStorage('action')->load('state_change__node__archived')->getPlugin()->execute($node);
++        $this->entityManager->getStorage('action')->load('state_change__node__unpublished')->getPlugin()->execute($node);
+ 
+ 
+         // Invoke event to tell Rules that Scheduler has unpublished this node.

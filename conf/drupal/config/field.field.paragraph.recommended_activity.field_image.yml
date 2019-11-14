@@ -1,0 +1,38 @@
+uuid: 71df83e8-4f2a-4335-b46c-6e3c91a9d83a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_image
+    - paragraphs.paragraphs_type.recommended_activity
+  module:
+    - image
+id: paragraph.recommended_activity.field_image
+field_name: field_image
+entity_type: paragraph
+bundle: recommended_activity
+label: Image
+description: 'This image will be displayed next to the title and text, and should be related to the activity.'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  file_directory: '[date:custom:Y]-[date:custom:m]'
+  file_extensions: 'png gif jpg jpeg'
+  max_filesize: ''
+  max_resolution: ''
+  min_resolution: 190x107
+  alt_field: true
+  alt_field_required: true
+  title_field: false
+  title_field_required: false
+  default_image:
+    uuid: ''
+    alt: ''
+    title: ''
+    width: null
+    height: null
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: image

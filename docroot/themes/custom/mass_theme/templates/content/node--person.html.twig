@@ -1,0 +1,141 @@
+{#
+/**
+ * @file
+ * Theme override to display the full view mode of the Person content type.
+ */
+ #}
+
+{% set pageIntro = {
+  pageTitle: {
+   text: node.field_person_first_name.value ~ ' ' ~ node.field_person_last_name.value,
+  },
+  subTitle: node.field_person_role_title.value,
+} %}
+
+{% extends '@templates/01-content-types/bio.twig' %}
+
+{# Set top heading level for the page. #}
+{% set level = 1 %}
+
+{% block preContent %}
+<div class="pre-content">
+  {% set secondaryIndicators = false %}
+  {% if node.computed_related_to is not empty %}
+    {% set secondaryIndicators = {
+      "label": "related to"
+    } %}
+  {% endif %}
+  {% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "primary": {
+        "label": "offered by"
+      },
+      "secondary": secondaryIndicators
+    }
+  } %}
+    {% block primaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.computed_related_to }}
+    {% endblock %}
+  {% endembed %}
+</div>
+{% endblock %}
+
+
+{% set mainContent = {
+  richText: {
+    rteElements: [{
+      path: '@atoms/11-text/raw-html.twig',
+      data: {
+        rawHtml: {
+          content: content.body|field_value,
+        },
+      },
+    }],
+  }
+} %}
+
+{% block pageContent %}{% endblock %}
+
+{% block personSocial %}
+  {{ content.field_social_links }}
+{% endblock %}
+
+{% block personImage %}
+  {% if node.field_person_headshot is not empty %}
+    {% include "@atoms/09-media/image.twig" with {
+      image: {
+        alt: node.field_person_headshot.alt,
+        src: content.field_person_headshot[0]['#markup'],
+        width: 285
+      }
+    } %}
+
+    {% set image_width = node.field_person_headshot.width %}
+    {% set image_height = node.field_person_headshot.height %}
+    {# Only show the download link if image width is greater than 285x380. #}
+    {% if image_width >= 380 and image_height >= 285 %}
+      {% include "@atoms/decorative-link.twig" with {
+        decorativeLink: {
+          href: file_url(node.field_person_headshot.entity.fileuri),
+          text: "Download high-resolution image"|t,
+        }
+      } %}
+    {% endif %}
+  {% endif %}
+{% endblock %}
+
+{##
+ # Use a contact node if one is present and either the 'source' field is not
+ # set or it's set to 'contact', otherwise output the individual fields.
+ #}
+{% block personContactList %}
+  {% if node.field_contact is not empty and (node.field_contact_source is empty or node.field_contact_source.value == 'contact') %}
+    {{ content.field_contact }}
+  {% elseif node.field_ref_single_address is not empty or node.field_ref_phone is not empty or node.field_ref_fax is not empty or node.field_ref_links is not empty %}
+    {% embed "@organisms/by-author/contact-list.twig" with {
+      "contactList": {
+        "viewSpecific": false,
+        "compHeading": {
+          "title": "Contact",
+          "sub": false,
+          "color": "",
+          "id": "contact",
+          "centered": ""
+        }
+      }
+    } %}
+      {% block contactListContacts %}
+        {{ content.field_ref_single_address }}
+        {{ content.field_ref_phone }}
+        {{ content.field_ref_fax }}
+        {# Pass through the level setting with Drupal render array values. #}
+        {{ content.field_ref_links|merge({'#level': level }) }}
+      {% endblock %}
+    {% endembed %}
+  {% endif %}
+{% endblock %}
+
+
+{% block inlineSidebar %}
+  {{ block('personImage') }}
+  {{ block('personContactList') }}
+  {{ block('personSocial') }}
+{% endblock %}
+{% block sidebar %}{% endblock %}
+
+{% block personRoles %}
+  {{ content.person_org_role }}
+  {{ content.field_person_ref_org }}
+{% endblock %}
+
+{% block postContent %}
+  {{ post_content }}
+  {{ content.extra_org_feedback_form }}
+{% endblock %}
+
+{% block footer %}{% endblock %}
+
+

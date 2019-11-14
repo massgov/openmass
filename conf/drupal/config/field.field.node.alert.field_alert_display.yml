@@ -1,0 +1,23 @@
+uuid: be0e8665-1081-4d36-9ccb-614d6557bae9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_alert_display
+    - node.type.alert
+  module:
+    - options
+id: node.alert.field_alert_display
+field_name: field_alert_display
+entity_type: node
+bundle: alert
+label: 'Alert placement'
+description: 'Sitewide alerts appear at the top of every page on the site. Page alerts appear below the menu on a specific group of pages selected by the author of the alert. NOTE: Only users with the special role of Emergency Alert author are permitted to create sitewide alerts.'
+required: true
+translatable: false
+default_value:
+  -
+    value: specific_pages
+default_value_callback: ''
+settings: {  }
+field_type: list_string

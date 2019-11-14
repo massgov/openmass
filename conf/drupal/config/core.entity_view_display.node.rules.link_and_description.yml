@@ -1,0 +1,78 @@
+uuid: 65955a4c-b28d-40b2-9964-fa636d7c982f
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.link_and_description
+    - field.field.node.rules.field_organizations
+    - field.field.node.rules.field_reusable_label
+    - field.field.node.rules.field_rules_adopted_date
+    - field.field.node.rules.field_rules_courts
+    - field.field.node.rules.field_rules_download
+    - field.field.node.rules.field_rules_effective_date
+    - field.field.node.rules.field_rules_footnotes
+    - field.field.node.rules.field_rules_listing_desc
+    - field.field.node.rules.field_rules_metatags
+    - field.field.node.rules.field_rules_overview
+    - field.field.node.rules.field_rules_ref_contact
+    - field.field.node.rules.field_rules_referenced_sources
+    - field.field.node.rules.field_rules_related
+    - field.field.node.rules.field_rules_related_collections
+    - field.field.node.rules.field_rules_section
+    - field.field.node.rules.field_rules_standing
+    - field.field.node.rules.field_rules_status
+    - field.field.node.rules.field_rules_subheading
+    - field.field.node.rules.field_rules_type
+    - field.field.node.rules.field_rules_updates
+    - field.field.node.rules.field_state_organization_tax
+    - node.type.rules
+  module:
+    - user
+id: node.rules.link_and_description
+targetEntityType: node
+bundle: rules
+mode: link_and_description
+content:
+  extra_node_pager:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_rules_listing_desc:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  field_intended_audience: true
+  field_organizations: true
+  field_reusable_label: true
+  field_rules_adopted_date: true
+  field_rules_courts: true
+  field_rules_download: true
+  field_rules_effective_date: true
+  field_rules_footnotes: true
+  field_rules_metatags: true
+  field_rules_overview: true
+  field_rules_ref_contact: true
+  field_rules_referenced_sources: true
+  field_rules_related: true
+  field_rules_related_collections: true
+  field_rules_section: true
+  field_rules_standing: true
+  field_rules_status: true
+  field_rules_subheading: true
+  field_rules_type: true
+  field_rules_updates: true
+  field_state_organization_tax: true
+  links: true
+  page_next: true
+  page_previous: true
+  referencing_binders: true
+  referencing_binders_page_flipper: true
+  workbench_moderation_control: true

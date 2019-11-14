@@ -1,0 +1,24 @@
+uuid: decd1c83-aa92-4b1f-9fad-91962e6baf7b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_emergency_alert_timestamp
+    - paragraphs.paragraphs_type.emergency_alert
+  module:
+    - datetime
+id: paragraph.emergency_alert.field_emergency_alert_timestamp
+field_name: field_emergency_alert_timestamp
+entity_type: paragraph
+bundle: emergency_alert
+label: Timestamp
+description: 'The date and time that this alert was created or last edited. The timestamp appears directly after the content of the alert message for sitewide alerts and appears on the alert landing page for page-specific alerts. The alert landing page is only visible if you do not link the alert to another page.'
+required: true
+translatable: false
+default_value:
+  -
+    default_date_type: now
+    default_date: now
+default_value_callback: ''
+settings: {  }
+field_type: datetime

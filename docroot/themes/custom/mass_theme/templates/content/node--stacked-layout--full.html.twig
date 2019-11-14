@@ -1,0 +1,95 @@
+{#
+/**
+ * @file
+ * Theme override to display the Full view mode of the Subtopic content type.
+ *
+ * Uses 'extend' methods from http://www.stevector.com/2013/10/make-your-drupal-8-theme-easier-to-maintain-with-this-one-weird-trick-twigs-extends-concept/
+ */
+ #}
+{%
+set pageBanner = {
+  'bgWide': file_url(node.field_photo.entity.fileuri),
+  'bgNarrow': file_url(node.field_photo.entity.fileuri),
+  'size':'large',
+  'icon': '',
+  'title': label|field_value,
+  'titleSubText': node.field_label.value ? "(" ~ node.field_label.value ~ ")" : ''
+}
+%}
+{%
+set illustratedHeader = {
+  'bgTitle': image_alt,
+  'bgImage': image_url,
+  'category': content.field_label|field_value,
+  'pageHeader': {
+    'title': label|field_value,
+    'subTitle': '',
+    'rteElements': [{
+      'path': '@atoms/11-text/raw-html.twig',
+      'data': {
+        'rawHtml' : {
+          'content': content.field_lede|field_value
+        }
+      }
+    }],
+    'headerTags': ''
+  }
+}
+%}
+
+{%
+set suggestedPages = {
+  'title': 'Related Guides'|t,
+  'titleContext': titleContext,
+  'pages': related_content
+}
+%}
+
+{% extends 'node.html.twig' %}
+
+{% block preContent %}
+  {# include 'organisms-breadcrumbs' with {breadcrumb:{class:'ma__breadcrumbs--page'}} #}
+  {# Breadcrumbs have been descoped from pilot, but they'd go here #}
+  {# drupal_block('breadcrumbs') #}
+
+  {# if search band exists we remove all other header things. #}
+  {% if search_band == false %}
+    {# Use ORG header if checked. #}
+    {% if node.field_use_alt_header.value %}
+      {% include '@organisms/by-template/page-banner.twig' %}
+      {# If extened header items are used, use action header. #}
+      {% if content.field_lede|field_value is not empty or
+            content.field_action_header|field_value is not empty or
+            content.field_header_cta|field_value is not empty %}
+        {% set actionHeader = { 'divider': true } %}
+        {% include "@mass_theme/includes/organisms-page-action-header.html.twig" %}
+      {% endif %}
+    {% else %}
+      {# If extened header items are used, use action header. #}
+      {% if content.field_action_header|field_value is not empty or
+            content.field_header_cta|field_value is not empty %}
+        {% include "@mass_theme/includes/organisms-page-action-header.html.twig" %}
+      {% else %}
+        {# Use illustrated header as default. #}
+        {% include '@organisms/by-template/illustrated-header.twig' %}
+      {% endif %}
+    {% endif %}
+    {% if content.field_action_banner|render|trim is not empty %}
+        {{ content.field_action_banner|field_value }}
+    {% endif %}
+  {% endif %}
+{% endblock %}
+
+{% block main %}
+  {{ content.field_bands }}
+{% endblock %}
+
+{% block postContent %}
+  {% if content.field_image_credit is not empty %}
+    {{ content.field_image_credit }}
+  {% endif %}
+  {% if related_content is not empty %}
+    {% include '@custom_includes/organisms-suggested-pages.html.twig' with suggestedPages %}
+  {% endif %}
+  {{ content.extra_org_feedback_form }}
+{% endblock %}

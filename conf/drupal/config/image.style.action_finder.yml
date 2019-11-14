@@ -1,0 +1,26 @@
+uuid: 0346568e-3297-4f69-98c6-4d6042f2737b
+langcode: en
+status: true
+dependencies:
+  module:
+    - imagick
+name: action_finder
+label: action-finder
+effects:
+  3e657e85-fab5-475d-a472-9336901d8e3d:
+    uuid: 3e657e85-fab5-475d-a472-9336901d8e3d
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 1600
+      height: 600
+      anchor: center-center
+  9dbb4b46-90f9-4dd2-b350-c79b06ffa8f4:
+    uuid: 9dbb4b46-90f9-4dd2-b350-c79b06ffa8f4
+    id: image_blur
+    weight: 2
+    data:
+      type: '2'
+      radius: '18'
+      sigma: '12'
+      angle: '0'

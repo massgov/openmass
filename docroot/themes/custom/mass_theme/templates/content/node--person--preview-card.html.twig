@@ -1,0 +1,168 @@
+{#
+/**
+ * @file
+ * Theme template to display a person node for the Preview Card viewmode.
+ *
+ * Available variables:
+ * - node: The node entity with limited access to object properties and methods.
+ *   Only method names starting with "get", "has", or "is" and a few common
+ *   methods such as "id", "label", and "bundle" are available. For example:
+ *   - node.getCreatedTime() will return the node creation timestamp.
+ *   - node.hasField('field_example') returns TRUE if the node bundle includes
+ *     field_example. (This does not indicate the presence of a value in this
+ *     field.)
+ *   - node.isPublished() will return whether the node is published or not.
+ *   Calling other methods, such as node.delete(), will result in an exception.
+ *   See \Drupal\node\Entity\Node for a full list of public properties and
+ *   methods for the node object.
+ * - label: The title of the node.
+ * - content: All node items. Use {{ content }} to print them all,
+ *   or print a subset such as {{ content.field_example }}. Use
+ *   {{ content|without('field_example') }} to temporarily suppress the printing
+ *   of a given child element.
+ * - author_picture: The node author user entity, rendered using the "compact"
+ *   view mode.
+ * - metadata: Metadata for this node.
+ * - date: Themed creation date field.
+ * - author_name: Themed author name field.
+ * - url: Direct URL of the current node.
+ * - display_submitted: Whether submission information should be displayed.
+ * - attributes: HTML attributes for the containing element.
+ *   The attributes.class element may contain one or more of the following
+ *   classes:
+ *   - node: The current template type (also known as a "theming hook").
+ *   - node--type-[type]: The current node type. For example, if the node is an
+ *     "Article" it would result in "node--type-article". Note that the machine
+ *     name will often be in a short form of the human readable label.
+ *   - node--view-mode-[view_mode]: The View Mode of the node; for example, a
+ *     teaser would result in: "node--view-mode-teaser", and
+ *     full: "node--view-mode-full".
+ *   The following are controlled through the node publishing options.
+ *   - node--promoted: Appears on nodes promoted to the front page.
+ *   - node--sticky: Appears on nodes ordered above other non-sticky nodes in
+ *     teaser listings.
+ *   - node--unpublished: Appears on unpublished nodes visible only to site
+ *     admins.
+ * - title_attributes: Same as attributes, except applied to the main title
+ *   tag that appears in the template.
+ * - content_attributes: Same as attributes, except applied to the main
+ *   content tag that appears in the template.
+ * - author_attributes: Same as attributes, except applied to the author of
+ *   the node tag that appears in the template.
+ * - title_prefix: Additional output populated by modules, intended to be
+ *   displayed in front of the main title tag that appears in the template.
+ * - title_suffix: Additional output populated by modules, intended to be
+ *   displayed after the main title tag that appears in the template.
+ * - view_mode: View mode; for example, "teaser" or "full".
+ * - teaser: Flag for the teaser state. Will be true if view_mode is 'teaser'.
+ * - page: Flag for the full page state. Will be true if view_mode is 'full'.
+ * - readmore: Flag for more state. Will be true if the teaser content of the
+ *   node cannot hold the main body content.
+ * - logged_in: Flag for authenticated user status. Will be true when the
+ *   current user is a logged-in member.
+ * - is_admin: Flag for admin user status. Will be true when the current user
+ *   is an administrator.
+ *
+ * @see template_preprocess_node()
+ *
+ * @todo Remove the id attribute (or make it a class), because if that gets
+ *   rendered twice on a page this is invalid CSS for example: two lists
+ *   in different view modes.
+ *
+ */
+#}
+
+{# Set top heading level for the page. #}
+{% set level = 2 %}
+{% if elements['#level'] is not empty %}
+  {% set level = elements['#level'] %}
+{% endif %}
+
+{# Get the eyebrow value from the field on the referencing paragraph. #}
+{% set eyebrow = '' %}
+{% set parent_field = node._referringItem.parent %}
+{% set referencing_paragraph = parent_field.parent %}
+{% if referencing_paragraph.get('field_eyebrow') %}
+  {% set eyebrow = referencing_paragraph.get('field_eyebrow').value %}
+{% endif %}
+
+{% set is_featured_board_member = node.person_is_featured.value %}
+
+{% set name = node.field_person_first_name.value ~ ' ' ~ node.field_person_last_name.value %}
+{% set short_bio = node.field_short_bio.value %}
+{% set role = node.field_person_role_title.value %}
+{% set show_image = true %}
+
+{% set position_is_vacant = node.position_is_vacant.value %}
+
+{% if position_is_vacant %}
+  {% set name = 'Vacant'|t %}
+  {% set short_bio = '' %}
+  {% set role = '' %}
+  {% set show_image = false %}
+{% endif %}
+
+{% set layout = 'inline-image' %}
+{% if is_featured_board_member or show_image %}
+  {% set layout = 'stacked' %}
+{% endif %}
+
+{% set generalTeaser = {
+  "layout": layout,
+  "eyebrow": eyebrow,
+  "image": show_image,
+  "level": level,
+  "title": {
+    "href": '',
+    "text": name,
+    "info": "",
+    "property": "",
+  },
+  "emphasizedText": [
+    role,
+  ],
+  "contents": [{
+    "path": "@atoms/11-text/paragraph.twig",
+    "data": {
+      "paragraph": {
+        "text": short_bio,
+      }
+    },
+  }]
+} %}
+
+{% if node.field_publish_bio_page.value and not position_is_vacant %}
+  {# Link the title to the person's bio page. #}
+  {% set generalTeaserTitle = generalTeaser.title|merge({ href: url }) %}
+  {% set generalTeaser = generalTeaser|merge({ title: generalTeaserTitle }) %}
+
+  {% set generalTeaserContents = generalTeaser.contents %}
+  {% set generalTeaser = generalTeaser|merge({ contents: generalTeaserContents }) %}
+{% endif %}
+
+{% embed "@molecules/general-teaser.twig" with {
+  generalTeaser: generalTeaser,
+} %}
+
+  {% block teaserImage %}
+    {% if content.field_medium_image|render|trim is not empty and show_image %}
+      {# If this is a featured board member, use a larger image. #}
+      {% if is_featured_board_member %}
+        <span class="ma__general-teaser__image-wrapper">
+          {% set image = {
+            src: file_url(node.field_medium_image.entity.fileuri),
+            alt: node.field_medium_image.alt,
+            width: "172",
+            height: "228",
+          } %}
+          {% include "@atoms/09-media/image.twig" %}
+        </span>
+      {% else %}
+        {{ content.field_medium_image }}
+      {% endif %}
+    {% endif %}
+  {% endblock %}
+
+{% endembed %}
+
+{{ content | without('field_medium_image', 'person_is_featured', 'position_is_vacant') }}

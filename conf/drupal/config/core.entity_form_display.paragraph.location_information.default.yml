@@ -1,0 +1,43 @@
+uuid: 8237bf21-c111-4b5c-99d8-ec0c1a0ae7ba
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.location_information.field_description
+    - field.field.paragraph.location_information.field_email
+    - field.field.paragraph.location_information.field_phone
+    - paragraphs.paragraphs_type.location_information
+  module:
+    - telephone
+id: paragraph.location_information.default
+targetEntityType: paragraph
+bundle: location_information
+mode: default
+content:
+  field_description:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_email:
+    weight: 7
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: email_default
+    region: content
+  field_phone:
+    weight: 8
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: telephone_default
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

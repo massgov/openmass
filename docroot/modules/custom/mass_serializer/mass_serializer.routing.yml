@@ -1,0 +1,12 @@
+
+mass_serializer.data_json_controller_endpoint:
+  path: '/api/v1/organization/{organization}/data.json'
+  defaults:
+    _controller: '\Drupal\mass_serializer\Controller\DataJsonController::endpoint'
+    _title: 'endpoint'
+  options:
+    parameters:
+      organization:
+        type: entity:taxonomy_term
+  requirements:
+    _permission: 'view media'

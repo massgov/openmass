@@ -1,0 +1,63 @@
+id: example_action
+label: Action
+
+migration_group: mass_content
+
+source:
+  plugin: csv
+  path: 'modules/custom/mass_content/data/MSG Content - Action.csv'
+  header_row_count: 1
+  keys:
+    - Title
+  constants:
+    bundle: action
+
+process:
+  type: 'constants/bundle'
+  title: Title
+  field_lede: Lede
+  field_actions:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: 'Related Actions'
+    -
+      plugin: explode
+      delimiter: ';'
+    -
+      plugin: callback
+      callable: trim
+    -
+      plugin: migration
+      migration: example_action
+  field_action_parents:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: 'L2 Parents'
+    -
+      plugin: explode
+      delimiter: ';'
+    -
+      plugin: callback
+      callable: trim
+    -
+      plugin: migration
+      migration: example_action_landing
+  field_agencies:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: 'Related Agencies'
+    -
+      plugin: explode
+      delimiter: ';'
+    -
+      plugin: callback
+      callable: trim
+    -
+      plugin: migration
+      migration: example_agency
+
+destination:
+  plugin: entity:node

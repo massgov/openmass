@@ -1,0 +1,42 @@
+uuid: dfce1bc6-28e5-4cc5-9e4c-4ad3586144b5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.board_member.field_eyebrow
+    - field.field.paragraph.board_member.field_person
+    - field.field.paragraph.board_member.field_position_is_vacant
+    - paragraphs.paragraphs_type.board_member
+id: paragraph.board_member.default
+targetEntityType: paragraph
+bundle: board_member
+mode: default
+content:
+  field_eyebrow:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_person:
+    weight: 1
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_position_is_vacant:
+    weight: 3
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

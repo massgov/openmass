@@ -1,0 +1,346 @@
+{#
+/**
+ * @file
+ * Theme override to display the full view mode of the Decision Tree content type.
+ */
+#}
+{% extends 'node.html.twig' %}
+
+{# Set top heading level for the page. #}
+{% set level = 1 %}
+
+{% block preContent %}
+  {# If the contextual navigation should be set for this node, then add it. #}
+  {% if node.computed_log_in_links is not empty %}
+    {{ contextual_log_in_links }}
+  {% endif %}
+
+  {% set secondaryIndicators = false %}
+  {% if node.computed_related_to is not empty %}
+    {% set secondaryIndicators = {
+      "label": "related to"
+    } %}
+  {% endif %}
+
+  {% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "primary": {
+        "label": "offered by"
+      },
+      "secondary": secondaryIndicators
+    }
+  } %}
+    {% block primaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.computed_related_to }}
+    {% endblock %}
+  {% endembed %}
+
+  <div class="decision-tree">
+  {% if pageBanner %}
+
+    {# Copied from page-banner.twig to allow logo to be inserted into banner #}
+    {% set sizeClass = pageBanner.size ? "ma__page-banner--" ~ pageBanner.size : '' %}
+
+    {% set colorClass = pageBanner.color ? "ma__page-banner--" ~ pageBanner.color : '' %}
+
+    <section class="ma__page-banner {{ sizeClass }} {{ colorClass }}">
+      {% if pageBanner.size == "columns" %}
+        <style>
+          .ma__page-banner__image {
+            background-image: url('{{ pageBanner.bgNarrow }}');
+          }
+
+          @media (min-width: 801px) {
+            .ma__page-banner__image {
+              background-image: url('{{ pageBanner.bgWide }}');
+            }
+          }
+        </style>
+      {% else %}
+        <style>
+          .ma__page-banner {
+            background-image: url('{{ pageBanner.bgNarrow }}');
+          }
+
+          @media (min-width: 801px) {
+            .ma__page-banner {
+              background-image: url('{{ pageBanner.bgWide }}');
+            }
+          }
+        </style>
+      {% endif %}
+      <div class="ma__page-banner__container">
+        {% if pageBanner.size and pageBanner.size == "columns" %}
+          <div class="ma__page-banner__image"></div>
+        {% endif %}
+        {% if logo %}
+          <div class="ma__page-banner__logo">
+            {% set image = logo %}
+            {% include '@atoms/09-media/image.twig' %}
+          </div>
+        {% endif %}
+        <div class="ma__page-banner__content" property="mainEntityOfPage">
+          {% if pageBanner.icon %}
+            <div class="ma__page-banner__icon">
+              {% include pageBanner.icon %}
+            </div>
+          {% endif %}
+          {% if logo %}
+            <div class="ma__page-banner__logo-mobile">
+              {% set image = logo %}
+              {% include '@atoms/09-media/image.twig' %}
+            </div>
+          {% endif %}
+          <h1 class="ma__page-banner__title">
+            {{ pageBanner.title }}
+            {% if pageBanner.titleSubText %}
+              <span> {{ pageBanner.titleSubText }}</span>
+            {% endif %}
+          </h1>
+          {% if pageBanner.description and not (pageBanner.size == "columns") %}
+            <p class="ma__page-banner__description">
+              {{ pageBanner.description }}
+            </p>
+          {% endif %}
+        </div>
+        {% if pageBanner.description and pageBanner.size == "columns" %}
+          <p class="ma__page-banner__description">
+            {{ pageBanner.description }}
+          </p>
+        {% endif %}
+      </div>
+    </section>
+    {# End copied from page-banner.twig #}
+  {% endif %}
+  </div>
+{% endblock %}
+
+{% block main %}
+<style>
+  /* Override the default style for the element with h1's initially applied to the element for the get started, question and answer. */
+  .ma__decision-tree__qa {
+    margin: 0.67em 0;
+    font-size: 3rem;
+    line-height: 1.07;
+  }
+  @media (min-width: 781px) {
+    .ma__decision-tree__qa {
+      font-size: 3.25rem;
+    }
+  }
+  @media (min-width: 1201px) {
+    .ma__decision-tree__qa {
+      font-size: 3.5rem;
+    }
+  }
+</style>
+  <div class="main-content main-content--two"></div>
+
+  <script id="root-content" type="text/x-handlebars-template">
+    {% verbatim %}
+      <div class="page-content ma__decision-tree-node ma__decision-tree-node--start">
+        <h2 class="ma__colored-heading ma__colored-heading--blue">
+          {{#if root.editLink }}<a href="{{root.editLink}}" class="edit-link">[edit]</a>{{/if}}
+          Get Started
+        </h2>
+        {{#if root.text}}<h3 class="ma__decision-tree__qa">{{root.text}}</h3>{{/if}}
+        {{#if root.details}}
+        <p>{{{root.details}}}</p>
+        {{/if}}
+
+        {{#if root.startText }}
+        <section class="ma__key-actions">
+          <div class="ma__key-actions__container">
+            <div class="ma__key-actions__items">
+              <div class="ma__callout-link">
+                <a href="#" class="start"><span class="ma__callout-link__container"><span class="ma__callout-link__text" >{{root.startText}}&nbsp;<svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" version="1.1" width="16" height="18" viewBox="0 0 16 18"><defs></defs><path id="SvgjsPath1007" d="M983.721 1887.28L983.721 1887.28L986.423 1890L986.423 1890L986.423 1890L983.721 1892.72L983.721 1892.72L978.318 1898.17L975.617 1895.45L979.115 1891.92L971.443 1891.92L971.443 1888.0700000000002L979.103 1888.0700000000002L975.617 1884.5500000000002L978.318 1881.8300000000002Z " transform="matrix(1,0,0,1,-971,-1881)"></path></svg></span></span></a>
+              </div>
+            </div>
+          </div>
+        </section>
+        {{/if}}
+      </div>
+    {% endverbatim %}
+  </script>
+
+  <script id="branch-content" type="text/x-handlebars-template">
+    {% verbatim %}
+      <div class="page-content ma__decision-tree-node ma__decision-tree-node--question">
+        <h2 class="ma__colored-heading ma__colored-heading--blue">
+          {{#if step.editLink }}<a href="{{step.editLink}}" class="edit-link">[edit]</a>{{/if}}
+          Question
+        </h2>
+        {{#if step.orphan}}
+        <p class="ma__decision-tree-node--orphan">
+          This step is currently not reachable from the beginning of the decision tree. Navigation is unavailable until this is added to the tree.
+        </p>
+        {{/if}}
+        <h3 class="ma__decision-tree__qa" id="question">{{step.text}}</h3>
+        {{#if step.details}}
+        <p>{{{step.details}}}</p>
+        {{/if}}
+
+        {{#if step.moreInfo}}
+        <section class="ma__action-step js-accordion ma__action-step--accordion question-more-info">
+          <button class="ma__action-step__header js-accordion-link" aria-label="Expand {{step.moreInfo.title}}">
+            <h2 class="ma__action-step__title">{{step.moreInfo.title}}</h2>
+          </button>
+          <div class="ma__action-step__content js-accordion-content">
+            <section class="ma__rich-text js-ma-rich-text">
+              <p>{{{step.moreInfo.details}}}</p>
+            </section>
+          </div>
+        </section>
+        {{/if}}
+
+        {{#unless step.orphan}}
+        {{#if step.responses}}
+        <div class="ma__decision-tree-node__responses">
+          {{#each step.responses}}
+            <button type="button" class="ma__button ma__button--minor" aria-label="{{text}}" data-response="{{id}}" aria-describedby="question">{{text}}</button>
+          {{/each}}
+        </div>
+        {{/if}}
+        {{/unless}}
+        {{#if step.disclaimer}}
+        <p class="disclaimer"><em>{{step.disclaimer}}</em></p>
+        {{/if}}
+        {{#unless step.orphan}}
+        <div class="back">
+          <a href="#">
+            <svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 35 35">
+             <path d="M17.5,35C7.8,35,0,27.2,0,17.5C0,7.8,7.8,0,17.5,0C27.2,0,35,7.8,35,17.5C35,27.2,27.2,35,17.5,35zM11,17l8,8l3,-2.9l-5.1,-5.1l5.1,-5.1l-3,-2.9l-8,8z" />
+            </svg>
+            Go Back
+          </a>
+        </div>
+        <div class="restart">
+          <a href="#">Start Over</a>
+        </div>
+        {{/unless}}
+      </div>
+      <aside class="sidebar">
+        <div class="ma__decision-tree-responses">
+          <h2 class="ma__colored-heading ">Your Responses</h2>
+          <section class="ma__link-list">
+            <div class="ma__link-list__container">
+              <ul class="ma__link-list__items ">
+                {{#each responses}}
+                <li class="ma__link-list__item">
+                  <span class="ma__input-checkbox">
+                    <input type="checkbox" value="checkbox" id="checkbox-test" checked disabled>
+                    <label for="checkbox-test"><span>{{explainer}}</span></label>
+                  </span>
+                </li>
+                {{/each}}
+              <ul>
+            </div>
+          </section>
+        </div>
+      </aside>
+    {% endverbatim %}
+  </script>
+
+  <script id="conclusion-content" type="text/x-handlebars-template">
+    {% verbatim %}
+      <div class="page-content ma__decision-tree-node ma__decision-tree-node--answer">
+        <h2 class="ma__colored-heading ma__colored-heading--green">
+          {{#if step.editLink }}<a href="{{step.editLink}}" class="edit-link">[edit]</a>{{/if}}
+          Answer
+        </h2>
+        {{#if step.orphan}}
+        <p class="ma__decision-tree-node--orphan">
+          This step is currently not reachable from the beginning of the decision tree. Navigation is unavailable until this is added to the tree.
+        </p>
+        {{/if}}
+        <h3 class="ma__decision-tree__qa">{{step.text}}</h3>
+        {{#if step.details}}
+        <p>{{{step.details}}}</p>
+        {{/if}}
+
+        {{#if step.actions }}
+        <section class="ma__key-actions">
+          <div class="ma__key-actions__container">
+            <div class="ma__key-actions__items">
+            {{#each step.actions}}
+              <div class="ma__callout-link">
+                <a href="{{url}}"><span class="ma__callout-link__container"><span class="ma__callout-link__text" >{{text}}&nbsp;<svg aria-hidden="true" id="SvgjsSvg1000" xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:svgjs="http://svgjs.com/svgjs" width="16" height="18" viewBox="0 0 16 18"><defs id="SvgjsDefs1001"></defs><path id="SvgjsPath1007" d="M983.721 1887.28L983.721 1887.28L986.423 1890L986.423 1890L986.423 1890L983.721 1892.72L983.721 1892.72L978.318 1898.17L975.617 1895.45L979.115 1891.92L971.443 1891.92L971.443 1888.0700000000002L979.103 1888.0700000000002L975.617 1884.5500000000002L978.318 1881.8300000000002Z " transform="matrix(1,0,0,1,-971,-1881)"></path></svg></span></span></a>
+              </div>
+            {{/each}}
+            </div>
+          </div>
+        </section>
+        {{/if}}
+
+        {{#if step.video }}
+        <div class="ma__video ma__video--new">
+          <div class="ma__video__container js-ma-responsive-video">
+            <iframe width="{{ step.video.width }}" height="{{ step.video.height }}" src="{{ step.video.src }}" frameborder="0" allowfullscreen aria-label="{{ video.label }}"></iframe>
+          </div>
+        </div>
+        {{/if}}
+
+        {{#unless step.orphan}}
+        <div class="back">
+          <a href="#">
+            <svg aria-hidden="true" version="1.1" xmlns="http://www.w3.org/2000/svg" width="35px" height="35px" viewBox="0 0 35 35" style="enable-background:new 0 0 35 35;" xml:space="preserve">
+             <path d="M17.5,35C7.8,35,0,27.2,0,17.5C0,7.8,7.8,0,17.5,0C27.2,0,35,7.8,35,17.5C35,27.2,27.2,35,17.5,35zM11,17l8,8l3,-2.9l-5.1,-5.1l5.1,-5.1l-3,-2.9l-8,8z" />
+            </svg>
+            Go Back
+          </a>
+        </div>
+        <div class="restart">
+          <a href="#">Start Over</a>
+        </div>
+        {{/unless}}
+      </div>
+      <aside class="sidebar">
+        <div class="ma__decision-tree-responses">
+          <h2 class="ma__colored-heading ">Your Responses</h2>
+          <section class="ma__link-list">
+            <div class="ma__link-list__container">
+              <ul class="ma__link-list__items ">
+                {{#each responses}}
+                <li class="ma__link-list__item">
+                  <span class="ma__input-checkbox">
+                    <input type="checkbox" value="checkbox" id="checkbox-test" checked disabled>
+                    <label for="checkbox-test"><span>{{explainer}}</span></label>
+                  </span>
+                </li>
+                {{/each}}
+              <ul>
+            </div>
+          </section>
+        </div>
+      </aside>
+    {% endverbatim %}
+  </script>
+{% endblock %}
+
+{% block postContent %}
+  <div class="ma__stacked-row">
+    <section class="ma__stacked-row__section">
+      <div class="ma__stacked-row__container">
+        <div class="ma__decision-tree-post">
+          {% if disclaimer %}
+            <section class="ma__callout-alert">
+              <div class="ma__callout-alert__content">
+                <div class="ma__callout-alert__icon">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" version="1.1" width="32" height="30" viewBox="0 0 32 30"><defs></defs><path d="M29.0704035,21.8970162 C30.713614,19.6037849 31.5799575,16.9505422 31.5799575,14.2109809 C31.5799575,6.37494075 24.496573,0 15.7899787,0 C7.08338446,0 0,6.37494075 0,14.2109809 C0,22.047021 7.08338446,28.4219617 15.7899787,28.4219617 C18.0332084,28.4219617 20.1995935,28.006159 22.2343954,27.1861327 C25.8160889,29.253041 30.7672999,29.9662217 30.9804646,29.9956963 C31.0046759,29.9993806 31.0294136,30.0009596 31.0536249,30.0009596 C31.2509996,30.0009596 31.435216,29.8899034 31.5246926,29.7093713 C31.6257484,29.5067333 31.5857471,29.2625149 31.425742,29.1025098 C30.215177,27.8919448 29.3814661,25.3376526 29.0704035,21.8970162" /></svg>
+                </div>
+                <div class="ma__callout-alert__link">
+                  {{ disclaimer }}
+                </div>
+              </div>
+            </section>
+          {% endif %}
+        </div>
+      </div>
+      {{ content.extra_org_feedback_form }}
+    </section>
+  </div>
+  <span id="decision-tree-current-node" value=""></span>
+{% endblock %}

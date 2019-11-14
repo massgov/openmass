@@ -1,0 +1,32 @@
+uuid: e40ca70f-74aa-4382-a79a-4f85976bcaf0
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.error_page.field_error_code
+    - field.field.node.error_page.field_error_label
+    - field.field.node.error_page.field_error_message
+    - field.field.node.error_page.field_error_title
+    - field.field.node.error_page.field_helpful_links
+    - field.field.node.error_page.field_include_search
+    - node.type.error_page
+  module:
+    - user
+id: node.error_page.teaser
+targetEntityType: node
+bundle: error_page
+mode: teaser
+content:
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_error_code: true
+  field_error_label: true
+  field_error_message: true
+  field_error_title: true
+  field_helpful_links: true
+  field_include_search: true

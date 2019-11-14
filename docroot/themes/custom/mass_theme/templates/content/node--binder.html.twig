@@ -1,0 +1,146 @@
+{#
+/**
+ * @file
+ * Theme override to display the full view mode of the Advisory content type.
+ */
+ #}
+{% extends '@templates/01-content-types/binder-page.twig' %}
+
+{# Build list table one row at a time. #}
+{% set binder_table_rows = [] %}
+{# Build organization row. #}
+{% set binder_table_rows = binder_table_rows|merge([{
+  "label": node.field_binder_ref_organization.fieldDefinition.label ~ ':',
+  "items": binder_organization_items
+}]) %}
+
+{# Build published date row. #}
+{% set binder_table_rows = binder_table_rows|merge([{
+  "label": node.field_binder_date_published.fieldDefinition.label ~ ':',
+  "text": (content.field_binder_date_published.0)
+}]) %}
+
+{# Build optional last update row. #}
+{% if content.field_binder_last_updated.0 %}
+  {% set binder_table_rows = binder_table_rows|merge([{
+    "label": node.field_binder_last_updated.fieldDefinition.label ~ ':',
+    "text": content.field_binder_last_updated.0
+  }]) %}
+{% endif %}
+
+{# Build optional volume row. #}
+{% if node.field_binder_volume.value %}
+  {% set binder_table_rows = binder_table_rows|merge([{
+    "label": node.field_binder_volume.fieldDefinition.label ~ ':',
+    "text": content.field_binder_volume
+  }]) %}
+{% endif %}
+
+{# Build optional serial number row. #}
+{% if node.field_binder_serial_number.value %}
+  {% set binder_table_rows = binder_table_rows|merge([{
+    "label": node.field_binder_serial_number.fieldDefinition.label ~ ':',
+    "text": content.field_binder_serial_number
+  }]) %}
+{% endif %}
+
+{% set secondaryIndicators = false %}
+{% if node.computed_related_to is not empty %}
+  {% set secondaryIndicators = {
+    "label": "related to"
+  } %}
+{% endif %}
+
+{# Set top heading level for the page. #}
+{% set level = 1 %}
+
+{% block preContent %}
+  {# If the contextual navigation should be set for this node, then add it. #}
+  {% if node.computed_log_in_links is not empty %}
+    {{ contextual_log_in_links }}
+  {% endif %}
+  {% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "primary": {
+        "label": "offered by"
+      },
+      "secondary": secondaryIndicators
+    }
+  } %}
+    {% block primaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.computed_related_to }}
+    {% endblock %}
+  {% endembed %}
+  {% set bgImage = false %}
+  {% if node.field_binder_banner_image is not empty %}
+    {% set bgImage = file_url(node.field_binder_banner_image.entity.fileuri) %}
+  {% endif %}
+  {% include "@organisms/by-template/illustrated-header.twig" with {
+    "illustratedHeader": {
+      "bgImage": bgImage,
+      "category": node.field_binder_binder_type.entity.label,
+      "inverted": true,
+      "pageHeader": {
+        "title": label,
+        "subTitle": "",
+        "optionalContents": [{
+          "path": "@atoms/11-text/paragraph.twig",
+          "data": {
+            "paragraph" : {
+              "text": node.field_binder_short_desc.value
+            }
+          }
+        }]
+      }
+    }
+  } %}
+  {{ pre_content }}
+{% endblock %}
+
+{% block listingTable %}
+  {% include "@molecules/listing-table.twig" with {
+    "listingTable": {
+      "rows": binder_table_rows
+    }
+  }%}
+{% endblock %}
+
+{# Increase heading number by 1 from the parent heading. #}
+{% set level = level + 1 %}
+
+{% block mainContent %}
+  {{ content.field_binder_overview }}
+  {{ content.field_binder_pages }}
+  {{ content.field_binder_appendix }}
+  {{ content.field_downloads }}
+{% endblock %}
+
+{% block pageContent %}
+{% endblock %}
+
+{% block tableOfContentsSections %}
+{% endblock %}
+
+{% block contactList %}
+  {{ content.field_contact }}
+{% endblock %}
+
+{% block sidebar %}
+  {{ content.extra_sidebar_contact }}
+  {% if sideContent.linkList %}
+    {% set linkList = sideContent.linkList %}
+    {% set linkList = linkList|merge({'compHeading': {
+      'title': linkList.compHeading.title,
+      'level': level
+    }}) %}
+    {% include "@organisms/by-author/link-list.twig" %}
+  {% endif %}
+{% endblock %}
+
+{% block postContent %}
+  {{ post_content }}
+  {{ content.extra_org_feedback_form }}
+{% endblock %}

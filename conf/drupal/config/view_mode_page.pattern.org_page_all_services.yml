@@ -1,0 +1,23 @@
+uuid: 1403a99f-b730-466e-9ba0-5cbbe871754f
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: org_page_all_services
+label: 'Org Page All Services'
+type: 'canonical_entities:node'
+pattern: '%/services'
+view_mode: all_services
+selection_criteria:
+  b73801c3-79c2-4e36-b83f-ce29b0b61a8f:
+    id: node_type
+    bundles:
+      org_page: org_page
+    negate: false
+    context_mapping:
+      node: node
+    uuid: b73801c3-79c2-4e36-b83f-ce29b0b61a8f
+selection_logic: and
+weight: -5
+relationships: {  }

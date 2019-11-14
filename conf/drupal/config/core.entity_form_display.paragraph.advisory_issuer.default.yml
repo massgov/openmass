@@ -1,0 +1,34 @@
+uuid: 75cff648-2b5e-4420-9bd8-2978de3ffd23
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.advisory_issuer.field_advisory_display_name
+    - field.field.paragraph.advisory_issuer.field_advisory_person_ref
+    - paragraphs.paragraphs_type.advisory_issuer
+id: paragraph.advisory_issuer.default
+targetEntityType: paragraph
+bundle: advisory_issuer
+mode: default
+content:
+  field_advisory_display_name:
+    weight: 7
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_advisory_person_ref:
+    weight: 6
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

@@ -1,0 +1,153 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Mass Media module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\file\Entity\File;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
+use Drupal\Core\Url;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Access\AccessResult;
+
+/**
+ * Immediately delete any old file entity on this media entity.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   A media entity.
+ *
+ * @link https://jira.state.ma.us/browse/DP-8699.
+ *
+ * @throws \Drupal\Core\Entity\EntityStorageException
+ */
+function mass_media_media_update(EntityInterface $entity) {
+  if ($entity->field_upload_file != NULL) {
+    $target_new = $entity->field_upload_file->target_id;
+    $target_original = $entity->original->field_upload_file->target_id;
+    if ($target_original && $target_original !== $target_new) {
+      if ($file = File::load($target_original)) {
+        $file->delete();
+        Drupal::logger('content')->info('File entity @num was replaced and then deleted. Was @url', ['@num' => $file->id(), '@url' => $file->url()]);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function mass_media_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  /** @var \Drupal\file\Plugin\Field\FieldType\FileFieldItemList $items */
+  $items = $context['items'];
+  if ($context['widget'] instanceof FileWidget && $items->getName() === 'field_upload_file') {
+    $element['#process'][] = 'mass_media_process_file_widget';
+  }
+}
+
+/**
+ * File widget process callback.
+ *
+ * Adds an extra data property to the "remove" button of any file widget that's
+ * displaying a permanent file.  This property is used in JS to display a
+ * confirmation before allowing the "Remove" action.
+ */
+function mass_media_process_file_widget(&$element, $form_state) {
+  $value = $form_state->getValue($element['#parents']);
+  if (isset($value['target_id']) && ($file = File::load($value['target_id'])) && $file->isPermanent()) {
+    $element['remove_button']['#attributes']['data-remove-confirm'] = $file->getFilename();
+    $element['remove_button']['#attached']['library'][] = 'mass_media/delete_confirm';
+  }
+  return $element;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Show document title field value instead of filename.
+ */
+function mass_media_preprocess_page_title(&$variables) {
+
+  $entities = [];
+
+  $route_match = \Drupal::routeMatch();
+  if ($route_match->getRouteName() !== 'entity.media.edit_form') {
+    return;
+  }
+
+  foreach (\Drupal::routeMatch()->getParameters() as $param) {
+    if ($param instanceof EntityInterface) {
+      $entities[] = $param;
+    }
+  }
+
+  foreach ($entities as $id => $entity) {
+    if ($entity->bundle() == 'document') {
+      $variables['title'] = "Edit Document: " . $entity->field_title->value;
+    }
+  }
+
+}
+
+/**
+ * Implements hook_form_alter_HOOK().
+ *
+ * Checks permission for restricted state.
+ */
+function mass_media_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $uid = \Drupal::currentUser()->id();
+  $current_user_roles = \Drupal::currentUser()->getRoles();
+
+  // Check if we're editing a media document.
+  if ($form_id == "media_document_edit_form") {
+    $doc = $form_state->getFormObject()->getEntity();
+    $mod_state = $doc->get('moderation_state')->getValue();
+    $mod_state = $mod_state[0]['value'];
+
+    if ($mod_state == "restricted") {
+      $author_id = $doc->getOwner()->id();
+      // If the user isn't an administrator.
+      if (!in_array("administrator", $current_user_roles)) {
+        // Check if the person trying to access the content is the author.
+        if ($author_id !== $uid) {
+          $form['#access'] = FALSE;
+          $form['#markup'] = t('Access Denied. This file is locked and you do not have permission to edit this media.');
+          $form['#cache'] = [
+            'contexts' => [],
+            'max-age' => 0,
+          ];
+        }
+      }
+    }
+  }
+
+}
+
+/**
+ * Implements hook_media_access().
+ *
+ * Restricts access to restricted content to only the author.
+ */
+function mass_media_media_access(EntityInterface $entity, $operation, AccountInterface $account) {
+
+  $uid = \Drupal::currentUser()->id();
+  $current_user_roles = \Drupal::currentUser()->getRoles();
+  if ($entity->bundle() === "document") {
+    $mod_state = $entity->get('moderation_state')->getValue();
+    $mod_state = $mod_state[0]['value'];
+
+    if ($mod_state == "restricted") {
+      $author_id = $entity->getOwner()->id();
+
+      if (!in_array("administrator", $current_user_roles)) {
+        if ($author_id !== $uid) {
+          // File is restricted and this isn't the author so we restrict access.
+          return AccessResult::forbidden();
+        }
+      }
+    }
+  }
+  return AccessResult::neutral();
+}

@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies: {  }
+id: icon_terms
+migration_tags: null
+migration_group: mass_content
+label: 'Icon Terms'
+source:
+  plugin: csv
+  path: 'modules/custom/mass_content/data/MSG Terms - Icons.csv'
+  header_row_count: 1
+  keys:
+    - Name
+process:
+  vid:
+    plugin: default_value
+    default_value: icons
+  name: Name
+  field_sprite_name: 'Sprite Name'
+destination:
+  plugin: 'entity:taxonomy_term'
+migration_dependencies: null

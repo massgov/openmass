@@ -1,0 +1,16 @@
+{#
+/**
+* @file
+* Template for the Section Topic cards.
+*/
+#}
+<section class="ma__sections-3up">
+  {% if label %}
+    <h2 class="ma__sections-3up__title">More in {{ label }}</h2>
+  {% endif %}
+  <div class="ma__sections-3up__container">
+    {% for row in rows %}
+      {{ row }}
+    {% endfor %}
+  </div>
+</section>

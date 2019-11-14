@@ -1,0 +1,29 @@
+uuid: bca00e41-7a8e-45ee-9b8f-30fa4cecf123
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_decision_ref_contact
+    - node.type.contact_information
+    - node.type.decision
+id: node.decision.field_decision_ref_contact
+field_name: field_decision_ref_contact
+entity_type: node
+bundle: decision
+label: Contact
+description: 'Optional. Select a Contact information item to show contact information on this page. You may need to <a href="/node/add/contact_information" target="_blank">create it</a> before referencing it here.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      contact_information: contact_information
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

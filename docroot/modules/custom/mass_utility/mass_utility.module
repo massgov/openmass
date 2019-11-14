@@ -1,0 +1,1268 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_utility.module.
+ */
+
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\file\FileInterface;
+use Drupal\media\MediaInterface;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\InvokeCommand;
+use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\file\Entity\File;
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Extension\Extension;
+use Drupal\Core\Url;
+use Drupal\Core\Render\Element;
+use Drupal\mayflower\Helper;
+use Drupal\node\Entity\Node;
+use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\user\Entity\User;
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function mass_utility_form_views_form_subtopics_subtopic_reorder_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Add custom submit handler to invalidate cache tags for
+  // "node/%nid%/reorder-callout-cards".
+  // With hook_form_BASE_FORM_ID_alter() this code has to be used for doing so.
+  // For a similar code example (observe at the end of function):
+  // @see https://api.drupal.org/api/drupal/core!modules!menu_ui!menu_ui.module/function/menu_ui_form_node_form_alter/8.0.x
+  foreach (array_keys($form['actions']) as $action) {
+    if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+      $form['actions'][$action]['#submit'][] = 'mass_utility_invalidate_tags_submit';
+    }
+  }
+}
+
+/**
+ * Implements hook_system_info_alter().
+ *
+ * Remove the Acquia Purge dependency on the Page Cache module.
+ *
+ * Having both page_cache and dynamic_page_cache module enabled causes duplicate
+ * cache entries, adding an extra write for each cache miss, and bloating the
+ * database size to unreasonable levels.  Acquia Purge depends on both, so we
+ * just remove the page_cache dependency.
+ */
+function mass_utility_system_info_alter(array &$info, Extension $file, $type) {
+  if ($file->getName() == 'acquia_purge') {
+    $idx = array_search('page_cache', $info['dependencies']);
+    if ($idx !== FALSE) {
+      unset($info['dependencies'][$idx]);
+    }
+  }
+}
+
+/**
+ * Form submission handler to invalidate cache tags.
+ */
+function mass_utility_invalidate_tags_submit($form, FormStateInterface $form_state) {
+  // When saving order of callout links the the cache tags for the node are
+  // invalidated to allow the user see the changes without having to clear
+  // the cache.
+  $form_id_parts = explode('_', $form_state->getValue('form_id'));
+  $nid = end($form_id_parts);
+  if (ctype_digit($nid)) {
+    Cache::invalidateTags(['node:' . $nid]);
+  }
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  /** @var \Drupal\node\NodeForm $node_form */
+  $node_form = $form_state->getFormObject();
+  /** @var \Drupal\node\Entity\Node $node */
+  $node = $node_form->getEntity();
+
+  // Update access unpublished generate token button label.
+  if (isset($form['access_unpublished_settings'])) {
+    $form['access_unpublished_settings']['generate_token']['#value'] = t('Get link');
+  }
+
+  // Add help text link for Scheduling options.
+  if (isset($form['publish_on']['widget'][0]['value']['#description'])) {
+    $schedule_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing/schedule-publishing-and-unpublishing');
+    $form['publish_on']['widget'][0]['value']['#description'] = new FormattableMarkup('Enter a date. The time part is optional. The default time is 09:00:00. Leave the date blank for no scheduled publishing.' . ' @schedule', [
+      '@schedule' => \Drupal::l('Learn how to schedule your content for publishing or unpublishing.', $schedule_url),
+    ]);
+  }
+
+  // Add help text link for Temporary Unpublished Access.
+  if (isset($form['access_unpublished_settings'])) {
+    $temporary_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing/temporary-unpublished-access');
+    $form['access_unpublished_settings']['description'] = [
+      '#markup' => \Drupal::l('Need to give someone access to your unpublished work? Learn how.', $temporary_url),
+      '#weight' => -30,
+    ];
+  }
+
+  // Changed the help text for the campaign landing page for the unpublish date only.
+  if ($node->getType() == 'campaign_landing') {
+    if (isset($form['unpublish_on']['widget'][0]['value']['#description'])) {
+      $form['unpublish_on']['widget'][0]['value']['#description'] = t('An unpublish date within the next 14 months must be provided.');
+    }
+  }
+
+  // Add Organization Stakeholders field to 'advanced' vertical tabs group.
+  if (isset($form['field_state_organization_tax'])) {
+    $form['organization_stakeholders'] = [
+      '#type' => 'details',
+      '#title' => t('SiteImprove Groups'),
+      '#group' => 'advanced',
+      '#weight' => 90,
+    ];
+  }
+  // Attach the fields to group.
+  $form['field_state_organization_tax']['#group'] = 'organization_stakeholders';
+
+  // Hide the preview button when a node is unsaved.
+  if (isset($form['actions']['preview'])) {
+    if ($node->isNew()) {
+      $form['actions']['preview']['#access'] = FALSE;
+    }
+  }
+
+  // Add link for contacting a user in the publish area.
+  if (isset($form['meta']['author']['#markup'])) {
+    $title = $node->getTitle();
+    $author = $node->getOwner();
+    $nid = $node->id();
+    $title_nid = "Outreach about Mass.gov page \"$title\" ($nid)";
+    $contact_url = new Url('entity.user.contact_form', ['user' => $author->id()], [
+      // Set 'query' option for use by Prepopulate contrib module.
+      // Will be used to pre-fill subject in contact form.
+      'query' => [
+        'edit[subject]' => $title_nid,
+      ],
+      // Set 'attributes' option for URL.
+      'attributes' => [
+        'title' => t('Contact the author of this content.'),
+      ],
+    ]);
+    if ($contact_url->access(\Drupal::currentUser())) {
+      $form['meta']['author']['#markup'] = new FormattableMarkup('@username - @contact', [
+        '@username' => $author->getDisplayName(),
+        '@contact' => Link::fromTextAndUrl(t('Contact the author'), $contact_url)->toString(),
+      ]);
+    }
+  }
+
+  // Add Node ID to meta details.
+  if (isset($form['meta'])) {
+    $form['meta']['node_id'] = [
+      '#type' => 'item',
+      '#title' => t('Node ID'),
+      '#markup' => $node->id(),
+      '#wrapper_attributes' => [
+        'class' => 'container-inline',
+      ],
+    ];
+  }
+
+  // Hide the publish_state field on the node/edit form.
+  if (isset($form['publish_state'])) {
+    $form['publish_state']['#access'] = FALSE;
+  }
+  // Hide the unpublish_state field on the node/edit form.
+  if (isset($form['unpublish_state'])) {
+    $form['unpublish_state']['#access'] = FALSE;
+  }
+
+  // For Intended Audience Field update the default value to 'Not Set'.
+  if (isset($form['field_intended_audience'])) {
+    $form['field_intended_audience']['widget']['#options']['_none'] = t('Not Set');
+    array_push($form['#validate'], "_mass_utility_intended_audience_validate");
+    if ($form['field_intended_audience']['widget']['#default_value'] == NULL) {
+      $form['field_intended_audience']['widget']['#default_value'] = '_none';
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ *
+ * Set the publish/unpublish_state fields to a default value.
+ */
+function mass_utility_node_presave(EntityInterface $entity) {
+  // Only set the publish_state value if the publish_on field is set.
+  if (($entity->hasField('publish_on') && $entity->hasField('publish_state')) && !empty($entity->publish_on->value)) {
+    $entity->publish_state->setValue('published');
+  }
+  // Only set the unpublish_state value if the unpublish_on field is set.
+  if (($entity->hasField('unpublish_on') && $entity->hasField('unpublish_state')) && !empty($entity->unpublish_on->value)) {
+    $entity->unpublish_state->setValue('unpublished');
+  }
+}
+
+/**
+ * Custom Validator for the intended audience field.
+ */
+function _mass_utility_intended_audience_validate(&$form, FormStateInterface $form_state) {
+
+  if ($form_state->hasValue('field_intended_audience')) {
+    $data = $form_state->getValue('field_intended_audience');
+    if ($data == NULL) {
+      // If nothing is set for intended audience field, set it to 'Not Set'.
+      $value = [0 => '_none'];
+      $form_state->setValue('field_intended_audience', $value);
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  /** @var \Drupal\media\MediaForm $media_form */
+  $media_form = $form_state->getFormObject();
+  /** @var \Drupal\media\Entity\Media $media */
+  $media = $media_form->getEntity();
+  if (isset($form['revision_information'])) {
+    $form['revision_information']['media_id'] = [
+      '#type' => 'item',
+      '#title' => t('Media ID'),
+      '#markup' => $media->id(),
+      '#wrapper_attributes' => [
+        'class' => 'container-inline',
+      ],
+      '#weight' => -99,
+    ];
+  }
+  if ($media_form->getOperation() === 'add') {
+    // Set the default value the same as the current user's org.
+    $user = User::load(\Drupal::currentUser()->id());
+    if (isset($user->field_user_org)) {
+      $user_orgs = $user->field_user_org->referencedEntities();
+      foreach ($user_orgs as $term) {
+        if (isset($term->field_state_organization)) {
+          $org_node = $term->field_state_organization->entity;
+          if (!empty($org_node)) {
+            $form['field_organizations']['widget'][0]['target_id']['#default_value'] = $org_node;
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_utility_form_revision_overview_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Add link for contact a user in the revision page.
+  $nodeStorage = \Drupal::entityTypeManager()->getStorage('node');
+
+  foreach (Element::children($form['node_revisions_table']) as $idx) {
+    $row =& $form['node_revisions_table'][$idx];
+    $vid = $row['select_column_one']['#return_value'];
+
+    if ($revision = $nodeStorage->loadRevision($vid)) {
+      if ($revisionAuthor = $revision->getRevisionAuthor()) {
+        $title = $revision->getTitle();
+        $nid = $revision->id();
+        $title_nid = "Outreach about Mass.gov revision \"$title\" ($nid)";
+        $contact_url = new Url('entity.user.contact_form', ['user' => $revisionAuthor->id()], [
+          // Set 'query' option for use by Prepopulate contrib module.
+          // Will be used to pre-fill subject in contact form.
+          'query' => [
+            'edit[subject]' => $title_nid,
+          ],
+          // Set 'attributes' option for URL.
+          'attributes' => [
+            'class' => ['button'],
+            'title' => t('Contact the author of this revision.'),
+          ],
+        ]);
+        if (!$contact_url->access(\Drupal::currentUser())) {
+          continue;
+          // Skip adding a contact link for this revision if the user doesn't have the ability to use it.
+        }
+        $row['revision']['#template'] .= '{{ contact }}';
+        $row['revision']['#context']['contact'] = \Drupal::l('Contact this author', $contact_url);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function mass_utility_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  // Hide the map name field on the address google map field.
+  $field_definition = $context['items']->getFieldDefinition();
+  $type = $field_definition->getType();
+  $field_name = $field_definition->getName();
+  if ($type == 'google_map_field') {
+    if ($field_name == 'field_lat_long') {
+      $element['name']['#type'] = 'hidden';
+    }
+  }
+  elseif ($type == 'link') {
+    // Remove the domain from the field prefix for internal only links.
+    if ($field_definition->getSetting('link_type') === 1) {
+      if (isset($element['uri']['#field_prefix'])) {
+        unset($element['uri']['#field_prefix']);
+      }
+    }
+    // Overrides description of link module for social media-related link fields.
+    $social_link_fields = [
+      'field_services_social_links',
+      'field_social_links',
+    ];
+    if (in_array($field_name, $social_link_fields)) {
+      $element['uri']['#description'] = t('Enter a complete, valid URL from Facebook, Twitter, Instagram, LinkedIn, or Medium.',
+        [
+          '%front' => '<front>',
+          '%add-node' => '/node/add',
+          '%url' => 'http://example.com',
+        ]
+      );
+    }
+    elseif ($field_name == 'field_url' || $field_name == 'field_org_more_news_link') {
+      if (isset($context['form']['#parents'][0]) && $context['form']['#parents'][0] == 'field_service_detail_sections' || $field_name == 'field_org_more_news_link') {
+        // When a new help text is added via config, it appears as the first
+        // item in the element, not the last. Per UAT, the default help text
+        // on service pages using this form should be removed.
+        // On field configuration pages, #description is an object while on \
+        // node edit it is an array.
+        if (!is_object($element['uri']['#description']) && isset($element['uri']['#description']['#items'][1])) {
+          unset($element['uri']['#description']['#items'][1]);
+        }
+      }
+      if (isset($context['form']['#parents'][0]) && $context['form']['#parents'][0] == 'field_iframe') {
+        $element['uri']['#description']['#items'][1] = t('This must be an external URL such as %url.',
+          [
+            '%url' => 'https://example.com',
+          ]
+        );
+      }
+    }
+    // The typo in regulation is on the actual field name.
+    elseif ($field_name == 'field_regluation_official_ver') {
+
+      // Get Regulation type taxonomy terms that make field optional: "Draft",
+      // "Working Draft" and "Proposed".
+      $regulation_type_term_ids = \Drupal::entityQuery('taxonomy_term')
+        ->condition('vid', 'advisory_publish_state')
+        ->condition('name', 'Future Effective Date', '!=')
+        ->execute();
+
+      // Build optional values array that will determine when field is optional.
+      $states_optional_values = [];
+      foreach ($regulation_type_term_ids as $term_id) {
+        $states_optional_values[] = ['value' => $term_id];
+      }
+
+      $element['uri']['#states'] = [
+        'optional' => [
+          'select[id="edit-field-regulation-ref-state-tax"]' => $states_optional_values,
+        ],
+      ];
+    }
+    elseif ($field_name == 'field_page_group_page' || $field_name == 'field_page_page') {
+      // Remove the domain from the field.
+      $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov. Allowed types include the following: Advisory, Curated List, Decision, Executive Order Page, Information Details, Regulation Page, or Rules of court.',
+        [
+          '%front' => '<front>',
+          '%add-node' => '/node/add',
+          '%url' => 'http://example.com',
+        ]
+      );
+    }
+    elseif ($field_name == 'field_button') {
+      // Set link field description for the button on campaign landing pages.
+      $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".');
+      $element['title']['#description'] = t('A short call to action, beginning with a verb. If this is not filled out, the button will not render on the page. 20 character limit.');
+      $element['title']['#title'] = t('Button text');
+    }
+    else {
+      // Set link field descriptions for all other link fields.
+      $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".');
+      $element['title']['#description'] = t('For links to Mass.gov pages, leave the link text empty to automatically use the page title. External links require link text.');
+    }
+  }
+  elseif ($type == 'entity_reference') {
+    if ($field_name == 'field_issuer_issuers') {
+      if ($element['target_id']['#field_parents'][0] == 'field_advisory_issuer') {
+        $element['target_id']['#ajax'] = [
+          'event' => 'autocompleteclose',
+          'callback' => 'mass_utility_get_issuer_advisory_ajax_callback',
+        ];
+      }
+      elseif ($element['target_id']['#field_parents'][0] == 'field_executive_order_issuer') {
+        $element['target_id']['#ajax'] = [
+          'event' => 'autocompleteclose',
+          'callback' => 'mass_utility_get_issuer_executive_ajax_callback',
+        ];
+      }
+    }
+    elseif ($field_name == 'field_state_org_ref_org') {
+      $element['target_id']['#description'] = t('Start typing to choose an existing org page on Mass.gov.');
+
+      // Set ajax callback on the press release signees entity reference field(s).
+      $element['target_id']['#ajax'] = [
+        'event' => 'autocompleteclose',
+        'callback' => 'mass_utility_get_signee_ajax_callback',
+      ];
+    }
+    elseif ($field_name == 'field_media_contact_ref_person') {
+      $element['target_id']['#description'] = t('Start typing to choose an existing Media Contact.');
+
+      // Set ajax callback on media contact entity reference field(s).
+      $element['target_id']['#ajax'] = [
+        'event' => 'autocompleteclose',
+        'callback' => 'mass_utility_get_media_contact_ajax_callback',
+      ];
+    }
+  }
+  elseif ($type == 'image' && $field_name == 'field_state_org_photo') {
+    $element['#process'][] = 'mass_upload_widget_process';
+  }
+  elseif ($type == 'string') {
+    // Conditionally hide Manual Description except when chosen to display.
+    if ($field_name == 'field_listitemlink_desc_manual' || $field_name == 'field_listitemdoc_desc_manual') {
+      $name = '';
+      foreach ($element['#field_parents'] as $index => $parent) {
+        if ($index === 0) {
+          $name = $parent . '[';
+        }
+        else {
+          $name .= $parent . '][';
+        }
+      }
+      $name .= ($field_name == 'field_listitemlink_desc_manual') ? 'field_listitemlink_desc_type]' : 'field_listitemdoc_desc_type]';
+      $element['value']['#states'] = [
+        'visible' => [
+          'select[name="' . $name . '"]' => ['value' => 'manual'],
+        ],
+      ];
+    }
+  }
+  elseif ($type == 'entity_reference_revisions') {
+    if ($field_name == 'field_curatedlist_list_section') {
+      if (isset($element['subform']['field_liststatic_items'])) {
+        $element['subform']['field_liststatic_items']['widget']['add_more']['add_more_button_list_item_link']['#value'] = t('Add @type', ['@type' => 'List item link']);
+      }
+    }
+    elseif ($field_name == 'field_liststatic_items') {
+      if (isset($element['subform']['field_listitemlink_item']['widget'])) {
+        unset($element['subform']['field_listitemlink_item']['widget']['add_more']);
+        unset($element['subform']['field_listitemlink_item']['widget'][1]);
+      }
+    }
+    elseif ($field_name == 'field_about' || $field_name == 'field_org_featured_items') {
+      if (!empty($element['#description'])) {
+        $element['description'] = [
+          '#type' => 'container',
+          '#weight' => -1000,
+        ];
+        $element['description']['info'] = [
+          '#markup' => '<div>' . $element['#description'] . '</div>',
+        ];
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function mass_utility_form_node_news_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  foreach ($form['field_news_signees']['widget'] as $delta => $widget) {
+    if (is_numeric($delta)) {
+      if (!empty($form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url'])) {
+        $element = $form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'][0]['value'];
+        $original_path = $element['#default_value'];
+        $image_path = file_create_url($original_path);
+        $form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'][0]['#prefix'] = '<p><div class="photo-preview"><img src=' . $image_path . '/></div></p>';
+      }
+    }
+  }
+}
+
+/**
+ * An element #process callback for the image.
+ *
+ * @param array $element
+ *   Element array.
+ *
+ * @return array
+ *   Returns back the element array.
+ */
+function mass_upload_widget_process(array $element) {
+  // Adds in another #submit callback.
+  if (isset($element['upload_button'])) {
+    $element['upload_button']['#ajax']['callback'] = 'mass_utility_get_signee_ajax_callback';
+  }
+  return $element;
+}
+
+/**
+ * AJAX handler for dynamic updates to static content.
+ */
+function mass_utility_get_issuer_advisory_ajax_callback(array &$form, FormStateInterface $form_state) {
+  // Get the current delta.
+  $element = $form_state->getTriggeringElement();
+  $delta = 0;
+
+  if (isset($element['#field_parents'][1])) {
+    $delta = $element['#field_parents'][1];
+  }
+
+  // Create AJAX Response object.
+  $response = new AjaxResponse();
+
+  // Get the referenced node id.
+  $nid = $form_state->getValue([
+    'field_advisory_issuer',
+    $delta,
+    'subform',
+    'field_issuer_issuers',
+    0,
+    'target_id',
+  ]);
+
+  if ($nid) {
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $node = $storage->load($nid);
+    $name_and_title = $node->getTitle();
+
+    if (!empty($node->field_person_ref_org->entity)) {
+      $personOrg = $node->field_person_ref_org->entity;
+      // Add ORG if exists.
+      $name_and_title .= ', ' . $personOrg->getTitle();
+      $nid = $personOrg->nid->value;
+    }
+
+    $response->addCommand(new InvokeCommand('input[name="field_advisory_issuer[' . $delta . '][subform][field_issuer_display_name][0][value]"', 'val', [trim($name_and_title)]));
+    $response->addCommand(new InvokeCommand('input[name="field_advisory_issuer[' . $delta . '][subform][field_issuer_content_id][0][value]"', 'val', [trim($nid)]));
+    return $response;
+  }
+
+  return FALSE;
+}
+
+/**
+ * AJAX handler for dynamic updates to static content.
+ */
+function mass_utility_get_issuer_executive_ajax_callback(array &$form, FormStateInterface $form_state) {
+  // Get the current delta.
+  $element = $form_state->getTriggeringElement();
+  $delta = 0;
+
+  if (isset($element['#field_parents'][1])) {
+    $delta = $element['#field_parents'][1];
+  }
+
+  // Create AJAX Response object.
+  $response = new AjaxResponse();
+
+  // Get the referenced node id.
+  $nid = $form_state->getValue([
+    'field_executive_order_issuer',
+    $delta,
+    'subform',
+    'field_issuer_issuers',
+    0,
+    'target_id',
+  ]);
+
+  if ($nid) {
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $node = $storage->load($nid);
+
+    if (!empty($node->field_person_ref_org->entity)) {
+      $personOrg = $node->field_person_ref_org->entity;
+      // Add ORG if exists.
+      $nid = $personOrg->nid->value;
+    }
+
+    $response->addCommand(new InvokeCommand('input[name="field_executive_order_issuer[' . $delta . '][subform][field_issuer_content_id][0][value]"', 'val', [trim($nid)]));
+    return $response;
+  }
+
+  return FALSE;
+}
+
+/**
+ * AJAX handler for dynamic updates to static content.
+ */
+function mass_utility_get_signee_ajax_callback(array &$form, FormStateInterface $form_state) {
+  // Get the current delta.
+  $element = $form_state->getTriggeringElement();
+  $delta = 0;
+  $image = '';
+
+  if (isset($element['#field_parents'][1])) {
+    $delta = $element['#field_parents'][1];
+  }
+
+  if (isset($element['#parents'][1])) {
+    $delta = $element['#parents'][1];
+  }
+
+  // Create AJAX Response object.
+  $response = new AjaxResponse();
+
+  $upload_button_class = 'field_news_signees_' . $delta . '_subform_field_state_org_photo_0_upload_button';
+
+  // If an image was uploaded, update our preview.
+  if ($element['#name'] == $upload_button_class) {
+    $fid = $form_state->getValue([
+      'field_news_signees',
+      $delta,
+      'subform',
+      'field_state_org_photo',
+      0,
+      'fids',
+      0,
+    ]);
+    $file = File::load($fid);
+    $image_path = $file->getFileUri();
+    $image = '<img src="' . file_create_url($image_path) . '"/>';
+    $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"', 'val', [$image_path]));
+    $response->addCommand(new HtmlCommand('#edit-field-news-signees-' . $delta . '-subform-field-state-org-photo-url-wrapper .photo-preview', $image));
+    return $response;
+  }
+
+  // Get the referenced node id.
+  $nid = $form_state->getValue([
+    'field_news_signees',
+    $delta,
+    'subform',
+    'field_state_org_ref_org',
+    0,
+    'target_id',
+  ]);
+
+  if ($nid) {
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    if ($node = $storage->load($nid)) {
+      $name = $node->getTitle();
+      $description = $node->field_sub_title->value;
+      $image_path = $node->field_sub_brand->entity->uri->value;
+      $image = '<img src="' . file_create_url($image_path) . '"/>';
+      $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_name][0][value]"', 'val', [$name]));
+      $response->addCommand(new InvokeCommand('textarea[name="field_news_signees[' . $delta . '][subform][field_state_org_description][0][value]"', 'val', [$description]));
+      $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"', 'val', [$image_path]));
+      $response->addCommand(new HtmlCommand('#edit-field-news-signees-' . $delta . '-subform-field-state-org-photo-url-wrapper .photo-preview', $image));
+    }
+    return $response;
+  }
+
+  return FALSE;
+}
+
+/**
+ * AJAX handler for dynamic updates to static content.
+ */
+function mass_utility_get_media_contact_ajax_callback(array &$form, FormStateInterface $form_state) {
+  // Get the current delta.
+  $element = $form_state->getTriggeringElement();
+  $delta = 0;
+
+  if (isset($element['#field_parents'][1])) {
+    $delta = $element['#field_parents'][1];
+  }
+
+  // Create AJAX Response object.
+  $response = new AjaxResponse();
+
+  // Get the referenced node id.
+  $nid = $form_state->getValue([
+    'field_news_media_contac',
+    $delta,
+    'subform',
+    'field_media_contact_ref_person',
+    0,
+    'target_id',
+  ]);
+
+  if ($nid) {
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $node = $storage->load($nid);
+    $name = $node->getTitle();
+    $phone = '';
+    $email = '';
+    if ($node->field_contact_source->value === 'node') {
+      if ($node->field_ref_phone->count() > 0) {
+        $phone = $node->field_ref_phone->entity->field_phone->value;
+      }
+      foreach ($node->field_ref_links->referencedEntities() as $entity) {
+        if ($entity->bundle() === 'online_email') {
+          $email = $entity->field_email->value;
+          break;
+        }
+      }
+    }
+    else {
+      $contact = $node->field_contact->entity;
+      if (!empty($contact)) {
+        if ($contact->field_ref_phone_number->count() > 0) {
+          $phone = $contact->field_ref_phone_number->entity->field_phone->value;
+        }
+        foreach ($contact->field_ref_links->referencedEntities() as $entity) {
+          if ($entity->bundle() === 'online_email') {
+            $email = $entity->field_email->value;
+            break;
+          }
+        }
+      }
+
+    }
+
+    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_name][0][value]"', 'val', [$name]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_email][0][value]"', 'val', [$email]));
+    $response->addCommand(new InvokeCommand('input[name="field_news_media_contac[' . $delta . '][subform][field_media_contact_phone][0][value]"', 'val', [$phone]));
+    return $response;
+  }
+
+  return FALSE;
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function mass_utility_module_implements_alter(&$implementations, $hook) {
+  // Implementations to be moved to the end of the list.
+  if (in_array($hook, ['page_attachments_alter', 'entity_view'])) {
+    $mass_utility = $implementations['mass_utility'];
+    unset($implementations['mass_utility']);
+    $implementations['mass_utility'] = $mass_utility;
+  }
+  // Implementations to be moved to the start of the list.
+  if (in_array($hook, ['cron'])) {
+    $mass_utility = $implementations['mass_utility'];
+    $implementations = [
+      'mass_utility' => $mass_utility,
+    ] + $implementations;
+  }
+
+}
+
+/**
+ * Implements hook_html_head_alter().
+ *
+ * Remove the shortlink from pages not tied to entities.
+ */
+function mass_utility_page_attachments_alter(array &$attachments) {
+  foreach ($attachments['#attached']['html_head'] as $key => $attachment) {
+    if ($attachment[1] == 'shortlink') {
+      unset($attachments['#attached']['html_head'][$key]);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_view().
+ *
+ * Remove the shortlink from pages tied to entities.
+ */
+function mass_utility_entity_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if (isset($build['#attached']['html_head_link'])) {
+    $links = &$build['#attached']['html_head_link'];
+    foreach ($links as $key => $link) {
+      if ($link[0]['rel'] == 'shortlink') {
+        unset($links[$key]);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function mass_utility_form_user_login_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Add a new validation function to unset field validation.
+  $form['#validate'][] = 'mass_utility_remove_login_validation';
+  // Hide the inline form error message.
+  $form['name']['#error_no_message'] = TRUE;
+}
+
+/**
+ * Moves username inline form errors on login page to the top of the page.
+ *
+ * @param array $form
+ *   The form.
+ * @param Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state.
+ */
+function mass_utility_remove_login_validation(array &$form, FormStateInterface $form_state) {
+  $errors = $form_state->getErrors();
+  if (isset($errors['name'])) {
+    $error = $errors['name'];
+    // Rebuild translated error message for displaying link.
+    drupal_set_message($error);
+  }
+}
+
+/**
+ * Implements hook_inline_entity_form_table_fields_alter().
+ *
+ * Alter the fields used to represent an entity in the IEF table.
+ */
+function mass_utility_inline_entity_form_table_fields_alter(&$fields, $context) {
+  // Removes unnecessary Thumbnails from IEF tables.
+  unset($fields['thumbnail']);
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function mass_utility_token_info() {
+  // Define a Mass category token group.
+  $types['mass'] = [
+    'name' => t('Mass Tokens'),
+    'description' => t('Custom Mass tokens for sitewide use.'),
+  ];
+  // Defines a Mass contact name with optional title.
+  $tokens['contact_name'] = [
+    'name' => t('Contact Name'),
+    'description' => t('Defines a contact name with optional title.'),
+  ];
+
+  return [
+    'types' => $types,
+    'tokens' => [
+      'mass' => $tokens,
+    ],
+  ];
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function mass_utility_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  // Define a replacements token and conditional based upon the token name.
+  $replacements = [];
+  if ($type == 'mass') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'contact_name':
+          $replacements[$original] = mass_utility_process_name_title($data);
+          break;
+      }
+    }
+  }
+
+  return $replacements;
+}
+
+/**
+ * Process name strings for optional title.
+ *
+ * @param array $data
+ *   Keyed array with 'node' being a Drupal Node object.
+ *
+ * @return string
+ *   Returns a formatted string based on node field values.
+ */
+function mass_utility_process_name_title(array $data) {
+  // As this relies on node values, if node was not part of the token
+  // data passed, return nothing.
+  if (!isset($data['node'])) {
+    return '';
+  }
+  $node = $data['node'];
+
+  // Setup the basic title as fname lname.
+  $title = $node->field_person_first_name->value . ' ' . $node->field_person_last_name->value;
+
+  // If the node object has a title, append it.
+  if (!$node->field_person_role_title->isEmpty()) {
+    $title = $title . ', ' . $node->field_person_role_title->value;
+  }
+
+  return $title;
+}
+
+/**
+ * Implements hook_mail_alter().
+ *
+ * Retheme the contact user e-mail.
+ */
+function mass_utility_mail_alter(&$message) {
+  switch ($message['id']) {
+    case 'contact_user_mail':
+    case 'contact_user_copy':
+      $params = $message['params'];
+      $contact_message = $params['contact_message'];
+      $variables = [
+        '@site-name' => \Drupal::config('system.site')->get('name'),
+        '@sender-name' => $params['sender']->getDisplayName(),
+        '@sender-email' => $params['sender']->getEmail(),
+        '@recipient-name' => $params['recipient']->getDisplayName(),
+      ];
+      $message['body'] = [];
+      $message['body'][] = t('Hello @recipient-name,', $variables);
+      $message['body'][] = t("@sender-name has sent you a message via your contact form at @site-name. You can email @sender-name back at @sender-email", $variables);
+      $build = entity_view($contact_message, 'mail');
+      $message['body'][] = \Drupal::service('renderer')->renderPlain($build);
+  }
+}
+
+/**
+ * Implements hook_rebuild().
+ */
+function mass_utility_rebuild() {
+  $current_user = \Drupal::currentUser();
+  $location = (PHP_SAPI === 'cli') ? 'drush' : 'the UI';
+  $message = 'drupal_flush_all_caches() has been called by @name using @location.';
+
+  if (!is_null($current_user)) {
+    $name = (empty($current_user->getAccountName())) ? 'Anonymous' : $current_user->getAccountName();
+  }
+  else {
+    $name = 'Anonymous';
+  }
+
+  \Drupal::logger('mass_utility')->notice($message, [
+    '@name' => $name,
+    '@location' => $location,
+  ]);
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function mass_utility_entity_extra_field_info() {
+  $extra = [];
+
+  $extra['media']['document']['display']['calculated_file_size'] = [
+    'label' => t('Calculated file size'),
+    'description' => t('This is the calculated file size in KB.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+
+  $extra['media']['document']['display']['extra_file_icon'] = [
+    'label' => t('Generated file icon name'),
+    'description' => t('This is the generated name for the file icon.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+
+  $extra['media']['document']['display']['extra_file_extension'] = [
+    'label' => t('File extension'),
+    'description' => t('This is the file extension for the file.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+
+  return $extra;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ */
+function mass_utility_media_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  // Get the attached file from the media entity because media fields
+  // can be removed from the entity.
+
+  if ($entity->field_upload_file != NULL) {
+    $file = $entity->field_upload_file->entity;
+
+    if ($file && $display->getComponent('calculated_file_size')) {
+      $file_size = strtoupper(format_size($file->getSize()));
+
+      $build['calculated_file_size'] = [
+        '#type' => 'markup',
+        '#markup' => $file_size,
+      ];
+    }
+
+    if ($file && $display->getComponent('extra_file_extension') && $display->getComponent('extra_file_icon')) {
+      $file_info = new \SplFileInfo($file->getFilename());
+      $file_extension = strtoupper($file_info->getExtension());
+      $file_icon = 'doc-' . strtolower($file_extension);
+      if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
+        $file_icon = 'doc-generic';
+      }
+
+      $build['extra_file_extension'] = [
+        '#type' => 'markup',
+        '#markup' => $file_extension,
+      ];
+      $build['extra_file_icon'] = [
+        '#type' => 'markup',
+        '#markup' => $file_icon,
+      ];
+    }
+  }
+}
+
+/**
+ * Update "Event" nodes so new field "Event Type" is set to "General Event".
+ */
+function mass_utility_post_update_events_event_type(&$sandbox = NULL) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  // Set up batch variables on first run.
+  if (!isset($sandbox['progress'])) {
+    // This must be the first run. Initialize the sandbox.
+    $sandbox['progress'] = 0;
+    $sandbox['current_index'] = 0;
+    $sandbox['max'] = \Drupal::entityQuery('node')
+      ->condition('type', 'event')
+      ->count()
+      ->execute();
+  }
+  $batch_size = 50;
+  $nids = \Drupal::entityQuery('node')
+    ->condition('type', 'event')
+    ->condition('nid', $sandbox['current_index'], '>')
+    ->sort('nid')
+    ->range(0, $batch_size)
+    ->execute();
+  $result = Node::loadMultiple($nids);
+
+  foreach ($result as $node) {
+    $sandbox['current_index'] = $node->id();
+    /** @var Drupal\node\Entity $node */
+    $node->set('field_event_type_list', 'general_event');
+    $node->save();
+
+    $sandbox['progress']++;
+  }
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ *
+ * Provides custom handling of uploaded files within Document media entities.
+ * Desired behavior for Document media entities and their uploaded files:
+ * - Published Documents will have a public uploaded file.
+ * - Unpublished Documents will have a private uploaded file.
+ */
+function mass_utility_media_presave(MediaInterface $entity) {
+  if ($entity->bundle() == 'document') {
+    // Loads file.
+    /** @var \Drupal\file\Entity\File $file */
+    $file = File::load($entity->field_upload_file->target_id);
+    if ($file) {
+      $file_uri = $file->getFileUri();
+      /** @var \Drupal\Core\File\FileSystem $file_system */
+      $file_system = \Drupal::service('file_system');
+      $file_scheme = $file_system->uriScheme($file_uri);
+      $file_uri_target = file_uri_target($file_uri);
+
+      // Checks for unpublished Documents to ensure file is private.
+      // Checks for published Documents to ensure file is public.
+      if (!$entity->isPublished() && $file_scheme == 'public') {
+        // Makes file private. File is public by default.
+        $file_destination = 'private://' . $file_uri_target;
+      }
+      elseif ($entity->isPublished() && $file_scheme == 'private') {
+        // Moves file from private to public, if necessary.
+        $file_destination = 'public://' . $file_uri_target;
+      }
+
+      // Moves file as needed.
+      if (!empty($file_destination)) {
+        $dirname = $file_system->dirname($file_destination);
+        if (!file_prepare_directory($dirname, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS)) {
+          \Drupal::logger('mass_utility')
+            ->error(t('Could not prepare directory needed to move file between public and private file systems.'));
+        }
+        file_move($file, $file_destination);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_file_move().
+ *
+ * Used in conjunction with mass_utility_media_presave(),
+ * where file_move() must be used without the FILE_EXISTS_REPLACE option,
+ * which leads to source file being left to linger as a temporary file.
+ * file_move() calls the 'file_move' hook, which we use here to ensure
+ * that the source file is deleted immediately.
+ */
+function mass_utility_file_move(FileInterface $file, FileInterface $source) {
+  // Add temporary logging due to https://jira.mass.gov/browse/DP-16025
+  $file_system = \Drupal::service('file_system');
+  $msg_file = sprintf('File, Id: %s, Uri: %s Filename: %s, Realpath: %s', $file->id(), $file->getFileUri(), $file->getFilename(), $file_system->realpath($file->getFileUri()));
+  $msg_source = sprintf('Source, Id: %s, Uri: %s Filename: %s, Realpath: %s', $source->id(), $source->getFileUri(), $source->getFilename(), $file_system->realpath($source->getFileUri()));
+  Drupal::logger('mass_utility')->debug("$msg_file.\n\n$msg_source");
+
+  // Delete the original if it's not in use elsewhere.
+  $delete_source_document = FALSE;
+  $file_references = file_get_file_references($file);
+  $file_system = \Drupal::service('file_system');
+  foreach ($file_references as $key => $reference) {
+    // Checks for Document-related files moving between public/private schemes.
+    if (
+      $key == 'field_upload_file'
+      && !empty($media = reset($reference['media']))
+      && $media->bundle() == 'document'
+      && $file_system->uriScheme($file->getFileUri()) != $file_system->uriScheme($source->getFileUri())
+    ) {
+      $delete_source_document = TRUE;
+    }
+  }
+  if ($delete_source_document) {
+    // Deletes old file immediately to avoid unwanted temporary file duplicates.
+    // Cannot use File::delete() because $file and $source share same ID.
+    file_unmanaged_delete($source->getFileUri());
+  }
+}
+
+/**
+ * Implements hook pathauto_alias_alter()
+ */
+function mass_utility_pathauto_alias_alter(&$alias, $context) {
+  // Proceed only if we are operating in the context of a node entity.
+  if (array_key_exists('data', $context) && array_key_exists('node', $context['data'])) {
+    $node_being_aliased = $context['data']['node'];
+  }
+
+  // Append `---unpublished` to the path alias if the node is going to be unpublished.
+  // For example, site.com/type/my-page becomes site.com/type/my-page---unpublished.
+  // NOTE:
+  // (1) Creation of unique aliases is taken care of by \Drupal\pathauto\AliasUniquifier::uniquify().
+  // (2) Published content continues to get regular aliases.
+  if (!empty($node_being_aliased)) {
+    if (!$node_being_aliased->isPublished()) {
+      $alias .= "---unpublished";
+    }
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function mass_utility_cron() {
+  // Check the config switch.
+  $config = \Drupal::config('mass_utility.clean_file_managed_settings');
+  if (!$config->get('clean_file_managed')) {
+    return;
+  }
+
+  mass_utility_clean_file_managed();
+}
+
+/**
+ * Removes spurious duplicate records from the file_managed table.
+ *
+ * Causes of duplicates include operation of ClamAV, as well as bugs
+ * in core Drupal file upload fields.
+ * If this function bogs down, run:
+ * drush sqlq --file=modules/custom/mass_utility/sql/clean_file_managed.sql
+ * from the command line.
+ */
+function mass_utility_clean_file_managed() {
+
+  $connection = \Drupal::database();
+
+  /*
+   * NOTE:  This could be a simple DELETE query, but that would make it hard
+   * to audit and debug.
+   */
+  $query = $connection->select('file_managed', 'fm1');
+  $query->leftJoin('file_usage', 'fu', 'fu.fid = fm1.fid');
+  $query->leftJoin('media__field_upload_file', 'm', 'm.field_upload_file_target_id = fm1.fid');
+  $query->leftJoin('paragraph__field_downloads', 'pd', 'pd.field_downloads_target_id = fm1.fid');
+  $query->condition('fm1.status', 0, '=');
+  $query->isNull('fu.count');
+  $query->isNull('m.entity_id');
+  $query->isNull('pd.entity_id');
+  $query->addField('fm1', 'fid');
+
+  // Separated into two queries so we do not delete all records in a set of duplicates.
+  $lt_query = clone $query;
+  $lt_query->join('file_managed', 'fm2', 'fm2.fid < fm1.fid AND fm2.uri = fm1.uri');
+  $bad_fids = $lt_query->execute()->fetchCol();
+
+  $gt_query = clone $query;
+  $gt_query->join('file_managed', 'fm2', 'fm2.fid > fm1.fid AND fm2.uri = fm1.uri');
+  $bad_fids = array_merge($bad_fids, $gt_query->execute()->fetchCol());
+
+  if ($bad_fids) {
+    mass_utility_delete_fids($bad_fids, $connection);
+  }
+}
+
+/**
+ * Utility function to delete records from the file_managed table efficiently.
+ *
+ * @param array $bad_fids
+ *   List of file ids to delete.
+ * @param \Drupal\Core\Database\Connection $connection
+ *   Optional database connection.
+ */
+function mass_utility_delete_fids(array $bad_fids, Connection $connection = NULL) {
+  if (!$connection) {
+    $connection = \Drupal::database();
+  }
+  // Delete in batches of 250 to avoid overload.
+  $bad_fids_chunked = array_chunk($bad_fids, 250);
+  foreach ($bad_fids_chunked as $chunk) {
+    $connection->delete('file_managed')
+      ->condition('fid', $chunk, 'IN')
+      ->execute();
+  }
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ *
+ * Limits linkit suggestions to 50 to avoid out of memory errors.
+ */
+function mass_utility_query_linkit_entity_autocomplete_alter(AlterableInterface $query) {
+  $query->range(0, 50);
+}
+
+/**
+ * Implements hook_views_data_alter().
+ *
+ * Add a relationship between the node_field_data and node_field_revision tables.
+ *
+ * As it stands, by default there's no way to get comprehensive infromation
+ * about a node's most recent revision when using node_field_data as the base
+ * table of a view. This creates a simple left join between node_field_data and
+ * node_field_revision on the vid.
+ */
+function mass_utility_views_data_alter(array &$data) {
+  $data['node_field_data']['content_of_latest_revision'] = [
+    'title' => t('Content of the latest node revision'),
+    'help' => t('Information pertaining to the latest revision of a node.'),
+
+    'relationship' => [
+      'base' => 'node_field_revision',
+      'base field' => 'vid',
+      'field' => 'vid',
+      'id' => 'standard',
+      'label' => t('Latest revision'),
+    ],
+  ];
+}
+
+/**
+ * Perform alterations before an entity form is included in the IEF widget.
+ */
+function mass_utility_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
+  if ($entity_form['#entity_type'] == 'node' && $entity_form['#bundle'] == 'fee') {
+    // Hide form fields we don't want user to access.
+    $entity_form['publish_state']['#access'] = FALSE;
+    $entity_form['unpublish_state']['#access'] = FALSE;
+    $entity_form['moderation_state']['#access'] = FALSE;
+
+    // Set the default value to published.
+    $entity_form['moderation_state']['widget'][0]['state']['#default_value'] = 'published';
+
+  }
+}

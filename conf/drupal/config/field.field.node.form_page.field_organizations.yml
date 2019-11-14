@@ -1,0 +1,29 @@
+uuid: 275d85e8-ba26-4f6d-ab1f-f3e9b5b0c7cc
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_organizations
+    - node.type.form_page
+    - node.type.org_page
+id: node.form_page.field_organizations
+field_name: field_organizations
+entity_type: node
+bundle: form_page
+label: Organization(s)
+description: 'Choose the organization(s) that offers this information. The organization(s) will be displayed at the top of this page, and when users search for information by organization, this page will appear in the results for the organization(s) listed here.'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

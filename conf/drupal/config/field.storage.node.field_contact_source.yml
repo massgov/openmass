@@ -1,0 +1,27 @@
+uuid: 59b6d60b-3e2c-4656-9e27-d17cfb5eebb2
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_contact_source
+field_name: field_contact_source
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: node
+      label: 'Entered on this page'
+    -
+      value: contact
+      label: 'From contact item'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

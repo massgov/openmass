@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @file
+ * Custom code for mass_feedback_loop module.
+ */
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_feedback_loop_preprocess_pager(&$variables) {
+  $request = \Drupal::request();
+  // Checks for main Feedback Manager page/form.
+  if ($request->attributes->get('_route') == 'mass_feedback_loop.mass_feedback_loop_author_interface_form') {
+    // Resets pager counter for results being reloaded via an AJAX call.
+    if ($request->isXmlHttpRequest() && is_numeric($request->query->getDigits('page'))) {
+      $variables['current'] = 1;
+    }
+    // Removes unnecessary 'First' and 'Last' navigation links from pager.
+    unset(
+      $variables['items']['first'],
+      $variables['items']['last']
+    );
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function mass_feedback_loop_theme() {
+  return [
+    'mass_survey_row' => [
+      'variables' => ['data' => NULL],
+    ],
+  ];
+}

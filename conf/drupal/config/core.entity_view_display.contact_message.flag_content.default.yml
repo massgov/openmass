@@ -1,0 +1,33 @@
+uuid: baa180eb-e807-49ff-92df-70ae2237fe2a
+langcode: en
+status: true
+dependencies:
+  config:
+    - contact.form.flag_content
+    - field.field.contact_message.flag_content.field_content_flagged
+    - field.field.contact_message.flag_content.field_reason_flagged
+  module:
+    - entity_reference_revisions
+id: contact_message.flag_content.default
+targetEntityType: contact_message
+bundle: flag_content
+mode: default
+content:
+  field_content_flagged:
+    weight: 0
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    type: entity_reference_revisions_entity_view
+    region: content
+  field_reason_flagged:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+hidden:
+  message: true

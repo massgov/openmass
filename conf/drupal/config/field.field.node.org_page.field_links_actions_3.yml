@@ -1,0 +1,40 @@
+uuid: 7e964305-7dd3-4be9-b12f-a5bf09e8d755
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_links_actions_3
+    - node.type.org_page
+  module:
+    - link
+id: node.org_page.field_links_actions_3
+field_name: field_links_actions_3
+entity_type: node
+bundle: org_page
+label: 'Featured Services'
+description: 'These content items will be prominently displayed on the page. Up to 3 can be listed. They may be internal pages, such as Service, Service Detail, How-to, Guide, Form, Decision Tree, Regulation, Rules of Court, Advisory, Decision, Executive Order, Location Details, Topic, and Curated List pages. They may also be URLs to external pages.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 1
+  entity_bundles:
+    advisory: advisory
+    binder: binder
+    curated_list: curated_list
+    decision: decision
+    decision_tree: decision_tree
+    executive_order: executive_order
+    form_page: form_page
+    guide_page: guide_page
+    how_to_page: how_to_page
+    info_details: info_details
+    location_details: location_details
+    regulation: regulation
+    rules: rules
+    service_details: service_details
+    service_page: service_page
+    topic_page: topic_page
+field_type: link

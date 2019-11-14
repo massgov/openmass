@@ -1,0 +1,28 @@
+uuid: 421f67e0-aa26-446f-8471-bbd0aaf7dc36
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_org_grid_org
+    - node.type.org_page
+    - paragraphs.paragraphs_type.organization_grid
+id: paragraph.organization_grid.field_org_grid_org
+field_name: field_org_grid_org
+entity_type: paragraph
+bundle: organization_grid
+label: Organizations
+description: 'Choose a child organization that is part of the current organization.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: mass_select_filter
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: _none
+    auto_create: 0
+    auto_create_bundle: ''
+field_type: entity_reference

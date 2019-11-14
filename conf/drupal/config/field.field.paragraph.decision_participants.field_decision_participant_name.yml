@@ -1,0 +1,32 @@
+uuid: 4e7e456a-b436-4a54-b76a-4a12b8715f8f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_decision_participant_name
+    - paragraphs.paragraphs_type.decision_participants
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.decision_participants.field_decision_participant_name
+field_name: field_decision_participant_name
+entity_type: paragraph
+bundle: decision_participants
+label: 'Participant name'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

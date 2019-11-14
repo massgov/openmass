@@ -1,0 +1,37 @@
+uuid: 4bf2ff29-a5e6-464a-92f1-d96187205185
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.token
+    - field.field.paragraph.content_card_group.field_content_card_category
+    - field.field.paragraph.content_card_group.field_content_card_link_cards
+    - paragraphs.paragraphs_type.content_card_group
+  module:
+    - link
+id: paragraph.content_card_group.token
+targetEntityType: paragraph
+bundle: content_card_group
+mode: token
+content:
+  field_content_card_category:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_content_card_link_cards:
+    weight: 1
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link_separate
+    region: content
+hidden: {  }

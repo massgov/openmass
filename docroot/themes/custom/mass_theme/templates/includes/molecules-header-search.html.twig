@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * Partial for google custom search form. Requires searchFormId to be passed.
+ */
+#}
+  {#{{ kint(searchFormId) }}#}
+{% block content %}
+
+<section class="ma__header-search">
+  <form action="https://search.mass.gov/" class="ma__form js-header-search-form">
+    <div role="search" class="ma__suggestions-container js-suggestions-container ma__search-banner__form {{ searchFormId }}">
+      <div class="visually-hidden js-suggestions-help" role="status"  aria-live="polite"></div>
+      <label for="header-search" class="ma__header-search__label">Search terms</label>
+      <input
+          id="header-search"
+          name="q"
+          class="ma__header-search__input"
+          autocomplete="off"
+          placeholder="Search Mass.gov"
+          data-suggest=""
+          type="text" />
+      <div class="ma__suggestions" data-suggestions=""></div>
+    </div>
+    <button type="submit" class="ma__button-search--secondary">
+      <span>Search</span>
+      {{ icon('search') }}
+    </button>
+  </form>
+</section>
+
+
+
+{% endblock %}

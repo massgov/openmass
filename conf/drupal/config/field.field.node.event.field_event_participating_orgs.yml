@@ -1,0 +1,25 @@
+uuid: d0cc4283-7f86-42ab-a353-98cb8af5b52d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_event_participating_orgs
+    - node.type.event
+  module:
+    - link
+id: node.event.field_event_participating_orgs
+field_name: field_event_participating_orgs
+entity_type: node
+bundle: event
+label: 'Participating organizations'
+description: 'Choose one or more participating organizations.  You may choose internal state organizations or external organizations.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 1
+  entity_bundles:
+    org_page: org_page
+field_type: link

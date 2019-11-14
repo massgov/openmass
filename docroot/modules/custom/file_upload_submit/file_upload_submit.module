@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Contains file_upload_submit.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function file_upload_submit_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // @codingStandardsIgnoreLine
+  // $form['#attached']['library'][] = 'file_upload_submit/file_upload_submit';
+  return $form;
+
+}

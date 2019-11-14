@@ -1,0 +1,297 @@
+uuid: bcc231fa-496b-453d-8f0d-64084421d87d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_binder_pages
+    - node.type.binder
+    - paragraphs.paragraphs_type.page
+    - paragraphs.paragraphs_type.page_group
+  module:
+    - entity_reference_revisions
+id: node.binder.field_binder_pages
+field_name: field_binder_pages
+entity_type: node
+bundle: binder
+label: Pages
+description: 'The binder displays a table of contents of all pages and page groups that are included in it. A page group is a an expandable section that can contain pages.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    negate: 0
+    target_bundles:
+      page: page
+      page_group: page_group
+    target_bundles_drag_drop:
+      1up_stacked_band:
+        weight: 83
+        enabled: false
+      2up_stacked_band:
+        weight: 84
+        enabled: false
+      3_up_content:
+        weight: 85
+        enabled: false
+      3_up_text:
+        weight: 86
+        enabled: false
+      action_address:
+        weight: 87
+        enabled: false
+      action_address_info:
+        weight: 88
+        enabled: false
+      action_area:
+        weight: 89
+        enabled: false
+      action_set:
+        weight: 90
+        enabled: false
+      action_step:
+        weight: 91
+        enabled: false
+      action_step_numbered:
+        weight: 92
+        enabled: false
+      action_step_numbered_list:
+        weight: 93
+        enabled: false
+      activities:
+        weight: 94
+        enabled: false
+      activity:
+        weight: 95
+        enabled: false
+      address:
+        weight: 96
+        enabled: false
+      adjustment_type:
+        weight: 97
+        enabled: false
+      advisory_issuer:
+        weight: 98
+        enabled: false
+      advisory_section:
+        weight: 99
+        enabled: false
+      answers:
+        weight: 100
+        enabled: false
+      callout_alert:
+        weight: 101
+        enabled: false
+      callout_button:
+        weight: 102
+        enabled: false
+      callout_link:
+        weight: 103
+        enabled: false
+      completion_time:
+        weight: 104
+        enabled: false
+      contact:
+        weight: 105
+        enabled: false
+      contact_group:
+        weight: 106
+        enabled: false
+      contact_info:
+        weight: 107
+        enabled: false
+      content_card_group:
+        weight: 108
+        enabled: false
+      decision_participants:
+        weight: 109
+        enabled: false
+      decision_section:
+        weight: 110
+        enabled: false
+      emergency_alert:
+        weight: 111
+        enabled: false
+      event_agenda_section:
+        weight: 112
+        enabled: false
+      event_minutes_section:
+        weight: 113
+        enabled: false
+      external_organization:
+        weight: 114
+        enabled: false
+      fax_number:
+        weight: 115
+        enabled: false
+      file_download:
+        weight: 116
+        enabled: false
+      full_bleed:
+        weight: 117
+        enabled: false
+      guide_section:
+        weight: 118
+        enabled: false
+      guide_section_3up:
+        weight: 119
+        enabled: false
+      homepage_background_images:
+        weight: 120
+        enabled: false
+      file_download_single:
+        weight: 120
+        enabled: false
+      hours:
+        weight: 121
+        enabled: false
+      icon:
+        weight: 122
+        enabled: false
+      icon_link:
+        weight: 123
+        enabled: false
+      footnotes:
+        weight: 123
+        enabled: false
+      featured_item:
+        weight: 123
+        enabled: false
+      icon_links:
+        weight: 124
+        enabled: false
+      featured_item_mosaic:
+        weight: 124
+        enabled: false
+      iframe:
+        weight: 125
+        enabled: false
+      image:
+        weight: 126
+        enabled: false
+      issuer:
+        weight: 127
+        enabled: false
+      links:
+        weight: 128
+        enabled: false
+      list_dynamic:
+        weight: 129
+        enabled: false
+      list_item_document:
+        weight: 130
+        enabled: false
+      list_item_link:
+        weight: 131
+        enabled: false
+      list_static:
+        weight: 132
+        enabled: false
+      links_downloads:
+        weight: 133
+        enabled: false
+      location_information:
+        weight: 133
+        enabled: false
+      image_credit:
+        weight: 134
+        enabled: false
+      map:
+        weight: 134
+        enabled: false
+      map_row:
+        weight: 135
+        enabled: false
+      media_contact:
+        weight: 136
+        enabled: false
+      method:
+        weight: 137
+        enabled: false
+      more_info:
+        weight: 138
+        enabled: false
+      next_step:
+        weight: 139
+        enabled: false
+      online_email:
+        weight: 140
+        enabled: false
+      page:
+        enabled: true
+        weight: 141
+      page_group:
+        enabled: true
+        weight: 142
+      phone_number:
+        weight: 143
+        enabled: false
+      pull_quote:
+        weight: 144
+        enabled: false
+      quick_action:
+        weight: 145
+        enabled: false
+      recommended_activity:
+        weight: 146
+        enabled: false
+      regulation_section:
+        weight: 147
+        enabled: false
+      related_content:
+        weight: 148
+        enabled: false
+      related_link:
+        weight: 149
+        enabled: false
+      rich_text:
+        weight: 150
+        enabled: false
+      rules_section:
+        weight: 151
+        enabled: false
+      rules_updates:
+        weight: 152
+        enabled: false
+      search_band:
+        weight: 153
+        enabled: false
+      section:
+        weight: 154
+        enabled: false
+      section_heading_text:
+        weight: 155
+        enabled: false
+      section_with_heading:
+        weight: 156
+        enabled: false
+      slideshow:
+        weight: 157
+        enabled: false
+      stacked_band:
+        weight: 158
+        enabled: false
+      start_button:
+        weight: 159
+        enabled: false
+      stat:
+        weight: 160
+        enabled: false
+      section_long_form:
+        weight: 161
+        enabled: false
+      state_organization:
+        weight: 161
+        enabled: false
+      subhead:
+        weight: 162
+        enabled: false
+      target_pages:
+        weight: 163
+        enabled: false
+      video:
+        weight: 164
+        enabled: false
+field_type: entity_reference_revisions

@@ -1,0 +1,236 @@
+uuid: b39807d5-c5a5-4119-ba6b-b5077579a19c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.service_details.field_intended_audience
+    - field.field.node.service_details.field_organizations
+    - field.field.node.service_details.field_service_detail_contact
+    - field.field.node.service_details.field_service_detail_lede
+    - field.field.node.service_details.field_service_detail_links_5
+    - field.field.node.service_details.field_service_detail_metatags
+    - field.field.node.service_details.field_service_detail_overview
+    - field.field.node.service_details.field_service_detail_sections
+    - field.field.node.service_details.field_state_organization_tax
+    - node.type.service_details
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - field_group
+    - link
+    - mass_validation
+    - metatag
+    - paragraphs
+    - scheduler
+    - scheduler_content_moderation_integration
+    - text
+third_party_settings:
+  field_group:
+    group_node_edit_form:
+      children:
+        - group_overview
+        - group_sections
+        - group_cross_promotional_content
+      parent_name: ''
+      weight: 0
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Node Edit Form'
+    group_overview:
+      children:
+        - title
+        - field_service_detail_lede
+        - field_service_detail_overview
+        - field_organizations
+        - field_intended_audience
+      parent_name: group_node_edit_form
+      weight: 20
+      format_type: tab
+      format_settings:
+        label: Overview
+        formatter: open
+        description: 'Service Detail pages offer information about the service they’re linked to. A Service Detail page should be linked to a Service page – make sure that you have a Service page in mind before you start. Keep the title as short as possible and use plain language. <a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/services-and-info/service-detail" target="_blank">Learn about authoring Service Detail pages.</a>'
+        required_fields: true
+        id: overview-tab
+        classes: ''
+      label: Overview
+    group_sections:
+      children:
+        - field_service_detail_sections
+      parent_name: group_node_edit_form
+      weight: 21
+      format_type: tab
+      format_settings:
+        label: Sections
+        formatter: closed
+        description: 'A Service Detail page is made up of one or more sections. Sections can contain text (with a header and, optionally, additional resources for that section), or a section can be a video. We recommend limiting a Service Detail page to no more than 8 sections.'
+        required_fields: true
+        id: sections-tab
+        classes: ''
+      label: Sections
+    group_cross_promotional_content:
+      children:
+        - field_service_detail_contact
+        - field_service_detail_links_5
+      parent_name: group_node_edit_form
+      weight: 22
+      format_type: tab
+      format_settings:
+        label: Related
+        formatter: closed
+        description: 'Use this area to add related content.'
+        required_fields: true
+        id: related-tab
+        classes: ''
+      label: Related
+id: node.service_details.default
+targetEntityType: node
+bundle: service_details
+mode: default
+content:
+  created:
+    type: datetime_timestamp
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_intended_audience:
+    weight: 26
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_organizations:
+    weight: 25
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_service_detail_contact:
+    weight: 35
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_service_detail_lede:
+    weight: 23
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_service_detail_links_5:
+    weight: 36
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - contact_information
+          - fee
+          - legacy_redirects
+    type: link_default
+    region: content
+  field_service_detail_metatags:
+    weight: 7
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_service_detail_overview:
+    weight: 24
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_service_detail_sections:
+    type: entity_reference_paragraphs
+    weight: 30
+    settings:
+      title: Section
+      title_plural: Sections
+      edit_mode: open
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_state_organization_tax:
+    weight: 8
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 100
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 22
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  uid:
+    type: entity_reference_autocomplete
+    weight: 1
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  path: true
+  promote: true
+  status: true
+  sticky: true

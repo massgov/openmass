@@ -1,0 +1,28 @@
+uuid: c8b85c5e-43c0-4180-8c3b-17dc7951e617
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_regulation_download
+    - media.type.document
+    - node.type.regulation
+id: node.regulation.field_regulation_download
+field_name: field_regulation_download
+entity_type: node
+bundle: regulation
+label: Download
+description: 'An optional download of the regulation in PDF format.  If you are not going to offer this, you should offer full text of the regulation and fill out at least 1 section.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      document: document
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

@@ -1,0 +1,21 @@
+services:
+  mass_utility.commands:
+    class: \Drupal\mass_utility\Commands\MassUtilityCommands
+    tags:
+      - { name: drush.command }
+    arguments: ['@database', '@entity_type.manager', '@logger.factory', '@messenger']
+  mass_utility_files.commands:
+    class: \Drupal\mass_utility\Commands\FileSystemCommands
+    arguments: ['@database', '@file_system']
+    tags:
+      - { name: drush.command }
+  mass_utility.file_commands:
+      class: \Drupal\mass_utility\Commands\FileCommands
+      arguments: ['@database', '@entity_type.manager']
+      tags:
+        - { name: drush.command }
+  mass_utility.redirect_commands:
+    class: \Drupal\mass_utility\Commands\RedirectMigrationCommands
+    arguments: ['@database', '@entity_type.manager', '@date.formatter']
+    tags:
+      - { name: drush.command }

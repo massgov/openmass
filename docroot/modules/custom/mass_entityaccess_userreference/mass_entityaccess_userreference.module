@@ -1,0 +1,274 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_entityaccess_userreference.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\NodeInterface;
+use Drupal\node\Entity\Node;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Entity\EntityForm;
+use Drupal\user\Entity\User;
+use Drupal\mass_entityaccess_userreference\Entity\UserRefAccess;
+use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Url;
+
+/**
+ * Revoke access when user entity access is enabled.
+ *
+ * Implements hook_entity_entity_access().
+ */
+function mass_entityaccess_userreference_node_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  // Entities in a published state should not be able to revoke access and instead return a neutral result.
+  if (_mass_entityaccess_userreference_entity_is_published($entity) == TRUE) {
+    return AccessResult::neutral();
+  }
+
+  // Get the access entity if one exists.
+  $user_ref_access_entity = _mass_entityaccess_userreference_entity_user_ref_access_query($entity);
+
+  if (!empty($user_ref_access_entity)) {
+    // If access should be revoked return a forbidden result.
+    if ($user_ref_access_entity->revokeUserAccess($entity, $account) == TRUE) {
+      return AccessResult::forbidden()->cachePerUser()->addCacheableDependency($entity);
+    }
+    return AccessResult::neutral();
+  }
+}
+
+/**
+ * Remove all of the operation links if the user does not have access to the node.
+ *
+ * Implements hook_entity_operation_alter().
+ */
+function mass_entityaccess_userreference_entity_operation_alter(array &$operations, EntityInterface $entity) {
+  $current_user = User::load(\Drupal::currentUser()->id());
+
+  if ($entity instanceof Node) {
+    if (_mass_entityaccess_userreference_entity_is_published($entity) == TRUE) {
+      return;
+    }
+
+    $user_ref_access_entity = _mass_entityaccess_userreference_entity_user_ref_access_query($entity);
+
+    if (!empty($user_ref_access_entity)) {
+      if ($user_ref_access_entity->revokeUserAccess($entity, $current_user) == TRUE) {
+        // Remove all operations when access is revoked.
+        $operations = [];
+      }
+    }
+  }
+}
+
+/**
+ * Add a form alter for the node to add the user access form elements.
+ *
+ * Implements hook_form_alter().
+ */
+function mass_entityaccess_userreference_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (!$form_state->getFormObject() instanceof EntityForm) {
+    return;
+  }
+
+  // Get the entity in its current state from the form.
+  $entity = $form_state->getFormObject()->getEntity();
+
+  if ($entity instanceof NodeInterface) {
+    $is_enabled = 0;
+    $additional_users = [];
+
+    // Don't add the user access form elements if the node is in a published state.
+    if (_mass_entityaccess_userreference_entity_is_published($entity) == TRUE) {
+      return;
+    }
+
+    // Get the user access entity if it exists.
+    $user_ref_access_entity = _mass_entityaccess_userreference_entity_user_ref_access_query($entity);
+
+    if (!empty($user_ref_access_entity)) {
+      $is_enabled = $user_ref_access_entity->get('enabled')->value;
+      $additional_users = [];
+      foreach ($user_ref_access_entity->get('additional_users')->getValue() as $user_ref) {
+        $additional_users[] = User::load($user_ref['target_id']);
+      }
+    }
+
+    // Add the form elements to the node edit form.
+    $form['enable_restricted_content'] = [
+      '#type' => 'details',
+      '#title' => t('Restrict content access'),
+      '#weight' => 35,
+      '#attributes' => [
+        'class' => ['enable-restricted-content'],
+      ],
+      '#optional' => FALSE,
+      '#group' => 'advanced',
+    ];
+
+    $form['enable_restricted_content']['mass_entity_access_enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Hide the content of this page from all users except the author while it’s unpublished.'),
+      '#desctiption' => t('Once the content is published, access restrictions will be removed and cannot be restored'),
+      '#default_value' => $is_enabled,
+    ];
+
+    if (isset($form['enable_restricted_content']['mass_entity_access_enabled']['#title'])) {
+      $restrict_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing/restricted-access');
+      $form['enable_restricted_content']['mass_entity_access_enabled']['#title'] = new FormattableMarkup('Hide the content of this page from all users except the author while it’s unpublished.' . ' @restrict', [
+        '@restrict' => \Drupal::l('Learn how to restrict access to sensitive content until you’re ready to publish it.', $restrict_url),
+      ]);
+    }
+
+    $form['enable_restricted_content']['mass_entity_access_additional_users'] = [
+      '#type' => 'details',
+      '#title' => t('Additional users'),
+      '#weight' => 0,
+      '#description' => t(''),
+      '#optional' => FALSE,
+    ];
+
+    $form['enable_restricted_content']['mass_entity_access_additional_users']['mass_entity_access_user_referrence_uids'] = [
+      '#type' => 'entity_autocomplete',
+      '#target_type' => 'user',
+      '#title' => t('Grant access to additional users.'),
+      '#description' => t('These users will be able to see and edit this content while it is unpublished.'),
+      '#default_value' => $additional_users,
+      '#tags' => TRUE,
+      '#weight' => '0',
+    ];
+
+    // Adds submit handler to save access settings on all node submit actions "Publish, Delete, etc.".
+    foreach (array_keys($form['actions']) as $action) {
+      if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+        $form['actions'][$action]['#submit'][] = 'mass_entityaccess_userreference_form_submit';
+      }
+    }
+
+    // Removes the access_unpublished settings if users are being restricted.
+    if ($is_enabled == TRUE && array_key_exists('access_unpublished_settings', $form)) {
+      $form['access_unpublished_settings']['duration']['#type'] = 'hidden';
+      $form['access_unpublished_settings']['generate_token']['#type'] = 'hidden';
+      $form['access_unpublished_settings']['#description'] = t('Unable to set temporary unpublished access tokens while this page has restricted content access enabled.');
+      if (array_key_exists('token_table', $form['access_unpublished_settings'])) {
+        $form['access_unpublished_settings']['#description'] = t('Unable to add additional temporary unpublished access tokens while this page has restricted content access enabled.');
+      }
+    }
+  }
+}
+
+/**
+ * Form submit handler to add or update a user access entity attached to the node.
+ */
+function mass_entityaccess_userreference_form_submit(&$form, FormStateInterface $form_state) {
+  // Get the entity as in it's current state from the form.
+  $entity = $form_state->getFormObject()->getEntity();
+
+  // Get the user access entity if one exists.
+  $user_ref_access_entity = _mass_entityaccess_userreference_entity_user_ref_access_query($entity);
+
+  // If the node is in a prepublished state then proceed with creating/updating the user access entity.
+  if (_mass_entityaccess_userreference_entity_is_published($entity) == FALSE) {
+    if (empty($user_ref_access_entity)) {
+      $storage = \Drupal::entityTypeManager()->getStorage('user_ref_access');
+
+      // Create the user access entity with the data from the form and the entity.
+      $storage->create(
+        [
+          'entity_type' => $entity->getEntityType()->id(),
+          'entity_id' => $entity->id(),
+          'user_id' => $entity->getOwnerId(),
+          'additional_users' => !empty($form_state->getValue('mass_entity_access_user_referrence_uids')) ? $form_state->getValue('mass_entity_access_user_referrence_uids') : [],
+          'enabled' => !empty($form_state->getValue('mass_entity_access_enabled')) ? !empty($form_state->getValue('mass_entity_access_enabled')) : 0,
+        ]
+      )->save();
+    }
+    else {
+      $additional_users = [];
+      $values = $form_state->getValues();
+      if (!empty($values['mass_entity_access_user_referrence_uids'])) {
+        foreach ($values['mass_entity_access_user_referrence_uids'] as $user_ref) {
+          $additional_users[] = $user_ref['target_id'];
+        }
+      }
+
+      // Update the existing user access entity with values from the form.
+      $user_ref_access_entity->additional_users->setValue($additional_users);
+      $user_ref_access_entity->enabled->setValue(!empty($values['mass_entity_access_enabled']) ? !empty($values['mass_entity_access_enabled']) : 0);
+      $user_ref_access_entity->user_id->setValue($entity->getOwnerId());
+      $user_ref_access_entity->save();
+    }
+  }
+  elseif (!empty($user_ref_access_entity)) {
+    // Delete the user reference entity if the parent entity is now in a published stated.
+    $user_ref_access_entity->delete();
+  }
+}
+
+/**
+ * Helper function to determine if an entity is published or out of a prepublished moderation state.
+ *
+ * @param Drupal\node\Entity\Node $node
+ *   The entity that needs its moderation checked.
+ *
+ * @return bool
+ *   Returns TRUE if the entity is published and not in a prepublished state.
+ */
+function _mass_entityaccess_userreference_entity_is_published(Node $node) {
+  // If moderation is not enabled still check if the node is published.
+  if (!$node->isNew() && $node->isPublished()) {
+    return TRUE;
+  }
+
+  /** @var \Drupal\content_moderation\ModerationInformation $moderation_info */
+  $moderation_info = Drupal::service('content_moderation.moderation_information');
+  if ($moderation_info->isModeratedEntity($node) && !empty($state_id = $node->moderation_state->value)) {
+    if (!in_array($state_id, MassModeration::getPrepublishedStates())) {
+      return TRUE;
+    };
+  }
+
+  return FALSE;
+}
+
+/**
+ * Helper function to query for the related user_ref_access entity.
+ *
+ * @param Drupal\node\Entity\Node $node
+ *   The entity used as the key in the query.
+ *
+ * @return Drupal\mass_entityaccess_userreference\Entity\UserRefAccess
+ *   Returns the user_ref_access entity if it exists.
+ */
+function _mass_entityaccess_userreference_entity_user_ref_access_query(Node $node) {
+  $query = \Drupal::entityQuery('user_ref_access');
+  $query->condition('entity_type', $node->getEntityType()->id());
+  $query->condition('entity_id', $node->id());
+  $query->range(0, 1);
+  $user_ref_access_id = $query->execute();
+
+  if (!empty($user_ref_access_id)) {
+    // Reset to get only the 1 user_ref_access ID and return the user_ref_access object.
+    return UserRefAccess::load(reset($user_ref_access_id));
+  }
+}
+
+/**
+ * Implements hook_views_data_alter().
+ */
+function mass_entityaccess_userreference_views_data_alter(array &$data) {
+  $data['node']['mass_entityaccess_userreference'] = [
+    'title' => t('Mass Entity Access User Reference'),
+    'help' => t('Relate the content to the corresponding entity access user reference entity.'),
+    'filter' => [
+      'title' => t('Entity Access User Reference'),
+      'help' => t('Filter records that the current user does not have access to based on EAUR.'),
+      'field' => 'nid',
+      'id' => 'mass_entityaccess_userreference_filter',
+    ],
+  ];
+}

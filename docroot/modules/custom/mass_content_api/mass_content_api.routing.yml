@@ -1,0 +1,54 @@
+
+mass_content_api.descendant_controller_build:
+  path: '/admin/config/content/descendants'
+  defaults:
+    _controller: '\Drupal\mass_content_api\Controller\DescendantController::build'
+    _title: 'Descendants'
+  requirements:
+    _permission: 'view descendant api test pages'
+
+mass_content_api.descendant_controller_relationships:
+  path: '/admin/config/content/relationships'
+  defaults:
+    _controller: '\Drupal\mass_content_api\Controller\DescendantController::relationships'
+    _title: 'Relationships'
+  requirements:
+    _permission: 'view descendant api test pages'
+mass_content_api.descendant_controller_overview:
+  path: '/admin/config/content/relationship-overview'
+  defaults:
+    _controller: '\Drupal\mass_content_api\Controller\DescendantOverviewController::build'
+    _title: 'Overview'
+  requirements:
+    _permission: 'view descendant api test pages'
+mass_content_api.descendant_controller_linking_page:
+  path: '/node/{node}/linking-page'
+  defaults:
+    _controller: '\Drupal\mass_content_api\Controller\LinkingPageController::build'
+    _title: 'Pages linking here'
+  options:
+    _node_operation_route: TRUE
+  requirements:
+    _permission: 'view pages linking here tab'
+mass_content_api.descendant_controller_media_linking_page:
+  path: '/media/{media}/linking-page'
+  defaults:
+    _controller: '\Drupal\mass_content_api\Controller\MediaLinkingPageController::build'
+    _title: 'Pages linking here'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'view pages linking here tab'
+mass_content_api.legacy_redirects_prod:
+  path: '/redirects-prod.json'
+  defaults:
+    _controller: 'Drupal\mass_content_api\Controller\LegacyRedirectsController::redirectsProd'
+  requirements:
+    _permission: 'access content'
+
+mass_content_api.legacy_redirects_staging:
+  path: '/redirects-staged.json'
+  defaults:
+    _controller: 'Drupal\mass_content_api\Controller\LegacyRedirectsController::redirectsStaged'
+  requirements:
+    _permission: 'access content'

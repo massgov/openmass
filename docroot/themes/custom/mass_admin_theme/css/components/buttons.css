@@ -1,0 +1,164 @@
+/**
+ * @file
+ * Structural styles for Mass Admin's UI buttons. These override Seven's button styles.
+ *
+ * Apply these classes to any element (<link>, <button>, <input>, etc.) that
+ * should appear as a button.
+ */
+
+.button {
+  color: #14558f;
+  background-color: #e7eef4;
+  background-image: none;
+  border-radius: 3px;
+  border: 1px solid #14558f;
+  text-shadow: none;
+  font-size: 1rem;
+  font-weight: bold;
+  line-height: 1.125rem;
+  text-transform: uppercase;
+  padding: 0.5625rem 1.5rem;
+}
+
+.button:hover,
+.button:focus,
+.button:active,
+.button:disabled,
+.button:disabled:active,
+.button.is-disabled,
+.button.is-disabled:active {
+  color: #fff;
+  background-image: none;
+  background-color: #14558f;
+  border: 1px solid #14558f;
+  text-shadow: none;
+  box-shadow: none;
+  text-decoration: none;
+  outline: none;
+  font-weight: bold;
+}
+
+.button--primary:hover {
+  text-shadow: none;
+  box-shadow: none;
+}
+.button.button--local-actions,
+.button.button--add-content {
+  padding: 1rem;
+}
+
+.button.button--local-actions,
+.button.button--add-content,
+.button.button--see-help-articles,
+.layout-region-doc-footer__content .button--primary {
+  background-color: #14558f;
+  color: #fff;
+}
+.button.button--see-help-articles {
+  margin-left: 0;
+  margin-top: 2.5rem;
+}
+.button.button--local-actions:hover,
+.button.button--local-actions:focus,
+.button.button--local-actions:active,
+.button.button--add-content:hover,
+.button.button--add-content:focus,
+.button.button--add-content:active,
+.button.button--see-help-articles:hover,
+.button.button--see-help-articles:focus,
+.button.button--see-help-articles:active {
+  color: #14558f;
+  background-color: #e7eef4;
+}
+.layout-region-doc-footer__content .button--primary:hover,
+.layout-region-doc-footer__content .button--primary:focus,
+.layout-region-doc-footer__content .button--primary:active {
+  text-decoration: underline;
+}
+.button-action:before {
+  font-family: fontello;
+  content: '\e800';
+  padding-right: .5rem;
+  font-weight: 300;
+  margin-left: 0;
+}
+
+.button.button--support-request {
+  display: block;
+  margin-top: 1.5rem;
+  font-size: 1.3125rem;
+  line-height: 1.5625rem;
+  padding: 1.25rem 0 1.5rem 0;
+}
+.button.button--support-request:before {
+  font-family: fontello;
+  content: '\e813';
+  padding-right: 18px;
+  font-size: 25px;
+  line-height: 25px;
+  vertical-align: middle;
+  font-weight: 500;
+}
+
+/**
+* We've temporarily added the danger button here, bit of a harsh reset but we
+* need it.
+* @todo replace with link--danger.
+* See https://www.drupal.org/node/2123731
+*/
+
+.button--danger {
+  display: inline;
+  cursor: pointer;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+  background: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  color: #c72100;
+  font-weight: 400;
+  text-decoration: underline;
+}
+.button--danger:hover,
+.button--danger:focus,
+.button--danger:active {
+  color: #ff2a00;
+  text-decoration: underline;
+  text-shadow: none;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: none;
+}
+.button--danger:disabled,
+.button--danger.is-disabled {
+  color: #737373;
+  cursor: default;
+  text-decoration: none;
+  -webkit-font-smoothing: antialiased;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+  background: none;
+}
+
+/* Make all Remove buttons have button--danger styles */
+input[value="Remove"] {
+  border: none;
+  background-color: transparent;
+  padding: 0;
+  color: #c72100;
+  font-weight: 400;
+  text-decoration: underline;
+  text-transform: capitalize;
+}
+input[value="Remove"]:hover,
+input[value="Remove"]:active,
+input[value="Remove"]:focus {
+  color: #ff2a00;
+  background-color: transparent;
+  border: none;
+  text-decoration: underline;
+}

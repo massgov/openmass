@@ -1,0 +1,95 @@
+uuid: 48adfb70-14a9-43b0-ba7c-a8f01cb97762
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.extended_header
+    - field.field.paragraph.contact_info.field_address
+    - field.field.paragraph.contact_info.field_branch_locations
+    - field.field.paragraph.contact_info.field_caption
+    - field.field.paragraph.contact_info.field_email
+    - field.field.paragraph.contact_info.field_label
+    - field.field.paragraph.contact_info.field_link
+    - field.field.paragraph.contact_info.field_phone
+    - field.field.paragraph.contact_info.field_type
+    - paragraphs.paragraphs_type.contact_info
+  module:
+    - link
+    - options
+id: paragraph.contact_info.extended_header
+targetEntityType: paragraph
+bundle: contact_info
+mode: extended_header
+content:
+  field_address:
+    weight: 5
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_branch_locations:
+    type: link
+    weight: 7
+    label: hidden
+    settings:
+      trim_length: 80
+      rel: ''
+      target: ''
+      url_only: false
+      url_plain: false
+    third_party_settings: {  }
+    region: content
+  field_caption:
+    weight: 6
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_email:
+    weight: 3
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_label:
+    weight: 1
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_link:
+    weight: 4
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_phone:
+    weight: 2
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_type:
+    weight: 0
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+hidden:
+  created: true
+  uid: true

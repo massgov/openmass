@@ -1,0 +1,44 @@
+uuid: 18053d94-223b-468b-b812-dd2e7f26a538
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.title_short_desc
+    - field.field.node.guide_page.field_guide_page_bg_wide
+    - field.field.node.guide_page.field_guide_page_lede
+    - field.field.node.guide_page.field_guide_page_metatags
+    - field.field.node.guide_page.field_guide_page_related_guides
+    - field.field.node.guide_page.field_guide_page_sections
+    - field.field.node.guide_page.field_image_credit
+    - field.field.node.guide_page.field_organizations
+    - field.field.node.guide_page.field_state_organization_tax
+    - node.type.guide_page
+  module:
+    - user
+id: node.guide_page.title_short_desc
+targetEntityType: node
+bundle: guide_page
+mode: title_short_desc
+content:
+  field_guide_page_lede:
+    weight: 0
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  field_guide_page_bg_wide: true
+  field_guide_page_metatags: true
+  field_guide_page_related_guides: true
+  field_guide_page_sections: true
+  field_image_credit: true
+  field_intended_audience: true
+  field_organizations: true
+  field_state_organization_tax: true
+  links: true
+  referencing_services: true
+  workbench_moderation_control: true

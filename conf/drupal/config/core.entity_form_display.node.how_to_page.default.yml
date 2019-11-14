@@ -1,0 +1,377 @@
+uuid: 0610e3b6-f7e8-4b15-baf2-eab14673f017
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.node.inline_entity
+    - field.field.node.how_to_page.field_how_to_contacts_3
+    - field.field.node.how_to_page.field_how_to_fee_description
+    - field.field.node.how_to_page.field_how_to_files
+    - field.field.node.how_to_page.field_how_to_lede
+    - field.field.node.how_to_page.field_how_to_link_1
+    - field.field.node.how_to_page.field_how_to_links_5
+    - field.field.node.how_to_page.field_how_to_metatags
+    - field.field.node.how_to_page.field_how_to_methods_5
+    - field.field.node.how_to_page.field_how_to_more_info
+    - field.field.node.how_to_page.field_how_to_next_steps
+    - field.field.node.how_to_page.field_how_to_ref_fees
+    - field.field.node.how_to_page.field_how_to_taxo_action_type
+    - field.field.node.how_to_page.field_how_to_time
+    - field.field.node.how_to_page.field_how_to_what_you_need
+    - field.field.node.how_to_page.field_intended_audience
+    - field.field.node.how_to_page.field_manage_your_account
+    - field.field.node.how_to_page.field_organizations
+    - field.field.node.how_to_page.field_state_organization_tax
+    - node.type.how_to_page
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - entity_browser_entity_form
+    - field_group
+    - inline_entity_form
+    - link
+    - mass_validation
+    - metatag
+    - paragraphs
+    - scheduler
+    - scheduler_content_moderation_integration
+    - text
+third_party_settings:
+  field_group:
+    group_how_to_page_edit_form:
+      children:
+        - group_overview
+        - group_details
+        - group_additional_info
+        - group_contacts
+      parent_name: ''
+      weight: 1
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'How To Page Edit Form'
+    group_overview:
+      children:
+        - field_how_to_taxo_action_type
+        - title
+        - field_how_to_lede
+        - field_how_to_time
+        - field_how_to_link_1
+        - field_organizations
+        - field_intended_audience
+      parent_name: group_how_to_page_edit_form
+      weight: 20
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: true
+      label: Overview
+    group_details:
+      children:
+        - field_how_to_what_you_need
+        - group_fees
+        - field_how_to_methods_5
+        - field_how_to_next_steps
+      parent_name: group_how_to_page_edit_form
+      weight: 21
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Details
+    group_additional_info:
+      children:
+        - field_how_to_more_info
+        - field_manage_your_account
+        - field_how_to_files
+        - field_how_to_links_5
+      parent_name: group_how_to_page_edit_form
+      weight: 22
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: 'Additional info'
+    group_contacts:
+      children:
+        - field_how_to_contacts_3
+      parent_name: group_how_to_page_edit_form
+      weight: 23
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Contacts
+    group_fees:
+      children:
+        - field_how_to_fee_description
+        - field_how_to_ref_fees
+      parent_name: group_details
+      weight: 37
+      format_type: fieldset
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: true
+      label: Fees
+id: node.how_to_page.default
+targetEntityType: node
+bundle: how_to_page
+mode: default
+content:
+  field_how_to_contacts_3:
+    weight: 4
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_how_to_fee_description:
+    weight: 50
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_how_to_files:
+    weight: 6
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+      collapsible: false
+      collapsed: false
+      allow_duplicate: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: media_browser
+    type: inline_entity_form_complex
+    region: content
+  field_how_to_lede:
+    weight: -2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_how_to_link_1:
+    weight: 0
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - contact_information
+          - fee
+          - legacy_redirects
+    type: link_default
+    region: content
+  field_how_to_links_5:
+    weight: 7
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - contact_information
+          - fee
+          - legacy_redirects
+    type: link_default
+    region: content
+  field_how_to_metatags:
+    weight: 6
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_how_to_methods_5:
+    type: entity_reference_paragraphs
+    weight: 39
+    settings:
+      title: Method
+      title_plural: Methods
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_how_to_more_info:
+    weight: 4
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_how_to_next_steps:
+    type: entity_reference_paragraphs
+    weight: 40
+    settings:
+      title: 'Next step'
+      title_plural: 'Next steps'
+      edit_mode: preview
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_how_to_ref_fees:
+    weight: 51
+    settings:
+      form_mode: inline_entity
+      override_labels: true
+      label_singular: Fee
+      label_plural: Fees
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      collapsible: false
+      collapsed: false
+      allow_duplicate: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: _none
+    type: inline_entity_form_complex
+    region: content
+  field_how_to_taxo_action_type:
+    weight: -4
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_how_to_time:
+    weight: -1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_how_to_what_you_need:
+    weight: 36
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_intended_audience:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_manage_your_account:
+    type: entity_reference_paragraphs
+    weight: 5
+    settings:
+      title: 'Manage account link'
+      title_plural: 'Manage account links'
+      edit_mode: preview
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_organizations:
+    weight: 1
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_state_organization_tax:
+    type: entity_reference_autocomplete
+    weight: 7
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  moderation_state:
+    type: moderation_state_default
+    weight: 100
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: -3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  uid:
+    type: entity_reference_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

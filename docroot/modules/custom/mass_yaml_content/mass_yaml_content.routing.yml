@@ -1,0 +1,16 @@
+mass_yaml_content.yaml:
+  path: '/admin/config/development/yaml'
+  defaults:
+    _controller: '\Drupal\system\Controller\SystemController::overview'
+    link_id: 'mass_yaml_content.yaml'
+    _title: 'YAML'
+  requirements:
+    _permission: 'access administration pages'
+
+mass_yaml_content.config:
+  path: '/admin/config/development/yaml/yaml-import'
+  defaults:
+    _form: '\Drupal\mass_yaml_content\Form\MassYamlContentConfigForm'
+    _title: 'Mass YAML Example Content Importer'
+  requirements:
+    _permission: 'administer site configuration'

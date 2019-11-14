@@ -1,0 +1,192 @@
+#!/usr/bin/env bash
+#
+# Description:
+#          A shell script to capture a backup for the production's database.
+#          During code release days, a release manager, prior to proceeding
+#          with the release, should always check the status of the backup in
+#          the log file referenced below.
+#
+# Backups:
+#         'ma-optimized-backup' deletes backups that are older than "BACKUP_RETENTION_DAYS"
+#         10 days should be sufficient given that releases takes place twice a week.
+#
+# Log files:
+#         'ma-optimized-backup' creates and rotates its own logs. The log file path
+#         will display once the script is executed. This is very simple logging;
+#         and it tracks the execution time of the script, which maybe helpful
+#         in build time metrics.
+#
+# Usage:
+#         $ ma-optimized-backup
+#
+# Help:
+#         $ ma-optimized-backup -h
+#         Run 'ma-optimized-backup -h' to get help and a list of options
+#
+################################################################################
+
+# Vars
+TIMESTAMP_SHORT=`date +%Y%m%d`
+SCRIPT_LOG_RETENTION_DAYS=10          # How long the script keeps its logs.
+BACKUP_RETENTION_DAYS=10              # How long optimized backups are kept.
+SCRIPT_NAME=`basename $0`             # Script name.
+LOGFILE_HOME=/var/log/sites/${AH_SITE_GROUP}.${AH_SITE_ENVIRONMENT}/logs/`hostname --short`
+LOGFILE_NAME=${LOGFILE_HOME}/${SCRIPT_NAME%\.*}_${TIMESTAMP_SHORT}.log
+BACKUP_HOME=/mnt/gfs/${AH_SITE_GROUP}.${AH_SITE_ENVIRONMENT}/backups/on-demand
+BACKUP_FILE_NAME=$BACKUP_HOME/"optimized-backup-"`date +"%m%d%Y"`.sql
+ART_COL=`tput setaf 035`              # A Mayflower like theme color.
+OK_MSG=`tput setaf 2`                 # Green.
+WARN_MSG=`tput setaf 3`               # Yellow.
+ERR_MSG=`tput setaf 9`                # Red.
+HEADING=`tput setaf 6`                # Blue.
+TEXTRESET=`tput sgr0`                 # Reset text to original color.
+BOLD_TXT=`tput bold`                  # Bold text.
+START_COUNTER=`date +%s`              # Start time in seconds.
+
+
+function show_help() {
+    # Display help.
+    header
+    echo "Usage:"
+    echo "\
+    A utility that creates a backup for mass.gov's production database.
+    This is an optimized backup that skips cache tables; therefore, it is smaller."
+    echo
+    echo "Usage:"
+    echo "    ${SCRIPT_NAME} [options]"
+    echo
+    echo "    ${SCRIPT_NAME}                       Create a database backup on Acquia."
+    echo "    ${SCRIPT_NAME} -h, --help            Shows this help screen."
+    echo
+}
+
+
+function show_usage() {
+    # Show usage.
+    echo "[+] Usage: '${SCRIPT_NAME}' to create a database backup on Acquia."
+    echo
+}
+
+
+function header() {
+    # Show this header.
+    echo
+    echo "${ART_COL} ___  ___  ___        ______  ___  _____  _   ___   _______   ${TEXTRESET}"
+    echo "${ART_COL} |  \/  | / _ \       | ___ \/ _ \/  __ \| | / / | | | ___ \\ ${TEXTRESET}"
+    echo "${ART_COL} | .  . |/ /_\ \______| |_/ / /_\ \ /  \/| |/ /| | | | |_/ /  ${TEXTRESET}"
+    echo "${ART_COL} | |\/| ||  _  |______| ___ \  _  | |    |    \| | | |  __/   ${TEXTRESET}"
+    echo "${ART_COL} | |  | || | | |      | |_/ / | | | \__/\| |\  \ |_| | |      ${TEXTRESET}"
+    echo "${ART_COL} \_|  |_/\_| |_/      \____/\_| |_/\____/\_| \_/\___/\_|      ${TEXTRESET}"
+    echo
+}
+
+
+function sub_header() {
+    # Show sub header with script date, script name current log file.
+    echo "`date`"
+    echo "Log file: ${LOGFILE_NAME}"
+    echo "______________________________________________________________________"
+}
+
+
+function log_retention() {
+  # The script rotates its own logs. Each run generates a separate log file.
+  # Deletes any that are older than '$SCRIPT_LOG_RETENTION_DAYS'.
+  find $LOGFILE_HOME -name "${SCRIPT_NAME%\.*}_*" -mtime +${SCRIPT_LOG_RETENTION_DAYS} -exec rm -f {} \; > /dev/null 2>&1
+  return 0
+}
+
+
+function increment() {
+    # When multiple backups are taken in the same day.
+    if [[ -e ${BACKUP_FILE_NAME}.gz ]] ; then
+        i=1
+        while [[ -e ${BACKUP_FILE_NAME}_${i}.gz ]] ; do
+            let i++
+        done
+        BACKUP_FILE_NAME=${BACKUP_FILE_NAME}_${i}
+    fi
+}
+
+
+function prune_backups() {
+    # Cleanup old backups.
+    find $BACKUP_HOME -name "optimized-backup-*.sql.gz" -mtime +${BACKUP_RETENTION_DAYS} -exec rm -f {} \; > /dev/null 2>&1
+    return 0
+}
+
+
+function maint() {
+    # Cleanup old logs.
+    log_retention
+    prune_backups
+}
+
+
+function counter() {
+    # Show script execution time.
+    END_COUNTER=`date +%s`      # End time.
+    RUN_DURATION=$((END_COUNTER-START_COUNTER))
+    echo
+    echo "${OK_MSG}Completed in $(($RUN_DURATION/60)) minutes. ${TEXTRESET}"
+    echo "`date "+%Y-%m-%d %H:%M:%S"` Completed in $(($RUN_DURATION/60)) minutes."  >> $LOGFILE_NAME
+    echo
+}
+
+
+function nonzero_exit() {
+    # Capture return code and exit (on non-zero).
+    RC=$?
+    if (( $RC )); then
+        # Capture parent function name that failed.
+        echo "${ERR_MSG}[!] '${FUNCNAME[ 1 ]}' operation failed. ${TEXTRESET}"
+        echo "${ERR_MSG}[!] '${SCRIPT_NAME}' issued non-zero return code: ${RC} ${TEXTRESET}"
+        echo
+        exit $RC;
+    fi
+}
+
+
+function main() {
+    increment
+    # When no args are passed.
+    if [[ "$#" -eq 0 ]]; then
+        header
+        sub_header
+        echo
+        # Print date and message to stdout and log file.
+        echo "`date "+%Y-%m-%d %H:%M:%S"` Logging started" >> $LOGFILE_NAME
+        echo "`date "+%Y-%m-%d %H:%M:%S"` Database backup started" >> $LOGFILE_NAME
+        echo "${HEADING}[+] Backup '${AH_SITE_GROUP}.${AH_SITE_ENVIRONMENT}' database ${TEXTRESET}"
+        echo "Backup folder: ${BACKUP_HOME}"
+        echo "Backup in progress..."
+
+        # Change directory and execute Drush from "vendor/bin"
+        # --structure-tables-key=common: skip cache tables.
+        # --gzip: compress sqldump file.
+        # --result-file: specify path where backup file will be saved to.
+        drush -r /var/www/html/${AH_SITE_GROUP}.${AH_SITE_ENVIRONMENT}/docroot sql:dump --structure-tables-key=common --gzip --result-file=$BACKUP_FILE_NAME &>> $LOGFILE_NAME
+        nonzero_exit
+        echo "Database backup completed"
+        echo "Backup file: ${BACKUP_FILE_NAME}.gz"
+        counter
+        echo "`date "+%Y-%m-%d %H:%M:%S"` Logging ended" >> $LOGFILE_NAME
+
+    # If help is needed.
+    elif [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]] ; then
+        show_help
+        echo
+
+    # Otherwise, an unknown arg was passed.
+    else
+        echo
+        echo "${ERR_MSG}[!] '${1}' is an unknown option. ${TEXTRESET}"
+        show_usage
+        exit 1;
+    fi
+}
+
+
+# Run main function & wrap up.
+main $*
+maint

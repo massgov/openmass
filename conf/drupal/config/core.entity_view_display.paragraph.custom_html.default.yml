@@ -1,0 +1,25 @@
+uuid: cf357d82-cd0f-437e-b2a1-61fe5c411559
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.custom_html.field_campaign_code_overview
+    - field.field.paragraph.custom_html.field_campaign_custom_html
+    - paragraphs.paragraphs_type.custom_html
+  module:
+    - text
+id: paragraph.custom_html.default
+targetEntityType: paragraph
+bundle: custom_html
+mode: default
+content:
+  field_campaign_custom_html:
+    weight: 0
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+hidden:
+  field_campaign_code_overview: true
+  paragraphs_type_help__default: true

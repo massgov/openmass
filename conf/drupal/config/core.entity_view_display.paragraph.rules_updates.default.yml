@@ -1,0 +1,36 @@
+uuid: de860120-f291-4e88-82a7-df38701be19f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.rules_updates.field_rules_update_note
+    - field.field.paragraph.rules_updates.field_rules_update_url
+    - paragraphs.paragraphs_type.rules_updates
+  module:
+    - link
+id: paragraph.rules_updates.default
+targetEntityType: paragraph
+bundle: rules_updates
+mode: default
+content:
+  field_rules_update_note:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_rules_update_url:
+    weight: 1
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+hidden: {  }

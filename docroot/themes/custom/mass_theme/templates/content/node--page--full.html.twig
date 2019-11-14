@@ -1,0 +1,15 @@
+{#
+/**
+ * @file
+ * Theme override to display the Full view mode of the Action content type.
+ *
+ * Uses 'extend' methods from http://www.stevector.com/2013/10/make-your-drupal-8-theme-easier-to-maintain-with-this-one-weird-trick-twigs-extends-concept/
+ */
+ #}
+{% extends 'node.html.twig' %}
+
+{% block pageContent %}
+  <div class="main-content--two">
+    {{ content }}
+  </div>
+{% endblock %}

@@ -1,0 +1,33 @@
+uuid: 8a1e9c02-3941-48c7-b353-9c6b31c18004
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.3_up_text.field_content
+    - field.field.paragraph.3_up_text.field_heading
+    - paragraphs.paragraphs_type.3_up_text
+  module:
+    - text
+id: paragraph.3_up_text.default
+targetEntityType: paragraph
+bundle: 3_up_text
+mode: default
+content:
+  field_content:
+    weight: 1
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_heading:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  created: true
+  uid: true

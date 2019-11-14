@@ -1,0 +1,32 @@
+uuid: 65b5c70f-5f0b-4e78-b96d-ff6503d76cde
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_regulation_section_title
+    - paragraphs.paragraphs_type.regulation_section
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.regulation_section.field_regulation_section_title
+field_name: field_regulation_section_title
+entity_type: paragraph
+bundle: regulation_section
+label: 'Section Title'
+description: 'Enter the title of this regulation section.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

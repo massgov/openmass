@@ -1,0 +1,36 @@
+uuid: d48dba5b-ed83-4bb3-87e4-09df3919fd27
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_address_address
+    - paragraphs.paragraphs_type.address
+  module:
+    - address
+id: paragraph.address.field_address_address
+field_name: field_address_address
+entity_type: paragraph
+bundle: address
+label: Address
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  available_countries:
+    US: US
+  fields:
+    administrativeArea: administrativeArea
+    locality: locality
+    dependentLocality: dependentLocality
+    postalCode: postalCode
+    sortingCode: sortingCode
+    addressLine1: addressLine1
+    addressLine2: addressLine2
+    organization: '0'
+    givenName: '0'
+    additionalName: '0'
+    familyName: '0'
+  langcode_override: ''
+field_type: address

@@ -1,0 +1,29 @@
+uuid: 22ade45a-ceeb-4171-a2b5-f0e04f1c25dd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_reusable_label
+    - node.type.person
+    - taxonomy.vocabulary.label
+id: node.person.field_reusable_label
+field_name: field_reusable_label
+entity_type: node
+bundle: person
+label: Label(s)
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      label: label
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

@@ -1,0 +1,32 @@
+uuid: e178f54e-8926-4bac-8321-025f248711d8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_regulation_title
+    - node.type.regulation
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.regulation.field_regulation_title
+field_name: field_regulation_title
+entity_type: node
+bundle: regulation
+label: 'Regulation title'
+description: 'The title of the regulation. The numbers prior to the title and the text “CMR” will be added automatically.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -1,0 +1,11 @@
+{% embed "@molecules/expandable-section.twig" with {
+ "expandableSection" : {
+   "text": element['#object'].field_page_group_name.value,
+ }
+} %}
+  {% block expandableSectionLinks %}
+    {% for item in items %}
+      <li>{{ item.content }}</li>
+    {% endfor %}
+  {% endblock %}
+{% endembed %}

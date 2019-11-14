@@ -1,0 +1,23 @@
+uuid: 74917f39-2c4c-4c18-8cb2-984f70a18711
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.related_content.field_related_content
+    - paragraphs.paragraphs_type.related_content
+id: paragraph.related_content.default
+targetEntityType: paragraph
+bundle: related_content
+mode: default
+content:
+  field_related_content:
+    weight: 0
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+hidden:
+  created: true
+  uid: true

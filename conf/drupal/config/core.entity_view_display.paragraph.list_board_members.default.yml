@@ -1,0 +1,43 @@
+uuid: cdd2800e-ad3f-4810-b056-757176fef836
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.list_board_members.field_board_members
+    - field.field.paragraph.list_board_members.field_featured_board_members
+    - field.field.paragraph.list_board_members.field_heading
+    - paragraphs.paragraphs_type.list_board_members
+  module:
+    - entity_reference_revisions
+id: paragraph.list_board_members.default
+targetEntityType: paragraph
+bundle: list_board_members
+mode: default
+content:
+  field_board_members:
+    type: entity_reference_revisions_entity_view
+    weight: 1
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_featured_board_members:
+    type: entity_reference_revisions_entity_view
+    weight: 2
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_heading:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

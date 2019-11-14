@@ -1,0 +1,32 @@
+services:
+  mass_serializer.media_entity.document:
+    class: Drupal\mass_serializer\Normalizer\MediaEntityDocumentNormalizer
+    arguments: ['@entity.manager']
+    tags:
+      - { name: normalizer, priority: 8 }
+
+  mass_serializer.typed_data:
+    class: Drupal\mass_serializer\Normalizer\TypedDataNormalizer
+    tags:
+      - { name: normalizer, priority: 7 }
+
+  mass_serializer.taxonomy_term.user_organization:
+    class: Drupal\mass_serializer\Normalizer\TaxonomyTermUserOrganizationNormalizer
+    arguments: ['@entity.manager']
+    tags:
+      - { name: normalizer, priority: 8 }
+
+  mass_serializer.cache_endpoint:
+    class: Drupal\mass_serializer\CacheEndpoint
+    arguments: ['@mass_serializer.render_endpoint']
+
+  mass_serializer.render_endpoint:
+    class: Drupal\mass_serializer\RenderEndpoint
+
+  # Note: This normalizer needs to run after mass_serializer.typed_data,
+  # because the two overlap.  @todo: Should we limit the format of
+  # mass_serializer.typed_data to prevent unexpected alteration?
+  mass_serializer.link_item_normalizer.jsonapi:
+    class: Drupal\mass_serializer\Normalizer\JSONAPIURINormalizer
+    tags:
+      - { name: normalizer, priority: 8 }

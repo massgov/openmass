@@ -1,0 +1,38 @@
+uuid: 138fe443-c38d-4520-b7af-5c3f9cf77c29
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.icon_link.field_link_single
+    - field.field.paragraph.icon_link.field_para_icon_term
+    - paragraphs.paragraphs_type.icon_link
+  module:
+    - link
+id: paragraph.icon_link.default
+targetEntityType: paragraph
+bundle: icon_link
+mode: default
+content:
+  field_link_single:
+    weight: 1
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_para_icon_term:
+    weight: 0
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+hidden:
+  created: true
+  uid: true

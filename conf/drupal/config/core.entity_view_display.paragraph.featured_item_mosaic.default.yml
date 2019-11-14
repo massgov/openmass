@@ -1,0 +1,26 @@
+uuid: 8d80960f-620c-4c7a-9510-1b417a124591
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.featured_item_mosaic.field_featured_item_mosaic_items
+    - field.field.paragraph.featured_item_mosaic.field_mosaic_heading
+    - paragraphs.paragraphs_type.featured_item_mosaic
+  module:
+    - entity_reference_revisions
+id: paragraph.featured_item_mosaic.default
+targetEntityType: paragraph
+bundle: featured_item_mosaic
+mode: default
+content:
+  field_featured_item_mosaic_items:
+    type: entity_reference_revisions_entity_view
+    weight: 0
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+hidden:
+  field_mosaic_heading: true

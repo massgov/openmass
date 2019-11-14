@@ -1,0 +1,30 @@
+uuid: d0eb9170-b6e7-4d01-8be5-43d9f61e4222
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.action_area.field_area_action_ref
+    - paragraphs.paragraphs_type.action_area
+  module:
+    - paragraphs
+id: paragraph.action_area.default
+targetEntityType: paragraph
+bundle: action_area
+mode: default
+content:
+  field_area_action_ref:
+    type: entity_reference_paragraphs
+    weight: 6
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: preview
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

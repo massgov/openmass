@@ -1,0 +1,30 @@
+uuid: 31e33af0-87ef-407e-b5fd-c45642a89fb6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.icon_links.field_icon_link
+    - paragraphs.paragraphs_type.icon_links
+  module:
+    - paragraphs
+id: paragraph.icon_links.default
+targetEntityType: paragraph
+bundle: icon_links
+mode: default
+content:
+  field_icon_link:
+    type: entity_reference_paragraphs
+    weight: 6
+    settings:
+      title: 'Icon Link'
+      title_plural: 'Icon Links'
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

@@ -1,0 +1,153 @@
+uuid: 4282b326-fed6-4ee7-a0aa-aaeb3cb3c426
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.minutes
+    - field.field.node.event.field_event_address_type
+    - field.field.node.event.field_event_agenda_download
+    - field.field.node.event.field_event_capacity
+    - field.field.node.event.field_event_contact_general
+    - field.field.node.event.field_event_date
+    - field.field.node.event.field_event_description
+    - field.field.node.event.field_event_fees
+    - field.field.node.event.field_event_image
+    - field.field.node.event.field_event_lede
+    - field.field.node.event.field_event_link_sign_up
+    - field.field.node.event.field_event_links
+    - field.field.node.event.field_event_logo
+    - field.field.node.event.field_event_meeting_agenda_sect
+    - field.field.node.event.field_event_meeting_minutes
+    - field.field.node.event.field_event_metatags
+    - field.field.node.event.field_event_minutes_download
+    - field.field.node.event.field_event_participating_orgs
+    - field.field.node.event.field_event_posted_date
+    - field.field.node.event.field_event_public_testimony
+    - field.field.node.event.field_event_rain_date
+    - field.field.node.event.field_event_ref_contact
+    - field.field.node.event.field_event_ref_downloads
+    - field.field.node.event.field_event_ref_event_2
+    - field.field.node.event.field_event_ref_parents
+    - field.field.node.event.field_event_ref_unique_address
+    - field.field.node.event.field_event_time
+    - field.field.node.event.field_event_type_list
+    - field.field.node.event.field_event_you_will_need
+    - field.field.node.event.field_organizations
+    - field.field.node.event.field_state_organization_tax
+    - node.type.event
+  module:
+    - entity_reference_revisions
+    - metatag
+    - user
+id: node.event.minutes
+targetEntityType: node
+bundle: event
+mode: minutes
+content:
+  computed_related_to:
+    type: entity_reference_label
+    weight: 8
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+  extra_org_feedback_form:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_event_lede:
+    weight: 6
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_event_meeting_agenda_sect:
+    type: entity_reference_revisions_entity_view
+    weight: 4
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_event_meeting_minutes:
+    type: entity_reference_revisions_entity_view
+    weight: 2
+    label: above
+    settings:
+      view_mode: preview
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_event_metatags:
+    weight: 7
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_empty_formatter
+    region: content
+  field_event_minutes_download:
+    type: entity_reference_entity_view
+    weight: 3
+    region: content
+    label: above
+    settings:
+      view_mode: media_download_link
+      link: false
+    third_party_settings: {  }
+  field_event_ref_event_2:
+    weight: 5
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_organizations:
+    type: entity_reference_label
+    weight: 9
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  content_moderation_control: true
+  field_event_address_type: true
+  field_event_agenda_download: true
+  field_event_capacity: true
+  field_event_contact_general: true
+  field_event_date: true
+  field_event_description: true
+  field_event_fees: true
+  field_event_image: true
+  field_event_link_sign_up: true
+  field_event_links: true
+  field_event_logo: true
+  field_event_participating_orgs: true
+  field_event_posted_date: true
+  field_event_public_testimony: true
+  field_event_rain_date: true
+  field_event_ref_contact: true
+  field_event_ref_downloads: true
+  field_event_ref_parents: true
+  field_event_ref_unique_address: true
+  field_event_time: true
+  field_event_type_list: true
+  field_event_you_will_need: true
+  field_intended_audience: true
+  field_state_organization_tax: true

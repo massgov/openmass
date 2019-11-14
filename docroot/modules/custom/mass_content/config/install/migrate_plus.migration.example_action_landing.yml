@@ -1,0 +1,39 @@
+id: example_action_landing
+label: Action Landing (L2)
+
+migration_group: mass_content
+
+source:
+  plugin: csv
+  path: 'modules/custom/mass_content/data/MSG Content - L2 - Action Landing Page.csv'
+  header_row_count: 1
+  keys:
+    - Title
+  constants:
+    bundle: action_landing
+
+process:
+  type: 'constants/bundle'
+  title: Title
+  field_lede: Lede
+  field_actions:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: 'Common Actions'
+    -
+      plugin: explode
+      delimiter: ';'
+    -
+      plugin: callback
+      callable: trim
+    -
+      plugin: migration
+      migration: example_action
+  field_secondary_landings:
+    plugin: migration
+    migration: example_secondary_landing
+    source: 'Parent'
+
+destination:
+  plugin: entity:node

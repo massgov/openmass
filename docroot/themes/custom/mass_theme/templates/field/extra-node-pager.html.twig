@@ -1,0 +1,55 @@
+{#
+  /**
+   * Psuedo-field template to display a pager on nodes.
+   */
+#}
+
+<div class="referencing-binders" data-id="{{ parent.entity.nid.value }}">
+{% if next %}
+  {% set next_button = {
+    "arrowButton": {
+      "href": next['url'],
+      "info": "",
+      "direction": "right"
+    },
+    "label": "Next",
+    "title": "",
+    "link": {
+      "href": next['url'],
+      "text": next['title'],
+      "info": ""
+    }
+  } %}
+{% endif %}
+{% if previous %}
+  {% set prev_button = {
+    "arrowButton": {
+      "href": previous['url'],
+      "info": "",
+      "direction": "left"
+    },
+    "label": "Previous",
+    "title": "",
+    "link": {
+      "href": previous['url'],
+      "text": previous['title'],
+      "info": ""
+    }
+  } %}
+{% endif %}
+{% include "@organisms/by-author/page-flipper.twig" with {
+  "pageFlipper": {
+    "context": {
+      "label": "This is part of:",
+      "link": {
+        "href": path('entity.node.canonical', {'node' : parent.entity.nid.value}),
+        "info": "",
+        "text": parent.entity.title.value,
+      }
+    },
+    "prev": prev_button,
+    "next": next_button
+  }
+} %}
+</div>
+

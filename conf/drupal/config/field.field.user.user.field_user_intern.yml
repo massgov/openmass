@@ -1,0 +1,24 @@
+uuid: fae2009e-5a43-4a99-aceb-77088ec8994e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_user_intern
+  module:
+    - user
+id: user.user.field_user_intern
+field_name: field_user_intern
+entity_type: user
+bundle: user
+label: 'Intern?'
+description: 'Check if this person is a 2017 MassIT summer intern.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'Yes'
+  off_label: 'No'
+field_type: boolean

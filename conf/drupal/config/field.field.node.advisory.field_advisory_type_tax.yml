@@ -1,0 +1,28 @@
+uuid: dd32e372-351c-42ac-aab6-fa3463cc132c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_advisory_type_tax
+    - node.type.advisory
+    - taxonomy.vocabulary.advisory_type
+id: node.advisory.field_advisory_type_tax
+field_name: field_advisory_type_tax
+entity_type: node
+bundle: advisory
+label: Type
+description: 'Choose what type of advisory this will be. Please file a <a href="https://massgov.service-now.com/sp?id=sc_cat_item&sys_id=0bb8e784dbec0700f132fb37bf9619fe" target="_blank">ServiceNow request</a> for a new type if you do not see it on the list.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      advisory_type: advisory_type
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

@@ -1,0 +1,573 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_fields.module.
+ */
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\TypedData\Plugin\DataType\Uri;
+use Drupal\Core\Entity\EntityPublishedInterface;
+use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * The extra logic to clear cache tags for referenced nodes is necessary because
+ * the "Related to" blocks will not function properly without the node_list
+ * cache tag.  Specifically, when a referencing entity is created or edited
+ * to add a new reference, the page for the referenced entity will not be
+ * invalidated since it does not yet contain the referencing entity's tag.
+ *
+ * An example of this problem is:
+ *   - Create new Service Detail Page (SD) and view it.
+ *   - Create new Service Page (SP) referencing SD via "Eligibility Info".
+ *   - Visit SD and observe that SP _is not_ reflected in the "Related to" area.
+ *   - Clear caches
+ *   - Visit SD and observe that SP _is_ reflected in the "Related to" section.
+ *
+ * To work around this, we clear tags for all referenced entities when a
+ * referencing entity is saved.  See https://github.com/massgov/mass/pull/1747
+ * for a full discussion of the issue.
+ */
+function mass_fields_entity_insert(EntityInterface $entity) {
+  mass_fields_entity_clear_referenced($entity);
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function mass_fields_entity_update(EntityInterface $entity) {
+  mass_fields_entity_clear_referenced($entity);
+}
+
+/**
+ * Clear cache tags for referenced entities that match our criteria.
+ *
+ * Tags will be collected from nodes referenced in entity reference fields,
+ * and in URL fields.
+ */
+function mass_fields_entity_clear_referenced(EntityInterface $entity) {
+  $checked_types = ['node', 'paragraph', 'media'];
+  if ($entity instanceof ContentEntityInterface && in_array($entity->getEntityTypeId(), $checked_types)) {
+    // Skip tag clearing for unpublished entities.  It's assumed these will not
+    // be displayed on referenced pages.
+    if ($entity instanceof EntityPublishedInterface && !$entity->isPublished()) {
+      return;
+    }
+    $referenceTags = mass_fields_get_tags_from_references($entity);
+    $linkTags = mass_fields_get_tags_from_links($entity);
+
+    $allTags = array_merge($referenceTags, $linkTags);
+    if ($allTags) {
+      Cache::invalidateTags($allTags);
+    }
+  }
+}
+
+/**
+ * Retrieve a list of cache tags for referenced entities from entityref fields.
+ */
+function mass_fields_get_tags_from_references(ContentEntityInterface $entity) {
+  $referenced = [];
+  // Exclude computed fields.  We have some computed fields that execute queries
+  // for entities. We don't want to cause those queries to execute.
+  foreach ($entity->getFields(FALSE) as $field_items) {
+    if ($field_items instanceof EntityReferenceFieldItemListInterface) {
+
+      $referenced = array_merge($referenced, array_filter($field_items->referencedEntities(), function ($referencedEntity) {
+        // All referenced nodes are cleared.
+        if ($referencedEntity->getEntityTypeId() === 'node') {
+          return TRUE;
+        }
+        // All referenced label terms are cleared. We use these to build dynamic
+        // lists.  See mass_theme_preprocess_node_curated_list.
+        if ($referencedEntity->getEntityTypeId() === 'taxonomy_term' && $referencedEntity->bundle() === 'label') {
+          return TRUE;
+        }
+
+      }));
+    }
+  }
+
+  return array_map(function (EntityInterface $entity) {
+    return sprintf('%s:%d', $entity->getEntityTypeId(), $entity->id());
+  }, $referenced);
+}
+
+/**
+ * Retrieve a list of cache tags for referenced entities from link fields.
+ */
+function mass_fields_get_tags_from_links(ContentEntityInterface $entity) {
+  $tags = [];
+  foreach ($entity->getFields(FALSE) as $items) {
+    foreach ($items as $item) {
+      foreach ($item->getProperties(FALSE) as $property) {
+        if ($property instanceof Uri) {
+          if (preg_match('~^entity:node/(\d+)$~', $item->uri, $matches)) {
+            $tags[] = sprintf('node:%d', $matches[1]);
+          }
+        }
+      }
+    }
+  }
+  return $tags;
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function mass_fields_entity_extra_field_info() {
+  $extra = [];
+
+  // Add the extra_sidebar_contact field to corresponding content types.
+  $sidebar_types = ['binder', 'curated_list', 'info_details'];
+
+  foreach ($sidebar_types as $sidebar_type) {
+    $extra['node'][$sidebar_type]['display']['extra_sidebar_contact'] = [
+      'label' => t('Sidebar Contact'),
+      'description' => t('A copy of the contact with a sidebar view mode.'),
+      'weight' => 100,
+      'visible' => TRUE,
+    ];
+  }
+
+  // Add the extra_node_pager field to corresponding content types.
+  $pager_types = [
+    'advisory',
+    'curated_list',
+    'decision',
+    'executive_order',
+    'info_details',
+    'regulation',
+    'rules',
+  ];
+
+  foreach ($pager_types as $pager_type) {
+    $extra['node'][$pager_type]['display']['extra_node_pager'] = [
+      'label' => t('Node Pager'),
+      'description' => t('Displays the Next, Previous links in tandem with the Parent binder link.'),
+      'weight' => 100,
+      'visible' => TRUE,
+    ];
+  }
+
+  // Used with Documents on Curated Lists.
+  $extra['paragraph']['list_item_document']['display']['extra_list_linked_desc'] = [
+    'label' => t('List with linked description'),
+    'description' => t('Render the paragraph in a linked description display mode'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+  $extra['paragraph']['list_item_document']['display']['extra_list_manual_desc'] = [
+    'label' => t('List with manual description'),
+    'description' => t('Render the paragraph in a manual description display mode'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+
+  // Used on the org page.
+  $extra['node']['org_page']['display']['extra_org_nav_contact_us'] = [
+    'label' => t('Organization Navigation Contact Us Row'),
+    'description' => t('A copy of the contact with a organization_navigation view mode.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+  $extra['node']['org_page']['display']['extra_org_nav_featured_services'] = [
+    'label' => t('Organization Navigation Featured Services'),
+    'description' => t('A copy of the contact with a org_nav_featured_services view mode.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+  $extra['node']['org_page']['display']['extra_org_nav_featured_topics'] = [
+    'label' => t('Organization Navigation Featured Topics'),
+    'description' => t('A copy of the featured topics field in the org_nav_featured_topics view mode.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+  $extra['node']['org_page']['display']['extra_org_nav_more_agency_link'] = [
+    'label' => t('Organization Navigation More Agency Link'),
+    'description' => t('A copy of the more agency links in the organization_navigation view mode.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+  $extra['node']['org_page']['display']['extra_org_nav_application_login_links'] = [
+    'label' => t('Organization Navigation Application Login Links'),
+    'description' => t('A copy of the about application login links field in the organization_navigation view mode.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+
+  // Add the extra_node_all_actions field to corresponding content types.
+  $all_actions_types = [
+    'org_page',
+    'service_page',
+  ];
+  foreach ($all_actions_types as $type) {
+    $extra['node'][$type]['display']['extra_node_all_actions'] = [
+      'label' => t('All action links'),
+      'description' => t('Lists all action links for a node.'),
+      'weight' => 100,
+      'visible' => TRUE,
+    ];
+  }
+
+  return $extra;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ */
+function mass_fields_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  if ($display->getComponent('extra_sidebar_contact') && !empty($build['field_contact'])) {
+    $build['extra_sidebar_contact'] = $build['field_contact'];
+    $build['extra_sidebar_contact']['#field_name'] = 'extra_sidebar_contact';
+    foreach (Element::children($build['extra_sidebar_contact']) as $key) {
+      $item = &$build['extra_sidebar_contact'][$key];
+      $item['#view_mode'] = 'sidebar';
+      $item['#field_name'] = 'extra_sidebar_contact';
+      // Prevent the cache from the contact field from interfering with this.
+      if (!empty($item['#cache']['keys'])) {
+        foreach ($item['#cache']['keys'] as &$key) {
+          if ($key == 'contact_list') {
+            $key = 'sidebar';
+          }
+        }
+      }
+    }
+  }
+  // Pass information from a curated list item of a person with a contact on contact information node.
+  if ($display->getComponent('field_contact') && !empty($build['#to_show'])) {
+    foreach (Element::children($build['field_contact']) as $key) {
+      $item = &$build['field_contact'][$key];
+      $item['#to_show'] = $build['#to_show'];
+      // Vary the cache by the contact elements to show.
+      $item['#cache']['keys'][] = implode('.', $build['#to_show']);
+    }
+  }
+  // Set access to control what contact information is shown on curated list items.
+  if (isset($build['#to_show'])) {
+    if ($entity->bundle() === 'person' && $entity->field_contact_source->value === 'node') {
+      $build['field_ref_links']['#access'] = in_array('online', $build['#to_show']);
+      $build['field_ref_phone']['#access'] = in_array('phone', $build['#to_show']);
+      $build['field_ref_single_address']['#access'] = in_array('address', $build['#to_show']);
+      $build['field_ref_fax']['#access'] = in_array('fax', $build['#to_show']);
+    }
+    elseif ($entity->bundle() === 'contact_information') {
+      $build['field_ref_links']['#access'] = in_array('online', $build['#to_show']);
+      $build['field_ref_phone_number']['#access'] = in_array('phone', $build['#to_show']);
+      $build['field_ref_address']['#access'] = in_array('address', $build['#to_show']);
+      $build['field_ref_fax_number']['#access'] = in_array('fax', $build['#to_show']);
+    }
+  }
+
+  if ($display->getComponent('extra_org_nav_featured_services') && (!empty($build['field_links_actions_3'][0]) || !empty($build['field_ref_actions_6'][0]))) {
+    // If there are featured services links, copy them.
+    if (!empty($build['field_links_actions_3'][0])) {
+      $build['extra_org_nav_featured_services'] = $build['field_links_actions_3'];
+      // If there are "More services" links, add them to the render array.
+      if (!empty($build['field_ref_actions_6'][0])) {
+        foreach ($entity->field_ref_actions_6->referencedEntities() as $linked) {
+          $build['extra_org_nav_featured_services'][] = [
+            '#type' => 'link',
+            '#title' => $linked->title->value,
+            '#url' => $linked->toUrl(),
+            '#theme' => 'link_formatter_link_separate',
+            '#field_name' => 'extra_org_nav_featured_services',
+          ];
+        }
+      }
+    }
+    else {
+      $build['extra_org_nav_featured_services'] = $build['field_ref_actions_6'];
+    }
+
+    $build['extra_org_nav_featured_services']['#view_mode'] = 'org_nav_featured_services';
+    $build['extra_org_nav_featured_services']['#field_name'] = 'extra_org_nav_featured_services';
+  }
+
+  if ($display->getComponent('extra_org_nav_application_login_links') && (!empty($build['field_application_login_links']))) {
+    $build['extra_org_nav_application_login_links'] = $build['field_application_login_links'];
+    $build['extra_org_nav_application_login_links']['#field_name'] = 'extra_org_nav_application_login_links';
+  }
+
+  if ($display->getComponent('extra_org_nav_featured_topics') && !empty($build['field_ref_card_view_6'])) {
+    foreach ($entity->field_ref_card_view_6->referencedEntities() as $linked) {
+      $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
+      $item = $builder->view($linked, 'org_nav_featured_topics');
+      $item['#field_name'] = 'extra_org_nav_featured_topics';
+      $build['extra_org_nav_featured_topics'][] = $item;
+    }
+  }
+
+  if ($display->getComponent('extra_org_nav_contact_us') && !empty($build['field_ref_contact_info_1'])) {
+    // Whether there is a location listings page.
+    $has_location_listing_page = !$entity->field_org_ref_locations->isEmpty();
+    // The org page's location listing URL.
+    $location_listings_url = Url::fromRoute('mass_map.map_page', ['node' => $entity->id()])->toString();
+
+    foreach ($entity->field_ref_contact_info_1->referencedEntities() as $linked) {
+      $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
+      $item = $builder->view($linked, 'organization_navigation');
+      $item['#field_name'] = 'extra_org_nav_contact_us';
+      $item['location_listings_url'] = [
+        '#markup' => $location_listings_url,
+        '#access' => $has_location_listing_page,
+      ];
+
+      $build['extra_org_nav_contact_us'][] = $item;
+    }
+  }
+
+  if ($display->getComponent('extra_org_nav_more_agency_link') && !empty($build['field_about'])) {
+    foreach ($entity->field_about->referencedEntities() as $linked) {
+      $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
+      $item = $builder->view($linked, 'organization_navigation');
+      $item['#field_name'] = 'extra_org_nav_more_agency_link';
+      $build['extra_org_nav_more_agency_link'][] = $item;
+    }
+  }
+
+  if ($display->getComponent('extra_node_pager') && !empty($build['referencing_binders'][0])) {
+    $pagers = ['page_next', 'page_previous'];
+    foreach ($pagers as $pager) {
+      $link[$pager] = NULL;
+      if ($entity->hasField($pager) && $link_value = $entity->get($pager)->getValue()) {
+        $link[$pager] = [
+          'url' => Url::fromUri($link_value[0]['uri']),
+          'title' => $link_value[0]['title'],
+        ];
+      }
+    }
+    $build['extra_node_pager'] = [
+      '#theme' => 'extra_node_pager',
+      '#next' => $link['page_next'],
+      '#previous' => $link['page_previous'],
+      '#parent' => $entity->referencing_binders,
+    ];
+  }
+
+  if ($display->getComponent('extra_node_all_actions')) {
+    if ($entity->bundle() === 'service_page') {
+      // NOTE: We still also check the $build[] array because this same code is triggered on /service path of Org Pages
+      // and without an empty check for $build[] array we see unwanted node list displays there.
+      if ($entity->field_service_ref_actions_2->count() > 0 || $entity->field_service_ref_actions->count() > 0) {
+        // EMPTY ARRAY TO STORE ONLY ITEMS TO RENDER FROM BOTH FIELDS.
+        $build['extra_node_all_actions'] = [];
+        if ($entity->field_service_ref_actions_2->count() > 0 && !empty($build['field_service_ref_actions_2'])) {
+          foreach ($entity->field_service_ref_actions_2->getValue() as $delta => $item) {
+            if (strpos($item['uri'], 'entity:') !== FALSE) {
+              list($entity_type, $entity_id) = explode('/', str_replace('entity:', '', $item['uri']));
+              $view_builder = $entityTypeManager->getViewBuilder('node');
+              $storage = $entityTypeManager->getStorage('node');
+              $node = $storage->load($entity_id);
+              if ($node !== NULL && $node->isPublished() === TRUE) {
+                // Override the author entered label with node title.
+                if ($item['title'] !== '' && $item['title'] !== $node->title->value) {
+                  $node->set('title', $item['title']);
+                }
+                $build['extra_node_all_actions'][] = $view_builder->view($node, 'title_short_desc');
+              }
+            }
+            else {
+              // THIS IS FOR EXTERNAL LINK.
+              $build['extra_node_all_actions'][] = [
+                'title' => $item['title'],
+                'href' => $item['uri'],
+              ];
+            }
+          }
+        }
+        // If there are "All tasks" links, add them to the render array.
+        if ($entity->field_service_ref_actions->count() > 0 && !empty($build['field_service_ref_actions'])) {
+          foreach ($entity->field_service_ref_actions->getValue() as $delta => $item) {
+            if (strpos($item['uri'], 'entity:') !== FALSE) {
+              list($entity_type, $entity_id) = explode('/', str_replace('entity:', '', $item['uri']));
+              $view_builder = $entityTypeManager->getViewBuilder('node');
+              $storage = $entityTypeManager->getStorage('node');
+              $node = $storage->load($entity_id);
+              if ($node !== NULL && $node->isPublished() === TRUE) {
+                // Override the author entered label with node title.
+                if ($item['title'] !== '' && $item['title'] !== $node->title->value) {
+                  $node->set('title', $item['title']);
+                }
+                $build['extra_node_all_actions'][] = $view_builder->view($node, 'title_short_desc');
+              }
+            }
+            else {
+              // THIS IS FOR EXTERNAL LINK.
+              $build['extra_node_all_actions'][] = [
+                'title' => $item['title'],
+                'href' => $item['uri'],
+              ];
+            }
+          }
+        }
+      }
+
+      $build['extra_node_all_actions']['#view_mode'] = 'title_short_desc';
+      $build['extra_node_all_actions']['#field_name'] = 'extra_node_all_actions';
+    }
+    elseif ($entity->bundle() === 'org_page') {
+      // If there are featured services links, copy them.
+      if (!empty($build['field_links_actions_3'])) {
+        $build['extra_node_all_actions'] = $build['field_links_actions_3'];
+        foreach ($entity->field_links_actions_3->getValue() as $delta => $item) {
+          if (strpos($item['uri'], 'entity:') !== FALSE) {
+            list($entity_type, $entity_id) = explode('/', str_replace('entity:', '', $item['uri']));
+
+            $view_builder = $entityTypeManager->getViewBuilder('node');
+            $storage = $entityTypeManager->getStorage('node');
+            $node = $storage->load($entity_id);
+            if ($node) {
+              $build['extra_node_all_actions'][$delta] = $view_builder->view($node, 'title_short_desc');
+            }
+          }
+          else {
+            $build['extra_node_all_actions'][$delta] = [
+              '#url_title' => $item['uri'],
+              '#title' => $item['title'],
+            ];
+          }
+        }
+
+        // If there are "More services" links, add them to the render array.
+        if (!empty($build['field_ref_actions_6'])) {
+          foreach ($entity->field_ref_actions_6->referencedEntities() as $linked) {
+            $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
+            $item = $builder->view($linked, 'title_short_desc');
+            $item['#field_name'] = 'extra_node_all_actions';
+            $build['extra_node_all_actions'][] = $item;
+          }
+        }
+      }
+      elseif (!empty($build['field_ref_actions_6'])) {
+        $build['extra_node_all_actions'] = $build['field_ref_actions_6'];
+      }
+      $build['extra_node_all_actions']['#view_mode'] = 'title_short_desc';
+      $build['extra_node_all_actions']['#field_name'] = 'extra_node_all_actions';
+    }
+  }
+  // In Service Details sections, the link presented at the bottom of Additional Resources should show a total of the
+  // links for all sections. Because this needs to reach into multiple paragraphs, it must be calculated where there is
+  // access to the multiple paragraphs and then pushed into any that have more than 6 links.
+  if ($entity->bundle() === 'service_details') {
+    $total = 0;
+    $more_links = [];
+    foreach ($entity->field_service_detail_sections as $delta => $section) {
+      $subtotal = 0;
+      if ($section->entity && $section->entity->bundle() === 'section') {
+        $subtotal += $section->entity->field_section_links->count();
+        $subtotal += $section->entity->field_section_downloads->count();
+        $total += $subtotal;
+      }
+      if ($subtotal > 6) {
+        array_push($more_links, $delta);
+      }
+    }
+    foreach ($more_links as $delta) {
+      // See paragraph--section.html.twig for the usage of this more link.
+      $build['field_service_detail_sections'][$delta]['more'] = [
+        'href' => Url::fromRoute('mass_more_lists.mass_more_lists_buildList', ['node' => $entity->id()])->toString(),
+        'text' => t('See all @count', ['@count' => $total]),
+        'chevron' => TRUE,
+        'labelContext' => t('See all of the resources for @title', ['@title' => $entity->label()]),
+      ];
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ */
+function mass_fields_paragraph_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  // Pass information from an automatic / dynamic curated list to controll what contact information is displayed.
+  if ($display->getComponent('computed_dynamic_directory')) {
+    $to_show = array_column($entity->field_contact_values_to_display->getValue(), 'value');
+    foreach (Element::children($build['computed_dynamic_directory']) as $key) {
+      $item = &$build['computed_dynamic_directory'][$key];
+      $item['#to_show'] = $to_show;
+      // Vary the cache by the contact elements to show.
+      $item['#cache']['keys'][] = implode('.', $item['#to_show']);
+    }
+  }
+  // Pass information from a curated list item for a contact information node or person node to control the contact
+  // information that should be displayed.
+  if ($entity->hasField('field_contact_values_to_display') && ($display->getComponent('field_contact') || $display->getComponent('field_person'))) {
+    // Contacts.
+    if (!empty($build['field_contact'])) {
+      $target = &$build['field_contact'];
+    }
+    // Persons.
+    else {
+      $target = &$build['field_person'];
+    }
+    $target[0]['#to_show'] = array_column($entity->field_contact_values_to_display->getValue(), 'value');
+    // Vary the cache by the contact elements to show.
+    $target[0]['#cache']['keys'][] = implode('.', $target[0]['#to_show']);
+  }
+  // Add a version of the curated list document for linked description.
+  if ($display->getComponent('extra_list_linked_desc')) {
+    $entityTypeManager = \Drupal::entityTypeManager();
+    foreach ($entity->field_liststaticdoc_item->referencedEntities() as $linked) {
+      $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
+      $item = $builder->view($linked, 'linked_desc');
+      $item['#field_name'] = 'extra_list_linked_desc';
+      $build['extra_list_linked_desc'][] = $item;
+    }
+  }
+
+  // Add a version of the curated list document for manual description.
+  if ($display->getComponent('extra_list_manual_desc')) {
+    $entityTypeManager = \Drupal::entityTypeManager();
+    foreach ($entity->field_liststaticdoc_item->referencedEntities() as $linked) {
+      $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
+      $item = $builder->view($linked, 'manual_desc');
+      $item['#options']['manual_description'] = $build['field_listitemdoc_desc_manual'];
+      $item['#field_name'] = 'extra_list_manual_desc';
+      // Vary the cache by the SHA of the description so that updating the description updates the display.
+      $item['#cache']['keys'][] = sha1($entity->field_listitemdoc_desc_manual->value);
+      $build['extra_list_manual_desc'][] = $item;
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_field_access().
+ */
+function mass_fields_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
+  // This is being used to hide the custom HTML field from all roles without permission.
+  // At this point only Admin have access.
+  if ($field_definition->getName() === 'field_campaign_custom_html' && $operation === 'edit') {
+    return AccessResult::forbiddenIf(!$account->hasPermission("access the custom_html field"));
+  }
+  return AccessResult::neutral();
+}
+
+/**
+ * Implements hook_theme().
+ */
+function mass_fields_theme() {
+  $base_theme = drupal_get_path('theme', 'mass_theme');
+  return [
+    'extra_node_pager' => [
+      'path' => $base_theme . '/templates/field',
+      'variables' => [
+        'next' => [],
+        'previous' => [],
+        'parent' => [],
+      ],
+    ],
+  ];
+}

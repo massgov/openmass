@@ -1,0 +1,28 @@
+uuid: 3c5373a7-67c0-4e21-92f5-362de4de5bd8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_guide_ref_contacts_3
+    - node.type.contact_information
+    - paragraphs.paragraphs_type.guide_section
+id: paragraph.guide_section.field_guide_ref_contacts_3
+field_name: field_guide_ref_contacts_3
+entity_type: paragraph
+bundle: guide_section
+label: Contacts
+description: 'Select the contact information for the organization(s)'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      contact_information: contact_information
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

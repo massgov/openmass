@@ -1,0 +1,59 @@
+uuid: c405e71c-c6e8-4b8d-9fff-9e20c58edfff
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.state_organization.field_state_org_description
+    - field.field.paragraph.state_organization.field_state_org_name
+    - field.field.paragraph.state_organization.field_state_org_photo
+    - field.field.paragraph.state_organization.field_state_org_photo_url
+    - field.field.paragraph.state_organization.field_state_org_ref_org
+    - paragraphs.paragraphs_type.state_organization
+  module:
+    - image
+id: paragraph.state_organization.default
+targetEntityType: paragraph
+bundle: state_organization
+mode: default
+content:
+  field_state_org_description:
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_state_org_name:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_state_org_photo:
+    weight: 4
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_state_org_photo_url:
+    weight: 3
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_state_org_ref_org:
+    weight: 0
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+hidden: {  }

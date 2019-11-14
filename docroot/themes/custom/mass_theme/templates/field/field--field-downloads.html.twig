@@ -1,0 +1,17 @@
+{# Set top heading level for the component. #}
+{% set level = 2 %}
+
+{% include "@atoms/04-headings/comp-heading.twig" with {
+  "compHeading": {
+    "title": label,
+    "titleContext": "",
+    "level": level,
+    "color": "",
+    "id": "",
+    "centered": ""
+}
+}%}
+
+{% for item in items %}
+  {{ item.content }}
+{% endfor %}

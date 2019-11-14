@@ -1,0 +1,51 @@
+# @file
+# Defines custom search module routes.
+
+mass_search.default_controller_search:
+  path: '/search'
+  defaults:
+    _controller: '\Drupal\mass_search\Controller\DefaultController::search'
+    _title: 'Search'
+  requirements:
+    _permission: 'access content'
+
+mass_search.news_list:
+  path: '/api/v1/news'
+  defaults:
+    _controller: '\Drupal\mass_search\Controller\NewsController::listRecent'
+    _title: 'Recent news items'
+  requirements:
+    _access: 'TRUE'
+
+mass_search.orgs_list:
+  path: '/api/v1/orgs'
+  defaults:
+    _controller: '\Drupal\mass_search\Controller\OrgController::listOrgs'
+    _title: 'Organizations List'
+  requirements:
+    _access: 'TRUE'
+
+# TODO: remove this route after Search is refactored to use the new paths.
+mass_search.orgs_list_temp:
+  path: '/api/v1/orgs/laws-regulations'
+  defaults:
+    _controller: '\Drupal\mass_search\Controller\OrgController::listOrgs'
+    _title: 'Organizations List'
+  requirements:
+    _access: 'TRUE'
+
+mass_search.orgs_list_detail:
+  path: '/api/v1/orgs/detail'
+  defaults:
+    _controller: '\Drupal\mass_search\Controller\OrgController::listOrgsDetail'
+    _title: 'Organizations List with content details'
+  requirements:
+    _access: 'TRUE'
+
+mass_search.nav_main:
+  path: '/api/v1/nav/{menu_name}'
+  defaults:
+    _controller: '\Drupal\mass_search\Controller\NavController::getLinks'
+    _title: 'Navigation Links'
+  requirements:
+    _access: 'TRUE'

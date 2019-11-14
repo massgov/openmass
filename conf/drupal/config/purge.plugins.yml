@@ -1,0 +1,23 @@
+purgers:
+  -
+    order_index: 2
+    instance_id: fa3e594f20
+    plugin_id: acquia_purge
+  -
+    order_index: 3
+    instance_id: 5565233d1d
+    plugin_id: massgov_cloudflare
+queuers:
+  -
+    plugin_id: manual
+    status: true
+  -
+    plugin_id: drush_purge_queue_add
+    status: true
+  -
+    plugin_id: coretags
+    status: true
+  -
+    plugin_id: purge_ui_block_queuer
+    status: true
+queue: database_unique

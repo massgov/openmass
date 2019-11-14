@@ -1,0 +1,26 @@
+uuid: 0430433a-93c4-4849-8855-c84264eadd38
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.token
+    - field.field.paragraph.external_organization.field_external_org_description
+    - field.field.paragraph.external_organization.field_external_org_name
+    - field.field.paragraph.external_organization.field_external_org_photo
+    - paragraphs.paragraphs_type.external_organization
+id: paragraph.external_organization.token
+targetEntityType: paragraph
+bundle: external_organization
+mode: token
+content:
+  field_external_org_name:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  field_external_org_description: true
+  field_external_org_photo: true

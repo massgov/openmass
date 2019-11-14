@@ -1,0 +1,26 @@
+uuid: faa01787-14b9-4cee-a714-540d9f980316
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.action_step_numbered_list.field_action_step_numbered_items
+    - paragraphs.paragraphs_type.action_step_numbered_list
+  module:
+    - entity_reference_revisions
+id: paragraph.action_step_numbered_list.default
+targetEntityType: paragraph
+bundle: action_step_numbered_list
+mode: default
+content:
+  field_action_step_numbered_items:
+    type: entity_reference_revisions_entity_view
+    weight: 0
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  uid: true

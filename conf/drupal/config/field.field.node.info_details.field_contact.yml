@@ -1,0 +1,29 @@
+uuid: 6d5f2b2a-47d7-4e76-b2b3-3d19810272dc
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_contact
+    - node.type.contact_information
+    - node.type.info_details
+id: node.info_details.field_contact
+field_name: field_contact
+entity_type: node
+bundle: info_details
+label: Contact
+description: 'Select the contact(s) people should use if they have questions about this information. You may need to <a href="/node/add/contact_information" target ="_blank">create a Contact Information</a> item before referencing it here.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      contact_information: contact_information
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

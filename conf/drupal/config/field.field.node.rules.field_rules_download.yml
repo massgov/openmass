@@ -1,0 +1,29 @@
+uuid: a7af215d-1a08-4232-aba8-3c8e8c911109
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_rules_download
+    - media.type.document
+    - node.type.rules
+id: node.rules.field_rules_download
+field_name: field_rules_download
+entity_type: node
+bundle: rules
+label: Download
+description: 'Optional. Add a downloadable document to this page.  If no Download is added, either an Overview or at least 1 Section must be added.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      document: document
+    sort:
+      field: field_title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

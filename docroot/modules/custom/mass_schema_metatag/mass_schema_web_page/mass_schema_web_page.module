@@ -1,0 +1,94 @@
+<?php
+
+/**
+ * @file
+ * Contains schema_article.module.
+ */
+
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\media\Entity\Media;
+use Drupal\file\Entity\File;
+
+/**
+ * Implements hook_metatag_groups_alter().
+ *
+ * Every module should implement this to add a flag to the object types they
+ * create.
+ */
+function mass_schema_web_page_metatag_groups_alter(&$data) {
+  $module_name = basename(__FILE__, '.module');
+  foreach ($data as $key => $value) {
+    if ($value['provider'] == $module_name) {
+      $data[$key]['schema_metatag'] = TRUE;
+    }
+  }
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function mass_schema_web_page_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+
+  if ($type === 'node' && !empty($data['node'])) {
+    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+    $entity = $data['node'];
+
+    // Only act on decision content.
+    if ($entity->bundle() !== 'decision') {
+      return;
+    }
+
+    // Iterate through all the tokens.
+    foreach ($tokens as $name => $original) {
+      // Check for the [entity:field_name] token.
+      if (strpos($name, ':') !== FALSE) {
+        list($name) = explode(':', $name);
+      }
+
+      // If the node entity doesn't have the field, continue.
+      if (!$entity->hasField($name)) {
+        continue;
+      }
+
+      // Get the field definition and type.
+      $field_definition = $entity->get($name)->getFieldDefinition();
+      $field_type = $field_definition->getType();
+      // Logic for handling entity reference fields.
+      if ($field_type == 'entity_reference') {
+        $target_type = $field_definition->getSetting('target_type');
+        $handler_settings = $field_definition->getSetting('handler_settings');
+        if (!empty($handler_settings['target_bundles'])) {
+          $target_bundles = $field_definition->getSetting('handler_settings')['target_bundles'];
+          // If the target entity is a media document entity, get the file
+          // paths of all the files referenced.
+          if ($target_type == 'media' && in_array('document', array_keys($target_bundles))) {
+            $filepaths = [];
+            $values = $entity->get($name)->getValue();
+            foreach ($values as $value) {
+              if (!empty($value['target_id'])) {
+                // Load the media entity by the target id.
+                $media_entity = Media::load($value['target_id']);
+                // Get the uploaded file values.
+                $files = $media_entity->get('field_upload_file')->getValue();
+                foreach ($files as $file) {
+                  if (!empty($file['target_id'])) {
+                    $file_id = $file['target_id'];
+                    // Load the file with the fid.
+                    $file = File::load($file_id);
+                    // Get the file uri and the url path to the file.
+                    $uri = $file->getFileUri();
+                    $filepaths[] = file_create_url($uri);
+                  }
+                }
+              }
+            }
+            $replacements[$original] = json_encode($filepaths);
+          }
+        }
+      }
+    }
+  }
+
+  return $replacements;
+}

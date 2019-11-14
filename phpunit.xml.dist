@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--Copy code below into your own phpunit.xml file-->
+
+<!-- Using this project's bootstrap file allows tests in `ExistingSite`, `ExistingSiteSelenium2` and `ExistingSiteWebDriver
+     to run alongside core's 4 test types. -->
+<phpunit
+   bootstrap="vendor/weitzman/drupal-test-traits/src/bootstrap.php"
+   printerClass="Drupal\Tests\Listeners\HtmlOutputPrinter">
+  <php>
+    <env name="DTT_MINK_DRIVER_ARGS" value="['firefox', null, 'http://localhost:4444/wd/hub']"/>
+  </php>
+  <!-- Automatically run all ExistingSite tests alongside unit, and kernel
+       tests in custom code. -->
+  <testsuites>
+    <testsuite name="unit">
+      <directory>./docroot/modules/custom/*/tests/src/Unit</directory>
+    </testsuite>
+    <testsuite name="kernel">
+      <directory>./docroot/modules/custom/*/tests/src/Kernel</directory>
+    </testsuite>
+    <testsuite name="existing-site">
+      <!-- This assumes tests are namespaced as
+           `\Drupal\Tests\custom_module_foo\ExistingSite`. -->
+      <directory>./docroot/modules/custom/*/tests/src/ExistingSite</directory>
+    </testsuite>
+    <testsuite name="existing-site-javascript">
+      <!-- This assumes tests are namespaced as
+           `\Drupal\Tests\custom_module_foo\ExistingSiteJavascript`. -->
+      <directory>./docroot/modules/custom/*/tests/src/ExistingSiteJavascript</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

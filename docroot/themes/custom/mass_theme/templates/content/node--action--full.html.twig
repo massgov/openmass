@@ -1,0 +1,67 @@
+{#
+/**
+ * @file
+ * Theme override to display the Full view mode of the Action content type.
+ *
+ * Uses 'extend' methods from http://www.stevector.com/2013/10/make-your-drupal-8-theme-easier-to-maintain-with-this-one-weird-trick-twigs-extends-concept/
+ */
+ #}
+
+{#
+  Hiding breadcrumb since we will want these breadcrumbs back in the future
+  refs https://jira.state.ma.us/browse/MGRP-242
+#}
+{#
+ set pageHeader = {
+   'title': label|field_value,
+   'subTitle': content.field_lede|field_value,
+   'intro': '',
+   'headerTags': {
+     'taxonomyTerms': taxonomyTerms
+   }
+ #}
+{%
+set pageHeader = {
+  'title': label|field_value,
+  'subTitle': content.field_lede|field_value,
+  'intro': '',
+  'headerTags': {}
+}
+%}
+
+{% extends 'node.html.twig' %}
+
+{% block preContent %}
+  {# include "organisms-breadcrumbs" with {breadcrumb:{class:"ma__breadcrumbs--page"}} #}
+  {# Breadcrumbs have been descoped from pilot, but they'd go here #}
+  {# drupal_block('breadcrumbs') #}
+  {# include "organisms-page-header" #}
+  {# Alert is currently appearing on all actions, commenting out until it can be fixed. #}
+  {# include "@organisms/by-template/header-alert.twig" #}
+  {% if content.field_action_header|render|trim is not empty or content.field_header_cta|render|trim is not empty %}
+    {% include "@mass_theme/includes/organisms-page-action-header.html.twig" %}
+  {% else %}
+    {% include "@organisms/by-template/page-header.twig" %}
+  {% endif %}
+  {% if content.field_action_banner|render|trim is not empty %}
+    {{ content.field_action_banner|field_value }}
+  {% endif %}
+{% endblock %}
+{% block pageContent %}
+  {% include "@custom_includes/organisms-quick-actions.html.twig" %}
+  {{ content.field_action_details }}
+{% endblock %}
+{% block sidebar %}
+  {% include "@custom_includes/organisms-quick-actions.html.twig" %}
+  {{ content.field_related_link }}
+  {{ content.field_action_sidebar }}
+{% endblock %}
+{% block postContent %}
+  {# include "organisms-breadcrumbs" #}
+  {# Breadcrumbs have been descoped from pilot, but they'd go here #}
+  {# drupal_block('breadcrumbs') #}
+  {% if content.field_image_credit is not empty %}
+    {{ content.field_image_credit }}
+  {% endif %}
+  {{ content.extra_org_feedback_form }}
+{% endblock %}

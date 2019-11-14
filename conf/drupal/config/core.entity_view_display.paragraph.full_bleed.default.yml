@@ -1,0 +1,26 @@
+uuid: 3cab2929-b821-4477-8d70-72b0e774816f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.full_bleed.field_full_bleed_ref
+    - paragraphs.paragraphs_type.full_bleed
+  module:
+    - entity_reference_revisions
+id: paragraph.full_bleed.default
+targetEntityType: paragraph
+bundle: full_bleed
+mode: default
+content:
+  field_full_bleed_ref:
+    type: entity_reference_revisions_entity_view
+    weight: 0
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  uid: true

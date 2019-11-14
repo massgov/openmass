@@ -1,0 +1,25 @@
+uuid: 6adb0713-2f0a-4bb7-b940-5ca9a364e853
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_read_more_page
+    - paragraphs.paragraphs_type.about
+  module:
+    - link
+id: paragraph.about.field_read_more_page
+field_name: field_read_more_page
+entity_type: paragraph
+bundle: about
+label: 'Read More Page'
+description: 'Select an optional information details page that has more information about the organization that will be linked from the About section of the organization page. A link label of "About the [name of organization]" is recommended.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 1
+  title: 2
+  entity_bundles:
+    info_details: info_details
+field_type: link

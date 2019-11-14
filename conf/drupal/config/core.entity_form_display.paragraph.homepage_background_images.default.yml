@@ -1,0 +1,45 @@
+uuid: 436795f0-9fac-4880-befe-d77fecd6915a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.homepage_background_images.field_caption
+    - field.field.paragraph.homepage_background_images.field_image
+    - field.field.paragraph.homepage_background_images.field_name
+    - image.style.thumbnail
+    - paragraphs.paragraphs_type.homepage_background_images
+  module:
+    - image
+id: paragraph.homepage_background_images.default
+targetEntityType: paragraph
+bundle: homepage_background_images
+mode: default
+content:
+  field_caption:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_image:
+    weight: 0
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_name:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

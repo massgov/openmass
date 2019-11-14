@@ -1,0 +1,31 @@
+uuid: 574cc9de-3805-4731-acf6-130831204e6c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.more_info.field_more_info_text
+    - field.field.paragraph.more_info.field_more_info_title
+    - paragraphs.paragraphs_type.more_info
+  module:
+    - text
+id: paragraph.more_info.default
+targetEntityType: paragraph
+bundle: more_info
+mode: default
+content:
+  field_more_info_text:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_more_info_title:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

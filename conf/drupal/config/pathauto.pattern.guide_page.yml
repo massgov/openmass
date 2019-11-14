@@ -1,0 +1,22 @@
+uuid: 7e44d951-6fd7-4e84-864a-bd85653e751b
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: guide_page
+label: 'Guide Page'
+type: 'canonical_entities:node'
+pattern: '/guides/[node:title]'
+selection_criteria:
+  18bd836c-f939-4ce6-9d6a-6fe3b2e94521:
+    id: node_type
+    bundles:
+      guide_page: guide_page
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 18bd836c-f939-4ce6-9d6a-6fe3b2e94521
+selection_logic: and
+weight: -5
+relationships: {  }

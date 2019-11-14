@@ -1,0 +1,31 @@
+uuid: 122e3668-9da7-422a-9cc8-8c2b0a04091e
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.media_video
+  module:
+    - views
+name: video_browser
+label: 'Video Browser'
+display: iframe
+display_configuration:
+  width: '650'
+  height: '520'
+  link_text: 'Select Video'
+  auto_open: true
+selection_display: no_display
+selection_display_configuration: {  }
+widget_selector: single
+widget_selector_configuration: {  }
+widgets:
+  fbc7ff6b-f3af-4c1f-9b82-fef2c6c88dc3:
+    settings:
+      view: media_video
+      view_display: entity_browser_videos
+      submit_text: 'Select video'
+      auto_select: false
+    uuid: fbc7ff6b-f3af-4c1f-9b82-fef2c6c88dc3
+    weight: 1
+    label: 'Video Selection View'
+    id: view

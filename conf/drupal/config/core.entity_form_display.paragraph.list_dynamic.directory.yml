@@ -1,0 +1,66 @@
+uuid: 89c4bed1-75eb-4510-8ab5-e2aeb2bb9726
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.paragraph.directory
+    - field.field.paragraph.list_dynamic.field_contact_values_to_display
+    - field.field.paragraph.list_dynamic.field_list_dynamic_desc_setting
+    - field.field.paragraph.list_dynamic.field_listdynamic_label
+    - field.field.paragraph.list_dynamic.field_listdynamic_sort
+    - field.field.paragraph.list_dynamic.field_listdynamic_title
+    - paragraphs.paragraphs_type.list_dynamic
+  module:
+    - conditional_fields
+id: paragraph.list_dynamic.directory
+targetEntityType: paragraph
+bundle: list_dynamic
+mode: directory
+content:
+  field_contact_values_to_display:
+    weight: 1
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        809fcfa7-eea9-479d-9b1c-4075111e6e89:
+          dependee: field_type_of_list_content
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: contact
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: paragraph
+          bundle: list_dynamic
+    type: options_buttons
+    region: content
+  field_listdynamic_label:
+    weight: 2
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_listdynamic_title:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  field_list_dynamic_desc_setting: true
+  field_listdynamic_sort: true
+  status: true
+  uid: true

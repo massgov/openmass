@@ -1,0 +1,35 @@
+{#
+/**
+ * @file
+ * Default theme implementation to present a document media entity.
+ *
+ * Available variables:
+ * - name: Name of the media.
+ * - content: Media content.
+ *
+ * @see template_preprocess_media()
+ *
+ * @ingroup themeable
+ */
+#}
+{% block preContent %}
+  {%
+    set pageHeader = {
+      title: content.field_title|field_value,
+      optionalContents: [{
+        path: "@molecules/download-link.twig",
+        data: {
+          downloadLink: downloadLink
+        }
+      },{
+        path: "@molecules/listing-table.twig",
+        data: {
+          listingTable: {
+            rows: curated_rows
+          }
+        }
+      }]
+    }
+  %}
+  {% include "@organisms/by-template/page-header.twig" %}
+{% endblock %}

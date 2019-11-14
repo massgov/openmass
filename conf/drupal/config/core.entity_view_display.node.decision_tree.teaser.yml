@@ -1,0 +1,47 @@
+uuid: 38b28cf9-4438-48a1-9bcc-4f6bfb28586d
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.decision_tree.field_bg_narrow
+    - field.field.node.decision_tree.field_bg_wide
+    - field.field.node.decision_tree.field_campaign_logo
+    - field.field.node.decision_tree.field_decision_tree_metatags
+    - field.field.node.decision_tree.field_description
+    - field.field.node.decision_tree.field_disclaimer
+    - field.field.node.decision_tree.field_organizations
+    - field.field.node.decision_tree.field_service_ref_services_6
+    - field.field.node.decision_tree.field_start_button
+    - field.field.node.decision_tree.field_state_organization_tax
+    - node.type.decision_tree
+  module:
+    - user
+id: node.decision_tree.teaser
+targetEntityType: node
+bundle: decision_tree
+mode: teaser
+content:
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  field_bg_narrow: true
+  field_bg_wide: true
+  field_campaign_logo: true
+  field_decision_tree_metatags: true
+  field_description: true
+  field_disclaimer: true
+  field_organizations: true
+  field_service_ref_services_6: true
+  field_start_button: true
+  field_state_organization_tax: true

@@ -1,0 +1,113 @@
+<?php
+
+/**
+ * @file
+ * Contains schema_article.module.
+ */
+
+use Drupal\Core\Render\BubbleableMetadata;
+
+/**
+ * Implements hook_metatag_groups_alter().
+ *
+ * Every module should implement this to add a flag to the object types they
+ * create.
+ */
+function mass_schema_collection_page_metatag_groups_alter(&$data) {
+  $module_name = basename(__FILE__, '.module');
+  foreach ($data as $key => $value) {
+    if ($value['provider'] == $module_name) {
+      $data[$key]['schema_metatag'] = TRUE;
+    }
+  }
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function mass_schema_collection_page_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  /** @var \Drupal\token\Token $token_service */
+  $token_service = \Drupal::token();
+
+  $replacements = [];
+
+  if (!empty($data['node'])) {
+    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+    $entity = $data['node'];
+
+    $entity_type = $entity->getType();
+    // The following logic is to be applied only to guide pages.
+    if ($entity_type !== 'guide_page' && $entity_type !== 'topic_page') {
+      return;
+    }
+
+    // Iterate through all the tokens.
+    foreach ($tokens as $name => $original) {
+      $property_name = $name;
+      $value = $filtered_tokens = [];
+
+      // Check for the [entity:field_name] token.
+      if (strpos($name, ':') !== FALSE) {
+        list($field_name, $delta) = explode(':', $name);
+
+        // Handle [entity:field_name:entity].
+        $filtered_tokens = $token_service->findWithPrefix($tokens, $field_name);
+        if (!empty(array_keys($filtered_tokens)[0])) {
+          // Handle [entity:field_name].
+          $property_name = key($token_service->findWithPrefix($filtered_tokens, $delta));
+        }
+
+        $name = $field_name;
+      }
+      // If the token is [node:field_state_organization_tax:entity:name] used in the
+      // mg_stakeholder_org metatag, skip the remaining logic; see DP-8191.
+      if (isset($field_name) && $field_name == 'field_state_organization_tax') {
+        continue;
+      }
+
+      // If the node entity doesn't have the field, continue.
+      if (!$entity->hasField($name)) {
+        continue;
+      }
+
+      $field_type = $entity->get($name)->getFieldDefinition()->getType();
+      if ($field_type != 'entity_reference_revisions' && $field_type != 'link' && $field_type != 'entity_reference') {
+        continue;
+      }
+
+      $data = [];
+      // Check if the field is a reference revisions field. This indicates that
+      // it references other entities, such as paragraphs.
+      if ($field_type == 'entity_reference_revisions') {
+        // Get all values from the referenced entity.
+        $referenced_entities = $entity->get($name)->referencedEntities();
+        foreach ($referenced_entities as $referenced_entity) {
+          if (!$referenced_entity->hasField($property_name)) {
+            continue;
+          }
+
+          $value = array_merge(
+            $value,
+            $referenced_entity->get($property_name)->getValue()
+          );
+        }
+      }
+      // Check if the property is for the related guides. We should only get
+      // the URL to each referenced node for output.
+      elseif ($field_type == 'entity_reference' && ($property_name == 'field_guide_page_related_guides' || $property_name == 'field_topic_ref_related_topics')) {
+        $referenced_entities = $entity->get($name)->referencedEntities();
+        foreach ($referenced_entities as $referenced_entity) {
+          $url = $referenced_entity->toUrl('canonical', ['absolute' => TRUE])->toString();
+          $data[] = $url;
+        }
+      }
+
+      // For each replacement token, JSON-encode the data. This data will be
+      // set as the value of the field token - for which it will need to be
+      // JSON-decoded before use.
+      $replacements[$original] = json_encode($data);
+    }
+  }
+
+  return $replacements;
+}

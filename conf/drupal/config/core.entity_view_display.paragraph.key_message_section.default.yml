@@ -1,0 +1,91 @@
+uuid: 4b5b703c-101c-457e-b803-25ecb276ba54
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.key_message_section.field_background_type
+    - field.field.paragraph.key_message_section.field_button
+    - field.field.paragraph.key_message_section.field_image
+    - field.field.paragraph.key_message_section.field_main_heading
+    - field.field.paragraph.key_message_section.field_rich_text_description
+    - field.field.paragraph.key_message_section.field_section_background_color
+    - field.field.paragraph.key_message_section.field_section_text_overlay_color
+    - field.field.paragraph.key_message_section.field_sub_heading
+    - paragraphs.paragraphs_type.key_message_section
+  module:
+    - image
+    - link
+    - options
+    - text
+id: paragraph.key_message_section.default
+targetEntityType: paragraph
+bundle: key_message_section
+mode: default
+content:
+  field_background_type:
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_button:
+    weight: 3
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_image:
+    weight: 1
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_main_heading:
+    weight: 8
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_rich_text_description:
+    weight: 5
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_section_background_color:
+    weight: 11
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_section_text_overlay_color:
+    weight: 12
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_sub_heading:
+    weight: 6
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  paragraphs_type_help__default: true

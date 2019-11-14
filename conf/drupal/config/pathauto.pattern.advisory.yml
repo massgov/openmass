@@ -1,0 +1,22 @@
+uuid: 790f73b9-705c-4952-a2b2-e17e7ee8e96c
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: advisory
+label: Advisory
+type: 'canonical_entities:node'
+pattern: '/[node:field_advisory_type_tax]/[node:title]'
+selection_criteria:
+  ba7d57d2-7131-4249-85ea-1e1714a88098:
+    id: node_type
+    bundles:
+      advisory: advisory
+    negate: false
+    context_mapping:
+      node: node
+    uuid: ba7d57d2-7131-4249-85ea-1e1714a88098
+selection_logic: and
+weight: -5
+relationships: {  }

@@ -1,0 +1,30 @@
+uuid: 3b5c18a5-f667-4359-830b-bcb78f4cbb64
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.advisory_issuer.field_advisory_display_name
+    - field.field.paragraph.advisory_issuer.field_advisory_person_ref
+    - paragraphs.paragraphs_type.advisory_issuer
+id: paragraph.advisory_issuer.default
+targetEntityType: paragraph
+bundle: advisory_issuer
+mode: default
+content:
+  field_advisory_display_name:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_advisory_person_ref:
+    weight: 0
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+hidden: {  }

@@ -1,0 +1,30 @@
+uuid: 6b6aeb76-72ea-4dc8-a867-09d5d12fc47d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.related_link.field_link
+    - paragraphs.paragraphs_type.related_link
+  module:
+    - link
+id: paragraph.related_link.default
+targetEntityType: paragraph
+bundle: related_link
+mode: default
+content:
+  field_link:
+    weight: 0
+    label: hidden
+    settings:
+      trim_length: null
+      url_only: false
+      url_plain: false
+      rel: '0'
+      target: '0'
+    third_party_settings: {  }
+    type: link_separate
+    region: content
+hidden:
+  created: true
+  field_description: true
+  uid: true

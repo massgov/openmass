@@ -1,0 +1,28 @@
+uuid: ffe6ab67-014a-4bb6-b455-f09ddcc1cf82
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_event_ref_contact
+    - node.type.contact_information
+    - node.type.event
+id: node.event.field_event_ref_contact
+field_name: field_event_ref_contact
+entity_type: node
+bundle: event
+label: 'Address from contact information item'
+description: 'Select an existing Contact information item or enter a unique address when you do not want to create a reusable Contact information item.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      contact_information: contact_information
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

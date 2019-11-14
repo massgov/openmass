@@ -1,0 +1,32 @@
+uuid: 4a2ff980-3670-4510-abb4-4b594577a6c2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.list_item_contact.field_contact
+    - field.field.paragraph.list_item_contact.field_contact_values_to_display
+    - paragraphs.paragraphs_type.list_item_contact
+id: paragraph.list_item_contact.default
+targetEntityType: paragraph
+bundle: list_item_contact
+mode: default
+content:
+  field_contact:
+    type: entity_reference_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_contact_values_to_display:
+    type: options_buttons
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true
+  uid: true

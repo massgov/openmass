@@ -1,0 +1,24 @@
+uuid: 05fea803-6fca-4890-bf1c-146d5fa4221d
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.sidebar
+    - field.field.paragraph.subhead.field_title
+    - paragraphs.paragraphs_type.subhead
+id: paragraph.subhead.sidebar
+targetEntityType: paragraph
+bundle: subhead
+mode: sidebar
+content:
+  field_title:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  created: true
+  uid: true

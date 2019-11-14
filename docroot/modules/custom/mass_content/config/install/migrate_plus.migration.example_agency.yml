@@ -1,0 +1,20 @@
+id: example_agency
+label: Agency
+
+migration_group: mass_content
+
+source:
+  plugin: csv
+  path: 'modules/custom/mass_content/data/MSG Content - Agency.csv'
+  header_row_count: 1
+  keys:
+    - Title
+  constants:
+    bundle: agency
+
+process:
+  type: 'constants/bundle'
+  title: Title
+
+destination:
+  plugin: entity:node

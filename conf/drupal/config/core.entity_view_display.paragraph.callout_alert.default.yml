@@ -1,0 +1,29 @@
+uuid: 540f8b19-0db0-4325-bff7-bf5d41dfcdd2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.callout_alert.field_link
+    - paragraphs.paragraphs_type.callout_alert
+  module:
+    - link
+id: paragraph.callout_alert.default
+targetEntityType: paragraph
+bundle: callout_alert
+mode: default
+content:
+  field_link:
+    weight: 0
+    label: hidden
+    settings:
+      trim_length: null
+      url_only: false
+      url_plain: false
+      rel: '0'
+      target: '0'
+    third_party_settings: {  }
+    type: link_separate
+    region: content
+hidden:
+  created: true
+  uid: true

@@ -1,0 +1,39 @@
+uuid: e3d0a9a3-d010-4c31-8828-baffeca27806
+langcode: en
+status: true
+dependencies:
+  config:
+    - contact.form.flag_content
+    - field.field.contact_message.flag_content.field_content_flagged
+    - field.field.contact_message.flag_content.field_reason_flagged
+  module:
+    - entity_reference_revisions
+id: contact_message.flag_content.default
+targetEntityType: contact_message
+bundle: flag_content
+mode: default
+content:
+  field_content_flagged:
+    type: entity_reference_revisions_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: 'Begin typing the title of the content you''d like to flag…'
+    third_party_settings: {  }
+  field_reason_flagged:
+    weight: 1
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+hidden:
+  copy: true
+  mail: true
+  message: true
+  name: true
+  preview: true
+  subject: true

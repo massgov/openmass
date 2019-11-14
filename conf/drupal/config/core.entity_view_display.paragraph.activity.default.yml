@@ -1,0 +1,57 @@
+uuid: 40ee635b-0add-4b3d-8271-a21295495996
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.activity.field_image
+    - field.field.paragraph.activity.field_link
+    - field.field.paragraph.activity.field_teaser
+    - field.field.paragraph.activity.field_title
+    - paragraphs.paragraphs_type.activity
+  module:
+    - image
+    - link
+id: paragraph.activity.default
+targetEntityType: paragraph
+bundle: activity
+mode: default
+content:
+  field_image:
+    weight: 1
+    label: hidden
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_link:
+    weight: 3
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_teaser:
+    weight: 2
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_title:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  created: true
+  uid: true

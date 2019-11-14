@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * @file
+ * Module file for mass_caching.
+ */
+
+use Drupal\file\FileInterface;
+
+/**
+ * Implements hook_file_insert().
+ *
+ * Purge the file's path when a file is created.
+ */
+function mass_caching_file_insert(FileInterface $file) {
+  // Must purge the file on all domains/schemes, so we
+  // use a path purge here, which is converted to a url.
+  $absolute = file_create_url($file->getFileUri());
+  $relative = file_url_transform_relative($absolute);
+  \Drupal::service('manual_purger')->purgePath($relative);
+}
+
+/**
+ * Implements hook_file_update().
+ *
+ * Purge the file's path when a file is updated.
+ */
+function mass_caching_file_update(FileInterface $file) {
+  // Must purge the file on all domains/schemes, so we
+  // use a path purge here, which is converted to a url.
+  $absolute = file_create_url($file->getFileUri());
+  $relative = file_url_transform_relative($absolute);
+  \Drupal::service('manual_purger')->purgePath($relative);
+}
+
+/**
+ * Implements hook_file_delete().
+ *
+ * Purge the file's path when a file is deleted.
+ */
+function mass_caching_file_delete(FileInterface $file) {
+  // Must purge the file on all domains/schemes, so we
+  // use a path purge here, which is converted to a url.
+  $absolute = file_create_url($file->getFileUri());
+  $relative = file_url_transform_relative($absolute);
+  \Drupal::service('manual_purger')->purgePath($relative);
+}
+
+/**
+ * Implements hook_path_insert().
+ *
+ * Purges new aliases as they are created.  Without this, it's possible
+ * to create content that lives at a URL that's already cached with a 404.
+ * We choose to implement this at the path level so we can avoid clearing
+ * paths for any content that isn't aliased. Technically, this leaves a gap
+ * in our purging where the internal path (/node/123) could be stuck with a
+ * 404, but it's extremely unlikely that this will happen or matter if it does.
+ */
+function mass_caching_path_insert(array $path) {
+  \Drupal::service('manual_purger')->purgePath($path['alias']);
+}
+
+/**
+ * Implements hook_path_update().
+ *
+ * Purges aliases when they change.
+ *
+ * @see \mass_caching_path_insert()
+ */
+function mass_caching_path_update(array $path) {
+  if ($path['alias'] !== $path['original']['alias']) {
+    \Drupal::service('manual_purger')->purgePath($path['alias']);
+  }
+}

@@ -1,0 +1,45 @@
+uuid: 94a4d64c-6000-44af-bdfe-a3419a4c8cb7
+langcode: en
+status: true
+dependencies:
+  config:
+    - entity_browser.browser.browse_files_modal
+    - field.field.paragraph.file_download.field_downloads
+    - paragraphs.paragraphs_type.file_download
+  module:
+    - entity_browser
+id: paragraph.file_download.default
+targetEntityType: paragraph
+bundle: file_download
+mode: default
+content:
+  field_downloads:
+    type: entity_browser_file
+    weight: 0
+    settings:
+      entity_browser: browse_files_modal
+      field_widget_edit: true
+      field_widget_remove: true
+      open: true
+      selection_mode: selection_append
+      view_mode: default
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    region: content
+  field_file:
+    weight: 6
+    settings:
+      entity_browser: browse_files_modal
+      field_widget_edit: true
+      field_widget_remove: true
+      selection_mode: selection_append
+      view_mode: default
+      open: false
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: entity_browser_file
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

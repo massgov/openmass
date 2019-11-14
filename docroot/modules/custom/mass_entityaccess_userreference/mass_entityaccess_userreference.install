@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Mass entity access userreference install file.
+ */
+
+use Drupal\mass_entityaccess_userreference\Entity\UserRefAccess;
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Removes all user_ref_access entities from the database.
+ */
+function mass_entityaccess_userreference_uninstall() {
+  $query = \Drupal::entityQuery('user_ref_access');
+  $user_ref_access_ids = $query->execute();
+
+  $entities = UserRefAccess::loadMultiple($user_ref_access_ids);
+
+  foreach ($entities as $entity) {
+    $entity->delete();
+  }
+}

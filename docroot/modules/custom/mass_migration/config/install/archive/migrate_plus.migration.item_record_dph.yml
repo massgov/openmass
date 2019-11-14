@@ -1,0 +1,207 @@
+id: item_record_dph
+label: Items and Records Dph Migration.
+migration_group: massdocs_dph
+migration_tags:
+  - CSV
+migration_dependencies:
+  optional:
+    - item_file_dph
+dependencies:
+  enforced:
+    module:
+      - mass_migration
+      - migrate_plus
+source:
+  plugin: csv
+  path: 'public://migration/dph_perc_20171127.csv'
+  header_row_count: 1
+  keys:
+    - rec_uid
+  fields:
+    rec_uid: Unique identifier for the Record.
+    rec_title: Record title.
+    rec_title_variant: Variant of the record title.
+    rec_creator: Record author - From Creators Taxonomy.
+    rec_description: Description of the record.
+    rec_contributor: Reference to the contributor group - From Agencies Taxonomy.
+    rec_frequency: Publishing frequency of the record.
+    rec_temporal_coverage: Temporal coverage of the record.
+    rec_geographic_area: Geographic area of the record.
+    rec_language: Language of the record.
+    rec_content_type: Content type of the record.
+    rec_subject: Subject of the record.
+    rec_tags: Tags of the record.
+    rec_additional_info: Additional Info of the record.
+    rec_related_content: Related content of the record.
+    rec_internal_notes: Internal notes of the record.
+    rec_public_access_level: Access level of the record.
+    rec_license: License of the record.
+    rec_rights: Rights of the record.
+    rec_data_dictionary: Data dictionary of the record.
+    rec_conforms_to: Record conforms to.
+    rec_data_quality: Data quality of the record.
+    rec_system_of_record: System of records value.
+    rec_modified_date: Modified date of the record.
+    rec_release_date: Release date of the record.
+    rec_oclc_number: OCLC nunmber of the record.
+    rec_contact_name: Contact name of the record.
+    rec_contact_email: Conatact mail of the record.
+    item_uid: Unique identifier for the Item.
+    item_title: Title of the item.
+    item_description: Description of the item.
+    item_format: File format of the item.
+    item_temporal_coverage: Temporal coverage of the item.
+    item_massgov_url: Mass.gov url.
+    item_geographic_area: Geographic area of the item.
+    item_oclc_number: OCLC number of the item.
+    item_migration_id: Migration Identifier of the item.
+    item_file_name: Unique file name for the item.
+destination:
+  plugin: 'entity:media'
+  default_bundle: document
+process:
+  name:
+    plugin: mass_sanitize
+    source: rec_title
+  field_title:
+    plugin: mass_sanitize
+    source: rec_title
+  uid:
+    plugin: default_value
+    default_value: 1
+  field_alternative_title:
+    plugin: mass_sanitize
+    source: rec_title_variant
+  field_creator:
+    -
+      plugin: mass_migration_get_organization_title
+      source: rec_creator
+    -
+      plugin: mass_migration_skip_on_false
+      method: row
+      message: "Row Skipped - Author not found. Column 'rec_creator' has an invalid value."
+    -
+      plugin: entity_generate
+      entity_type: taxonomy_term
+      bundle_key: vid
+      bundle: document_creators
+      value_key: name
+  field_description: rec_description
+  field_contributing_organization:
+    -
+      plugin: mass_migration_get_organization_title
+      source: rec_contributor
+    -
+      plugin: mass_migration_skip_on_false
+      method: row
+      message: "Row Skipped - Organization Title not found. Column 'rec_contributor' has an invalid value."
+    -
+      plugin: entity_generate
+      entity_type: taxonomy_term
+      bundle_key: vid
+      bundle: user_organization
+      value_key: name
+  field_publishing_frequency:
+    -
+      plugin: default_value
+      default_value: once
+      source: rec_frequency
+    -
+      plugin: mass_migration_get_frequency_key
+    -
+      plugin: mass_migration_skip_on_false
+      method: row
+      message: "Row Skipped - Publishing Frequency (rec_frequency) has an invalid value."
+  field_geographic_place:
+    plugin: default_value
+    default_value: Massachusetts
+    source: rec_geographic_area
+  field_language:
+    -
+      plugin: default_value
+      default_value: English
+      source: rec_language
+    -
+      plugin: entity_generate
+      entity_type: taxonomy_term
+      bundle_key: vid
+      bundle: language
+      value_key: name
+  field_content_type:
+    plugin: entity_generate
+    source: rec_content_type
+    entity_type: taxonomy_term
+    bundle_key: vid
+    bundle: content_type
+    value_key: name
+  field_subjects:
+    plugin: entity_generate
+    source: rec_subject
+    entity_type: taxonomy_term
+    bundle_key: vid
+    bundle: document_subjects
+    value_key: name
+  field_tags:
+    plugin: entity_generate
+    source: rec_tags
+    entity_type: taxonomy_term
+    bundle_key: vid
+    bundle: document_tags
+    value_key: name
+  field_link_related_content/uri: rec_related_content
+  field_link_classic_massgov/uri: item_massgov_url
+  # field_link_related_content/title:
+  field_internal_notes: rec_internal_notes
+  field_license:
+    -
+      plugin: default_value
+      default_value: Creative Commons Attribution
+      source: rec_license
+    -
+      plugin: entity_generate
+      entity_type: taxonomy_term
+      bundle_key: vid
+      bundle: license
+      value_key: name
+  field_rights: rec_rights
+  field_data_dictionary: rec_data_dictionary
+  field_conform/uri: rec_conforms_to
+  field_data_quality:
+    plugin: static_map
+    source: rec_data_quality
+    map:
+      'f': false
+      't': true
+    default_value: false
+  field_system_of_records/uri: rec_system_of_record
+  changed:
+    plugin: callback
+    callable: strtotime
+    source: rec_modified_date
+  created:
+    plugin: callback
+    callable: strtotime
+    source: rec_release_date
+  field_oclc_number: rec_oclc_number
+  field_contact_name:
+    plugin: entity_generate
+    source: rec_contact_name
+    entity_type: taxonomy_term
+    bundle_key: vid
+    bundle: document_contacts
+    value_key: name
+  field_contact_information:
+    plugin: default_value
+    default_value: open@MassMail.State.MA.US
+    source: rec_contact_email
+  field_file_mime:
+    plugin: mass_migration_get_file_format
+    source:
+      - item_format
+      - item_massgov_url
+  field_file_migration_id: item_migration_id
+  field_upload_file:
+      plugin: migration_lookup
+      migration: item_file_dph
+      no_stub: true
+      source: item_file_name

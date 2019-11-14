@@ -1,0 +1,28 @@
+uuid: c35b3370-357d-4b7d-8d6b-5605868f7966
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_how_to_files
+    - media.type.document
+    - node.type.how_to_page
+id: node.how_to_page.field_how_to_files
+field_name: field_how_to_files
+entity_type: node
+bundle: how_to_page
+label: Downloads
+description: 'Link or upload forms and documents related to this action.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      document: document
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

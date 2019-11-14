@@ -1,0 +1,20 @@
+/*
+  The homepage doesn't use standard patternlab implementations.
+  Override the paddinga and spacing here to ensure visual compatibility.
+ */
+
+@media (min-width: 911px) {
+  body.is-front .ma__stacked-row__section ~ .ma__stacked-row__section .ma__stacked-row__container:before {
+    padding-top: 90px;
+  }
+}
+
+@media (max-width: 910px) {
+  body.is-front .ma__stacked-row__section ~ .ma__stacked-row__section .ma__stacked-row__container:before {
+    padding-top: 45px;
+  }
+}
+
+body.is-front .ma__stacked-row__section ~ .ma__stacked-row__section .ma__stacked-row__title .ma__comp-heading {
+  margin-top: 0;
+}

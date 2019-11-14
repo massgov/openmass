@@ -1,0 +1,44 @@
+uuid: 61de2178-d15e-40fa-a1f8-f3850b086e77
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_advisory_links
+    - node.type.advisory
+  module:
+    - link
+id: node.advisory.field_advisory_links
+field_name: field_advisory_links
+entity_type: node
+bundle: advisory
+label: Related
+description: 'Add links to related pages (up to 3) that people might also be looking for.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 1
+  entity_bundles:
+    advisory: advisory
+    action: action
+    curated_list: curated_list
+    decision: decision
+    event: event
+    executive_order: executive_order
+    guide_page: guide_page
+    how_to_page: how_to_page
+    location: location
+    location_details: location_details
+    news: news
+    org_page: org_page
+    page: page
+    regulation: regulation
+    rules: rules
+    service_details: service_details
+    service_page: service_page
+    stacked_layout: stacked_layout
+    topic_page: topic_page
+    utility_drawer: utility_drawer
+field_type: link

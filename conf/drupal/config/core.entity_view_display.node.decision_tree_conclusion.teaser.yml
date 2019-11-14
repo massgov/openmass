@@ -1,0 +1,39 @@
+uuid: 24aa5786-b529-4093-ae1d-99736e0c0f03
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.decision_tree_conclusion.field_add_video
+    - field.field.node.decision_tree_conclusion.field_decision_actions
+    - field.field.node.decision_tree_conclusion.field_decision_root_ref
+    - field.field.node.decision_tree_conclusion.field_description
+    - field.field.node.decision_tree_conclusion.field_organizations
+    - field.field.node.decision_tree_conclusion.field_state_organization_tax
+    - node.type.decision_tree_conclusion
+  module:
+    - user
+id: node.decision_tree_conclusion.teaser
+targetEntityType: node
+bundle: decision_tree_conclusion
+mode: teaser
+content:
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  content_moderation_control: true
+  field_add_video: true
+  field_decision_actions: true
+  field_decision_root_ref: true
+  field_description: true
+  field_how_to_link_1: true
+  field_organizations: true
+  field_state_organization_tax: true

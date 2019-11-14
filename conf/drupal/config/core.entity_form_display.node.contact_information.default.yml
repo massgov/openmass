@@ -1,0 +1,284 @@
+uuid: 52ea6540-4471-41cc-a252-656c0045bc8c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.contact_information.field_contact_more_info_link
+    - field.field.node.contact_information.field_display_title
+    - field.field.node.contact_information.field_organizations
+    - field.field.node.contact_information.field_plain_description
+    - field.field.node.contact_information.field_ref_address
+    - field.field.node.contact_information.field_ref_fax_number
+    - field.field.node.contact_information.field_ref_hours
+    - field.field.node.contact_information.field_ref_links
+    - field.field.node.contact_information.field_ref_phone_number
+    - field.field.node.contact_information.field_reusable_label
+    - field.field.node.contact_information.field_state_organization_tax
+    - node.type.contact_information
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - field_group
+    - link
+    - paragraphs
+    - scheduler
+    - scheduler_content_moderation_integration
+third_party_settings:
+  field_group:
+    group_contact_address:
+      children:
+        - field_ref_address
+      parent_name: group_contact
+      weight: 8
+      format_type: fieldset
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: true
+      label: Address
+    group_phone_fax_online_email:
+      children:
+        - field_ref_phone_number
+        - field_ref_links
+        - field_ref_fax_number
+      parent_name: group_contact
+      weight: 9
+      format_type: fieldset
+      format_settings:
+        label: 'Phone / Online Link / Email / Fax'
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+      label: 'Phone / Online Link / Email / Fax'
+    group_hours_of_operation:
+      children:
+        - field_ref_hours
+      parent_name: group_contact
+      weight: 10
+      format_type: fieldset
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: true
+      label: 'Hours of operation'
+    group_contact_titles:
+      children:
+        - field_display_title
+        - title
+        - field_plain_description
+      parent_name: group_contact
+      weight: 0
+      format_type: fieldset
+      format_settings:
+        label: 'Contact titles'
+        description: 'The Display Title is the information that will appear on a page. The Admin Title provides a way to distinguish between 2 Contacts that use the same Display Title. The Admin Title is for internal use only and will never be displayed to the public. For example, the Governor’s Office might use the same Display title (“Governor’s Office”) for two offices - Boston and Springfield. The Admin Title can be different for each office.'
+        required_fields: true
+        id: tab-contact-titles
+        classes: ''
+      label: 'Contact titles'
+    group_contact_information_edit_f:
+      children:
+        - group_contact
+        - field_organizations
+        - field_contact_more_info_link
+      parent_name: ''
+      weight: 1
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Contact information edit form'
+    group_contact:
+      children:
+        - group_contact_titles
+        - group_contact_address
+        - group_phone_fax_online_email
+        - group_hours_of_operation
+      parent_name: group_contact_information_edit_f
+      weight: 0
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: true
+      label: Contact
+id: node.contact_information.default
+targetEntityType: node
+bundle: contact_information
+mode: default
+content:
+  field_contact_more_info_link:
+    weight: 6
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_display_title:
+    weight: 3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_organizations:
+    weight: 3
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_plain_description:
+    weight: 5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_ref_address:
+    type: entity_reference_paragraphs
+    weight: 8
+    settings:
+      title: Address
+      title_plural: Addresses
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_ref_fax_number:
+    type: entity_reference_paragraphs
+    weight: 11
+    settings:
+      title: 'Fax Number'
+      title_plural: 'Fax Numbers'
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_ref_hours:
+    type: entity_reference_paragraphs
+    weight: 13
+    settings:
+      title: Hours
+      title_plural: Hours
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_ref_links:
+    type: entity_reference_paragraphs
+    weight: 10
+    settings:
+      title: Link
+      title_plural: Links
+      edit_mode: open
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_ref_phone_number:
+    type: entity_reference_paragraphs
+    weight: 9
+    settings:
+      title: 'Phone Number'
+      title_plural: 'Phone Numbers'
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_reusable_label:
+    weight: 11
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_state_organization_tax:
+    weight: 10
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 100
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 7
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  uid:
+    type: entity_reference_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 8
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

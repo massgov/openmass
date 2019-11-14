@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+# Clone the Acquia repository using the faster cloning technique
+git clone --depth=1 massgov@svn-20994.prod.hosting.acquia.com:massgov.git massgov-acquia
+
+# Checkout the master branch on the Acquia repository
+cd massgov-acquia
+
+# Tag the master branch
+git tag $CIRCLE_TAG
+
+# Push the tag to the Acquia master branch
+git push origin tag $CIRCLE_TAG

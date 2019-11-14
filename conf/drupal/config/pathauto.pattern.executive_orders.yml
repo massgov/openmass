@@ -1,0 +1,22 @@
+uuid: 9e564459-9612-4df3-9012-896e96e6d648
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: executive_orders
+label: 'Executive Orders'
+type: 'canonical_entities:node'
+pattern: '/executive-orders/[node:title]'
+selection_criteria:
+  919ec5e1-6a92-4044-9581-2c46b9bbf8de:
+    id: node_type
+    bundles:
+      executive_order: executive_order
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 919ec5e1-6a92-4044-9581-2c46b9bbf8de
+selection_logic: and
+weight: -5
+relationships: {  }

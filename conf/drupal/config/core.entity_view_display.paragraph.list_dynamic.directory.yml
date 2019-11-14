@@ -1,0 +1,72 @@
+uuid: 5bf44aec-44c2-4e63-bea0-0a060070c70a
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.directory
+    - field.field.paragraph.list_dynamic.field_contact_values_to_display
+    - field.field.paragraph.list_dynamic.field_list_dynamic_desc_setting
+    - field.field.paragraph.list_dynamic.field_listdynamic_label
+    - field.field.paragraph.list_dynamic.field_listdynamic_sort
+    - field.field.paragraph.list_dynamic.field_listdynamic_title
+    - paragraphs.paragraphs_type.list_dynamic
+  module:
+    - options
+id: paragraph.list_dynamic.directory
+targetEntityType: paragraph
+bundle: list_dynamic
+mode: directory
+content:
+  computed_dynamic_directory:
+    type: entity_reference_entity_view
+    weight: 7
+    region: content
+    label: above
+    settings:
+      view_mode: contact_summary
+      link: false
+    third_party_settings: {  }
+  field_contact_values_to_display:
+    weight: 4
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_list_dynamic_desc_setting:
+    type: boolean
+    weight: 3
+    region: content
+    label: hidden
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+  field_listdynamic_label:
+    weight: 2
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_listdynamic_sort:
+    weight: 1
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_listdynamic_title:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  computed_dynamic_list: true
+  computed_dynamic_list_w_desc: true
+  computed_section_id: true

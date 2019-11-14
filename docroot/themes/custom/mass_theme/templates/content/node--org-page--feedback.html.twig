@@ -1,0 +1,477 @@
+{#
+/**
+ * @file
+ * Theme override to display the feedback view mode.
+ */
+ #}
+{{ attach_library('mass_feedback_form/feedback-form-behaviors') }}
+{% set org_name = node.field_org_sentence_phrasing is empty ? node.title.value : content.field_org_sentence_phrasing|render|trim %}
+{% set response = false %}
+{% set responseRequired = false %}
+{% set noResponseDescription = false %}
+{% set contactInputs = [] %}
+{% if node.field_constituent_communication.value == 'contact' %}
+  {% set response = "Would you like a response from" %}
+  {% set responseRequired = {
+    "responseDescription": content.field_response_expectations,
+    "inputGroup": {
+      "required": true,
+      "inline": true,
+      "title": "",
+      "type": "radio",
+      "items": [
+        {
+          "name": "field70611737",
+          "value": "Yes",
+          "id": "field70611737_1",
+          "label": "Yes",
+          "required": true,
+          "checked": false
+        },
+        {
+          "name": "field70611737",
+          "value": "No",
+          "id": "field70611737_2",
+          "label": "No",
+          "required": true,
+          "checked": false
+        }
+      ]
+    }
+  } %}
+  {% set contactInputs = [
+    {
+      "hiddenLabel": false,
+      "labelText": "First Name",
+      "required": false,
+      "id": "field70611807",
+      "name": "field70611807",
+      "type": "text",
+      "noOptionalLabel": true
+    },
+    {
+      "hiddenLabel": false,
+      "labelText": "Last Name",
+      "required": false,
+      "id": "field70611815",
+      "name": "field70611815",
+      "type": "text",
+      "noOptionalLabel": true
+    },
+    {
+      "hiddenLabel": false,
+      "labelText": "Phone",
+      "required": false,
+      "id": "field70611804",
+      "name": "field70611804",
+      "type": "tel",
+      "noOptionalLabel": true
+    },
+    {
+      "hiddenLabel": false,
+      "labelText": "Email",
+      "required": false,
+      "id": "field70611812",
+      "name": "field70611812",
+      "type": "email",
+      "noOptionalLabel": true
+    }
+  ] %}
+{% else %}
+  {% set response = "Your feedback will not receive a response." %}
+  {% set noResponseDescription = "This form only gathers feedback about the website." %}
+{% endif %}
+<div class="feedback-steps">
+  <span id="feedback"></span>
+  <div id="feedback-step-1" class="feedback-step" data-feedback-next="feedback-step-2">
+    {% include "@organisms/feedback/mass-feedback.twig" with {
+      "formAction": "https://www.formstack.com/forms/index.php",
+      "formId": "2521317",
+      "title": {
+        "value": "Did you find what you were looking for on this webpage?",
+        "required": true
+      },
+      "org": org_name,
+      "queryAffirmative": {
+        "value": "Do you have anything else to tell us?",
+        "required": false
+      },
+      "queryNegative": {
+        "value": "Please tell us what you were looking for.",
+        "required": true
+      },
+      "queryDescription": "We will use this information to improve the site.",
+      "inputGroup": {
+        "required": true,
+        "inline": true,
+        "title": "",
+        "type": "radio",
+        "items": [
+          {
+            "name": "field47054416",
+            "value": "Yes",
+            "id": "field47054416_1",
+            "label": "Yes"
+          },
+          {
+            "name": "field47054416",
+            "value": "No",
+            "id": "field47054416_2",
+            "label": "No"
+          }
+        ]
+      },
+      "reportMessage": (node.field_urgent_warning is empty or node.field_urgent_warning.value == 0) ? false : {
+        "id": "",
+        "text": "If you need to report child abuse, any other kind of abuse, or need urgent assistance, please click here.",
+        "href": "https://www.mass.gov/info-details/report-abuse-or-request-urgent-assistance",
+        "info": ""
+      },
+      "affirmativeTextarea": {
+        "labelText": "Text Area",
+        "hiddenLabel": true,
+        "required": false,
+        "maxlength": 5000,
+        "id": "field52940022",
+        "name": "field52940022"
+      },
+      "negativeTextarea": {
+        "labelText": "Text Area",
+        "hiddenLabel": true,
+        "required": false,
+        "maxlength": 5000,
+        "id": "field47054414",
+        "name": "field47054414"
+      },
+      "helperText": {
+        "inputId": "GUID2738572489",
+        "message": "Do not include sensitive information, such as Social Security or bank account numbers."
+      },
+      "Response": response,
+      "noResponseDescription": noResponseDescription,
+      "contactInputs": contactInputs,
+      "hiddenElements": [
+        {
+          "id": "field47056299",
+          "name": "field47056299",
+          "value": url('<current>'),
+          "class": "fsField"
+        },
+        {
+          "id": "field58154059",
+          "name": "field58154059",
+          "value": "entityId",
+          "class": "fsField data-layer-substitute"
+        },
+        {
+          "id": "field57432673",
+          "name": "field57432673",
+          "value": "entityId",
+          "class": "fsField data-layer-substitute"
+        },
+        {
+          "id": "field68798989",
+          "name": "field68798989",
+          "value": "uniqueId",
+          "class": "fsField unique-id-substitute"
+        },
+        {
+          "id": "form2521317",
+          "name": "form",
+          "value": "2521317"
+        },
+        {
+          "id": "viewkeyvx39GBYJhi",
+          "name": "viewkey",
+          "value": "vx39GBYJhi"
+        },
+        {
+          "id": "hidden_fields2521317",
+          "name": "hidden_fields",
+          "value": ""
+        },
+        {
+          "id": "submit2521317",
+          "name": "_submit",
+          "value": "1"
+        },
+        {
+          "id": "style_version2521317",
+          "name": "style_version",
+          "value": "3"
+        },
+        {
+          "id": "viewparam",
+          "name": "viewparam",
+          "value": "524744"
+        }
+      ]
+    } %}
+  </div>
+  <div id="feedback-step-2" class="feedback-step hidden" data-feedback-next="feedback-step-3">
+    {% set contact = false %}
+    {% if node.field_constituent_communication.value == 'link' and node.field_feedback_com_link is not empty %}
+      {% set contact = content.field_feedback_com_link[0]['#url'] %}
+    {% endif %}
+    {% include "@organisms/feedback/mass-feedback-success.twig" with {
+      "title": "Thanks, your message has been sent to",
+      "action": "#",
+      "org": org_name,
+      "description": "Would you like to provide additional feedback to help improve Mass.gov?",
+      "contactLink": contact
+    } %}
+  </div>
+  <div id="feedback-step-3" class="feedback-step hidden" data-feedback-next="feedback-step-4">
+    {% include "@organisms/feedback/secondary-survey.twig" with {
+      "formId": "3184363",
+      "formAction": "https://massgov.formstack.com/forms/index.php",
+      "radioScalesGroups": {
+        "title": "",
+        "startScaleLabel": "Strongly Disagree",
+        "endScaleLabel": "Strongly Agree",
+        "groups": [
+          {
+            "path": "@atoms/03-forms/radio-scale.twig",
+            "data": {
+            "radioScale": {
+              "legend": "This page is helpful.",
+              "required": true,
+              "groupID": "field68557157",
+              "name": "field68557157",
+              "items": [
+                {
+                  "value": "1",
+                  "id": "field68557157_1",
+                  "label": "1",
+                  "text": "",
+                  "checked": false
+                },
+                {
+                  "value": "2",
+                  "id": "field68557157_2",
+                  "label": "2",
+                  "text": "",
+                  "checked": false
+                },
+                {
+                  "value": "3",
+                  "id": "field68557157_3",
+                  "label": "3",
+                  "text": "",
+                  "checked": false
+                },
+                {
+                  "value": "4",
+                  "id": "field68557157_4",
+                  "label": "4",
+                  "text": "",
+                  "checked": false
+                },
+                {
+                  "value": "5",
+                  "id": "field68557157_5",
+                  "label": "4",
+                  "text": "",
+                  "checked": false
+                }
+              ]
+            }
+          }
+          },
+          {
+            "path": "@atoms/03-forms/radio-scale.twig",
+            "data": {
+            "radioScale": {
+              "legend": "This page is easy to use.",
+              "required": true,
+              "groupID": "field68557204",
+              "name": "field68557204",
+              "items": [
+                {
+                  "value": "1",
+                  "id": "field68557204_1",
+                  "label": "1",
+                  "text": "",
+                  "checked": false
+                },
+                {
+                  "value": "2",
+                  "id": "field68557204_2",
+                  "label": "2",
+                  "text": "",
+                  "checked": false
+                },
+                {
+                  "value": "3",
+                  "id": "field68557204_3",
+                  "label": "3",
+                  "text": "",
+                  "checked": false
+                },
+                {
+                  "value": "4",
+                  "id": "field68557204_4",
+                  "label": "4",
+                  "text": "",
+                  "checked": false
+                },
+                {
+                  "value": "5",
+                  "id": "field68557204_5",
+                  "label": "4",
+                  "text": "",
+                  "checked": false
+                }
+              ]
+            }
+          }
+          },
+          {
+            "path": "@atoms/03-forms/radio-scale.twig",
+            "data": {
+            "radioScale": {
+              "legend": "I am confident that I will find the information that I need.",
+              "required": true,
+              "groupID": "field68557235",
+              "name": "field68557235",
+              "items": [
+                {
+                  "value": "1",
+                  "id": "field68557235_1",
+                  "label": "1",
+                  "text": "text",
+                  "checked": false
+                },
+                {
+                  "value": "2",
+                  "id": "field68557235_2",
+                  "label": "2",
+                  "text": "",
+                  "checked": false
+                },
+                {
+                  "value": "3",
+                  "id": "field68557235_3",
+                  "label": "3",
+                  "text": "",
+                  "checked": false
+                },
+                {
+                  "value": "4",
+                  "id": "field68557235_4",
+                  "label": "4",
+                  "text": "",
+                  "checked": false
+                },
+                {
+                  "value": "5",
+                  "id": "field68557235_5",
+                  "label": "4",
+                  "text": "",
+                  "checked": false
+                }
+              ]
+            }
+          }
+          }
+        ]
+      },
+      "doToday": {
+        "labelText": "Text Area",
+        "hiddenLabel": true,
+        "required": false,
+        "id": "field68557240",
+        "maxlength": 500,
+        "name": "field68557240"
+      },
+      "inputGroup": {
+        "required": true,
+        "inline": false,
+        "title": "",
+        "type": "radio",
+        "items": [
+          {
+            "name": "field68557373",
+            "value": "Personal",
+            "id": "field68557373_1",
+            "label": "Personal",
+            "checked": false
+          },
+          {
+            "name": "field68557373",
+            "value": "Professional",
+            "id": "field68557373_2",
+            "label": "Professional",
+            "checked": false
+          }
+        ]
+      },
+      "otherFeedback": {
+        "labelText": "Text Area",
+        "hiddenLabel": true,
+        "required": false,
+        "id": "field68557414",
+        "maxlength": 1000,
+        "name": "field68557414"
+      },
+      "emailContact": {
+        "labelText": "Email",
+        "hiddenLabel": true,
+        "required": false,
+        "id": "field68557501",
+        "name": "field68557501",
+        "type": "email",
+        "width": "375"
+      },
+      "hiddenElements": [
+        {
+          "id": "field68557708",
+          "name": "field68557708",
+          "value": "uniqueId",
+          "class": "fsField unique-id-substitute"
+        },
+        {
+          "id": "form3184363",
+          "name": "form",
+          "value": "3184363"
+        },
+        {
+          "id": "viewkeymLaeYhDMyl",
+          "name": "viewkey",
+          "value": "mLaeYhDMyl"
+        },
+        {
+          "id": "hidden_fields3184363",
+          "name": "hidden_fields",
+          "value": ""
+        },
+        {
+          "id": "submit3184363",
+          "name": "_submit",
+          "value": "1"
+        },
+        {
+          "id": "style_version3184363",
+          "name": "style_version",
+          "value": "3"
+        },
+        {
+          "id": "viewparam524744",
+          "name": "viewparam",
+          "value": "524744"
+        }
+      ]
+    } %}
+  </div>
+  <div id="feedback-step-4" class="feedback-step hidden">
+    {% include "@organisms/feedback/mass-feedback-thank-you.twig" with {
+      "title": "Thanks, your survey has been submitted to the Mass.gov team!",
+      "description": "If you would like to continue helping us improve Mass.gov, join our user panel to test new features for the site.",
+      "link": {
+        "text": "Join user panel",
+        "href": "https://www.mass.gov/user-panel?utm_source=survey"
+      }
+    } %}
+  </div>
+</div>
+

@@ -1,0 +1,9 @@
+services:
+  mass_fields.route_subscriber:
+    class: Drupal\mass_fields\Routing\AutocompleteRouteSubscriber
+    tags:
+      - { name: event_subscriber }
+
+  mass_fields.autocomplete_matcher:
+    class: Drupal\mass_fields\EntityAutocompleteMatcher
+    arguments: ['@plugin.manager.entity_reference_selection', '@entity_type.manager']

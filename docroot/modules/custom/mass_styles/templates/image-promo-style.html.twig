@@ -1,0 +1,19 @@
+{#
+ /**
+ * @file
+ * Template for the imagePromos view style plugin.
+ */
+ #}
+<div class="main-content main-content--two">
+  <section class="ma__image-promos js-image-promos">
+    <div>
+      {% for row in rows %}
+        <section class="ma__image-promo">
+          <div class="ma__image-promo__details">
+            {{ row }}
+          </div>
+        </section>
+      {% endfor %}
+    </div>
+  </section>
+</div>

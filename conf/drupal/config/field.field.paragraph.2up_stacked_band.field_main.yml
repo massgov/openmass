@@ -1,0 +1,182 @@
+uuid: 77dc4983-7650-46dc-a397-b0bd7621369b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_main
+    - paragraphs.paragraphs_type.2up_stacked_band
+    - paragraphs.paragraphs_type.action_step
+    - paragraphs.paragraphs_type.action_step_numbered
+    - paragraphs.paragraphs_type.action_step_numbered_list
+    - paragraphs.paragraphs_type.callout_alert
+    - paragraphs.paragraphs_type.callout_link
+    - paragraphs.paragraphs_type.completion_time
+    - paragraphs.paragraphs_type.file_download
+    - paragraphs.paragraphs_type.iframe
+    - paragraphs.paragraphs_type.map
+    - paragraphs.paragraphs_type.map_row
+    - paragraphs.paragraphs_type.pull_quote
+    - paragraphs.paragraphs_type.related_content
+    - paragraphs.paragraphs_type.rich_text
+    - paragraphs.paragraphs_type.stat
+  module:
+    - entity_reference_revisions
+id: paragraph.2up_stacked_band.field_main
+field_name: field_main
+entity_type: paragraph
+bundle: 2up_stacked_band
+label: Main
+description: 'This will take up 70% of this row.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      action_step: action_step
+      action_step_numbered: action_step_numbered
+      action_step_numbered_list: action_step_numbered_list
+      callout_alert: callout_alert
+      callout_link: callout_link
+      completion_time: completion_time
+      file_download: file_download
+      iframe: iframe
+      map: map
+      pull_quote: pull_quote
+      rich_text: rich_text
+      stat: stat
+      related_content: related_content
+      map_row: map_row
+    target_bundles_drag_drop:
+      1up_stacked_band:
+        weight: 32
+        enabled: false
+      2up_stacked_band:
+        weight: 33
+        enabled: false
+      action_address:
+        weight: 34
+        enabled: false
+      action_address_info:
+        weight: 35
+        enabled: false
+      action_area:
+        weight: 36
+        enabled: false
+      action_step:
+        enabled: true
+        weight: 37
+      action_step_numbered:
+        enabled: true
+        weight: 38
+      action_step_numbered_list:
+        enabled: true
+        weight: 39
+      callout_alert:
+        enabled: true
+        weight: 40
+      callout_button:
+        weight: 41
+        enabled: false
+      callout_link:
+        enabled: true
+        weight: 42
+      completion_time:
+        enabled: true
+        weight: 43
+      contact:
+        weight: 44
+        enabled: false
+      contact_group:
+        weight: 45
+        enabled: false
+      activities:
+        weight: 46
+        enabled: false
+      contact_info:
+        weight: 46
+        enabled: false
+      3_up_content:
+        weight: 46
+        enabled: false
+      file_download:
+        enabled: true
+        weight: 47
+      activity:
+        weight: 47
+        enabled: false
+      3_up_text:
+        weight: 47
+        enabled: false
+      full_bleed:
+        weight: 48
+        enabled: false
+      hours:
+        weight: 49
+        enabled: false
+      icon:
+        weight: 50
+        enabled: false
+      iframe:
+        enabled: true
+        weight: 51
+      action_set:
+        weight: 51
+        enabled: false
+      location_information:
+        weight: 52
+        enabled: false
+      map:
+        enabled: true
+        weight: 53
+      pull_quote:
+        enabled: true
+        weight: 54
+      emergency_alert:
+        weight: 55
+        enabled: false
+      quick_action:
+        weight: 55
+        enabled: false
+      related_link:
+        weight: 56
+        enabled: false
+      rich_text:
+        enabled: true
+        weight: 57
+      slideshow:
+        weight: 58
+        enabled: false
+      stacked_band:
+        weight: 59
+        enabled: false
+      stat:
+        enabled: true
+        weight: 60
+      icon_link:
+        weight: 60
+        enabled: false
+      icon_links:
+        weight: 61
+        enabled: false
+      subhead:
+        weight: 61
+        enabled: false
+      video:
+        weight: 62
+        enabled: false
+      related_content:
+        enabled: true
+        weight: 67
+      image:
+        weight: 72
+        enabled: false
+      map_row:
+        enabled: true
+        weight: 75
+      search_band:
+        weight: 81
+        enabled: false
+field_type: entity_reference_revisions

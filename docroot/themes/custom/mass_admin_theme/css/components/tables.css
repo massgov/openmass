@@ -1,0 +1,73 @@
+/**
+ * @file
+ * Mass Admin Table styles.
+ */
+table {
+  margin: 0 0 1.5rem 0;
+}
+
+thead > tr {
+  border-bottom: 1px solid #141414;
+}
+thead th {
+  background: #fff;
+  border: none;
+  color: #141414;
+  text-transform: none;
+}
+thead th:first-child {
+  border-top-left-radius: 6px;
+}
+thead th:last-child {
+  border-top-right-radius: 6px;
+}
+tr {
+  background-color: #fff;
+  padding: 0.75rem 1px;
+}
+tr + tr {
+  border-bottom: 1px solid #dcdcdc;
+}
+tbody tr:hover {
+  /* Todo find something that works for table row hover UX that works. */
+  background-color: #fff;
+}
+tbody tr:last-child {
+  border-bottom: none;
+}
+tbody tr:last-child td:first-child {
+  border-bottom-left-radius: 6px;
+}
+tbody tr:last-child td:last-child {
+  border-bottom-right-radius: 6px;
+}
+tbody td {
+  font-size: 1rem;
+  color: #535353;
+}
+
+td label {
+  font-size: 1rem;
+  margin: 0;
+}
+
+/* 1. Must match negative bottom padding of the parent <th> */
+th > a:after {
+  display: none;
+}
+th.is-active > a {
+  color: #14558f;
+  text-decoration: underline;
+}
+
+th > a:hover,
+th > a:focus,
+th.is-active > a:hover,
+th.is-active > a:focus {
+  color: #14558f;
+  text-decoration: underline;
+}
+
+.red-link a {
+  color: red;
+}

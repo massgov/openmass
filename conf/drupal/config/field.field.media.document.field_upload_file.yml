@@ -1,0 +1,27 @@
+uuid: ccf6f8b4-ac01-4e4a-a8a5-148265c9f0f5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_upload_file
+    - media.type.document
+  module:
+    - file
+id: media.document.field_upload_file
+field_name: field_upload_file
+entity_type: media
+bundle: document
+label: 'Select the file'
+description: 'References the file corresponding to the document.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  file_directory: 'documents/[date:custom:Y]/[date:custom:m]/[date:custom:d]'
+  file_extensions: 'csv doc docm docx dot dotx dwg geojson gif json jpg kml kmz mp3 mpp msg odf ods odt pdf png pps ppsx potx ppt pptm pptx ppsm prx pub rdf rfa rte rtf tiff tsv txt xls xlsb xlsm xlsx xml zip'
+  max_filesize: '100 MB'
+  description_field: false
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: file

@@ -1,0 +1,64 @@
+uuid: 4de8a7f2-84e8-4af1-9dc4-efdbe25cdeb6
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.stacked_layout.field_action_banner
+    - field.field.node.stacked_layout.field_action_header
+    - field.field.node.stacked_layout.field_bands
+    - field.field.node.stacked_layout.field_header_cta
+    - field.field.node.stacked_layout.field_image_credit
+    - field.field.node.stacked_layout.field_label
+    - field.field.node.stacked_layout.field_lede
+    - field.field.node.stacked_layout.field_metatags
+    - field.field.node.stacked_layout.field_photo
+    - field.field.node.stacked_layout.field_related_content
+    - field.field.node.stacked_layout.field_state_organization_tax
+    - field.field.node.stacked_layout.field_topic_callout_links
+    - field.field.node.stacked_layout.field_use_alt_header
+    - node.type.stacked_layout
+  module:
+    - link
+    - user
+id: node.stacked_layout.teaser
+targetEntityType: node
+bundle: stacked_layout
+mode: teaser
+content:
+  extra_org_feedback_form:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_topic_callout_links:
+    type: link
+    weight: 0
+    label: hidden
+    settings:
+      trim_length: null
+      url_only: false
+      url_plain: false
+      rel: '0'
+      target: '0'
+    third_party_settings: {  }
+    region: content
+hidden:
+  content_moderation_control: true
+  field_action_banner: true
+  field_action_header: true
+  field_bands: true
+  field_header_cta: true
+  field_image_credit: true
+  field_intended_audience: true
+  field_label: true
+  field_lede: true
+  field_metatags: true
+  field_organizations: true
+  field_photo: true
+  field_related_content: true
+  field_related_guides: true
+  field_state_organization_tax: true
+  field_use_alt_header: true
+  links: true
+  workbench_moderation_control: true

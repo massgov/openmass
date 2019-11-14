@@ -1,0 +1,30 @@
+uuid: 061d8d05-0dc5-4370-a92b-87fa3fef2657
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.org_page
+  module:
+    - allowed_formats
+    - text
+third_party_settings:
+  allowed_formats:
+    basic_html: basic_html
+    restricted_html: restricted_html
+    full_html: full_html
+    rules_of_court_section: '0'
+    plain_text: '0'
+id: node.org_page.body
+field_name: body
+entity_type: node
+bundle: org_page
+label: 'Who we serve'
+description: 'Describe the people or groups that your organization serves and describe how they are affected. Include key highlights of services provided but no comprehensive lists.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: false
+field_type: text_with_summary

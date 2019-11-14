@@ -1,0 +1,26 @@
+uuid: 8bf292b6-1a67-40bf-a7bc-a9a6fd261941
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_feedback_form
+    - system
+  theme:
+    - mass_admin_theme
+id: nodefeedbackcontainer
+theme: mass_admin_theme
+region: content
+weight: -4
+provider: null
+plugin: node_feedback_container
+settings:
+  id: node_feedback_container
+  label: 'Node Feedback Container'
+  provider: mass_feedback_form
+  label_display: visible
+visibility:
+  request_path:
+    id: request_path
+    pages: "/node/*/edit\r\n/node/add/*\r\n/media/*/edit\r\n/media/add/*"
+    negate: false
+    context_mapping: {  }

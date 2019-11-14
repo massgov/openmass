@@ -1,0 +1,36 @@
+uuid: bfb1a87a-bd82-4643-88d0-e16499bc42f3
+langcode: en
+status: true
+dependencies:
+  module:
+    - options
+    - paragraphs
+id: paragraph.field_method_type
+field_name: field_method_type
+entity_type: paragraph
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: online
+      label: Online
+    -
+      value: phone
+      label: 'By phone'
+    -
+      value: mail
+      label: 'By mail'
+    -
+      value: fax
+      label: 'By fax'
+    -
+      value: 'in person'
+      label: 'In person'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

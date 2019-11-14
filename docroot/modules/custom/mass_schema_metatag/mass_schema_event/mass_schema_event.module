@@ -1,0 +1,179 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_schema_event.module.
+ */
+
+use Drupal\node\NodeInterface;
+use Drupal\Core\Render\BubbleableMetadata;
+
+/**
+ * Implements hook_metatag_groups_alter().
+ *
+ * Every module should implement this to add a flag to the object types they
+ * create.
+ */
+function mass_schema_event_metatag_groups_alter(&$data) {
+  $module_name = basename(__FILE__, '.module');
+  foreach ($data as $key => $value) {
+    if ($value['provider'] == $module_name) {
+      $data[$key]['schema_metatag'] = TRUE;
+    }
+  }
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function mass_schema_event_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  /** @var \Drupal\token\Token $token_service */
+  $token_service = \Drupal::token();
+
+  $replacements = [];
+
+  if (!empty($data['node'])) {
+    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+    $entity = $data['node'];
+
+    $entity_type = $entity->getType();
+    // The following logic is to be applied only to guide pages.
+    if ($entity_type !== 'event') {
+      return;
+    }
+
+    // Iterate through all the tokens.
+    foreach ($tokens as $name => $original) {
+      $property_name = $name;
+      $value = $filtered_tokens = [];
+
+      // Check for the [entity:field_name] token.
+      if (strpos($name, ':') !== FALSE) {
+        list($field_name, $delta) = explode(':', $name);
+
+        // Handle [entity:field_name:entity].
+        $filtered_tokens = $token_service->findWithPrefix($tokens, $field_name);
+        if (!empty(array_keys($filtered_tokens)[0])) {
+          // Handle [entity:field_name].
+          $property_name = array_keys($token_service->findWithPrefix($filtered_tokens, $delta))[0];
+        }
+
+        $name = $field_name;
+      }
+
+      // If the token is [node:field_state_organization_tax:entity:name] skip
+      // the remaining logic. This token is used in the
+      // mg_stakeholder_org metatag; see DP-8191.
+      if (isset($field_name) && $field_name == 'field_state_organization_tax') {
+        continue;
+      }
+
+      // If the node entity doesn't have the field, continue.
+      if (!$entity->hasField($name)) {
+        continue;
+      }
+
+      $field_type = $entity->get($name)->getFieldDefinition()->getType();
+
+      if ($field_type != 'entity_reference_revisions' && $field_type != 'link' && $field_type != 'entity_reference' && $field_type != 'image') {
+        continue;
+      }
+
+      $data = [];
+      // Check if the field is a reference revisions field. This indicates that
+      // it references other entities, such as paragraphs.
+      if ($field_type == 'image') {
+        $referenced_entities = $entity->get($name)->referencedEntities();
+        foreach ($referenced_entities as $referenced_entity) {
+          $file_uri = $referenced_entity->getFileUri();
+          $url = file_create_url($file_uri);
+          if ($url && !in_array($url, $data)) {
+            $data[] = $url;
+          }
+        }
+      }
+      elseif ($field_type == 'entity_reference_revisions') {
+        // Get all values from the referenced entity.
+        $referenced_entities = $entity->get($name)->referencedEntities();
+        foreach ($referenced_entities as $referenced_entity) {
+          if (!$referenced_entity->hasField($property_name)) {
+            continue;
+          }
+
+          $value = array_merge(
+            $value,
+            $referenced_entity->get($property_name)->getValue()
+          );
+        }
+      }
+      // Get address values from 'contact_information' entity reference or from direct input of unique addresses.
+      // NOTE: The below code was already specific to Mass.gov Events, in that it extracted addresses from
+      // field_event_ref_contact. However we can now have addresses in field_event_ref_unique_address as well.
+      // So as replacement of the same token we combine data from both the fields.
+      // See: https://jira.mass.gov/browse/DP-10592
+      elseif ($field_type == 'entity_reference' && $property_name == 'field_event_ref_contact') {
+        $referenced_entities = $entity->get($name)->referencedEntities();
+        $addresses = [];
+        foreach ($referenced_entities as $referenced_entity) {
+          if ($referenced_entity->getType() == 'contact_information') {
+            $address_paragraph_entities = [];
+            // Get the address from the 'contact_information' node. The address
+            // field references the 'address' paragraph, so we need to get it
+            // from the paragraph entity.
+            if ($referenced_entity->hasField('field_ref_address') && !empty($referenced_entity->get('field_ref_address')->getValue())) {
+              $address_paragraph_entities = array_merge($address_paragraph_entities, $referenced_entity->field_ref_address->referencedEntities());
+            }
+
+            // Iterate through each 'address' paragraph entity to retrieve the
+            // address from the 'field_address_text' field.
+            foreach ($address_paragraph_entities as $paragraph) {
+              if ($paragraph->hasField('field_address_address') && !empty($paragraph->field_address_address->getValue()[0])) {
+                $addresses[] = $paragraph->get('field_address_address')->getValue()[0];
+              }
+            }
+          }
+        }
+        // We pull address data from the other new address field on event content types as well.
+        $direct_address_paragraphs = $entity->get('field_event_ref_unique_address')->referencedEntities();
+        foreach ($direct_address_paragraphs as $paragraph) {
+          if ($paragraph->hasField('field_address_address') && !empty($paragraph->field_address_address->getValue()[0])) {
+            $addresses[] = $paragraph->get('field_address_address')->getValue()[0];
+          }
+        }
+        $data = $addresses;
+      }
+
+      // For each replacement token, JSON-encode the data. This data will be
+      // set as the value of the field token - for which it will need to be
+      // JSON-decoded before use.
+      $replacements[$original] = json_encode($data);
+    }
+  }
+
+  return $replacements;
+}
+
+/**
+ * Implements hook_metatags_alter()
+ *
+ * @param array $metatags
+ *   The special meta tags to be added to the page.
+ * @param array $context
+ *   The context for the current meta tags being generated. Will contain the
+ *   following:
+ *   'entity' - The entity being processed; passed by reference.
+ */
+function mass_schema_event_metatags_alter(array &$metatags, array &$context) {
+  // We pick up the entity that is being processed, and if it is an EVENT with no address, then we
+  // remove the ```location``` property from that EVENT's schema.org data.
+  if (array_key_exists('entity', $context) && $context['entity'] instanceof NodeInterface) {
+    $entity = $context['entity'];
+    if ($entity->bundle() === 'event' && $entity->hasField('field_event_address_type')) {
+      if ($entity->get('field_event_address_type')->getString() === "none") {
+        if (array_key_exists('schema_event_location', $metatags)) {
+          unset($metatags['schema_event_location']);
+        }
+      }
+    }
+  }
+}

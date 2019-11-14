@@ -1,0 +1,144 @@
+uuid: 6bed4420-d2ed-454a-9e93-6b842f15e64f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_action_sidebar
+    - node.type.action
+    - paragraphs.paragraphs_type.callout_button
+    - paragraphs.paragraphs_type.contact_group
+    - paragraphs.paragraphs_type.icon_links
+    - paragraphs.paragraphs_type.iframe
+    - paragraphs.paragraphs_type.quick_action
+    - paragraphs.paragraphs_type.related_link
+    - paragraphs.paragraphs_type.subhead
+  module:
+    - entity_reference_revisions
+id: node.action.field_action_sidebar
+field_name: field_action_sidebar
+entity_type: node
+bundle: action
+label: Sidebar
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      iframe: iframe
+      subhead: subhead
+      contact_group: contact_group
+      callout_button: callout_button
+      related_link: related_link
+      quick_action: quick_action
+      icon_links: icon_links
+    target_bundles_drag_drop:
+      action_step:
+        weight: 11
+        enabled: false
+      action_step_numbered:
+        weight: 12
+        enabled: false
+      action_step_numbered_list:
+        weight: 13
+        enabled: false
+      callout_link:
+        weight: 14
+        enabled: false
+      contact:
+        weight: 15
+        enabled: false
+      file_download:
+        weight: 16
+        enabled: false
+      iframe:
+        enabled: true
+        weight: 17
+      rich_text:
+        weight: 18
+        enabled: false
+      stat:
+        weight: 19
+        enabled: false
+      action_address:
+        weight: 19
+        enabled: false
+      action_address_info:
+        weight: 20
+        enabled: false
+      subhead:
+        enabled: true
+        weight: 20
+      action_area:
+        weight: 21
+        enabled: false
+      contact_group:
+        enabled: true
+        weight: 27
+      contact_info:
+        weight: 28
+        enabled: false
+      full_bleed:
+        weight: 30
+        enabled: false
+      callout_button:
+        enabled: true
+        weight: 31
+      location_information:
+        weight: 32
+        enabled: false
+      slideshow:
+        weight: 34
+        enabled: false
+      icon:
+        weight: 34
+        enabled: false
+      1up_stacked_band:
+        weight: 35
+        enabled: false
+      related_link:
+        enabled: true
+        weight: 37
+      2up_stacked_band:
+        weight: 37
+        enabled: false
+      video:
+        weight: 38
+        enabled: false
+      quick_action:
+        enabled: true
+        weight: 38
+      map:
+        weight: 41
+        enabled: false
+      activities:
+        weight: 43
+        enabled: false
+      activity:
+        weight: 44
+        enabled: false
+      callout_alert:
+        weight: 45
+        enabled: false
+      completion_time:
+        weight: 48
+        enabled: false
+      hours:
+        weight: 54
+        enabled: false
+      icon_link:
+        weight: 56
+        enabled: false
+      icon_links:
+        enabled: true
+        weight: 58
+      pull_quote:
+        weight: 62
+        enabled: false
+      stacked_band:
+        weight: 67
+        enabled: false
+field_type: entity_reference_revisions

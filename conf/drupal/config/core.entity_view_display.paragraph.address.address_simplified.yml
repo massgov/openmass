@@ -1,0 +1,36 @@
+uuid: 34b19abe-585c-47b9-a261-7067184f2d73
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.address_simplified
+    - field.field.paragraph.address.field_address_address
+    - field.field.paragraph.address.field_address_text
+    - field.field.paragraph.address.field_geofield
+    - field.field.paragraph.address.field_label
+    - field.field.paragraph.address.field_lat_long
+    - paragraphs.paragraphs_type.address
+  module:
+    - mass_fields
+id: paragraph.address.address_simplified
+targetEntityType: paragraph
+bundle: address
+mode: address_simplified
+content:
+  field_address_address:
+    weight: 0
+    label: hidden
+    settings:
+      link_text: directions
+    third_party_settings: {  }
+    type: address_full_link
+    region: content
+hidden:
+  created: true
+  field_address_text: true
+  field_geofield: true
+  field_geofield_7: true
+  field_label: true
+  field_lat_long: true
+  field_new_geofield: true
+  uid: true

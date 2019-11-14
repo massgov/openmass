@@ -1,0 +1,81 @@
+uuid: c18c368e-b7c7-46d4-b5dc-a0db7d9108d5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_target_content_ref
+    - node.type.action
+    - node.type.advisory
+    - node.type.binder
+    - node.type.curated_list
+    - node.type.decision
+    - node.type.decision_tree
+    - node.type.error_page
+    - node.type.event
+    - node.type.executive_order
+    - node.type.form_page
+    - node.type.guide_page
+    - node.type.how_to_page
+    - node.type.info_details
+    - node.type.interstitial
+    - node.type.location
+    - node.type.location_details
+    - node.type.news
+    - node.type.org_page
+    - node.type.page
+    - node.type.person
+    - node.type.regulation
+    - node.type.rules
+    - node.type.service_details
+    - node.type.service_page
+    - node.type.stacked_layout
+    - node.type.topic_page
+    - node.type.utility_drawer
+    - paragraphs.paragraphs_type.target_pages
+id: paragraph.target_pages.field_target_content_ref
+field_name: field_target_content_ref
+entity_type: paragraph
+bundle: target_pages
+label: 'Target page'
+description: 'Start typing the title of the page you want and select it from the autocomplete list.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      advisory: advisory
+      page: page
+      binder: binder
+      curated_list: curated_list
+      decision: decision
+      decision_tree: decision_tree
+      error_page: error_page
+      event: event
+      executive_order: executive_order
+      form_page: form_page
+      guide_page: guide_page
+      how_to_page: how_to_page
+      info_details: info_details
+      interstitial: interstitial
+      location: location
+      location_details: location_details
+      news: news
+      org_page: org_page
+      person: person
+      regulation: regulation
+      action: action
+      rules: rules
+      service_page: service_page
+      service_details: service_details
+      stacked_layout: stacked_layout
+      topic_page: topic_page
+      utility_drawer: utility_drawer
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: org_page
+field_type: entity_reference

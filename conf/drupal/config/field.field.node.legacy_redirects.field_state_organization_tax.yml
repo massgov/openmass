@@ -1,0 +1,29 @@
+uuid: 7f2adc71-46a8-49cc-8713-8fa485e305a5
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_state_organization_tax
+    - node.type.legacy_redirects
+    - taxonomy.vocabulary.user_organization
+id: node.legacy_redirects.field_state_organization_tax
+field_name: field_state_organization_tax
+entity_type: node
+bundle: legacy_redirects
+label: Groups
+description: 'Choose SiteImprove groups in which to show this content. This field will be soon phased out in favor of using the Organization(s) field.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      user_organization: user_organization
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

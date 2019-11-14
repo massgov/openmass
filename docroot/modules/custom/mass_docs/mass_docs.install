@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Install config.
+ */
+
+use Drupal\taxonomy\Entity\Term;
+use Drupal\taxonomy\Entity\Vocabulary;
+
+/**
+ * Implements hook_uninstall().
+ */
+function mass_docs_uninstall() {
+  \Drupal::configFactory()->getEditable('mass_docs.settings')->delete();
+}
+
+/**
+ * Delete the deprecated mass_docs.settings config item.
+ */
+function mass_docs_update_8002() {
+  if ($config = \Drupal::configFactory()->getEditable('mass_docs.settings')) {
+    $config->delete();
+  }
+}

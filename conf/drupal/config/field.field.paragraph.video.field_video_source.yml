@@ -1,0 +1,23 @@
+uuid: 3ff22a10-39d6-4673-9c65-d4983ad4c3d3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_video_source
+    - paragraphs.paragraphs_type.video
+  module:
+    - options
+id: paragraph.video.field_video_source
+field_name: field_video_source
+entity_type: paragraph
+bundle: video
+label: 'Video Source'
+description: 'Source from which the video is embedded. Currently only supports <b>YouTube</b>.'
+required: false
+translatable: false
+default_value:
+  -
+    value: youtube
+default_value_callback: ''
+settings: {  }
+field_type: list_string

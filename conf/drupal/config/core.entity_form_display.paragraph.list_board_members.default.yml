@@ -1,0 +1,52 @@
+uuid: 8c0f2ea0-9d70-44c8-9601-e99c98b328d9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.list_board_members.field_board_members
+    - field.field.paragraph.list_board_members.field_featured_board_members
+    - field.field.paragraph.list_board_members.field_heading
+    - paragraphs.paragraphs_type.list_board_members
+  module:
+    - paragraphs
+id: paragraph.list_board_members.default
+targetEntityType: paragraph
+bundle: list_board_members
+mode: default
+content:
+  field_board_members:
+    type: entity_reference_paragraphs
+    weight: 2
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+    third_party_settings: {  }
+    region: content
+  field_featured_board_members:
+    type: entity_reference_paragraphs
+    weight: 1
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+    third_party_settings: {  }
+    region: content
+  field_heading:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

@@ -1,0 +1,27 @@
+uuid: 0141e238-e5fb-4e19-a27d-a2c4870047ec
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.page.field_page_page
+    - paragraphs.paragraphs_type.page
+  module:
+    - mass_formatters
+id: paragraph.page.default
+targetEntityType: paragraph
+bundle: page
+mode: default
+content:
+  field_page_page:
+    weight: 0
+    label: hidden
+    settings:
+      trim_length: '80'
+      url_only: false
+      url_plain: false
+      rel: 0
+      target: 0
+    third_party_settings: {  }
+    type: mass_link_title_separated
+    region: content
+hidden: {  }

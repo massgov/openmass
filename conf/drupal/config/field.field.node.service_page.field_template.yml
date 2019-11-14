@@ -1,0 +1,23 @@
+uuid: 26f48575-4b09-4e95-afd1-bea41095e258
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_template
+    - node.type.service_page
+  module:
+    - options
+id: node.service_page.field_template
+field_name: field_template
+entity_type: node
+bundle: service_page
+label: 'Service page template'
+description: 'Default links groups include "What would you like to do?" and "What you need to know".  Custom groups allow you to define up to 6 custom group headings that can each contain up to 10 links or documents.'
+required: true
+translatable: false
+default_value:
+  -
+    value: default
+default_value_callback: ''
+settings: {  }
+field_type: list_string

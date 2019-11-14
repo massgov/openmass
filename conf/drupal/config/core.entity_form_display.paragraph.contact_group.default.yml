@@ -1,0 +1,46 @@
+uuid: 1899b986-64ab-40c3-b8c8-c90ab3163f0e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.contact_group.field_contact_group_layout
+    - field.field.paragraph.contact_group.field_contact_info
+    - field.field.paragraph.contact_group.field_title
+    - paragraphs.paragraphs_type.contact_group
+  module:
+    - paragraphs
+id: paragraph.contact_group.default
+targetEntityType: paragraph
+bundle: contact_group
+mode: default
+content:
+  field_contact_group_layout:
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_contact_info:
+    type: entity_reference_paragraphs
+    weight: 2
+    settings:
+      title: 'Contact Info'
+      title_plural: 'Contact Info'
+      edit_mode: preview
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_title:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

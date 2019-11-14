@@ -1,0 +1,81 @@
+uuid: e2f7ee1e-af2a-416b-a818-1a3798061d3b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_action_banner
+    - node.type.action
+    - paragraphs.paragraphs_type.full_bleed
+  module:
+    - entity_reference_revisions
+id: node.action.field_action_banner
+field_name: field_action_banner
+entity_type: node
+bundle: action
+label: Banner
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      full_bleed: full_bleed
+    target_bundles_drag_drop:
+      action_area:
+        weight: 19
+        enabled: false
+      action_step:
+        weight: 20
+        enabled: false
+      action_step_numbered:
+        weight: 21
+        enabled: false
+      action_step_numbered_list:
+        weight: 22
+        enabled: false
+      callout_link:
+        weight: 23
+        enabled: false
+      contact:
+        weight: 24
+        enabled: false
+      contact_group:
+        weight: 25
+        enabled: false
+      contact_info:
+        weight: 26
+        enabled: false
+      file_download:
+        weight: 27
+        enabled: false
+      full_bleed:
+        enabled: true
+        weight: 28
+      icon:
+        weight: 29
+        enabled: false
+      iframe:
+        weight: 30
+        enabled: false
+      location_information:
+        weight: 31
+        enabled: false
+      rich_text:
+        weight: 32
+        enabled: false
+      slideshow:
+        weight: 33
+        enabled: false
+      stat:
+        weight: 34
+        enabled: false
+      subhead:
+        weight: 35
+        enabled: false
+      video:
+        weight: 36
+        enabled: false
+field_type: entity_reference_revisions

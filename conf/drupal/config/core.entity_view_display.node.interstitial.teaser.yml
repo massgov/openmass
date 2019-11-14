@@ -1,0 +1,24 @@
+uuid: 8f015d31-748a-4a0b-8466-7874a5827dfc
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.interstitial.field_interstitial_checkbox_msg
+    - field.field.node.interstitial.field_message
+    - node.type.interstitial
+  module:
+    - user
+id: node.interstitial.teaser
+targetEntityType: node
+bundle: interstitial
+mode: teaser
+content:
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_interstitial_checkbox_msg: true
+  field_message: true

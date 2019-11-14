@@ -1,0 +1,224 @@
+uuid: be32155b-bf5e-47dd-b3eb-950a14ffc8ec
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.guide_page.field_guide_page_bg_wide
+    - field.field.node.guide_page.field_guide_page_lede
+    - field.field.node.guide_page.field_guide_page_metatags
+    - field.field.node.guide_page.field_guide_page_related_guides
+    - field.field.node.guide_page.field_guide_page_sections
+    - field.field.node.guide_page.field_image_credit
+    - field.field.node.guide_page.field_intended_audience
+    - field.field.node.guide_page.field_organizations
+    - field.field.node.guide_page.field_state_organization_tax
+    - image.style.large
+    - node.type.guide_page
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - field_group
+    - focal_point
+    - metatag
+    - paragraphs
+    - scheduler
+    - scheduler_content_moderation_integration
+third_party_settings:
+  field_group:
+    group_node_edit_form:
+      children:
+        - group_overview
+        - group_sections
+        - group_related
+      parent_name: ''
+      weight: 1
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Node Edit Form'
+    group_overview:
+      children:
+        - title
+        - field_guide_page_lede
+        - field_guide_page_bg_wide
+        - field_image_credit
+        - field_organizations
+        - field_intended_audience
+      parent_name: group_node_edit_form
+      weight: 20
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: true
+      label: Overview
+    group_sections:
+      children:
+        - field_guide_page_sections
+      parent_name: group_node_edit_form
+      weight: 22
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: "<p>Guides offer a high level overview of a process or service. They are made up of sections that provide detailed context about each phase or stage. Section titles automatically appear at the top of the guide to give direct access to each section.</p>\n\n<p>A guide section can have different layouts. It can be one column, with room for contact information on the side, or it can be 3 columns of text, each with its own heading.</p>\n\n<p>Guide sections also allow different kinds callouts. These callouts can highlight the estimated time a stage takes, draw attention to an important number/stat, or provide an alert about an important deadline or requirement.</p>\n\n<p>In general, a guide should have at least 3 sections but not more than 8.</p>"
+        required_fields: true
+      label: Sections
+    group_related:
+      children:
+        - field_guide_page_related_guides
+      parent_name: group_node_edit_form
+      weight: 23
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Related
+id: node.guide_page.default
+targetEntityType: node
+bundle: guide_page
+mode: default
+content:
+  field_guide_page_bg_wide:
+    weight: -3
+    settings:
+      preview_image_style: large
+      progress_indicator: throbber
+      preview_link: true
+      offsets: '50,50'
+    third_party_settings: {  }
+    type: image_focal_point
+    region: content
+  field_guide_page_lede:
+    weight: -4
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+  field_guide_page_metatags:
+    weight: 5
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_guide_page_related_guides:
+    weight: 34
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_guide_page_sections:
+    type: entity_reference_paragraphs
+    weight: 37
+    settings:
+      title: Section
+      title_plural: Sections
+      edit_mode: preview
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_image_credit:
+    weight: -2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_intended_audience:
+    weight: 0
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_organizations:
+    weight: -1
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_state_organization_tax:
+    weight: 6
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 100
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: -5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  uid:
+    type: entity_reference_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

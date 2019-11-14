@@ -1,0 +1,289 @@
+#!/usr/bin/env bash
+################################################################################
+#
+#        __  __    _         ____  _____ _____ ____  _____ ____  _   _
+#       |  \/  |  / \       |  _ \| ____|  ___|  _ \| ____/ ___|| | | |
+#       | |\/| | / _ \ _____| |_) |  _| | |_  | |_) |  _| \___ \| |_| |
+#       | |  | |/ ___ \_____|  _ <| |___|  _| |  _ <| |___ ___) |  _  |
+#       |_|  |_/_/   \_\    |_| \_\_____|_|   |_| \_\_____|____/|_| |_|
+#
+# Description:
+#          A utility that builds the local environment for developers and testers.
+#          It can use a locally cached database copy or pull the latest available
+#          daily backup. Finding the remote backup uses the Acquia Cloud API.
+#          The script is also used on CircleCI to create builds."
+#
+# Log files:
+#         'ma-refresh-local' creates and rotates its own logs. The log file path
+#         will display once the script is executed. This is very simple logging;
+#         and it tracks the execution time of the script, which maybe helpful
+#         in build time metrics.
+#
+# Usage:
+#         $ ma-refresh-local
+#         Run 'ma-refresh-local -h' to get help and a list of options
+#
+################################################################################
+
+
+# Vars
+TIMESTAMP=`date +%Y%m%d%H%M%S`        # YYYYMMDDhhmmss format.
+SCRIPT_LOG_RETENTION_DAYS=15          # How long the script keeps its logs.
+SCRIPT_NAME=`basename $0`             # Script's name.
+LOGFILE_HOME=/tmp                     # Script's logs location.
+LOGFILE_NAME=${LOGFILE_HOME}/${SCRIPT_NAME%\.*}_${TIMESTAMP}.log      # Logfile.
+OK_MSG=`tput setaf 2`                 # Green.
+WARN_MSG=`tput setaf 3`               # Yellow.
+ERR_MSG=`tput setaf 9`                # Red.
+HEADING=`tput setaf 6`                # Blue.
+TEXTRESET=`tput sgr0`                 # Reset text to original color.
+START_COUNTER=`date +%s`              # Start time in seconds.
+
+
+function show_help() {
+    # Displays help.
+    header
+    echo "Usage:"
+    echo "\
+    A utility that builds the local environment for developers and testers.
+    It can use a locally cached database copy or pull the latest available
+    daily backup. Finding the remote backup uses the Acquia Cloud API.
+    The script is also used on CircleCI to create builds."
+    echo
+    echo "Usage:"
+    echo "    ${SCRIPT_NAME} [options]"
+    echo
+    echo "    ${SCRIPT_NAME}                            Download latest backup and build local environment."
+    echo "    ${SCRIPT_NAME} -h, --help                 Shows this help screen."
+    echo "    ${SCRIPT_NAME} -c, --cache                Use locally cached database (if available)."
+    echo "    ${SCRIPT_NAME} -sdb, --skip-db-prep       Skip database prep operations (used in CircleCI only)."
+    echo "    ${SCRIPT_NAME} -dpo, --db-prep-only       Prepare db only (drops old db, downloads backup and import it)."
+    echo
+}
+
+function show_usage() {
+    # Show usage.
+    echo "[+] Usage: '${SCRIPT_NAME} -c' to build with a cached db copy (if available)."
+    echo
+}
+
+
+function header() {
+    # Show this header.
+    echo
+    echo "  __  __    _         ____  _____ _____ ____  _____ ____  _   _ "
+    echo " |  \/  |  / \       |  _ \| ____|  ___|  _ \| ____/ ___|| | | |"
+    echo " | |\/| | / _ \ _____| |_) |  _| | |_  | |_) |  _| \___ \| |_| |"
+    echo " | |  | |/ ___ \_____|  _ <| |___|  _| |  _ <| |___ ___) |  _  |"
+    echo " |_|  |_/_/   \_\    |_| \_\_____|_|   |_| \_\_____|____/|_| |_|"
+    echo
+
+
+}
+
+function sub_header() {
+    # Show sub header with script date, sript name current log file.
+    echo "`date`" | tee -a $LOGFILE_NAME
+    echo "Utility: ${SCRIPT_NAME}" | tee -a $LOGFILE_NAME
+    echo "Log file: ${LOGFILE_NAME}"
+    echo "_____________________________________________________________________"
+}
+
+
+function log_retention() {
+  # The script rotates its own logs. Each run generates a separate logfile.
+  # Deletes any that are older than '$SCRIPT_LOG_RETENTION_DAYS'.
+  find $LOGFILE_HOME -name "${SCRIPT_NAME%\.*}_*" -mtime +${SCRIPT_LOG_RETENTION_DAYS} -exec rm -f {} \; > /dev/null 2>&1
+  return 0
+}
+
+function wrap_up() {
+    # Cleanup old logs and display execution time (%s).
+    log_retention
+    END_COUNTER=`date +%s`      # End time.
+    RUN_DURATION=$((END_COUNTER-START_COUNTER))
+    echo "${OK_MSG} '${SCRIPT_NAME}' completed in $RUN_DURATION seconds. ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    echo
+}
+
+
+function nonzero_exit() {
+    # Capture return code and exit (on non-zero).
+    RC=$?
+    if (( $RC )); then
+        # Capture parent function name that failed.
+        echo "${ERR_MSG}[!] '${FUNCNAME[ 1 ]}' operation failed. ${TEXTRESET}"
+        echo "${ERR_MSG}[!] '${SCRIPT_NAME}' issued non-zero return code: ${RC} ${TEXTRESET}"
+        echo
+        exit $RC;
+    fi
+}
+
+
+function download_backup() {
+    # Download backup using Acquia's Cloud API.
+    echo "${HEADING}[+] Download latest database backup ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    LATEST_BACKUP=`drush ma:latest-backup-url prod`
+    # Track download url in current log file.
+    echo $LATEST_BACKUP >> $LOGFILE_NAME
+    echo
+    wget -q --continue $LATEST_BACKUP --output-document=$HOME/db-backup.sql.gz
+    echo
+}
+
+
+function import_backup() {
+    # Import backup in local environment.
+    # If you make a change here, also do so at scripts/ma-import-backup.
+    echo "${HEADING}[+] Import database backup ${TEXTRESET}"
+    echo "Database import in progress..."
+    zgrep --line-buffered -v -e "^INSERT INTO \`cache_" -e "^INSERT INTO \`migrate_map_" -e "^INSERT INTO \`config_log" -e "^INSERT INTO \`key_value_expire" -e "^INSERT INTO \`sessions" $HOME/db-backup.sql.gz | `drush sql:connect`
+}
+
+
+function sql_create() {
+    # Create a database.
+    echo
+    echo "${HEADING}[+] Drop old database and create new one ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y sql:create
+    nonzero_exit
+}
+
+function cache_rebuild() {
+    # Rebuild Drupal caches
+    echo
+    echo "${HEADING}[+] Run cache:rebuild ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y cache:rebuild
+    nonzero_exit
+}
+
+function cache_rebuild_discovery() {
+    # Rebuild only cache_discovery
+    echo
+    echo "${HEADING}[+] Rebuilding discovery cache ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y php-eval "\Drupal::cache('discovery')->invalidateAll();"
+    nonzero_exit
+}
+
+function sanitize() {
+    # Sanitize the database by removing or obfuscating user data.
+    echo
+    echo "${HEADING}[+] Sanitize database ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y sql:sanitize
+    nonzero_exit
+}
+
+
+function updatedb() {
+    # Apply any database updates required (as with running update.php).
+    echo
+    echo "${HEADING}[+] Update database ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y updatedb --no-post-updates
+    nonzero_exit
+}
+
+
+function config_import() {
+    # Import configuration from a config directory.
+    echo
+    echo "${HEADING}[+] Configuration import ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y config:import
+    nonzero_exit
+}
+
+
+function post_updates() {
+    # Run 'updatedb --post-updates'.
+    echo
+    echo "${HEADING}[+] Apply post updates ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y updatedb --post-updates=1
+    nonzero_exit
+}
+
+
+function common_tasks() {
+    # Common local environment refresh tasks.
+    import_backup
+    sanitize
+    cache_rebuild
+    updatedb
+    config_import
+    post_updates
+    cache_rebuild
+}
+
+
+function skip_db_prep() {
+    # When '--skip-db-prep' is passed.
+    cache_rebuild_discovery
+    updatedb
+    config_import
+    post_updates
+    cache_rebuild
+}
+
+function db_prep_only() {
+    # When '--db-prep-only' is passed.
+    sql_create
+    download_backup
+    import_backup
+    sanitize
+}
+
+function main() {
+    # When total args is 1 and is "-c" (lower/upper).
+    if [[ "$#" = 1 ]] && [[ "$1" = "-c" ]] || [[ "$1" = "--cache" ]] ; then
+        # display script header
+        header
+        sub_header
+
+        # Check if backup file exists.
+        if [[ -f ${HOME}/db-backup.sql.gz ]]; then
+            sql_create
+            common_tasks
+            echo
+        else
+            echo
+            echo "${WARN_MSG}[!] Local database backup not found: '${HOME}/db-backup.sql.gz' ${TEXTRESET}"
+            echo "'${SCRIPT_NAME}' will download the latest backup."
+            sql_create
+            download_backup
+            common_tasks
+            echo
+        fi
+
+    # When no args are passed, default to download and import.
+    elif [[ "$#" -eq 0 ]]; then
+        header
+        sub_header
+        sql_create
+        download_backup
+        common_tasks
+        echo
+
+    # When db prep is skipped.
+    elif [[ "$1" = "-sdp" ]] || [[ "$1" = "--skip-db-prep" ]]; then
+        skip_db_prep
+
+    # Database prep only.
+    elif [[ "$1" = "-dpo" ]] || [[ "$1" = "--db-prep-only" ]]; then
+        db_prep_only
+
+    # If help is needed.
+    elif [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]] ; then
+        show_help
+        echo
+
+    # Otherwise, an unknown arg was passed.
+    else
+        echo
+        echo "${ERR_MSG}[!] '${1}' is an unknown option. ${TEXTRESET}"
+        show_usage
+        exit 1;
+    fi
+}
+
+
+# Run main function & wrap up.
+main $*
+wrap_up

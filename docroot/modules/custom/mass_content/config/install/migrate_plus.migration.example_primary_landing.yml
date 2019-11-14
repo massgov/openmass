@@ -1,0 +1,35 @@
+id: example_primary_landing
+label: Primary Landing (L0)
+
+migration_group: mass_content
+
+source:
+  plugin: csv
+  path: 'modules/custom/mass_content/data/MSG Content - L0 - Primary Landing Page.csv'
+  header_row_count: 1
+  keys:
+    - Title
+  constants:
+    bundle: primary_landing
+
+process:
+  type: 'constants/bundle'
+  title: Title
+  field_lede: Lede
+  field_actions:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: 'Common Actions'
+    -
+      plugin: explode
+      delimiter: ';'
+    -
+      plugin: callback
+      callable: trim
+    -
+      plugin: migration
+      migration: example_action
+
+destination:
+  plugin: entity:node

@@ -1,0 +1,26 @@
+uuid: 2da12158-7289-4727-b98a-26ffff5bda13
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.1up_stacked_band.field_main
+    - paragraphs.paragraphs_type.1up_stacked_band
+  module:
+    - entity_reference_revisions
+id: paragraph.1up_stacked_band.default
+targetEntityType: paragraph
+bundle: 1up_stacked_band
+mode: default
+content:
+  field_main:
+    type: entity_reference_revisions_entity_view
+    weight: 0
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  uid: true

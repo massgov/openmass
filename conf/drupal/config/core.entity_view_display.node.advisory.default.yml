@@ -1,0 +1,226 @@
+uuid: 8105eef4-33dd-47a5-afef-7d7e778fa49b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.advisory.field_advisory_date
+    - field.field.node.advisory.field_advisory_download
+    - field.field.node.advisory.field_advisory_footnotes
+    - field.field.node.advisory.field_advisory_issuer
+    - field.field.node.advisory.field_advisory_links
+    - field.field.node.advisory.field_advisory_listing_desc
+    - field.field.node.advisory.field_advisory_metatags
+    - field.field.node.advisory.field_advisory_overview
+    - field.field.node.advisory.field_advisory_publish_state_tax
+    - field.field.node.advisory.field_advisory_ref_contact
+    - field.field.node.advisory.field_advisory_ref_sources
+    - field.field.node.advisory.field_advisory_section
+    - field.field.node.advisory.field_advisory_type_tax
+    - field.field.node.advisory.field_intended_audience
+    - field.field.node.advisory.field_organizations
+    - field.field.node.advisory.field_reusable_label
+    - field.field.node.advisory.field_state_organization_tax
+    - node.type.advisory
+  module:
+    - datetime
+    - entity_reference_revisions
+    - link
+    - metatag
+    - options
+    - text
+    - user
+id: node.advisory.default
+targetEntityType: node
+bundle: advisory
+mode: default
+content:
+  computed_related_to:
+    type: entity_reference_label
+    weight: 19
+    region: content
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+  content_moderation_control:
+    weight: -20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_node_pager:
+    weight: 17
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  extra_org_feedback_form:
+    weight: 21
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_advisory_date:
+    weight: 2
+    label: above
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_advisory_download:
+    weight: 6
+    label: above
+    settings:
+      view_mode: media_download_link
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_advisory_footnotes:
+    weight: 13
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_advisory_issuer:
+    type: entity_reference_revisions_entity_view
+    weight: 11
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_advisory_links:
+    weight: 12
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_advisory_listing_desc:
+    weight: 15
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_advisory_metatags:
+    weight: 7
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_empty_formatter
+    region: content
+  field_advisory_overview:
+    weight: 5
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_advisory_publish_state_tax:
+    weight: 10
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_advisory_ref_contact:
+    weight: 8
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_advisory_ref_sources:
+    weight: 3
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_advisory_section:
+    type: entity_reference_revisions_entity_view
+    weight: 4
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_advisory_type_tax:
+    weight: 9
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_intended_audience:
+    weight: 20
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_organizations:
+    type: entity_reference_label
+    weight: 18
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_reusable_label:
+    weight: 14
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  referencing_binders:
+    type: entity_reference_entity_view
+    weight: 16
+    region: content
+    label: hidden
+    settings:
+      view_mode: table_of_contents
+      link: false
+    third_party_settings: {  }
+  referencing_binders_page_flipper:
+    type: entity_reference_label
+    weight: 18
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  field_state_organization_tax: true
+  page_next: true
+  page_previous: true

@@ -1,0 +1,28 @@
+uuid: 0f0a13d8-0516-4990-8c70-01e3e0bd8b3b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_person
+    - node.type.person
+    - paragraphs.paragraphs_type.board_member
+id: paragraph.board_member.field_person
+field_name: field_person
+entity_type: paragraph
+bundle: board_member
+label: Person
+description: 'If the person you want doesn''t exist, you may <a href="/node/add/person" target="_blank">create a new person</a>.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      person: person
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

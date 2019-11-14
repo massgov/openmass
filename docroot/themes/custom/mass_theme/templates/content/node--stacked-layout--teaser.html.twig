@@ -1,0 +1,21 @@
+{#
+/**
+ * @file
+ * Theme override to display the teaser view mode of the Stacked Layout content type.
+ *
+ * Uses 'extend' methods from http://www.stevector.com/2013/10/make-your-drupal-8-theme-easier-to-maintain-with-this-one-weird-trick-twigs-extends-concept/
+ */
+ #}
+{%
+  set sectionLinks = {
+    'title':  {
+      'href': url,
+      'text': label|field_value
+    },
+  }
+%}
+{% extends 'node.html.twig' %}
+
+{% block pageContent %}
+  {% include "@molecules/section-links.twig" with sectionLinks %}
+{% endblock %}

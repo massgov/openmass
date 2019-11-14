@@ -1,0 +1,181 @@
+uuid: e1e053a6-34ac-4d35-abdc-d96defe2f15e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.guide_section_3up.field_guide_section_alert_text
+    - field.field.paragraph.guide_section_3up.field_guide_section_body_first
+    - field.field.paragraph.guide_section_3up.field_guide_section_body_second
+    - field.field.paragraph.guide_section_3up.field_guide_section_body_third
+    - field.field.paragraph.guide_section_3up.field_guide_section_downloads
+    - field.field.paragraph.guide_section_3up.field_guide_section_heading_1
+    - field.field.paragraph.guide_section_3up.field_guide_section_heading_2
+    - field.field.paragraph.guide_section_3up.field_guide_section_heading_3
+    - field.field.paragraph.guide_section_3up.field_guide_section_label
+    - field.field.paragraph.guide_section_3up.field_guide_section_link
+    - field.field.paragraph.guide_section_3up.field_guide_section_links_4
+    - field.field.paragraph.guide_section_3up.field_guide_section_name
+    - field.field.paragraph.guide_section_3up.field_guide_section_stat
+    - field.field.paragraph.guide_section_3up.field_guide_section_time
+    - paragraphs.paragraphs_type.guide_section_3up
+  module:
+    - entity_browser_entity_form
+    - field_group
+    - inline_entity_form
+    - link
+    - mass_validation
+    - text
+third_party_settings:
+  field_group:
+    group_stat:
+      children:
+        - field_guide_section_label
+        - field_guide_section_stat
+      parent_name: ''
+      weight: 8
+      format_type: fieldset
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: true
+      label: Stat
+    group_additional_resources:
+      children:
+        - field_guide_section_link
+        - field_guide_section_downloads
+      parent_name: ''
+      weight: 11
+      format_type: fieldset
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: true
+      label: 'Additional Resources'
+id: paragraph.guide_section_3up.default
+targetEntityType: paragraph
+bundle: guide_section_3up
+mode: default
+content:
+  field_guide_section_alert_text:
+    weight: 9
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_guide_section_body_first:
+    weight: 3
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_guide_section_body_second:
+    weight: 5
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_guide_section_body_third:
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_guide_section_downloads:
+    weight: 15
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+      collapsible: false
+      collapsed: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: media_browser
+    type: inline_entity_form_complex
+    region: content
+  field_guide_section_heading_1:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_guide_section_heading_2:
+    weight: 4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_guide_section_heading_3:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_guide_section_link:
+    weight: 14
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - contact_information
+          - fee
+          - legacy_redirects
+    type: link_default
+    region: content
+  field_guide_section_links_4:
+    weight: 10
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - contact_information
+          - fee
+          - legacy_redirects
+    type: link_default
+    region: content
+  field_guide_section_name:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_guide_section_time:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  field_guide_section_label: true
+  field_guide_section_stat: true
+  status: true
+  uid: true

@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_serializer.module.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_entity_base_field_info().
+ *
+ * Add an `entity_url` property to nodes, as expected by the JSONAPI alerts
+ * response code.  This field is computed.  This is the approach recommended
+ * by the JSONAPI module for adding additional properties to entities.
+ *
+ * @see \jsonapi_entity_base_field_info()
+ */
+function mass_serializer_entity_base_field_info(EntityTypeInterface $type) {
+  if ($type->id() === 'node') {
+    $fields = [];
+    $fields['entity_url'] = BaseFieldDefinition::create('uri')
+      ->setLabel(t('The entity URL'))
+      ->setDescription(t('The url to view the node in the browser'))
+      ->setComputed(TRUE)
+      ->setCustomStorage(TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'above',
+        'weight' => -5,
+        'region' => 'hidden',
+      ])
+      ->setClass('\Drupal\mass_serializer\Field\EntityUrl');
+
+    return $fields;
+  }
+}

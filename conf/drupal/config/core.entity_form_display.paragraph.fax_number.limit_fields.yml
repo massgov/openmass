@@ -1,0 +1,37 @@
+uuid: 74727729-e14a-48f9-90a5-b388eb9ccab7
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.paragraph.limit_fields
+    - field.field.paragraph.fax_number.field_caption
+    - field.field.paragraph.fax_number.field_fax
+    - field.field.paragraph.fax_number.field_label
+    - paragraphs.paragraphs_type.fax_number
+  module:
+    - telephone
+id: paragraph.fax_number.limit_fields
+targetEntityType: paragraph
+bundle: fax_number
+mode: limit_fields
+content:
+  field_caption:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_fax:
+    weight: 0
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: telephone_default
+    region: content
+hidden:
+  created: true
+  field_label: true
+  status: true
+  uid: true

@@ -1,0 +1,242 @@
+<?php
+
+/**
+ * @file
+ * The module file for the Mass Decision Tree module.
+ */
+
+use Drupal\mayflower\Prepare\Atoms;
+use Drupal\mayflower\Prepare\Organisms;
+use Drupal\mayflower\Helper;
+use Drupal\node\Entity\Node;
+use Drupal\Core\Url;
+use Drupal\Core\Field\FieldFilteredMarkup;
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function mass_decision_tree_preprocess_node(&$variables) {
+  $node = $variables['node'];
+  // Only affect decision_tree content type.
+  if ($node->getType() == 'decision_tree') {
+    $root_nid = $node->id();
+
+    // Set default values for the Decision Tree root.
+    $root_values = [
+      'title' => '',
+      'details' => '',
+      'startText' => '',
+      'startId' => '',
+    ];
+
+    if (Helper::isFieldPopulated($node, 'title')) {
+      $root_values['title'] = Helper::fieldValue($node, 'title');
+    }
+    if (Helper::isFieldPopulated($node, 'field_description')) {
+      // We have to render() this value explicitly since it does not pass
+      // through Twig.
+      $details = Helper::fieldFullView($node, 'field_description');
+      $root_values['details'] = render($details);
+    }
+    if (Helper::isFieldPopulated($node, 'field_start_button')) {
+      $start = Helper::getReferencedEntitiesFromField($node, 'field_start_button');
+      $start = $start[0];
+      $start_branch = $start->get('field_start_button_branch')->getValue();
+      $root_values['startText'] = Helper::fieldValue($start, 'field_start_button_label');
+      $root_values['startId'] = $start_branch[0]['target_id'];
+    }
+
+    $user = \Drupal::currentUser();
+    if ($node->access('update', $user)) {
+      $root_values['editLink'] = $node->toUrl('edit-form')->toString();
+    }
+
+    // Some branches and conclusions may not be placed in the decision tree yet,
+    // but all should know what tree they are in.
+    $allowed_bundles = ['decision_tree_branch', 'decision_tree_conclusion'];
+    $query = Drupal::entityQuery('node')
+      ->condition('type', $allowed_bundles, 'IN')
+      ->condition('field_decision_root_ref', $root_nid);
+    $descendant_ids = $query->execute();
+
+    // Find all descendants which are reachable from the root node.
+    /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
+    $descendant_manager = \Drupal::getContainer()->get('descendant_manager');
+    // This depth is arbitrarily set here to 20. If decision trees are created with a depth greater than 20, the
+    // nodes past 20 will be marked as orphans and have a message about not being reachable.
+    $direct_descendants = $descendant_manager->getChildrenFlat($root_nid, 20);
+
+    // Iterate through the tree's descendants and format them.
+    $steps = [];
+    foreach (Node::loadMultiple($descendant_ids) as $descendant_node) {
+
+      // Only iterate through proper nodes.
+      if (empty($descendant_node) || !($descendant_node instanceof Node)) {
+        continue;
+      }
+
+      // Default values for children.
+      $descendant = [
+        'id' => $descendant_node->id(),
+        'vid' => $descendant_node->get('vid')->getValue()[0]['value'],
+        'uid' => $descendant_node->getOwnerId(),
+        'name' => $descendant_node->getOwner()->getDisplayName(),
+        'status' => $descendant_node->get('status')->getValue()[0]['value'],
+        'langcode' => $descendant_node->get('langcode')->getValue()[0]['value'],
+        'created' => $descendant_node->get('created')->getValue()[0]['value'],
+        'text' => $descendant_node->getTitle(),
+        'details' => '',
+        'disclaimer' => '',
+        'moreInfo' => [],
+        'responses' => [],
+        'type' => $descendant_node->bundle() == 'decision_tree_conclusion' ? 'conclusion' : 'branch',
+      ];
+
+      if (Helper::isFieldPopulated($descendant_node, 'field_description')) {
+        // We have to render() this value explicitly since it does not pass
+        // through Twig.
+        $details = Helper::fieldFullView($descendant_node, 'field_description');
+        $descendant['details'] = render($details);
+      }
+
+      // Key actions on conclusions.
+      if (Helper::isFieldPopulated($descendant_node, 'field_decision_actions')) {
+        $actions = $descendant_node->get('field_decision_actions')->getValue();
+        foreach ($actions as $action) {
+          $item = [
+            'url' => Url::fromUri($action['uri'])->setAbsolute()->setOptions($action['options'])->toString(),
+          ];
+
+          // If a manual title was specified, always use it.
+          if (!empty($action['title'])) {
+            $item['text'] = $action['title'];
+          }
+          // As a last resort, use the URL as the button text.
+          else {
+            // Let's attempt to get the title from the uri first.
+            $params = Url::fromUri($action['uri'])->getRouteParameters();
+            $entity_type = key($params);
+            $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($params[$entity_type]);
+            $title = $entity->getTitle();
+
+            if ($title !== NULL) {
+              $item['text'] = $title;
+            }
+            else {
+              // Couldn't get that so we'll just set it to the url.
+              $item['text'] = $item['url'];
+            }
+          }
+
+          $descendant['actions'][] = $item;
+        }
+      }
+
+      if (Helper::isFieldPopulated($descendant_node, 'field_branch_disclaimer')) {
+        $descendant['disclaimer'] = Helper::fieldValue($descendant_node, 'field_branch_disclaimer');
+      }
+      if (Helper::isFieldPopulated($descendant_node, 'field_more_info')) {
+        $more_info = Helper::getReferencedEntitiesFromField($descendant_node, 'field_more_info');
+        $more_value = $more_info[0];
+        // We have to render() this value explicitly since it does not pass
+        // through Twig.
+        $details = Helper::fieldFullView($more_value, 'field_more_info_text');
+        $descendant['moreInfo'] = [
+          'title' => Helper::fieldValue($more_value, 'field_more_info_title'),
+          'details' => render($details),
+        ];
+      }
+
+      // Answers.
+      if (Helper::isFieldPopulated($descendant_node, 'field_answers')) {
+        $answers = Helper::getReferencedEntitiesFromField($descendant_node, 'field_answers');
+        $answer = $answers[0];
+        $choices = ['true', 'false'];
+        $responses = [];
+        foreach ($choices as $choice) {
+          $id = '';
+          $referenced_path = Helper::getReferencedEntitiesFromField($answer, "field_{$choice}_answer_path");
+          if (!empty($referenced_path)) {
+            $id = $referenced_path[0]->id();
+          }
+          $responses[] = [
+            'text' => Helper::fieldValue($answer, "field_{$choice}_answer_text"),
+            'explainer' => Helper::fieldValue($answer, "field_{$choice}_answer_explainer"),
+            'id' => $id,
+          ];
+        }
+        $descendant['responses'] = $responses;
+      }
+
+      if (Helper::isFieldPopulated($descendant_node, 'field_add_video')) {
+        $videos = Helper::getReferencedEntitiesFromField($descendant_node, 'field_add_video');
+        $video = $videos[0];
+        $descendant['video'] = Atoms::prepareVideo($video->field_video->entity, []);
+      }
+      if ($descendant_node->access('update', $user)) {
+        $descendant['editLink'] = $descendant_node->toUrl('edit-form')->toString();
+      }
+
+      // If this isn't a direct descendant, label it as an orphan.
+      if (array_search($descendant_node->id(), $direct_descendants) === FALSE) {
+        $descendant['orphan'] = TRUE;
+      }
+      $steps[$descendant_node->id()] = $descendant;
+    }
+
+    // Attach Decision Tree library and settings.
+    $variables['#attached']['library'][] = 'mass_decision_tree/mass_decision_tree';
+    $variables['#attached']['drupalSettings']['decisionTree'] = [
+      $root_nid => [
+        'root' => $root_values,
+        'steps' => $steps,
+      ],
+    ];
+
+    // Set static pageBanner properties to pass to prepare function.
+    $pageBanner_options = [
+      'size' => 'overlay',
+      'icon' => NULL,
+      'type' => NULL,
+      'color' => 'blue',
+    ];
+
+    // Make pageBanner data object available in twig template.
+    $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
+
+    // Prepare the option array for image widget.
+    $logo_options = [
+      'style' => NULL,
+      'height' => 90,
+      'width' => '',
+    ];
+    if ($logo = Atoms::prepareImage($node, $logo_options, 'field_campaign_logo')) {
+      $variables['logo'] = $logo;
+    }
+
+    if (Helper::isFieldPopulated($node, 'field_disclaimer')) {
+      $variables['disclaimer'] = Helper::fieldValue($node, 'field_disclaimer');
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Updating the help text for the title of
+ * Decision Tree, Branch, Conclusion edit pages.
+ */
+function mass_decision_tree_form_alter(&$form, &$form_state, $form_id) {
+  // Grab only decision tree edit forms.
+  if ($form_id == 'node_decision_tree_edit_form' || $form_id == 'node_decision_tree_form') {
+    // Set the help text for title.
+    $form['title']['widget'][0]['value']['#description'] = FieldFilteredMarkup::create('The title of your Decision Tree does not have to be a question, but it should describe what decision this Tree will help the user make. For example, “Determine your eligibility,” or “Choosing the correct content type.”');
+  }
+  elseif ($form_id == 'node_decision_tree_branch_edit_form' || $form_id == 'node_decision_tree_branch_form') {
+    $form['title']['widget'][0]['value']['#description'] = FieldFilteredMarkup::create('The question you are asking in this branch.');
+  }
+  elseif ($form_id == 'node_decision_tree_conclusion_edit_form' || $form_id == 'node_decision_tree_conclusion_form') {
+    $form['title']['widget'][0]['value']['#description'] = FieldFilteredMarkup::create('The title should state a definitive answer to the main question asked by the Decision Tree.');
+  }
+
+}

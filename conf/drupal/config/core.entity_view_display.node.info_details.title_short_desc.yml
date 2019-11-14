@@ -1,0 +1,64 @@
+uuid: 15c3ffc9-ab49-42c7-b68c-e412f383d0c4
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.title_short_desc
+    - field.field.node.info_details.field_contact
+    - field.field.node.info_details.field_footnotes
+    - field.field.node.info_details.field_image_credit
+    - field.field.node.info_details.field_info_details_date_publishe
+    - field.field.node.info_details.field_info_details_header_media
+    - field.field.node.info_details.field_info_details_last_updated
+    - field.field.node.info_details.field_info_details_related
+    - field.field.node.info_details.field_info_details_sections
+    - field.field.node.info_details.field_infodetails_metatags
+    - field.field.node.info_details.field_organizations
+    - field.field.node.info_details.field_reusable_label
+    - field.field.node.info_details.field_short_desc
+    - field.field.node.info_details.field_state_organization_tax
+    - node.type.info_details
+  module:
+    - user
+id: node.info_details.title_short_desc
+targetEntityType: node
+bundle: info_details
+mode: title_short_desc
+content:
+  extra_node_pager:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_short_desc:
+    type: basic_string
+    weight: 0
+    region: content
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  dm_ancestors_related_to: true
+  extra_org_feedback_form: true
+  extra_sidebar_contact: true
+  field_contact: true
+  field_footnotes: true
+  field_image_credit: true
+  field_info_details_date_publishe: true
+  field_info_details_header_media: true
+  field_info_details_last_updated: true
+  field_info_details_related: true
+  field_info_details_sections: true
+  field_infodetails_metatags: true
+  field_intended_audience: true
+  field_organizations: true
+  field_reusable_label: true
+  field_state_organization_tax: true
+  links: true
+  page_next: true
+  page_previous: true
+  referencing_binders: true
+  referencing_binders_page_flipper: true
+  workbench_moderation_control: true

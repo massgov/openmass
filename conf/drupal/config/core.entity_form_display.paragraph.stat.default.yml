@@ -1,0 +1,40 @@
+uuid: a907fa54-706b-4cf6-ba87-7c7163e0bda2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.stat.field_alignment
+    - field.field.paragraph.stat.field_description
+    - field.field.paragraph.stat.field_stat
+    - paragraphs.paragraphs_type.stat
+id: paragraph.stat.default
+targetEntityType: paragraph
+bundle: stat
+mode: default
+content:
+  field_alignment:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_description:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_stat:
+    weight: 0
+    settings:
+      size: 10
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

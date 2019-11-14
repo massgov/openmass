@@ -1,0 +1,23 @@
+uuid: 41175098-3edc-434a-8432-1242470c9280
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_number_of_news_items
+    - node.type.org_page
+  module:
+    - options
+id: node.org_page.field_number_of_news_items
+field_name: field_number_of_news_items
+entity_type: node
+bundle: org_page
+label: 'Automatic news items'
+description: 'Choose the number of automatic news items to appear on this page. The automatic list is populated with the news items where this organization is a Signee.'
+required: false
+translatable: false
+default_value:
+  -
+    value: '3'
+default_value_callback: ''
+settings: {  }
+field_type: list_string

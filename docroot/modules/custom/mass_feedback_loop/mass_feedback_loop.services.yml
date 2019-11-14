@@ -1,0 +1,14 @@
+services:
+  mass_feedback_loop.content_fetcher:
+    class: Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher
+    arguments:
+      - '@current_user'
+      - '@database'
+      - '@settings'
+      - '@config.factory'
+      - '@http_client_factory'
+      - '@logger.channel.mass_feedback_loop'
+      - '@entity_type.manager'
+  logger.channel.mass_feedback_loop:
+      parent: logger.channel_base
+      arguments: ['mass_feedback_loop']

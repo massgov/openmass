@@ -1,0 +1,42 @@
+uuid: b6db75dd-5f84-4b2b-9302-0b8bcf4da45b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.stat.field_alignment
+    - field.field.paragraph.stat.field_description
+    - field.field.paragraph.stat.field_stat
+    - paragraphs.paragraphs_type.stat
+  module:
+    - options
+id: paragraph.stat.default
+targetEntityType: paragraph
+bundle: stat
+mode: default
+content:
+  field_alignment:
+    weight: 2
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_key
+    region: content
+  field_description:
+    weight: 1
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_stat:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  created: true
+  uid: true

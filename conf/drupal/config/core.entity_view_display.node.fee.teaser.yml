@@ -1,0 +1,36 @@
+uuid: fa3ef44e-c6e3-4a5a-adc7-9691293279f4
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.fee.field_fee_fee
+    - field.field.node.fee.field_fee_name
+    - field.field.node.fee.field_fee_unit
+    - field.field.node.fee.field_organizations
+    - field.field.node.fee.field_state_organization_tax
+    - node.type.fee
+  module:
+    - user
+id: node.fee.teaser
+targetEntityType: node
+bundle: fee
+mode: teaser
+content:
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  content_moderation_control: true
+  field_fee_fee: true
+  field_fee_name: true
+  field_fee_unit: true
+  field_organizations: true
+  field_state_organization_tax: true

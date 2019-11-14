@@ -1,0 +1,81 @@
+uuid: 3d0c8cf6-ce8a-487f-b27b-9510eea79acd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_action_header
+    - node.type.action
+    - paragraphs.paragraphs_type.contact_group
+  module:
+    - entity_reference_revisions
+id: node.action.field_action_header
+field_name: field_action_header
+entity_type: node
+bundle: action
+label: 'Detailed Header Information'
+description: 'Use this area to add contact information, slideshows, and maps to the extended header.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      contact_group: contact_group
+    target_bundles_drag_drop:
+      action_area:
+        weight: 18
+        enabled: false
+      action_step:
+        weight: 19
+        enabled: false
+      action_step_numbered:
+        weight: 20
+        enabled: false
+      action_step_numbered_list:
+        weight: 21
+        enabled: false
+      callout_link:
+        weight: 22
+        enabled: false
+      contact:
+        weight: 23
+        enabled: false
+      file_download:
+        weight: 24
+        enabled: false
+      full_bleed:
+        weight: 25
+        enabled: false
+      iframe:
+        weight: 26
+        enabled: false
+      location_information:
+        weight: 27
+        enabled: false
+      rich_text:
+        weight: 28
+        enabled: false
+      contact_group:
+        enabled: true
+        weight: 29
+      stat:
+        weight: 29
+        enabled: false
+      subhead:
+        weight: 30
+        enabled: false
+      slideshow:
+        weight: 30
+        enabled: false
+      contact_info:
+        weight: 30
+        enabled: false
+      icon:
+        weight: 33
+        enabled: false
+      video:
+        weight: -37
+        enabled: false
+field_type: entity_reference_revisions

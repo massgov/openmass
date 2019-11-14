@@ -1,0 +1,98 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a paragraph.
+ *
+ * Available variables:
+ * - paragraph: Full paragraph entity.
+ *   - id: The paragraph ID.
+ *   - bundle: The type of the paragraph, for example, 'image' or 'text'.
+ *   - authorid: The user ID of the paragraph author.
+ *   - createdtime: Formatted creation date. Preprocess functions can
+ *     reformat it by calling format_date() with the desired parameters on
+ *     $variables['paragraph']->getCreatedTime().
+ * - content: All paragraph items. Use {{ content }} to print them all,
+ *   or print a subset such as {{ content.field_example }}. Use
+ *   {{ content|without('field_example') }} to temporarily suppress the printing
+ *   of a given child element.
+ * - attributes: HTML attributes for the containing element.
+ *   The attributes.class element may contain one or more of the following
+ *   classes:
+ *   - paragraphs: The current template type (also known as a 'theming hook').
+ *   - paragraphs--type-[type]: The current paragraphs type. For example, if the paragraph is an
+ *     'Image' it would result in 'paragraphs--type--image'. Note that the machine
+ *     name will often be in a short form of the human readable label.
+ *   - paragraphs--view-mode--[view_mode]: The View Mode of the paragraph; for example, a
+ *     preview would result in: 'paragraphs--view-mode--preview', and
+ *     default: 'paragraphs--view-mode--default'.
+ * - view_mode: View mode; for example, 'preview' or 'full'.
+ * - logged_in: Flag for authenticated user status. Will be true when the
+ *   current user is a logged-in member.
+ * - is_admin: Flag for admin user status. Will be true when the current user
+ *   is an administrator.
+ *
+ * @see template_preprocess_paragraph()
+ *
+ * @ingroup themeable
+ */
+#}
+{% if layout == 'topicCards' %}
+  <div class='ma__sections-3up__container'>
+  {% for item in items %}
+    {%
+    set sectionLinks = {
+      'catIcon': {
+        'icon':item.icon,
+        'small':'true'
+      },
+      'title':  {
+      'href': item.node_path,
+      'text': item.label
+      },
+      'description': item.field_lede.value,
+      'links': item.links,
+    }
+    %}
+    {% include '@molecules/section-links.twig' with sectionLinks %}
+  {% endfor %}
+  </div>
+{% endif %}
+{% if layout == 'actionCards' %}
+  <section class="ma__key-actions">
+    <div class="ma__key-actions__container">
+      <div class='ma__key-actions__items'>
+        {% for item in items %}
+          {# We need handling for either actions or guides here. #}
+          {% if item.getType() == 'stacked_layout' %}
+            {%
+            set illustratedLink = {
+              'text': item.label,
+              'type': item.field_label,
+              'href': item.node_path,
+              'image': file_url(item.field_photo.entity.fileuri),
+              'label': item.label_text
+            }
+            %}
+            {% include "@molecules/illustrated-link.twig" with illustratedLink %}
+          {% else %}
+            {%
+              set calloutLink = {
+                'text': item.label,
+                'type':'',
+                'href': item.node_path
+              }
+            %}
+            {% include '@molecules/callout-link.twig' with calloutLink %}
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+{% endif %}
+{% if layout != 'topicCards' and layout != 'actionCards' %}
+  <section class="ma__link-list">
+    <div class="ma__link-list__container">
+      {{ content }}
+    </div>
+  </section>
+{% endif %}

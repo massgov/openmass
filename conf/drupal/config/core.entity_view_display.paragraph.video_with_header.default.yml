@@ -1,0 +1,50 @@
+uuid: 0f41be14-b0e6-45e6-932e-e4fdde1ace07
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.video_with_header.field_campaign_description
+    - field.field.paragraph.video_with_header.field_main_heading
+    - field.field.paragraph.video_with_header.field_video
+    - field.field.paragraph.video_with_header.field_video_header_bg_color
+    - paragraphs.paragraphs_type.video_with_header
+  module:
+    - options
+    - text
+id: paragraph.video_with_header.default
+targetEntityType: paragraph
+bundle: video_with_header
+mode: default
+content:
+  field_campaign_description:
+    weight: 3
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_main_heading:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_video:
+    weight: 2
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_video_header_bg_color:
+    weight: 4
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_key
+    region: content
+hidden:
+  paragraphs_type_help__default: true

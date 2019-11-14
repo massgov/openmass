@@ -1,0 +1,37 @@
+{#
+/**
+ * @file
+ * Partial for page header. To be included at the node template level.
+ */
+#}
+{% if content.field_header_cta|render|trim is not empty %}
+  {% set widgetsClass = "ma__page-header--has-widgets" %}
+{% endif %}
+
+<section class="ma__page-header {{ widgetsClass }}">
+  <div class="ma__page-header__content">
+    <h1 class="ma__page-header__title">{{label}}</h1>
+    {% if content.field_lede|render|trim %}
+      <h4 class="ma__page-header__sub-title">
+        {{ content.field_lede|field_value }}
+      </h4>
+    {% endif %}
+    {% if content.field_action_header|render|trim is not empty %}
+      <div class="ma__page-header__optional-content">
+        {{ content.field_action_header|field_value }}
+      </div>
+    {% endif %}
+  </div>
+  {% if content.field_header_cta|render|trim is not empty %}
+    <div class="ma__page-header__widgets">
+      {{ content.field_header_cta|field_value }}
+    </div>
+  {% endif %}
+  {% if actionHeader.divider %}
+    <div class="ma__page-header__divider">
+      {% include "@atoms/divider.twig" %}
+    </div>
+  {% endif %}
+</section>
+
+{# ma__page-header__widgets #}

@@ -1,0 +1,34 @@
+uuid: fe05c06a-a56e-41dd-a6c8-edba1d2087cb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.start_button.field_start_button_branch
+    - field.field.paragraph.start_button.field_start_button_label
+    - paragraphs.paragraphs_type.start_button
+id: paragraph.start_button.default
+targetEntityType: paragraph
+bundle: start_button
+mode: default
+content:
+  field_start_button_branch:
+    weight: 7
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_start_button_label:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

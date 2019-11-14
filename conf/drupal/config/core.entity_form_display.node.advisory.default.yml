@@ -1,0 +1,334 @@
+uuid: 82e18f57-4113-431d-a5f3-13248e23b9be
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.advisory.field_advisory_date
+    - field.field.node.advisory.field_advisory_download
+    - field.field.node.advisory.field_advisory_footnotes
+    - field.field.node.advisory.field_advisory_issuer
+    - field.field.node.advisory.field_advisory_links
+    - field.field.node.advisory.field_advisory_listing_desc
+    - field.field.node.advisory.field_advisory_metatags
+    - field.field.node.advisory.field_advisory_overview
+    - field.field.node.advisory.field_advisory_publish_state_tax
+    - field.field.node.advisory.field_advisory_ref_contact
+    - field.field.node.advisory.field_advisory_ref_sources
+    - field.field.node.advisory.field_advisory_section
+    - field.field.node.advisory.field_advisory_type_tax
+    - field.field.node.advisory.field_intended_audience
+    - field.field.node.advisory.field_organizations
+    - field.field.node.advisory.field_reusable_label
+    - field.field.node.advisory.field_state_organization_tax
+    - node.type.advisory
+    - workflows.workflow.editorial
+  module:
+    - content_moderation
+    - datetime
+    - entity_browser_entity_form
+    - field_group
+    - inline_entity_form
+    - link
+    - mass_validation
+    - metatag
+    - paragraphs
+    - scheduler
+    - scheduler_content_moderation_integration
+    - text
+third_party_settings:
+  field_group:
+    group_advisory_page_edit_form:
+      children:
+        - group_advisory_overview
+        - group_advisory_sections
+        - group_advisory_related
+      parent_name: ''
+      weight: 0
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Advisory Page Edit Form'
+    group_advisory_overview:
+      children:
+        - title
+        - field_advisory_type_tax
+        - field_advisory_publish_state_tax
+        - field_advisory_date
+        - group_issuer
+        - field_advisory_ref_sources
+        - field_advisory_overview
+        - field_advisory_listing_desc
+        - field_reusable_label
+        - field_organizations
+        - field_intended_audience
+      parent_name: group_advisory_page_edit_form
+      weight: 12
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: true
+      label: Overview
+    group_advisory_sections:
+      children:
+        - field_advisory_section
+        - field_advisory_footnotes
+        - field_advisory_download
+      parent_name: group_advisory_page_edit_form
+      weight: 13
+      format_type: tab
+      format_settings:
+        label: Details
+        formatter: closed
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+      label: Details
+    group_advisory_related:
+      children:
+        - field_advisory_ref_contact
+        - field_advisory_links
+      parent_name: group_advisory_page_edit_form
+      weight: 14
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Related
+    group_issuer:
+      children:
+        - field_advisory_issuer
+      parent_name: group_advisory_overview
+      weight: 11
+      format_type: fieldset
+      format_settings:
+        label: '  '
+        description: ''
+        id: ''
+        classes: ''
+        required_fields: false
+      label: '  '
+id: node.advisory.default
+targetEntityType: node
+bundle: advisory
+mode: default
+content:
+  field_advisory_date:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_advisory_download:
+    weight: 36
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+      collapsible: false
+      collapsed: false
+      allow_duplicate: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: media_browser
+    type: inline_entity_form_complex
+    region: content
+  field_advisory_footnotes:
+    weight: 35
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_advisory_issuer:
+    type: entity_reference_paragraphs
+    weight: 4
+    settings:
+      title: Issuer
+      title_plural: Issuers
+      edit_mode: closed
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_advisory_links:
+    weight: 32
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_advisory_listing_desc:
+    weight: 14
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_advisory_metatags:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_advisory_overview:
+    weight: 13
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_advisory_publish_state_tax:
+    weight: 9
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_advisory_ref_contact:
+    weight: 31
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_advisory_ref_sources:
+    weight: 12
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - contact_information
+          - fee
+          - legacy_redirects
+    type: link_default
+    region: content
+  field_advisory_section:
+    type: entity_reference_paragraphs
+    weight: 34
+    settings:
+      title: Section
+      title_plural: Sections
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_advisory_type_tax:
+    weight: 8
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_intended_audience:
+    weight: 17
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_organizations:
+    weight: 16
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_reusable_label:
+    weight: 15
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_state_organization_tax:
+    weight: 37
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 100
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 20
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 7
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 1
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

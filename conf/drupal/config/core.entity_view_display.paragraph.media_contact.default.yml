@@ -1,0 +1,47 @@
+uuid: c5f123a4-ee75-400a-bb97-960df2e4cb45
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.media_contact.field_media_contact_email
+    - field.field.paragraph.media_contact.field_media_contact_name
+    - field.field.paragraph.media_contact.field_media_contact_phone
+    - field.field.paragraph.media_contact.field_media_contact_ref_person
+    - paragraphs.paragraphs_type.media_contact
+id: paragraph.media_contact.default
+targetEntityType: paragraph
+bundle: media_contact
+mode: default
+content:
+  field_media_contact_email:
+    weight: 4
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_media_contact_name:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_media_contact_phone:
+    weight: 3
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_media_contact_ref_person:
+    weight: 1
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+hidden: {  }

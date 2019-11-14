@@ -1,0 +1,68 @@
+uuid: 071e56a1-d5c0-455f-89c4-3a4e6e979aaf
+langcode: en
+status: true
+dependencies:
+  module:
+    - editor
+    - entity_embed
+    - mass_fields
+    - pathologic
+name: 'Rules of Court Section'
+format: rules_of_court_section
+weight: 0
+filters:
+  editor_file_reference:
+    id: editor_file_reference
+    provider: editor
+    status: true
+    weight: 11
+    settings: {  }
+  entity_embed:
+    id: entity_embed
+    provider: entity_embed
+    status: true
+    weight: 0
+    settings: {  }
+  filter_html:
+    id: filter_html
+    provider: filter
+    status: true
+    weight: -10
+    settings:
+      allowed_html: '<a href hreflang> <sup> <sub> <em> <strong> <cite> <blockquote cite> <code> <ul type class> <ol start type> <li> <dl> <dt> <dd> <h2 id> <h3 id> <h4 id> <h5 id> <h6 id> <p> <br> <span> <img src alt height width data-entity-type data-entity-uuid data-align data-caption> <table> <caption> <tbody> <thead> <tfoot> <th> <td> <tr> <drupal-entity data-entity-type data-entity-uuid data-entity-embed-display data-entity-embed-display-settings data-align data-caption data-embed-button title alt>'
+      filter_html_help: true
+      filter_html_nofollow: false
+  filter_align:
+    id: filter_align
+    provider: filter
+    status: true
+    weight: 7
+    settings: {  }
+  filter_caption:
+    id: filter_caption
+    provider: filter
+    status: true
+    weight: 8
+    settings: {  }
+  filter_richtext_indent:
+    id: filter_richtext_indent
+    provider: mass_fields
+    status: true
+    weight: -1
+    settings: {  }
+  filter_pathologic:
+    id: filter_pathologic
+    provider: pathologic
+    status: true
+    weight: 50
+    settings:
+      settings_source: global
+      local_settings:
+        protocol_style: full
+        local_paths: ''
+  filter_richtext:
+    id: filter_richtext
+    provider: mass_fields
+    status: true
+    weight: 0
+    settings: {  }

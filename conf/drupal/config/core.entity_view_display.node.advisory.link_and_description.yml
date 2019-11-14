@@ -1,0 +1,69 @@
+uuid: 860ba2de-c170-4752-8c52-534a286a20cb
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.link_and_description
+    - field.field.node.advisory.field_advisory_date
+    - field.field.node.advisory.field_advisory_download
+    - field.field.node.advisory.field_advisory_footnotes
+    - field.field.node.advisory.field_advisory_issuer
+    - field.field.node.advisory.field_advisory_links
+    - field.field.node.advisory.field_advisory_listing_desc
+    - field.field.node.advisory.field_advisory_metatags
+    - field.field.node.advisory.field_advisory_overview
+    - field.field.node.advisory.field_advisory_publish_state_tax
+    - field.field.node.advisory.field_advisory_ref_contact
+    - field.field.node.advisory.field_advisory_ref_sources
+    - field.field.node.advisory.field_advisory_section
+    - field.field.node.advisory.field_advisory_type_tax
+    - field.field.node.advisory.field_organizations
+    - field.field.node.advisory.field_reusable_label
+    - field.field.node.advisory.field_state_organization_tax
+    - node.type.advisory
+  module:
+    - user
+id: node.advisory.link_and_description
+targetEntityType: node
+bundle: advisory
+mode: link_and_description
+content:
+  extra_node_pager:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_advisory_listing_desc:
+    type: string
+    weight: 0
+    region: content
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  field_advisory_date: true
+  field_advisory_download: true
+  field_advisory_footnotes: true
+  field_advisory_issuer: true
+  field_advisory_links: true
+  field_advisory_metatags: true
+  field_advisory_overview: true
+  field_advisory_publish_state_tax: true
+  field_advisory_ref_contact: true
+  field_advisory_ref_sources: true
+  field_advisory_section: true
+  field_advisory_type_tax: true
+  field_intended_audience: true
+  field_organizations: true
+  field_reusable_label: true
+  field_state_organization_tax: true
+  links: true
+  page_next: true
+  page_previous: true
+  referencing_binders: true
+  referencing_binders_page_flipper: true
+  workbench_moderation_control: true

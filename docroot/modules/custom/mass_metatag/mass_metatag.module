@@ -1,0 +1,574 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_metatag.module.
+ */
+
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\mayflower\Helper;
+use Drupal\Core\Field\FieldItemList;
+use Drupal\link\LinkItemInterface;
+use Drupal\user\Entity\User;
+use Drupal\node\NodeInterface;
+use Drupal\node\Entity\Node;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Path;
+
+/**
+ * Implements hook_token_info().
+ */
+function mass_metatag_token_info() {
+  $info['tokens']['node']['dm_organizations'] = [
+    'name' => t('Related organization pages'),
+    'description' => t("The organization pages related to the current node."),
+    'type' => 'node',
+  ];
+  $info['tokens']['node']['mass_external_organizations'] = [
+    'name' => t('Related external organizations'),
+    'description' => t("The external organizations related to the current node."),
+    'type' => 'node',
+  ];
+  $info['tokens']['node']['mass_organizations'] = [
+    'name' => t('Related organizations'),
+    'description' => t('The organizations related to the current node.'),
+    'type' => 'node',
+  ];
+  $info['tokens']['node']['dm_services'] = [
+    'name' => t('Related service pages'),
+    'description' => t("The service pages related to the current node."),
+    'type' => 'node',
+  ];
+  $info['tokens']['node']['dm_topics'] = [
+    'name' => t('Related topic pages'),
+    'description' => t("The topic pages related to the current node."),
+    'type' => 'node',
+  ];
+  $info['tokens']['node']['dm_locations'] = [
+    'name' => t('Related location pages'),
+    'description' => t("The location pages related to the current node."),
+    'type' => 'node',
+  ];
+  $info['tokens']['string']['mass_urlencode'] = [
+    'name' => t('urlencode a string'),
+    'description' => t("Run a string through the urlencode function."),
+  ];
+  $info['tokens']['paragraph']['mass_jsonify_links'] = [
+    'name' => t('jsonify links'),
+    'description' => t("Create a JSON representation of a set of links contained within paragraphs."),
+  ];
+
+  return $info;
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function mass_metatag_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+  if ($type == 'node') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'dm_organizations':
+          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
+          $descendant_manager = \Drupal::service('descendant_manager');
+          $org_ids = $descendant_manager->getOrganizations($data['node']->id());
+          $organizations = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($org_ids);
+          foreach ($organizations as $organization) {
+            $values[] = [
+              'name' => $organization->getTitle(),
+              'url' => $organization->toUrl('canonical', ['absolute' => TRUE])
+                ->toString(),
+            ];
+            $replacements[$original] = json_encode($values);
+          }
+          break;
+
+        case 'dm_services':
+          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
+          $descendant_manager = \Drupal::service('descendant_manager');
+          $service_ids = $descendant_manager->getServices($data['node']->id());
+          $services = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($service_ids);
+          foreach ($services as $service) {
+            $values[] = [
+              'name' => $service->getTitle(),
+              'url' => $service->toUrl('canonical', ['absolute' => TRUE])
+                ->toString(),
+            ];
+            $replacements[$original] = json_encode($values);
+          }
+          break;
+
+        case 'dm_topics':
+          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
+          $descendant_manager = \Drupal::service('descendant_manager');
+          $topics_array = $descendant_manager->getTopics($data['node']->id());
+          // Collect all topic ids so we can batch load them.
+          $topic_ids = array_reduce($topics_array, function ($ids, $level_ids) {
+            return array_merge($ids, $level_ids);
+          }, []);
+          $topics = \Drupal::entityTypeManager()
+            ->getStorage('node')
+            ->loadMultiple($topic_ids);
+          foreach ($topics as $topic) {
+            $values[] = [
+              'name' => $topic->label(),
+              'url' => $topic->toUrl('canonical', ['absolute' => TRUE])->toString(),
+            ];
+            $replacements[$original] = json_encode($values);
+          }
+          break;
+
+        case 'dm_locations':
+          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
+          $descendant_manager = \Drupal::service('descendant_manager');
+          $ancestors_array = $descendant_manager->getParents($data['node']->id());
+          // Flatten the multilevel ancestors array by merging each set. This
+          // produces a single array ordered by level.
+          $ancestors_flat = array_reduce($ancestors_array, function ($flattened, $set) {
+            return array_merge($flattened, $set);
+          }, []);
+          // Filter to only locations, then grab the 'id' from each.
+          $location_ids = array_column(array_filter($ancestors_flat, function ($record) {
+            return $record['type'] === 'location';
+          }), 'id');
+          $locations = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($location_ids);
+          foreach ($locations as $location) {
+            $values[] = [
+              'name' => $location->label(),
+              'url' => $location->toUrl('canonical', ['absolute' => TRUE])->toString(),
+            ];
+            $replacements[$original] = json_encode($values);
+          }
+          break;
+
+        case 'dm_child_locations':
+          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
+          $descendant_manager = \Drupal::service('descendant_manager');
+          $descendants_array = $descendant_manager->getChildrenTree($data['node']->id(), 1);
+          $direct_location_descendants = array_filter($descendants_array, function ($descendant) {
+            return $descendant['type'] === 'location';
+          });
+          // If there are child locations, link to the Locations listing page.
+          if (count($direct_location_descendants)) {
+            $org_name = $data['node']->label();
+            $values[] = [
+              'name' => t('@org_name Locations', ['@org_name' => $org_name]),
+              'url' => $data['node']->toUrl('canonical', ['absolute' => TRUE])
+                ->toString() . '/locations',
+            ];
+            $replacements[$original] = json_encode($values);
+          }
+          break;
+
+        case 'mass_external_organizations':
+          /** @var \Drupal\Core\Entity\EntityFieldManager $entity_field_manager */
+          $entity_field_manager = \Drupal::service('entity_field.manager');
+          $fields = $entity_field_manager->getFieldDefinitions('node', $data['node']->getType());
+          foreach ($fields as $field_name => $field) {
+            if ($field->getType() == 'entity_reference_revisions' && $field->getSettings()['target_type'] == 'paragraph') {
+              $handler_settings = $field->getSetting('handler_settings');
+              // If the field targets 'external_organization' paragraphs, get
+              // the name value.
+              if (!empty($handler_settings['target_bundles']['external_organization'])) {
+                foreach ($data['node']->get($field_name) as $item) {
+                  if ($item->entity->hasField('field_external_org_name')) {
+                    $values[] = $item->entity->field_external_org_name->value;
+                    $replacements[$original] = json_encode($values);
+                  }
+                }
+              }
+            }
+          }
+          break;
+
+        case 'mass_organizations':
+          /** @var \Drupal\mass_metatag\Service\MassMetatagUtilities $metatag_utils */
+          $metatag_utils = \Drupal::service('mass_metatag.utilities');
+          $org_names = $metatag_utils->getAllOrgsFromNode($data['node']);
+
+          // Remove hyphens from organizations.
+          foreach ($org_names as $key => $value) {
+            $org_names[$key] = str_replace("-", "", $value);
+          }
+
+          // Separate the organizations with a comma.
+          $replacements[$original] = implode(',', $org_names);
+          break;
+      }
+    }
+  }
+
+  if (array_key_exists('mass_urlencode', $tokens)) {
+    foreach ($data as $field) {
+      if ($field instanceof FieldItemList) {
+        $replacements[$tokens['mass_urlencode']] = urlencode(Helper::formatAddress($field));
+      }
+    }
+  }
+  if (array_key_exists('mass_jsonify_links', $tokens)) {
+    $values = [];
+    foreach ($data as $field) {
+      if ($field instanceof FieldItemList) {
+
+        // Each item should be a paragraph. The link data is stored differently
+        // for each type of paragraph.
+        foreach ($field as $item) {
+          $paragraph = $item->entity;
+          switch ($paragraph->bundle()) {
+            case 'links':
+              foreach ($paragraph->field_link_single as $link) {
+                if ($link instanceof LinkItemInterface) {
+                  $url = $link->getUrl()->setAbsolute();
+                  $name = $link->computed_title;
+                  // Sometimes the computed_title is a render array, the output
+                  // must be a string.
+                  if (!is_string($name) && isset($name['#markup'])) {
+                    $name = $name['#markup'];
+                  }
+                  if (empty($name) || !is_string($name)) {
+                    if ($entity = Helper::entityFromUrl($url)) {
+                      $name = $entity->label();
+                    }
+                    else {
+                      $name = $url->toString();
+                    }
+                  }
+                  $values[] = [
+                    'name' => $name,
+                    'url' => $url->toString(),
+                  ];
+                }
+              }
+              break;
+
+            case 'online_email':
+              $email = $paragraph->field_email->value;
+              $values[] = ['name' => $email, 'url' => $email];
+              break;
+          }
+        }
+      }
+    }
+
+    $replacements[$tokens['mass_jsonify_links']] = json_encode($values);
+  }
+  return $replacements;
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function mass_metatag_page_attachments(array &$attachments) {
+  // We proceed to add metatags "mg_backend_user_id" and "mg_backend_user_org"
+  // only if the current user is a logged in user of our product, and the
+  // admin theme is active (which could be both admin routes, and non-frontend
+  // non-admin routes.
+
+  if (\Drupal::currentUser()->isAuthenticated() && \Drupal::service('theme.manager')->getActiveTheme()->getName() == 'mass_admin_theme') {
+    $user = Drupal::currentUser();
+    $user_entity = User::load($user->id());
+    $field_name = 'field_user_org';
+    if ($user_entity->hasField($field_name)) {
+      $referenced_entities = $user_entity->get($field_name)->referencedEntities();
+      if (count($referenced_entities) == 1) {
+        $user_org_term = array_pop($referenced_entities);
+        $slugified_user_org = _mass_metatag_slugify(trim($user_org_term->getName()));
+      }
+    }
+
+    // We directly put together the render arrays that create
+    // "mg_backend_user_id" and "mg_backend_user_org" metatags, instead of -
+    // - Creating metatags config entities like so
+    //   Link: https://github.com/massgov/mass/blob/60a45018c31d9450d25a73c7f70f10bbbb2a7eb1/docroot/modules/custom/mass_metatag/src/Plugin/metatag/Tag/MassMetatagStakeholderOrg.php.
+    // - And then setting their values here
+    //   Link: http://mass.local/admin/config/search/metatag
+    // Because when we tried that solution approach
+    // - Extra work was needed to show those on admin pages at all,
+    //   or admin pages only because of how metatag module is designed.
+    // - And after we did that work, dynamic cacheability would break
+    //   Link: https://circleci.com/gh/massgov/mass/24841.
+
+    $user_metatag_render_array = [
+      [
+        "#tag" => "meta",
+        "#attributes" => [
+          "name" => "mg_backend_user_id",
+          "content" => $user->id(),
+        ]
+      ],
+      "mg_backend_user_id"
+    ];
+
+    $user_org_metatag_render_array = [
+      [
+        "#tag" => "meta",
+        "#attributes" => [
+          "name" => "mg_backend_user_org",
+          "content" => isset($slugified_user_org) ? $slugified_user_org : "user-org-not-set",
+        ]
+      ],
+      "mg_backend_user_org"
+    ];
+
+    $attachments['#attached']['html_head'][] = $user_metatag_render_array;
+    $attachments['#attached']['html_head'][] = $user_org_metatag_render_array;
+  }
+
+  // Set robots "noindex, follow" on these overflow pages.
+  $paths = [
+    'need-to-know',
+    'tasks',
+    'related',
+    'resources',
+  ];
+
+  // Convert the array into a regex pattern for matching.
+  $patterns_flattened = implode('|', $paths);
+  $current_uri = \Drupal::request()->getRequestUri();
+
+  // URI has more than 1 segment and its ending matches one of the paths.
+  if ((preg_match("/\/$patterns_flattened$/", $current_uri) === 1) && substr_count($current_uri, '/') > 1) {
+    $noindex = [
+      '#tag' => 'meta',
+      '#attributes' => [
+        'name' => 'robots',
+        'content' => 'noindex, follow',
+      ],
+    ];
+    $attachments['#attached']['html_head'][] = [$noindex, 'noindex'];
+  }
+}
+
+/**
+ * Implements hook_datalayer_meta().
+ *
+ * Add entityField_organizations to dataLayer.
+ */
+function mass_metatag_datalayer_meta() {
+  return [
+    'field_organizations'
+  ];
+}
+
+/**
+ * Implements hook_datalayer_meta_alter().
+ *
+ * Change the output of entityField_organizations to include title.
+ */
+function mass_metatag_datalayer_alter(&$data_layer) {
+  if (isset($data_layer['entityField_organizations'])) {
+    $ids = explode(', ', $data_layer['entityField_organizations']);
+    $organizations = [];
+    foreach ($ids as $id) {
+      if ($node = Node::load($id)) {
+        $organizations[$id] = $node->getTitle();
+      }
+    }
+    $data_layer['entityField_organizations'] = $organizations;
+  }
+}
+
+/**
+ * Slugifies a string by making it lowercase and separating words with hyphens.
+ *
+ * @param string $string
+ *   The string to slugify.
+ *
+ * @return string
+ *   A slugified version of the string.
+ */
+function _mass_metatag_slugify($string) {
+  // Replace one or more consecutive whitespace characters with a hyphen.
+  $without_whitespace = preg_replace('/[\s_]+/', '-', $string);
+
+  // Lowercase and remove characters which aren't alphanumeric or hyphens.
+  return preg_replace('/[^a-z\d-]/', '', strtolower($without_whitespace));
+}
+
+/**
+ * Formats the address string for any address metatags.
+ *
+ * @param array $address
+ *   Address data in the field.
+ *
+ * @return string
+ *   Formatted string.
+ */
+function _mass_metatag_address_format(array $address) {
+
+  try {
+    // Compute the streetAddress value by combining line1 and line2.
+    $address_string = $address['address_line1'];
+    if (!empty($address['address_line2'])) {
+      $address_string .= ' ' . $address['address_line2'];
+    }
+
+    $address_string .= ' ' .
+      (!empty($address['locality']) ? $address['locality'] . ' ' : '') .
+      (!empty($address['administrative_area']) ? $address['administrative_area'] . ' ' : '') .
+      (!empty($address['postal_code']) ? $address['postal_code'] : '');
+  }
+  catch (\Exception $e) {
+    $address_string = '';
+  }
+
+  return $address_string;
+}
+
+/**
+ * Gets address data from event nodes.
+ *
+ * For Event nodes, pull information from 'Unique Address' field or address
+ * from Contact Information.
+ *
+ * @param \Drupal\node\NodeInterface $node
+ *   Node to test.
+ *
+ * @return array
+ *   Address data or empty array.
+ */
+function _mass_metatag_addresses(NodeInterface $node) {
+
+  $addresses = [];
+  $field_ref = NULL;
+
+  $address_type = $node->get('field_event_address_type')->value;
+  try {
+    switch ($address_type) {
+      // Unique entered address in the address paragraph.
+      case 'unique':
+        $ref = $node->get('field_event_ref_unique_address')->entity;
+        if ($ref) {
+          $field_ref = $ref->get('field_address_address');
+        }
+        break;
+
+      // Address is a Contact Info entity, which has an address paragraph.
+      case 'contact info':
+        // Get contact info reference.
+        $contact_ref = $node->get('field_event_ref_contact')->entity;
+        if ($contact_ref) {
+          $address_ref = $contact_ref->get('field_ref_address')->entity;
+          if ($address_ref) {
+            $field_ref = $address_ref->get('field_address_address');
+          }
+        }
+        break;
+
+      // No address is present so we do nothing.
+      default:
+
+    }
+    if ($field_ref) {
+      $addresses = $field_ref->getValue();
+    }
+  }
+  catch (\Exception $exception) {
+    // No action needed.
+  }
+  return $addresses;
+
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function mass_metatag_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // List of nodes with the metatag field.
+  $metatags_labels = [
+    'advisory' => 'field_advisory_metatags',
+    'page' => 'field_metatags',
+    'binder' => 'field_binder_metatags',
+    'campaign_landing' => 'field_campaign_landing_metatags',
+    'curated_list' => 'field_curatedlist_metatags',
+    'decision' => 'field_decision_metatags',
+    'decision_tree' => 'field_decision_tree_metatags',
+    'event' => 'field_event_metatags',
+    'executive_order' => 'field_executive_order_metatags',
+    'form_page' => 'field_metatags',
+    'guide_page' => 'field_guide_page_metatags',
+    'how_to_page' => 'field_how_to_metatags',
+    'info_details' => 'field_infodetails_metatags',
+    'location' => 'field_location_metatags',
+    'location_details' => 'field_location_details_metatags',
+    'news' => 'field_news_metatags',
+    'org_page' => 'field_metatags',
+    'regulation' => 'field_regulation_metatags',
+    'action' => 'field_metatags',
+    'rules' => 'field_rules_metatags',
+    'service_page' => 'field_service_metatags',
+    'service_details' => 'field_service_detail_metatags',
+    'topic_page' => 'field_topic_metatags'
+  ];
+
+  // Hide the following metatags from the advanced section.
+  $subsection_advanced = [
+    'geo_placename',
+    'geo_position',
+    'geo_region',
+    'icbm',
+    'canonical_url',
+    'content_language',
+    'shortlink',
+    'news_keywords',
+    'standout',
+    'generator',
+    'image_src',
+    'original_source',
+    'google',
+    'referrer',
+    'rights',
+    'set_cookie',
+  ];
+
+  // Find the node that the metatag field is being used.
+  $node = $form_state->getFormObject()->getEntity();
+  $content_type = $node->getType();
+
+  // Remove the sub-sections from the Metatags - Advanced group.
+  if (isset($metatags_labels[$content_type])) {
+    foreach ($subsection_advanced as $item) {
+      $form[$metatags_labels[$content_type]]['widget'][0]['advanced'][$item]['#access'] = FALSE;
+    }
+  }
+}
+
+/**
+ * Implements hook_metatags_attachments_alter().
+ *
+ * This takes the description and twitter description metatags
+ * and assigns them the body preview value for news items.
+ */
+function mass_metatag_metatags_attachments_alter(array &$metatag_attachments) {
+  if (!empty($metatag_attachments['#attached']['html_head'])) {
+    $metatags = $metatag_attachments['#attached']['html_head'];
+
+    // Find the mg_metatag_body_preview to grab the value.
+    foreach ($metatags as $tag) {
+      // Verify that we are in the news content type.
+      if ($tag[1] == "schema_news_article_id") {
+        $news = TRUE;
+      }
+
+      // Grab the value to replace the other fields with.
+      if ($tag[1] == "mass_metatag_body_preview") {
+        $value = $tag[0]['#attributes']['content'];
+      }
+    }
+
+    // If this is a news node and we have a body preview field
+    // now we can assign it to our other fields.
+    if (isset($news) && isset($value)) {
+      $x = 0;
+      foreach ($metatags as $tag) {
+        if ($tag[1] == "description" || $tag[1] == "twitter_cards_description") {
+          $metatag_attachments['#attached']['html_head'][$x][0]['#attributes']['content'] = $value;
+        }
+        $x++;
+      }
+    }
+  }
+
+}

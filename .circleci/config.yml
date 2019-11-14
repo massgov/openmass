@@ -1,0 +1,971 @@
+version: 2
+
+# YAML anchors/aliases. See;
+# - https://circleci.com/blog/circleci-hacks-reuse-yaml-in-your-circleci-config-with-yaml/
+# - https://github.com/circleci/frontend/blob/master/.circleci/config.yml
+references:
+  container_config: &container_config
+    working_directory: /var/www/code
+    docker:
+      # @see https://github.com/massgov/Drupal-Container
+      - image: massgov/drupal-container:php72alpha-ci
+        environment:
+          COMPOSER_ALLOW_SUPERUSER: 1
+
+  # Dynamic hosts mean constantly checking interactively that we mean to connect to an unknown host. We ignore those here.
+  no_host_check: &no_host_check
+    run: {name: 'Disable StrictHostKeyChecking', command: 'mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config'}
+
+  no_ssh_timeout: &no_ssh_timeout
+    run: {name: 'Disable SSH timeout', command: 'echo "ServerAliveInterval 30" >> ~/.ssh/config'}
+
+  restore_composer_cache: &restore_composer_cache
+    restore_cache:
+      name: Restore Composer Cache
+      keys:
+        - site-composer-v9-{{ checksum "composer.lock" }}
+        - site-composer-v9-
+
+  save_composer_cache: &save_composer_cache
+    save_cache:
+      name: Save Composer cache
+      key: site-composer-v6-{{ checksum "composer.lock" }}
+      paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
+
+jobs:
+  build:
+    <<: *container_config
+    steps:
+      - checkout
+      # See https://stackoverflow.com/questions/18126559/how-can-i-download-a-single-raw-file-from-a-private-github-repo-using-the-comman
+      - run:
+          name: Fetch Drush aliases
+          command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
+      - *restore_composer_cache
+      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
+      - *save_composer_cache
+      # Same for yarn - https://circleci.com/docs/2.0/yarn/#caching
+      - restore_cache:
+          name: Restore Yarn Package Cache
+          keys:
+            - yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
+            - yarn-packages-{{ .Branch }}
+            - yarn-packages-master
+            - yarn-packages-
+      - run:
+          name: Install Dependencies
+          command: yarn install
+      - save_cache:
+          name: Save Yarn Package Cache
+          key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - node_modules/
+
+      - persist_to_workspace:
+          root: /var/www
+          paths: [code]
+
+  push_acquia:
+      <<: *container_config
+      steps:
+        - *no_host_check
+        - *no_ssh_timeout
+        - checkout
+        - run:
+            name: Fetch Drush aliases
+            command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
+        - run: git add -f /var/www/code/drush/sites/self.site.yml
+        - *restore_composer_cache
+        - run: {name: 'Composer install', command: 'composer install --no-dev --no-interaction --optimize-autoloader'}
+        # Identify the committer i.e. CircleCI deployment bot
+        - run: git config --global user.email "circleci@example.com"
+        - run: git config --global user.name "CircleCI Deployment Bot"
+        # Prep for push to Acquia Git. Do so while we have a clean build.
+        - run: ( find docroot -type d -name .git && find docroot -type f -name .gitmodules ) | xargs rm -rf
+        - run: git add -A -f /var/www/code
+        - run: git commit -m "Add vendor code and drush alias."
+        # Add a deployment identifier file and push current branch to Acquia's Git repo.
+        - run: scripts/stamp-and-deploy
+
+  # Automate the tagging process in GitHub
+  tagging_github:
+    <<: *container_config
+    working_directory: /var/www/code
+    steps:
+      - *no_host_check
+      - checkout
+      # Identify the committer i.e. CircleCI deployment bot
+      - run: git config --global user.email "circleci@example.com"
+      - run: git config --global user.name "CircleCI Deployment Bot"
+      # Push this build to Acquia's master branch, and tag it there.
+      - run: scripts/tag-release-github
+
+  # Automate the tagging process by using the GitHub then pushing to Acquia repository.
+  tagging_acquia:
+    <<: *container_config
+    steps:
+      - *no_host_check
+      - checkout
+      # Identify the committer i.e. CircleCI deployment bot
+      - run: git config --global user.email "circleci@example.com"
+      - run: git config --global user.name "CircleCI Deployment Bot"
+      # Push this build to Acquia's master branch, and tag it there.
+      - run: scripts/tag-release-deploy
+
+  test:
+    working_directory: /var/www/code
+    docker:
+      - image: massgov/drupal-container:php72alpha-ci
+        environment:
+          COMPOSER_ALLOW_SUPERUSER: 1
+          DOCKER_ENV: ci
+          APACHE_DOCROOT: /var/www/code/docroot
+          MYSQL_USER: circle
+          MYSQL_PASSWORD: circle
+          MYSQL_DATABASE: circle
+          MYSQL_HOST: 127.0.0.1
+          MEMCACHED_HOST: 127.0.0.1
+          DTT_BASE_URL: http://mass.local
+          DTT_API_URL: http://mass.local:9222
+          BROWSERTEST_OUTPUT_DIRECTORY: /tmp
+      - image: comass/mysql-sanitized:latest
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_API_KEY
+        environment:
+          MYSQL_USER: circle
+          MYSQL_PASSWORD: circle
+          MYSQL_DATABASE: circle
+          MYSQL_RANDOM_ROOT_PASSWORD: 1
+        command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
+      - image: memcached:1-alpine
+        command: memcached -m 128
+      - image: previousnext/chrome-headless:65
+
+    steps:
+      - attach_workspace: {at: /var/www}
+      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - run: {name: 'Start Apache', command: '/usr/local/bin/apache2-foreground-enhanced', background: true}
+      - run:
+          name: Update host file
+          command: echo '127.0.0.1 mass.local' >> /etc/hosts
+
+      # Validate .json and check if it is in sync with the .lock file
+      - run: composer validate
+      # Check coding standards with php code sniffer. See phpcs.xml
+      - run: phpcs -v -n
+      # lint javascript
+      - run: yarn run eslint --debug --ignore-path 'docroot/.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
+
+      # Check for changelog in the PR.
+      - run:
+          name: Check for a changelog file in the PR
+          command: yarn danger ci
+
+      # Wait for mysql.
+      - run: dockerize -wait tcp://localhost:3306 -timeout 2m
+      # Run drush updatedb and cim.
+      - run: scripts/ma-refresh-local --skip-db-prep
+      # Get a status
+      - run: drush status
+
+      # config-export and error if there are differences.
+      # This makes sure our committed config matches what is exported by Drupal.
+      # If this fails, the usual fix is to commit the diff that is reported.
+      - run: "drush config:export -y"
+      - run: git diff -w --exit-code
+      - run: git reset --hard
+
+      # Ensure files and DTT directories are writable by www-data
+      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+
+      # drupal-test-traits testing
+      - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom"'
+
+      # Behat testing
+      - run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          # Pages saved via 'Then save the html for the page'. @see \FeatureContext::saveHtml.
+          path: /var/www/code/output
+      - store_artifacts:
+          # DTT saves page output for all requests.
+          path: /var/www/code/docroot/sites/simpletest/browser_output
+
+  test_without_danger:
+    working_directory: /var/www/code
+    docker:
+      - image: massgov/drupal-container:php72alpha-ci
+        environment:
+          COMPOSER_ALLOW_SUPERUSER: 1
+          DOCKER_ENV: ci
+          APACHE_DOCROOT: /var/www/code/docroot
+          MYSQL_USER: circle
+          MYSQL_PASSWORD: circle
+          MYSQL_DATABASE: circle
+          MYSQL_HOST: 127.0.0.1
+          MEMCACHED_HOST: 127.0.0.1
+          DTT_BASE_URL: http://mass.local
+          DTT_API_URL: http://mass.local:9222
+          BROWSERTEST_OUTPUT_DIRECTORY: /tmp
+      - image: comass/mysql-sanitized:latest
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_API_KEY
+        environment:
+          MYSQL_USER: circle
+          MYSQL_PASSWORD: circle
+          MYSQL_DATABASE: circle
+          MYSQL_RANDOM_ROOT_PASSWORD: 1
+        command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
+      - image: memcached:1-alpine
+        command: memcached -m 128
+      - image: previousnext/chrome-headless:65
+
+    steps:
+      - attach_workspace: {at: /var/www}
+      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - run: {name: 'Start Apache', command: '/usr/local/bin/apache2-foreground-enhanced', background: true}
+      - run:
+          name: Update host file
+          command: echo '127.0.0.1 mass.local' >> /etc/hosts
+
+      # Validate .json and check if it is in sync with the .lock file
+      - run: composer validate
+      # Check coding standards with php code sniffer. See phpcs.xml
+      - run: phpcs -v -n
+      # lint javascript
+      - run: yarn run eslint --debug --ignore-path 'docroot/.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
+
+      # Wait for mysql.
+      - run: dockerize -wait tcp://localhost:3306 -timeout 2m
+      # Run drush updatedb and cim.
+      - run: scripts/ma-refresh-local --skip-db-prep
+      # Get a status
+      - run: drush status
+
+      # config-export and error if there are differences.
+      # This makes sure our committed config matches what is exported by Drupal.
+      # If this fails, the usual fix is to commit the diff that is reported.
+      - run: "drush config:export -y"
+      - run: git diff -w --exit-code
+      - run: git reset --hard
+
+      # Ensure files and DTT directories are writable by www-data
+      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+
+      # drupal-test-traits testing
+      - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom"'
+
+      # Behat testing
+      - run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          # Pages saved via 'Then save the html for the page'. @see \FeatureContext::saveHtml.
+          path: /var/www/code/output
+      - store_artifacts:
+          # DTT saves page output for all requests.
+          path: /var/www/code/docroot/sites/simpletest/browser_output
+
+  cloudflare:
+    <<: *container_config
+    steps:
+      - attach_workspace: {at: /var/www}
+      - run: "cd cloudflare && yarn install"
+      - run: "cd cloudflare && npm test"
+
+  # Cut the release branch for Wednesday release only
+  cut_release_branch:
+    <<: *container_config
+    steps:
+      - attach_workspace: {at: /var/www}
+      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - *no_host_check
+      - checkout
+      # Identify the committer i.e. CircleCI deployment bot
+      - run: git config --global user.email "circleci@example.com"
+      - run: git config --global user.name "CircleCI Deployment Bot"
+      # Create a release branch from the develop branch in GitHub.
+      - run:
+          command: "php scripts/build-changelog.php"
+
+  # Create the mayflower branch for testing the develop branch.
+  mayflower_develop_branch:
+    <<: *container_config
+    steps:
+      - attach_workspace: {at: /var/www}
+      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - *no_host_check
+      - checkout
+      # Identify the committer i.e. CircleCI deployment bot
+      - run: git config --global user.email "circleci@example.com"
+      - run: git config --global user.name "CircleCI Deployment Bot"
+      # Create a release branch from the develop branch in GitHub.
+      - run:
+          command: "php scripts/ma-mayflower-develop.php"
+
+  # Deploy the branch CircleCI checkout to CD environment with a new database.
+  # Example being the develop branch each night.
+  deploy:
+    <<: *container_config
+    steps:
+      - attach_workspace: {at: /var/www}
+      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - *no_host_check
+      - *no_ssh_timeout
+      # deploy `develop` to `cd` environment
+      - run:
+          command: "drush ma:deploy -v --refresh-db cd $CIRCLE_BRANCH"
+          no_output_timeout: 60m
+
+  # Deploy a release branch to stage environment with a new database.
+  deploy_release_stage:
+    <<: *container_config
+    steps:
+      - attach_workspace: {at: /var/www}
+      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - *no_host_check
+      - *no_ssh_timeout
+      # deploy `release` branch to `test` environment
+      - run:
+          command: "drush ma:deploy -v --refresh-db test $CIRCLE_BRANCH"
+          no_output_timeout: 60m
+
+  # Deploy a hotfix branch to stage environment without a new database.
+  deploy_hotfix_stage:
+    <<: *container_config
+    steps:
+    - attach_workspace: {at: /var/www}
+    - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+    - *no_host_check
+    - *no_ssh_timeout
+    # deploy `hotfix` branch to `test` environment without a fresh database
+    - run:
+        command: "drush ma:deploy -v test $CIRCLE_BRANCH"
+        no_output_timeout: 60m
+
+  # Deploy a branch to any environment from command line with options.
+  deploy_from_scratch:
+    <<: *container_config
+    steps:
+      - checkout
+      - *restore_composer_cache
+      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
+      # Deliberately don't save_cache in this job.
+      - run:
+          name: Fetch Drush aliases
+          command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
+      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - *no_host_check
+      - *no_ssh_timeout
+      # Deploy specified ref to specified environment
+      - run:
+          command: "drush ma:deploy -y -v $DEPLOY_REFRESH_DB $DEPLOY_SKIP_MAINT $DEPLOY_CACHE_REBUILD $DEPLOY_TARGET $DEPLOY_GIT_REF"
+          no_output_timeout: 60m
+
+  # Deploy a tag to the stage environment within the Acquia repository (Testing for production deployment)
+  deploy_tag_stage:
+    <<: *container_config
+    steps:
+      - checkout
+      - *restore_composer_cache
+      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
+      # Deliberately don't save_cache in this job.
+      - run:
+          name: Fetch Drush aliases
+          command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
+      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - *no_host_check
+      - *no_ssh_timeout
+      # Deploy specified ref to specified environment
+      - run:
+          command: "drush ma:deploy -v test tags/$CIRCLE_TAG"
+          no_output_timeout: 60m
+
+  # Nightcrawler is only using 1500 samples size to crawl the dev environment.
+  crawl_feature1:
+    <<: *container_config
+    steps:
+      - attach_workspace: {at: /var/www}
+      - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
+      - *no_host_check
+      - *no_ssh_timeout
+      - run: mkdir -p /tmp/results/junit
+      - run:
+          name: Nightcrawler
+          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=feature1 --samples=1200
+          no_output_timeout: 300m
+      - store_test_results:
+          path: /tmp/results
+      - store_artifacts:
+          path: /tmp/results
+
+  # Nightcrawler is only using 1200 samples size to crawl the feature3 environment.
+  crawl_feature3:
+    <<: *container_config
+    steps:
+      - attach_workspace: {at: /var/www}
+      - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
+      - *no_host_check
+      - *no_ssh_timeout
+      - run: mkdir -p /tmp/results/junit
+      - run:
+          name: Nightcrawler
+          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=feature3 --samples=1200
+          no_output_timeout: 300m
+      - store_test_results:
+          path: /tmp/results
+      - store_artifacts:
+          path: /tmp/results
+
+  # Nightcrawler is only using 900 samples size to crawl the develop branch.
+  crawl_cd:
+    <<: *container_config
+    steps:
+      - attach_workspace: {at: /var/www}
+      - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
+      - *no_host_check
+      - *no_ssh_timeout
+      - run: mkdir -p /tmp/results/junit
+      - run:
+          name: Nightcrawler
+          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=cd --samples=900
+          no_output_timeout: 300m
+      - store_test_results:
+          path: /tmp/results
+      - store_artifacts:
+          path: /tmp/results
+
+  # Nightcrawler is only using 700 samples size to crawl the release branch.
+  crawl_stage_release:
+    <<: *container_config
+    steps:
+    - attach_workspace: {at: /var/www}
+    - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
+    - *no_host_check
+    - *no_ssh_timeout
+    - run: mkdir -p /tmp/results/junit
+    - run:
+        name: Nightcrawler
+        command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=test --samples=700
+        no_output_timeout: 300m
+    - store_test_results:
+        path: /tmp/results
+    - store_artifacts:
+        path: /tmp/results
+
+  # Nightcrawler is only using 200 samples size to crawl the hotfix branch.
+  crawl_stage_hotfix:
+    <<: *container_config
+    steps:
+    - attach_workspace: {at: /var/www}
+    - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
+    - *no_host_check
+    - *no_ssh_timeout
+    - run: mkdir -p /tmp/results/junit
+    - run:
+        name: Nightcrawler
+        command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=test --samples=200
+        no_output_timeout: 300m
+    - store_test_results:
+        path: /tmp/results
+    - store_artifacts:
+        path: /tmp/results
+
+  # Nightcrawler is only using 500 samples size to crawl the mayflower branch.
+  crawl_mayflower_stage:
+    <<: *container_config
+    steps:
+      - attach_workspace: {at: /var/www}
+      - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
+      - *no_host_check
+      - *no_ssh_timeout
+      - run: mkdir -p /tmp/results/junit
+      - run:
+          name: Nightcrawler
+          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=test --samples=500
+          no_output_timeout: 300m
+      - store_test_results:
+          path: /tmp/results
+      - store_artifacts:
+          path: /tmp/results
+
+  # Backstop is using the all.json file compare production vs dev for the core update branch.
+  backstop_feature1:
+    working_directory: /home/circleci/code
+    docker:
+      # Need to use docker image for these steps.
+      - image: circleci/python:2.7.14
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker-compose up --no-start backstop
+      - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
+      - run: docker-compose run backstop reference --target=prod --list=all
+      - run: docker-compose run backstop test --target=feature1 --list=all
+      - run:
+          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
+          when: always
+      - store_test_results:
+          path: /home/circleci/code/backstop/report
+      - store_artifacts:
+          path: /home/circleci/code/backstop
+
+  # Backstop is using the all.json file compare production vs stage (test) for the 'release/', 'hotfix/' and 'mayflower/' branch.
+  backstop_stage:
+      working_directory: /home/circleci/code
+      docker:
+      # Need to use docker image for these steps.
+      - image: circleci/python:2.7.14
+      steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker-compose up --no-start backstop
+      - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
+      - run: docker-compose run backstop reference --target=prod --list=all
+      - run: docker-compose run backstop test --target=test --list=all
+      - run:
+          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
+          when: always
+      - store_test_results:
+          path: /home/circleci/code/backstop/report
+      - store_artifacts:
+          path: /home/circleci/code/backstop
+
+  # Backstop is using the all.json file compare production vs CD for the 'develop' branch.
+  backstop_cd:
+    working_directory: /home/circleci/code
+    docker:
+      # Need to use docker image for these steps.
+      - image: circleci/python:2.7.14
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker-compose up --no-start backstop
+      - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
+      - run: docker-compose run backstop reference --target=prod --list=all
+      - run: docker-compose run backstop test --target=cd --list=all
+      - run:
+          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
+          when: always
+      - store_test_results:
+          path: /home/circleci/code/backstop/report
+      - store_artifacts:
+          path: /home/circleci/code/backstop
+
+  # If you make changes to this job, consider pushing to a tag that's not 'latest'
+  # at Docker Hub. That way, your in-progress work does not interfere with build
+  # happening in the build_test workflow.
+  populate:
+    working_directory: /home/circleci/code/.circleci/mysql-rebuild
+    docker:
+      # Use Python since that's needed for docker tools anyway.
+      - image: circleci/python:2.7.14
+    steps:
+      - attach_workspace: {at: /home/circleci}
+      - setup_remote_docker
+      - run: docker-compose up -d
+      - run: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www
+      # @todo Actually perform health check.
+      - run:
+          name: Wait for mysql
+          command: sleep 60
+      - run:
+          command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
+          no_output_timeout: 60m
+      - run: docker-compose stop --timeout 60 mysql
+      - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
+      - run: docker commit $(docker-compose ps -q mysql) comass/mysql-sanitized:latest
+      - run: docker push comass/mysql-sanitized:latest
+
+  pending_security:
+      <<: *container_config
+      steps:
+        - attach_workspace: {at: /var/www}
+        - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+        - run: "drush pm:security"
+
+
+workflows:
+  version: 2
+  build_test:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - /^release\/.*$/
+                - /^hotfix\/.*$/
+                - master
+                - /^mayflower-dev-.*/
+      - push_acquia:
+          filters:
+            branches:
+              ignore:
+                - /^release\/.*$/
+                - /^hotfix\/.*$/
+                - /^mayflower\/.*$/
+                - master
+                - /^mayflower-dev-.*/
+      - test:
+          requires: [build]
+          filters:
+            branches:
+              ignore:
+                - /^release\/.*$/
+                - /^hotfix\/.*$/
+                - /^mayflower\/.*$/
+                - master
+                - /^mayflower-dev-.*/
+      - cloudflare:
+          requires: [build]
+          filters:
+            branches:
+              ignore:
+                - /^release\/.*$/
+                - /^hotfix\/.*$/
+                - /^mayflower\/.*$/
+                - master
+                - /^mayflower-dev-.*/
+
+  # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_develop_branch.
+  # This will only happens on Sunday night 11 p.m. ETS to allow us to review Mayflower in Drupal on Mondays.
+  mayflower_dev_branch:
+    jobs:
+      - build
+      - mayflower_develop_branch:
+          requires: [build]
+    triggers:
+      - schedule:
+          cron: "00 03 * * 1"
+          filters:
+            branches:
+              only:
+                - develop
+
+  # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_dev branch only.
+  deploy_mayflower_cd:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: /^mayflower-dev-.*/
+      - push_acquia:
+          filters:
+            branches:
+              only: /^mayflower-dev-.*/
+      - test_without_danger:
+          requires: [build]
+          filters:
+            branches:
+              only: /^mayflower-dev-.*/
+      - deploy:
+          requires:
+            - build
+            - push_acquia
+          filters:
+            branches:
+              only: /^mayflower-dev-.*/
+      - crawl_cd:
+          requires: [deploy]
+          filters:
+            branches:
+              only: /^mayflower-dev-.*/
+      - backstop_cd:
+          requires: [deploy]
+          filters:
+            branches:
+              only: /^mayflower-dev-.*/
+
+  # This is to automate the creation of the release branch for Wednesday at 1 p.m. ET.
+  # The cron time needs to be updated every Fall/Spring for daylight saving time.
+  release_branch:
+    jobs:
+      - build
+      - cut_release_branch:
+          requires: [build]
+    triggers:
+      - schedule:
+          cron: "00 18 * * 3"
+          filters:
+            branches:
+              only:
+                - develop
+
+  # This is to automate the release branch only.
+  release:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: /^release\/.*$/
+      - push_acquia:
+          filters:
+            branches:
+              only: /^release\/.*$/
+      - test_without_danger:
+          requires: [build]
+          filters:
+            branches:
+              only: /^release\/.*$/
+      - hold:
+          type: approval
+          requires:
+            - build
+            - push_acquia
+          filters:
+            branches:
+              only: /^release\/.*$/
+      - deploy_release_stage:
+          requires:
+            - hold
+          filters:
+            branches:
+              only: /^release\/.*$/
+      - crawl_stage_release:
+          requires: [deploy_release_stage]
+          filters:
+            branches:
+              only: /^release\/.*$/
+      - backstop_stage:
+          requires: [deploy_release_stage]
+          filters:
+            branches:
+              only: /^release\/.*$/
+
+  # This is to automate the hotfix branch only.
+  hotfix:
+   jobs:
+    - build:
+        filters:
+          branches:
+            only: /^hotfix\/.*$/
+    - push_acquia:
+        filters:
+          branches:
+            only: /^hotfix\/.*$/
+    - test_without_danger:
+        requires: [build]
+        filters:
+         branches:
+           only: /^hotfix\/.*$/
+    - hold:
+          type: approval
+          requires:
+            - build
+            - push_acquia
+          filters:
+            branches:
+              only: /^hotfix\/.*$/
+    - deploy_hotfix_stage:
+        requires:
+          - hold
+        filters:
+          branches:
+            only: /^hotfix\/.*$/
+    - crawl_stage_hotfix:
+          requires: [deploy_hotfix_stage]
+          filters:
+            branches:
+              only: /^hotfix\/.*$/
+    - backstop_stage:
+          requires: [deploy_hotfix_stage]
+          filters:
+            branches:
+              only: /^hotfix\/.*$/
+
+  # This is to automate the mayflower branch only.
+  mayflower:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+      - push_acquia:
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+      - test:
+          requires: [build]
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+      - hold:
+          type: approval
+          requires:
+            - build
+            - push_acquia
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+      - deploy_release_stage:
+          requires:
+            - hold
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+      - crawl_mayflower_stage:
+          requires: [deploy_release_stage]
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+      - backstop_stage:
+          requires: [deploy_release_stage]
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+
+  # This is to tag the release in the GitHub repository
+  build_github_tag:
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: master
+      - push_acquia:
+          filters:
+            branches:
+              only: master
+      - test_without_danger:
+          requires: [build]
+          filters:
+            branches:
+              only: master
+      - cloudflare:
+          requires: [build]
+          filters:
+            branches:
+              only: master
+      - hold:
+          type: approval
+          requires:
+            - build
+            - push_acquia
+          filters:
+            branches:
+              only: master
+      - tagging_github:
+          requires:
+              - hold
+          filters:
+            branches:
+              only: master
+
+  # This is to tag the release in the Acquia repository.
+  # Testing deploying the newly created tag to stage environment.
+  build_tag:
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - tagging_acquia:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - hold:
+          type: approval
+          requires:
+            - build
+            - tagging_acquia
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - deploy_tag_stage:
+          requires:
+            - build
+            - tagging_acquia
+            - hold
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+
+
+  # Daily rebuild of our sanitized mysql data image, runs at 12:30 PM EST.
+  # The cron time needs to be updated every Fall/Spring for daylight saving time.
+  mysql_rebuild:
+    jobs:
+      - build
+      - populate:
+          requires: [build]
+    triggers:
+      - schedule:
+          cron: "50 17 * * *"
+          filters:
+            branches:
+              only:
+                - develop
+
+  # Run Nightcrawler and Backstop on dev, runs at 9:00PM EST.
+#  test_feature1:
+#    jobs:
+#      - build
+#      - backstop_feature1:
+#          requires: [build]
+#      - crawl_feature1:
+#          requires: [build]
+#    triggers:
+#      - schedule:
+#          cron: "00 02 * * *"
+#          filters:
+#            branches:
+#              only:
+#                - develop
+
+  # Run Nightcrawler on feature3, runs at 10:00PM EST.
+#  test_feature3:
+#    jobs:
+#      - build
+#      - crawl_feature3:
+#          requires: [build]
+#    triggers:
+#      - schedule:
+#          cron: "00 02 * * *"
+#          filters:
+#            branches:
+#              only:
+#                - develop
+
+  # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
+  deploy_cd:
+    jobs:
+      - build
+      - deploy:
+          requires: [build]
+      - crawl_cd:
+          requires: [deploy]
+      - backstop_cd:
+          requires: [deploy]
+    triggers:
+      - schedule:
+          cron: "00 03 * * 0,2,3,4,5,6"
+          filters:
+            branches:
+              only:
+                - develop
+
+  # Nightly pm:security, runs at 2:00AM EST.
+  nightly_pending_security:
+    jobs:
+      - build
+      - pending_security:
+          requires: [build]
+    triggers:
+      - schedule:
+          cron: "05 07 * * *"
+          filters:
+              branches:
+                  only:
+                      - develop

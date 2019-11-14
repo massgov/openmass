@@ -1,0 +1,32 @@
+uuid: 4871028f-46d4-41dc-8900-46500acaba13
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_advisory_section_title
+    - paragraphs.paragraphs_type.advisory_section
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: parent_id
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: paragraph.advisory_section.field_advisory_section_title
+field_name: field_advisory_section_title
+entity_type: paragraph
+bundle: advisory_section
+label: 'Section Title'
+description: 'Enter the title of this advisory section.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -1,0 +1,31 @@
+uuid: f62a071c-14eb-4b9f-958a-3383e7d55b06
+langcode: en
+status: true
+dependencies:
+  module:
+    - crop
+    - scheduler_media
+    - video_embed_media
+third_party_settings:
+  crop:
+    image_field: null
+  scheduler_media:
+    expand_fieldset: when_required
+    fields_display_mode: vertical_tab
+    publish_enable: 1
+    publish_past_date: error
+    publish_required: 0
+    publish_revision: 1
+    publish_touch: 0
+    unpublish_enable: 1
+    unpublish_required: 0
+    unpublish_revision: 1
+id: media_video
+label: Video
+description: ''
+source: video_embed_field
+queue_thumbnail_downloads: false
+new_revision: true
+source_configuration:
+  source_field: field_media_video_embed_field
+field_map: {  }

@@ -1,0 +1,71 @@
+uuid: 74ba8f91-6a9e-495d-9b91-04825d683285
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.answers.field_false_answer_explainer
+    - field.field.paragraph.answers.field_false_answer_path
+    - field.field.paragraph.answers.field_false_answer_text
+    - field.field.paragraph.answers.field_true_answer_explainer
+    - field.field.paragraph.answers.field_true_answer_path
+    - field.field.paragraph.answers.field_true_answer_text
+    - paragraphs.paragraphs_type.answers
+id: paragraph.answers.default
+targetEntityType: paragraph
+bundle: answers
+mode: default
+content:
+  field_false_answer_explainer:
+    weight: 12
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_false_answer_path:
+    weight: 11
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_false_answer_text:
+    weight: 10
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_true_answer_explainer:
+    weight: 9
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_true_answer_path:
+    weight: 8
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_true_answer_text:
+    weight: 7
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

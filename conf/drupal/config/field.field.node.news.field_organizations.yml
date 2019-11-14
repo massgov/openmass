@@ -1,0 +1,29 @@
+uuid: 6298693d-eb4d-44d2-ae6c-3ecc957ce892
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_organizations
+    - node.type.news
+    - node.type.org_page
+id: node.news.field_organizations
+field_name: field_organizations
+entity_type: node
+bundle: news
+label: Organization(s)
+description: 'Choose the organization(s) that offers this information. The organization(s) will be displayed at the top of this page, and when users search for information by organization, this page will appear in the results for the organization(s) listed here. We recommend that you keep this field value the same as the "Signees" field, which will later be synchronized with this field.'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

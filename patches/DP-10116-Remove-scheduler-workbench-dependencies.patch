@@ -1,0 +1,68 @@
+diff --git a/scheduler/scheduler.services.yml b/scheduler/scheduler.services.yml
+index e6ccc8b74..3bca5e575 100644
+--- a/scheduler/scheduler.services.yml
++++ b/scheduler/scheduler.services.yml
+@@ -1,10 +1,10 @@
+ services:
+   scheduler.manager:
+     class: Drupal\scheduler\SchedulerManager
+-    arguments: ['@date.formatter', '@logger.channel.scheduler', '@module_handler', '@entity.manager', '@config.factory', '@workbench_moderation.moderation_information', '@account_switcher' ]
++    arguments: ['@date.formatter', '@logger.channel.scheduler', '@module_handler', '@entity.manager', '@config.factory', '@account_switcher' ]
+   scheduler.media.manager:
+     class: Drupal\scheduler\SchedulerMediaManager
+-    arguments: ['@date.formatter', '@logger.channel.scheduler', '@module_handler', '@entity.manager', '@config.factory', '@workbench_moderation.moderation_information', '@account_switcher' ]
++    arguments: ['@date.formatter', '@logger.channel.scheduler', '@module_handler', '@entity.manager', '@config.factory', '@account_switcher' ]
+   logger.channel.scheduler:
+     parent: logger.channel_base
+     arguments: ['scheduler']
+diff --git a/scheduler/src/SchedulerManagerBase.php b/scheduler/src/SchedulerManagerBase.php
+index 411d4fe05..b42ccacb7 100644
+--- a/scheduler/src/SchedulerManagerBase.php
++++ b/scheduler/src/SchedulerManagerBase.php
+@@ -11,7 +11,6 @@
+ use Drupal\Core\Entity\Entity;
+ use Drupal\scheduler\Exception\SchedulerNodeTypeNotEnabledException;
+ use Psr\Log\LoggerInterface;
+-use Drupal\workbench_moderation\ModerationInformation;
+ use Drupal\Core\Session\AccountSwitcherInterface;
+
+ /**
+@@ -58,13 +57,6 @@ class SchedulerManagerBase {
+    */
+   protected $configFactory;
+
+-  /**
+-   * ModerationInformation object.
+-   *
+-   * @var \Drupal\workbench_moderation\ModerationInformation
+-   */
+-  protected $moderation;
+-
+   /**
+    * The account switcher service.
+    *
+@@ -76,13 +68,12 @@ class SchedulerManagerBase {
+   /**
+    * Constructs a SchedulerManagerBase object.
+    */
+-  public function __construct(DateFormatter $dateFormatter, LoggerInterface $logger, ModuleHandler $moduleHandler, EntityManager $entityManager, ConfigFactory $configFactory, ModerationInformation $moderationInformation, AccountSwitcherInterface $account_switcher) {
++  public function __construct(DateFormatter $dateFormatter, LoggerInterface $logger, ModuleHandler $moduleHandler, EntityManager $entityManager, ConfigFactory $configFactory, AccountSwitcherInterface $account_switcher) {
+     $this->dateFormatter = $dateFormatter;
+     $this->logger = $logger;
+     $this->moduleHandler = $moduleHandler;
+     $this->entityManager = $entityManager;
+     $this->configFactory = $configFactory;
+-    $this->moderation = $moderationInformation;
+     $this->accountSwitcher = $account_switcher;
+   }
+
+@@ -299,7 +290,8 @@ public function setEntityStatus(string $action) {
+       $entity_multilingual = $manager->loadRevision($vid);
+
+       // If entity is NOT its latest revision, skip it, otherwise act on it.
+-      if(!$this->moderation->isLatestRevision($entity_multilingual)) {
++      $moderation_information = \Drupal::service('content_moderation.moderation_information');
++      if(!$moderation_information->isLatestRevision($entity_multilingual)) {
+         continue;
+       }
+

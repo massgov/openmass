@@ -1,0 +1,150 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_map.module.
+ */
+
+use Drupal\Core\Url;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\mayflower\Helper;
+use Drupal\Core\Site\Settings;
+
+/**
+ * Implements hook_theme().
+ */
+function mass_map_theme() {
+  $theme['map_page'] = [
+    'variables' => [
+      'pageHeader' => [],
+      'locationListing' => [],
+    ],
+    'template' => 'map-page',
+  ];
+  $theme['map_row'] = [
+    'variables' => [
+      'locationListing' => [],
+    ],
+    'template' => 'map-row',
+  ];
+  return $theme;
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function mass_map_page_attachments(&$page) {
+  $match = Drupal::routeMatch();
+
+  if ($match->getRouteName() === 'mass_map.map_page') {
+    $node = $match->getParameter('node');
+
+    $page['#attached']['html_head'][] = [
+      [
+        '#tag' => 'meta',
+        '#attributes' => [
+          'name' => 'mg_title',
+          'content' => $node->label() . ' Locations',
+        ],
+      ],
+      'mg_title',
+    ];
+
+    // Pass the absolute URL of the current page as mg_url.
+    $url = Url::fromRouteMatch($match)
+      ->setAbsolute(TRUE);
+    $page['#attached']['html_head'][] = [
+      [
+        '#tag' => 'meta',
+        '#attributes' => [
+          'name' => 'mg_url',
+          'content' => $url->toString(),
+        ],
+      ],
+      'mg_url',
+    ];
+  }
+}
+
+/**
+ * Implements hook_preprocess_map_page().
+ */
+function mass_map_preprocess_map_page(&$variables) {
+  if (!isset($variables['node'])) {
+    $allowed_regions = ['post_content'];
+    mass_theme_add_regions_to_node($allowed_regions, $variables);
+  }
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function mass_map_entity_extra_field_info() {
+  $extra = [];
+
+  $extra['node']['location']['display']['extra_contact_info_static_map'] = [
+    'label' => t('Extra static map'),
+    'description' => t('A copy of the contact information in the contact map view mode'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+
+  return $extra;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ */
+function mass_map_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  $entityTypeManager = \Drupal::entityTypeManager();
+
+  if ($display->getComponent('extra_contact_info_static_map') && !empty($entity->field_ref_contact_info_1->entity)) {
+    $builder = $entityTypeManager->getViewBuilder('node');
+    $item = $builder->view($entity->field_ref_contact_info_1->entity, 'map');
+    $item['#field_name'] = 'extra_contact_info_static_map';
+    $build['extra_contact_info_static_map'][] = $item;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_map_preprocess_node(&$variables) {
+  $node = $variables['node'];
+  if ($node->bundle() === 'contact_information' && !empty($variables['elements']['#view_mode']) && $variables['elements']['#view_mode'] === 'map') {
+    $address = $node->field_ref_address->entity;
+    $massMap = \Drupal::service('mass_map');
+    $variables['static_map_link'] = $massMap->getMapLinkUrl($address->field_address_address);;
+
+    // These are the sizes of map image that are being used for each width of screen.
+    // Go to the following twig were its being used mass_theme/templates/content/node--contact-information--map.html.twig.
+    foreach (['900x700', '800x450', '600x450'] as $size) {
+      $static_map_url = $massMap->getStaticMapUrl($address->field_address_address, [
+        'size' => $size,
+        'zoom' => 15,
+      ]);
+      $variables['static_map_' . $size] = $static_map_url;
+    }
+  }
+}
+
+/**
+ * Implements hook_library_info_alter().
+ *
+ * Build the Google Maps javascript API URL based on a secret API key.
+ */
+function mass_map_library_info_alter(&$libraries, $extension) {
+  if ($extension === 'mass_map' && isset($libraries['google-map-api'])) {
+    $url = \Drupal::service('mass_map')
+      ->getJavascriptApiUrl(['geometry', 'places', 'geocoder'], 'initGoogleMaps');
+    $libraries['google-map-api']['js'][$url] = [
+      'scope' => 'header',
+      'type' => 'external',
+      'attributes' => [
+        'defer' => TRUE,
+        'async' => TRUE,
+      ]
+    ];
+  }
+}

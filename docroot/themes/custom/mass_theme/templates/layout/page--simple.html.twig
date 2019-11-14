@@ -1,0 +1,32 @@
+{#
+/**
+ * @file
+ * Theme override to display the full view mode of user login related pages.
+ *  - User login
+ *  - View profile
+ *  - TFA
+ *
+ */
+ #}
+{% extends 'page.html.twig' %}
+
+  {% block preContent %}
+    {% if page.pre_content %}
+      <div class="pre-content">
+      {{ page.pre_content }}
+      </div>
+    {% endif %}
+    {{ attach_library('mass_theme/simple') }}
+      <div class="user-login">
+        {{ parent() }}
+  {% endblock %}
+  {% block postContent %}
+      </div>
+{#
+    {% if page.post_content %}
+      <div class="post-content">
+      {{ page.post_content }}
+      </div>
+    {% endif %}
+#}
+  {% endblock %}

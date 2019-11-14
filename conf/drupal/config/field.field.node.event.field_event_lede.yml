@@ -1,0 +1,32 @@
+uuid: 70846e8a-7619-4dbd-bd4e-e761169ea229
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_event_lede
+    - node.type.event
+  module:
+    - geocoder_field
+third_party_settings:
+  geocoder_field:
+    method: none
+    field: title
+    plugins: {  }
+    dumper: wkt
+    delta_handling: default
+    failure:
+      handling: preserve
+      status_message: true
+      log: true
+id: node.event.field_event_lede
+field_name: field_event_lede
+entity_type: node
+bundle: event
+label: 'Listing description'
+description: 'This is a short summary of your event that will be used in previews, listings, and on social media sites.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

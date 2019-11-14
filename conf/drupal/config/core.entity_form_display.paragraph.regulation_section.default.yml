@@ -1,0 +1,35 @@
+uuid: 1944f01c-4139-437c-9185-d7b8376da893
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.regulation_section.field_regulation_section_body
+    - field.field.paragraph.regulation_section.field_regulation_section_title
+    - paragraphs.paragraphs_type.regulation_section
+  module:
+    - text
+id: paragraph.regulation_section.default
+targetEntityType: paragraph
+bundle: regulation_section
+mode: default
+content:
+  field_regulation_section_body:
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_regulation_section_title:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

@@ -1,0 +1,46 @@
+uuid: 11cf5b04-136e-4490-83b4-6bcc45265038
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_admin_pages
+    - mass_content_api
+    - menu_ui
+    - node_title_help_text
+    - scheduler
+third_party_settings:
+  menu_ui:
+    available_menus: {  }
+    parent: ''
+  scheduler:
+    expand_fieldset: when_required
+    fields_display_mode: vertical_tab
+    publish_enable: true
+    publish_past_date: error
+    publish_required: false
+    publish_revision: true
+    publish_touch: false
+    unpublish_enable: true
+    unpublish_required: false
+    unpublish_revision: true
+  mass_content_api:
+    parents: null
+    children: null
+    linking_pages:
+      - field_service_detail_contact
+      - field_service_detail_links_5
+      - 'field_service_detail_sections>*'
+  mass_admin_pages:
+    node_type_long_description: "<ul>\r\n<li>Explain who’s eligible for unemployment benefits</li>\r\n<li>Provide supplemental information about taking a road test</li>\r\n<li>Advise users about what your organization looks for in applications for the grant it oversees\r\n<li>Provide plain language definitions of the different forms your organization uses</li>\r\n</ul>"
+    node_type_url: ''
+    node_type_category: service_suite
+    node_type_thumbnail_path: /modules/custom/mass_admin_pages/images/add-thumbnail_service-detail.svg
+  node_title_help_text:
+    title_help: 'Titles should be unique, specific, and in plain language. Use words that someone would use to search for this content.'
+name: 'Service Details'
+type: service_details
+description: '<p>Offer concise additional information about a Service.</p><p><a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/services-and-info/service-detail" target="_blank">Learn more about authoring Service Details.</a></p>'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

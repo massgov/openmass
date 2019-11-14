@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * @file
+ * Contains trashbin.module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Database\Query\AlterableInterface;
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function trashbin_form_node_form_alter(&$form, $form_state, $form_id) {
+  // Hide "move to trash" button when a new node is being created.
+  // See: https://jira.state.ma.us/browse/DP-4027.
+  $node = $form_state->getFormObject()->getEntity();
+  if ($node->isNew()) {
+    if (isset($form['moderation_state']) && isset($form['moderation_state']['widget'][0]['#options']['trash'])) {
+      unset($form['moderation_state']['widget'][0]['#options']['trash']);
+      // NOTE: We cannot directly check and unset $form['actions']['moderation_state_trash']
+      // because workbench_moderation module adds moderation_state to the form as raido buttons
+      // and then later uses '#process' callback to change them to dropdown buttons, which happens
+      // after all form_alters are run, deep inside FromBuilderInterface::doBuildForm().
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_operation_alter().
+ */
+function trashbin_entity_operation_alter(array &$operations, EntityInterface $entity) {
+  /** @var \Drupal\workbench_moderation\ModerationInformationInterface $modinfo */
+  $moderation_info = Drupal::service('content_moderation.moderation_information');
+  // Only if the entity is in trash.
+  if ($moderation_info->isModeratedEntity($entity) && $entity->get('moderation_state') && $entity->get('moderation_state')->target_id === "trash") {
+    // Do not show the edit action.
+    if (isset($operations['edit'])) {
+      unset($operations['edit']);
+    }
+    // Change workbench_moderation's default "Set to @state" text,
+    // which becomes "Set to Unpublished", to a "Restore (unpublished)" value.
+    if (isset($operations['unpublished'])) {
+      $operations['unpublished']['title'] = t('Restore');
+    }
+  }
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ *
+ * Alter the entity reference query to remove trash nodes.
+ *
+ * @param \Drupal\Core\Database\Query\AlterableInterface $query
+ *   The query.
+ */
+function trashbin_query_entity_reference_alter(AlterableInterface $query) {
+  if ($query->hasTag('node_access') && array_key_exists('node_field_data', $query->getTables())) {
+    $query->leftJoin('content_moderation_state_field_data', 'cm', "base_table.nid=cm.content_entity_id and base_table.vid=cm.content_entity_revision_id and cm.content_entity_type_id='node'");
+    $query->condition('cm.moderation_state', 'trash', '!=');
+  }
+}

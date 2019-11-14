@@ -1,0 +1,54 @@
+{#
+/**
+ * @file
+ * Theme override to display the full view mode of the Topic page content type.
+ *
+ */
+ #}
+{% extends 'node.html.twig' %}
+
+{# Set top heading level for the page. #}
+{% set level = 1 %}
+
+{% block preContent %}
+  {#{% include "@organisms/by-template/breadcrumbs.twig" %}#}
+  {% include "@organisms/by-template/content-eyebrow.twig" %}
+  {% include "@organisms/by-template/page-banner.twig" %}
+{% endblock %}
+
+{% block pageContent %}
+
+  {# Increase heading number by 1 from the parent heading. #}
+  {% set level = level + 1 %}
+
+  {% for i in range(1, numOfSections) %}
+    {% if pageContent[i]['sectionThreeUp'] %}
+      {% set sectionThreeUp = pageContent[i]['sectionThreeUp'] %}
+      {% include "@organisms/by-author/sections-three-up.twig" %}
+    {% endif %}
+  {% endfor %}
+
+  {# TOPIC PAGES show organizations and related topics at the bottom of page content as a bulleted list. #}
+  {# Other content types show organizations as wrapped links at the top in the page header region. #}
+  {# See: https://jira.mass.gov/browse/DP-13009 #}
+  <section class="ma__related-orgs-and-topics">
+    {% include "@atoms/04-headings/comp-heading.twig" with {
+      "compHeading": {
+        "title": "Related Information",
+        "level": level
+      },
+    }%}
+    <div class="ma__related-orgs-and-topics__columns">
+      {{ content.field_organizations }}
+      {{ content.field_topic_ref_related_topics }}
+    </div>
+  </section>
+{% endblock %}
+
+{% block postContent %}
+  {% if content.field_image_credit is not empty %}
+    {{ content.field_image_credit }}
+  {% endif %}
+{#{% include "@organisms/by-template/breadcrumbs.twig" %}#}
+  {{ content.extra_org_feedback_form }}
+{% endblock %}

@@ -1,0 +1,28 @@
+{#
+/**
+ * @file
+ * Custorm theme override for add document form.
+ *
+ * Two column template for the add document form.
+ *
+ *
+ * Available variables:
+ * - see mass_admin_theme_preprocess_form()
+ *
+ */
+#}
+ <div class="layout-doc-form clearfix">
+    <div class="layout-region layout-region-doc-main">
+      {{ form|without('advanced', 'footer', 'actions', 'path') }}
+    </div>
+    <div class="layout-region layout-region-doc-secondary">
+      {{ form.advanced }}
+      {{ form.path }}
+    </div>
+    <div class="layout-region layout-region-doc-footer">
+      <div class="layout-region-doc-footer__content">
+        {{ form.footer }}
+        {{ form.actions }}
+      </div>
+    </div>
+  </div>

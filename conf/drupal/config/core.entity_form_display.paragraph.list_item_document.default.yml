@@ -1,0 +1,53 @@
+uuid: 661e5c1a-9602-4aff-a7a0-350df370dd48
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.list_item_document.field_listitemdoc_desc_manual
+    - field.field.paragraph.list_item_document.field_listitemdoc_desc_type
+    - field.field.paragraph.list_item_document.field_liststaticdoc_item
+    - paragraphs.paragraphs_type.list_item_document
+  module:
+    - entity_browser_entity_form
+    - inline_entity_form
+id: paragraph.list_item_document.default
+targetEntityType: paragraph
+bundle: list_item_document
+mode: default
+content:
+  field_listitemdoc_desc_manual:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_listitemdoc_desc_type:
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_liststaticdoc_item:
+    weight: 0
+    settings:
+      form_mode: default
+      label_singular: ''
+      label_plural: ''
+      allow_new: true
+      allow_existing: true
+      match_operator: CONTAINS
+      override_labels: false
+      collapsible: false
+      collapsed: false
+      allow_duplicate: false
+    third_party_settings:
+      entity_browser_entity_form:
+        entity_browser_id: media_browser
+    type: inline_entity_form_complex
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true

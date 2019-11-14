@@ -1,0 +1,29 @@
+uuid: 154c19c0-3c5e-4ec6-a7c4-4764e4d116cd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_category
+    - media.type.document
+    - taxonomy.vocabulary.document_category
+id: media.document.field_category
+field_name: field_category
+entity_type: media
+bundle: document
+label: Category
+description: 'If applicable, categorize this file as "news", "laws-regulations", "services", or "state-organizations"'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      document_category: document_category
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

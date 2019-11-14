@@ -1,0 +1,61 @@
+body {
+  -ms-overflow-style: auto;
+}
+
+@media (max-width: 910px) {
+  /*
+    Override the bottom padding for stacked row sections with nested stack row
+    sections. These appear to use the deprecated stacked-row-section class.
+  */
+  .ma__org-page--general-organization .ma__stacked-row-section > .main-content {
+    margin-bottom: 0;
+  }
+}
+
+/*
+  Override the top border and margin for sections on pages that have
+  traditionally had overrides applied to make their border and margins deviate
+  from Mayflower.
+ */
+.ma__guide-page .main-content--full .page-content > .ma__split-columns {
+  margin-top: 40px;
+}
+
+.ma__org-page .ma__stacked-row__section~.ma__stacked-row__section .ma__stacked-row__container .ma__stacked-row__title .ma__comp-heading {
+  margin-top: 0;
+}
+
+.ma__org-page.ma__org-page--boards .ma__stacked-row__section ~ .ma__stacked-row__section .ma__stacked-row__container .ma__stacked-row__title .ma__comp-heading {
+  margin-top: 15px;
+}
+
+@media (min-width: 621px) {
+  .ma__guide-page .main-content--full .page-content > .ma__split-columns {
+    margin-top: 60px;
+  }
+}
+
+@media (min-width: 781px) {
+  .ma__guide-page .main-content--full .page-content > .ma__split-columns {
+    margin-top: 70px;
+  }
+}
+
+@media (min-width: 911px) {
+  .ma__org-page .ma__stacked-row__section ~ .ma__stacked-row__section .ma__stacked-row__container:before {
+    border-top-width: 0px;
+  }
+  .ma__org-page--boards .ma__stacked-row__section ~ .ma__stacked-row__section .ma__stacked-row__container:before {
+    border-top-width: 1px;
+  }
+  .ma__guide-page .main-content--full .page-content > .ma__split-columns {
+    margin-top: 90px;
+  }
+}
+
+/*
+  Override the margin at the top of decision tre pages when there is a banner.
+*/
+.ma__relationship-indicators + .decision-tree > .ma__page-banner {
+  margin-top: -11px;
+}

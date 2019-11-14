@@ -1,0 +1,27 @@
+uuid: 1a1349a6-3501-4af0-8a7f-95d4152cd8a7
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_ref_orgs
+    - node.type.org_page
+id: node.org_page.field_ref_orgs
+field_name: field_ref_orgs
+entity_type: node
+bundle: org_page
+label: 'Related Organizations'
+description: 'Choose other organizations to surface as related to this organization''s page. Do not include organizations that fall under the current organization.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

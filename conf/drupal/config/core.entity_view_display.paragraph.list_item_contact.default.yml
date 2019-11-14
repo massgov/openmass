@@ -1,0 +1,29 @@
+uuid: ac9c4f06-8dc4-425f-864e-a7e2bd9d0d35
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.list_item_contact.field_contact
+    - field.field.paragraph.list_item_contact.field_contact_values_to_display
+    - paragraphs.paragraphs_type.list_item_contact
+id: paragraph.list_item_contact.default
+targetEntityType: paragraph
+bundle: list_item_contact
+mode: default
+content:
+  extra_contact_with_options:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_contact:
+    type: entity_reference_entity_view
+    weight: 1
+    region: content
+    label: hidden
+    settings:
+      view_mode: contact_summary
+      link: false
+    third_party_settings: {  }
+hidden:
+  field_contact_values_to_display: true

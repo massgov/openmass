@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+#
+# Description:
+#         Import from a gzipped tarball sql dump file. This code also appears
+#         in ma-refresh-local import_backup function.
+# Usage:
+#         From the command line
+#         $ ./ma-import-backup /path/to/dump.sql.gz
+
+################################################################################
+
+zgrep --line-buffered -v -e "^INSERT INTO \`cache_" -e "^INSERT INTO \`migrate_map_" -e "^INSERT INTO \`config_log" -e "^INSERT INTO \`key_value_expire" -e "^INSERT INTO \`sessions" $1 | `drush sql:connect`

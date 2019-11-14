@@ -1,0 +1,587 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_content.module.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_entity_bundle_field_info().
+ *
+ * Adds computed fields to nodes.
+ */
+function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+  $fields = [];
+
+  if ($entity_type->id() === 'node') {
+    // The types of pages that can be referenced by a binder page TOC.
+    $bundles = [
+      'advisory',
+      'curated_list',
+      'decision',
+      'executive_order',
+      'info_details',
+      'regulation',
+      'rules',
+    ];
+
+    if (in_array($bundle, $bundles)) {
+
+      // The field that will be used for the TOC overlay.
+      $fields['referencing_binders'] = BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('Referencing Binders for TOC'))
+        ->setComputed(TRUE)
+        ->setSetting('target_type', 'node')
+        ->setSetting('linkFields', [
+          'field_binder_pages.entity.field_page_page',
+          'field_binder_pages.entity.field_page_group_page',
+        ])
+        ->setSetting('types', ['binder'])
+        ->setClass('\Drupal\mass_content\Field\RelatedNodes')
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setDisplayConfigurable('view', TRUE);
+
+      $fields['page_previous'] = BaseFieldDefinition::create('link')
+        ->setLabel(t('Previous Page'))
+        ->setComputed(TRUE)
+        ->setSetting('direction', 'previous')
+        ->setSetting('link_type', 16)
+        ->setClass('\Drupal\mass_content\Field\PageFlipperLink')
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setDisplayConfigurable('view', TRUE);
+
+      $fields['page_next'] = BaseFieldDefinition::create('link')
+        ->setLabel(t('Next Page'))
+        ->setComputed(TRUE)
+        ->setSetting('direction', 'next')
+        ->setSetting('link_type', 16)
+        ->setClass('\Drupal\mass_content\Field\PageFlipperLink')
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setDisplayConfigurable('view', TRUE);
+    }
+
+    // Handle all of the related to relationship indicators.
+    // The related to config controls the creation of the field. In most instances, this is finding content that
+    // references the current node in specific link fields or reference fields. See additional comments for the
+    // exceptions to this in the definition for a specific content type.
+
+    // For these types, specific fields are used with the RelatedNodes class that queries for referencing services.
+    $related_to_config = [
+      'advisory' => [
+        'settings' => [
+          'linkFields' => [
+            'field_guide_page_sections.entity.field_guide_section_links_4',
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_key_info_links_6',
+            'field_service_ref_actions_2',
+          ],
+        ],
+      ],
+      'binder' => [
+        'settings' => [
+          'linkFields' => [
+            'field_guide_page_sections.entity.field_guide_section_links_4',
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_key_info_links_6',
+            'field_service_ref_actions_2',
+          ],
+        ],
+      ],
+      'curated_list' => [
+        'settings' => [
+          'linkFields' => [
+            'field_guide_page_sections.entity.field_guide_section_links_4',
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_key_info_links_6',
+            'field_service_ref_actions_2',
+          ],
+        ],
+      ],
+      'decision' => [
+        'settings' => [
+          'linkFields' => [
+            'field_guide_page_sections.entity.field_guide_section_links_4',
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_key_info_links_6',
+            'field_service_ref_actions_2',
+          ],
+        ],
+      ],
+      'decision_tree' => [
+        'settings' => [
+          'fields' => [
+            'field_service_ref_services_6',
+          ],
+          'linkFields' => [
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_key_info_links_6',
+            'field_service_ref_actions_2',
+          ],
+        ],
+      ],
+      // Event uses a field on the event content type but must have orgs filtered out. Org pages must remain an
+      // option for this field because the field also controls how events are shown on org pages.
+      'event' => [
+        'settings' => [
+          'fields' => [
+            'field_event_ref_parents',
+          ],
+          'linkFields' => [
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_ref_actions_2',
+          ],
+        ],
+      ],
+      'executive_order' => [
+        'settings' => [
+          'linkFields' => [
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_key_info_links_6',
+            'field_service_ref_actions_2',
+          ],
+        ],
+      ],
+      'form_page' => [
+        'settings' => [
+          'linkFields' => [
+            'field_guide_page_sections.entity.field_guide_section_links_4',
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_key_info_links_6',
+            'field_service_ref_actions',
+            'field_service_ref_actions_2',
+          ],
+        ],
+      ],
+      'guide_page' => [
+        'settings' => [
+          'linkFields' => [
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_key_info_links_6',
+            'field_service_links',
+            'field_service_ref_actions',
+            'field_service_ref_actions_2',
+          ],
+          'referenceFields' => [
+            'field_service_ref_guide_page_1',
+          ],
+        ],
+      ],
+      'how_to_page' => [
+        'settings' => [
+          'linkFields' => [
+            'field_guide_page_sections.entity.field_guide_section_links_4',
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_key_info_links_6',
+            'field_service_ref_actions_2',
+            'field_service_ref_actions',
+          ],
+        ],
+      ],
+      'info_details' => [
+        'settings' => [
+          'linkFields' => [
+            'field_guide_page_sections.entity.field_guide_section_links_4',
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_key_info_links_6',
+            'field_service_ref_actions_2',
+          ],
+          'referenceFields' => [
+            'field_service_eligibility_info',
+          ],
+        ],
+      ],
+      'location' => [
+        'settings' => [
+          'linkFields' => [
+            'field_guide_page_sections.entity.field_guide_section_links_4',
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_ref_actions_2',
+          ],
+          'referenceFields' => [
+            'field_service_ref_locations',
+          ],
+        ],
+      ],
+      'location_details' => [
+        'settings' => [
+          'linkFields' => [
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_ref_actions_2',
+          ],
+          'referenceFields' => [
+            'field_location_activity_detail.entity.field_ref_location_details_page',
+          ],
+        ],
+      ],
+      'news' => [
+        'settings' => [
+          'linkFields' => [
+            'field_guide_page_sections.entity.field_guide_section_links_4',
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_ref_actions_2',
+          ],
+        ],
+      ],
+      'person' => [
+        'settings' => [
+          'linkFields' => [
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+          ],
+        ],
+      ],
+      'regulation' => [
+        'settings' => [
+          'linkFields' => [
+            'field_service_key_info_links_6',
+            'field_service_ref_actions_2',
+            'field_guide_page_sections.entity.field_guide_section_links_4',
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+          ],
+        ],
+      ],
+      'rules' => [
+        'settings' => [
+          'linkFields' => [
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_key_info_links_6',
+            'field_service_ref_actions_2',
+          ],
+        ],
+      ],
+      'service_details' => [
+        'settings' => [
+          'linkFields' => [
+            'field_guide_page_sections.entity.field_guide_section_links_4',
+            'field_link_group.entity.field_links_documents.entity.field_link_group_link',
+            'field_service_key_info_links_6',
+            'field_service_ref_actions_2',
+          ],
+          'referenceFields' => [
+            'field_service_eligibility_info',
+          ],
+        ],
+      ],
+      'service_page' => [
+        'settings' => [
+          'linkFields' => [
+            'field_topic_content_cards.entity.field_content_card_link_cards',
+          ],
+        ],
+      ],
+    ];
+
+    if (in_array($bundle, array_keys($related_to_config))) {
+      // A field to hold referencing services.
+      $field_definition = BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('Computed Related To'))
+        ->setComputed(TRUE)
+        ->setSetting('target_type', 'node')
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setDisplayConfigurable('view', TRUE);
+
+      if (!empty($related_to_config[$bundle]['settings'])) {
+        foreach ($related_to_config[$bundle]['settings'] as $setting => $value) {
+          $field_definition->setSetting($setting, $value);
+        }
+      }
+
+      if (!empty($related_to_config[$bundle]['class'])) {
+        $field_definition->setClass($related_to_config[$bundle]['class']);
+      }
+      else {
+        $field_definition->setClass('\Drupal\mass_content\Field\RelatedNodes');
+      }
+      $fields['computed_related_to'] = $field_definition;
+    }
+
+    // Add computed log in links field onto child content types.
+    $log_in_link_bundles = [
+      'binder',
+      'curated_list',
+      'decision_tree',
+      'form_page',
+      'guide_page',
+      'how_to_page',
+      'info_details',
+      'location',
+      'location_details',
+      'service_details',
+    ];
+    if (in_array($bundle, $log_in_link_bundles)) {
+      $fields['computed_log_in_links'] = BaseFieldDefinition::create('link')
+        ->setLabel(t('Computed Log in links'))
+        ->setComputed(TRUE)
+        ->setSetting('link_type', 17)
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setClass('\Drupal\mass_content\Field\LogInLinks')
+        ->setDisplayConfigurable('view', TRUE);
+    }
+
+    if ($bundle === 'org_page') {
+      $fields['recent_news'] = BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('Recent news'))
+        ->setComputed(TRUE)
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setSetting('target_type', 'node')
+        ->setClass('\Drupal\mass_content\Field\RecentNews')
+        ->setDisplayConfigurable('view', TRUE);
+
+      // The field used for the "All services" View Mode Page.
+      $fields['computed_all_services'] = BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('All Services list'))
+        ->setComputed(TRUE)
+        ->setSetting('target_type', 'node')
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setClass('\Drupal\mass_content\Field\OrgPageAllServices')
+        ->setDisplayConfigurable('view', TRUE);
+
+      // Lists all the referencing organizations from field_organizations.
+      $fields['referenced_organizations'] = BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('Referenced organizations'))
+        ->setComputed(TRUE)
+        ->setSetting('target_type', 'node')
+        ->setSetting('handler_settings', ['target_bundles' => ['org_page']])
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setClass('\Drupal\mass_content\Field\ReferencedOrganizations')
+        ->setDisplayConfigurable('view', TRUE);
+    }
+    elseif ($bundle === 'topic_page') {
+      $fields['computed_card_links'] = BaseFieldDefinition::create('link')
+        ->setLabel(t('Computed Links from Topic Cards'))
+        ->setComputed(TRUE)
+        ->setSetting('field', 'field_topic_content_cards')
+        ->setSetting('paragraph_field', 'field_content_card_link_cards')
+        ->setSetting('link_type', 17)
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setClass('\Drupal\mass_content\Field\LinksOnParagraphs')
+        ->setDisplayConfigurable('view', TRUE);
+    }
+    elseif ($bundle === 'person') {
+      $fields['position_is_vacant'] = BaseFieldDefinition::create('boolean')
+        ->setLabel(t('Position is vacant'))
+        ->setComputed(TRUE)
+        ->setClass('\Drupal\mass_content\Field\PositionIsVacant')
+        ->setDisplayConfigurable('view', TRUE);
+      $fields['person_org_role'] = BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('Person Org Role'))
+        ->setComputed(TRUE)
+        ->setSetting('target_type', 'node')
+        ->setClass('\Drupal\mass_content\Field\PersonOrgRole')
+        ->setDisplayConfigurable('view', TRUE);
+      $fields['person_is_featured'] = BaseFieldDefinition::create('boolean')
+        ->setLabel(t('Person Is Featured'))
+        ->setComputed(TRUE)
+        ->setClass('\Drupal\mass_content\Field\PersonIsFeatured')
+        ->setDisplayConfigurable('view', TRUE);
+    }
+    elseif ($bundle === 'location') {
+      $fields['computed_related_locations'] = BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('Computed related locations'))
+        ->setComputed(TRUE)
+        ->setSetting('target_type', 'node')
+        ->setSetting('ancestor_allowed_types', ['org_page', 'service_page'])
+        ->setSetting('ancestor_allowed_fields', ['field_org_ref_locations', 'field_service_ref_locations'])
+        ->setClass('\Drupal\mass_content\Field\RelatedLocations')
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setDisplayConfigurable('view', TRUE);
+    }
+  }
+  elseif ($entity_type->id() === 'paragraph') {
+    if ($bundle === 'about') {
+      $fields['computed_short_name'] = BaseFieldDefinition::create('text')
+        ->setLabel(t('Computed Short name from parent'))
+        ->setComputed(TRUE)
+        ->setSetting('parent_field', ['field_short_name', 'title'])
+        ->setClass('\Drupal\mass_content\Field\InjectParentField')
+        ->setDisplayConfigurable('view', TRUE);
+
+      $fields['computed_social_links'] = BaseFieldDefinition::create('link')
+        ->setLabel(t('Computed Social Links from parent'))
+        ->setComputed(TRUE)
+        ->setSetting('link_type', 16)
+        ->setSetting('parent_field', ['field_social_links'])
+        ->setClass('\Drupal\mass_content\Field\SocialLinks')
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setDisplayConfigurable('view', TRUE);
+
+      $fields['computed_bio_page'] = BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('Computed Person / Bio from parent'))
+        ->setComputed(TRUE)
+        ->setSetting('target_type', 'node')
+        ->setSetting('parent_field', ['field_person_bio'])
+        ->setClass('\Drupal\mass_content\Field\InjectParentEntityReferenceField')
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setDisplayConfigurable('view', TRUE);
+
+      $fields['computed_secondary_bio_page'] = BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('Computed Secondary Person / Bio from parent'))
+        ->setComputed(TRUE)
+        ->setSetting('target_type', 'node')
+        ->setSetting('parent_field', ['field_secondary_person_bio'])
+        ->setClass('\Drupal\mass_content\Field\InjectParentEntityReferenceField')
+        ->setDisplayConfigurable('view', TRUE);
+
+    }
+    elseif ($bundle === 'details') {
+      $fields['computed_short_name'] = BaseFieldDefinition::create('text')
+        ->setLabel(t('Computed Short name from parent'))
+        ->setComputed(TRUE)
+        ->setSetting('parent_field', ['field_short_name', 'title'])
+        ->setClass('\Drupal\mass_content\Field\InjectParentField')
+        ->setDisplayConfigurable('view', TRUE);
+    }
+    elseif ($bundle === 'list_dynamic') {
+      $fields['computed_dynamic_list'] = BaseFieldDefinition::create('dynamic_entity_reference')
+        ->setLabel(t('Computed list of links and documents based on label'))
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setComputed(TRUE)
+        ->setClass('\Drupal\mass_content\Field\DynamicListByLabel')
+        ->setDisplayConfigurable('view', TRUE);
+      $fields['computed_dynamic_list_w_desc'] = BaseFieldDefinition::create('dynamic_entity_reference')
+        ->setLabel(t('Computed list of links and documents based on label to include description'))
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setComputed(TRUE)
+        ->setClass('\Drupal\mass_content\Field\DynamicListByLabel')
+        ->setDisplayConfigurable('view', TRUE);
+      $fields['computed_dynamic_directory'] = BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('Computed list of people and contact info based on label'))
+        ->setComputed(TRUE)
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setClass('\Drupal\mass_content\Field\DynamicDirectoryByLabel')
+        ->setDisplayConfigurable('view', TRUE);
+    }
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ *
+ * Attach the binder navigation management library and define the page flipper field implementation.
+ */
+function mass_content_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if ($display->getComponent('referencing_binders')) {
+    $build['referencing_binders']['#attached']['library'][] = 'mass_content/binder_store';
+  }
+  if ($display->getComponent('field_binder_pages')) {
+    $build['field_binder_pages']['#attached']['library'][] = 'mass_content/binder_store';
+  }
+
+  // Make sure the page flipper links vary by route.
+  if ($display->getComponent('page_flipper_previous') || $display->getComponent('page_flipper_next')) {
+    $build['#cache']['contexts'][] = 'route';
+  }
+}
+
+/**
+ * Implements hook_field_info_alter().
+ *
+ * Replace field handler classes with special ones.
+ */
+function mass_content_field_info_alter(&$info) {
+  // Overrides core LinkItem class for all Link fields.
+  $info['link']['class'] = 'Drupal\mass_content\Field\FieldType\DynamicLinkItem';
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ *
+ * Add taxonomy based cache tags to dynamic output.
+ */
+function mass_content_paragraph_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  // Attach taxonomy term cache tags to dynamic lists.
+  if ($entity->bundle() === 'list_dynamic') {
+    foreach ($entity->field_listdynamic_label->referencedEntities() as $term) {
+      $cache_tags[] = sprintf('taxonomy_term:%d', $term->id());
+    }
+    $fields = [
+      'computed_dynamic_directory',
+      'computed_dynamic_list',
+      'computed_dynamic_list_w_desc',
+    ];
+    foreach ($fields as $field) {
+      if (!empty($build[$field])) {
+        $build[$field]['#cache']['tags'] += $cache_tags;
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function mass_content_theme() {
+  return [
+    'mass_content_contextual_log_in_links' => [
+      'variables' => [
+        'links' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Attach the contextual navigation JS here so it loads before the Mayflower
+ * JS.
+ */
+function mass_content_page_attachments(array &$attachments) {
+  $attachments['#attached']['library'][] = 'mass_content/contextual-nav';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_content_form_node_org_page_edit_form_alter(&$form, FormStateInterface $form_state) {
+  mass_content_set_default_event_quantity($form);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_content_form_node_service_page_edit_form_alter(&$form, FormStateInterface $form_state) {
+  mass_content_set_default_event_quantity($form);
+}
+
+/**
+ * Set the Event Quantity field to 2 if nothing is set.
+ *
+ * This will prevent errors on service pages that were created before the Event
+ * Quantity was present in the system.
+ *
+ * @param array $form
+ *   The node edit form.
+ */
+function mass_content_set_default_event_quantity(array &$form) {
+  if (!empty($form['field_event_quantity']) && empty($form['field_event_quantity']['widget']['#default_value'])) {
+    $form['field_event_quantity']['widget']['#default_value'] = [2];
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_content_form_views_exposed_form_alter(&$form, $form_state, $form_id) {
+  if ($form['#id'] == 'views-exposed-form-content-page-1' || $form['#id'] == 'views-exposed-form-my-content-page-1') {
+    $form['status_1']['#options'][1] = t('Published');
+    $form['status_1']['#options'][0] = t('Unpublished');
+  }
+}
+
+/**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ */
+function mass_content_field_widget_paragraphs_form_alter(&$element, &$form_state, $context) {
+  if ($element['#paragraph_type'] == 'campaign_features') {
+    $element['subform']['field_url']['widget'][0]['title']['#description'] = t('Provide a label that describes the link destination in a specific way, such as "See more employee profiles". Avoid generic labels such as "See more".');
+  }
+}

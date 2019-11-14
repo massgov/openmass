@@ -1,0 +1,24 @@
+#mass_alerts.configuration:
+#  path: '/admin/config/mass'
+#  defaults:
+#    _controller: '\Drupal\system\Controller\SystemController::systemAdminMenuBlockPage'
+#    _title: 'Mass.gov 2'
+#  requirements:
+#    _permission: 'access administration pages'
+
+mass_alerts.notifications:
+  path: '/admin/config/mass/notifications'
+  defaults:
+    _form: 'Drupal\mass_alerts\Form\ConfigForm'
+    _title: 'Sitewide Alert Watcher Email Recipients'
+  requirements:
+    _permission: 'access email address list for alerts config page'
+
+
+mass_alerts.user_autocomplete:
+  path: '/mass_alerts/user_autocomplete/{field_name}/{count}'
+  defaults:
+    _controller: 'Drupal\mass_alerts\Controller\AutocompleteController::handleAutocomplete'
+    _format: json
+  requirements:
+    _permission: 'access email address list for alerts config page'

@@ -1,0 +1,23 @@
+uuid: 7a9ea14d-c59e-4827-bbe9-75d0273b4e04
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_event_address_type
+    - node.type.event
+  module:
+    - options
+id: node.event.field_event_address_type
+field_name: field_event_address_type
+entity_type: node
+bundle: event
+label: 'Address type'
+description: 'You may choose "no address required" for online or phone-based events. Be sure to list information about how to participate in the event.'
+required: true
+translatable: false
+default_value:
+  -
+    value: unique
+default_value_callback: ''
+settings: {  }
+field_type: list_string

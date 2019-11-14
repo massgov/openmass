@@ -1,0 +1,26 @@
+uuid: 2b404b48-01e2-4104-bce2-a4df19b19a62
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.quick_action.field_link
+    - paragraphs.paragraphs_type.quick_action
+  module:
+    - link
+id: paragraph.quick_action.default
+targetEntityType: paragraph
+bundle: quick_action
+mode: default
+content:
+  field_link:
+    weight: 6
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true
