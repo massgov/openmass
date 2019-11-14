@@ -10,7 +10,7 @@ This is the codebase for the Drupal 8 www.mass.gov. The site's theme (mass_theme
 
 1. Clone the repo: `git clone git@github.com:massgov/openmass.git`
 
-1. Move into the project directory: `cd mass`
+1. Move into the project directory: `cd openmass`
 
 1. Create a `.env` file at the root level of the project by copying the example file shipped with the `mass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
     ```
