@@ -3,6 +3,7 @@
 namespace Drush\Commands;
 
 use Consolidation\AnnotatedCommand\CommandData;
+use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\Sql\SqlEntityStorageInterface;
 use MassGov\Sanitation\ContentModerationSanitizer;
 use MassGov\Sanitation\MediaSanitizer;
@@ -193,6 +194,42 @@ class SanitizationCommands extends DrushCommands {
    */
   private function getEntityStorage(string $type) {
     return $this->entityTypeManager->getStorage($type);
+  }
+
+  /**
+   * Sanitize the database table for the user roles.
+   *
+   * @throws \Exception
+   *
+   * @command ma:userRole
+   */
+  public function userRole() {
+    // Remove all authors roles from the database.
+    $role = Database::getConnection()->truncate('user_roles')->execute();
+    if ($role) {
+      $this->logger()->error(dt('The user roles have not been truncated.'));
+    }
+    else {
+      $this->logger()->success(dt('The user roles have been truncated.'));
+    }
+  }
+
+  /**
+   * Sanitize the database table for the username.
+   *
+   * @throws \Exception
+   *
+   * @command ma:userName
+   */
+  public function userName() {
+    // User data table updated.
+    $name = Database::getConnection()->truncate('users_data table')->execute();
+    if ($name) {
+      $this->logger()->error(dt('The usernames have not been truncated.'));
+    }
+    else {
+      $this->logger()->success(dt('The usernames have been truncated.'));
+    }
   }
 
 }
