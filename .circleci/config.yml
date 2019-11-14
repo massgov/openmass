@@ -857,40 +857,40 @@ workflows:
 
   # This is to tag the release in the Acquia repository.
   # Testing deploying the newly created tag to stage environment.
-  build_tag:
-    jobs:
-      - build:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /.*/
-      - tagging_acquia:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /.*/
-      - hold:
-          type: approval
-          requires:
-            - build
-            - tagging_acquia
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /.*/
-      - deploy_tag_stage:
-          requires:
-            - build
-            - tagging_acquia
-            - hold
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /.*/
+#  build_tag:
+#    jobs:
+#      - build:
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /.*/
+#      - tagging_acquia:
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /.*/
+#      - hold:
+#          type: approval
+#          requires:
+#            - build
+#            - tagging_acquia
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /.*/
+#      - deploy_tag_stage:
+#          requires:
+#            - build
+#            - tagging_acquia
+#            - hold
+#          filters:
+#            branches:
+#              ignore: /.*/
+#            tags:
+#              only: /.*/
 
 
   # Daily rebuild of our sanitized mysql data image, runs at 12:30 PM EST.
