@@ -14,19 +14,18 @@
 IMPORTANT: You will need input from both the content and the design teams to fully fill out this form.
 
 - **Use this content type for...** -- Add whatever the content team provides. It should be in the form of a <ul>. It's optional, so may be left empty.
-- **Link to live example** -- Add whatever the content team provides. Note: we have not yet started filling these in, pending a decision about what exactly to link to.
-- **Category** -- Ask the content team which category to add. If a new category is needed or edits to an existing one are requested [add it to the xx module].
-- **Thumbnail** -- Ask the design team to provide a thumbnail image. These are usually SVGs. The file will also need to be committed, to /modules/custom/mass_admin_pages/images/[filename]
-- **Description** -- This is the main description for the content type. Add whatever the content team provides. (Yes, this field should come first in the form but making that happen was more trouble than it was worth).
+- **Link to live example** -- Not yet implemented. Links can be added to content that demonstrates how the page type will look.
+- **Category** -- Ask the content team which category to add. If a new category is needed or edits to an existing one are requested, make that change in the `mass_admin_pages` module.
+- **Thumbnail** -- Ask the design team to provide a thumbnail image. These are usually SVGs. The file will also need to be committed, to /modules/custom/mass_admin_pages/images/<filename>
+- **Description** -- This is the main description for the content type. Add whatever the content team provides.
 - **Vertical tabs**
   - Submission form settings
     _ Rename the "title" field if warranted
-    _ Leave "Preview before submitting" as "optional".
-    _ In general, don't add submission guidelines for the content type (we don't currently do this with any regularity if at all)
+    _ Leave "Preview before submitting" as "optional."
+    _ Skip submission guidelines for the content type (we don't currently do this with any regularity if at all)
     _ Add help text for the title field if provided (ask the Content team)
   - Publishing options
-    - UNCHECK “promoted.”
-    - Leave default as Published, and Yes Create new revision. (We use "promoted" in a different context, so we do want this off by default.)
+    - Leave default as Published, and Yes Create new revision.
   - Display settings
     - UNCHECK “display author and date info” (this really doesn't matter, but for consistency we have turned it off everywhere)
   - Menu settings
@@ -36,11 +35,11 @@ IMPORTANT: You will need input from both the content and the design teams to ful
   - Scheduler
     - Enable scheduling of publish and unpublish for all content types unless you have a good reason not to. Enable "create new revision" for both.
   - Dependency options
-    - See separate documentation for the <a href="https://github.com/massgov/mass/blob/DP-9397-dm-documentation/docs/descendant-manager.md">Descendant Manager</a> to learn more about how to configure any fields that create links between content.
+    - See documentation for the <a href="descendant-manager.md">Descendant Manager</a> to learn more about how to configure any fields that create links between content.
 
 ### Fields
 
-**THIS IS SECTION OUTLINES CURRENT PRACTICE BUT IS UNDER REVIEW - check with TA's**
+**THIS IS SECTION OUTLINES CURRENT PRACTICE BUT IS UNDER REVIEW**
 
 - **Reuse** -- Don't re-use fields across content types unless there's a good reason to do so. Exceptions include:
   - the `reusable_label` field, which is reused on all the law library types (advisory, decisions, regs, rules of court, exec orders) plus forms
@@ -49,7 +48,7 @@ IMPORTANT: You will need input from both the content and the design teams to ful
   - Include the content type name in the field, e.g. `field_content_type_name_of_field`
   - Include 'ref' in the machine name of entity references to note what’s being referenced: `field_how_to_ref_services`
 - **Labels**
-  - Use sentence case - only capitalize the first word.
+  - Use sentence case and only capitalize the first word.
   - Unless you have a very strong reason, use an entity reference field to a taxonomy term over a List (text) field type. _Changing list items is much more difficult, and no matter how certain you are the list won't change, you will be wrong most of the time_.
 - **Multiple value fields**
   - To solve the terrible UI when you allow X number of a item (other than unlimited), we have a pattern of allowing an unlimited number of an item and then limiting it using javascript - try to use that.
@@ -85,10 +84,6 @@ IMPORTANT: You will need input from both the content and the design teams to ful
 
 - Enable moderation (unless there's some specific reason not to). **Note that the content type filter on the "all content" view our authors use requires content types to have moderation enabled to work, so it's important to turn it on!**
 - Set the default state to "prepublished draft." **This is very important, as the Restricted Content Access tool depends on that prepublished state!**
-
-### Legacy Redirects
-
-- Permit authors to redirect to pages of this content type by adjusting the settings in the Legacy Redirect content type.
 
 ### Link/Entity Reference combo Fields
 
