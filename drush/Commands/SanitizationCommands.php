@@ -199,11 +199,12 @@ class SanitizationCommands extends DrushCommands {
   /**
    * Sanitize the database table for the user roles.
    *
-   * @throws \Exception
-   *
-   * @command ma:userRole
+   * @hook post-command sql-sanitize
    */
-  public function userRole() {
+  public function userRole($result, CommandData $commandData) {
+    if (!$commandData->input()->getOption('sanitize-roles')) {
+      return;
+    }
     // Remove all authors roles from the database.
     $role = Database::getConnection()->truncate('user_roles')->execute();
     if ($role) {
@@ -217,11 +218,12 @@ class SanitizationCommands extends DrushCommands {
   /**
    * Sanitize the database table for the username.
    *
-   * @throws \Exception
-   *
-   * @command ma:userName
+   * @hook post-command sql-sanitize
    */
-  public function userName() {
+  public function userName($result, CommandData $commandData) {
+    if (!$commandData->input()->getOption('sanitize-name')) {
+      return;
+    }
     // User data table updated.
     $name = Database::getConnection()->truncate('users_data table')->execute();
     if ($name) {
