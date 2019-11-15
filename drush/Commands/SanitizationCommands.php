@@ -209,8 +209,7 @@ class SanitizationCommands extends DrushCommands {
     $role = Database::getConnection()->truncate('user_roles')->execute();
     if ($role) {
       $this->logger()->error(dt('The user roles have not been truncated.'));
-    }
-    else {
+    } else {
       $this->logger()->success(dt('The user roles have been truncated.'));
     }
   }
@@ -221,17 +220,27 @@ class SanitizationCommands extends DrushCommands {
    * @hook post-command sql-sanitize
    */
   public function userName($result, CommandData $commandData) {
-    if (!$commandData->input()->getOption('sanitize-name')) {
-      return;
-    }
     // User data table updated.
-    $name = Database::getConnection()->truncate('users_data table')->execute();
-    if ($name) {
-      $this->logger()->error(dt('The usernames have not been truncated.'));
-    }
-    else {
-      $this->logger()->success(dt('The usernames have been truncated.'));
+    $options = $commandData->options();
+    $query = $this->database->update('users_field_data')->condition('uid', 0, '>');
+    $messages = [];
+
+    if ($this->isEnabled($options['sanitize-name'])) {
+      if (strpos($options['sanitize-name'], '%') !== false) {
+        $name_map = ['%name' => "', replace(name, ' ', '_'), '"];
+        $new_name = "concat('" . str_replace(array_keys($name_map), array_values($name_map), $options['sanitize-name']) . "')";
+      }
+      $query->expression('name', $new_name);
+
+      $messages[] = dt('User names are sanitized.');
+
+      if ($messages) {
+        $query->execute();
+        $this->entityTypeManager->getStorage('user')->resetCache();
+        foreach ($messages as $message) {
+          $this->logger()->success($message);
+        }
+      }
     }
   }
-
 }
