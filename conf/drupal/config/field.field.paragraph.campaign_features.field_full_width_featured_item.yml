@@ -12,8 +12,8 @@ id: paragraph.campaign_features.field_full_width_featured_item
 field_name: field_full_width_featured_item
 entity_type: paragraph
 bundle: campaign_features
-label: 'Full-width featured item'
-description: ''
+label: 'Primary featured item'
+description: 'This is the most prominent featured item. It is larger and will be displayed above featured items 2 and 3.. The image, title, and description span the full width of the page.'
 required: true
 translatable: false
 default_value: {  }
@@ -121,6 +121,9 @@ settings:
       emergency_alert:
         weight: 139
         enabled: false
+      custom_html:
+        weight: 140
+        enabled: false
       event_agenda_section:
         weight: 140
         enabled: false
@@ -204,6 +207,9 @@ settings:
         enabled: false
       links:
         weight: 167
+        enabled: false
+      key_message_section:
+        weight: 168
         enabled: false
       links_downloads:
         weight: 168
@@ -345,5 +351,8 @@ settings:
         enabled: false
       video_with_header:
         weight: 214
+        enabled: false
+      video_with_section:
+        weight: 220
         enabled: false
 field_type: entity_reference_revisions
