@@ -115,13 +115,16 @@ class SanitizationCommands extends DrushCommands {
     if ($input->getOption('sanitize-entities')) {
       $messages[] = 'Sanitize unpublished and old revisions of entities.';
     }
+    if ($input->getOption('sanitize-name')) {
+      $message[] = 'Sanitize user names.';
+    }
   }
 
   /**
    * @hook option sql-sanitize
    * @option sanitize-keyvalue Boolean flag for sanitization of key_value.
    */
-  public function options($options = ['sanitize-keyvalue' => FALSE, 'sanitize-entities' => FALSE]) {
+  public function options($options = ['sanitize-keyvalue' => FALSE, 'sanitize-entities' => FALSE, 'sanitize-name' => FALSE]) {
   }
 
   /**
