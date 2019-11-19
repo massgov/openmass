@@ -561,6 +561,11 @@ jobs:
   # at Docker Hub. That way, your in-progress work does not interfere with build
   # happening in the build_test workflow.
   populate:
+    description: "Sanitize a mysql database and push to Docker Hub"
+    parameters:
+      isSuper:
+        type: boolean
+        default: false
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
     docker:
       # Use Python since that's needed for docker tools anyway.
@@ -579,8 +584,20 @@ jobs:
           no_output_timeout: 60m
       - run: docker-compose stop --timeout 60 mysql
       - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
-      - run: docker commit $(docker-compose ps -q mysql) comass/mysql-sanitized:latest
-      - run: docker push comass/mysql-sanitized:latest
+      - when:
+          condition: << parameters.isSuper >>
+          steps:
+            # @todo Add username/roles sanitize
+            # Run an additional sanitization step for openmass.
+            - run: docker-compose exec drupal drush sql:sanitize --sanitize-entities --sanitize-keyvalue
+            - run: docker commit $(docker-compose ps -q mysql) massgov/openmass:sanitize
+            - run: docker push massgov/openmass:sanitize
+      - unless:
+          condition: << parameters.isSuper >>
+          steps:
+            - run: docker-compose exec drupal drush sql:sanitize --sanitize-entities --sanitize-keyvalue
+            - run: docker commit $(docker-compose ps -q mysql) comass/mysql-sanitized:sanitize
+            - run: docker push comass/mysql-sanitized:sanitize
 
   pending_security:
       <<: *container_config
@@ -893,7 +910,7 @@ workflows:
               only: /.*/
 
 
-  # Daily rebuild of our sanitized mysql data image, runs at 12:30 PM EST.
+  # Daily rebuild of our sanitized mysql data image.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
     jobs:
@@ -902,11 +919,29 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "50 17 * * *"
+          cron: "06 17 * * *"
           filters:
             branches:
               only:
                 - develop
+                - super-sanitize
+
+  # Daily rebuild of our SUPER sanitized mysql data image.
+  # The cron time needs to be updated every Fall/Spring for daylight saving time.
+  mysql_rebuild_super:
+    jobs:
+      - build
+      - populate:
+          isSuper: true
+          requires: [build]
+    triggers:
+      - schedule:
+          cron: "06 17 * * *"
+          filters:
+            branches:
+              only:
+                - develop
+                - super-sanitize
 
   # Run Nightcrawler and Backstop on dev, runs at 9:00PM EST.
 #  test_feature1:
