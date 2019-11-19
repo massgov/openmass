@@ -42,7 +42,6 @@ const legacyPrefixes = [
   'perac',
   'envir',
   'legis',
-  'agr',
   'bb',
   'abcc',
   'da',

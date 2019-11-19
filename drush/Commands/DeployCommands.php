@@ -92,7 +92,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       throw new \Exception('Missing CIRCLECI_PERSONAL_API_TOKEN. See .env.example for more details.');
     }
     $branch = $options['ci-branch'];
-    $uri = "https://circleci.com/api/v1.1/project/github/massgov/mass/tree/$branch?circle-token=" . $token;
+    $uri = "https://circleci.com/api/v1.1/project/github/massgov/openmass/tree/$branch?circle-token=" . $token;
     $response = $client->request('POST', $uri, [
       'headers' => ['Accept' => 'application/json'],
       'form_params' => [
