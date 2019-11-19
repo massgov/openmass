@@ -115,16 +115,22 @@ class SanitizationCommands extends DrushCommands {
     if ($input->getOption('sanitize-entities')) {
       $messages[] = 'Sanitize unpublished and old revisions of entities.';
     }
-    if ($input->getOption('sanitize-name')) {
-      $message[] = 'Sanitize user names.';
+    if ($input->getOption('sanitize-names')) {
+      $messages[] = 'Sanitize user names.';
+    }
+    if ($input->getOption('sanitize-roles')) {
+      $messages[] = 'Remove user-role assignments.';
     }
   }
 
   /**
    * @hook option sql-sanitize
-   * @option sanitize-keyvalue Boolean flag for sanitization of key_value.
+   * @option sanitize-keyvalue Sanitize key_value table.
+   * @option sanitize-entities Remove unpublished entities and old revisions of entities.
+   * @option sanitize-roles Remove user role assignments.
+   * @option sanitize-names Replace usernames with user+1, user+2, etc.
    */
-  public function options($options = ['sanitize-keyvalue' => FALSE, 'sanitize-entities' => FALSE, 'sanitize-name' => FALSE, 'sanitize-roles' => FALSE]) {
+  public function options($options = ['sanitize-keyvalue' => FALSE, 'sanitize-entities' => FALSE, 'sanitize-names' => FALSE, 'sanitize-roles' => FALSE]) {
   }
 
   /**
@@ -209,7 +215,7 @@ class SanitizationCommands extends DrushCommands {
       return;
     }
     // Remove all authors roles from the database.
-    $role = Database::getConnection()->truncate('user_roles')->execute();
+    $role = Database::getConnection()->truncate('user__roles')->execute();
     if ($role) {
       $this->logger()->error(dt('The user roles have not been truncated.'));
     } else {
@@ -218,32 +224,30 @@ class SanitizationCommands extends DrushCommands {
   }
 
   /**
-   * Sanitize the database table for the username.
+   * Sanitize usernames.
    *
    * @hook post-command sql-sanitize
    */
   public function userName($result, CommandData $commandData) {
-    // User data table updated.
-    $options = $commandData->options();
-    $query = $this->database->update('users_field_data')->condition('uid', 0, '>');
-    $messages = [];
-
-    if ($this->isEnabled($options['sanitize-name'])) {
-      if (strpos($options['sanitize-name'], '%') !== false) {
-        $name_map = ['%name' => "', replace(name, ' ', '_'), '"];
-        $new_name = "concat('" . str_replace(array_keys($name_map), array_values($name_map), $options['sanitize-name']) . "')";
-      }
-      $query->expression('name', $new_name);
-
-      $messages[] = dt('User names are sanitized.');
-
-      if ($messages) {
-        $query->execute();
-        $this->entityTypeManager->getStorage('user')->resetCache();
-        foreach ($messages as $message) {
-          $this->logger()->success($message);
-        }
-      }
+    if (!$commandData->input()->getOption('sanitize-names')) {
+      return;
     }
+
+    $this->database->update('users_field_data')
+      ->condition('uid', 0, '>')
+      ->expression('name', "concat('user+', uid)")
+      ->execute();
+    $this->logger()->success(dt('User names are sanitized.'));
+    $this->entityTypeManager->getStorage('user')->resetCache();
   }
+
+  /**
+   * Test an option value to see if it is disabled.
+   * @param $value
+   * @return bool
+   */
+  protected function isEnabled($value) {
+    return $value != 'no' && $value != '0';
+  }
+
 }

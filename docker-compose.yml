@@ -64,6 +64,10 @@ services:
     labels:
       - 'traefik.frontend.rule=Host:mass.local'
 
+  # The following database service uses a `percona-server:5.6.40` image where mysql initialization done by
+  # a custom `docker-entrypoint.sh` script. You can find that script and the `Dockerfile` in `.circleci/mysql-rebuild/`.
+  # The image is customized to store MySQL data *inside* the container, instead of using the Docker data volume.
+  # Further, the image is highly sanitized (no unpublished content, old revisions, user data, etc.).
   mysql:
     image: massgov/openmass:latest
     environment:
