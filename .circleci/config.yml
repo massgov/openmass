@@ -588,7 +588,7 @@ jobs:
           steps:
             # @todo Add username/roles sanitize
             # Run an additional sanitization step for openmass.
-            - run: docker-compose exec drupal drush sql:sanitize --sanitize-entities --sanitize-keyvalue
+            - run: docker-compose exec drupal drush -y sql:sanitize --sanitize-entities --sanitize-keyvalue
             - run: docker-compose stop --timeout 60 mysql
             - run: docker commit $(docker-compose ps -q mysql) massgov/openmass:sanitize
             - run: docker push massgov/openmass:sanitize
@@ -597,7 +597,7 @@ jobs:
           steps:
             - run: docker-compose stop --timeout 60 mysql
             - run: docker commit $(docker-compose ps -q mysql) comass/mysql-sanitized:sanitize
-            - run: docker push comass/mysql-sanitized:sanitize
+            - run: docker push comass/mysql-sanitized:latest
 
   pending_security:
       <<: *container_config
@@ -922,7 +922,7 @@ workflows:
           isSuper: true
     triggers:
       - schedule:
-          cron: "53 18 * * *"
+          cron: "37 19 * * *"
           filters:
             branches:
               only:

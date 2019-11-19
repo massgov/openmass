@@ -64,10 +64,8 @@ services:
     labels:
       - 'traefik.frontend.rule=Host:mass.local'
 
-  # USE: `ahoy start` to spin up a brand new drupal 8 site with massgov code, below DB, and default placeholder content.
-  # USE: The private override steps listed in DP-15515 to work with sanitized www.mass.gov data instead of starter placeholder content.
   mysql:
-    image: mariadb:10.4.8
+    image: massgov/openmass:latest
     environment:
       MYSQL_USER: circle
       MYSQL_PASSWORD: circle
