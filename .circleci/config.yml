@@ -588,7 +588,7 @@ jobs:
           steps:
             # @todo Add username/roles sanitize
             # Run an additional sanitization step for openmass.
-            - run: docker-compose exec drupal drush -y sql:sanitize --sanitize-entities --sanitize-keyvalue
+            - run: docker-compose exec drupal drush -y sql:sanitize --sanitize-entities --sanitize-keyvalue --sanitize-name
             - run: docker-compose stop --timeout 60 mysql
             - run: docker commit $(docker-compose ps -q mysql) massgov/openmass:sanitize
             - run: docker push massgov/openmass:sanitize
