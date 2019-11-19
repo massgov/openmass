@@ -183,7 +183,7 @@ class SanitizationCommands extends DrushCommands {
       $select->leftJoin($targetStorage->getDataTable(), 'b', "s.{$revisionFieldName} = b.{$targetType->getKey('revision')}");
       $select->condition("b.{$targetType->getKey('revision')}", NULL, '=');
       $count = $select->countQuery()->execute()->fetchField();
-      $this->writeln("Detected {$count} mismatched ERR references in {$fieldStorage->id()}");
+      $this->logger()->notice("Detected {$count} mismatched ERR references in {$fieldStorage->id()}");
 
     }
   }

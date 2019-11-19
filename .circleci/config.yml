@@ -582,7 +582,6 @@ jobs:
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
           no_output_timeout: 60m
-      - run: docker-compose stop --timeout 60 mysql
       - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
       - when:
           condition: << parameters.isSuper >>
@@ -590,12 +589,13 @@ jobs:
             # @todo Add username/roles sanitize
             # Run an additional sanitization step for openmass.
             - run: docker-compose exec drupal drush sql:sanitize --sanitize-entities --sanitize-keyvalue
+            - run: docker-compose stop --timeout 60 mysql
             - run: docker commit $(docker-compose ps -q mysql) massgov/openmass:sanitize
             - run: docker push massgov/openmass:sanitize
       - unless:
           condition: << parameters.isSuper >>
           steps:
-            - run: docker-compose exec drupal drush sql:sanitize --sanitize-entities --sanitize-keyvalue
+            - run: docker-compose stop --timeout 60 mysql
             - run: docker commit $(docker-compose ps -q mysql) comass/mysql-sanitized:sanitize
             - run: docker push comass/mysql-sanitized:sanitize
 
