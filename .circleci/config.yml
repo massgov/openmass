@@ -910,30 +910,16 @@ workflows:
               only: /.*/
 
 
-  # Daily rebuild of our sanitized mysql data image.
+  # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
     jobs:
       - build
       - populate:
           requires: [build]
-    triggers:
-      - schedule:
-          cron: "53 18 * * *"
-          filters:
-            branches:
-              only:
-                - develop
-                - super-sanitize
-
-  # Daily rebuild of our SUPER sanitized mysql data image.
-  # The cron time needs to be updated every Fall/Spring for daylight saving time.
-  mysql_rebuild_super:
-    jobs:
-      - build
       - populate:
-          isSuper: true
           requires: [build]
+          isSuper: true
     triggers:
       - schedule:
           cron: "53 18 * * *"
