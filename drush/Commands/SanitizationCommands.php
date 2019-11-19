@@ -124,7 +124,7 @@ class SanitizationCommands extends DrushCommands {
    * @hook option sql-sanitize
    * @option sanitize-keyvalue Boolean flag for sanitization of key_value.
    */
-  public function options($options = ['sanitize-keyvalue' => FALSE, 'sanitize-entities' => FALSE, 'sanitize-name' => FALSE]) {
+  public function options($options = ['sanitize-keyvalue' => FALSE, 'sanitize-entities' => FALSE, 'sanitize-name' => FALSE, 'sanitize-roles' => FALSE]) {
   }
 
   /**
