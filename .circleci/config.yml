@@ -586,10 +586,9 @@ jobs:
       - when:
           condition: << parameters.isSuper >>
           steps:
-            # @todo Add username/roles sanitize
             # Run an additional sanitization step for openmass.
             - run:
-                command: docker-compose exec drupal drush -y -vvv sql:sanitize --sanitize-entities --sanitize-keyvalue
+                command: docker-compose exec drupal drush -y -v sql:sanitize --sanitize-entities --sanitize-keyvalue --sanitize-names --sanitize-roles
                 no_output_timeout: 30m
             - run: docker-compose stop --timeout 60 mysql
             - run: docker commit $(docker-compose ps -q mysql) massgov/openmass:latest
@@ -924,7 +923,7 @@ workflows:
           isSuper: true
     triggers:
       - schedule:
-          cron: "11 0 * * *"
+          cron: "48 03 * * *"
           filters:
             branches:
               only:
