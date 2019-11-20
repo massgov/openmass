@@ -122,8 +122,8 @@ $data_string = json_encode($data);
 curl_setopt($ch, CURLOPT_USERNAME, 'massgov-bot');
 curl_setopt($ch, CURLOPT_PASSWORD, $_ENV['GITHUB_MASSGOV_BOT_TOKEN']);
 curl_setopt($ch, CURLOPT_POST, '-X');
-curl_setopt($ch, CURLOPT_USERAGENT, 'https://api.github.com/repos/massgov/mass/');
-curl_setopt($ch, CURLOPT_URL, 'https://api.github.com/repos/massgov/mass/pulls');
+curl_setopt($ch, CURLOPT_USERAGENT, 'https://api.github.com/repos/massgov/openmass/');
+curl_setopt($ch, CURLOPT_URL, 'https://api.github.com/repos/massgov/openmass/pulls');
 curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/json', 'Content-Type: application/json'));
 curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
 
