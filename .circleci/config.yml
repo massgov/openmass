@@ -566,7 +566,7 @@ jobs:
       isSuper:
         type: boolean
         default: false
-      tag:
+      instance:
         type: string
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
     docker:
@@ -593,8 +593,8 @@ jobs:
                 command: docker-compose exec drupal drush -y -v sql:sanitize --sanitize-entities --sanitize-keyvalue --sanitize-names --sanitize-roles
                 no_output_timeout: 30m
       - run: docker-compose stop --timeout 60 mysql
-      - run: docker commit $(docker-compose ps -q mysql) << parameters.tag >>
-      - run: docker push << parameters.tag >>
+      - run: docker commit $(docker-compose ps -q mysql) << parameters.instance >>
+      - run: docker push << parameters.instance >>
 
   pending_security:
       <<: *container_config
@@ -914,11 +914,11 @@ workflows:
       - build
       - populate:
           requires: [build]
-          tag: comass/mysql-sanitized:latest
+          instance: comass/mysql-sanitized:latest
       - populate:
           requires: [build]
           isSuper: true
-          tag: massgov/openmass:latest
+          instance: massgov/openmass:latest
     triggers:
       - schedule:
           cron: "48 13 * * *"
