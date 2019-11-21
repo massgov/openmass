@@ -1,3 +1,14 @@
+
+
+## [0.222.0] - November 20, 2019
+
+### Changed
+  - DP-16567: Removed "/agr" path from Cloudflare config.
+  - DP-15695: Update a few release bits from mass to openmass
+  
+### Added
+  - DP-16555: Create a way to produce a sanitized database that has no username or roles in it.
+  
 ## [0.220.1] - November 13, 2019
 
 ### Removed
