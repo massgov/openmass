@@ -48,7 +48,7 @@ IMPORTANT: You will need input from both the content and the design teams to ful
   - Include the content type name in the field, e.g. `field_content_type_name_of_field`
   - Include 'ref' in the machine name of entity references to note what’s being referenced: `field_how_to_ref_services`
 - **Labels**
-  - Use sentence case and only capitalize the first word.
+  - Use sentence case: only capitalize the first word.
   - Unless you have a very strong reason, use an entity reference field to a taxonomy term over a List (text) field type. _Changing list items is much more difficult, and no matter how certain you are the list won't change, you will be wrong most of the time_.
 - **Multiple value fields**
   - To solve the terrible UI when you allow X number of a item (other than unlimited), we have a pattern of allowing an unlimited number of an item and then limiting it using javascript - try to use that.
