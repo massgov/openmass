@@ -34,10 +34,8 @@ This is the codebase for the Drupal 8 www.mass.gov. The site's theme (mass_theme
     ```bash
     sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
     ```
-1. Run `ahoy start` to setup a fresh new site (n.b. takes about 1 hour to complete). This does the following: 
-    - Starts the Docker containers, which includes a database.
-    - Runs `composer install` to fetch all dependencies.
-    - Installs a fresh site based on latest config contained in this repository.
+1. Run `ahoy up` to start the Docker containers (n.b. takes about 1 hour to pull down the latest database). 
+1. Runs `ahoy comi` to fetch all dependencies.
 
 ## Workflow
 
