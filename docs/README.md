@@ -1,0 +1,43 @@
+# Table of Contents
+See also: [Documentation for Mass Digital team](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/README.md) (not public)
+  
+## Developer basics
+- [Getting Started](#getting-started)
+  - Clone the repo; set up Docker and ahoy; workflow
+- [Changelog Instructions](changelog_instructions.md)
+- [Composer](composer.md)
+- [Peer Review checklist](peer_review_checklist.md)
+- [Performance](performance.md)
+- [Testing](testing.md)
+
+## API
+- [Web Services(JSON API)](webservices.md)
+
+## Content model
+- [Content Type configuration checklist](content-type-checklist.md)
+- [Descendant Manager](descendant-manager.md)
+  - [Configuring Content types for Descendant Manager](https://github.com/massgov/openmass/blob/develop/docs/descendant-manager.md#adding-and-updating-content-types)
+- [Map content type to schema.org](schema.org_mapping.md)
+
+
+## Modules
+Contributors should familiarize themselves with existing modules both custom and contrib, so they can find and copy established patterns, keep related code together, and generally keep the codebase organized. 
+-  [Modules](modules.md)
+   - [Adding a new module to composer](modules.md#adding-a-new-module-to-composer)
+   - [Patching a module](modules.md#patching-a-module)
+   - [Updating a dependency](modules.md#updating-a-dependency)
+   - [Enabling development-only modules (e.g. Devel)](modules.md#enabling-development-only-modules-eg-devel)
+   
+
+## Testing
+- [Testing](testing.md)
+  - [Behat & PHPUnit](testing.md#run-tests-locally)
+  - [Backstop](https://github.com/massgov/openmass/blob/develop/backstop/README.md)
+  - [Performance Optimization and Profiling (Blackfire.io)](performance.md)
+  - [Nightcrawler](https://github.com/massgov/openmass/blob/develop/.circleci/nightcrawler/README.md)
+
+## Theme & Mayflower
+- [mass_theme](https://github.com/massgov/openmass/blob/develop/docroot/themes/custom/mass_theme/README.md)
+- [Mayflower Module](https://github.com/massgov/openmass/blob/develop/docroot/modules/custom/mayflower/README.md)
+- [Change the Mayflower version in Drupal](mayflower.md)
+- [Mayflower assets integration](mayflower_assets.md)
