@@ -1,6 +1,6 @@
 # Mayflower
 
-[Mayflower](https://github.com/massgov/mayflower) is an open source Design System built in [Pattern Lab](http://patternlab.io/) (PHP) and maintained by Mass Digital. Learn more about Mayflower in the [project repo's readme](https://github.com/massgov/mayflower).
+[Mayflower](https://github.com/massgov/mayflower) is an open source Design System built in [Pattern Lab](http://patternlab.io/) (PHP) and maintained by Mass Digital.
 
 ## Mayflower and Mass.gov's Drupal theme
 
@@ -8,7 +8,7 @@ Mass.gov uses a custom Drupal theme called [mass_theme](../docroot/themes/custom
 
 This relationship is managed alongside other project dependencies through composer. Learn more about this relationship in the [Mayflower Artifacts](#mayflower-artifacts) section below.
 
-Mass.gov also uses a custom Drupal module, called [mayflower](../docroot/modules/custom/mayflower), which acts as "glue code" to get `mass_theme` working with Mayflower. Learn more in the [mass_theme](../docroot/themes/custom/mass_theme) and [mayflower module](../docroot/modules/custom/mayflower) readmes.
+Mass.gov also uses a custom Drupal module, called [mayflower](../docroot/modules/custom/mayflower), which acts as "glue code" to get `mass_theme` working with Mayflower. Learn more in the [mass_theme](../docroot/themes/custom/mass_theme) and [mayflower module](../docroot/modules/custom/mayflower) readme's.
 
 ### A visual flow from Mayflower to Drupal
 

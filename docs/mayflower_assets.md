@@ -1,6 +1,6 @@
 # Mayflower Assets Integration
 
-CircleCI is configured for [massgov/mayflower](https://github.com/massgov/mayflower) to build the production artifact on every build but to deploy the artifact only when a release is cut. The deployment script copies the built artifact into a clone of [massgov/mayflower-artifacts](https://github.com/massgov/mayflower-artifacts) and commits all the branches and tags with the same release version of [massgov/mayflower](https://github.com/massgov/mayflower).
+CircleCI is configured for [massgov/mayflower](https://github.com/massgov/mayflower) to build the production artifact on every build but to deploy the artifacts only when a release is cut. The deployment script copies the built artifacts into a clone of [massgov/mayflower-artifacts](https://github.com/massgov/mayflower-artifacts) and commits all the branches and tags with the same release version of [massgov/mayflower](https://github.com/massgov/mayflower).
 
 See [https://github.com/massgov/mayflower-patternlab/pull/49](https://github.com/massgov/mayflower-patternlab/pull/49) and [https://github.com/massgov/mayflower-patternlab/pull/50](https://github.com/massgov/mayflower-patternlab/pull/50) for this work.
 

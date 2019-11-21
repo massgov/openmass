@@ -1,6 +1,6 @@
 # Changelog Instructions
 
-When PRs are added to this repo, several things happen automatically. One is to test for the presence of a correctly named and formatted changlog file. This document explains how to create that file.
+When PRs are added to this repo, several things happen automatically. One is to test for the presence of a correctly named and formatted changelog file. This document explains how to create that file.
 
 ## Before you submit a PR
 
