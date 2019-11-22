@@ -918,10 +918,10 @@ workflows:
       - populate:
           requires: [build]
           isSuper: true
-          instance: massgov/openmass:latest
+          instance: comass/mysql-sanitized:super
     triggers:
       - schedule:
-          cron: "48 13 * * *"
+          cron: "28 02 * * *"
           filters:
             branches:
               only:
