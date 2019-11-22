@@ -875,7 +875,7 @@ workflows:
               only: master
 
   # This is to tag the release in the Acquia repository.
-  # Testing deploying the newly created tag to stage environment.
+  # This will deploy the newly created tag to stage environment and production environment with hold/approval for each job.
   build_tag:
     jobs:
       - build:
