@@ -563,9 +563,9 @@ jobs:
   populate:
     description: "Sanitize a mysql database and push to Docker Hub"
     parameters:
-      isSuper:
-        type: boolean
-        default: false
+      santitizeOption:
+        type: string
+        default: --sanitize
       instance:
         type: string
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
@@ -585,18 +585,9 @@ jobs:
           command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
           no_output_timeout: 60m
       - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
-      - when:
-          condition: << parameters.isSuper >>
-          steps:
-            - run:
-                command: docker-compose exec drupal scripts/ma-refresh-local --super-sanitize
-                no_output_timeout: 30m
-      - unless:
-          condition: << parameters.isSuper >>
-          steps:
-            - run:
-                command: docker-compose exec drupal scripts/ma-refresh-local --sanitize
-                no_output_timeout: 30m
+      - run:
+          command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
+          no_output_timeout: 30m
       - run: docker-compose exec drupal drush cr
       - run: docker-compose stop --timeout 60 mysql
       - run: docker commit $(docker-compose ps -q mysql) << parameters.instance >>
@@ -923,7 +914,7 @@ workflows:
           instance: comass/mysql-sanitized:latest
       - populate:
           requires: [build]
-          isSuper: true
+          sanitizeOption: --super-sanitize
           instance: comass/mysql-sanitized:super
     triggers:
       - schedule:
