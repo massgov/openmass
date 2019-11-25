@@ -14,7 +14,7 @@ dependencies:
     - field.field.node.campaign_landing.field_organizations
     - field.field.node.campaign_landing.field_sections
     - node.type.campaign_landing
-    - workflows.workflow.editorial
+    - workflows.workflow.campaign_landing_page
   module:
     - content_moderation
     - field_group
@@ -36,7 +36,7 @@ third_party_settings:
       format_settings:
         label: Overview
         formatter: open
-        description: ''
+        description: "A promotional page is a simple, engaging, and visually appealing landing page that supports a marketing or awareness campaign by the state government by conveying a focused message, over a finite time period. <a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/promotional-page\" target=\"_blank\">Learn about authoring Promotional pages.</a>\r\n<br><br>Editors can get permissions to publish Promotional pages after attending an office hours session to receive training.  <a href=\"https://massgovdigital.gitbook.io/knowledge-base/digital-service-resources-1/get-help-from-the-mass.gov-team/ma-digital-service-office-hours\">Sign up here</a>."
         required_fields: true
         id: ''
         classes: ''
@@ -62,28 +62,30 @@ third_party_settings:
       weight: 7
       format_type: tab
       format_settings:
+        label: Content
+        formatter: open
+        description: "Choose the Header that you want to appear at the top of your page and add up to 9 sections. <br><br>\r\nThe Header consists of a title and text that is either over an image or solid color (Key message), or a video.<br><br>\r\nWe recommend you keep the page as short and simple as possible with a single call to action."
+        required_fields: true
         id: ''
         classes: ''
-        formatter: open
-        description: ''
-        required_fields: true
       label: Content
     group_kpis:
       children:
         - field_kpi_ctr_key_msg
         - field_kpi_ctr_button_links
-        - field_kpi_pageviews
         - field_kpi_pct_video_play
         - field_kpi_pct_video_50
+        - field_kpi_pageviews
       parent_name: group_campaign_landing_edit_form
-      weight: 8
+      weight: 9
       format_type: tab
       format_settings:
+        label: 'Key Performance Indicators'
+        formatter: closed
+        description: "KPIs allow you to define what counts as success for this page.  You may set goals for up to 3 metrics. At least 1 is required.  You'll then be able to see your results on your page's dashboard (not yet implemented).<br><br>\r\nIf you're not sure what to choose, please see our <a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/promotional-page\" target=\"_blank\">knowledge base article</a>."
+        required_fields: true
         id: ''
         classes: ''
-        formatter: closed
-        description: 'KPIs allow you to define what counts as success for this page.  You may set goals for up to 3 metrics. At least 1 is required.  You''ll then be able to see your results on your page''s dashboard.'
-        required_fields: true
       label: 'Key Performance Indicators'
 id: node.campaign_landing.default
 targetEntityType: node
@@ -91,14 +93,14 @@ bundle: campaign_landing
 mode: default
 content:
   field_campaign_landing_metatags:
-    weight: 3
+    weight: 2
     settings: {  }
     third_party_settings: {  }
     type: metatag_firehose
     region: content
   field_header:
     type: paragraphs
-    weight: 2
+    weight: 8
     settings:
       title: Header
       title_plural: Header
@@ -106,7 +108,7 @@ content:
       closed_mode: summary
       autocollapse: none
       closed_mode_threshold: 0
-      add_mode: dropdown
+      add_mode: button
       form_display_mode: default
       default_paragraph_type: _none
       features:
@@ -130,21 +132,21 @@ content:
     type: number
     region: content
   field_kpi_pageviews:
-    weight: 3
-    settings:
-      placeholder: ''
-    third_party_settings: {  }
-    type: number
-    region: content
-  field_kpi_pct_video_50:
     weight: 5
     settings:
       placeholder: ''
     third_party_settings: {  }
     type: number
     region: content
-  field_kpi_pct_video_play:
+  field_kpi_pct_video_50:
     weight: 4
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_kpi_pct_video_play:
+    weight: 3
     settings:
       placeholder: ''
     third_party_settings: {  }
@@ -172,7 +174,7 @@ content:
     region: content
   field_sections:
     type: paragraphs
-    weight: 3
+    weight: 9
     settings:
       title: Section
       title_plural: Sections
@@ -180,7 +182,7 @@ content:
       closed_mode: summary
       autocollapse: none
       closed_mode_threshold: 0
-      add_mode: dropdown
+      add_mode: button
       form_display_mode: default
       default_paragraph_type: _none
       features:
@@ -191,33 +193,33 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 8
+    weight: 9
     settings: {  }
     region: content
     third_party_settings: {  }
   path:
     type: path
-    weight: 2
+    weight: 1
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 4
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 6
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 20
+    weight: 10
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
   title:
     type: string_textfield
     weight: 1
@@ -234,7 +236,7 @@ content:
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 7
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
