@@ -590,7 +590,7 @@ jobs:
           steps:
             # Run an additional sanitization step for openmass.
             - run:
-                command: docker-compose exec drupal drush -y -v sql:sanitize --sanitize-entities --sanitize-keyvalue --sanitize-names --sanitize-roles
+                command: docker-compose exec drupal scripts/ma-refresh-local --super-sanitize
                 no_output_timeout: 30m
       - run: docker-compose exec drupal drush cr
       - run: docker-compose stop --timeout 60 mysql
