@@ -169,7 +169,7 @@ function sanitize() {
     # Sanitize the database by removing or obfuscating user data.
     echo
     echo "${HEADING}[+] Sanitize database ${TEXTRESET}" | tee -a $LOGFILE_NAME
-    drush -y sql:sanitize
+    drush -y -v sql:sanitize --sanitize-entities --sanitize-keyvalue --sanitize-names --sanitize-roles
     nonzero_exit
 }
 
@@ -267,6 +267,10 @@ function main() {
 
     # Database prep only.
     elif [[ "$1" = "-dpo" ]] || [[ "$1" = "--db-prep-only" ]]; then
+        db_prep_only
+
+    # Sanitize database.
+    elif [[ "$1" = "-s" ]] || [[ "$1" = "--sanitize" ]]; then
         db_prep_only
 
     # If help is needed.
