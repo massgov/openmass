@@ -175,7 +175,7 @@ function sanitize() {
     # Sanitize the database by removing or obfuscating user data.
     echo
     echo "${HEADING}[+] Sanitize database ${TEXTRESET}" | tee -a $LOGFILE_NAME
-    drush -y -v sql:sanitize
+    drush -y sql:sanitize
     nonzero_exit
 }
 
