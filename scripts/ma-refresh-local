@@ -61,6 +61,7 @@ function show_help() {
     echo
 }
 
+
 function show_usage() {
     # Show usage.
     echo "[+] Usage: '${SCRIPT_NAME} -c' to build with a cached db copy (if available)."
@@ -81,6 +82,7 @@ function header() {
 
 }
 
+
 function sub_header() {
     # Show sub header with script date, sript name current log file.
     echo "`date`" | tee -a $LOGFILE_NAME
@@ -96,6 +98,7 @@ function log_retention() {
   find $LOGFILE_HOME -name "${SCRIPT_NAME%\.*}_*" -mtime +${SCRIPT_LOG_RETENTION_DAYS} -exec rm -f {} \; > /dev/null 2>&1
   return 0
 }
+
 
 function wrap_up() {
     # Cleanup old logs and display execution time (%s).
@@ -149,6 +152,7 @@ function sql_create() {
     nonzero_exit
 }
 
+
 function cache_rebuild() {
     # Rebuild Drupal caches
     echo
@@ -156,6 +160,7 @@ function cache_rebuild() {
     drush -y cache:rebuild
     nonzero_exit
 }
+
 
 function cache_rebuild_discovery() {
     # Rebuild only cache_discovery
@@ -165,8 +170,18 @@ function cache_rebuild_discovery() {
     nonzero_exit
 }
 
+
 function sanitize() {
     # Sanitize the database by removing or obfuscating user data.
+    echo
+    echo "${HEADING}[+] Sanitize database ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y -v sql:sanitize
+    nonzero_exit
+}
+
+
+function super_sanitize() {
+    # Super sanitize the database by removing or obfuscating user data.
     echo
     echo "${HEADING}[+] Sanitize database ${TEXTRESET}" | tee -a $LOGFILE_NAME
     drush -y -v sql:sanitize --sanitize-entities --sanitize-keyvalue --sanitize-names --sanitize-roles
@@ -222,6 +237,7 @@ function skip_db_prep() {
     cache_rebuild
 }
 
+
 function db_prep_only() {
     # When '--db-prep-only' is passed.
     sql_create
@@ -272,6 +288,10 @@ function main() {
     # Sanitize database.
     elif [[ "$1" = "-s" ]] || [[ "$1" = "--sanitize" ]]; then
         sanitize
+    
+    # Super sanitize database.
+    elif [[ "$1" = "-ss" ]] || [[ "$1" = "--super-sanitize" ]]; then
+        super_sanitize
 
     # If help is needed.
     elif [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]] ; then
