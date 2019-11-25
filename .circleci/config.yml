@@ -563,7 +563,7 @@ jobs:
   populate:
     description: "Sanitize a mysql database and push to Docker Hub"
     parameters:
-      santitizeOption:
+      sanitizeOption:
         type: string
         default: --sanitize
       instance:
@@ -911,6 +911,7 @@ workflows:
       - build
       - populate:
           requires: [build]
+          sanitizeOption: --sanitize
           instance: comass/mysql-sanitized:latest
       - populate:
           requires: [build]
