@@ -592,6 +592,7 @@ jobs:
             - run:
                 command: docker-compose exec drupal drush -y -v sql:sanitize --sanitize-entities --sanitize-keyvalue --sanitize-names --sanitize-roles
                 no_output_timeout: 30m
+      - run: docker-compose exec drupal drush cr
       - run: docker-compose stop --timeout 60 mysql
       - run: docker commit $(docker-compose ps -q mysql) << parameters.instance >>
       - run: docker push << parameters.instance >>
@@ -921,7 +922,7 @@ workflows:
           instance: comass/mysql-sanitized:super
     triggers:
       - schedule:
-          cron: "28 02 * * *"
+          cron: "56 13 * * *"
           filters:
             branches:
               only:
