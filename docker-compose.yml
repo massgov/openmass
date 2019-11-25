@@ -69,7 +69,8 @@ services:
   # The image is customized to store MySQL data *inside* the container, instead of using the Docker data volume.
   # Further, the image is super sanitized (no unpublished content, old revisions, user data, etc.).
   mysql:
-    image: massgov/openmass:latest
+    # @todo - Document how access is granted to this private image.
+    image: comass/mysql-sanitized:super
     environment:
       MYSQL_USER: circle
       MYSQL_PASSWORD: circle
