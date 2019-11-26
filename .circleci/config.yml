@@ -103,7 +103,6 @@ jobs:
           key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - node_modules/
-
       - persist_to_workspace:
           root: /var/www
           paths: [code]
@@ -176,7 +175,6 @@ jobs:
       - run:
           name: Update host file
           command: echo '127.0.0.1 mass.local' >> /etc/hosts
-
       # Validate .json and check if it is in sync with the .lock file
       - run: composer validate
       # Check coding standards with php code sniffer. See phpcs.xml
@@ -189,21 +187,17 @@ jobs:
       - run: scripts/ma-refresh-local --skip-db-prep
       # Get a status
       - run: drush status
-
       # config-export and error if there are differences.
       # This makes sure our committed config matches what is exported by Drupal.
       # If this fails, the usual fix is to commit the diff that is reported.
       - run: "drush config:export -y"
       - run: git diff -w --exit-code
       - run: git reset --hard
-
       # Ensure files and DTT directories are writable by www-data
       - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
-
       # drupal-test-traits testing
       - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom"'
-
       # Behat testing
       - run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - store_test_results:
@@ -349,8 +343,12 @@ jobs:
           command: "drush ma:deploy -v -y prod tags/$CIRCLE_TAG"
           no_output_timeout: 60m
 
-  # Nightcrawler is only using 1500 samples size to crawl the dev environment.
-  crawl_feature1:
+  crawl:
+    parameters:
+      samples:
+        type: integer
+      target:
+        type: string
     <<: *container_config
     steps:
       - attach_workspace: {at: /var/www}
@@ -360,105 +358,17 @@ jobs:
       - run: mkdir -p /tmp/results/junit
       - run:
           name: Nightcrawler
-          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=feature1 --samples=1200
+          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=<< parameters.target >> --samples=<< parameters.samples >>
           no_output_timeout: 300m
       - store_test_results:
           path: /tmp/results
       - store_artifacts:
           path: /tmp/results
 
-  # Nightcrawler is only using 1200 samples size to crawl the feature3 environment.
-  crawl_feature3:
-    <<: *container_config
-    steps:
-      - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
-      - *no_host_check
-      - *no_ssh_timeout
-      - run: mkdir -p /tmp/results/junit
-      - run:
-          name: Nightcrawler
-          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=feature3 --samples=1200
-          no_output_timeout: 300m
-      - store_test_results:
-          path: /tmp/results
-      - store_artifacts:
-          path: /tmp/results
-
-  # Nightcrawler is only using 900 samples size to crawl the develop branch.
-  crawl_cd:
-    <<: *container_config
-    steps:
-      - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
-      - *no_host_check
-      - *no_ssh_timeout
-      - run: mkdir -p /tmp/results/junit
-      - run:
-          name: Nightcrawler
-          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=cd --samples=900
-          no_output_timeout: 300m
-      - store_test_results:
-          path: /tmp/results
-      - store_artifacts:
-          path: /tmp/results
-
-  # Nightcrawler is only using 700 samples size to crawl the release branch.
-  crawl_stage_release:
-    <<: *container_config
-    steps:
-    - attach_workspace: {at: /var/www}
-    - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
-    - *no_host_check
-    - *no_ssh_timeout
-    - run: mkdir -p /tmp/results/junit
-    - run:
-        name: Nightcrawler
-        command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=test --samples=700
-        no_output_timeout: 300m
-    - store_test_results:
-        path: /tmp/results
-    - store_artifacts:
-        path: /tmp/results
-
-  # Nightcrawler is only using 200 samples size to crawl the hotfix branch.
-  crawl_stage_hotfix:
-    <<: *container_config
-    steps:
-    - attach_workspace: {at: /var/www}
-    - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
-    - *no_host_check
-    - *no_ssh_timeout
-    - run: mkdir -p /tmp/results/junit
-    - run:
-        name: Nightcrawler
-        command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=test --samples=200
-        no_output_timeout: 300m
-    - store_test_results:
-        path: /tmp/results
-    - store_artifacts:
-        path: /tmp/results
-
-  # Nightcrawler is only using 500 samples size to crawl the mayflower branch.
-  crawl_mayflower_stage:
-    <<: *container_config
-    steps:
-      - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
-      - *no_host_check
-      - *no_ssh_timeout
-      - run: mkdir -p /tmp/results/junit
-      - run:
-          name: Nightcrawler
-          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=test --samples=500
-          no_output_timeout: 300m
-      - store_test_results:
-          path: /tmp/results
-      - store_artifacts:
-          path: /tmp/results
-
-  # Backstop is using the all.json file compare production vs dev for the core update branch.
-  backstop_feature1:
+  backstop:
+    parameters:
+      target:
+        type: string
     working_directory: /home/circleci/code
     docker:
       # Need to use docker image for these steps.
@@ -469,49 +379,7 @@ jobs:
       - run: docker-compose up --no-start backstop
       - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
       - run: docker-compose run backstop reference --target=prod --list=all
-      - run: docker-compose run backstop test --target=feature1 --list=all
-      - run:
-          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
-          when: always
-      - store_test_results:
-          path: /home/circleci/code/backstop/report
-      - store_artifacts:
-          path: /home/circleci/code/backstop
-
-  # Backstop is using the all.json file compare production vs stage (test) for the 'release/', 'hotfix/' and 'mayflower/' branch.
-  backstop_stage:
-      working_directory: /home/circleci/code
-      docker:
-      # Need to use docker image for these steps.
-      - image: circleci/python:2.7.14
-      steps:
-      - checkout
-      - setup_remote_docker
-      - run: docker-compose up --no-start backstop
-      - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
-      - run: docker-compose run backstop reference --target=prod --list=all
-      - run: docker-compose run backstop test --target=test --list=all
-      - run:
-          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
-          when: always
-      - store_test_results:
-          path: /home/circleci/code/backstop/report
-      - store_artifacts:
-          path: /home/circleci/code/backstop
-
-  # Backstop is using the all.json file compare production vs CD for the 'develop' branch.
-  backstop_cd:
-    working_directory: /home/circleci/code
-    docker:
-      # Need to use docker image for these steps.
-      - image: circleci/python:2.7.14
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run: docker-compose up --no-start backstop
-      - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
-      - run: docker-compose run backstop reference --target=prod --list=all
-      - run: docker-compose run backstop test --target=cd --list=all
+      - run: docker-compose run backstop test --target=<< parameters.target >> --list=all
       - run:
           command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
           when: always
@@ -633,13 +501,16 @@ workflows:
           filters:
             branches:
               only: /^mayflower-dev-.*/
-      - crawl_cd:
+      - crawl:
           requires: [deploy]
+          samples: 900
+          target: cd
           filters:
             branches:
               only: /^mayflower-dev-.*/
-      - backstop_cd:
+      - backstop:
           requires: [deploy]
+          target: cd
           filters:
             branches:
               only: /^mayflower-dev-.*/
@@ -689,13 +560,16 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - crawl_stage_release:
+      - crawl:
           requires: [deploy_release_stage]
+          target: test
+          samples: 700
           filters:
             branches:
               only: /^release\/.*$/
-      - backstop_stage:
+      - backstop:
           requires: [deploy_release_stage]
+          target: stage
           filters:
             branches:
               only: /^release\/.*$/
@@ -730,13 +604,16 @@ workflows:
         filters:
           branches:
             only: /^hotfix\/.*$/
-    - crawl_stage_hotfix:
+    - crawl:
           requires: [deploy_hotfix_stage]
+          target: test
+          samples: 200
           filters:
             branches:
               only: /^hotfix\/.*$/
-    - backstop_stage:
+    - backstop:
           requires: [deploy_hotfix_stage]
+          target: stage
           filters:
             branches:
               only: /^hotfix\/.*$/
@@ -771,13 +648,16 @@ workflows:
           filters:
             branches:
               only: /^mayflower\/.*$/
-      - crawl_mayflower_stage:
+      - crawl:
           requires: [deploy_release_stage]
+          target: test
+          samples: 500
           filters:
             branches:
               only: /^mayflower\/.*$/
-      - backstop_stage:
+      - backstop:
           requires: [deploy_release_stage]
+          target: stage
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -920,24 +800,13 @@ workflows:
 #  test_feature1:
 #    jobs:
 #      - build
-#      - backstop_feature1:
+#      - backstop:
 #          requires: [build]
-#      - crawl_feature1:
+#          target: feature1
+#      - crawl:
 #          requires: [build]
-#    triggers:
-#      - schedule:
-#          cron: "00 02 * * *"
-#          filters:
-#            branches:
-#              only:
-#                - develop
-
-  # Run Nightcrawler on feature3, runs at 10:00PM EST.
-#  test_feature3:
-#    jobs:
-#      - build
-#      - crawl_feature3:
-#          requires: [build]
+#          target: feature1
+#          samples: 1200
 #    triggers:
 #      - schedule:
 #          cron: "00 02 * * *"
@@ -952,10 +821,13 @@ workflows:
       - build
       - deploy:
           requires: [build]
-      - crawl_cd:
+      - crawl:
           requires: [deploy]
-      - backstop_cd:
+          target: cd
+          samples: 900
+      - backstop:
           requires: [deploy]
+          target: cd
     triggers:
       - schedule:
           cron: "00 03 * * 0,2,3,4,5,6"
