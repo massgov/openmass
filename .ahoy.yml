@@ -25,13 +25,6 @@ commands:
     cmd: docker-compose down --remove-orphans && docker-compose pull && docker-compose up -d
     usage: Refresh the database.
 
-  start:
-    cmd: |
-        ahoy up
-        ahoy comi
-        ahoy drush si --existing-config -n -v
-    usage: Start Docker, assemble a codebase, and install a fresh site.
-
   updatedb:
     cmd: ahoy exec scripts/ma-refresh-local --skip-db-prep
     usage: Run after a git pull, so that pending updates are run.
