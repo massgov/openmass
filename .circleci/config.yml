@@ -881,6 +881,7 @@ workflows:
     jobs:
       - build
       - test:
+          name: test-super
           instance: comass/mysql-sanitized:super
           requires: [build]
     triggers:
@@ -898,10 +899,12 @@ workflows:
     jobs:
       - build
       - populate:
+          name: populate --sanitize
           requires: [build]
           sanitizeOption: --sanitize
           instance: comass/mysql-sanitized:latest
       - populate:
+          name: populate --super-sanitize
           requires: [build]
           sanitizeOption: --super-sanitize
           instance: comass/mysql-sanitized:super
