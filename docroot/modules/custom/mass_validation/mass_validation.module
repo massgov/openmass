@@ -652,6 +652,22 @@ function _mass_validation_form_node_campaign_landing_form_validate(array &$form,
   if ($unpublished_date > $today_date) {
     $form_state->setErrorByName('unpublish_on][0][value', t('An unpublish date within the next 14 months must be provided.'));
   }
+
+  $kpi_fields = [
+    'field_kpi_ctr_button_links',
+    'field_kpi_ctr_key_msg',
+    'field_kpi_pageviews',
+    'field_kpi_pct_video_play',
+    'field_kpi_pct_video_50',
+  ];
+  $promotional_kpi_choice = $form_state->getValue('field_promotional_kpi_choice', '#default_value');
+
+  if (isset($promotional_kpi_choice)) {
+    $check_kpi = ($form_state->getValue(array($kpi_fields)));
+    if ($check_kpi == NULL) {
+      $form_state->setErrorByName('$kpi_field][0][value', t('A value must be added to the this field.'));
+    }
+  }
 }
 
 /**
