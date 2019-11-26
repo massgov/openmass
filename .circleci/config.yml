@@ -113,6 +113,10 @@ jobs:
       - run: scripts/tag-release-deploy
 
   test:
+    parameters:
+      instance:
+        type: string
+        default: comass/mysql-sanitized:latest
     working_directory: /var/www/code
     docker:
       - image: massgov/drupal-container:php72alpha-ci
@@ -901,7 +905,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold:
+      - hold_for_stage:
           type: approval
           requires:
             - build
@@ -915,13 +919,13 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - hold
+            - hold_for_stage
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold:
+      - hold_for_prod:
           type: approval
           requires:
             - build
@@ -936,7 +940,7 @@ workflows:
             - build
             - tagging_acquia
             - deploy_tag_stage
-            - hold
+            - hold_for_prod
           filters:
             branches:
               ignore: /.*/
