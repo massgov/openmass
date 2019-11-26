@@ -713,18 +713,18 @@ workflows:
 
   # This is to automate the creation of the release branch for Wednesday at 1 p.m. ET.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
-  release_branch:
-    jobs:
-      - build
-      - cut_release_branch:
-          requires: [build]
-    triggers:
-      - schedule:
-          cron: "00 18 * * 3"
-          filters:
-            branches:
-              only:
-                - develop
+  # release_branch:
+  #   jobs:
+  #     - build
+  #     - cut_release_branch:
+  #         requires: [build]
+  #   triggers:
+  #     - schedule:
+  #         cron: "00 18 * * 3"
+  #         filters:
+  #           branches:
+  #             only:
+  #               - develop
 
   # This is to automate the release branch only.
   release:
