@@ -66,7 +66,7 @@ services:
 
   # The following database service uses a `percona-server:5.6.40` image where mysql initialization done by
   # a custom `docker-entrypoint.sh` script. You can find that script and the `Dockerfile` in `.circleci/mysql-rebuild/`.
-  # The image is customized to store MySQL data *inside* the container, instead of using the Docker data volume.
+  # See https://medium.com/massgovdigital/dev-env-5d35b97f3473#cba3 for more info.
   # Further, the image is super sanitized (no unpublished content, old revisions, user data, etc.).
   mysql:
     # @todo - Document how access is granted to this private image.

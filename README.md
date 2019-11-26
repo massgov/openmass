@@ -34,10 +34,12 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
     ```bash
     sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
     ```
-1. Run `ahoy up` to start the Docker containers (n.b. takes about 1 hour to pull down the latest database). 
+1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database). 
 1. Run `ahoy comi` to fetch all dependencies.
 
-NOTE: Mass Digital team members should skip `ahoy start` and follow steps for [Mass Digital development](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/development-massgov-team.md) instead.
+###### Notes 
+- It takes a few minutes for the `mysql` container start up.
+- Mass Digital team members should skip `ahoy start` and follow steps for [Mass Digital development](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/development-massgov-team.md) instead.
 
 
 ## Workflow
