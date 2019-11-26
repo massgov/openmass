@@ -1,4 +1,4 @@
-version: 2
+version: 2.1
 
 # YAML anchors/aliases. See;
 # - https://circleci.com/blog/circleci-hacks-reuse-yaml-in-your-circleci-config-with-yaml/
@@ -580,6 +580,13 @@ jobs:
   # at Docker Hub. That way, your in-progress work does not interfere with build
   # happening in the build_test workflow.
   populate:
+    description: "Sanitize a mysql database and push to Docker Hub"
+    parameters:
+      sanitizeOption:
+        type: string
+        default: --sanitize
+      instance:
+        type: string
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
     docker:
       # Use Python since that's needed for docker tools anyway.
@@ -596,10 +603,14 @@ jobs:
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
           no_output_timeout: 60m
-      - run: docker-compose stop --timeout 60 mysql
       - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
-      - run: docker commit $(docker-compose ps -q mysql) comass/mysql-sanitized:latest
-      - run: docker push comass/mysql-sanitized:latest
+      - run:
+          command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
+          no_output_timeout: 30m
+      - run: docker-compose exec drupal drush cr
+      - run: docker-compose stop --timeout 60 mysql
+      - run: docker commit $(docker-compose ps -q mysql) << parameters.instance >>
+      - run: docker push << parameters.instance >>
 
   pending_security:
       <<: *container_config
@@ -890,7 +901,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold:
+      - hold_for_stage:
           type: approval
           requires:
             - build
@@ -904,13 +915,13 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - hold
+            - hold_for_stage
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold:
+      - hold_for_prod:
           type: approval
           requires:
             - build
@@ -925,7 +936,7 @@ workflows:
             - build
             - tagging_acquia
             - deploy_tag_stage
-            - hold
+            - hold_for_prod
           filters:
             branches:
               ignore: /.*/
@@ -933,16 +944,22 @@ workflows:
               only: /.*/
 
 
-  # Daily rebuild of our sanitized mysql data image, runs at 12:30 PM EST.
+  # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
     jobs:
       - build
       - populate:
           requires: [build]
+          sanitizeOption: --sanitize
+          instance: comass/mysql-sanitized:latest
+      - populate:
+          requires: [build]
+          sanitizeOption: --super-sanitize
+          instance: comass/mysql-sanitized:super
     triggers:
       - schedule:
-          cron: "50 17 * * *"
+          cron: "32 21 * * *"
           filters:
             branches:
               only:
