@@ -113,10 +113,6 @@ jobs:
       - run: scripts/tag-release-deploy
 
   test:
-    parameters:
-      instance:
-        type: string
-        default: comass/mysql-sanitized:latest
     working_directory: /var/www/code
     docker:
       - image: massgov/drupal-container:php72alpha-ci
