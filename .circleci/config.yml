@@ -432,7 +432,6 @@ jobs:
         - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
         - run: "drush pm:security"
 
-
 workflows:
   version: 2
   build_test:
@@ -768,7 +767,7 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "51 18 * * *"
+          cron: "49 20 * * *"
           filters:
             branches:
               only:
