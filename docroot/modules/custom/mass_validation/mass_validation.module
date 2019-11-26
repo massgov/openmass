@@ -653,19 +653,22 @@ function _mass_validation_form_node_campaign_landing_form_validate(array &$form,
     $form_state->setErrorByName('unpublish_on][0][value', t('An unpublish date within the next 14 months must be provided.'));
   }
 
-  $kpi_fields = [
-    'field_kpi_ctr_button_links',
-    'field_kpi_ctr_key_msg',
-    'field_kpi_pageviews',
-    'field_kpi_pct_video_play',
-    'field_kpi_pct_video_50',
+  $kpi_fields_mapping = [
+    'ctr_button_link' => 'field_kpi_ctr_button_links',
+    'ctr_button' => 'field_kpi_ctr_key_msg',
+    'num_pgviews' => 'field_kpi_pageviews',
+    'pct_vid_play' => 'field_kpi_pct_video_play',
+    'pct_vid_watch' => 'field_kpi_pct_video_50',
   ];
   $promotional_kpi_choice = $form_state->getValue('field_promotional_kpi_choice', '#default_value');
 
   if (isset($promotional_kpi_choice)) {
-    $check_kpi = ($form_state->getValue(array($kpi_fields)));
-    if ($check_kpi == NULL) {
-      $form_state->setErrorByName('$kpi_field][0][value', t('A value must be added to the this field.'));
+    foreach ($promotional_kpi_choice as $choice) {
+      $field_name = $kpi_fields_mapping[$choice['value']];
+      $value = $form_state->getValue($field_name);
+      if (empty($value[0]['value'])) {
+        $form_state->setErrorByName($field_name, t('A value must be added to the this field.'));
+      }
     }
   }
 }
