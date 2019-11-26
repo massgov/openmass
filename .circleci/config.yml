@@ -8,7 +8,7 @@ references:
     working_directory: /var/www/code
     docker:
       # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:php72alpha-ci
+      - image: massgov/drupal-container:1.0.13-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
 
@@ -48,7 +48,7 @@ executors:
         default: comass/mysql-sanitized:latest
     working_directory: /var/www/code
     docker:
-      - image: massgov/drupal-container:php72alpha-ci
+      - image: massgov/drupal-container:1.0.13-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           DOCKER_ENV: ci
@@ -129,10 +129,11 @@ jobs:
         # Add a deployment identifier file and push current branch to Acquia's Git repo.
         - run: scripts/stamp-and-deploy
 
-  # Run Danger to check for a changelog file in the PR
+  # Run Danger to check for a changelog file in the PR.
   danger:
-    executor: base
+    <<: *container_config
     steps:
+      - attach_workspace: {at: /var/www}
       - run: yarn danger ci
 
   # Automate the tagging process in GitHub
@@ -449,6 +450,7 @@ workflows:
             branches:
               <<: *branch_ignore
       - danger:
+          requires: [build]
           filters:
             branches:
               <<: *branch_ignore
