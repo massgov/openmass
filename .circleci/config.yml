@@ -162,7 +162,13 @@ jobs:
       - run: scripts/tag-release-deploy
 
   test:
-    executor: base
+    parameters:
+      instance:
+        type: string
+        default: comass/mysql-sanitized:latest
+    executor:
+      name: base
+      instance: << parameters.instance >>
     steps:
       - attach_workspace: {at: /var/www}
       - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
@@ -873,13 +879,13 @@ workflows:
   # Daily run of test suite using super sanitized DB
   build_test_super:
     jobs:
-      - build:
+      - build
       - test:
-          requires: [build]
           instance: comass/mysql-sanitized:super
+          requires: [build]
     triggers:
       - schedule:
-          cron: "10 17 * * *"
+          cron: "51 18 * * *"
           filters:
             branches:
               only:
