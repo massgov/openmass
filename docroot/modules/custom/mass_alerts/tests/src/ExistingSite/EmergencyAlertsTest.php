@@ -5,6 +5,7 @@ namespace Drupal\Tests\mass_alerts\ExistingSite;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\Tests\mass_utility\Traits\UserTestTrait;
+use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
@@ -62,8 +63,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
    * Since validation is form based, we post a form in this test.
    */
   public function testPageSpecificAlert() {
-    $massadmin = user_load_by_name('massadmin');
-    $this->massgovLogin($massadmin);
+    $this->massgovLogin(User::load(1));
     $session = $this->getSession();
     $session->visit('/node/add/alert');
     $page = $session->getPage();
