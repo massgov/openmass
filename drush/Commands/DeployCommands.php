@@ -97,12 +97,11 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       'headers' => ['Accept' => 'application/json'],
       'form_params' => [
         'build_parameters' => [
-          'CIRCLE_JOB' => 'deploy_from_scratch',
-          'DEPLOY_TARGET' => $target,
-          'DEPLOY_GIT_REF' => $git_ref,
-          'DEPLOY_SKIP_MAINT' => $options['skip-maint'] ? '--skip-maint' : '',
-          'DEPLOY_REFRESH_DB' => $options['refresh-db'] ? '--refresh-db' : '',
-          'DEPLOY_CACHE_REBUILD' => $options['no-cache-rebuild'] ? '--no-cache-rebuild' : '',
+          'CIRCLE_JOB' => 'deploy',
+          'target' => $target,
+          'gitRef' => $git_ref,
+          'skipMaint' => (int) $options['skip-maint'],
+          'refreshDB' => (int) $options['refresh-db'],
         ],
       ],
     ]);
