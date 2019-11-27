@@ -203,7 +203,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       // Turn on Maint mode.
       $args = array('system.maintenance_mode', 1);
       $state_options = array('input-format' => 'integer');
-      $process = Drush::drush($targetRecord, 'state-set', $args, $state_options);
+      $process = Drush::drush($targetRecord, 'state:set', $args, $state_options);
       $process->mustRun();
       $this->logger()->success("Maintenance mode enabled in $target.");
     }
@@ -230,7 +230,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $this->logger()->success("Database and entity updates completed in $target.");
 
     // Import new config.
-    $process = Drush::drush($targetRecord, 'config-import');
+    $process = Drush::drush($targetRecord, 'config:import');
     $process->mustRun($process->showRealtime());
     $this->logger()->success("Configuration imported in $target.");
 
@@ -273,7 +273,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       // Disable Maintenance mode.
       $args = array('system.maintenance_mode', '0');
       $state_options = ['input-format' => 'integer'];
-      $process = Drush::drush($targetRecord, 'state-set', $args, $state_options);
+      $process = Drush::drush($targetRecord, 'state:set', $args, $state_options);
       $process->mustRun();
       $this->logger()->success("Maintenance mode disabled in $target.");
     }
@@ -383,7 +383,7 @@ curl -X POST 'https://api.newrelic.com/v2/applications/$application/deployments.
   }
 }'
 EOT;
-    if (!drush_shell_exec($cmd)) {
+    if (!Drush::shell($cmd)) {
       $this->logger()->warning('Failed to create a Deployment at New Relic');
     }
   }
