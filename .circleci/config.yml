@@ -134,7 +134,7 @@ jobs:
     <<: *container_config
     steps:
       - attach_workspace: {at: /var/www}
-      - run: yarn danger ci
+      - run: yarn danger ci --failOnErrors
 
   # Automate the tagging process in GitHub
   tagging_github:
