@@ -1,0 +1,13 @@
+diff --git a/core/modules/link/src/Plugin/Field/FieldWidget/LinkWidget.php b/core/modules/link/src/Plugin/Field/FieldWidget/LinkWidget.php
+index db00fedc97..1e777d89ef 100644
+--- a/core/modules/link/src/Plugin/Field/FieldWidget/LinkWidget.php
++++ b/core/modules/link/src/Plugin/Field/FieldWidget/LinkWidget.php
+@@ -214,7 +214,7 @@ public function formElement(FieldItemListInterface $items, $delta, array $elemen
+     // If the field is configured to allow both internal and external links,
+     // show a useful description.
+     elseif ($this->supportsExternalLinks() && $this->supportsInternalLinks()) {
+-      $element['uri']['#description'] = $this->t('Start typing the title of a piece of content to select it. You can also enter an internal path such as %add-node or an external URL such as %url. Enter %front to link to the front page.', ['%front' => '<front>', '%add-node' => '/node/add', '%url' => 'http://example.com']);
++      $element['uri']['#description'] = $this->t('Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".');
+     }
+     // If the field is configured to allow only external links, show a useful
+     // description.
