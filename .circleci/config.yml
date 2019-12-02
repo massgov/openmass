@@ -427,6 +427,7 @@ workflows:
             branches:
               only: /^mayflower-dev-.*/
       - deploy:
+          name: deploy-cd-refreshDb
           requires:
             - build
             - push_acquia
@@ -436,6 +437,7 @@ workflows:
             branches:
               only: /^mayflower-dev-.*/
       - crawl:
+          name: crawl-cd-900
           requires: [deploy]
           samples: 900
           target: cd
@@ -443,6 +445,7 @@ workflows:
             branches:
               only: /^mayflower-dev-.*/
       - backstop:
+          name: backstop-cd
           requires: [deploy]
           target: cd
           filters:
@@ -489,6 +492,7 @@ workflows:
             branches:
               only: /^release\/.*$/
       - deploy:
+          name: deploy-test-refreshDb
           requires:
             - hold
           target: test
@@ -497,6 +501,7 @@ workflows:
             branches:
               only: /^release\/.*$/
       - crawl:
+          name: crawl-test-700
           requires: [deploy]
           target: test
           samples: 700
@@ -504,6 +509,7 @@ workflows:
             branches:
               only: /^release\/.*$/
       - backstop:
+          name: backstop-test
           requires: [deploy]
           target: test
           filters:
@@ -535,6 +541,7 @@ workflows:
             branches:
               only: /^hotfix\/.*$/
     - deploy:
+        name: deploy-test-no-refreshDb
         requires:
           - hold
         target: test
@@ -542,6 +549,7 @@ workflows:
           branches:
             only: /^hotfix\/.*$/
     - crawl:
+          name: crawl-test
           requires: [deploy]
           target: test
           samples: 200
@@ -549,6 +557,7 @@ workflows:
             branches:
               only: /^hotfix\/.*$/
     - backstop:
+          name: backstop-test
           requires: [deploy]
           target: test
           filters:
@@ -580,6 +589,7 @@ workflows:
             branches:
               only: /^mayflower\/.*$/
       - deploy:
+          name: deploy-test-refreshDb
           requires:
             - hold
           target: test
@@ -588,6 +598,7 @@ workflows:
             branches:
               only: /^mayflower\/.*$/
       - crawl:
+          name: crawl-test-500
           requires: [deploy]
           target: test
           samples: 500
@@ -595,6 +606,7 @@ workflows:
             branches:
               only: /^mayflower\/.*$/
       - backstop:
+          name: backstop-test
           requires: [deploy]
           target: test
           filters:
@@ -664,6 +676,7 @@ workflows:
             tags:
               only: /.*/
       - deploy:
+          name: deploy-test-no-refreshDb
           requires:
             - build
             - tagging_acquia
@@ -686,6 +699,7 @@ workflows:
             tags:
               only: /.*/
       - deploy:
+          name: deploy-prod-no-refreshDb
           requires:
             - build
             - tagging_acquia
@@ -739,34 +753,17 @@ workflows:
               only:
                 - develop
 
-  # Run Nightcrawler and Backstop on dev, runs at 9:00PM EST.
-#  test_feature1:
-#    jobs:
-#      - build
-#      - backstop:
-#          requires: [build]
-#          target: feature1
-#      - crawl:
-#          requires: [build]
-#          target: feature1
-#          samples: 1200
-#    triggers:
-#      - schedule:
-#          cron: "00 02 * * *"
-#          filters:
-#            branches:
-#              only:
-#                - develop
-
   # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
     jobs:
       - build
       - deploy:
+          name: deploy-cd-refreshDb
           requires: [build]
           target: cd
           refreshDb: "1"
       - crawl:
+          name: crawl-deploy-900
           requires: [deploy]
           target: cd
           samples: 900
