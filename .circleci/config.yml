@@ -740,23 +740,23 @@ workflows:
                 - develop
 
   # Run Nightcrawler and Backstop on dev, runs at 9:00PM EST.
-#  test_feature1:
-#    jobs:
-#      - build
-#      - backstop:
-#          requires: [build]
-#          target: feature1
-#      - crawl:
-#          requires: [build]
-#          target: feature1
-#          samples: 1200
-#    triggers:
-#      - schedule:
-#          cron: "00 02 * * *"
-#          filters:
-#            branches:
-#              only:
-#                - develop
+ test_feature1:
+   jobs:
+     - build
+     - backstop:
+         requires: [build]
+         target: feature1
+     - crawl:
+         requires: [build]
+         target: feature1
+         samples: 1200
+   triggers:
+     - schedule:
+         cron: "00 02 * * *"
+         filters:
+           branches:
+             only:
+               - develop
 
   # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
