@@ -254,14 +254,14 @@ jobs:
       gitRef:
         type: string
         default: $CIRCLE_BRANCH
-      skipMaint:
+      skip-maint:
         type: enum
-        enum: ["0", "1"]
-        default: "0"
-      refreshDb:
+        enum: ["skip-maint", "no-skip-maint"]
+        default: "no-skip-maint"
+      refresh-db:
         type: enum
-        enum: ["0", "1"]
-        default: "0"
+        enum: ["refresh-db", "no-refresh-db"]
+        default: "no-refresh-db"
     <<: *container_config
     steps:
       - attach_workspace: {at: /var/www}
@@ -272,7 +272,7 @@ jobs:
           name: Fetch Drush aliases
           command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
       - run:
-          command: "drush ma:deploy -v --skip-maint=<< parameters.skipMaint >> --refresh-db=<< parameters.refreshDb >> << parameters.target >> << parameters.gitRef >>"
+          command: "drush ma:deploy -v --<< parameters.skip-maint >> --<< parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
           no_output_timeout: 60m
 
   crawl:
@@ -427,18 +427,18 @@ workflows:
             branches:
               only: /^mayflower-dev-.*/
       - deploy:
-          name: deploy-cd-refreshDb
+          name: deploy-cd-refresh-db
           requires:
             - build
             - push_acquia
-          refreshDb: "1"
+          refresh-db: "refresh-db"
           target: cd
           filters:
             branches:
               only: /^mayflower-dev-.*/
       - crawl:
           name: crawl-cd-900
-          requires: [deploy]
+          requires: [deploy-cd-refresh-db]
           samples: 900
           target: cd
           filters:
@@ -446,7 +446,7 @@ workflows:
               only: /^mayflower-dev-.*/
       - backstop:
           name: backstop-cd
-          requires: [deploy]
+          requires: [deploy-cd-refresh-db]
           target: cd
           filters:
             branches:
@@ -492,17 +492,17 @@ workflows:
             branches:
               only: /^release\/.*$/
       - deploy:
-          name: deploy-test-refreshDb
+          name: deploy-test-refresh-db
           requires:
             - hold
           target: test
-          refreshDb: "1"
+          refresh-db: "refresh-db"
           filters:
             branches:
               only: /^release\/.*$/
       - crawl:
           name: crawl-test-700
-          requires: [deploy]
+          requires: [deploy-test-refresh-db]
           target: test
           samples: 700
           filters:
@@ -510,7 +510,7 @@ workflows:
               only: /^release\/.*$/
       - backstop:
           name: backstop-test
-          requires: [deploy]
+          requires: [deploy-test-refresh-db]
           target: test
           filters:
             branches:
@@ -541,7 +541,7 @@ workflows:
             branches:
               only: /^hotfix\/.*$/
     - deploy:
-        name: deploy-test-no-refreshDb
+        name: deploy-test-no-refresh-db
         requires:
           - hold
         target: test
@@ -549,8 +549,8 @@ workflows:
           branches:
             only: /^hotfix\/.*$/
     - crawl:
-          name: crawl-test
-          requires: [deploy]
+          name: crawl-test-200
+          requires: [deploy-test-no-refresh-db]
           target: test
           samples: 200
           filters:
@@ -558,7 +558,7 @@ workflows:
               only: /^hotfix\/.*$/
     - backstop:
           name: backstop-test
-          requires: [deploy]
+          requires: [deploy-test-no-refresh-db]
           target: test
           filters:
             branches:
@@ -589,17 +589,17 @@ workflows:
             branches:
               only: /^mayflower\/.*$/
       - deploy:
-          name: deploy-test-refreshDb
+          name: deploy-test-refresh-db
           requires:
             - hold
           target: test
-          refreshDb: "1"
+          refresh-db: "refresh-db"
           filters:
             branches:
               only: /^mayflower\/.*$/
       - crawl:
           name: crawl-test-500
-          requires: [deploy]
+          requires: [deploy-test-refresh-db]
           target: test
           samples: 500
           filters:
@@ -607,7 +607,7 @@ workflows:
               only: /^mayflower\/.*$/
       - backstop:
           name: backstop-test
-          requires: [deploy]
+          requires: [deploy-test-refresh-db]
           target: test
           filters:
             branches:
@@ -676,7 +676,7 @@ workflows:
             tags:
               only: /.*/
       - deploy:
-          name: deploy-test-no-refreshDb
+          name: deploy-test-no-refresh-db
           requires:
             - build
             - tagging_acquia
@@ -699,11 +699,11 @@ workflows:
             tags:
               only: /.*/
       - deploy:
-          name: deploy-prod-no-refreshDb
+          name: deploy-prod-no-refresh-db
           requires:
             - build
             - tagging_acquia
-            - deploy
+            - deploy-test-no-refresh-db
             - hold_for_prod
           target: prod
           gitRef: tags/$CIRCLE_TAG
@@ -758,17 +758,17 @@ workflows:
     jobs:
       - build
       - deploy:
-          name: deploy-cd-refreshDb
+          name: deploy-cd-refresh-db
           requires: [build]
           target: cd
-          refreshDb: "1"
+          refresh-db: "refresh-db"
       - crawl:
           name: crawl-deploy-900
-          requires: [deploy]
+          requires: [deploy-cd-refresh-db]
           target: cd
           samples: 900
       - backstop:
-          requires: [deploy]
+          requires: [deploy-cd-refresh-db]
           target: cd
     triggers:
       - schedule:
