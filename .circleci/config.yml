@@ -676,7 +676,7 @@ workflows:
             tags:
               only: /.*/
       - deploy:
-          name: deploy-test-no-refresh-db
+          name: deploy-tag-stage-acquia
           requires:
             - build
             - tagging_acquia
@@ -699,11 +699,11 @@ workflows:
             tags:
               only: /.*/
       - deploy:
-          name: deploy-prod-no-refresh-db
+          name: deploy-tag-prod-acquia
           requires:
             - build
             - tagging_acquia
-            - deploy-test-no-refresh-db
+            - deploy-tag-stage-acquia
             - hold_for_prod
           target: prod
           gitRef: tags/$CIRCLE_TAG
