@@ -8,7 +8,7 @@ references:
     working_directory: /var/www/code
     docker:
       # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:php72alpha-ci
+      - image: massgov/drupal-container:1.0.13-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
 
@@ -31,6 +31,49 @@ references:
       name: Save Composer cache
       key: site-composer-v6-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
+
+  branch_ignore: &branch_ignore
+    ignore:
+      - /^release\/.*$/
+      - /^hotfix\/.*$/
+      - /^mayflower\/.*$/
+      - master
+      - /^mayflower-dev-.*/
+
+executors:
+  base:
+    parameters:
+      instance:
+        type: string
+        default: comass/mysql-sanitized:latest
+    working_directory: /var/www/code
+    docker:
+      - image: massgov/drupal-container:1.0.13-ci
+        environment:
+          COMPOSER_ALLOW_SUPERUSER: 1
+          DOCKER_ENV: ci
+          APACHE_DOCROOT: /var/www/code/docroot
+          MYSQL_USER: circle
+          MYSQL_PASSWORD: circle
+          MYSQL_DATABASE: circle
+          MYSQL_HOST: 127.0.0.1
+          MEMCACHED_HOST: 127.0.0.1
+          DTT_BASE_URL: http://mass.local
+          DTT_API_URL: http://mass.local:9222
+          BROWSERTEST_OUTPUT_DIRECTORY: /tmp
+      - image: << parameters.instance >>
+        auth:
+          username: $DOCKER_USER
+          password: $DOCKER_API_KEY
+        environment:
+          MYSQL_USER: circle
+          MYSQL_PASSWORD: circle
+          MYSQL_DATABASE: circle
+          MYSQL_RANDOM_ROOT_PASSWORD: 1
+        command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
+      - image: memcached:1-alpine
+        command: memcached -m 128
+      - image: previousnext/chrome-headless:65
 
 jobs:
   build:
@@ -60,7 +103,6 @@ jobs:
           key: yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
           paths:
             - node_modules/
-
       - persist_to_workspace:
           root: /var/www
           paths: [code]
@@ -86,6 +128,13 @@ jobs:
         - run: git commit -m "Add vendor code and drush alias."
         # Add a deployment identifier file and push current branch to Acquia's Git repo.
         - run: scripts/stamp-and-deploy
+
+  # Run Danger to check for a changelog file in the PR.
+  danger:
+    <<: *container_config
+    steps:
+      - attach_workspace: {at: /var/www}
+      - run: yarn danger ci
 
   # Automate the tagging process in GitHub
   tagging_github:
@@ -113,35 +162,13 @@ jobs:
       - run: scripts/tag-release-deploy
 
   test:
-    working_directory: /var/www/code
-    docker:
-      - image: massgov/drupal-container:php72alpha-ci
-        environment:
-          COMPOSER_ALLOW_SUPERUSER: 1
-          DOCKER_ENV: ci
-          APACHE_DOCROOT: /var/www/code/docroot
-          MYSQL_USER: circle
-          MYSQL_PASSWORD: circle
-          MYSQL_DATABASE: circle
-          MYSQL_HOST: 127.0.0.1
-          MEMCACHED_HOST: 127.0.0.1
-          DTT_BASE_URL: http://mass.local
-          DTT_API_URL: http://mass.local:9222
-          BROWSERTEST_OUTPUT_DIRECTORY: /tmp
-      - image: comass/mysql-sanitized:latest
-        auth:
-          username: $DOCKER_USER
-          password: $DOCKER_API_KEY
-        environment:
-          MYSQL_USER: circle
-          MYSQL_PASSWORD: circle
-          MYSQL_DATABASE: circle
-          MYSQL_RANDOM_ROOT_PASSWORD: 1
-        command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
-      - image: memcached:1-alpine
-        command: memcached -m 128
-      - image: previousnext/chrome-headless:65
-
+    parameters:
+      instance:
+        type: string
+        default: comass/mysql-sanitized:latest
+    executor:
+      name: base
+      instance: << parameters.instance >>
     steps:
       - attach_workspace: {at: /var/www}
       - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
@@ -149,117 +176,29 @@ jobs:
       - run:
           name: Update host file
           command: echo '127.0.0.1 mass.local' >> /etc/hosts
-
       # Validate .json and check if it is in sync with the .lock file
       - run: composer validate
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: phpcs -v -n
       # lint javascript
       - run: yarn run eslint --debug --ignore-path 'docroot/.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
-
-      # Check for changelog in the PR.
-      - run:
-          name: Check for a changelog file in the PR
-          command: yarn danger ci
-
       # Wait for mysql.
       - run: dockerize -wait tcp://localhost:3306 -timeout 2m
       # Run drush updatedb and cim.
       - run: scripts/ma-refresh-local --skip-db-prep
       # Get a status
       - run: drush status
-
       # config-export and error if there are differences.
       # This makes sure our committed config matches what is exported by Drupal.
       # If this fails, the usual fix is to commit the diff that is reported.
       - run: "drush config:export -y"
       - run: git diff -w --exit-code
       - run: git reset --hard
-
       # Ensure files and DTT directories are writable by www-data
       - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
-
       # drupal-test-traits testing
       - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom"'
-
-      # Behat testing
-      - run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
-      - store_test_results:
-          path: /tmp/test-results
-      - store_artifacts:
-          # Pages saved via 'Then save the html for the page'. @see \FeatureContext::saveHtml.
-          path: /var/www/code/output
-      - store_artifacts:
-          # DTT saves page output for all requests.
-          path: /var/www/code/docroot/sites/simpletest/browser_output
-
-  test_without_danger:
-    working_directory: /var/www/code
-    docker:
-      - image: massgov/drupal-container:php72alpha-ci
-        environment:
-          COMPOSER_ALLOW_SUPERUSER: 1
-          DOCKER_ENV: ci
-          APACHE_DOCROOT: /var/www/code/docroot
-          MYSQL_USER: circle
-          MYSQL_PASSWORD: circle
-          MYSQL_DATABASE: circle
-          MYSQL_HOST: 127.0.0.1
-          MEMCACHED_HOST: 127.0.0.1
-          DTT_BASE_URL: http://mass.local
-          DTT_API_URL: http://mass.local:9222
-          BROWSERTEST_OUTPUT_DIRECTORY: /tmp
-      - image: comass/mysql-sanitized:latest
-        auth:
-          username: $DOCKER_USER
-          password: $DOCKER_API_KEY
-        environment:
-          MYSQL_USER: circle
-          MYSQL_PASSWORD: circle
-          MYSQL_DATABASE: circle
-          MYSQL_RANDOM_ROOT_PASSWORD: 1
-        command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
-      - image: memcached:1-alpine
-        command: memcached -m 128
-      - image: previousnext/chrome-headless:65
-
-    steps:
-      - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
-      - run: {name: 'Start Apache', command: '/usr/local/bin/apache2-foreground-enhanced', background: true}
-      - run:
-          name: Update host file
-          command: echo '127.0.0.1 mass.local' >> /etc/hosts
-
-      # Validate .json and check if it is in sync with the .lock file
-      - run: composer validate
-      # Check coding standards with php code sniffer. See phpcs.xml
-      - run: phpcs -v -n
-      # lint javascript
-      - run: yarn run eslint --debug --ignore-path 'docroot/.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
-
-      # Wait for mysql.
-      - run: dockerize -wait tcp://localhost:3306 -timeout 2m
-      # Run drush updatedb and cim.
-      - run: scripts/ma-refresh-local --skip-db-prep
-      # Get a status
-      - run: drush status
-
-      # config-export and error if there are differences.
-      # This makes sure our committed config matches what is exported by Drupal.
-      # If this fails, the usual fix is to commit the diff that is reported.
-      - run: "drush config:export -y"
-      - run: git diff -w --exit-code
-      - run: git reset --hard
-
-      # Ensure files and DTT directories are writable by www-data
-      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
-      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
-
-      # drupal-test-traits testing
-      - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom"'
-
       # Behat testing
       - run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - store_test_results:
@@ -405,8 +344,12 @@ jobs:
           command: "drush ma:deploy -v -y prod tags/$CIRCLE_TAG"
           no_output_timeout: 60m
 
-  # Nightcrawler is only using 1500 samples size to crawl the dev environment.
-  crawl_feature1:
+  crawl:
+    parameters:
+      samples:
+        type: integer
+      target:
+        type: string
     <<: *container_config
     steps:
       - attach_workspace: {at: /var/www}
@@ -416,105 +359,17 @@ jobs:
       - run: mkdir -p /tmp/results/junit
       - run:
           name: Nightcrawler
-          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=feature1 --samples=1200
+          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=<< parameters.target >> --samples=<< parameters.samples >>
           no_output_timeout: 300m
       - store_test_results:
           path: /tmp/results
       - store_artifacts:
           path: /tmp/results
 
-  # Nightcrawler is only using 1200 samples size to crawl the feature3 environment.
-  crawl_feature3:
-    <<: *container_config
-    steps:
-      - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
-      - *no_host_check
-      - *no_ssh_timeout
-      - run: mkdir -p /tmp/results/junit
-      - run:
-          name: Nightcrawler
-          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=feature3 --samples=1200
-          no_output_timeout: 300m
-      - store_test_results:
-          path: /tmp/results
-      - store_artifacts:
-          path: /tmp/results
-
-  # Nightcrawler is only using 900 samples size to crawl the develop branch.
-  crawl_cd:
-    <<: *container_config
-    steps:
-      - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
-      - *no_host_check
-      - *no_ssh_timeout
-      - run: mkdir -p /tmp/results/junit
-      - run:
-          name: Nightcrawler
-          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=cd --samples=900
-          no_output_timeout: 300m
-      - store_test_results:
-          path: /tmp/results
-      - store_artifacts:
-          path: /tmp/results
-
-  # Nightcrawler is only using 700 samples size to crawl the release branch.
-  crawl_stage_release:
-    <<: *container_config
-    steps:
-    - attach_workspace: {at: /var/www}
-    - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
-    - *no_host_check
-    - *no_ssh_timeout
-    - run: mkdir -p /tmp/results/junit
-    - run:
-        name: Nightcrawler
-        command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=test --samples=700
-        no_output_timeout: 300m
-    - store_test_results:
-        path: /tmp/results
-    - store_artifacts:
-        path: /tmp/results
-
-  # Nightcrawler is only using 200 samples size to crawl the hotfix branch.
-  crawl_stage_hotfix:
-    <<: *container_config
-    steps:
-    - attach_workspace: {at: /var/www}
-    - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
-    - *no_host_check
-    - *no_ssh_timeout
-    - run: mkdir -p /tmp/results/junit
-    - run:
-        name: Nightcrawler
-        command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=test --samples=200
-        no_output_timeout: 300m
-    - store_test_results:
-        path: /tmp/results
-    - store_artifacts:
-        path: /tmp/results
-
-  # Nightcrawler is only using 500 samples size to crawl the mayflower branch.
-  crawl_mayflower_stage:
-    <<: *container_config
-    steps:
-      - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
-      - *no_host_check
-      - *no_ssh_timeout
-      - run: mkdir -p /tmp/results/junit
-      - run:
-          name: Nightcrawler
-          command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=test --samples=500
-          no_output_timeout: 300m
-      - store_test_results:
-          path: /tmp/results
-      - store_artifacts:
-          path: /tmp/results
-
-  # Backstop is using the all.json file compare production vs dev for the core update branch.
-  backstop_feature1:
+  backstop:
+    parameters:
+      target:
+        type: string
     working_directory: /home/circleci/code
     docker:
       # Need to use docker image for these steps.
@@ -525,49 +380,7 @@ jobs:
       - run: docker-compose up --no-start backstop
       - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
       - run: docker-compose run backstop reference --target=prod --list=all
-      - run: docker-compose run backstop test --target=feature1 --list=all
-      - run:
-          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
-          when: always
-      - store_test_results:
-          path: /home/circleci/code/backstop/report
-      - store_artifacts:
-          path: /home/circleci/code/backstop
-
-  # Backstop is using the all.json file compare production vs stage (test) for the 'release/', 'hotfix/' and 'mayflower/' branch.
-  backstop_stage:
-      working_directory: /home/circleci/code
-      docker:
-      # Need to use docker image for these steps.
-      - image: circleci/python:2.7.14
-      steps:
-      - checkout
-      - setup_remote_docker
-      - run: docker-compose up --no-start backstop
-      - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
-      - run: docker-compose run backstop reference --target=prod --list=all
-      - run: docker-compose run backstop test --target=test --list=all
-      - run:
-          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
-          when: always
-      - store_test_results:
-          path: /home/circleci/code/backstop/report
-      - store_artifacts:
-          path: /home/circleci/code/backstop
-
-  # Backstop is using the all.json file compare production vs CD for the 'develop' branch.
-  backstop_cd:
-    working_directory: /home/circleci/code
-    docker:
-      # Need to use docker image for these steps.
-      - image: circleci/python:2.7.14
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run: docker-compose up --no-start backstop
-      - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
-      - run: docker-compose run backstop reference --target=prod --list=all
-      - run: docker-compose run backstop test --target=cd --list=all
+      - run: docker-compose run backstop test --target=<< parameters.target >> --list=all
       - run:
           command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
           when: always
@@ -619,7 +432,6 @@ jobs:
         - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
         - run: "drush pm:security"
 
-
 workflows:
   version: 2
   build_test:
@@ -635,32 +447,22 @@ workflows:
       - push_acquia:
           filters:
             branches:
-              ignore:
-                - /^release\/.*$/
-                - /^hotfix\/.*$/
-                - /^mayflower\/.*$/
-                - master
-                - /^mayflower-dev-.*/
+              <<: *branch_ignore
+      - danger:
+          requires: [build]
+          filters:
+            branches:
+              <<: *branch_ignore
       - test:
           requires: [build]
           filters:
             branches:
-              ignore:
-                - /^release\/.*$/
-                - /^hotfix\/.*$/
-                - /^mayflower\/.*$/
-                - master
-                - /^mayflower-dev-.*/
+              <<: *branch_ignore
       - cloudflare:
           requires: [build]
           filters:
             branches:
-              ignore:
-                - /^release\/.*$/
-                - /^hotfix\/.*$/
-                - /^mayflower\/.*$/
-                - master
-                - /^mayflower-dev-.*/
+              <<: *branch_ignore
 
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_develop_branch.
   # This will only happens on Sunday night 11 p.m. ETS to allow us to review Mayflower in Drupal on Mondays.
@@ -688,7 +490,7 @@ workflows:
           filters:
             branches:
               only: /^mayflower-dev-.*/
-      - test_without_danger:
+      - test:
           requires: [build]
           filters:
             branches:
@@ -700,31 +502,34 @@ workflows:
           filters:
             branches:
               only: /^mayflower-dev-.*/
-      - crawl_cd:
+      - crawl:
           requires: [deploy]
+          samples: 900
+          target: cd
           filters:
             branches:
               only: /^mayflower-dev-.*/
-      - backstop_cd:
+      - backstop:
           requires: [deploy]
+          target: cd
           filters:
             branches:
               only: /^mayflower-dev-.*/
 
   # This is to automate the creation of the release branch for Wednesday at 1 p.m. ET.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
-  release_branch:
-    jobs:
-      - build
-      - cut_release_branch:
-          requires: [build]
-    triggers:
-      - schedule:
-          cron: "00 18 * * 3"
-          filters:
-            branches:
-              only:
-                - develop
+  # release_branch:
+  #   jobs:
+  #     - build
+  #     - cut_release_branch:
+  #         requires: [build]
+  #   triggers:
+  #     - schedule:
+  #         cron: "00 18 * * 3"
+  #         filters:
+  #           branches:
+  #             only:
+  #               - develop
 
   # This is to automate the release branch only.
   release:
@@ -737,7 +542,7 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - test_without_danger:
+      - test:
           requires: [build]
           filters:
             branches:
@@ -756,13 +561,16 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - crawl_stage_release:
+      - crawl:
           requires: [deploy_release_stage]
+          target: test
+          samples: 700
           filters:
             branches:
               only: /^release\/.*$/
-      - backstop_stage:
+      - backstop:
           requires: [deploy_release_stage]
+          target: stage
           filters:
             branches:
               only: /^release\/.*$/
@@ -778,7 +586,7 @@ workflows:
         filters:
           branches:
             only: /^hotfix\/.*$/
-    - test_without_danger:
+    - test:
         requires: [build]
         filters:
          branches:
@@ -797,13 +605,16 @@ workflows:
         filters:
           branches:
             only: /^hotfix\/.*$/
-    - crawl_stage_hotfix:
+    - crawl:
           requires: [deploy_hotfix_stage]
+          target: test
+          samples: 200
           filters:
             branches:
               only: /^hotfix\/.*$/
-    - backstop_stage:
+    - backstop:
           requires: [deploy_hotfix_stage]
+          target: stage
           filters:
             branches:
               only: /^hotfix\/.*$/
@@ -838,13 +649,16 @@ workflows:
           filters:
             branches:
               only: /^mayflower\/.*$/
-      - crawl_mayflower_stage:
+      - crawl:
           requires: [deploy_release_stage]
+          target: test
+          samples: 500
           filters:
             branches:
               only: /^mayflower\/.*$/
-      - backstop_stage:
+      - backstop:
           requires: [deploy_release_stage]
+          target: stage
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -860,7 +674,7 @@ workflows:
           filters:
             branches:
               only: master
-      - test_without_danger:
+      - test:
           requires: [build]
           filters:
             branches:
@@ -943,6 +757,22 @@ workflows:
             tags:
               only: /.*/
 
+  # Daily run of test suite using super sanitized DB
+  build_test_super:
+    jobs:
+      - build
+      - test:
+          name: test-super
+          instance: comass/mysql-sanitized:super
+          requires: [build]
+    triggers:
+      - schedule:
+          cron: "49 20 * * *"
+          filters:
+            branches:
+              only:
+                - develop
+                - night-super-sanitized3
 
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
@@ -950,10 +780,12 @@ workflows:
     jobs:
       - build
       - populate:
+          name: populate --sanitize
           requires: [build]
           sanitizeOption: --sanitize
           instance: comass/mysql-sanitized:latest
       - populate:
+          name: populate --super-sanitize
           requires: [build]
           sanitizeOption: --super-sanitize
           instance: comass/mysql-sanitized:super
@@ -969,24 +801,13 @@ workflows:
 #  test_feature1:
 #    jobs:
 #      - build
-#      - backstop_feature1:
+#      - backstop:
 #          requires: [build]
-#      - crawl_feature1:
+#          target: feature1
+#      - crawl:
 #          requires: [build]
-#    triggers:
-#      - schedule:
-#          cron: "00 02 * * *"
-#          filters:
-#            branches:
-#              only:
-#                - develop
-
-  # Run Nightcrawler on feature3, runs at 10:00PM EST.
-#  test_feature3:
-#    jobs:
-#      - build
-#      - crawl_feature3:
-#          requires: [build]
+#          target: feature1
+#          samples: 1200
 #    triggers:
 #      - schedule:
 #          cron: "00 02 * * *"
@@ -1001,10 +822,13 @@ workflows:
       - build
       - deploy:
           requires: [build]
-      - crawl_cd:
+      - crawl:
           requires: [deploy]
-      - backstop_cd:
+          target: cd
+          samples: 900
+      - backstop:
           requires: [deploy]
+          target: cd
     triggers:
       - schedule:
           cron: "00 03 * * 0,2,3,4,5,6"
