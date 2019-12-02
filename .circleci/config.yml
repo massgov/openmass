@@ -256,12 +256,12 @@ jobs:
         default: $CIRCLE_BRANCH
       skip-maint:
         type: enum
-        enum: ["skip-maint", "no-skip-maint"]
-        default: "no-skip-maint"
+        enum: ["", "--skip-maint"]
+        default: ""
       refresh-db:
         type: enum
-        enum: ["refresh-db", "no-refresh-db"]
-        default: "no-refresh-db"
+        enum: ["", "--refresh-db"]
+        default: ""
     <<: *container_config
     steps:
       - attach_workspace: {at: /var/www}
@@ -272,7 +272,7 @@ jobs:
           name: Fetch Drush aliases
           command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
       - run:
-          command: "drush ma:deploy -v --<< parameters.skip-maint >> --<< parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
+          command: "drush ma:deploy -v << parameters.skip-maint >> << parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
           no_output_timeout: 60m
 
   crawl:
@@ -431,7 +431,7 @@ workflows:
           requires:
             - build
             - push_acquia
-          refresh-db: "refresh-db"
+          refresh-db: "--refresh-db"
           target: cd
           filters:
             branches:
@@ -496,7 +496,7 @@ workflows:
           requires:
             - hold
           target: test
-          refresh-db: "refresh-db"
+          refresh-db: "--refresh-db"
           filters:
             branches:
               only: /^release\/.*$/
@@ -593,7 +593,7 @@ workflows:
           requires:
             - hold
           target: test
-          refresh-db: "refresh-db"
+          refresh-db: "--refresh-db"
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -761,7 +761,7 @@ workflows:
           name: deploy-cd-refresh-db
           requires: [build]
           target: cd
-          refresh-db: "refresh-db"
+          refresh-db: "--refresh-db"
       - crawl:
           name: crawl-deploy-900
           requires: [deploy-cd-refresh-db]
