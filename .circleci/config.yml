@@ -505,7 +505,7 @@ workflows:
               only: /^release\/.*$/
       - backstop:
           requires: [deploy]
-          target: stage
+          target: test
           filters:
             branches:
               only: /^release\/.*$/
@@ -550,7 +550,7 @@ workflows:
               only: /^hotfix\/.*$/
     - backstop:
           requires: [deploy]
-          target: stage
+          target: test
           filters:
             branches:
               only: /^hotfix\/.*$/
@@ -596,7 +596,7 @@ workflows:
               only: /^mayflower\/.*$/
       - backstop:
           requires: [deploy]
-          target: stage
+          target: test
           filters:
             branches:
               only: /^mayflower\/.*$/
