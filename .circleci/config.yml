@@ -134,7 +134,7 @@ jobs:
     <<: *container_config
     steps:
       - attach_workspace: {at: /var/www}
-      - run: yarn danger ci
+      - run: yarn danger ci --failOnErrors
 
   # Automate the tagging process in GitHub
   tagging_github:
@@ -247,101 +247,32 @@ jobs:
       - run:
           command: "php scripts/ma-mayflower-develop.php"
 
-  # Deploy the branch CircleCI checkout to CD environment with a new database.
-  # Example being the develop branch each night.
   deploy:
+    parameters:
+      target:
+        type: string
+      gitRef:
+        type: string
+        default: $CIRCLE_BRANCH
+      skipMaint:
+        type: enum
+        enum: ["0", "1"]
+        default: "0"
+      refreshDb:
+        type: enum
+        enum: ["0", "1"]
+        default: "0"
     <<: *container_config
     steps:
       - attach_workspace: {at: /var/www}
       - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
       - *no_host_check
       - *no_ssh_timeout
-      # deploy `develop` to `cd` environment
-      - run:
-          command: "drush ma:deploy -v --refresh-db cd $CIRCLE_BRANCH"
-          no_output_timeout: 60m
-
-  # Deploy a release branch to stage environment with a new database.
-  deploy_release_stage:
-    <<: *container_config
-    steps:
-      - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
-      - *no_host_check
-      - *no_ssh_timeout
-      # deploy `release` branch to `test` environment
-      - run:
-          command: "drush ma:deploy -v --refresh-db test $CIRCLE_BRANCH"
-          no_output_timeout: 60m
-
-  # Deploy a hotfix branch to stage environment without a new database.
-  deploy_hotfix_stage:
-    <<: *container_config
-    steps:
-    - attach_workspace: {at: /var/www}
-    - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
-    - *no_host_check
-    - *no_ssh_timeout
-    # deploy `hotfix` branch to `test` environment without a fresh database
-    - run:
-        command: "drush ma:deploy -v test $CIRCLE_BRANCH"
-        no_output_timeout: 60m
-
-  # Deploy a branch to any environment from command line with options.
-  deploy_from_scratch:
-    <<: *container_config
-    steps:
-      - checkout
-      - *restore_composer_cache
-      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
-      # Deliberately don't save_cache in this job.
       - run:
           name: Fetch Drush aliases
           command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
-      - *no_host_check
-      - *no_ssh_timeout
-      # Deploy specified ref to specified environment
       - run:
-          command: "drush ma:deploy -y -v $DEPLOY_REFRESH_DB $DEPLOY_SKIP_MAINT $DEPLOY_CACHE_REBUILD $DEPLOY_TARGET $DEPLOY_GIT_REF"
-          no_output_timeout: 60m
-
-  # Deploy a tag to the stage environment within the Acquia repository
-  deploy_tag_stage:
-    <<: *container_config
-    steps:
-      - checkout
-      - *restore_composer_cache
-      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
-      # Deliberately don't save_cache in this job.
-      - run:
-          name: Fetch Drush aliases
-          command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
-      - *no_host_check
-      - *no_ssh_timeout
-      # Deploy specified ref to specified environment
-      - run:
-          command: "drush ma:deploy -v test tags/$CIRCLE_TAG"
-          no_output_timeout: 60m
-
-  # Deploy a tag to the production environment within the Acquia repository
-  deploy_tag_prod:
-    <<: *container_config
-    steps:
-      - checkout
-      - *restore_composer_cache
-      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
-      # Deliberately don't save_cache in this job.
-      - run:
-          name: Fetch Drush aliases
-          command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
-      - *no_host_check
-      - *no_ssh_timeout
-      # Deploy specified ref to specified environment
-      - run:
-          command: "drush ma:deploy -v -y prod tags/$CIRCLE_TAG"
+          command: "drush ma:deploy -v --skip-maint=<< parameters.skipMaint >> --refresh-db=<< parameters.refreshDb >> << parameters.target >> << parameters.gitRef >>"
           no_output_timeout: 60m
 
   crawl:
@@ -499,6 +430,8 @@ workflows:
           requires:
             - build
             - push_acquia
+          refreshDb: "1"
+          target: cd
           filters:
             branches:
               only: /^mayflower-dev-.*/
@@ -555,22 +488,24 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - deploy_release_stage:
+      - deploy:
           requires:
             - hold
+          target: test
+          refreshDb: "1"
           filters:
             branches:
               only: /^release\/.*$/
       - crawl:
-          requires: [deploy_release_stage]
+          requires: [deploy]
           target: test
           samples: 700
           filters:
             branches:
               only: /^release\/.*$/
       - backstop:
-          requires: [deploy_release_stage]
-          target: stage
+          requires: [deploy]
+          target: test
           filters:
             branches:
               only: /^release\/.*$/
@@ -599,22 +534,23 @@ workflows:
           filters:
             branches:
               only: /^hotfix\/.*$/
-    - deploy_hotfix_stage:
+    - deploy:
         requires:
           - hold
+        target: test
         filters:
           branches:
             only: /^hotfix\/.*$/
     - crawl:
-          requires: [deploy_hotfix_stage]
+          requires: [deploy]
           target: test
           samples: 200
           filters:
             branches:
               only: /^hotfix\/.*$/
     - backstop:
-          requires: [deploy_hotfix_stage]
-          target: stage
+          requires: [deploy]
+          target: test
           filters:
             branches:
               only: /^hotfix\/.*$/
@@ -643,22 +579,24 @@ workflows:
           filters:
             branches:
               only: /^mayflower\/.*$/
-      - deploy_release_stage:
+      - deploy:
           requires:
             - hold
+          target: test
+          refreshDb: "1"
           filters:
             branches:
               only: /^mayflower\/.*$/
       - crawl:
-          requires: [deploy_release_stage]
+          requires: [deploy]
           target: test
           samples: 500
           filters:
             branches:
               only: /^mayflower\/.*$/
       - backstop:
-          requires: [deploy_release_stage]
-          target: stage
+          requires: [deploy]
+          target: test
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -725,11 +663,13 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - deploy_tag_stage:
+      - deploy:
           requires:
             - build
             - tagging_acquia
             - hold_for_stage
+          gitRef: tags/$CIRCLE_TAG
+          target: test
           filters:
             branches:
               ignore: /.*/
@@ -745,12 +685,14 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - deploy_tag_prod:
+      - deploy:
           requires:
             - build
             - tagging_acquia
-            - deploy_tag_stage
+            - deploy
             - hold_for_prod
+          target: prod
+          gitRef: tags/$CIRCLE_TAG
           filters:
             branches:
               ignore: /.*/
@@ -822,6 +764,8 @@ workflows:
       - build
       - deploy:
           requires: [build]
+          target: cd
+          refreshDb: "1"
       - crawl:
           requires: [deploy]
           target: cd
