@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_content;
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\node\Entity\Node;
 use Drupal\mayflower\Helper;
@@ -184,54 +185,27 @@ class EntitySorter {
    *   Returns 0, -1 or 1.
    */
   protected function compareAlpha($a, $b) {
-    foreach ([$a, $b] as $e) {
-      $entity = $e->entity;
-      if ($entity instanceof Media) {
-        $field = 'field_title';
-      }
-      if ($entity instanceof Node) {
-        if ($entity->bundle() == 'person') {
-          $field = 'field_person_last_name';
-        }
-        elseif ($entity->bundle() == 'contact_information') {
-          $field = 'field_display_title';
-        }
-        else {
-          $field = 'title';
-        }
-      }
-      if (Helper::isFieldPopulated($entity, $field)) {
-        if (!isset($a_title)) {
-          $a_title = Helper::fieldValue($entity, $field);
-        }
-        else {
-          $b_title = Helper::fieldValue($entity, $field);
-        }
-      }
-    }
-    if ($a_title == $b_title) {
-      foreach ([$a, $b] as $e) {
-        $entity = $e->entity;
-        if ($entity->bundle() == 'person') {
-          $field_first_name = 'field_person_first_name';
-        }
-        if (Helper::isFieldPopulated($entity, $field_first_name)) {
-          if (!isset($a_first_name_title)) {
-            $a_first_name_title = Helper::fieldValue($entity, $field_first_name);
-          }
-          else {
-            $b_first_name_title = Helper::fieldValue($entity, $field_first_name);
-          }
-        }
-      }
-      $a_title = $a_title . $a_first_name_title;
-      $b_title = $b_title . $b_first_name_title;
-    }
-
-    $a_title = strtolower($a_title);
-    $b_title = strtolower($b_title);
+    $a_title = strtolower($this->getComparisonTitle($a->entity));
+    $b_title = strtolower($this->getComparisonTitle($b->entity));
 
     return strnatcmp($a_title, $b_title);
+  }
+
+  function getComparisonTitle(EntityInterface $entity) {
+    if ($entity instanceof Media) {
+      return Helper::fieldValue($entity, 'field_title');
+    }
+    if($entity instanceof Node) {
+      switch($entity->bundle()) {
+        case 'person':
+          return Helper::fieldValue($entity, 'field_last_name') . ' ' . Helper::fieldValue($entity, 'field_first_name');
+        case 'contact_information':
+          return Helper::fieldValue($entity, 'field_display_title');
+        default:
+          return $entity->label();
+      }
+    }
+    return $entity->label();
   }
 
   /**
