@@ -12,10 +12,12 @@ dependencies:
     - field.field.node.campaign_landing.field_kpi_pct_video_play
     - field.field.node.campaign_landing.field_meta_description
     - field.field.node.campaign_landing.field_organizations
+    - field.field.node.campaign_landing.field_promotional_kpi_choice
     - field.field.node.campaign_landing.field_sections
     - node.type.campaign_landing
     - workflows.workflow.campaign_landing_page
   module:
+    - conditional_fields
     - content_moderation
     - field_group
     - metatag
@@ -64,25 +66,26 @@ third_party_settings:
       format_settings:
         label: Content
         formatter: open
-        description: "Choose the Header that you want to appear at the top of your page and add up to 9 sections. <br><br>\r\nThe Header consists of a title and text that is either over an image or solid color (Key message), or a video.<br><br>\r\nWe recommend you keep the page as short and simple as possible with a single call to action."
+        description: "Choose the Header that you want to appear at the top of your page and add up to 9 sections. The Header consists of a title and text that is either over an image or solid color (Key message), or a video.<br><br>\r\nWe recommend you keep the page as short and simple as possible with a single call to action. <a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/promotional-page/content-tab\" target=\"_blank\">Learn about adding content to Promotional pages.</a>"
         required_fields: true
         id: ''
         classes: ''
       label: Content
     group_kpis:
       children:
+        - field_promotional_kpi_choice
         - field_kpi_ctr_key_msg
         - field_kpi_ctr_button_links
+        - field_kpi_pageviews
         - field_kpi_pct_video_play
         - field_kpi_pct_video_50
-        - field_kpi_pageviews
       parent_name: group_campaign_landing_edit_form
       weight: 9
       format_type: tab
       format_settings:
         label: 'Key Performance Indicators'
         formatter: closed
-        description: "KPIs allow you to define what counts as success for this page.  You may set goals for up to 3 metrics. At least 1 is required.  You'll then be able to see your results on your page's dashboard (not yet implemented).<br><br>\r\nIf you're not sure what to choose, please see our <a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/promotional-page\" target=\"_blank\">knowledge base article</a>."
+        description: 'KPIs allow you to define what counts as success for this page. <a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/promotional-page/key-performance-indicators" target="_blank">Learn about choosing Key Performance Indicators.</a>'
         required_fields: true
         id: ''
         classes: ''
@@ -118,38 +121,128 @@ content:
     third_party_settings: {  }
     region: content
   field_kpi_ctr_button_links:
-    weight: 2
+    weight: 28
     settings:
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        33b09f9f-0ea5-403b-b819-10e637c3a16e:
+          dependee: field_promotional_kpi_choice
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: ctr_button_link
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: campaign_landing
     type: number
     region: content
   field_kpi_ctr_key_msg:
-    weight: 1
+    weight: 27
     settings:
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        f784c9de-6ac6-4d92-af0e-e14f6c78986a:
+          dependee: field_promotional_kpi_choice
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: ctr_button
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: campaign_landing
     type: number
     region: content
   field_kpi_pageviews:
-    weight: 5
+    weight: 29
     settings:
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        27c43845-d9fd-4370-98f5-4cc41118c53e:
+          dependee: field_promotional_kpi_choice
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: num_pgviews
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: campaign_landing
     type: number
     region: content
   field_kpi_pct_video_50:
-    weight: 4
+    weight: 31
     settings:
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        4ff2bca4-2dff-4e88-8765-dd7f54b5f3e8:
+          dependee: field_promotional_kpi_choice
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: pct_vid_watch
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: campaign_landing
     type: number
     region: content
   field_kpi_pct_video_play:
-    weight: 3
+    weight: 30
     settings:
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        72e93d38-c523-427d-955f-0432adf852de:
+          dependee: field_promotional_kpi_choice
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: pct_vid_play
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: campaign_landing
     type: number
     region: content
   field_meta_description:
@@ -171,6 +264,12 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: entity_reference_autocomplete
+    region: content
+  field_promotional_kpi_choice:
+    weight: 26
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
     region: content
   field_sections:
     type: paragraphs
@@ -216,7 +315,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 10
+    weight: 20
     region: content
     settings: {  }
     third_party_settings: {  }
