@@ -10,14 +10,14 @@ field_name: field_kpi_pct_video_play
 entity_type: node
 bundle: campaign_landing
 label: 'Percent of video plays'
-description: 'Measures the percent of visitors that clicked the "play" button last month.<br>Enter a percentage in the form of a decimal (e.g., 80% as 0.8).'
+description: 'Measures the percent of visitors that clicked the "play" button last month.  Enter a percentage between 0 and 100.'
 required: false
 translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:
   min: !!float 0
-  max: !!float 1
+  max: !!float 100
   prefix: ''
-  suffix: ''
+  suffix: '%'
 field_type: decimal
