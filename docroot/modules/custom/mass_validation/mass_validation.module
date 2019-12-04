@@ -680,7 +680,7 @@ function _mass_validation_form_node_campaign_landing_form_validate(array &$form,
     // Take the unchecked checkboxes and reset the value to NULL.
     $unchecked = array_diff($kpi_fields_mapping, $selected_kpi);
     foreach ($unchecked as $unchecked_field_name) {
-     $form_state->setValue([$unchecked_field_name, 0, 'value'], NULL);
+      $form_state->setValue([$unchecked_field_name, 0, 'value'], NULL);
     }
   }
 }
