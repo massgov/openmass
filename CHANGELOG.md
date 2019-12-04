@@ -1,5 +1,4 @@
 
-
 ## [0.223.0] - December 4, 2019
 
 ### Changed
@@ -9,20 +8,21 @@
   - DP-16563: Numerous field label and help text changes for the promotional page
   - DP-16596: Changed the default help text for fields using both external/internal with core patch for link module. If will not override any code changes to help text.
   - DP-16470: Makes promotional pages available for authors and editors to create, clone, edit own, edit any, but not publish, revert or recycle.
+  - DP-16625: Add a KPI choice field to promotional page, conditional logic to display KPIs, modifies percent/CTR KPIs to use 0 to 100 scale, modifies related help text.
   
 ### Removed
   - DP-16322: Removed the yaml_content module and the custom mass_yaml_content module.
   
 ### Fixed
   - DP-16564: Minor updates to documentation after move to openmass repo
+  - DP-16524: Resolved a test failure due to PHP notices in entity comparisons that was uncovered by an upstream content change.
   
 ### Added
   - DP-16469: Build a super samitized database image nightly
   - DP-16585: Run test suite with super sanitized image nightly
   - DP-16620: Added a new job to deploy code to production from CircleCI. Also added the job to our current workflow for build_tag with hold button.
+  - DP-16524: Added validation to the KPI choice to make sure each checkbox has value if checked off. If unchecked checkbox the field value will be reset.
   
-
-
 ## [0.222.0] - November 20, 2019
 
 ### Changed
