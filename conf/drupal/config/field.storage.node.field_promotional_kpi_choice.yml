@@ -1,0 +1,36 @@
+uuid: eaedfb33-ba33-46a3-a523-0c1ef20ddee6
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_promotional_kpi_choice
+field_name: field_promotional_kpi_choice
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: ctr_button
+      label: 'Click through rate: key message button only'
+    -
+      value: ctr_button_link
+      label: 'Click through rate: buttons and links'
+    -
+      value: pct_vid_play
+      label: 'Percent of video plays'
+    -
+      value: pct_vid_watch
+      label: 'Percent of video watches'
+    -
+      value: num_pgviews
+      label: 'Number of pageviews'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 3
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
