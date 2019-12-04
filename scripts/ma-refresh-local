@@ -58,8 +58,11 @@ function show_help() {
     echo "    ${SCRIPT_NAME} -c, --cache                Use locally cached database (if available)."
     echo "    ${SCRIPT_NAME} -sdb, --skip-db-prep       Skip database prep operations (used in CircleCI only)."
     echo "    ${SCRIPT_NAME} -dpo, --db-prep-only       Prepare db only (drops old db, downloads backup and import it)."
+    echo "    ${SCRIPT_NAME} -s, --sanitize             Sanitize database."
+    echo "    ${SCRIPT_NAME} -ss, --super-sanitize      Super sanitize database."
     echo
 }
+
 
 function show_usage() {
     # Show usage.
@@ -81,6 +84,7 @@ function header() {
 
 }
 
+
 function sub_header() {
     # Show sub header with script date, sript name current log file.
     echo "`date`" | tee -a $LOGFILE_NAME
@@ -97,12 +101,13 @@ function log_retention() {
   return 0
 }
 
+
 function wrap_up() {
     # Cleanup old logs and display execution time (%s).
     log_retention
     END_COUNTER=`date +%s`      # End time.
     RUN_DURATION=$((END_COUNTER-START_COUNTER))
-    echo "${OK_MSG} '${SCRIPT_NAME}' completed in $RUN_DURATION seconds. ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    echo "${OK_MSG}Completed in $(($RUN_DURATION/60)) minutes. ${TEXTRESET}" | tee -a $LOGFILE_NAME
     echo
 }
 
@@ -149,6 +154,7 @@ function sql_create() {
     nonzero_exit
 }
 
+
 function cache_rebuild() {
     # Rebuild Drupal caches
     echo
@@ -156,6 +162,7 @@ function cache_rebuild() {
     drush -y cache:rebuild
     nonzero_exit
 }
+
 
 function cache_rebuild_discovery() {
     # Rebuild only cache_discovery
@@ -165,11 +172,21 @@ function cache_rebuild_discovery() {
     nonzero_exit
 }
 
+
 function sanitize() {
     # Sanitize the database by removing or obfuscating user data.
     echo
     echo "${HEADING}[+] Sanitize database ${TEXTRESET}" | tee -a $LOGFILE_NAME
     drush -y sql:sanitize
+    nonzero_exit
+}
+
+
+function super_sanitize() {
+    # Super sanitize the database by removing or obfuscating user data.
+    echo
+    echo "${HEADING}[+] Super sanitize database ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y -v sql:sanitize --sanitize-entities --sanitize-keyvalue --sanitize-names --sanitize-roles
     nonzero_exit
 }
 
@@ -222,6 +239,7 @@ function skip_db_prep() {
     cache_rebuild
 }
 
+
 function db_prep_only() {
     # When '--db-prep-only' is passed.
     sql_create
@@ -268,6 +286,14 @@ function main() {
     # Database prep only.
     elif [[ "$1" = "-dpo" ]] || [[ "$1" = "--db-prep-only" ]]; then
         db_prep_only
+
+    # Sanitize database.
+    elif [[ "$1" = "-s" ]] || [[ "$1" = "--sanitize" ]]; then
+        sanitize
+    
+    # Super sanitize database.
+    elif [[ "$1" = "-ss" ]] || [[ "$1" = "--super-sanitize" ]]; then
+        super_sanitize
 
     # If help is needed.
     elif [[ "$1" = "-h" ]] || [[ "$1" = "--help" ]] ; then

@@ -2,15 +2,15 @@
 
 _The official website of the Commonwealth of Massachusetts_
 
-This is the codebase for the Drupal 8 www.mass.gov. The site's theme (mass_theme) is powered by Mayflower, a companion repo available at https://github.com/massgov/mayflower.
+This is the codebase for the Drupal 8 web site `www.mass.gov`. The site's theme, [mass_theme](https://github.com/massgov/openmass/blob/develop/docroot/themes/custom/mass_theme/README.md), is powered by Mayflower, a companion repo available at https://github.com/massgov/mayflower.
 
-[Table of Contents](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/README.md) for documentation related to this repository such as [Releases](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/release.md). NOTE: documentation specific to the production site is not publicly available. 
+See the [Table of Contents](/docs/README.md) for additional documentation related to this repository. In addition, there is [documentation for the Mass Digital team](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/README.md) that covers topics such as [Releases](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/release.md). 
 
 ## Getting Started
 
 1. Clone the repo: `git clone git@github.com:massgov/openmass.git`
 
-1. Move into the project directory: `cd mass`
+1. Move into the project directory: `cd openmass`
 
 1. Create a `.env` file at the root level of the project by copying the example file shipped with the `mass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
     ```
@@ -34,10 +34,13 @@ This is the codebase for the Drupal 8 www.mass.gov. The site's theme (mass_theme
     ```bash
     sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
     ```
-1. Run `ahoy start` to setup a fresh new site (n.b. takes about 1 hour to complete). This does the following: 
-    - Starts the Docker containers, which includes a database.
-    - Runs `composer install` to fetch all dependencies.
-    - Installs a fresh site based on latest config contained in this repository.
+1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database). 
+1. Run `ahoy comi` to fetch all dependencies.
+
+###### Notes 
+- It takes a few minutes for the `mysql` container start up.
+- Mass Digital team members should skip `ahoy start` and follow steps for [Mass Digital development](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/development-massgov-team.md) instead.
+
 
 ## Workflow
 
@@ -98,3 +101,13 @@ View `/etc/hosts` for Mac/Linux or `c:\windows\system32\drivers\etc\hosts` in Wi
 ### `SQLSTATE[HY000][2002]` Connection refused
 
 This usually happens if you go visit mass.local right after the containers are brought up. MySQL has not started yet. Open `portainer.mass.local`; and go to _Containers > mass_mysql_1 > Logs_ and check for the message: _mysqld: ready for connections._ If you don't see this message, _mysqld_ has not started yet.
+
+
+### Windows troubleshooting
+
+- All host machine command line steps should be done from an elevated (admin) prompt.
+- Make sure that you have run `git config --local core.symlinks true` to enable symlinks when
+  you check out the repository.
+- If the symlinks from the theme to the Pattern Lab assets are not working after running composer,
+  delete the non-working symlinks and `git checkout` again.
+- You will find it helpful to copy `docroot/.gitattributes` to the root of the project. [@todo - add this to the automation]

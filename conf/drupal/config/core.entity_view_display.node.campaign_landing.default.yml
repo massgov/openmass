@@ -12,11 +12,13 @@ dependencies:
     - field.field.node.campaign_landing.field_kpi_pct_video_play
     - field.field.node.campaign_landing.field_meta_description
     - field.field.node.campaign_landing.field_organizations
+    - field.field.node.campaign_landing.field_promotional_kpi_choice
     - field.field.node.campaign_landing.field_sections
     - node.type.campaign_landing
   module:
     - entity_reference_revisions
     - metatag
+    - options
     - user
 id: node.campaign_landing.default
 targetEntityType: node
@@ -112,6 +114,13 @@ content:
       link: true
     third_party_settings: {  }
     type: entity_reference_label
+    region: content
+  field_promotional_kpi_choice:
+    weight: 13
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
     region: content
   field_sections:
     type: entity_reference_revisions_entity_view
