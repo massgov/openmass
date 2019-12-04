@@ -200,17 +200,26 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success('Cache rebuild complete.');
     }
 
-    // Purge Varnish cache.
-    // Get a list of all an environment's domains.
-    // Note: This also returns load balancer URLs.
-    $domains = $cloudapi->domains($this->site, $target);
-    foreach ($domains as $domain) {
-      // Skip Load Balancers.
-      if (!preg_match('/.*\.elb\.amazonaws\.com$/', $domain) ) {
-        // Clear the cache for the domain.
-        $cloudapi->purgeVarnishCache($this->site, $target, $domain);
-        $this->logger()->success("Purged Varnish cache for $domain in $target environment.");
+    if ($options['varnish']) {
+      // Purge Varnish cache.
+      // Get a list of all an environment's domains.
+      // Note: This also returns load balancer URLs.
+      $domains = $cloudapi->domains($this->site, $target);
+      foreach ($domains as $domain) {
+        // Skip Load Balancers.
+        if (!preg_match('/.*\.elb\.amazonaws\.com$/', $domain)) {
+          // Clear the cache for the domain.
+          $cloudapi->purgeVarnishCache($this->site, $target, $domain);
+          $this->logger()->success("Purged Varnish cache for $domain in $target environment.");
+        }
       }
+    }
+    else {
+      // Make sure the QAG and select other pages are purged.
+      $tags = implode(',', $tags);
+      $process = Drush::drush($targetRecord, 'cache:tag', $tags, ['verbose' => TRUE]);
+      $process->mustRun();
+      $this->logger()->success("Maintenance mode disabled in $target.");
     }
 
     if ($options['skip-maint'] == FALSE) {
@@ -252,8 +261,9 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    *   DB.
    * @option skip-maint Skip maintenance mode enable/disable.
    * @option cache-rebuild Rebuild caches as needed during deployment.
+   * @option varnish Purge Varnish fully at end of deployment. Otherwise, do minimalist purge.
    */
-  public function options($options = ['refresh-db' => FALSE, 'skip-maint' => FALSE, 'cache-rebuild' => TRUE]) {
+  public function options($options = ['refresh-db' => FALSE, 'skip-maint' => FALSE, 'cache-rebuild' => TRUE, 'varnish' => FALSE]) {
 
   }
 
