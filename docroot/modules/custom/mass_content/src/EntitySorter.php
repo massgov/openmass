@@ -191,20 +191,26 @@ class EntitySorter {
     return strnatcmp($a_title, $b_title);
   }
 
-  function getComparisonTitle(EntityInterface $entity) {
+  /**
+   * Determine the title of an entity to use as the basis for comparison.
+   */
+  private function getComparisonTitle(EntityInterface $entity) {
+    // Derive the title from `field_title` on media entities.
     if ($entity instanceof Media) {
       return Helper::fieldValue($entity, 'field_title');
     }
-    if($entity instanceof Node) {
-      switch($entity->bundle()) {
+    // For specific content types, we derive the title special ways.
+    if ($entity instanceof Node) {
+      switch ($entity->bundle()) {
         case 'person':
           return Helper::fieldValue($entity, 'field_last_name') . ' ' . Helper::fieldValue($entity, 'field_first_name');
+
         case 'contact_information':
           return Helper::fieldValue($entity, 'field_display_title');
-        default:
-          return $entity->label();
       }
     }
+
+    // Fallback to entity label if we can't figure out a more specific one.
     return $entity->label();
   }
 
