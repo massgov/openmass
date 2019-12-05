@@ -200,27 +200,48 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success('Cache rebuild complete.');
     }
 
+    // Get a list of all an environment's domains.
+    // Note: This also returns load balancer URLs.
+    $domains = $cloudapi->domains($this->site, $target);
+    foreach ($domains as $domain) {
+      // Skip Load Balancers.
+      if (!preg_match('/.*\.elb\.amazonaws\.com$/', $domain)) {
+        $domains_web[] = $domain;
+      }
+    }
+
     if ($options['varnish']) {
       // Purge Varnish cache.
-      // Get a list of all an environment's domains.
-      // Note: This also returns load balancer URLs.
-      $domains = $cloudapi->domains($this->site, $target);
-      foreach ($domains as $domain) {
-        // Skip Load Balancers.
-        if (!preg_match('/.*\.elb\.amazonaws\.com$/', $domain)) {
-          // Clear the cache for the domain.
-          $cloudapi->purgeVarnishCache($this->site, $target, $domain);
-          $this->logger()->success("Purged Varnish cache for $domain in $target environment.");
-        }
+      foreach ($domains_web as $domain) {
+        // Clear the cache for the domain.
+        $cloudapi->purgeVarnishCache($this->site, $target, $domain);
+        $this->logger()->success("Purged full Varnish cache for $domain in $target environment.");
       }
     }
     else {
-      // Make sure the QAG and select other pages are purged.
-      $tags = implode(',', $tags);
-      $process = Drush::drush($targetRecord, 'cache:tag', $tags, ['verbose' => TRUE]);
+      // Enqueue purging of notable URLs. Don't use tags to avoid over-purging.
+      // Empty path is the homepage
+      $paths = ['', 'orgs/office-of-the-governor'];
+      foreach ($domains_web as $domain) {
+        foreach ($paths as $path) {
+          $expressions[] = 'url ' . 'https://' . $domain . '/' . $path . ',';
+        }
+      }
+      $process = Drush::drush($targetRecord, 'p:queue-add', $expressions, ['verbose' => TRUE]);
       $process->mustRun();
-      $this->logger()->success("Maintenance mode disabled in $target.");
+
+      // Enqueue purging of QAG pages.
+      $tags = ['node:1'];
+      $tags_str = implode(',', $tags);
+      $process = Drush::drush($targetRecord, 'cache:tags', $tags_str, ['verbose' => TRUE]);
+      $process->mustRun();
+
+      $this->logger()->success("Selective Purge successful at $target.");
     }
+
+    // Process purge queue.
+    $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
+    $process->mustRun();
 
     if ($options['skip-maint'] == FALSE) {
       // Disable Maintenance mode.
