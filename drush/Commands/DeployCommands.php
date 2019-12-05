@@ -5,12 +5,10 @@ namespace Drush\Commands;
 use Acquia\Cloud\Api\CloudApiClient;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
-use Consolidation\SiteProcess\Util\Escape;
 use Consolidation\SiteProcess\Util\Shell;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\SiteAlias\SiteAliasManagerAwareInterface;
-use GuzzleHttp\Client;
 use Webmozart\PathUtil\Path;
 
 /**
@@ -219,6 +217,18 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       }
     }
     else {
+      // Enqueue purging of QAG pages.
+      $sql = "SELECT nid FROM node_field_data WHERE title LIKE '%_QAG%'";
+      $process = Drush::drush($targetRecord, 'sql:query', [$sql], ['verbose' => TRUE]);
+      $process->mustRun();
+      $out = $process->getOutput();
+      $nids = array_filter(explode("\n", $out));
+      foreach ($nids as $nid) {
+        $tags[] = "node:$nid";
+      }
+      $process = Drush::drush($targetRecord, 'cache:tags', [implode(',', $tags)], ['verbose' => TRUE]);
+      $process->mustRun();
+
       // Enqueue purging of notable URLs. Don't use tags to avoid over-purging.
       // Empty path is the homepage
       $paths = ['', 'orgs/office-of-the-governor'];
@@ -230,18 +240,8 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $process = Drush::drush($targetRecord, 'p:queue-add', $expressions, ['verbose' => TRUE]);
       $process->mustRun();
 
-      // Enqueue purging of QAG pages.
-      $tags = ['node:1'];
-      $tags_str = implode(',', $tags);
-      $process = Drush::drush($targetRecord, 'cache:tags', $tags_str, ['verbose' => TRUE]);
-      $process->mustRun();
-
-      $this->logger()->success("Selective Purge successful at $target.");
+      $this->logger()->success("Selective Purge enqueued at $target.");
     }
-
-    // Process purge queue.
-    $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
-    $process->mustRun();
 
     if ($options['skip-maint'] == FALSE) {
       // Disable Maintenance mode.
@@ -251,6 +251,11 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $process->mustRun();
       $this->logger()->success("Maintenance mode disabled in $target.");
     }
+
+    // Process purge queue.
+    $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
+    $process->mustRun();
+    $this->logger()->success("Purge queue worker complete at $target.");
 
     // Log a new deployment at New Relic.
     if ($is_prod) {
