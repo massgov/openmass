@@ -135,6 +135,19 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
         }
       }
 
+      /*
+       * Get any field_kpi_ fields for this entity.
+       * See https://jira.mass.gov/browse/DP-16429.
+       */
+      $kpis = [];
+      $info = $item->getFieldDefinitions();
+      foreach ($info as $name => $field) {
+        if (strpos($name, 'field_kpi_') !== FALSE) {
+          $kpis[$name] = $item->get($name)->value;
+        }
+      }
+
+
       $roles = array_map($get_target_id, $node_owner->roles->getValue());
       $mod_state = $item->moderation_state->getValue();
       $path = $this->aliasManager->getAliasByPath('/node/' . $item->nid->value);
@@ -160,6 +173,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
           'is_intern' => $node_owner->field_user_intern->value == 1,
           'roles' => $roles,
         ],
+        'kpis' => $kpis,
       ];
 
       if ($flag_show_flat) {
