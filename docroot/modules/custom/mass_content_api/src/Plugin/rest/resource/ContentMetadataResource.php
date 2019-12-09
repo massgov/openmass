@@ -147,7 +147,6 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
         }
       }
 
-
       $roles = array_map($get_target_id, $node_owner->roles->getValue());
       $mod_state = $item->moderation_state->getValue();
       $path = $this->aliasManager->getAliasByPath('/node/' . $item->nid->value);
