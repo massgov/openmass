@@ -147,7 +147,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
           $is_ctr = strpos($name, '_ctr') !== FALSE;
           $value = $item->get($name)->value;
           if ($value && ($is_ctr || $is_pct)) {
-            $value = round($value / 100, 3);
+            $value = $value / 100;
           }
           $kpis[$name] = $value;
         }
