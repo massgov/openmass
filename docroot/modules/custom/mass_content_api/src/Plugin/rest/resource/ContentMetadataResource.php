@@ -111,7 +111,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
       if (!empty($org)) {
         $organization = [
           'name' => $org->name->value,
-          'uuid' => $org->uuid->value,
+          'uuid' => $org->uuid(),
           'id' => $org->tid->value,
         ];
       }
@@ -143,7 +143,13 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
       $info = $item->getFieldDefinitions();
       foreach ($info as $name => $field) {
         if (strpos($name, 'field_kpi_') !== FALSE) {
-          $kpis[$name] = $item->get($name)->value;
+          $is_pct = strpos($name, '_pct') !== FALSE;
+          $is_ctr = strpos($name, '_ctr') !== FALSE;
+          $value = $item->get($name)->value;
+          if ($value && ($is_ctr || $is_pct)) {
+            $value = round($value / 100, 2);
+          }
+          $kpis[$name] = $value;
         }
       }
 
