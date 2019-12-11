@@ -5,7 +5,7 @@ namespace Drush\Commands;
 use Drupal\Core\Cache\Cache;
 use Drush\Utils\StringUtils;
 
-class CacheBackportCommands {
+class CacheBackportCommands extends DrushCommands {
 
   /**
    * Invalidate by cache tags.
