@@ -1,61 +1,75 @@
+## [0.224.1] - December 11, 2019
 
+### Changed
+
+- DP-16759: Downgrade Drush to fix sitemap and massdocs cron tasks.
 
 ## [0.224.0] - December 11, 2019
 
 ### Changed
-  - DP-16625: Add a KPI choice field to promotional page, conditional logic to display KPIs, modifies percent/CTR KPIs to use 0 to 100 scale, modifies related help text.
-  - DP-16655: Selective Varnish purge at end of deployment.
-  - DP-16598: Update dependencies - cache_metrics, devel, drush
-  - DP-16638: Update to use Mayflower 9.33.0.
-  
+
+- DP-16625: Add a KPI choice field to promotional page, conditional logic to display KPIs, modifies percent/CTR KPIs to use 0 to 100 scale, modifies related help text.
+- DP-16655: Selective Varnish purge at end of deployment.
+- DP-16598: Update dependencies - cache_metrics, devel, drush
+- DP-16638: Update to use Mayflower 9.33.0.
+
 ### Added
-  - DP-16524: Added validation to the KPI choice to make sure each checkbox has value if checked off. If unchecked checkbox the field value will be reset.
-  - DP-16585: Added the "-y" option for prod's deployment to proceed once approved via CircleCI.
-  
+
+- DP-16524: Added validation to the KPI choice to make sure each checkbox has value if checked off. If unchecked checkbox the field value will be reset.
+- DP-16585: Added the "-y" option for prod's deployment to proceed once approved via CircleCI.
+
 ### Fixed
-  - DP-16524: Resolved a test failure due to PHP notices in entity comparisons that was uncovered by an upstream content change.
-  - DP-16695: Resolve the error with curated list pages by correcting the field names in /modules/custom/mass_content/src/EntitySorter.php.
-  
+
+- DP-16524: Resolved a test failure due to PHP notices in entity comparisons that was uncovered by an upstream content change.
+- DP-16695: Resolve the error with curated list pages by correcting the field names in /modules/custom/mass_content/src/EntitySorter.php.
+
 ### Security
-  - DP-16674: Update symfony/http-foundation from 3.4.27 to 3.4.35 (https://github.com/advisories/GHSA-xhh6-956q-4q69).
-  
+
+- DP-16674: Update symfony/http-foundation from 3.4.27 to 3.4.35 (https://github.com/advisories/GHSA-xhh6-956q-4q69).
 
 ## [0.223.0] - December 4, 2019
 
 ### Changed
-  - DP-16585: Config fixes for Circle deployments, skip-maint and refresh-db
-  - DP-16322: Uninstalled a few modules content export yaml, manager content export yaml, mass yaml content, and vbo content export yaml.
-  - DP-16585: Refactored deploy jobs in config.yml
-  - DP-16563: Numerous field label and help text changes for the promotional page
-  - DP-16596: Changed the default help text for fields using both external/internal with core patch for link module. If will not override any code changes to help text.
-  - DP-16470: Makes promotional pages available for authors and editors to create, clone, edit own, edit any, but not publish, revert or recycle.
-  - DP-16625: Add a KPI choice field to promotional page, conditional logic to display KPIs, modifies percent/CTR KPIs to use 0 to 100 scale, modifies related help text.
-  
+
+- DP-16585: Config fixes for Circle deployments, skip-maint and refresh-db
+- DP-16322: Uninstalled a few modules content export yaml, manager content export yaml, mass yaml content, and vbo content export yaml.
+- DP-16585: Refactored deploy jobs in config.yml
+- DP-16563: Numerous field label and help text changes for the promotional page
+- DP-16596: Changed the default help text for fields using both external/internal with core patch for link module. If will not override any code changes to help text.
+- DP-16470: Makes promotional pages available for authors and editors to create, clone, edit own, edit any, but not publish, revert or recycle.
+- DP-16625: Add a KPI choice field to promotional page, conditional logic to display KPIs, modifies percent/CTR KPIs to use 0 to 100 scale, modifies related help text.
+
 ### Removed
-  - DP-16322: Removed the yaml_content module and the custom mass_yaml_content module.
-  
+
+- DP-16322: Removed the yaml_content module and the custom mass_yaml_content module.
+
 ### Fixed
-  - DP-16564: Minor updates to documentation after move to openmass repo
-  - DP-16524: Resolved a test failure due to PHP notices in entity comparisons that was uncovered by an upstream content change.
-  
+
+- DP-16564: Minor updates to documentation after move to openmass repo
+- DP-16524: Resolved a test failure due to PHP notices in entity comparisons that was uncovered by an upstream content change.
+
 ### Added
-  - DP-16469: Build a super samitized database image nightly
-  - DP-16585: Run test suite with super sanitized image nightly
-  - DP-16620: Added a new job to deploy code to production from CircleCI. Also added the job to our current workflow for build_tag with hold button.
-  - DP-16524: Added validation to the KPI choice to make sure each checkbox has value if checked off. If unchecked checkbox the field value will be reset.
-  
+
+- DP-16469: Build a super samitized database image nightly
+- DP-16585: Run test suite with super sanitized image nightly
+- DP-16620: Added a new job to deploy code to production from CircleCI. Also added the job to our current workflow for build_tag with hold button.
+- DP-16524: Added validation to the KPI choice to make sure each checkbox has value if checked off. If unchecked checkbox the field value will be reset.
+
 ## [0.222.0] - November 20, 2019
 
 ### Changed
-  - DP-16567: Removed "/agr" path from Cloudflare config.
-  - DP-15695: Update a few release bits from mass to openmass
-  
+
+- DP-16567: Removed "/agr" path from Cloudflare config.
+- DP-15695: Update a few release bits from mass to openmass
+
 ### Added
-  - DP-16555: Create a way to produce a sanitized database that has no username or roles in it.
-  
+
+- DP-16555: Create a way to produce a sanitized database that has no username or roles in it.
+
 ## [0.220.1] - November 13, 2019
 
 ### Removed
+
 - DP-16557: Remove the legacy `/resources` redirect path from Cloudflare configuration.
 
 ## [0.220.0] - November 13, 2019
