@@ -1,4 +1,25 @@
 
+
+## [0.224.0] - December 11, 2019
+
+### Changed
+  - DP-16625: Add a KPI choice field to promotional page, conditional logic to display KPIs, modifies percent/CTR KPIs to use 0 to 100 scale, modifies related help text.
+  - DP-16655: Selective Varnish purge at end of deployment.
+  - DP-16598: Update dependencies - cache_metrics, devel, drush
+  - DP-16638: Update to use Mayflower 9.33.0.
+  
+### Added
+  - DP-16524: Added validation to the KPI choice to make sure each checkbox has value if checked off. If unchecked checkbox the field value will be reset.
+  - DP-16585: Added the "-y" option for prod's deployment to proceed once approved via CircleCI.
+  
+### Fixed
+  - DP-16524: Resolved a test failure due to PHP notices in entity comparisons that was uncovered by an upstream content change.
+  - DP-16695: Resolve the error with curated list pages by correcting the field names in /modules/custom/mass_content/src/EntitySorter.php.
+  
+### Security
+  - DP-16674: Update symfony/http-foundation from 3.4.27 to 3.4.35 (https://github.com/advisories/GHSA-xhh6-956q-4q69).
+  
+
 ## [0.223.0] - December 4, 2019
 
 ### Changed
