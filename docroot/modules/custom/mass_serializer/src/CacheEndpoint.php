@@ -3,6 +3,7 @@
 namespace Drupal\mass_serializer;
 
 use Drupal\views\Views;
+use Drush\Drush;
 use Exception;
 
 /**
@@ -98,27 +99,28 @@ class CacheEndpoint {
    *   Arguments to supply to the view.
    */
   public function cacheSave($api, array $args) {
+    $self = Drush::aliasManager()->getSelf();
     try {
       file_prepare_directory($this->publicDirectory, FILE_CREATE_DIRECTORY);
       if (!file_prepare_directory($this->publicDirectory)) {
-        drush_log($this->publicDirectory . 'does not exist or is not writeable.', 'error');
+        Drush::logger()->error($this->publicDirectory . 'does not exist or is not writeable.');
         return;
       }
 
-      drush_log('Beginning processing for endpoint (this could take a while)', 'success');
+      Drush::logger()->success('Beginning processing for endpoint (this could take a while)');
 
       $count = $this->countRows($args[0]);
 
       // Message on zero items. Still generate the cache file.
       if (!$count) {
-        drush_log('Zero items in feed.', 'success');
+        Drush::logger()->success('Zero items in feed.');
       }
 
       // If the feed is only one page, simply save the file directly to public files.
       if ($this->itemsPerPage >= $count) {
         $filename = $this->cacheName($api, $args, TRUE);
         $this->renderPartial($api, $this->display, $filename, $args, TRUE);
-        drush_log('Single page finished. ' . $filename . ' saved.', 'success');
+        Drush::logger()->success('Single page finished. ' . $filename . ' saved.');
         return;
       }
 
@@ -126,30 +128,21 @@ class CacheEndpoint {
       $this->setDbTimeout();
 
       // If the feed has multiple pages create temp files per page.
-      drush_log($count . ' items, starting batches of ' . $this->itemsPerPage . '.', 'success');
+      Drush::logger()->success($count . ' items, starting batches of ' . $this->itemsPerPage . '.');
       $filenames = [];
       for ($offset = 0; $offset < $count; $offset += $this->itemsPerPage) {
         $filename = $this->cacheName($api, $args, FALSE, $offset);
         $filenames[] = $filename;
 
         // Spawn a separate process so memory does not run out.
-        drush_invoke_process('@self', 'mass-serializer-render-partial', [
-          'machine_name' => $api,
-          'display' => $this->display,
-          'filename' => $filename,
-          'term_id' => $args[0],
-          'offset' => $offset,
-        ]);
+        Drush::drush($self, 'mass-serializer-render-partial', [$api, $this->display, $filename, $args[0], $offset]);
       }
 
       // Spawn a separate process so memory does not run out.
-      drush_invoke_process('@self', 'mass-serializer-merge-file', [
-        'cachename' => $this->cacheName($api, $args, TRUE),
-        'filenames' => implode(' ', $filenames),
-      ]);
+      Drush::drush($self, 'mass-serializer-merge-file', [$this->cacheName($api, $args, TRUE), implode(' ', $filenames)]);
     }
     catch (Exception $e) {
-      drush_log('Exception: ' . $e->getMessage(), 'error');
+      Drush::logger()->error('Exception: ' . $e->getMessage());
     }
   }
 
