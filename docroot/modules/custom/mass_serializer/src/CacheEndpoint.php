@@ -156,7 +156,7 @@ class CacheEndpoint {
         ->execute();
     }
     catch (Exception $e) {
-      drush_log($e->getMessage(), 'error');
+      Drush::logger()->error($e->getMessage());
     }
   }
 
@@ -202,7 +202,7 @@ class CacheEndpoint {
       throw new Exception('No view returned by this machine name: ' . $api);
     }
 
-    drush_log('View with offset: ' . $offset, 'success');
+    Drush::logger()->success('View with offset: ' . $offset);
 
     $view->setItemsPerPage($this->itemsPerPage);
     $view->setOffset($offset);
@@ -210,7 +210,7 @@ class CacheEndpoint {
     $preview = $view->preview($display, $args);
 
     $file = file_save_data(strval($preview['#markup']), $filename, FILE_EXISTS_REPLACE);
-    drush_log('Saving partial ' . $filename, 'success');
+    Drush::logger()->success('Saving partial ' . $filename);
   }
 
   /**
@@ -233,7 +233,7 @@ class CacheEndpoint {
 
     file_save_data(json_encode($result), $cachename, FILE_EXISTS_REPLACE);
 
-    drush_log('All pages combined. ' . count($data) . ' rows. ' . $cachename . ' saved.', 'success');
+    Drush::logger()->sucess('All pages combined. ' . count($data) . ' rows. ' . $cachename . ' saved.');
   }
 
 }
