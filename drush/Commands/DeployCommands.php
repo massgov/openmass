@@ -5,12 +5,10 @@ namespace Drush\Commands;
 use Acquia\Cloud\Api\CloudApiClient;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
-use Consolidation\SiteProcess\Util\Escape;
 use Consolidation\SiteProcess\Util\Shell;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\SiteAlias\SiteAliasManagerAwareInterface;
-use GuzzleHttp\Client;
 use Webmozart\PathUtil\Path;
 
 /**
@@ -147,7 +145,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       // Turn on Maint mode.
       $args = array('system.maintenance_mode', 1);
       $state_options = array('input-format' => 'integer');
-      $process = Drush::drush($targetRecord, 'state-set', $args, $state_options);
+      $process = Drush::drush($targetRecord, 'state:set', $args, $state_options);
       $process->mustRun();
       $this->logger()->success("Maintenance mode enabled in $target.");
     }
@@ -174,7 +172,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $this->logger()->success("Database and entity updates completed in $target.");
 
     // Import new config.
-    $process = Drush::drush($targetRecord, 'config-import');
+    $process = Drush::drush($targetRecord, 'config:import');
     $process->mustRun($process->showRealtime());
     $this->logger()->success("Configuration imported in $target.");
 
@@ -200,27 +198,64 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success('Cache rebuild complete.');
     }
 
-    // Purge Varnish cache.
     // Get a list of all an environment's domains.
     // Note: This also returns load balancer URLs.
     $domains = $cloudapi->domains($this->site, $target);
     foreach ($domains as $domain) {
       // Skip Load Balancers.
-      if (!preg_match('/.*\.elb\.amazonaws\.com$/', $domain) ) {
+      if (!preg_match('/.*\.elb\.amazonaws\.com$/', $domain)) {
+        $domains_web[] = $domain;
+      }
+    }
+
+    if ($options['varnish']) {
+      // Purge Varnish cache.
+      foreach ($domains_web as $domain) {
         // Clear the cache for the domain.
         $cloudapi->purgeVarnishCache($this->site, $target, $domain);
-        $this->logger()->success("Purged Varnish cache for $domain in $target environment.");
+        $this->logger()->success("Purged full Varnish cache for $domain in $target environment.");
       }
+    }
+    else {
+      // Enqueue purging of QAG pages.
+      $sql = "SELECT nid FROM node_field_data WHERE title LIKE '%_QAG%'";
+      $process = Drush::drush($targetRecord, 'sql:query', [$sql], ['verbose' => TRUE]);
+      $process->mustRun();
+      $out = $process->getOutput();
+      $nids = array_filter(explode("\n", $out));
+      foreach ($nids as $nid) {
+        $tags[] = "node:$nid";
+      }
+      $process = Drush::drush($targetRecord, 'cache:tags', [implode(',', $tags)], ['verbose' => TRUE]);
+      $process->mustRun();
+
+      // Enqueue purging of notable URLs. Don't use tags to avoid over-purging.
+      // Empty path is the homepage
+      $paths = ['', 'orgs/office-of-the-governor'];
+      foreach ($domains_web as $domain) {
+        foreach ($paths as $path) {
+          $expressions[] = 'url ' . 'https://' . $domain . '/' . $path . ',';
+        }
+      }
+      $process = Drush::drush($targetRecord, 'p:queue-add', $expressions, ['verbose' => TRUE]);
+      $process->mustRun();
+
+      $this->logger()->success("Selective Purge enqueued at $target.");
     }
 
     if ($options['skip-maint'] == FALSE) {
       // Disable Maintenance mode.
       $args = array('system.maintenance_mode', '0');
       $state_options = ['input-format' => 'integer'];
-      $process = Drush::drush($targetRecord, 'state-set', $args, $state_options);
+      $process = Drush::drush($targetRecord, 'state:set', $args, $state_options);
       $process->mustRun();
       $this->logger()->success("Maintenance mode disabled in $target.");
     }
+
+    // Process purge queue.
+    $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
+    $process->mustRun();
+    $this->logger()->success("Purge queue worker complete at $target.");
 
     // Log a new deployment at New Relic.
     if ($is_prod) {
@@ -252,8 +287,9 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    *   DB.
    * @option skip-maint Skip maintenance mode enable/disable.
    * @option cache-rebuild Rebuild caches as needed during deployment.
+   * @option varnish Purge Varnish fully at end of deployment. Otherwise, do minimalist purge.
    */
-  public function options($options = ['refresh-db' => FALSE, 'skip-maint' => FALSE, 'cache-rebuild' => TRUE]) {
+  public function options($options = ['refresh-db' => FALSE, 'skip-maint' => FALSE, 'cache-rebuild' => TRUE, 'varnish' => FALSE]) {
 
   }
 
@@ -327,7 +363,7 @@ curl -X POST 'https://api.newrelic.com/v2/applications/$application/deployments.
   }
 }'
 EOT;
-    if (!drush_shell_exec($cmd)) {
+    if (!Drush::shell($cmd)) {
       $this->logger()->warning('Failed to create a Deployment at New Relic');
     }
   }
