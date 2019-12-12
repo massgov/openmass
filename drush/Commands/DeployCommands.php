@@ -6,9 +6,11 @@ use Acquia\Cloud\Api\CloudApiClient;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 use Consolidation\SiteProcess\Util\Shell;
+use Drupal\Core\Cache\Cache;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\SiteAlias\SiteAliasManagerAwareInterface;
+use Drush\Utils\StringUtils;
 use Webmozart\PathUtil\Path;
 
 /**
