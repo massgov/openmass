@@ -135,11 +135,13 @@ class CacheEndpoint {
         $filenames[] = $filename;
 
         // Spawn a separate process so memory does not run out.
-        Drush::drush($self, 'mass-serializer-render-partial', [$api, $this->display, $filename, $args[0], $offset]);
+        $args = [$api, $this->display, $filename, $args[0], $offset];
+        Drush::drush($self, 'mass-serializer-render-partial', $args);
       }
 
       // Spawn a separate process so memory does not run out.
-      Drush::drush($self, 'mass-serializer-merge-file', [$this->cacheName($api, $args, TRUE), implode(' ', $filenames)]);
+      $args = [$this->cacheName($api, $args, true), implode(' ', $filenames)];
+      Drush::drush($self, 'mass-serializer-merge-file', $args);
     }
     catch (Exception $e) {
       Drush::logger()->error('Exception: ' . $e->getMessage());
