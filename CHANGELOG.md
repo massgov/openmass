@@ -3,6 +3,7 @@
 ### Changed
 
 - DP-16759: Downgrade Drush to fix sitemap and massdocs cron tasks.
+- DP-16759: `ma:deploy` erroring during cache clearing.
 
 ## [0.224.0] - December 11, 2019
 
