@@ -91,7 +91,8 @@ class MassSerializerCommands extends DrushCommands implements SiteAliasManagerAw
     $processed = 0;
     foreach ($tids as $tid) {
       $this->logger()->debug('Calling mserc drush command with organization id: ' . $tid);
-      Drush::drush($this->siteAliasManager()->getSelf(), 'mserc', [$machine_name, $tid]);
+      $process = Drush::drush($this->siteAliasManager()->getSelf(), 'mserc', [$machine_name, $tid]);
+      $process->mustRun();
       $processed++;
 
       // If limit is reached then stop processing organizations.
