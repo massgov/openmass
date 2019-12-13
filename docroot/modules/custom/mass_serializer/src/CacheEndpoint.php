@@ -141,7 +141,7 @@ class CacheEndpoint {
       }
 
       // Spawn a separate process so memory does not run out.
-      $args = [$this->cacheName($api, $args, true), implode(' ', $filenames)];
+      $args = [$this->cacheName($api, $args, TRUE), implode(' ', $filenames)];
       $process = Drush::drush($self, 'mass-serializer-merge-file', $args, Drush::redispatchOptions());
       $process->mustRun();
     }
