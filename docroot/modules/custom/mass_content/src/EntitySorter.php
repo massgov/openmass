@@ -204,6 +204,7 @@ class EntitySorter {
       switch ($entity->bundle()) {
         case 'person':
           return Helper::fieldValue($entity, 'field_person_last_name') . ' ' . Helper::fieldValue($entity, 'field_person_first_name');
+
         case 'contact_information':
           return Helper::fieldValue($entity, 'field_display_title');
       }
