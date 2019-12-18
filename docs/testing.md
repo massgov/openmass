@@ -2,7 +2,7 @@
 
 Mass.gov has a robust test suite that helps us maintain high uptime, deliver high quality, and develop our codebase with confidence and velocity.
 
-Our test suite is run automatically on all PRs via our continuous integration provider, [CircleCI](circleci.com/gh/massgov/openmass). PRs must return green to be accepted. This ensures that known regressions stay out of the codebase.
+Our test suite is run automatically on all PRs via our continuous integration provider, [CircleCI](https://circleci.com/gh/massgov/openmass). PRs must return green to be accepted. This ensures that known regressions stay out of the codebase.
 
 In addition, [BackstopJS](https://github.com/massgov/openmass/blob/develop/backstop/README.md) (visual regression testing) and [Nightcrawler](https://github.com/massgov/openmass/blob/develop/.circleci/nightcrawler/README.md) (5xx error testing) are run a nightly on the CD environment on the latest version of develop (see more below).
 
