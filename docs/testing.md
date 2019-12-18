@@ -94,7 +94,7 @@ These are a 2018 addition to our test capabilities. Here you have a fully bootst
 
 To prevent database issues we've seen in the past, we MUST test any changes to queries that see significant traffic. This includes ANY CHANGES to the All Content or My Content view. (Needs Review and Trash changes should also be checked, but they see less traffic). In addition, changes that affect the snooze feature or autocomplete (Linkit module) should be scrutinized for any performance impact.
 
-To test these changes we need to compare the performance of the query on production to the performance of the new query that will be introduced. [Performance](/performance.md) offers documentation on how to compare query times to see if a change will introduce a problem for our content authors.
+To test these changes we need to compare the performance of the query on production to the performance of the new query that will be introduced. [Performance](https://github.com/massgov/openmass/blob/develop/docs/performance.md) offers documentation on how to compare query times to see if a change will introduce a problem for our content authors.
 
 #### Picking a test type
 
