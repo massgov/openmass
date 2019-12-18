@@ -1,8 +1,20 @@
+
+
+## [0.225.0] - December 18, 2019
+
+### Changed
+  - DP-16764: Stop purge from false exception at end of a deployment.
+  - DP-16689: Exclude purges sent to New Relic.
+  
+### Added
+  - DP-16429: KPI information added to api/v1/content-metadata REST endpoint
+  
 ## [0.224.1] - December 11, 2019
 
 ### Changed
 
 - DP-16759: Downgrade Drush to fix sitemap and massdocs cron tasks.
+- DP-16759: `ma:deploy` erroring during cache clearing.
 
 ## [0.224.0] - December 11, 2019
 

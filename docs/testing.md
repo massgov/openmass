@@ -1,14 +1,16 @@
-# Introduction
+# Testing
+
+## Introduction
 
 Mass.gov has a robust test suite that helps us maintain high uptime, deliver high quality, and develop our codebase with confidence and velocity.
 
-Our test suite is run automatically on all PRs via our continuous integration provider, [CircleCI](circleci.com/gh/massgov/mass). PRs must return green to be accepted. This ensures that known regressions stay out of the codebase.
+Our test suite is run automatically on all PRs via our continuous integration provider, [CircleCI](https://circleci.com/gh/massgov/openmass). PRs must return green to be accepted. This ensures that known regressions stay out of the codebase.
 
-In addition, [BackstopJS](https://github.com/massgov/mass/blob/develop/backstop/README.md) (visual regression testing) and [Nightcrawler](https://github.com/massgov/mass/blob/develop/.circleci/nightcrawler/README.md) (5xx error testing) are run a nightly on the CD environment on the latest version of develop (see more below).
+In addition, [BackstopJS](https://github.com/massgov/openmass/blob/develop/backstop/README.md) (visual regression testing) and [Nightcrawler](https://github.com/massgov/openmass/blob/develop/.circleci/nightcrawler/README.md) (5xx error testing) are run a nightly on the CD environment on the latest version of develop (see more below).
 
 Any PR that is created in the Mass repository can and should be tested locally before being being pushed up to GitHub.
 
-# Tests run on every PR
+## Tests run on every PR
 
 The following tests are included in the CircleCI workflow automatically each time a PR is pushed to the GitHub repository. 
 
@@ -27,13 +29,13 @@ To run these tests locally:
 
 Pass the --help option to learn the arguments and options for each tool.
 
-# Tests run nightly on develop
+## Tests run nightly on develop
 
 Nightcrawler and Backstop are run on the develop branch at 10 p.m. EST each night. If your branch is merged into develop by then, it will be tested as part of that night's run.
 
 To run these tests locally:
 
-## Nightcrawler
+### Nightcrawler
 
 ```
 ahoy nightcrawler crawl --samples=50
@@ -41,27 +43,27 @@ ahoy nightcrawler crawl --samples=50
 ### Sample size should be between 40-60 for a branch
 ```
 
-More information about setup or running Nightcrawler can be found in the [Nightcrawler documentation](https://github.com/massgov/mass/blob/develop/.circleci/nightcrawler/README.md).
+More information about setup or running Nightcrawler can be found in the [Nightcrawler documentation](https://github.com/massgov/openmass/blob/develop/.circleci/nightcrawler/README.md).
 
 
-## Backstop
+### Backstop
 
 #### Options
   - `pages.json` is the list pages that are tested when Backstop is run. This is the default option. There are currently 39 pages, which is about as many pages as we want the default option to include. If there are too many pages included, the risk of failed test runs increases.
   - `all.json` has additional pages to test a larger number of pages -- for example, additional displays for some content types. There are currently 57 total (this includes the default pages). To use this option, add `--list=all`
 
-### Take screen captures of production pages
+###3 Take screen captures of production pages
 `ahoy  backstop reference --target=prod --list=all`
 
-### Take screen captures of local pages to compare
+#### Take screen captures of local pages to compare
 `ahoy backstop test --target=local --list=all`
 
-### Open the report from the comparison 
+#### Open the report from the comparison 
 `open backstop/report/index.html`
 
-More information about setup or running Backstop can be found in the [Backstop documentation](https://github.com/massgov/mass/blob/develop/backstop/README.md).
+More information about setup or running Backstop can be found in the [Backstop documentation](https://github.com/massgov/openmass/blob/develop/backstop/README.md).
 
-# Good tests
+## Good tests
 
 Good tests take the point of view of the end user. We want to test that _their_ expectations are met. We encourage developers to write tests that click on links and buttons, just like end users do.
 
@@ -69,38 +71,38 @@ Good tests focus on high-value activities. We want to test that major functional
 
 ### Creating new tests
 
-- Behat test (Found in the [/features](https://github.com/massgov/mass/tree/develop/features) directory)
+- Behat test (Found in the [/features](https://github.com/massgov/openmass/tree/develop/features) directory)
 - PHPUnit (Found in most of the custom modules under `/test/src/ExistingSites`)
 
 ### Updating tests
 
-- Behat test (Found in the [/features](https://github.com/massgov/mass/tree/develop/features) directory)
+- Behat test (Found in the [/features](https://github.com/massgov/openmass/tree/develop/features) directory)
 - PHPUnit (Found in most of the custom modules under `/test/src/ExistingSites`)
 - Backstop (Change the page URLs if needed)
 
 **Please note that anything that is added or updated in the Behat tests or PHPUnit will be run in the CircleCI testing section**
 
-# Test types
+## Test types
 
-#### Behavioral (aka behat)
+### Behavioral (aka behat)
 
-We have [a large suite](https://github.com/massgov/mass/tree/develop/features) of Behavioral tests. These tests are written in Gherkin. The Gherkin steps map to step definitions that we or others have written. Read our test suite to learn how to author these tests. These tests live in the [/features](https://github.com/massgov/mass/tree/develop/features) directory.
+We have [a large suite](https://github.com/massgov/openmass/tree/develop/features) of Behavioral tests. These tests are written in Gherkin. The Gherkin steps map to step definitions that we or others have written. Read our test suite to learn how to author these tests. These tests live in the [/features](https://github.com/massgov/openmass/tree/develop/features) directory.
 
-#### Functional (aka PHPUnit+ExistingSiteTestCase)
+### Functional (aka PHPUnit+ExistingSiteTestCase)
 
-These are a 2018 addition to our test capabilities. Here you have a fully bootstrapped Drupal and Mink at your disposal. We extend [Drupal Test Traits](https://github.com/weitzman/drupal-test-traits), an open source project which we founded for this project. [See examples](https://github.com/massgov/mass/tree/develop/docroot/modules/custom/mass_utility/tests/src/ExistingSite). Read our test suite to learn how to author these tests. These tests live inside modules. A good example is [MediaDeleteTest](https://github.com/massgov/mass/blob/develop/docroot/modules/custom/mass_media/tests/src/ExistingSite/MediaDeleteTest.php).
+These are a 2018 addition to our test capabilities. Here you have a fully bootstrapped Drupal and Mink at your disposal. We extend [Drupal Test Traits](https://github.com/weitzman/drupal-test-traits), an open source project which we founded for this project. [See examples](https://github.com/massgov/openmass/tree/develop/docroot/modules/custom/mass_utility/tests/src/ExistingSite). Read our test suite to learn how to author these tests. These tests live inside modules. A good example is [MediaDeleteTest](https://github.com/massgov/openmass/blob/develop/docroot/modules/custom/mass_media/tests/src/ExistingSite/MediaDeleteTest.php).
 
-#### Performance
+### Performance
 
 To prevent database issues we've seen in the past, we MUST test any changes to queries that see significant traffic. This includes ANY CHANGES to the All Content or My Content view. (Needs Review and Trash changes should also be checked, but they see less traffic). In addition, changes that affect the snooze feature or autocomplete (Linkit module) should be scrutinized for any performance impact.
 
-To test these changes we need to compare the performance of the query on production to the performance of the new query that will be introduced. [Performance](/performance.md) offers documentation on how to compare query times to see if a change will introduce a problem for our content authors.
+To test these changes we need to compare the performance of the query on production to the performance of the new query that will be introduced. [Performance](https://github.com/massgov/openmass/blob/develop/docs/performance.md) offers documentation on how to compare query times to see if a change will introduce a problem for our content authors.
 
-#### Picking a test type
+### Picking a test type
 
 The ideal case is that Product Owners and developers jointly describe new features in Gherkin. When this happens, a Behavioral test makes most sense. Otherwise, a Functional test is preferred as it hits the sweet spot between ease of development and value to the organization. Also, tests that depend on lots of related content are more easily authored as Functional.
 
-# Tips
+## Tips
 
 - Robust tests create and delete their own content. Relying on production content is brittle.
 - Do not break up your tests in to too many classes and methods. Each one has a startup cost and contributes to long test times for the whole suite.

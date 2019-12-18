@@ -2,7 +2,7 @@
 See also: [Documentation for Mass Digital team](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/README.md) (not public)
   
 ## Developer basics
-- [Getting Started](#getting-started)
+- [Getting Started](https://github.com/massgov/openmass#getting-started)
   - Clone the repo; set up Docker and ahoy; workflow
 - [Changelog Instructions](changelog_instructions.md)
 - [Composer](composer.md)
@@ -31,7 +31,7 @@ Contributors should familiarize themselves with existing modules both custom and
 
 ## Testing
 - [Testing](testing.md)
-  - [Behat & PHPUnit](testing.md#run-tests-locally)
+  - [Behat & PHPUnit](https://github.com/massgov/openmass/blob/develop/docs/testing.md#tests-run-on-every-pr)
   - [Backstop](https://github.com/massgov/openmass/blob/develop/backstop/README.md)
   - [Performance Optimization and Profiling (Blackfire.io)](performance.md)
   - [Nightcrawler](https://github.com/massgov/openmass/blob/develop/.circleci/nightcrawler/README.md)

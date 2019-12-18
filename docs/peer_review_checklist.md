@@ -2,7 +2,7 @@
 
 ## General
 
-- [ ] Does the PR include a changelog.yml file [see instructions](changelog_instructions.md)? 
+- [ ] Does the PR include a changelog.yml file ([see instructions](changelog_instructions.md))? 
 - [ ] Does the code actually work? Does it perform its intended function, is the logic correct, etc.
 - [ ] Does the code break other stuff? (Acknowledge that you can't test everything, but think about it). A common offense: custom rendering of a field that is used in more than one place or in more than one context.
 - [ ] Is all the code easily understood? Does anything confuse you or give you pause?

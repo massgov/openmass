@@ -254,17 +254,17 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success("Maintenance mode disabled in $target.");
     }
 
-    // Process purge queue.
-    $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
-    $process->mustRun();
-    $this->logger()->success("Purge queue worker complete at $target.");
-
     // Log a new deployment at New Relic.
     if ($is_prod) {
       $this->newRelic($git_ref, getenv('AC_API_USER'), getenv('MASS_NEWRELIC_APPLICATION'), getenv('MASS_NEWRELIC_KEY'));
     }
     $done = $this->getTimestamp();
     $this->io()->success("Deployment completed at {$done}");
+
+    // Process purge queue.
+    $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
+    $process->mustRun();
+    $this->logger()->success("Purge queue worker complete at $target.");
   }
 
   /**

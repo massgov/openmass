@@ -88,7 +88,6 @@ To get the environment details follow these steps:
 2. Go to the `Databases` on the left column
 3. Click the `Details` tab, where you will see the information you need to make the SSH connection.
 
-![ssh database](assets/sequel_pro.png)
 
 The query in question can be found in different ways. Here are a few approaches to consider:
 
