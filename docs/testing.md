@@ -2,9 +2,9 @@
 
 Mass.gov has a robust test suite that helps us maintain high uptime, deliver high quality, and develop our codebase with confidence and velocity.
 
-Our test suite is run automatically on all PRs via our continuous integration provider, [CircleCI](circleci.com/gh/massgov/mass). PRs must return green to be accepted. This ensures that known regressions stay out of the codebase.
+Our test suite is run automatically on all PRs via our continuous integration provider, [CircleCI](circleci.com/gh/massgov/openmass). PRs must return green to be accepted. This ensures that known regressions stay out of the codebase.
 
-In addition, [BackstopJS](https://github.com/massgov/mass/blob/develop/backstop/README.md) (visual regression testing) and [Nightcrawler](https://github.com/massgov/mass/blob/develop/.circleci/nightcrawler/README.md) (5xx error testing) are run a nightly on the CD environment on the latest version of develop (see more below).
+In addition, [BackstopJS](https://github.com/massgov/openmass/blob/develop/backstop/README.md) (visual regression testing) and [Nightcrawler](https://github.com/massgov/openmass/blob/develop/.circleci/nightcrawler/README.md) (5xx error testing) are run a nightly on the CD environment on the latest version of develop (see more below).
 
 Any PR that is created in the Mass repository can and should be tested locally before being being pushed up to GitHub.
 
@@ -41,7 +41,7 @@ ahoy nightcrawler crawl --samples=50
 ### Sample size should be between 40-60 for a branch
 ```
 
-More information about setup or running Nightcrawler can be found in the [Nightcrawler documentation](https://github.com/massgov/mass/blob/develop/.circleci/nightcrawler/README.md).
+More information about setup or running Nightcrawler can be found in the [Nightcrawler documentation](https://github.com/massgov/openmass/blob/develop/.circleci/nightcrawler/README.md).
 
 
 ## Backstop
@@ -59,7 +59,7 @@ More information about setup or running Nightcrawler can be found in the [Nightc
 ### Open the report from the comparison 
 `open backstop/report/index.html`
 
-More information about setup or running Backstop can be found in the [Backstop documentation](https://github.com/massgov/mass/blob/develop/backstop/README.md).
+More information about setup or running Backstop can be found in the [Backstop documentation](https://github.com/massgov/openmass/blob/develop/backstop/README.md).
 
 # Good tests
 
@@ -69,12 +69,12 @@ Good tests focus on high-value activities. We want to test that major functional
 
 ### Creating new tests
 
-- Behat test (Found in the [/features](https://github.com/massgov/mass/tree/develop/features) directory)
+- Behat test (Found in the [/features](https://github.com/massgov/openmass/tree/develop/features) directory)
 - PHPUnit (Found in most of the custom modules under `/test/src/ExistingSites`)
 
 ### Updating tests
 
-- Behat test (Found in the [/features](https://github.com/massgov/mass/tree/develop/features) directory)
+- Behat test (Found in the [/features](https://github.com/massgov/openmass/tree/develop/features) directory)
 - PHPUnit (Found in most of the custom modules under `/test/src/ExistingSites`)
 - Backstop (Change the page URLs if needed)
 
@@ -84,11 +84,11 @@ Good tests focus on high-value activities. We want to test that major functional
 
 #### Behavioral (aka behat)
 
-We have [a large suite](https://github.com/massgov/mass/tree/develop/features) of Behavioral tests. These tests are written in Gherkin. The Gherkin steps map to step definitions that we or others have written. Read our test suite to learn how to author these tests. These tests live in the [/features](https://github.com/massgov/mass/tree/develop/features) directory.
+We have [a large suite](https://github.com/massgov/openmass/tree/develop/features) of Behavioral tests. These tests are written in Gherkin. The Gherkin steps map to step definitions that we or others have written. Read our test suite to learn how to author these tests. These tests live in the [/features](https://github.com/massgov/openmass/tree/develop/features) directory.
 
 #### Functional (aka PHPUnit+ExistingSiteTestCase)
 
-These are a 2018 addition to our test capabilities. Here you have a fully bootstrapped Drupal and Mink at your disposal. We extend [Drupal Test Traits](https://github.com/weitzman/drupal-test-traits), an open source project which we founded for this project. [See examples](https://github.com/massgov/mass/tree/develop/docroot/modules/custom/mass_utility/tests/src/ExistingSite). Read our test suite to learn how to author these tests. These tests live inside modules. A good example is [MediaDeleteTest](https://github.com/massgov/mass/blob/develop/docroot/modules/custom/mass_media/tests/src/ExistingSite/MediaDeleteTest.php).
+These are a 2018 addition to our test capabilities. Here you have a fully bootstrapped Drupal and Mink at your disposal. We extend [Drupal Test Traits](https://github.com/weitzman/drupal-test-traits), an open source project which we founded for this project. [See examples](https://github.com/massgov/openmass/tree/develop/docroot/modules/custom/mass_utility/tests/src/ExistingSite). Read our test suite to learn how to author these tests. These tests live inside modules. A good example is [MediaDeleteTest](https://github.com/massgov/openmass/blob/develop/docroot/modules/custom/mass_media/tests/src/ExistingSite/MediaDeleteTest.php).
 
 #### Performance
 
