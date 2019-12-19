@@ -1,4 +1,3 @@
-/* global jQuery, Drupal */
 /**
  * @file
  * Extends Drupal object with mass custom js objects
@@ -61,7 +60,7 @@
       function checkActive($el) {
         var value = 'true';
         if ($el.length) {
-          value = window.getComputedStyle($el[0], ':before').getPropertyValue('content').replace(/\"/g, '');
+          value = window.getComputedStyle($el[0], ':before').getPropertyValue('content').replace(/"/g, '');
         }
         return value === 'false' ? false : true;
       }
