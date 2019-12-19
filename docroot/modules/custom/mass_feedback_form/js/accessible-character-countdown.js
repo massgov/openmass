@@ -1,3 +1,4 @@
+/* eslint-disable strict */
 'use strict';
 
 // Accessible Character Counter Plugin For Text Field
@@ -13,25 +14,29 @@
     // we don't want this text to be merged with user-provided values
     if (!('en' in settings.beforeNumberElem.html)) {
       settings.beforeNumberElem.html['en'] = [''];
-    } else if (typeof settings.beforeNumberElem.html.en === 'string') {
+    }
+    else if (typeof settings.beforeNumberElem.html.en === 'string') {
       settings.beforeNumberElem.html['en'] = [settings.beforeNumberElem.html.en];
     }
 
     if (!('fr' in settings.beforeNumberElem.html)) {
       settings.beforeNumberElem.html['fr'] = [''];
-    } else if (typeof settings.beforeNumberElem.html.fr === 'string') {
+    }
+    else if (typeof settings.beforeNumberElem.html.fr === 'string') {
       settings.beforeNumberElem.html['fr'] = [settings.beforeNumberElem.html.fr];
     }
 
     if (!('en' in settings.afterNumberElem.html)) {
       settings.afterNumberElem.html['en'] = [' characters remaining', ' character remaining', ' characters remaining'];
-    } else if (typeof settings.afterNumberElem.html.en === 'string') {
+    }
+    else if (typeof settings.afterNumberElem.html.en === 'string') {
       settings.afterNumberElem.html['en'] = [settings.afterNumberElem.html.en];
     }
 
     if (!('fr' in settings.afterNumberElem.html)) {
       settings.afterNumberElem.html['fr'] = [' caractères restants', ' caractère restant', ' caractères restants'];
-    } else if (typeof settings.afterNumberElem.html.fr === 'string') {
+    }
+    else if (typeof settings.afterNumberElem.html.fr === 'string') {
       settings.afterNumberElem.html['fr'] = [settings.afterNumberElem.html.fr];
     }
 
@@ -48,9 +53,9 @@
     }
 
     function provideNewHtml(settings, remaining) {
-      var returnObj = { 'beforeNumberElem': '',
-        'numberElem': '',
-        'afterNumberElem': ''
+      var returnObj = {beforeNumberElem: '',
+        numberElem: '',
+        afterNumberElem: ''
       };
 
       var pageLanguage = document.documentElement.getAttribute('lang');
@@ -65,10 +70,12 @@
         if (remaining >= beforeNumberElemArray.length) {
           // Generic plural form; use last element in array.
           returnObj.beforeNumberElem = beforeNumberElemArray[beforeNumberElemArray.length - 1];
-        } else {
+        }
+        else {
           returnObj.beforeNumberElem = beforeNumberElemArray[remaining];
         }
-      } else {
+      }
+      else {
         // If no text is available for current language then show no text
         returnObj.beforeNumberElem = '';
       }
@@ -83,10 +90,12 @@
           // Generic plural form; use last element in array
           var lastIndex = afterNumberElemArray.length - 1;
           returnObj.afterNumberElem = afterNumberElemArray[lastIndex];
-        } else {
+        }
+        else {
           returnObj.afterNumberElem = afterNumberElemArray[remaining];
         }
-      } else {
+      }
+      else {
         // If no text is available for current language then show no text
         returnObj.afterNumberElem = '';
       }
@@ -107,7 +116,8 @@
       if (!isNaN(maxLength)) {
         // The maxlength attribute exists; use it
         settings['maxLength'] = maxLength;
-      } else {
+      }
+      else {
         // The maxlength attribute does not exist; set it
         $(this).attr('maxlength', settings.maxLength);
       }
@@ -120,19 +130,19 @@
       var $beforeNumberElem = $('<span></span>').attr(settings.beforeNumberElem.attrs).css(settings.beforeNumberElem.css).html(newHtml.beforeNumberElem);
 
       var numberElemID = settings.numberElem.idPrefix + idSuffix;
-      var $numberElem = $('<span></span>', { 'id': numberElemID }).attr(settings.numberElem.attrs).css(settings.numberElem.css).html(newHtml.numberElem);
+      var $numberElem = $('<span></span>', {id: numberElemID}).attr(settings.numberElem.attrs).css(settings.numberElem.css).html(newHtml.numberElem);
 
       var $afterNumberElem = $('<span></span>').attr(settings.afterNumberElem.attrs).css(settings.afterNumberElem.css).html(newHtml.afterNumberElem);
 
       var wrapperElemID = settings.wrapperElem.idPrefix + idSuffix;
       var wrapperElemInitialState = 'polite';
-      var $wrapperElem = $('<div></div>', { 'id': wrapperElemID }).attr(settings.wrapperElem.attrs).attr('aria-live', wrapperElemInitialState).css(settings.wrapperElem.css).append($beforeNumberElem).append($numberElem).append($afterNumberElem).insertAfter($(this));
+      var $wrapperElem = $('<div></div>', {id: wrapperElemID}).attr(settings.wrapperElem.attrs).attr('aria-live', wrapperElemInitialState).css(settings.wrapperElem.css).append($beforeNumberElem).append($numberElem).append($afterNumberElem).insertAfter($(this));
       $(this).attr('aria-describedby', wrapperElemID);
 
       // Attach input listener
-      var oldHtml = { 'beforeNumberElem': newHtml.beforeNumberElem,
-        'numberElem': newHtml.numberElem,
-        'afterNumberElem': newHtml.afterNumberElem
+      var oldHtml = {beforeNumberElem: newHtml.beforeNumberElem,
+        numberElem: newHtml.numberElem,
+        afterNumberElem: newHtml.afterNumberElem
       };
       function update(el) {
         var remaining = countRemaining(el);
@@ -159,30 +169,34 @@
           // Announce the whole string (e.g. '20 characters remaining')
           $wrapperElem.attr('aria-live', 'polite');
           $wrapperElem.attr('aria-atomic', true);
-        } else if (remaining > settings.triggerPolite) {
+        }
+        else if (remaining > settings.triggerPolite) {
           status = 'off';
           // Don't announce anything
           $wrapperElem.attr('aria-live', 'off');
           $wrapperElem.attr('aria-atomic', true);
-        } else if (remaining > settings.triggerAssertive) {
+        }
+        else if (remaining > settings.triggerAssertive) {
           status = 'polite';
           // Announce only the number (e.g. '50')
           $wrapperElem.attr('aria-live', 'polite');
           if (settings.everyNth > 0) {
             if (remaining % settings.everyNth === 0) {
               $wrapperElem.attr('aria-atomic', true);
-            } else {
+            }
+            else {
               $wrapperElem.attr('aria-atomic', false);
             }
           }
-        } else {
+        }
+        else {
           status = 'assertive';
           // Announce the whole string (e.g. '20 characters remaining')
           $wrapperElem.attr('aria-live', 'assertive');
           $wrapperElem.attr('aria-atomic', true);
-          if (remaining === 0) settings.atMaxLength.call(el);
+          if (remaining === 0) {settings.atMaxLength.call(el);}
         }
-        return { remaining: remaining, status: status };
+        return {remaining: remaining, status: status};
       }
 
       // Attach keyup listener
@@ -196,49 +210,49 @@
       var currentElement = this;
       var observer = new window.MutationObserver(function (mutations) {
         mutations.forEach(function (mutation) {
-          if (mutation.type === 'attributes' && mutation.attributeName === 'lang') update(currentElement);
+          if (mutation.type === 'attributes' && mutation.attributeName === 'lang') {update(currentElement);}
         });
       });
-      observer.observe(document.documentElement, { attributes: true });
+      observer.observe(document.documentElement, {attributes: true});
     });
   };
 
-  $.fn.accessibleCharCount.defaults = { maxLength: 160
+  $.fn.accessibleCharCount.defaults = {maxLength: 160,
     // The maximum length of the element
     // Will be overridden by actual maxlength if present
-    , triggerPolite: 50
+    triggerPolite: 50,
     // The number of remaining characters that triggers the polite announcement
-    , triggerAssertive: 20
+    triggerAssertive: 20,
     // The number of remaining characters that triggers the assertive announcement
-    , everyNth: 5
+    everyNth: 5,
     // How frequently to speak the whole message, as opposed to just the number
     // Set to 0 to turn off this feature
-    , wrapperElem: { idPrefix: 'accessibleCharCount-wrapper-'
+    wrapperElem: {idPrefix: 'accessibleCharCount-wrapper-',
       // Prefix to apply to the ID
-      , attrs: { 'class': 'accessibleCharCount-wrapperElem' },
+      attrs: {class: 'accessibleCharCount-wrapperElem'},
       css: {}
       // Inline CSS
     },
-    beforeNumberElem: { attrs: { 'class': 'accessibleCharCount-beforeNumberElem' },
+    beforeNumberElem: {attrs: {class: 'accessibleCharCount-beforeNumberElem'},
       css: {},
       html: {}
       // Contents, by language and number
       // Defaults are provided in code
     },
-    numberElem: { idPrefix: 'accessibleCharCount-number-'
+    numberElem: {idPrefix: 'accessibleCharCount-number-',
       // Prefix to apply to the ID
-      , attrs: { 'class': 'accessibleCharCount-numberElem' },
+      attrs: {class: 'accessibleCharCount-numberElem'},
       css: {}
     },
-    afterNumberElem: { attrs: { 'class': 'accessibleCharCount-afterNumberElem visually-hidden' },
+    afterNumberElem: {attrs: {class: 'accessibleCharCount-afterNumberElem visually-hidden'},
       css: {},
       html: {}
     },
-    beforeUpdate: function beforeUpdate() {}
+    beforeUpdate: function beforeUpdate() {},
     // Callback function before processing
-    , afterUpdate: function afterUpdate() {}
+    afterUpdate: function afterUpdate() {},
     // Callback function after processing
-    , atMaxLength: function atMaxLength() {}
+    atMaxLength: function atMaxLength() {}
     // Callback function when the maximum length is reached
   };
 })(jQuery);

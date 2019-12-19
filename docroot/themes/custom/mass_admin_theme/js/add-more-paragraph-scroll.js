@@ -44,6 +44,7 @@
               $('html, body').animate(
                 {scrollTop: $input.offset().top - 116},
                 333, // Scroll duration
+                // eslint-disable-next-line max-nested-callbacks
                 function () {
                   $input.focus();
                 }
