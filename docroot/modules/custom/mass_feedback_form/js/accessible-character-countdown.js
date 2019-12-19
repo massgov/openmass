@@ -1,3 +1,4 @@
+/* eslint-disable strict */
 'use strict';
 
 // Accessible Character Counter Plugin For Text Field
