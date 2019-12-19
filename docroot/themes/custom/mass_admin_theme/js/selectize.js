@@ -1,3 +1,5 @@
+/* eslint-disable no-undef */
+/* eslint-disable strict */
 /**
  * sifter.js
  * Copyright (c) 2013 Brian Reavis & contributors

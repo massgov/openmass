@@ -20,7 +20,7 @@
       image_style.find('option').each(function (e) {
         var value = $(this).attr('value').trim();
         if (value !== 'embedded_full_width' && value !== 'embedded_half_width') {
-	  image_style.find('option[value="' + value + '"]').remove();
+          image_style.find('option[value="' + value + '"]').remove();
         }
       });
 
@@ -32,6 +32,7 @@
     }
   };
 
+  // eslint-disable-next-line valid-jsdoc
   /**
    * Helper function to hide and show the alignment fieldset.
    */
