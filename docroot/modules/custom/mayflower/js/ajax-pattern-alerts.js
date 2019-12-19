@@ -189,7 +189,7 @@
         console.error(e);
       }
 
-       // Now we iterate on each alert data.
+      // Now we iterate on each alert data.
       responseData.data.forEach(function (item) {
         // Don't process if it not alert content
         if (item.type !== 'node--alert') {

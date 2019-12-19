@@ -18,16 +18,16 @@
       var align_fieldset = $('fieldset.fieldgroup[data-drupal-selector="edit-attributes-data-align"]');
 
       image_style.find('option').each(function (e) {
-	var value = $(this).attr('value').trim();
-	if (value !== 'embedded_full_width' && value !== 'embedded_half_width') {
+        var value = $(this).attr('value').trim();
+        if (value !== 'embedded_full_width' && value !== 'embedded_half_width') {
 	  image_style.find('option[value="' + value + '"]').remove();
-	}
+        }
       });
 
       hide_show_align(image_style, align_fieldset);
 
       image_style.on('change', function () {
-	hide_show_align($(this), align_fieldset);
+        hide_show_align($(this), align_fieldset);
       });
     }
   };

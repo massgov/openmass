@@ -203,23 +203,23 @@
       // Act on textfields with the "form-autocomplete" class.
       var $autocomplete = $(context).find('input.form-autocomplete').once('autocomplete');
       if ($autocomplete.length) {
-    // Allow options to be overriden per instance.
+        // Allow options to be overriden per instance.
         var blacklist = $autocomplete.attr('data-autocomplete-first-character-blacklist');
         $.extend(autocomplete.options, {
           firstCharacterBlacklist: (blacklist) ? blacklist : ''
         });
-    // Use jQuery UI Autocomplete on the textfield.
+        // Use jQuery UI Autocomplete on the textfield.
         $autocomplete.autocomplete(autocomplete.options)
-      .each(function () {
-        $(this).data('ui-autocomplete')._renderItem = autocomplete.options.renderItem;
-      });
+          .each(function () {
+            $(this).data('ui-autocomplete')._renderItem = autocomplete.options.renderItem;
+          });
       }
     },
     detach: function (context, settings, trigger) {
       if (trigger === 'unload') {
         $(context).find('input.form-autocomplete')
-      .removeOnce('autocomplete')
-      .autocomplete('destroy');
+          .removeOnce('autocomplete')
+          .autocomplete('destroy');
       }
     }
   };
