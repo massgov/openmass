@@ -1,3 +1,4 @@
+/* eslint-disable valid-jsdoc */
 /**
  * @file
  * Entity embed dialog alter

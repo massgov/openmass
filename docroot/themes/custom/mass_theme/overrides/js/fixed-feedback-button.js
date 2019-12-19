@@ -3,6 +3,7 @@
  * Support pages that do not have feedback forms.
  */
 
+// eslint-disable-next-line no-unused-vars
 /* global dataLayer */
 
 (function ($) {
