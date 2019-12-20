@@ -65,12 +65,12 @@
     initVars: function (context) {
       var $tabs = $('.horizontal-tab-button', context);
       this.$conditionalTabs = $tabs
-          .find('a[href$="about-details-tab"]')
-          .closest('li');
+        .find('a[href$="about-details-tab"]')
+        .closest('li');
 
       this.$boardsTab = $tabs
-          .find('a[href$="boards-tab"]')
-          .closest('li');
+        .find('a[href$="boards-tab"]')
+        .closest('li');
 
       // Allow a simple array of machine field names to be used to calculate the selector
       // for conditionally required fields.
