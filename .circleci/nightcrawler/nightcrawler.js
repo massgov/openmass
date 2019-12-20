@@ -100,11 +100,11 @@ crawler.on('response.success', function(response, data) {
 crawler.on('analyze', function(report, analysis) {
   const responses = report.data;
 
-  analysis.addMetric('time', metrics.responseTime(responses, 'Average TTFB', 1000));
+  analysis.addMetric('time', metrics.responseTime(responses, 'Average TTFB', 1250));
   analysis.addMetric('500s', metrics.serverErrors(responses, '500 Requests', 0));
   collectGroups(responses).forEach(function(group) {
     const groupResponses = responses.filter(getGroupFilter(group))
-    analysis.addMetric(group+'.time', metrics.responseTime(groupResponses, 'Average TTFB: ' + group, 2000))
+    analysis.addMetric(group+'.time', metrics.responseTime(groupResponses, 'Average TTFB: ' + group, 2250))
     analysis.addMetric(group+'.500s', metrics.serverErrors(groupResponses, '500 Requests: ' + group, 0));
   })
   responses.forEach(function(response) {
