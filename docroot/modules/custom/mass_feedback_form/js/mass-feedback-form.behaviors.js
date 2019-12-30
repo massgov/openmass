@@ -158,7 +158,7 @@
             // Check if either the phone or email is populated.
             var $phone = $form.find('[name="' + PHONE + '"]');
             var $email = $form.find('[name="' + EMAIL + '"]');
-            var validEmail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test($email.val());
+            var validEmail = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test($email.val());
             if (!$phone.val().length > 0 && !validEmail) {
               validates = false;
               message = '<p class="error">Please add an email or a phone number to receive a response.</p>';
