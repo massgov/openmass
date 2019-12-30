@@ -132,7 +132,7 @@ function mass_flagging_node_update_insert_send_notifications(Node $node) {
           else {
             $moderation_state_msg = "The latest revision has not changed moderation state.";
           }
-          $params['message'] = t("Hello,\n\nUser @author_username added a new revision of the @node_type '@node_title' at @node_edit_time. You can email @author_username at @author_email.@moderation_state_changelog@author_message\n\nTo see content changes (if any) made in this revision, go to:\n\n:diff_url\n\nTo get more information about the watch feature, please see the documentation here :help_url\n\nIf you would like to unwatch this or other content, please go here:\n\n:watched_content\n\nWant to give feedback on these emails and the Watch feature? Click the below link to go to our feedback form:\n\nhttps://massgov.formstack.com/forms/mass_gov_watching_feedback",
+          $params['message'] = t("Hello,\n\nUser @author_username added a new revision of the @node_type '@node_title' at @node_edit_time. You can email @author_username at @author_email.@moderation_state_changelog@author_message\n\nTo see content changes (if any) made in this revision, go to:\n\n:diff_url\n\nFor more information about the watch feature, visit https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/navigating-the-cms/watching-and-unwatching-content. \n\nTo unwatch this or other content, visit:\n\n:watched_content",
             [
               '@current_username' => \Drupal::currentUser()->getDisplayName(),
               '@author_username' => $author_username,
@@ -142,7 +142,7 @@ function mass_flagging_node_update_insert_send_notifications(Node $node) {
               '@node_edit_time' => $node_edit_time,
               ':diff_url' => $diff_url,
               '@author_message' => $author_message ? "\n\nRevision log message:\n\n" . $author_message : '',
-              ':help_url' => Url::fromRoute('help.page', ['name' => 'mass_flagging'])->setAbsolute()->toString(),
+//              ':help_url' => Url::fromRoute('help.page', ['name' => 'mass_flagging'])->setAbsolute()->toString(),
               ':watched_content' => Url::fromRoute('view.watched_content.page')->setAbsolute()->toString(),
               '@moderation_state_changelog' => "\n\nModeration state change: {$moderation_state_msg}",
             ]
