@@ -58,7 +58,7 @@ class LinkingPageController extends ControllerBase {
    * {@inheritdoc}
    */
   public function build() {
-    $help_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/tools-for-improving-your-content/pages-linking-here');
+    $help_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/content-improvement-tools/pages-linking-here');
     $help_text = Link::fromTextAndUrl('Learn how to use Linking Pages.', $help_url)->toString();
     $output = [];
     $output['linking_nodes'] = [
