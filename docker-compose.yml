@@ -37,9 +37,12 @@ services:
       # Needed here per https://blackfire.io/docs/integrations/docker#using-the-client-for-cli-profiling
       - BLACKFIRE_CLIENT_ID
       - BLACKFIRE_CLIENT_TOKEN
-      # Acquia Cloud
+      # Acquia Cloud - v1
       - AC_API_KEY
       - AC_API_USER
+      # Acquia Cloud - v2
+      - AC_API2_KEY
+      - AC_API2_SECRET
       # New Relic. Needed for deployments.
       - MASS_NEWRELIC_APPLICATION
       - MASS_NEWRELIC_KEY
