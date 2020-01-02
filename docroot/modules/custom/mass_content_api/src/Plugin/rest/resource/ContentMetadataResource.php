@@ -164,6 +164,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
         'title' => $item->title->value,
         'date_created' => $item->created->value,
         'date_changed' => $item->changed->value,
+        'intended_audience' => $item->field_intended_audience->value,
         'content_type' => $item->getType(),
         'offered_by_organizations' => $offered_by_organizations,
         'published' => $item->status->value == 1,
