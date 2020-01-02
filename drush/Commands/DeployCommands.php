@@ -2,15 +2,14 @@
 
 namespace Drush\Commands;
 
-use Acquia\Cloud\Api\CloudApiClient;
+use AcquiaCloudApi\CloudApi\Client;
+use AcquiaCloudApi\CloudApi\Connector;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 use Consolidation\SiteProcess\Util\Shell;
-use Drupal\Core\Cache\Cache;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\SiteAlias\SiteAliasManagerAwareInterface;
-use Drush\Utils\StringUtils;
 use Webmozart\PathUtil\Path;
 
 /**
@@ -37,25 +36,21 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    */
   public function latestBackupUrl($target, $type = null) {
-    // Build Cloud API client connection.
-    $cloudapi = CloudApiClient::factory(array(
-      // Easiest way to provide creds is in a .env file. See /.env.example
-      'username' => getenv('AC_API_USER'),
-      'password' => getenv('AC_API_KEY'),
-    ));
+    $cloudapi = $this->getClient();
 
-    $backups = (array) $cloudapi->databaseBackups($this->site, $target, 'massgov');
+    $env = $this->siteAliasManager()->getAlias($target);
+    $backups = $cloudapi->databaseBackups($env->get('uuid'), 'massgov');
 
     // Ignore backups that are still in progress, and of wrong type.
     // The 'use' keyword is described at https://bryce.fisher-fleig.org/blog/php-what-does-function-use-syntax-mean/index.html.
-    $backups = array_filter($backups, function($backup) use ($type) {
-      return $backup['completed'] > 0 && (is_null($type) || $backup['type'] == $type);
+    $backups = array_filter((array)$backups, function($backup) use ($type) {
+      return $backup->completedAt > 0 && (is_null($type) || $backup->type == $type);
     });
 
-    // Use the last backup.
-    $backup = end($backups);
-    if($backup) {
-      return $backup['link'];
+    // Use the most recent backup.
+    $backup = reset($backups);
+    if ($backup) {
+      return $backup->links->download->href;
     }
     throw new \Exception('No usable backups were found.');
   }
@@ -98,11 +93,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $targetRecord = $this->siteAliasManager()->get('@' . $target);
 
     // Build Cloud API client connection.
-    $cloudapi = CloudApiClient::factory(array(
-      // Easiest way to provide creds is in a /.env file. See /.env.example.
-      'username' => getenv('AC_API_USER'),
-      'password' => getenv('AC_API_KEY'),
-    ));
+    $cloudapi = $this->getClient();
 
     // Copy database, but only for non-prod deploys and when refresh-db is set.
     if (!$is_prod && $options['refresh-db']) {
@@ -153,9 +144,9 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     }
 
     // Deploy the new code.
-    $code = $cloudapi->pushCode($this->site, $target, $git_ref);
-    $id = $code->id();
-    $this->waitForTaskToComplete($cloudapi, $this->site, $id);
+    $operationResponse = $cloudapi->switchCode($targetRecord->get('uuid'), $git_ref);
+    $href = $operationResponse->links->notification->href;
+    $this->waitForTaskToComplete(basename($href));
 
     if ($options['cache-rebuild']) {
       // Rebuild cache_discovery ONLY.  This allows new plugins to be picked up
@@ -202,21 +193,18 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
     // Get a list of all an environment's domains.
     // Note: This also returns load balancer URLs.
-    $domains = $cloudapi->domains($this->site, $target);
+    $domains = $cloudapi->domains($targetRecord->get('uuid'));
     foreach ($domains as $domain) {
       // Skip Load Balancers.
-      if (!preg_match('/.*\.elb\.amazonaws\.com$/', $domain)) {
-        $domains_web[] = $domain;
+      if (!preg_match('/.*\.elb\.amazonaws\.com$/', $domain->hostname)) {
+        $domains_web[] = $domain->hostname;
       }
     }
 
     if ($options['varnish']) {
-      // Purge Varnish cache.
-      foreach ($domains_web as $domain) {
-        // Clear the cache for the domain.
-        $cloudapi->purgeVarnishCache($this->site, $target, $domain);
-        $this->logger()->success("Purged full Varnish cache for $domain in $target environment.");
-      }
+      // Clear the cache for the domains.
+      $cloudapi->purgeVarnishCache($targetRecord->get('uuid'), $domains_web);
+      $this->logger()->success("Purged full Varnish cache for in $target environment.");
     }
     else {
       // Enqueue purging of QAG pages.
@@ -254,17 +242,27 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success("Maintenance mode disabled in $target.");
     }
 
-    // Process purge queue.
-    $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
-    $process->mustRun();
-    $this->logger()->success("Purge queue worker complete at $target.");
-
     // Log a new deployment at New Relic.
     if ($is_prod) {
       $this->newRelic($git_ref, getenv('AC_API_USER'), getenv('MASS_NEWRELIC_APPLICATION'), getenv('MASS_NEWRELIC_KEY'));
     }
     $done = $this->getTimestamp();
     $this->io()->success("Deployment completed at {$done}");
+
+    // Process purge queue.
+    $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
+    $process->mustRun();
+    $this->logger()->success("Purge queue worker complete at $target.");
+  }
+
+  protected function getClient() {
+    $config = [
+      // Easiest way to provide creds is in a .env file. See /.env.example
+      'key' => getenv('AC_API2_KEY'),
+      'secret' => getenv('AC_API2_SECRET'),
+    ];
+    $connector = new Connector($config);
+    return Client::factory($connector);
   }
 
   /**
@@ -296,50 +294,31 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
-   * Pause until a given task is completed.
+   * Loop and re-check until a given task is complete.
    *
-   * This function handles Cloud API 503 errors, and will ignore up to five 503s
-   * before failing.
-   *
-   * @param \Acquia\Cloud\Api\CloudApiClient $cloudapi
-   * @param string $site Site name
-   * @param int $id Id
-   *   The task ID.
-   *
-   * @return bool
-   *   Final outcome. Always true.
+   * @param str $uuid
+   *   The Notification UUID.
    *
    * @throws \Exception
    */
-  public function waitForTaskToComplete(CloudApiClient $cloudapi, $site, $id) {
+  public function waitForTaskToComplete($uuid) {
     $task_complete = FALSE;
-    $cloud_api_failures = 0;
+    $cloudapi = $this->getClient();
 
     while ($task_complete !== TRUE) {
-      try {
-        $task_status = $cloudapi->task($site, $id);
-        if ($task_status->state() == 'done') {
-          $task_complete = TRUE;
-          $this->logger()->success(dt('!desc is complete: Task !task_id.', array('!desc' => $task_status->description(), '!task_id' => $id)));
-        }
-        elseif ($task_status->state() == 'failed') {
-          throw new \Exception(dt("!desc - Task !task_id failed:\n!logs", array('!desc' => $task_status->description(), '!task_id' => $id, '!logs' => $task_status->logs())));
-        }
-        else {
-          $this->logger()->notice(dt('!desc: Will re-check Task !task_id for completion in 5 seconds.', array('!desc' => $task_status->description(), '!task_id' => $id)));
-          sleep(5);
-        }
+      $notification = $cloudapi->notification($uuid);
+      if ($notification->status == 'completed') {
+        $this->logger()->success(dt('!desc is complete: Notification !uuid.', ['!desc' => $notification->description, '!uuid' => $uuid]));
+        break;
       }
-      catch (Guzzle\Http\Exception\ServerErrorResponseException $e) {
-        if ($e->getCode() == 503) {
-          $cloud_api_failures++;
-          if ($cloud_api_failures >= 5) {
-            throw new Exception('Cloud API returned 5 or more 503s, indicating failure to complete.');
-          }
-        }
+      elseif ($notification->status == 'failed') {
+        throw new \Exception(dt("!desc - Notification !uuid failed.", ['!desc' => $notification->description, '!uuid' => $uuid]));
+      }
+      else {
+        $this->logger()->notice(dt('!desc: Will re-check Notification !uuid for completion in 5 seconds.', ['!desc' => $notification->description, '!uuid' => $uuid]));
+        sleep(5);
       }
     }
-    return $task_complete;
   }
 
   /**

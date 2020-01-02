@@ -1,4 +1,4 @@
-/* global jQuery, Handlebars, Drupal */
+/* global Handlebars */
 /**
  * @file
  * Extends Drupal object with mass custom js objects

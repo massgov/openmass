@@ -1,4 +1,3 @@
-/* global jQuery, Drupal */
 /**
  * @file
  * Extends Drupal object with mass custom js objects

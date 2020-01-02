@@ -15,8 +15,8 @@
       $(document).once('views-ajax').ajaxComplete(function (e, xhr, settings) {
         xhr.done(function () {
           Drupal.announce(
-        Drupal.t(FILTERED_ANNOUNCEMENT)
-      );
+            Drupal.t(FILTERED_ANNOUNCEMENT)
+          );
         });
       });
     }

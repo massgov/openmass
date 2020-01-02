@@ -111,7 +111,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
       if (!empty($org)) {
         $organization = [
           'name' => $org->name->value,
-          'uuid' => $org->uuid->value,
+          'uuid' => $org->uuid(),
           'id' => $org->tid->value,
         ];
       }
@@ -132,6 +132,24 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
             'uuid' => $org_page->uuid(),
             'title' => $org_page->getTitle(),
           ]);
+        }
+      }
+
+      /*
+       * Get any field_kpi_ fields for this entity.
+       * See https://jira.mass.gov/browse/DP-16429.
+       */
+      $kpis = [];
+      $info = $item->getFieldDefinitions();
+      foreach ($info as $name => $field) {
+        if (strpos($name, 'field_kpi_') !== FALSE) {
+          $is_pct = strpos($name, '_pct') !== FALSE;
+          $is_ctr = strpos($name, '_ctr') !== FALSE;
+          $value = $item->get($name)->value;
+          if ($value && ($is_ctr || $is_pct)) {
+            $value = $value / 100;
+          }
+          $kpis[$name] = $value;
         }
       }
 
@@ -160,6 +178,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
           'is_intern' => $node_owner->field_user_intern->value == 1,
           'roles' => $roles,
         ],
+        'kpis' => $kpis,
       ];
 
       if ($flag_show_flat) {
