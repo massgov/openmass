@@ -142,7 +142,6 @@ function mass_flagging_node_update_insert_send_notifications(Node $node) {
               '@node_edit_time' => $node_edit_time,
               ':diff_url' => $diff_url,
               '@author_message' => $author_message ? "\n\nRevision log message:\n\n" . $author_message : '',
-//              ':help_url' => Url::fromRoute('help.page', ['name' => 'mass_flagging'])->setAbsolute()->toString(),
               ':watched_content' => Url::fromRoute('view.watched_content.page')->setAbsolute()->toString(),
               '@moderation_state_changelog' => "\n\nModeration state change: {$moderation_state_msg}",
             ]
