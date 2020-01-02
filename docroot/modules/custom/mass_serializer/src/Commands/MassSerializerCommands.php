@@ -2,15 +2,20 @@
 
 namespace Drupal\mass_serializer\Commands;
 
+use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 use Drupal\mass_serializer\CacheEndpoint;
 use Drush\Commands\DrushCommands;
+use Drush\Drush;
+use Drush\SiteAlias\SiteAliasManagerAwareInterface;
 
 /**
  * Class MassSerializerCommands.
  *
  * @package Drupal\mass_serializer\Commands
  */
-class MassSerializerCommands extends DrushCommands {
+class MassSerializerCommands extends DrushCommands implements SiteAliasManagerAwareInterface {
+
+  use SiteAliasManagerAwareTrait;
 
   /**
    * Cache endpoint service.
@@ -86,13 +91,8 @@ class MassSerializerCommands extends DrushCommands {
     $processed = 0;
     foreach ($tids as $tid) {
       $this->logger()->debug('Calling mserc drush command with organization id: ' . $tid);
-      // Drush_invoke_process because invokes a command in a new process.
-      drush_invoke_process(
-        '@self', 'mserc', [
-          'machine_name' => $machine_name,
-          'term_id' => $tid,
-        ]
-      );
+      $process = Drush::drush($this->siteAliasManager()->getSelf(), 'mserc', [$machine_name, $tid], Drush::redispatchOptions());
+      $process->mustRun();
       $processed++;
 
       // If limit is reached then stop processing organizations.
