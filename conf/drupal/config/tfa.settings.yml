@@ -5,12 +5,12 @@ validation_plugin: tfa_totp
 validation_plugin_settings:
   tfa_totp:
     time_skew: 30
-    site_name_prefix: 0
+    site_name_prefix: 1
     name_prefix: MASS
     issuer: MASS.GOV
   tfa_hotp:
     counter_window: 10
-    site_name_prefix: 1
+    site_name_prefix: 0
     name_prefix: TFA
     issuer: Drupal
 fallback_plugins:
@@ -48,13 +48,14 @@ required_roles:
   tester: tester
   authenticated: '0'
   doc_deletion: '0'
+  campaign_landing_page_publisher: '0'
 allowed_validation_plugins:
   tfa_totp: tfa_totp
 default_validation_plugin: tfa_totp
 mail:
   tfa_enabled_configuration:
-    subject: 'Mass.gov two-factor authentication enabled'
-    body: "Dear [user:account-name],\r\n\r\nThank you for setting up two-factor validation on your account at Mass.gov.\r\n\r\nPlease remember that you will need your authentication method (your cell phone or desktop software) ready when you log in again.\r\n\r\nIf you lose your device, you can use one of your recovery codes to log in. \r\n\r\n Once you have logged in, you can disable your existing two-factor setup and re-enable two-factor with a new device.  If you have not taken note of your recovery codes, please do so the next time you log in.  Store them in a safe place!\r\n\r\nMass.gov"
+    subject: 'edit.mass.gov two-factor authentication enabled'
+    body: "Dear [user:display-name],\r\n\r\nThank you for setting up two-factor authentication (also known as multifactor authentication) on your account at edit.mass.gov. Please remember that you will need your authentication method (your cell phone or desktop software) ready every time you log in. \r\n\r\nIf you lose your device, you can use one of your recovery codes to log in. Then you can disable your existing two-factor setup and re-enable two-factor with a new device. If you have not taken note of your recovery codes, please do so the next time you log in. Store them in a safe place! \r\n\r\n-- Massachusetts Digital Service "
   tfa_disabled_configuration:
-    subject: 'Mass.gov two-factor authentication disabled'
-    body: "Dear [user:account-name],\r\n\r\nYour two-factor authentication on Mass.gov has been disabled.\r\n\r\nYou will need to re-enable two-factor authentication the next time you log in.\r\n\r\nMass.gov"
+    subject: 'edit.mass.gov two-factor authentication disabled'
+    body: "Dear [user:display-name], \r\n\r\nYour two-factor authentication on edit.mass.gov has been disabled. \r\n\r\nYou will need to re-enable two-factor authentication the next time you log in. \r\n\r\n--Massachusetts Digital Service "
