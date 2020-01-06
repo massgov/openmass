@@ -397,18 +397,18 @@ workflows:
 
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_develop_branch.
   # This will only happens on Sunday night 11 p.m. ETS to allow us to review Mayflower in Drupal on Mondays.
-#  mayflower_dev_branch:
-#    jobs:
-#      - build
-#      - mayflower_develop_branch:
-#          requires: [build]
-#    triggers:
-#      - schedule:
-#          cron: "00 03 * * 1"
-#          filters:
-#            branches:
-#              only:
-#                - develop
+  mayflower_dev_branch:
+    jobs:
+      - build
+      - mayflower_develop_branch:
+          requires: [build]
+    triggers:
+      - schedule:
+          cron: "00 03 * * 1"
+          filters:
+            branches:
+              only:
+                - develop
 
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_dev branch only.
   deploy_mayflower_cd:
@@ -454,18 +454,18 @@ workflows:
 
   # This is to automate the creation of the release branch for Wednesday at 1 p.m. ET.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
-#  release_branch:
-#    jobs:
-#      - build
-#      - cut_release_branch:
-#          requires: [build]
-#    triggers:
-#      - schedule:
-#          cron: "00 18 * * 3"
-#          filters:
-#            branches:
-#              only:
-#                - develop
+  release_branch:
+    jobs:
+      - build
+      - cut_release_branch:
+          requires: [build]
+    triggers:
+      - schedule:
+          cron: "00 18 * * 3"
+          filters:
+            branches:
+              only:
+                - develop
 
   # This is to automate the release branch only.
   release:
