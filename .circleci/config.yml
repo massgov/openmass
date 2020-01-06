@@ -375,23 +375,31 @@ workflows:
                 - /^hotfix\/.*$/
                 - master
                 - /^mayflower-dev-.*/
-      - push_acquia:
-          context: massgov-trusted
+      - hold_for_outsider:
+          type: approval
+          requires:
+            - build
           filters:
             branches:
               <<: *branch_ignore
-      - danger:
-          requires: [build]
+      - push_acquia:
+          context: massgov-trusted
+          requires:
+            - hold_for_outsider
           filters:
             branches:
               <<: *branch_ignore
       - test:
-          requires: [build]
+          requires:
+            - build
+            - hold_for_outsider
           filters:
             branches:
               <<: *branch_ignore
       - cloudflare:
-          requires: [build]
+          requires: 
+            - build
+            - hold_for_outsider
           filters:
             branches:
               <<: *branch_ignore
