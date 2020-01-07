@@ -181,7 +181,7 @@ jobs:
       # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
       # Check for a changelog file.
-      - run: yarn danger ci --failOnErrors
+      - run: yarn danger local --failOnErrors
 
   test:
     parameters:
