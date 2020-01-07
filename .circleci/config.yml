@@ -180,10 +180,12 @@ jobs:
   validate:
     <<: *container_config
     steps:
+      - attach_workspace: {at: /var/www}
+      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
       # Validate .json and check if it is in sync with the .lock file
       - run: composer validate
       # Check coding standards with php code sniffer. See phpcs.xml
-      - run: vendor/bin/phpcs -v -n
+      - run: phpcs -v -n
       # lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
 
