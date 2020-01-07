@@ -144,6 +144,14 @@ jobs:
         # Add a deployment identifier file and push current branch to Acquia's Git repo.
         - run: scripts/stamp-and-deploy
 
+  # Run Danger to check for a changelog file in the PR.
+  danger:
+    <<: *container_config
+    steps:
+      - early_return_for_forked_pull_requests
+      - attach_workspace: {at: /var/www}
+      - run: yarn danger ci --failOnErrors
+
   # Automate the tagging process in GitHub
   tagging_github:
     <<: *container_config
@@ -180,8 +188,7 @@ jobs:
       - run: phpcs -v -n
       # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
-      # Check for a changelog file.
-      - run: yarn danger local --failOnErrors
+
 
   test:
     parameters:
@@ -397,8 +404,11 @@ workflows:
             branches:
               <<: *branch_ignore
 
+#
 #      The jobs below exit early for forked PRs, as those have no access to secrets.
 #
+      - danger:
+          requires: [build]
       - push_acquia:
           filters:
             branches:
