@@ -89,6 +89,10 @@ commands:
               echo "Nothing to do for forked PRs, so marking this step successful"
               circleci step halt
             fi
+  fetch_drush_aliases:
+    steps:
+      - run: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
+
 
 jobs:
   build:
@@ -96,9 +100,6 @@ jobs:
     steps:
       - checkout
       # See https://stackoverflow.com/questions/18126559/how-can-i-download-a-single-raw-file-from-a-private-github-repo-using-the-comman
-      - run:
-          name: Fetch Drush aliases
-          command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
       - *restore_composer_cache
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - *save_composer_cache
@@ -129,9 +130,7 @@ jobs:
         - *no_host_check
         - *no_ssh_timeout
         - checkout
-        - run:
-            name: Fetch Drush aliases
-            command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
+        - fetch_drush_aliases
         - run: git add -f /var/www/code/drush/sites/self.site.yml
         - *restore_composer_cache
         - run: {name: 'Composer install', command: 'composer install --no-dev --no-interaction --optimize-autoloader'}
@@ -144,13 +143,6 @@ jobs:
         - run: git commit -m "Add vendor code and drush alias."
         # Add a deployment identifier file and push current branch to Acquia's Git repo.
         - run: scripts/stamp-and-deploy
-
-  # Run Danger to check for a changelog file in the PR.
-  danger:
-    <<: *container_config
-    steps:
-      - attach_workspace: {at: /var/www}
-      - run: yarn danger ci --failOnErrors
 
   # Automate the tagging process in GitHub
   tagging_github:
@@ -186,8 +178,10 @@ jobs:
       - run: composer validate
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: phpcs -v -n
-      # lint javascript
+      # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
+      # Check for a changelog file.
+      - run: yarn danger ci --failOnErrors
 
   test:
     parameters:
@@ -292,9 +286,7 @@ jobs:
       - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
       - *no_host_check
       - *no_ssh_timeout
-      - run:
-          name: Fetch Drush aliases
-          command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
+      - fetch_drush_aliases
       - run:
           command: "drush ma:deploy -v -y << parameters.skip-maint >> << parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
           no_output_timeout: 60m
@@ -404,12 +396,7 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - danger:
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
-#
+
 #      The jobs below exit early for forked PRs, as those have no access to secrets.
 #
       - push_acquia:
