@@ -41,6 +41,17 @@ module.exports = async function(page, scenario, vp) {
         '  bottom: 0;\n' +
         '  z-index: 100;\n' +
         '}' +
+        // Kill static google Maps (show a green box instead)
+        '.ma__google-map__map.static-image {' +
+        '  background: #B2DEA2;\n' +
+        '  content: \' \';\n' +
+        '  display: block;\n' +
+        '  top: 0;\n' +
+        '  left: 0;\n' +
+        '  right: 0;\n' +
+        '  bottom: 0;\n' +
+        '  z-index: 100;\n' +
+        '}' +
         // Kill random background image on homepage.
         '#GUID935283478 {' +
         '  background: #B2DEA2 !important;\n' +
