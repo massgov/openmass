@@ -75,6 +75,21 @@ executors:
         command: memcached -m 128
       - image: previousnext/chrome-headless:65
 
+commands:
+#  Approach is from https://circleci.com/blog/managing-secrets-when-you-have-pull-requests-from-outside-contributors/
+  early_return_for_forked_pull_requests:
+    description: >-
+      If this build is from a fork, stop executing the current job and return success.
+      This is useful to avoid steps that will fail due to missing credentials.
+    steps:
+      - run:
+          name: Early return if this build is from a forked PR
+          command: |
+            if [ -n "$CIRCLE_PR_NUMBER" ]; then
+              echo "Nothing to do for forked PRs, so marking this step successful"
+              circleci step halt
+            fi
+
 jobs:
   build:
     <<: *container_config
@@ -110,6 +125,7 @@ jobs:
   push_acquia:
       <<: *container_config
       steps:
+        - early_return_for_forked_pull_requests
         - *no_host_check
         - *no_ssh_timeout
         - checkout
@@ -161,6 +177,16 @@ jobs:
       # Push this build to Acquia's master branch, and tag it there.
       - run: scripts/tag-release-deploy
 
+  validate:
+    <<: *container_config
+    steps:
+      # Validate .json and check if it is in sync with the .lock file
+      - run: composer validate
+      # Check coding standards with php code sniffer. See phpcs.xml
+      - run: vendor/bin/phpcs -v -n
+      # lint javascript
+      - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
+
   test:
     parameters:
       instance:
@@ -170,18 +196,13 @@ jobs:
       name: base
       instance: << parameters.instance >>
     steps:
+      - early_return_for_forked_pull_requests
       - attach_workspace: {at: /var/www}
       - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
       - run: {name: 'Start Apache', command: '/usr/local/bin/apache2-foreground-enhanced', background: true}
       - run:
           name: Update host file
           command: echo '127.0.0.1 mass.local' >> /etc/hosts
-      # Validate .json and check if it is in sync with the .lock file
-      - run: composer validate
-      # Check coding standards with php code sniffer. See phpcs.xml
-      - run: phpcs -v -n
-      # lint javascript
-      - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
       # Wait for mysql.
       - run: dockerize -wait tcp://localhost:3306 -timeout 2m
       # Run drush updatedb and cim.
@@ -213,6 +234,7 @@ jobs:
   cloudflare:
     <<: *container_config
     steps:
+      - early_return_for_forked_pull_requests
       - attach_workspace: {at: /var/www}
       - run: "cd cloudflare && yarn install"
       - run: "cd cloudflare && npm test"
@@ -375,12 +397,20 @@ workflows:
                 - /^hotfix\/.*$/
                 - master
                 - /^mayflower-dev-.*/
-      - push_acquia:
+      - validate:
+          requires: [build]
           filters:
             branches:
               <<: *branch_ignore
       - danger:
           requires: [build]
+          filters:
+            branches:
+              <<: *branch_ignore
+#
+#      The jobs below exit early for forked PRs, as those have no access to secrets.
+#
+      - push_acquia:
           filters:
             branches:
               <<: *branch_ignore
