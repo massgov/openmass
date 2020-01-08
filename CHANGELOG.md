@@ -1,5 +1,30 @@
 
 
+## [0.226.0] - December 18, 2019
+
+### Changed
+  - DP-16624: Update contents of emails sent to users for account changes and Watching.
+  - DP-16283: Upgrade to Acquia Cloud API 2
+  - DP-16767: Update mserc Drush command, and Drush core.
+  - DP-16815: Update .eslintignore.
+  - DP-16844: Update Drupal core to 8.7.11.
+  - DP-16853: Update links to knowledge base articles for restricted access, scheduling.
+  - DP-16876: Adjust Nightcrawler failure thresholds to reduce false positives.
+  - DP-16877: Remove old admin theme no longer in use.
+  - DP-16881: Restart automation after holiday break.
+  - DP-16927: Add intended audience to Drupal API
+  - DP-17023: |-
+      Updated Mayflower version to 9.36.0.
+          - DP-16925: Bump handlebars from 4.1.2 to 4.4.2 in /patternlab/styleguide. #782 (MF)
+
+### Fixed
+  - DP-16815: Fix errors in in-house custom js files flagged by eslint.
+
+### Security
+  - DP-16805: Security update for the PHP library `symfony/cache` (CVE-2019-18889 - https://nvd.nist.gov/vuln/detail/CVE-2019-18889).
+  - DP-16808: Update serialize-javascript for cloudflare.
+  - DP-16815: Update eslint from 2.13.1 to 4.18.2.
+
 ## [0.225.0] - December 18, 2019
 
 ### Changed
