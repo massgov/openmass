@@ -2,8 +2,10 @@
 
 namespace Drush\Commands;
 
-use AcquiaCloudApi\CloudApi\Client;
-use AcquiaCloudApi\CloudApi\Connector;
+use AcquiaCloudApi\Connector\Client;
+use AcquiaCloudApi\Connector\Connector;
+use AcquiaCloudApi\Endpoints\DatabaseBackups;
+use AcquiaCloudApi\Endpoints\Notifications;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 use Consolidation\SiteProcess\Util\Shell;
@@ -22,24 +24,24 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   var $site = 'prod:massgov';
 
   /**
-   * Write the download link for the most recent database backup to stdout.
+   * Write the download ID for the most recent database backup to stdout.
    *
    * @param string $target Target environment. Recognized values: dev, cd, test, feature1, feature2, feature3, feature4, feature5, prod.
    * @param string $type Backup type. Recognized values: ondemand, daily.
    *
-   * @usage drush ma:latest-backup-url prod
-   *   Fetch a link to the latest database backup from production.
+   * @usage drush ma:latest-backup-id prod
+   *   Fetch the ID of the latest database backup from production.
    *
-   * @command ma:latest-backup-url
+   * @command ma:latest-backup-id
    *
-   * @throws \Drush\Exceptions\UserAbortException
    * @throws \Exception
    */
-  public function latestBackupUrl($target, $type = null) {
-    $cloudapi = $this->getClient();
+  public function latestBackupId($target, $type = null) {
+    $dbName = 'massgov';
+    $environmentUuid = $this->siteAliasManager()->getAlias($target)->get('uuid');
 
-    $env = $this->siteAliasManager()->getAlias($target);
-    $backups = $cloudapi->databaseBackups($env->get('uuid'), 'massgov');
+    $databaseBackups = new DatabaseBackups($this->getClient());
+    $backups = $databaseBackups->getAll($environmentUuid, $dbName);
 
     // Ignore backups that are still in progress, and of wrong type.
     // The 'use' keyword is described at https://bryce.fisher-fleig.org/blog/php-what-does-function-use-syntax-mean/index.html.
@@ -50,9 +52,29 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     // Use the most recent backup.
     $backup = reset($backups);
     if ($backup) {
-      return $backup->links->download->href;
+      return "$backup->id";
     }
     throw new \Exception('No usable backups were found.');
+  }
+
+  /**
+   * Download a backup. Backups are always saved locally, not on the $target.
+   *
+   * @param string $target Target environment. Recognized values: dev, cd, test, feature1, feature2, feature3, feature4, feature5, prod.
+   * @param string $id The ID of the backup to download.
+   * @param string $destination Local path for saving the download.
+   *
+   * @command ma:backup-download
+   */
+  public function download($target, $id, $destination) {
+    $dbName = 'massgov';
+    $environmentUuid = $this->siteAliasManager()->getAlias($target)->get('uuid');
+
+    $databaseBackups = new DatabaseBackups($this->getClient());
+    $download = $databaseBackups->download($environmentUuid, $dbName, $id);
+    $download->rewind();
+    $contents = $download->getContents();
+    file_put_contents($destination, $contents, LOCK_EX);
   }
 
   /**
@@ -100,17 +122,17 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       // This section resembles ma-refresh-local --db-prep-only. We don't call that
       // since we can't easily make Cloud API calls from Acquia servers, and we
       // don't need to sanitize here.
-      $process = Drush::drush($self, 'ma:latest-backup-url', ['prod']);
+      $process = Drush::drush($self, 'ma:latest-backup-id', ['prod']);
       $process->mustRun();
-      $url = $process->getOutput();
-      $this->logger()->success('Backup URL retrieved.');
+      $id = $process->getOutput();
+      $this->logger()->success('Backup ID retrieved.');
 
       // Download the latest backup.
       // Directory set by https://jira.mass.gov/browse/DP-12823.
       $tmp =  Path::join('/mnt/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz');
-      $bash = ['wget', '-q', '--continue', trim($url), "--output-document=$tmp"];
-      $process = Drush::siteProcess($targetRecord, $bash);
-      $process->mustRun($process->showRealtime());
+
+      $process = Drush::drush($targetRecord, ['prod', $id, $tmp]);
+      $process->mustRun();
       $this->logger()->success('Database downloaded from backup.');
 
       // Drop all tables.
@@ -303,10 +325,10 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    */
   public function waitForTaskToComplete($uuid) {
     $task_complete = FALSE;
-    $cloudapi = $this->getClient();
+    $notifications = new Notifications($this->getClient());
 
     while ($task_complete !== TRUE) {
-      $notification = $cloudapi->notification($uuid);
+      $notification = $notifications->get($uuid);
       if ($notification->status == 'completed') {
         $this->logger()->success(dt('!desc is complete: Notification !uuid.', ['!desc' => $notification->description, '!uuid' => $uuid]));
         break;

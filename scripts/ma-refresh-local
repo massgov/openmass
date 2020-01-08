@@ -128,11 +128,11 @@ function nonzero_exit() {
 function download_backup() {
     # Download backup using Acquia's Cloud API.
     echo "${HEADING}[+] Download latest database backup ${TEXTRESET}" | tee -a $LOGFILE_NAME
-    LATEST_BACKUP=`drush ma:latest-backup-url prod`
+    LATEST_BACKUP=`drush ma:latest-backup-id prod`
     # Track download url in current log file.
     echo $LATEST_BACKUP >> $LOGFILE_NAME
     echo
-    wget -q --continue $LATEST_BACKUP --output-document=$HOME/db-backup.sql.gz
+    `drush ma:backup-download prod $LATEST_BACKUP $HOME/db-backup.sql.gz`
     echo
 }
 

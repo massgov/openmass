@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "17843a4cdb468d863bba607075dd2f07",
+    "content-hash": "0d68f0b2b0ebc66ffe21f4aa326c7eb0",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -14338,33 +14338,37 @@
         },
         {
             "name": "typhonius/acquia-php-sdk-v2",
-            "version": "1.1.1",
+            "version": "dev-download-db",
             "source": {
                 "type": "git",
                 "url": "https://github.com/typhonius/acquia-php-sdk-v2.git",
-                "reference": "e8b4c87b6c953371a6a3834f0928b007d0686cd2"
+                "reference": "6838ab5752b39f1c82fe13d5312db5f126c2bc55"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/typhonius/acquia-php-sdk-v2/zipball/e8b4c87b6c953371a6a3834f0928b007d0686cd2",
-                "reference": "e8b4c87b6c953371a6a3834f0928b007d0686cd2",
+                "url": "https://api.github.com/repos/typhonius/acquia-php-sdk-v2/zipball/6838ab5752b39f1c82fe13d5312db5f126c2bc55",
+                "reference": "6838ab5752b39f1c82fe13d5312db5f126c2bc55",
                 "shasum": ""
             },
             "require": {
                 "guzzlehttp/guzzle": "^6.3",
                 "league/oauth2-client": "^2.4",
-                "php": ">=5.6"
+                "php": ">=7.1"
             },
             "require-dev": {
                 "php-coveralls/php-coveralls": "^2.0.0",
-                "phpunit/phpunit": "^6.4",
+                "phpstan/phpstan": "^0.11.19",
+                "phpstan/phpstan-phpunit": "^0.11.2",
+                "phpunit/phpunit": "^7.0",
                 "squizlabs/php_codesniffer": "^2.7"
             },
             "type": "library",
             "autoload": {
                 "psr-4": {
-                    "AcquiaCloudApi\\CloudApi\\": "src/CloudApi",
-                    "AcquiaCloudApi\\Response\\": "src/Response"
+                    "AcquiaCloudApi\\Connector\\": "src/Connector",
+                    "AcquiaCloudApi\\Endpoints\\": "src/Endpoints",
+                    "AcquiaCloudApi\\Response\\": "src/Response",
+                    "AcquiaCloudApi\\Exception\\": "src/Exception"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -14378,7 +14382,7 @@
                 }
             ],
             "description": "A PHP SDK for Acquia CloudAPI v2",
-            "time": "2019-12-19T21:34:51+00:00"
+            "time": "2020-01-08T05:55:53+00:00"
         },
         {
             "name": "typo3/phar-stream-wrapper",
@@ -17400,6 +17404,7 @@
         "drupal/stage_file_proxy": 15,
         "drupal/views_data_export": 20,
         "mikeyp/google_tag": 20,
+        "typhonius/acquia-php-sdk-v2": 20,
         "behat/mink-selenium2-driver": 20,
         "weitzman/logintrait": 20
     },
