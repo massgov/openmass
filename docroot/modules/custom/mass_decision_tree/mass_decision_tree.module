@@ -116,15 +116,14 @@ function mass_decision_tree_preprocess_node(&$variables) {
             // Let's attempt to get the title from the uri first.
             $params = Url::fromUri($action['uri'])->getRouteParameters();
             $entity_type = key($params);
-            $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($params[$entity_type]);
-            $title = $entity->getTitle();
-
-            if ($title !== NULL) {
-              $item['text'] = $title;
-            }
-            else {
-              // Couldn't get that so we'll just set it to the url.
-              $item['text'] = $item['url'];
+            if ($entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($params[$entity_type])) {
+              if ($title = $entity->getTitle()) {
+                $item['text'] = $title;
+              }
+              else {
+                // Couldn't get that so we'll just set it to the url.
+                $item['text'] = $item['url'];
+              }
             }
           }
 
