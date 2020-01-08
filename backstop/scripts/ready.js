@@ -43,9 +43,13 @@ module.exports = async function(page, scenario, vp) {
         '}' +
         // Kill static google Maps (show a green box instead)
         '.ma__google-map__map.static-image {' +
+        '  position: relative;' +
+        '}' +
+        '.ma__google-map__map.static-image:before {' +
         '  background: #B2DEA2;\n' +
         '  content: \' \';\n' +
         '  display: block;\n' +
+        '  position: absolute;\n' +
         '  top: 0;\n' +
         '  left: 0;\n' +
         '  right: 0;\n' +
