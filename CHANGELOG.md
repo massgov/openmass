@@ -1,6 +1,6 @@
 
 
-## [0.226.0] - December 18, 2019
+## [0.226.0] - January 8, 2020
 
 ### Changed
   - DP-16624: Update contents of emails sent to users for account changes and Watching.
@@ -30,10 +30,10 @@
 ### Changed
   - DP-16764: Stop purge from false exception at end of a deployment.
   - DP-16689: Exclude purges sent to New Relic.
-  
+
 ### Added
   - DP-16429: KPI information added to api/v1/content-metadata REST endpoint
-  
+
 ## [0.224.1] - December 11, 2019
 
 ### Changed
