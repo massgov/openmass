@@ -181,7 +181,7 @@ jobs:
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: phpcs -v -n
       # lint javascript
-      - run: yarn run eslint --debug --ignore-path 'docroot/.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
+      - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
       # Wait for mysql.
       - run: dockerize -wait tcp://localhost:3306 -timeout 2m
       # Run drush updatedb and cim.

@@ -4,7 +4,7 @@ _The official website of the Commonwealth of Massachusetts_
 
 This is the codebase for the Drupal 8 web site `www.mass.gov`. The site's theme, [mass_theme](https://github.com/massgov/openmass/blob/develop/docroot/themes/custom/mass_theme/README.md), is powered by Mayflower, a companion repo available at https://github.com/massgov/mayflower.
 
-See the [Table of Contents](/docs/README.md) for additional documentation related to this repository. In addition, there is [documentation for the Mass Digital team](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/README.md) that covers topics such as [Releases](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/releases/release.md). 
+See the [Table of Contents](/docs/README.md) for additional documentation related to this repository.
 
 ## Getting Started
 

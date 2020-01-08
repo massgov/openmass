@@ -27,7 +27,7 @@
 
     $('.layout-node-form').find('label').each(function () {
 
-    /**
+      /**
      * Override the field_news_body label based on selected option of
      * field_news_type in News.
      */
@@ -40,7 +40,7 @@
         }
       }
 
-    /**
+      /**
      * Add an asterisk to indicate 'required' for field_news_location label in
      * News.
      */
@@ -54,7 +54,7 @@
       }
     });
 
-  /**
+    /**
    * Add an asterisk to indicate 'required' to tab and Media contacts field in
    * News.
    */

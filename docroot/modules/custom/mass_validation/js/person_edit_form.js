@@ -31,8 +31,8 @@
 
     initVars: function (context) {
       this.$conditionalTabs = $('.horizontal-tab-button', context)
-          .find('a[href$="bio-page-tab"]')
-          .closest('li');
+        .find('a[href$="bio-page-tab"]')
+        .closest('li');
       this.$bioPageTab = $('#bio-page-tab', context);
       this.$details = $('details#bio-page-tab', context);
       this.$rabbitHoleForm = $('#edit-rabbit-hole', context);

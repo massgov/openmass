@@ -99,7 +99,7 @@ class MediaEntityDocumentNormalizer extends ContentEntityNormalizer {
   public function normalize($object, $format = NULL, array $context = []) {
     $attributes = parent::normalize($object, $format, $context);
     /** @var \Drupal\taxonomy\TermStorage $term_storage */
-    $term_storage = $this->entityManager->getStorage('taxonomy_term');
+    $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
 
     // Keep only fields defined in context.
     $attributes = array_intersect_key($attributes, array_flip($this->includedFields));
