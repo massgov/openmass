@@ -205,7 +205,7 @@ describe('WWW Backend', function() {
     });
   })
 
-  test(`Should pre-fetch media download redirects`, async function() {
+  test(`Should pre-resolve media download redirects`, async function() {
     const expectedResponse = dummyResponse();
 
     global.fetch = jest.fn((request) => {
@@ -213,7 +213,7 @@ describe('WWW Backend', function() {
         return new Response('', {
           status: 301,
           headers: new Headers({
-            'Location': '/sites/default/files/foo'
+            'Location': '/files/foo'
           })
         })
       }
@@ -224,15 +224,13 @@ describe('WWW Backend', function() {
     expect(response).toEqual(response)
     expect(fetch.mock.calls.length).toBe(2);
   });
-  test('Should detect and gracefully handle self-referencing media download redirects', async function() {
-    let depth = 0;
+  test('Should not allow infinite loops when handling media download redirects', async function() {
     global.fetch = jest.fn((request) => {
       if(request.url === 'https://www.mass.gov/media/123/download') {
         return new Response('', {
           status: 301,
           headers: new Headers({
             'Location': '/media/123/download',
-            'X-Depth': ++depth
           })
         })
       }
@@ -240,11 +238,29 @@ describe('WWW Backend', function() {
     })
     const response = await www('TEST_TOKEN')(new Request('https://www.mass.gov/media/123/download'));
 
-    // Check that we've avoided recursion by stopping on the second pass.
-    expect(response.headers.get('x-depth')).toEqual(2)
+    // Check that we've avoided recursion by only executing one fetch.
+    expect(fetch.mock.calls.length).toBe(1);
     expect(response.status).toEqual(301);
-    expect(fetch.mock.calls.length).toBe(2);
+  });
 
-  })
+  test('Should pre-resolve media download redirects only when they redirect directly to files.', async function() {
+    global.fetch = jest.fn((request) => {
+      if(request.url === 'https://www.mass.gov/media/123/download') {
+        return new Response('', {
+          status: 301,
+          headers: new Headers({
+            'Location': '/doc/foo/download'
+          })
+        })
+      }
+      return dummyResponse()
+    })
+    const response = await www('TEST_TOKEN')(new Request('https://www.mass.gov/media/123/download'));
+
+    expect(response.headers).toEqual(new Headers({
+      'Location': '/doc/foo/download'
+    }))
+    expect(fetch.mock.calls.length).toBe(1);
+  });
 
 });
