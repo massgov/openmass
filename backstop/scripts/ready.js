@@ -45,6 +45,21 @@ module.exports = async function(page, scenario, vp) {
         '  bottom: 0;\n' +
         '  z-index: 100;\n' +
         '}' +
+        // Kill banner image on QAG campaign landing page (show a black box instead)
+        '#ID1345331.ma__key-message--image, #imgID1345331 {' +
+        '  position: relative;' +
+        '}' +
+        '#ID1345331.ma__key-message--image:before, #imgID1345331:before {' +
+        '  background: #000000;\n' +
+        '  content: \' \';\n' +
+        '  display: block;\n' +
+        '  position: absolute;\n' +
+        '  top: 0;\n' +
+        '  left: 0;\n' +
+        '  right: 0;\n' +
+        '  bottom: 0;\n' +
+        '  z-index: 3;\n' +
+        '}' +
         // Kill random background image on homepage.
         '#GUID935283478 {' +
         '  background: #B2DEA2 !important;\n' +
