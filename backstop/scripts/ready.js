@@ -27,10 +27,14 @@ module.exports = async function(page, scenario, vp) {
         '  z-index: 100;' +
         '}' +
         // Kill google Maps (show a green box instead)
-        '.js-google-map {' +
+        // .js-google-map for dynamic maps
+        // .ma__google-map__map.static-image for static images
+        '.js-google-map,\n' +
+        '.ma__google-map__map.static-image {' +
         '  position: relative;' +
         '}' +
-        '.js-google-map:before {' +
+        '.js-google-map:before,\n' +
+        '.ma__google-map__map.static-image:before {' +
         '  background: #B2DEA2;\n' +
         '  content: \' \';\n' +
         '  display: block;\n' +
