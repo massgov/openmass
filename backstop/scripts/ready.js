@@ -27,10 +27,10 @@ module.exports = async function(page, scenario, vp) {
         '  z-index: 100;' +
         '}' +
         // Kill google Maps (show a green box instead)
-        '.js-google-map {' +
+        '.js-google-map, .ma__google-map__map.static-image {' +
         '  position: relative;' +
         '}' +
-        '.js-google-map:before {' +
+        '.js-google-map:before, .ma__google-map__map.static-image:before {' +
         '  background: #B2DEA2;\n' +
         '  content: \' \';\n' +
         '  display: block;\n' +
@@ -42,20 +42,20 @@ module.exports = async function(page, scenario, vp) {
         '  z-index: 100;\n' +
         '}' +
         // Kill static google Maps (show a green box instead)
-        '.ma__google-map__map.static-image {' +
-        '  position: relative;' +
-        '}' +
-        '.ma__google-map__map.static-image:before {' +
-        '  background: #B2DEA2;\n' +
-        '  content: \' \';\n' +
-        '  display: block;\n' +
-        '  position: absolute;\n' +
-        '  top: 0;\n' +
-        '  left: 0;\n' +
-        '  right: 0;\n' +
-        '  bottom: 0;\n' +
-        '  z-index: 100;\n' +
-        '}' +
+        // '.ma__google-map__map.static-image {' +
+        // '  position: relative;' +
+        // '}' +
+        // '.ma__google-map__map.static-image:before {' +
+        // '  background: #B2DEA2;\n' +
+        // '  content: \' \';\n' +
+        // '  display: block;\n' +
+        // '  position: absolute;\n' +
+        // '  top: 0;\n' +
+        // '  left: 0;\n' +
+        // '  right: 0;\n' +
+        // '  bottom: 0;\n' +
+        // '  z-index: 100;\n' +
+        // '}' +
         // Kill random background image on homepage.
         '#GUID935283478 {' +
         '  background: #B2DEA2 !important;\n' +
