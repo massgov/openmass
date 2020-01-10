@@ -69,7 +69,10 @@ class DocumentPagesUrlGenerator extends UrlGeneratorBase {
           $org_nodes = $entity->field_organizations->referencedEntities();
           $org_slugs = [];
           foreach ($org_nodes as $org) {
-            $org_slugs += $utility_service->getAllOrgsFromNode($org);
+            // $org_slugs += $utility_service->getAllOrgsFromNode($org);
+            // $allOrgs = $utility_service->getAllOrgsFromNode($org);
+            // $org_slugs += str_replace("-", "", $allOrgs);
+            $org_slugs += str_replace("-", "", $utility_service->getAllOrgsFromNode($org));
           }
           if (!empty($org_slugs)) {
             $data['pagemap']['metatags'][] = [
