@@ -1,14 +1,37 @@
 
 
+## [0.226.0] - January 8, 2020
+
+### Changed
+- DP-16624: Update contents of emails sent to users for account changes and Watching.
+- DP-16283: Upgrade to Acquia Cloud API 2
+- DP-16767: Update mserc Drush command, and Drush core.
+- DP-16815: Update .eslintignore.
+- DP-16844: Update Drupal core to 8.7.11.
+- DP-16853: Update links to knowledge base articles for restricted access, scheduling.
+- DP-16876: Adjust Nightcrawler failure thresholds to reduce false positives.
+- DP-16877: Remove old admin theme no longer in use.
+- DP-16881: Restart automation after holiday break.
+- DP-16927: Add intended audience to Drupal API
+- DP-17023: Update Mayflower version to 9.36.0.
+
+### Fixed
+- DP-16815: Fix errors in in-house custom js files flagged by eslint.
+
+### Security
+- DP-16805: Security update for the PHP library `symfony/cache` (CVE-2019-18889 - https://nvd.nist.gov/vuln/detail/CVE-2019-18889).
+- DP-16808: Update serialize-javascript for cloudflare.
+- DP-16815: Update eslint from 2.13.1 to 4.18.2.
+
 ## [0.225.0] - December 18, 2019
 
 ### Changed
-  - DP-16764: Stop purge from false exception at end of a deployment.
-  - DP-16689: Exclude purges sent to New Relic.
-  
+- DP-16764: Stop purge from false exception at end of a deployment.
+- DP-16689: Exclude purges sent to New Relic.
+
 ### Added
-  - DP-16429: KPI information added to api/v1/content-metadata REST endpoint
-  
+- DP-16429: KPI information added to api/v1/content-metadata REST endpoint
+
 ## [0.224.1] - December 11, 2019
 
 ### Changed
