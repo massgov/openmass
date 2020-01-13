@@ -63,15 +63,15 @@ echo "Display new version for release:" . $version;
 echo "\n";
 echo "";
 
-//// Creates the release branch with new version.
-//$release_branch = exec('git checkout -b release/' . $version);
-//
-//// Display the new release branch name.
-//echo "This is the name for new release branch:" . "release/" . $version;
-//echo "\n";
-//echo "";
-//
-//// Update the changelog.md with the changelog files.
+// Creates the release branch with new version.
+$release_branch = exec('git checkout -b release/' . $version);
+
+// Display the new release branch name.
+echo "This is the name for new release branch:" . "release/" . $version;
+echo "\n";
+echo "";
+
+// Update the changelog.md with the changelog files.
 $changes = [];
 $path = Path::join(dirname(__DIR__), 'changelogs');
 
