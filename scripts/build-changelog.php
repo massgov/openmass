@@ -13,34 +13,73 @@ use PHLAK\SemVer;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-// Find the most recent tag in GitHub and used for the Changelog version as well.
-$version = new SemVer\Version(`git describe --abbrev=0 --tags`);
+// Check for Holidays and changelogs files before cutting the release branch.
+//$date = new DateTime();
+//$todayDate = $date->format('m-d');
+//echo "Today date is: " . $todayDate;
+//echo "\n";
+//echo "";
 
-// Increment the minor version by 1.
-$version->incrementMinor();
-
-// Display new version/tag.
-echo "Display new version for release:" . $version;
+// Test the holiday section this can be removed after testing done.
+// Change to any holiday date and comment out the above lines for $todayDate.
+$date = strtotime("-18 Days");
+$todayDate = date('m-d', $date);
+echo "Today date is: " . $todayDate;
 echo "\n";
 echo "";
 
-// Creates the release branch with new version.
-$release_branch = exec('git checkout -b release/' . $version);
-
-// Display the new release branch name.
-echo "This is the name for new release branch:" . "release/" . $version;
-echo "\n";
-echo "";
-
-// Update the changelog.md with the changelog files.
-$changes = [];
-$path = Path::join(dirname(__DIR__), 'changelogs');
+// These are the only holidays that would not fall on Monday.
+// Except for Thanksgiving which falls on 4th Thursday in November.
+$holidayDates = array('01-01', '07-04', '11-14', '12-25');
 
 // Iterate over Changelog files
 $finder = Finder::create()
   ->in(__DIR__ . '/../changelogs')
   ->name('*.yml')
   ->notName('template.yml');
+
+foreach($finder as $file);
+
+// Checks to see if today is holiday or no changelogs available.
+if (in_array($todayDate, $holidayDates, true) || empty($file) ) {
+  exit("No release today because either nothing to release or today is a holiday.");
+  echo "\n";
+  echo "";
+}
+else {
+  echo("The release branch will continue.");
+  echo "\n";
+  echo "";
+}
+
+// Find the most recent tag in GitHub and used for the Changelog version as well.
+$version = new SemVer\Version(`git describe --abbrev=0 --tags`);
+
+//// Increment the minor version by 1.
+$version->incrementMinor();
+
+//// Display new version/tag.
+echo "Display new version for release:" . $version;
+echo "\n";
+echo "";
+
+//// Creates the release branch with new version.
+//$release_branch = exec('git checkout -b release/' . $version);
+//
+//// Display the new release branch name.
+//echo "This is the name for new release branch:" . "release/" . $version;
+//echo "\n";
+//echo "";
+//
+//// Update the changelog.md with the changelog files.
+$changes = [];
+$path = Path::join(dirname(__DIR__), 'changelogs');
+
+//// Iterate over Changelog files
+//$finder = Finder::create()
+//  ->in(__DIR__ . '/../changelogs')
+//  ->name('*.yml')
+//  ->notName('template.yml');
 
 foreach($finder as $file) {
   $data = Yaml::parseFile($file->getPathname());
@@ -64,7 +103,7 @@ foreach($finder as $file) {
   unlink($file);
 }
 
-// Display what going on with the changelog.md updates and removing old changelog files.
+//// Display what going on with the changelog.md updates and removing old changelog files.
 echo "Going through all of the changelog files to update CHANGELOG.md and removing old changelog files.";
 echo "\n";
 echo "";
@@ -79,6 +118,10 @@ $context = [
 // var_dump($context);
 
 $markdown = $env->render('changelog.twig', $context);
+
+// Add the changes in Changelog.md to text file for GitHub release post.
+$markdown .= file_get_contents('scripts/changelog-body.txt');
+file_put_contents('scripts/changelog-body.txt', $markdown);
 
 $markdown .= file_get_contents(Path::join(dirname(__DIR__), 'CHANGELOG.md'));
 
@@ -116,7 +159,7 @@ echo "";
 // Get cURL resource
 $ch = curl_init();
 
-$data = array("title" => "Release" . $version, "body" => "xxxx", "head" => "release/" . $version, "base" => "master");
+$data = array("title" => "Release" . $version, "body" => $markdown, "head" => "release/" . $version, "base" => "master");
 $data_string = json_encode($data);
 
 curl_setopt($ch, CURLOPT_USERNAME, 'massgov-bot');
