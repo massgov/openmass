@@ -400,6 +400,7 @@ workflows:
                 - master
                 - /^mayflower-dev-.*/
       - validate:
+          requires: [build]
           filters:
             branches:
               <<: *branch_ignore
@@ -420,6 +421,7 @@ workflows:
                 - master
                 - /^mayflower-dev-.*/
       - validate:
+          requires: [build]
           filters:
             branches:
               <<: *branch_ignore
