@@ -4,6 +4,9 @@ status: true
 dependencies:
   config:
     - field.field.node.info_details.field_contact
+    - field.field.node.info_details.field_data_flag
+    - field.field.node.info_details.field_data_resource_type
+    - field.field.node.info_details.field_details_data_type
     - field.field.node.info_details.field_footnotes
     - field.field.node.info_details.field_image_credit
     - field.field.node.info_details.field_info_detail_overview
@@ -57,6 +60,9 @@ third_party_settings:
         - field_info_details_last_updated
         - field_reusable_label
         - field_organizations
+        - field_data_flag
+        - field_details_data_type
+        - field_data_resource_type
         - field_intended_audience
       parent_name: group_information_details_edit_f
       weight: 7
@@ -135,6 +141,60 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: entity_reference_autocomplete
+    region: content
+  field_data_flag:
+    weight: 9
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_data_resource_type:
+    weight: 11
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        b3e458d0-0cce-4383-9585-e94dd7e09ff6:
+          dependee: field_details_data_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data-resource
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: info_details
+    type: options_buttons
+    region: content
+  field_details_data_type:
+    weight: 10
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        94ea094f-cfda-451e-9d3e-d47af22470f0:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: info_details
+    type: options_buttons
     region: content
   field_footnotes:
     weight: 2
@@ -216,7 +276,7 @@ content:
     type: metatag_firehose
     region: content
   field_intended_audience:
-    weight: 9
+    weight: 12
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -264,7 +324,7 @@ content:
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 2
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }

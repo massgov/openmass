@@ -4,6 +4,9 @@ status: true
 dependencies:
   config:
     - field.field.node.info_details.field_contact
+    - field.field.node.info_details.field_data_flag
+    - field.field.node.info_details.field_data_resource_type
+    - field.field.node.info_details.field_details_data_type
     - field.field.node.info_details.field_footnotes
     - field.field.node.info_details.field_image_credit
     - field.field.node.info_details.field_info_detail_overview
@@ -68,6 +71,27 @@ content:
       link: false
     third_party_settings: {  }
     type: entity_reference_entity_view
+    region: content
+  field_data_flag:
+    weight: 21
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_data_resource_type:
+    weight: 23
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_details_data_type:
+    weight: 22
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
     region: content
   field_footnotes:
     weight: 8
