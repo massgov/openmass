@@ -1,0 +1,30 @@
+uuid: 175f4376-9459-4102-a21f-7f4a8cb9f934
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_details_data_type
+field_name: field_details_data_type
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: data-resource
+      label: 'Data resource<ul><ol>A report, data visualization or map.</ul></ol>'
+    -
+      value: dataset
+      label: 'Dataset<ul><ol>A body of structured information describing some topic(s) of interest. A dataset usually comprises a description of the data and one or multiple data resources, which can be in various formats.</ul></ol>'
+    -
+      value: data-catalog
+      label: 'Data catalog<ul><ol>A collection of datasets that covers one or more topics. For example, an open data portal or a curated dataset listing across multiple topics.</ul></ol>'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

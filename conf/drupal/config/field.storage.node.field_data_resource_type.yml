@@ -1,0 +1,30 @@
+uuid: e8d7db34-69e1-4683-afc0-daecb0d5e81c
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_data_resource_type
+field_name: field_data_resource_type
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: report
+      label: 'Report<ul><ol>An information summary and analysis of a dataset or a collection of datasets that provide insights into the raw data. This type includes data reports and data stories.</ul></ol>'
+    -
+      value: data-visualization
+      label: 'Data visualization<ul><ol>AInformation presented in the form of a chart, diagram, picture, dashboard, map, etc. This type can also include landing pages for charts, diagrams, pictures, or dashboards, etc.</ul></ol>'
+    -
+      value: map
+      label: 'Map<ul><ol>AA visualization of a dataset with a geographic component(s).</ul></ol>'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
