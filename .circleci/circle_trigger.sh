@@ -14,10 +14,11 @@ fi
 DATA="{ \"branch\": \"$CIRCLE_BRANCH\", \"parameters\": { $PARAMETERS } }"
 URL="${CIRCLE_API}/v2/project/${REPOSITORY_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/pipeline"
 echo "Triggering pipeline with data:"
-echo -e "  $URL"
-echo -e "  $DATA"
+echo -e "URL:  $URL"
+echo -e "DATA:  $DATA"
+echo -e "CIRCLE_TOKEN: $CIRCLE_PERSONAL_TOKEN"
 
-HTTP_RESPONSE=$(curl -s -u ${CIRCLE_TOKEN}: -o response.txt -w "%{http_code}" -X POST --header "Content-Type: application/json" -d "$DATA" $URL)
+HTTP_RESPONSE=$(curl -s -u ${CIRCLE_PERSONAL_TOKEN}: -o response.txt -w "%{http_code}" -X POST --header "Content-Type: application/json" -d "$DATA" $URL)
 
 if [ "$HTTP_RESPONSE" -ge "200" ] && [ "$HTTP_RESPONSE" -lt "300" ]; then
     echo "API call succeeded."
