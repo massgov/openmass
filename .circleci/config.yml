@@ -80,8 +80,28 @@ commands:
     steps:
       - run: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
 
+# See https://medium.com/labs42/monorepo-with-circleci-conditional-workflows-69e65d3f1bd0
+parameters:
+  webhook:
+    type: boolean
+    default: true
+  post-trigger:
+    type: boolean
+    default: false
+  build-test-fork:
+    type: boolean
+    default: false
 
 jobs:
+  trigger_workflows:
+    docker:
+      - image: circleci/node
+    steps:
+      - checkout
+      - run:
+          name: Trigger workflows
+          command: ./circle_trigger.sh
+
   build:
     <<: *container_config
     steps:
@@ -371,7 +391,13 @@ jobs:
 
 workflows:
   version: 2
+  ci:
+    when: << pipeline.parameters.webhook >>
+    jobs:
+      - trigger_workflows
+
   build_test:
+    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build:
           filters:
@@ -403,9 +429,27 @@ workflows:
             branches:
               <<: *branch_ignore
 
+  build_test_fork:
+    when: << pipeline.parameters.build-test-fork >>
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - /^release\/.*$/
+                - /^hotfix\/.*$/
+                - master
+                - /^mayflower-dev-.*/
+      - validate:
+          requires: [build]
+          filters:
+            branches:
+              <<: *branch_ignore
+
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_develop_branch.
   # This will only happens on Sunday night 11 p.m. ETS to allow us to review Mayflower in Drupal on Mondays.
   mayflower_dev_branch:
+    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build
       - mayflower_develop_branch:
@@ -420,6 +464,7 @@ workflows:
 
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_dev branch only.
   deploy_mayflower_cd:
+    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build:
           filters:
@@ -463,6 +508,7 @@ workflows:
   # This is to automate the creation of the release branch for Wednesday at 1 p.m. ET.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   release_branch:
+    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build
       - cut_release_branch:
@@ -477,6 +523,7 @@ workflows:
 
   # This is to automate the release branch only.
   release:
+    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build:
           filters:
@@ -526,54 +573,56 @@ workflows:
 
   # This is to automate the hotfix branch only.
   hotfix:
-   jobs:
-    - build:
-        filters:
-          branches:
-            only: /^hotfix\/.*$/
-    - push_acquia:
-        filters:
-          branches:
-            only: /^hotfix\/.*$/
-    - test:
-        requires: [build]
-        filters:
-         branches:
-           only: /^hotfix\/.*$/
-    - hold:
-          type: approval
+    when: << pipeline.parameters.post-trigger >>
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: /^hotfix\/.*$/
+      - push_acquia:
+          filters:
+            branches:
+              only: /^hotfix\/.*$/
+      - test:
+          requires: [build]
+          filters:
+           branches:
+             only: /^hotfix\/.*$/
+      - hold:
+            type: approval
+            requires:
+              - build
+              - push_acquia
+            filters:
+              branches:
+                only: /^hotfix\/.*$/
+      - deploy:
+          name: deploy-test-no-refresh-db
           requires:
-            - build
-            - push_acquia
-          filters:
-            branches:
-              only: /^hotfix\/.*$/
-    - deploy:
-        name: deploy-test-no-refresh-db
-        requires:
-          - hold
-        target: test
-        filters:
-          branches:
-            only: /^hotfix\/.*$/
-    - crawl:
-          name: crawl-test-200
-          requires: [deploy-test-no-refresh-db]
-          target: test
-          samples: 200
-          filters:
-            branches:
-              only: /^hotfix\/.*$/
-    - backstop:
-          name: backstop-test
-          requires: [deploy-test-no-refresh-db]
+            - hold
           target: test
           filters:
             branches:
               only: /^hotfix\/.*$/
+      - crawl:
+            name: crawl-test-200
+            requires: [deploy-test-no-refresh-db]
+            target: test
+            samples: 200
+            filters:
+              branches:
+                only: /^hotfix\/.*$/
+      - backstop:
+            name: backstop-test
+            requires: [deploy-test-no-refresh-db]
+            target: test
+            filters:
+              branches:
+                only: /^hotfix\/.*$/
 
   # This is to automate the mayflower branch only.
   mayflower:
+    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build:
           filters:
@@ -623,6 +672,7 @@ workflows:
 
   # This is to tag the release in the GitHub repository
   build_github_tag:
+    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build:
           filters:
@@ -660,6 +710,7 @@ workflows:
   # This is to tag the release in the Acquia repository.
   # This will deploy the newly created tag to stage environment and production environment with hold/approval for each job.
   build_tag:
+    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build:
           filters:
@@ -723,6 +774,7 @@ workflows:
 
   # Daily run of test suite using super sanitized DB
   build_test_super:
+    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build
       - test:
@@ -741,6 +793,7 @@ workflows:
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
+    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build
       - populate:
@@ -763,6 +816,7 @@ workflows:
 
   # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
+    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build
       - deploy:
@@ -788,6 +842,7 @@ workflows:
 
   # Nightly pm:security, runs at 2:00AM EST.
   nightly_pending_security:
+    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build
       - pending_security:
