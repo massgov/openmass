@@ -400,7 +400,6 @@ workflows:
                 - master
                 - /^mayflower-dev-.*/
       - validate:
-          requires: [build]
           filters:
             branches:
               <<: *branch_ignore
@@ -420,11 +419,10 @@ workflows:
                 - /^hotfix\/.*$/
                 - master
                 - /^mayflower-dev-.*/
-#      - validate:
-#          requires: [build]
-#          filters:
-#            branches:
-#              <<: *branch_ignore
+      - validate:
+          filters:
+            branches:
+              <<: *branch_ignore
       - danger:
           requires: [build]
       - push_acquia:
