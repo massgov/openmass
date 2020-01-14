@@ -44,6 +44,8 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 ## Pull Requests
 Anyone is welcome and encouraged to submit a pull request for this project. Members of the public should fork the project and submit a PR. Your PR will automatically build and get limited testing. Once that is green, a mass.gov team member will code review your PR. Once satisfied, the team member will [copy your branch into the openmass repo](scripts/git-push-fork-to-upstream-branch) so the full test suite may run. Once that is green, your PR is is eligible to be merged.
 
+Forks rule!!!
+
 
 ## Workflow
 
