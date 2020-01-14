@@ -3,12 +3,12 @@ set -e
 
 REPOSITORY_TYPE=github
 CIRCLE_API="https://circleci.com/api"
-PARAMETERS='"post-trigger":true'
+PARAMETERS='"post-trigger": true'
 if [[ $(echo "$CIRCLE_BRANCH" | grep -c "pull") -gt 0 ]]; then
     # Its an openmass internal PR. Nothing special to do.
     true
 else
-    PARAMETERS+='"build-test-fork":true'
+    PARAMETERS+=', "build-test-fork": true'
 fi
 
 DATA="{ \"branch\": \"$CIRCLE_BRANCH\", \"parameters\": { $PARAMETERS } }"
