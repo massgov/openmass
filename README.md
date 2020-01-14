@@ -17,7 +17,7 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
     $ cp .env.example .env
     ```
 
-### Docker
+### Docker (optional)
 
 1. Install Docker for [Mac](https://docs.docker.com/docker-for-mac/install/) or [Windows](https://docs.docker.com/docker-for-windows/install/). If using Linux, skip this step.
 
@@ -28,7 +28,7 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
     1. **Mac/Linux:** `/etc/hosts`
     1. **Windows:** `c:\windows\system32\drivers\etc\hosts`
     
-### Ahoy
+### Ahoy (optional)
 
 1. In order for the Ahoy aliases to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
     ```bash
@@ -39,7 +39,10 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 
 ###### Notes 
 - It takes a few minutes for the `mysql` container start up.
-- Mass Digital team members should skip `ahoy start` and follow steps for [Mass Digital development](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/development-massgov-team.md) instead.
+- Mass Digital team members have additional information at [Mass Digital development](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/development-massgov-team.md) instead.
+
+## Pull Requests
+Anyone is welcome and encouraged to submit a pull request for this project. Members of the public should fork the project and submit a PR. Your PR will automatically build and get limited testing. Once thats green, a mass.gov team member will code review your PR. Once satisfied, the team member will copy your branch into the openmass repo so the full test suite may run. Once that is green, your PR is is eligible to be merged.
 
 
 ## Workflow
