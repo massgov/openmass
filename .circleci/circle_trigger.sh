@@ -29,5 +29,5 @@ if [ -z "$CIRCLE_PR_NUMBER" ]; then
 else
   echo -e "Skip trigger since this is a fork."
   exit 0;
-
+fi
 
