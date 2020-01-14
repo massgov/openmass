@@ -22,7 +22,7 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 // Test the holiday section this can be removed after testing done.
 // Change to any holiday date and comment out the above lines for $todayDate.
-$date = strtotime("-18 Days");
+$date = strtotime("-15 Days");
 $todayDate = date('m-d', $date);
 echo "Today date is: " . $todayDate;
 echo "\n";
@@ -42,7 +42,7 @@ foreach($finder as $file);
 
 // Checks to see if today is holiday or no changelogs available.
 if (in_array($todayDate, $holidayDates, true) || empty($file) ) {
-  exit("No release today because either nothing to release or today is a holiday.");
+  exit("There will be no release today. Because nothing to release or today is a holiday.");
   echo "\n";
   echo "";
 }
@@ -55,10 +55,10 @@ else {
 // Find the most recent tag in GitHub and used for the Changelog version as well.
 $version = new SemVer\Version(`git describe --abbrev=0 --tags`);
 
-//// Increment the minor version by 1.
+// Increment the minor version by 1.
 $version->incrementMinor();
 
-//// Display new version/tag.
+// Display new version/tag.
 echo "Display new version for release:" . $version;
 echo "\n";
 echo "";
@@ -75,11 +75,6 @@ echo "";
 $changes = [];
 $path = Path::join(dirname(__DIR__), 'changelogs');
 
-//// Iterate over Changelog files
-//$finder = Finder::create()
-//  ->in(__DIR__ . '/../changelogs')
-//  ->name('*.yml')
-//  ->notName('template.yml');
 
 foreach($finder as $file) {
   $data = Yaml::parseFile($file->getPathname());
@@ -103,7 +98,7 @@ foreach($finder as $file) {
   unlink($file);
 }
 
-//// Display what going on with the changelog.md updates and removing old changelog files.
+// Display what going on with the changelog.md updates and removing old changelog files.
 echo "Going through all of the changelog files to update CHANGELOG.md and removing old changelog files.";
 echo "\n";
 echo "";
@@ -120,8 +115,10 @@ $context = [
 $markdown = $env->render('changelog.twig', $context);
 
 // Add the changes in Changelog.md to text file for GitHub release post.
-$markdown .= file_get_contents('scripts/changelog-body.txt');
-file_put_contents('scripts/changelog-body.txt', $markdown);
+// Each run of the release branch script will override the text file.
+$textFile = fopen('scripts/changelog-body.txt','w');
+fwrite($textFile,$markdown);
+fclose($textFile);
 
 $markdown .= file_get_contents(Path::join(dirname(__DIR__), 'CHANGELOG.md'));
 
