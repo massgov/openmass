@@ -8,7 +8,9 @@ dependencies:
     - field.field.node.curated_list.field_curatedlist_list_section
     - field.field.node.curated_list.field_curatedlist_metatags
     - field.field.node.curated_list.field_curatedlist_overview
+    - field.field.node.curated_list.field_data_flag
     - field.field.node.curated_list.field_intended_audience
+    - field.field.node.curated_list.field_list_data_type
     - field.field.node.curated_list.field_list_directory_section
     - field.field.node.curated_list.field_list_type
     - field.field.node.curated_list.field_organizations
@@ -95,9 +97,23 @@ content:
     third_party_settings: {  }
     type: text_default
     region: content
+  field_data_flag:
+    weight: 17
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
   field_intended_audience:
     weight: 8
     label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_list_data_type:
+    weight: 18
+    label: above
     settings: {  }
     third_party_settings: {  }
     type: list_default
@@ -158,6 +174,7 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  computed_log_in_links: true
   field_state_organization_tax: true
   page_next: true
   page_previous: true

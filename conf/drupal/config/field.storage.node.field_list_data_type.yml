@@ -1,0 +1,27 @@
+uuid: f465a0bc-0a2d-4979-b9fa-7afa563d21f5
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_list_data_type
+field_name: field_list_data_type
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: dataset
+      label: 'Dataset<ul><ol>A body of structured information describing some topic(s) of interest. A dataset usually comprises a description of the data and one or multiple data resources, which can be in various formats.</ul></ol>'
+    -
+      value: data-catalog
+      label: 'Data catalog<ul><ol>A collection of datasets that covers one or more topics. For example, an open data portal or a curated dataset listing across multiple topics.</ul></ol>'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false
