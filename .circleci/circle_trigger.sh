@@ -4,7 +4,7 @@ set -e
 REPOSITORY_TYPE=github
 CIRCLE_API="https://circleci.com/api"
 PARAMETERS='"post-trigger": true'
-PARAMETERS+='", webhook": false'
+PARAMETERS+=', "webhook": false'
 if [[ $(echo "$CIRCLE_BRANCH" | grep -c "pull") -gt 0 ]]; then
     # Its an openmass internal PR. Nothing special to do.
     true
