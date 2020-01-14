@@ -100,7 +100,7 @@ jobs:
       - checkout
       - run:
           name: Trigger workflows
-          command: ./circle_trigger.sh
+          command: .circleci/circle_trigger.sh
 
   build:
     <<: *container_config
