@@ -88,9 +88,6 @@ parameters:
   post-trigger:
     type: boolean
     default: false
-  build-test-fork:
-    type: boolean
-    default: false
 
 jobs:
   trigger_workflows:
@@ -391,10 +388,26 @@ jobs:
 
 workflows:
   version: 2
-  ci:
+  build_validate:
     when: << pipeline.parameters.webhook >>
     jobs:
-      - trigger_workflows
+      - build:
+          filters:
+            branches:
+              ignore:
+                - /^release\/.*$/
+                - /^hotfix\/.*$/
+                - master
+                - /^mayflower-dev-.*/
+      - validate:
+          requires: [build]
+          filters:
+            branches:
+              <<: *branch_ignore
+      - trigger_workflows:
+          filters:
+            branches:
+              <<: *branch_ignore
 
   build_test:
     when: << pipeline.parameters.post-trigger >>
@@ -407,11 +420,11 @@ workflows:
                 - /^hotfix\/.*$/
                 - master
                 - /^mayflower-dev-.*/
-      - validate:
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
+#      - validate:
+#          requires: [build]
+#          filters:
+#            branches:
+#              <<: *branch_ignore
       - danger:
           requires: [build]
       - push_acquia:
@@ -424,23 +437,6 @@ workflows:
             branches:
               <<: *branch_ignore
       - cloudflare:
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
-
-  build_test_fork:
-    when: << pipeline.parameters.build-test-fork >>
-    jobs:
-      - build:
-          filters:
-            branches:
-              ignore:
-                - /^release\/.*$/
-                - /^hotfix\/.*$/
-                - master
-                - /^mayflower-dev-.*/
-      - validate:
           requires: [build]
           filters:
             branches:
