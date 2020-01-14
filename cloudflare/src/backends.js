@@ -1,5 +1,5 @@
 
-const {isStaticUrl, isAlertsUrl, isDrupalResponse, isMediaDownloadUrl, isValidRedirect} = require('./util');
+const {isStaticUrl, isAlertsUrl, isDrupalResponse, isMediaDownloadUrl, isValidRedirect, isFileRedirect} = require('./util');
 // Used to ensure safe handling of content-disposition headers
 // for media download pre-resolution.
 const contentDisposition = require('content-disposition');
@@ -51,13 +51,17 @@ export function edit(token) {
 
     let response = await fetch(backendRequest)
 
-    // Attempt to pre-resolve a media download redirect as long as we haven't
-    // gotten stuck in a redirect loop. When formulating the additional request,
+    // Attempt to pre-resolve a media download redirect by fetching the file and returning
+    // it directly. When formulating the additional request,
     // base it off of the unmodified request object, not backendRequest.
-    if(isMediaDownloadUrl(url) && isValidRedirect(response) && level < 1) {
+    if(isMediaDownloadUrl(url) && isFileRedirect(response)) {
       const redirectUrl = new URL(response.headers.get('location'), request.url)
-      response = await handler(new Request(redirectUrl, request), level + 1);
-      response = addDispositionHeaderToResponse(response, redirectUrl);
+      response = await handler(new Request(redirectUrl, request));
+      // Tack on a content-disposition header to trigger download if the response
+      // was 2xx.
+      if(response.status >= 200 && response.status < 300) {
+        response = addDispositionHeaderToResponse(response, redirectUrl);
+      }
     }
 
     if(browserTTL !== RESPECT_ORIGIN && isDrupalResponse(response)) {
@@ -85,7 +89,7 @@ export function www(token) {
 
   // This is where the work actually happens. We take in a request
   // and return a response.
-  return async function handler(request, level = 0) {
+  return async function handler(request) {
     let backendRequest = normalizeRequest(request)
     backendRequest = addRequestHeader(backendRequest, 'mass-cdn-fwd', token)
     backendRequest = removeRequestHeader(backendRequest, 'cookie')
@@ -109,13 +113,17 @@ export function www(token) {
       cf: edgeTTL !== RESPECT_ORIGIN ? {cacheTtl: edgeTTL} : {}
     });
 
-    // Attempt to pre-resolve a media download redirect as long as we haven't
-    // gotten stuck in a redirect loop. When formulating the additional request,
+    // Attempt to pre-resolve a media download redirect by fetching the file and returning
+    // it directly. When formulating the additional request,
     // base it off of the unmodified request object, not backendRequest.
-    if(isMediaDownloadUrl(url) && isValidRedirect(response) && level < 1) {
+    if(isMediaDownloadUrl(url) && isFileRedirect(response)) {
       const redirectUrl = new URL(response.headers.get('location'), request.url)
-      response = await handler(new Request(redirectUrl, request), level + 1);
-      response = addDispositionHeaderToResponse(response, redirectUrl);
+      response = await handler(new Request(redirectUrl, request));
+      // Tack on a content-disposition header to trigger download if the response
+      // was 2xx.
+      if(response.status >= 200 && response.status < 300) {
+        response = addDispositionHeaderToResponse(response, redirectUrl);
+      }
     }
 
     // Apply browser TTL overrides.
