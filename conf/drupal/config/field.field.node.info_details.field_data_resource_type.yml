@@ -1,12 +1,11 @@
-uuid: dfd8fe0d-0084-4846-a078-e8c0b11ab397
+uuid: 28c024b0-66fa-46a0-a8d7-d755c0f3ddbb
 langcode: en
 status: true
 dependencies:
   config:
     - field.storage.node.field_data_resource_type
     - node.type.info_details
-  module:
-    - options
+    - taxonomy.vocabulary.tx_data_resource_type
 id: node.info_details.field_data_resource_type
 field_name: field_data_resource_type
 entity_type: node
@@ -17,5 +16,14 @@ required: false
 translatable: true
 default_value: {  }
 default_value_callback: ''
-settings: {  }
-field_type: list_string
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      tx_data_resource_type: tx_data_resource_type
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference
