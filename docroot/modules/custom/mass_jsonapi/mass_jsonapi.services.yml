@@ -1,28 +1,5 @@
-parameters:
-  # Map a route to a maximum number of items. See MassOffsetPageNormalizer.
-  # Unmentioned routes get the usual value of 50. Alter this array as you need.
-  #
-  # It would have been nicer to map routes instead of paths. Alas the services
-  # is instantiated *during* routeMatch so no route name is available yet.
-  mass_jsonapi.size_max:
-    /jsonapi/node/alert: 250
-
 services:
   mass_jsonapi.event_subscriber:
     class: Drupal\mass_jsonapi\EventSubscriber\MassJsonapiSubscriber
     tags:
       - { name: event_subscriber }
-
-#  #Override the core JSONAPI service to allow customized max items per path.
-#  serializer.normalizer.offset_page.jsonapi:
-#    class: Drupal\mass_jsonapi\Normalizer\MassOffsetPageNormalizer
-#    arguments: ['%mass_jsonapi.size_max%', '@router.request_context']
-#    tags:
-#    - { name: jsonapi_normalizer_do_not_use_removal_imminent }
-
-  #Override the core JSONAPI service to custom normalizers as was allowed in JSONAPI 1.x
-  jsonapi.serializer_do_not_use_removal_imminent:
-    class: Drupal\mass_jsonapi\Serializer\MassSerializer
-    calls:
-      - [setFallbackNormalizer, ['@serializer']]
-    arguments: [{  }, {  }]

@@ -1,3 +1,4 @@
+
 const legacyPrefixes = [
   'anf',
   'portal',
@@ -109,4 +110,19 @@ export function isMediaDownloadUrl(url) {
 
 export function isValidRedirect(response) {
   return response.status === 301 && response.headers.has('location');
+}
+
+/**
+ * Check whether a response redirects the user to a file in the files directory.
+ *
+ * @param response
+ * @return {boolean}
+ */
+export function isFileRedirect(response) {
+  if(isValidRedirect(response)) {
+    // Parse the location header, allowing both relative and absolute forms to be used.
+    const redirect = new URL(response.headers.get('location'), 'http://example.com');
+    return redirect.pathname.startsWith('/files');
+  }
+  return false;
 }

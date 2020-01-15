@@ -3,9 +3,11 @@ import {URL} from 'url'
 import {
   isEditUrl,
   isLegacyUrl,
-  pathIsBanned,
-  replaceErrorPages
+  isFileRedirect
 } from '../src/util';
+import makeServiceWorkerMock from "service-worker-mock";
+
+const mockContext = makeServiceWorkerMock();
 
 describe('isLegacyUrl', function() {
   const tests = [
@@ -38,4 +40,30 @@ describe('isEditUrl', function() {
       expect(isEditUrl(new URL(test[0]))).toEqual(test[1]);
     });
   });
+});
+
+describe('isFileRedirect', function() {
+  const tests = [
+    ['/files/foo', true],
+    ['/foo/bar', false],
+    ['/foo/files/bar', false],
+    ['https://www.mass.gov/files/foo', true],
+  ];
+
+  beforeEach(() => {
+    Object.assign(global, makeServiceWorkerMock());
+    jest.resetModules();
+  });
+
+  tests.forEach(function(test) {
+    it(`${test[1] ? 'Should' : 'Should not'} treat ${test[0]} as a file redirect`, function() {
+      const response = new mockContext.Response('', {
+        status: 301,
+        headers: {
+          'Location': test[0]
+        }
+      })
+      expect(isFileRedirect(response)).toEqual(test[1]);
+    })
+  })
 })
