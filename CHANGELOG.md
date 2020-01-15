@@ -1,5 +1,16 @@
 
 
+## [0.227.0] - January 15, 2020
+
+### Added
+  - DP-16657: Added config for route iframe for promo page analytics dashboards
+  
+### Fixed
+  - DP-15854: Alerts JSON should return 250 items
+  - DP-16945: Media download links not resolving properly if they result in multiple redirects to get to the file.
+  
+
+
 ## [0.226.0] - January 8, 2020
 
 ### Changed
