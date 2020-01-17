@@ -13,34 +13,36 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 1. Move into the project directory: `cd openmass`
 
 1. Create a `.env` file at the root level of the project by copying the example file shipped with the `mass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
-    ```
-    $ cp .env.example .env
-    ```
+   ```
+   $ cp .env.example .env
+   ```
 
 ### Docker
 
 1. Install Docker for [Mac](https://docs.docker.com/docker-for-mac/install/) or [Windows](https://docs.docker.com/docker-for-windows/install/). If using Linux, skip this step.
 
 1. Edit your `hosts` file and add the following line:
-    ```
-    127.0.0.1 mass.local portainer.mass.local mailhog.mass.local
-    ```
-    1. **Mac/Linux:** `/etc/hosts`
-    1. **Windows:** `c:\windows\system32\drivers\etc\hosts`
-    
+
+   ```
+   127.0.0.1 mass.local portainer.mass.local mailhog.mass.local
+   ```
+
+   1. **Mac/Linux:** `/etc/hosts`
+   1. **Windows:** `c:\windows\system32\drivers\etc\hosts`
+
 ### Ahoy
 
 1. In order for the Ahoy aliases to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
-    ```bash
-    sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
-    ```
-1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database). 
+   ```bash
+   sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
+   ```
+1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database).
 1. Run `ahoy comi` to fetch all dependencies.
 
-###### Notes 
+###### Notes
+
 - It takes a few minutes for the `mysql` container start up.
 - Mass Digital team members should skip `ahoy start` and follow steps for [Mass Digital development](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/development-massgov-team.md) instead.
-
 
 ## Workflow
 
@@ -53,8 +55,6 @@ This is a suggestion for how you can transition between branches when working on
 | docker-compose exec drupal composer install                        | ahoy comi     |
 | docker-compose exec drupal yarn                                    | ahoy yarn     |
 | docker-compose exec drupal scripts/ma-refresh-local --skip-db-prep | ahoy updatedb |
-
-
 
 ### Blackfire
 
@@ -80,6 +80,7 @@ drush memcache:keys
 # List key sizes:
 drush memcache:sizes
 ```
+
 ## Troubleshooting
 
 ### Disk Space
@@ -101,7 +102,6 @@ View `/etc/hosts` for Mac/Linux or `c:\windows\system32\drivers\etc\hosts` in Wi
 ### `SQLSTATE[HY000][2002]` Connection refused
 
 This usually happens if you go visit mass.local right after the containers are brought up. MySQL has not started yet. Open `portainer.mass.local`; and go to _Containers > mass_mysql_1 > Logs_ and check for the message: _mysqld: ready for connections._ If you don't see this message, _mysqld_ has not started yet.
-
 
 ### Windows troubleshooting
 
