@@ -15,7 +15,7 @@ use Monolog\Logger;
  */
 class AcquiaSyslogHandler extends SyslogHandler {
 
-  const FORMAT = '%extra.base_url%|%extra.timestamp%|%channel%|%extra.ip%|%extra.request_uri%|%extra.referer%|%extra.uid%|%context.link%|%message%';
+  const FORMAT = '%level_name%|%extra.base_url%|%extra.timestamp%|%channel%|%extra.ip%|%extra.request_uri%|%extra.referer%|%extra.uid%|%context.link%|%message%';
 
   /**
    * Constructor.
