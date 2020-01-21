@@ -19,6 +19,7 @@ dependencies:
     - field_group
     - focal_point
     - link
+    - mass_validation
     - maxlength
     - text
 third_party_settings:
@@ -112,7 +113,12 @@ content:
     settings:
       placeholder_url: ''
       placeholder_title: ''
-    third_party_settings: {  }
+    third_party_settings:
+      maxlength:
+        maxlength_js: 35
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+      mass_validation:
+        internal_link_content_type_blacklist: {  }
     type: link_default
     region: content
   field_image:
