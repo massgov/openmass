@@ -91,6 +91,14 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
     $form['access_unpublished_settings']['generate_token']['#value'] = t('Get link');
   }
 
+  // Remove 'Unlimited' option for Temporary Unpublished Access.
+  if (isset($form['access_unpublished_settings'])) {
+    $options = $form['access_unpublished_settings']['duration']['#options'];
+    // The array key for 'Unlimited' access is '-1'.
+    unset($options['-1']);
+    $form['access_unpublished_settings']['duration']['#options'] = $options;
+  }
+
   // Add help text link for Scheduling options.
   if (isset($form['publish_on']['widget'][0]['value']['#description'])) {
     $schedule_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/strategy/schedule-publishing-and-unpublishing');
@@ -254,6 +262,11 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
         }
       }
     }
+  }
+
+  // Hide the Temporary Unpublished Access form on the edit page for media items.
+  if (isset($form['access_unpublished_settings'])) {
+    $form['access_unpublished_settings']['#access'] = FALSE;
   }
 }
 
