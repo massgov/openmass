@@ -2,13 +2,28 @@
 
 ## [0.227.0] - January 15, 2020
 
+### Changed
+  - DP-11540: Remove the option to create an "unlimited" temporary unpublished access token from the node form.
+  - DP-16772: Add comments to docker-compose re database container.
+  - DP-16915: Hides the "Temporary unpublished access" form on the edit page for media items.
+  - DP-16934: Allow forks to pass limited testing.
+  - DP-17004: Limit characters for button text in key message on promo pages to 35 char.
+  - DP-17036: Remove hyphens from the mg_organization metadata for media entities.
+  - DP-17050: New fields are added to service details, info details and curated lists that allow authors to tag the pages so that they will appear in the data tab on search when it is released. This ticket is just the authoring user interface, it doesn't include full configuration of the meta tags.
+
+### Fixed
+  - DP-15833: Added field_links to Location CT linking pages config.
+
+
+## [0.227.0] - January 15, 2020
+
 ### Added
   - DP-16657: Added config for route iframe for promo page analytics dashboards
-  
+
 ### Fixed
   - DP-15854: Alerts JSON should return 250 items
   - DP-16945: Media download links not resolving properly if they result in multiple redirects to get to the file.
-  
+
 
 
 ## [0.226.0] - January 8, 2020
