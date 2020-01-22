@@ -1,5 +1,7 @@
 
 
+## [0.228.0] -January 22, 2020###Fixed  -DP-15833:Added field_links to Location CT linking pages config.###Changed  -DP-16915:Hides the "Temporary unpublished access" form on the edit page for media items.  -DP-17004:Limit characters for button text in key message on promo pages to 35 char  -DP-17036:Remove hyphens from the mg_organization metadata for media entities.  -DP-16772:Add comments to docker-compose re database container  -DP-11540:Remove the option to create an "unlimited" temporary unpublished access token from the node form.###Added  -DP-17050:New fields are added to service details, info details and curated lists that allow authors to tag the pages so that they will appear in the data tab on search when it is released. This ticket is just the authoring user interface, it doesn't include full configuration of the meta tags.
+
 ## [0.227.0] - January 15, 2020
 
 ### Added
