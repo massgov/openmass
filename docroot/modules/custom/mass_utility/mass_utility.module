@@ -255,6 +255,11 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
       }
     }
   }
+
+  // Hide the Temporary Unpublished Access form on the edit page for media items.
+  if (isset($form['access_unpublished_settings'])) {
+    $form['access_unpublished_settings']['#access'] = FALSE;
+  }
 }
 
 /**
