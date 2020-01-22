@@ -1,6 +1,6 @@
 
 
-## [0.227.0] - January 15, 2020
+## [0.228.0] - January 22, 2020
 
 ### Changed
   - DP-11540: Remove the option to create an "unlimited" temporary unpublished access token from the node form.
