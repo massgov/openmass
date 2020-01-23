@@ -1,0 +1,40 @@
+uuid: 0f52e428-02c6-4e7d-bdc3-122da99aaaaa
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.tx_data_resource_type.field_dataresource_metatag
+    - taxonomy.vocabulary.tx_data_resource_type
+  module:
+    - text
+id: taxonomy_term.tx_data_resource_type.default
+targetEntityType: taxonomy_term
+bundle: tx_data_resource_type
+mode: default
+content:
+  description:
+    type: text_textarea
+    weight: 1
+    region: content
+    settings:
+      placeholder: ''
+      rows: 5
+    third_party_settings: {  }
+  field_dataresource_metatag:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  path: true
