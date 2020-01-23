@@ -1,19 +1,36 @@
+## [0.228.0] -January 22, 2020
 
+### Fixed
+
+- DP-15833: Added `field_links` to Location content type linking pages config.
+
+### Changed
+
+- DP-16915: Hide the "Temporary Unpublished Access" form on the edit page for media items.
+- DP-17004: Limit characters for the button's text to 35 characters (in key message on promo pages).
+- DP-17036: Remove hyphens from the `mg_organization` metadata for media entities.
+- DP-16772: Add comments to `docker-compose` regarding the database container.
+- DP-11540: Remove the option to create an "unlimited" temporary unpublished access token from the node form.
+
+### Added
+
+- DP-17050: New fields are added to Service Details, Info Details and Curated Lists that allow authors to tag the pages so that they will appear in the data tab on search when it is released. This ticket is just the authoring user interface, it doesn't include full configuration of the meta tags.
 
 ## [0.227.0] - January 15, 2020
 
 ### Added
-  - DP-16657: Added config for route iframe for promo page analytics dashboards
-  
-### Fixed
-  - DP-15854: Alerts JSON should return 250 items
-  - DP-16945: Media download links not resolving properly if they result in multiple redirects to get to the file.
-  
 
+- DP-16657: Added config for route iframe for promo page analytics dashboards
+
+### Fixed
+
+- DP-15854: Alerts JSON should return 250 items
+- DP-16945: Media download links not resolving properly if they result in multiple redirects to get to the file.
 
 ## [0.226.0] - January 8, 2020
 
 ### Changed
+
 - DP-16624: Update contents of emails sent to users for account changes and Watching.
 - DP-16283: Upgrade to Acquia Cloud API 2
 - DP-16767: Update mserc Drush command, and Drush core.
@@ -27,9 +44,11 @@
 - DP-17023: Update Mayflower version to 9.36.0.
 
 ### Fixed
+
 - DP-16815: Fix errors in in-house custom js files flagged by eslint.
 
 ### Security
+
 - DP-16805: Security update for the PHP library `symfony/cache` (CVE-2019-18889 - https://nvd.nist.gov/vuln/detail/CVE-2019-18889).
 - DP-16808: Update serialize-javascript for cloudflare.
 - DP-16815: Update eslint from 2.13.1 to 4.18.2.
@@ -37,10 +56,12 @@
 ## [0.225.0] - December 18, 2019
 
 ### Changed
+
 - DP-16764: Stop purge from false exception at end of a deployment.
 - DP-16689: Exclude purges sent to New Relic.
 
 ### Added
+
 - DP-16429: KPI information added to api/v1/content-metadata REST endpoint
 
 ## [0.224.1] - December 11, 2019
