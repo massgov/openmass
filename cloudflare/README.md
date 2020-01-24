@@ -52,6 +52,7 @@ Before you can deploy any changes, you will need:
 * [Terraform](https://www.terraform.io/downloads.html) installed locally. See [scripts/cloudflare-deploy](../scripts/cloudflare-deploy) for the correct version to use. [tfenv](https://github.com/tfutils/tfenv) helps with installing older versions.
 * [AWS Vault](https://github.com/99designs/aws-vault) installed and [configured with MFA](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/access.md#programmatic-cli-access).
 * [Chamber](https://github.com/segmentio/chamber) installed locally.
+* Python 2 must be the first `python` on your PATH. If needed, prefix your deployment with `PATH=/path/to/python2:$PATH`
 
 Once you have these things, you will use the [`cloudflare-deploy` shell script](../scripts/cloudflare-deploy):
 
