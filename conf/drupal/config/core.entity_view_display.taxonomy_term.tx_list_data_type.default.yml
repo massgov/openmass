@@ -1,0 +1,30 @@
+uuid: 304da1d2-58c2-4310-a039-94afbd57de41
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.tx_list_data_type.field_list_datatype_metatag
+    - taxonomy.vocabulary.tx_list_data_type
+  module:
+    - text
+id: taxonomy_term.tx_list_data_type.default
+targetEntityType: taxonomy_term
+bundle: tx_list_data_type
+mode: default
+content:
+  description:
+    label: hidden
+    type: text_default
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_list_datatype_metatag:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }

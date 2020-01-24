@@ -72,8 +72,12 @@ services:
   # See https://medium.com/massgovdigital/dev-env-5d35b97f3473#cba3 for more info.
   # Further, the image is super sanitized (no unpublished content, old revisions, user data, etc.).
   mysql:
-    # @todo - Document how access is granted to this private image.
+    # Access to the database is granted by adding your ID to Docker Hub (ask a team member)
+    # Use the heavily sanitized version of the database by default.
+    # If needed, access can be given to the less heavily sanitized db, "latest"
+    # That version includes revisions, unpublished content, and other information we keep private
     image: comass/mysql-sanitized:super
+    # image: comass/mysql-sanitized:latest
     environment:
       MYSQL_USER: circle
       MYSQL_PASSWORD: circle
