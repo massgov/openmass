@@ -29,6 +29,7 @@
 {% set level = 1 %}
 
 {% block preContent %}
+  {{ attach_library('mass_theme/tableau') }}
   {# If the contextual navigation should be set for this node, then add it. #}
   {% if node.computed_log_in_links is not empty %}
     {{ contextual_log_in_links }}
@@ -94,6 +95,7 @@
 {% block pageContent %}
   {{ content.field_info_details_sections }}
   {{ content.field_contact }}
+  {{ content.field_tableau_visualization }}
 
   {% if node.field_footnotes[0].value %}
     {% include "@organisms/by-author/footnote-list.twig" with {
