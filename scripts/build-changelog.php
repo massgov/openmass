@@ -13,6 +13,45 @@ use PHLAK\SemVer;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
+// Check for Holidays and changelogs files before cutting the release branch.
+//$date = new DateTime();
+//$todayDate = $date->format('m-d');
+//echo "Today date is: " . $todayDate;
+//echo "\n";
+//echo "";
+
+// Test the holiday section this can be removed after testing done.
+// Change to any holiday date and comment out the above lines for $todayDate.
+$date = strtotime("-15 Days");
+$todayDate = date('m-d', $date);
+echo "Today date is: " . $todayDate;
+echo "\n";
+echo "";
+
+// These are the only holidays that would not fall on Monday.
+// Except for Thanksgiving which falls on 4th Thursday in November.
+$holidayDates = array('01-01', '07-04', '11-14', '12-25');
+
+// Iterate over Changelog files
+$finder = Finder::create()
+  ->in(__DIR__ . '/../changelogs')
+  ->name('*.yml')
+  ->notName('template.yml');
+
+foreach($finder as $file);
+
+// Checks to see if today is holiday or no changelogs available.
+if (in_array($todayDate, $holidayDates, true) || empty($file) ) {
+  exit("There will be no release today. Because nothing to release or today is a holiday.");
+  echo "\n";
+  echo "";
+}
+else {
+  echo("The release branch will continue.");
+  echo "\n";
+  echo "";
+}
+
 // Find the most recent tag in GitHub and used for the Changelog version as well.
 $version = new SemVer\Version(`git describe --abbrev=0 --tags`);
 
@@ -36,11 +75,6 @@ echo "";
 $changes = [];
 $path = Path::join(dirname(__DIR__), 'changelogs');
 
-// Iterate over Changelog files
-$finder = Finder::create()
-  ->in(__DIR__ . '/../changelogs')
-  ->name('*.yml')
-  ->notName('template.yml');
 
 foreach($finder as $file) {
   $data = Yaml::parseFile($file->getPathname());
@@ -80,6 +114,12 @@ $context = [
 
 $markdown = $env->render('changelog.twig', $context);
 
+// Add the changes in Changelog.md to text file for GitHub release post.
+// Each run of the release branch script will override the text file.
+$textFile = fopen('scripts/changelog-body.txt','w');
+fwrite($textFile,$markdown);
+fclose($textFile);
+
 $markdown .= file_get_contents(Path::join(dirname(__DIR__), 'CHANGELOG.md'));
 
 // print $markdown;
@@ -116,7 +156,7 @@ echo "";
 // Get cURL resource
 $ch = curl_init();
 
-$data = array("title" => "Release" . $version, "body" => "xxxx", "head" => "release/" . $version, "base" => "master");
+$data = array("title" => "Release" . $version, "body" => $markdown, "head" => "release/" . $version, "base" => "master");
 $data_string = json_encode($data);
 
 curl_setopt($ch, CURLOPT_USERNAME, 'massgov-bot');
