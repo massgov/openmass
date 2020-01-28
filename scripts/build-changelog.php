@@ -13,7 +13,7 @@ use PHLAK\SemVer;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-Check for Holidays and changelogs files before cutting the release branch.
+// Check for Holidays and changelogs files before cutting the release branch.
 $date = new DateTime();
 $todayDate = $date->format('m-d');
 echo "Today date is: " . $todayDate;
