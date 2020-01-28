@@ -26,6 +26,17 @@ module.exports = async function(page, scenario, vp) {
         '  bottom: 0;' +
         '  z-index: 100;' +
         '}' +
+        // Kill iframes (show blue box instead)
+        '.ma__iframe__container:after {' +
+        '  background: #357B8F;' +
+        '  content: \'\';' +
+        '  position: absolute;' +
+        '  top: 0;' +
+        '  left: 0;' +
+        '  right: 0;' +
+        '  bottom: 0;' +
+        '  z-index: 100;' +
+        '}' +
         // Kill google Maps (show a green box instead)
         // .js-google-map for dynamic maps
         // .ma__google-map__map.static-image for static images
