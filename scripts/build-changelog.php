@@ -13,17 +13,9 @@ use PHLAK\SemVer;
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 
-// Check for Holidays and changelogs files before cutting the release branch.
-//$date = new DateTime();
-//$todayDate = $date->format('m-d');
-//echo "Today date is: " . $todayDate;
-//echo "\n";
-//echo "";
-
-// Test the holiday section this can be removed after testing done.
-// Change to any holiday date and comment out the above lines for $todayDate.
-$date = strtotime("-15 Days");
-$todayDate = date('m-d', $date);
+Check for Holidays and changelogs files before cutting the release branch.
+$date = new DateTime();
+$todayDate = $date->format('m-d');
 echo "Today date is: " . $todayDate;
 echo "\n";
 echo "";
