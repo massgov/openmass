@@ -1,12 +1,13 @@
 diff --git a/core/modules/system/src/FileDownloadController.php b/core/modules/system/src/FileDownloadController.php
-index 08b1632b28..87f6a7a1bc 100644
+index 9bf889084a..c527aed07c 100644
 --- a/core/modules/system/src/FileDownloadController.php
 +++ b/core/modules/system/src/FileDownloadController.php
-@@ -43,7 +43,7 @@ public function download(Request $request, $scheme = 'private') {
+@@ -75,7 +75,7 @@ public function download(Request $request, $scheme = 'private') {
      // Merge remaining path arguments into relative file path.
      $uri = $scheme . '://' . $target;
-
--    if (file_stream_wrapper_valid_scheme($scheme) && file_exists($uri)) {
-+    if (file_stream_wrapper_valid_scheme($scheme) && is_file($uri)) {
+ 
+-    if ($this->streamWrapperManager->isValidScheme($scheme) && file_exists($uri)) {
++    if ($this->streamWrapperManager->isValidScheme($scheme) && is_file($uri)) {
        // Let other modules provide headers and controls access to the file.
        $headers = $this->moduleHandler()->invokeAll('file_download', [$uri]);
+ 
