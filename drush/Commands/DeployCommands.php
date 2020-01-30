@@ -67,7 +67,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    */
   public function latestBackupFetch($destination) {
-    // Get filename of latest backup.
+    // Get filename of latest backup. See https://docs.acquia.com/acquia-cloud/manage/back-up/cli/
     // The head | tail comes fom https://stackoverflow.com/questions/13832866/unix-show-the-second-line-of-the-file.
     $path_backups = '/mnt/files/massgov.prod/backups';
     $bash = ['ls',

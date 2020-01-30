@@ -147,7 +147,7 @@ function sql_create() {
     # Create a database.
     echo
     echo "${HEADING}[+] Drop old database and create new one ${TEXTRESET}" | tee -a $LOGFILE_NAME
-#    drush -y -vvv sql:create
+    drush -y sql:create
     nonzero_exit
 }
 
