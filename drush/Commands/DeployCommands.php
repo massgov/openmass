@@ -81,7 +81,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     // Rsync the latest backup.
     $self = $this->siteAliasManager()->getSelf();
     $process = Drush::drush($self, 'core:rsync', ["@prod:$file", "@self:$destination"], ['verbose' => NULL]);
-    $process->mustRun();
+    $process->mustRun($process->showRealtime());
     $this->logger()->success('Database downloaded from backup.');
   }
 
@@ -134,8 +134,8 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
       // Fetch backup.
       // Directory set by https://jira.mass.gov/browse/DP-12823.
-      $process = Drush::drush($targetRecord, 'ma:latest-backup-fetch', [Path::join('/mnt/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz')]);
-      $process->mustRun();
+      $process = Drush::drush($targetRecord, 'ma:latest-backup-fetch', [Path::join('/mnt/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz')], ['verbose' => NULL]);
+      $process->mustRun($process->showRealtime());
       $this->logger()->success('Fetched backup.');
 
       // Drop all tables.
