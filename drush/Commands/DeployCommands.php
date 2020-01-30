@@ -29,6 +29,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    *
    * @usage drush ma:latest-backup-url prod
    *   Fetch a link to the latest database backup from production.
+   * @validate-target
    *
    * @command ma:latest-backup-url
    *
@@ -56,6 +57,35 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
+   * Rsync latest backup to local.
+   *
+   * @param string $destination
+   *  A local path to save backup.
+   *
+   * @command ma:latest-backup-fetch
+   *
+   * @throws \Exception
+   */
+  public function latestBackupFetch($destination) {
+    // Get filename of latest backup.
+    // The head | tail comes fom https://stackoverflow.com/questions/13832866/unix-show-the-second-line-of-the-file.
+    $path_backups = '/mnt/files/massgov.prod/backups';
+    $bash = ['ls',
+      $path_backups, Shell::op('|'), 'head', '-2', Shell::op('|'), 'tail', '-n', '1'];
+    $prodRecord = $this->siteAliasManager()->getAlias('@prod');
+    $process = Drush::siteProcess($prodRecord, $bash);
+    $process->mustRun();
+    $file = $path_backups . '/' . trim($process->getOutput());
+    $this->logger()->success('Backup file identified. ' . $file);
+
+    // Rsync the latest backup.
+    $self = $this->siteAliasManager()->getSelf();
+    $process = Drush::drush($self, 'core:rsync', ["@prod:$file", "@self:$destination"], ['verbose' => NULL]);
+    $process->mustRun();
+    $this->logger()->success('Database downloaded from backup.');
+  }
+
+  /**
    * Deploy code and database (if needed).
    *
    * Copies Prod DB to target environment, then runs config import, updb,
@@ -67,6 +97,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @param array $options The options list.
    * @usage drush ma-deploy test tags/build-0.6.1
    *   Deploy build-0.6.1 tag to the staging environment.
+   * @validate-target
    * @aliases ma-deploy
    * @deploy
    *
@@ -100,18 +131,12 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       // This section resembles ma-refresh-local --db-prep-only. We don't call that
       // since we can't easily make Cloud API calls from Acquia servers, and we
       // don't need to sanitize here.
-      $process = Drush::drush($self, 'ma:latest-backup-url', ['prod']);
-      $process->mustRun();
-      $url = $process->getOutput();
-      $this->logger()->success('Backup URL retrieved.');
 
-      // Download the latest backup.
+      // Fetch backup.
       // Directory set by https://jira.mass.gov/browse/DP-12823.
-      $tmp =  Path::join('/mnt/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz');
-      $bash = ['wget', '-q', '--continue', trim($url), "--output-document=$tmp"];
-      $process = Drush::siteProcess($targetRecord, $bash);
-      $process->mustRun($process->showRealtime());
-      $this->logger()->success('Database downloaded from backup.');
+      $process = Drush::drush($self, 'ma:latest-backup-fetch', [Path::join('/mnt/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz')]);
+      $process->mustRun();
+      $this->logger()->success('Fetched backup.');
 
       // Drop all tables.
       $process = Drush::drush($targetRecord, 'sql:drop');
@@ -268,11 +293,11 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   /**
    * Validate the target name.
    *
-   * @hook validate
+   * @hook validate @validate-target
    *
    * @throws \Exception
    */
-  public function validate(CommandData $commandData) {
+  public function validateTarget(CommandData $commandData) {
     $target = $commandData->input()->getArgument('target');
     $available_targets = ['dev', 'cd', 'test', 'feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prod', 'ra'];
     if (!in_array($target, $available_targets)) {
