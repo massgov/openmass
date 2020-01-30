@@ -1,3 +1,23 @@
+
+
+## [0.229.0] - January 30, 2020
+
+### Added
+  - DP-17242: Python2 for CloudFlare deployment.
+  
+### Changed
+  - DP-17049: Add description metatag to curated lists and info details.
+  - DP-17039: Allow multiple types for document media entity and display choices as checkboxes.
+  - DP-17289: Authors can now enter hours for contacts in 5 minute increments.
+  - DP-17014: Adjust Superset config to include promo page (aka campaign landing)
+  - DP-16934: Allow forks to pass limited testing
+  - DP-14197: Checking to see if holiday or any changelogs are there before cutting the branch.
+  
+### Fixed
+  - DP-14197: Fixed to use the changelog markdown to the PR body and GitHub release tag instead of the placeholder.
+  - DP-17189: Fix sitewide alert notification function to use updated moderation states from mass_content_moderation.
+  - DP-17313: Restore triggerred workflows at CircleCI
+  
 ## [0.228.0] -January 22, 2020
 
 ### Fixed
