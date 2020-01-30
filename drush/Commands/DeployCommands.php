@@ -154,10 +154,10 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success('Database imported from backup.');
 
       // Delete tmp file.
-      $bash = ['test', '-f', $tmp, Shell::op('&&'), 'rm', $tmp];
+      $bash = ['test', '-f', $destination, Shell::op('&&'), 'rm', $destination];
       $process = Drush::siteProcess($targetRecord, $bash);
       $process->mustRun();
-      $this->logger()->success('Temporary file deleted. ' . $tmp);
+      $this->logger()->success('Temporary file deleted. ' . $destination);
     }
 
     if ($options['skip-maint'] == FALSE) {
@@ -322,7 +322,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   /**
    * Loop and re-check until a given task is complete.
    *
-   * @param str $uuid
+   * @param string $uuid
    *   The Notification UUID.
    *
    * @throws \Exception
