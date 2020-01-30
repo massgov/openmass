@@ -68,7 +68,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    */
   public function latestBackupFetch($destination) {
     // Get filename of latest backup. See https://docs.acquia.com/acquia-cloud/manage/back-up/cli/
-    // The head | tail comes fom https://stackoverflow.com/questions/13832866/unix-show-the-second-line-of-the-file.
     $path_backups = '/mnt/files/massgov.prod/backups';
     $bash = ['ls', '-Art', '--group-directories-first', $path_backups, Shell::op('|'), 'tail', '-n', '1'];
     $prodRecord = $this->siteAliasManager()->getAlias('@prod');
