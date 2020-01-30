@@ -509,11 +509,12 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "00 18 * * 3"
+          cron: "00 18 * * 4"
           filters:
             branches:
               only:
                 - develop
+                - fix-triggers
 
   # This is to automate the release branch only.
   release:
@@ -805,6 +806,7 @@ workflows:
             branches:
               only:
                 - develop
+                - fix-triggers
 
   # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
