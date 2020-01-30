@@ -134,7 +134,8 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
       // Fetch backup.
       // Directory set by https://jira.mass.gov/browse/DP-12823.
-      $process = Drush::drush($targetRecord, 'ma:latest-backup-fetch', [Path::join('/mnt/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz')], ['verbose' => NULL]);
+      $destination = Path::join('/mnt/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz');
+      $process = Drush::drush($targetRecord, 'ma:latest-backup-fetch', [$destination], ['verbose' => NULL]);
       $process->mustRun($process->showRealtime());
       $this->logger()->success('Fetched backup.');
 
@@ -146,7 +147,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       // Import the latest backup.
       // $bash = ['zgrep', '--line-buffered', '-v', '-e', '^INSERT INTO \`cache_', '-e', '^INSERT INTO \`migrate_map_', '-e', "^INSERT INTO \`config_log", '-e', "^INSERT INTO \`key_value_expire", '-e', "^INSERT INTO \`sessions", $tmp, Shell::op('|'), Path::join($targetRecord->root(), '../vendor/bin/drush'), '-r', $targetRecord->root(), '-v', 'sql:cli'];
       // $bash = '-e "^INSERT INTO \`migrate_map_" -e "^INSERT INTO \`config_log" -e "^INSERT INTO \`key_value_expire" -e "^INSERT INTO \`sessions" ' . $tmp . ' | drush -vvv sql:cli';
-      $bash = ['cd', $targetRecord->root(), Shell::op('&&'), '../scripts/ma-import-backup', $tmp];
+      $bash = ['cd', $targetRecord->root(), Shell::op('&&'), '../scripts/ma-import-backup', $destination];
       $process = Drush::siteProcess($targetRecord, $bash);
       $process->disableOutput();
       $process->mustRun();
