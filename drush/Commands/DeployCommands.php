@@ -134,7 +134,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
       // Fetch backup.
       // Directory set by https://jira.mass.gov/browse/DP-12823.
-      $process = Drush::drush($self, 'ma:latest-backup-fetch', [Path::join('/mnt/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz')]);
+      $process = Drush::drush($targetRecord, 'ma:latest-backup-fetch', [Path::join('/mnt/tmp', $_SERVER['REQUEST_TIME'] . '-db-backup.sql.gz')]);
       $process->mustRun();
       $this->logger()->success('Fetched backup.');
 
