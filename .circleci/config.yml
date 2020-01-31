@@ -540,11 +540,14 @@ workflows:
             branches:
               only: /^release\/.*$/
       - deploy:
-          name: deploy-test-refresh-db
+          # name: deploy-test-refresh-db
+          # skip refresh db for the time being.
+          name: deploy-test-no-refresh-db
           requires:
             - hold
           target: test
-          refresh-db: "--refresh-db"
+          # skip refresh db for the time being.
+          # refresh-db: "--refresh-db"
           filters:
             branches:
               only: /^release\/.*$/
