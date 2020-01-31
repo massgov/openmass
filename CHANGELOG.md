@@ -1,5 +1,4 @@
 
-
 ## [0.229.0] - January 30, 2020
 
 ### Added
@@ -16,8 +15,8 @@
 ### Fixed
   - DP-14197: Fixed to use the changelog markdown to the PR body and GitHub release tag instead of the placeholder.
   - DP-17189: Fix sitewide alert notification function to use updated moderation states from mass_content_moderation.
-  - DP-17313: Restore triggerred workflows at CircleCI
-  
+  - DP-17313: Restore triggerred workflows at CircleCI.
+
 ## [0.228.0] -January 22, 2020
 
 ### Fixed
