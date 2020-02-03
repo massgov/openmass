@@ -1482,13 +1482,13 @@ function mass_theme_preprocess_node_info_details(&$variables) {
     /** @var \Drupal\node\Entity\Node $node */
     $node = $variables['node'];
 
-    $variables['tableauEmbeded'] = false;
+    $variables['tableauEmbeded'] = FALSE;
 
     foreach ($node->get('field_info_details_sections')->referencedEntities() as $section) {
       $ref_entities = $section->get('field_section_long_form_content')->referencedEntities();
       foreach ($ref_entities as $entity) {
         if ($entity->bundle() == 'tableau_embed') {
-          $variables['tableauEmbeded'] = true;
+          $variables['tableauEmbeded'] = TRUE;
         }
       }
     }
