@@ -75,15 +75,35 @@ executors:
         command: memcached -m 128
       - image: previousnext/chrome-headless:65
 
+commands:
+  fetch_drush_aliases:
+    steps:
+      - run: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
+
+# See https://medium.com/labs42/monorepo-with-circleci-conditional-workflows-69e65d3f1bd0
+parameters:
+  webhook:
+    type: boolean
+    default: true
+  post-trigger:
+    type: boolean
+    default: false
+
 jobs:
+  trigger_workflows:
+    docker:
+      - image: circleci/node
+    steps:
+      - checkout
+      - run:
+          name: Trigger workflows
+          command: .circleci/circle_trigger.sh
+
   build:
     <<: *container_config
     steps:
       - checkout
       # See https://stackoverflow.com/questions/18126559/how-can-i-download-a-single-raw-file-from-a-private-github-repo-using-the-comman
-      - run:
-          name: Fetch Drush aliases
-          command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
       - *restore_composer_cache
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - *save_composer_cache
@@ -113,9 +133,7 @@ jobs:
         - *no_host_check
         - *no_ssh_timeout
         - checkout
-        - run:
-            name: Fetch Drush aliases
-            command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
+        - fetch_drush_aliases
         - run: git add -f /var/www/code/drush/sites/self.site.yml
         - *restore_composer_cache
         - run: {name: 'Composer install', command: 'composer install --no-dev --no-interaction --optimize-autoloader'}
@@ -161,6 +179,19 @@ jobs:
       # Push this build to Acquia's master branch, and tag it there.
       - run: scripts/tag-release-deploy
 
+  validate:
+    <<: *container_config
+    steps:
+      - attach_workspace: {at: /var/www}
+      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      # Validate .json and check if it is in sync with the .lock file
+      - run: composer validate
+      # Check coding standards with php code sniffer. See phpcs.xml
+      - run: phpcs -v -n
+      # Lint javascript
+      - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
+
+
   test:
     parameters:
       instance:
@@ -176,12 +207,6 @@ jobs:
       - run:
           name: Update host file
           command: echo '127.0.0.1 mass.local' >> /etc/hosts
-      # Validate .json and check if it is in sync with the .lock file
-      - run: composer validate
-      # Check coding standards with php code sniffer. See phpcs.xml
-      - run: phpcs -v -n
-      # lint javascript
-      - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
       # Wait for mysql.
       - run: dockerize -wait tcp://localhost:3306 -timeout 2m
       # Run drush updatedb and cim.
@@ -268,9 +293,7 @@ jobs:
       - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
       - *no_host_check
       - *no_ssh_timeout
-      - run:
-          name: Fetch Drush aliases
-          command: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
+      - fetch_drush_aliases
       - run:
           command: "drush ma:deploy -v -y << parameters.skip-maint >> << parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
           no_output_timeout: 60m
@@ -365,7 +388,8 @@ jobs:
 
 workflows:
   version: 2
-  build_test:
+  build_validate:
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -375,12 +399,35 @@ workflows:
                 - /^hotfix\/.*$/
                 - master
                 - /^mayflower-dev-.*/
-      - push_acquia:
+      - validate:
+          requires: [build]
+          filters:
+            branches:
+              <<: *branch_ignore
+      - trigger_workflows:
+          filters:
+            branches:
+              <<: *branch_ignore
+
+  build_test:
+    when: << pipeline.parameters.post-trigger >>
+    jobs:
+      - build:
+          filters:
+            branches:
+              ignore:
+                - /^release\/.*$/
+                - /^hotfix\/.*$/
+                - master
+                - /^mayflower-dev-.*/
+      - validate:
+          requires: [build]
           filters:
             branches:
               <<: *branch_ignore
       - danger:
           requires: [build]
+      - push_acquia:
           filters:
             branches:
               <<: *branch_ignore
@@ -461,11 +508,12 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "50 19 * * 3"
+          cron: "00 18 * * 4"
           filters:
             branches:
               only:
                 - develop
+                - fix-triggers
 
   # This is to automate the release branch only.
   release:
@@ -518,51 +566,51 @@ workflows:
 
   # This is to automate the hotfix branch only.
   hotfix:
-   jobs:
-    - build:
-        filters:
-          branches:
-            only: /^hotfix\/.*$/
-    - push_acquia:
-        filters:
-          branches:
-            only: /^hotfix\/.*$/
-    - test:
-        requires: [build]
-        filters:
-         branches:
-           only: /^hotfix\/.*$/
-    - hold:
-          type: approval
+    jobs:
+      - build:
+          filters:
+            branches:
+              only: /^hotfix\/.*$/
+      - push_acquia:
+          filters:
+            branches:
+              only: /^hotfix\/.*$/
+      - test:
+          requires: [build]
+          filters:
+           branches:
+             only: /^hotfix\/.*$/
+      - hold:
+            type: approval
+            requires:
+              - build
+              - push_acquia
+            filters:
+              branches:
+                only: /^hotfix\/.*$/
+      - deploy:
+          name: deploy-test-no-refresh-db
           requires:
-            - build
-            - push_acquia
-          filters:
-            branches:
-              only: /^hotfix\/.*$/
-    - deploy:
-        name: deploy-test-no-refresh-db
-        requires:
-          - hold
-        target: test
-        filters:
-          branches:
-            only: /^hotfix\/.*$/
-    - crawl:
-          name: crawl-test-200
-          requires: [deploy-test-no-refresh-db]
-          target: test
-          samples: 200
-          filters:
-            branches:
-              only: /^hotfix\/.*$/
-    - backstop:
-          name: backstop-test
-          requires: [deploy-test-no-refresh-db]
+            - hold
           target: test
           filters:
             branches:
               only: /^hotfix\/.*$/
+      - crawl:
+            name: crawl-test-200
+            requires: [deploy-test-no-refresh-db]
+            target: test
+            samples: 200
+            filters:
+              branches:
+                only: /^hotfix\/.*$/
+      - backstop:
+            name: backstop-test
+            requires: [deploy-test-no-refresh-db]
+            target: test
+            filters:
+              branches:
+                only: /^hotfix\/.*$/
 
   # This is to automate the mayflower branch only.
   mayflower:
@@ -728,7 +776,7 @@ workflows:
             branches:
               only:
                 - develop
-                - night-super-sanitized3
+                - fix-triggers
 
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
@@ -752,6 +800,7 @@ workflows:
             branches:
               only:
                 - develop
+                - fix-triggers
 
   # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
@@ -777,6 +826,7 @@ workflows:
             branches:
               only:
                 - develop
+                - fix-triggers
 
   # Nightly pm:security, runs at 2:00AM EST.
   nightly_pending_security:
@@ -791,3 +841,4 @@ workflows:
               branches:
                   only:
                       - develop
+                      - fix-triggers
