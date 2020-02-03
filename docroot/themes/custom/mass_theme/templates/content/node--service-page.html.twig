@@ -184,7 +184,7 @@
       {% for i in 0..lastIndex %}
         {% set keyInfoLink = content.field_service_key_info_links_6[i] %}
         {% set href = keyInfoLink['#url_title'] %}
-        {% if '/node/' in href or '---unpublished' in href %}
+        {% if '/node/' in href or href ends with '---unpublished' %}
           {# DO NOTHING if referenced item is NULL or unpublished state. #}
         {% else %}
           {% set publishedLinkCount = publishedLinkCount + 1 %}
