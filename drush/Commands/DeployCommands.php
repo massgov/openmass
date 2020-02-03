@@ -37,6 +37,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    */
   public function latestBackupUrl($target, $type = null) {
     $cloudapi = $this->getClient();
+    $connector = $this->getConnector();
 
     $env = $this->siteAliasManager()->getAlias($target);
     $backups = $cloudapi->databaseBackups($env->get('uuid'), 'massgov');
@@ -50,7 +51,14 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     // Use the most recent backup.
     $backup = reset($backups);
     if ($backup) {
-      return $backup->links->download->href;
+      $url = $backup->links->download->href;
+      if(strpos($url, Connector::BASE_URI) !== 0) {
+        throw new Error('Backup URL is not hosted on Acquia API. We\'re not sure what to do here.');
+      }
+      $response = $connector->makeRequest('get', $url, [], [
+        'allow_redirects' => FALSE,
+      ]);
+      return $response->getHeader('Location');
     }
     throw new \Exception('No usable backups were found.');
   }
@@ -256,13 +264,16 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   protected function getClient() {
+    return Client::factory($this->getConnector());
+  }
+
+  protected function getConnector() {
     $config = [
       // Easiest way to provide creds is in a .env file. See /.env.example
       'key' => getenv('AC_API2_KEY'),
       'secret' => getenv('AC_API2_SECRET'),
     ];
-    $connector = new Connector($config);
-    return Client::factory($connector);
+    return new Connector($config);
   }
 
   /**
