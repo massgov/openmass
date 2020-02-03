@@ -128,11 +128,8 @@ function nonzero_exit() {
 function download_backup() {
     # Download backup using Acquia's Cloud API.
     echo "${HEADING}[+] Download latest database backup ${TEXTRESET}" | tee -a $LOGFILE_NAME
-    LATEST_BACKUP=`drush ma:latest-backup-url prod`
-    # Track download url in current log file.
-    echo $LATEST_BACKUP >> $LOGFILE_NAME
     echo
-    wget -q --continue $LATEST_BACKUP --output-document=$HOME/db-backup.sql.gz
+    drush ma:download-latest-backup prod $HOME/db-backup.sql.gz
     echo
 }
 
@@ -290,7 +287,7 @@ function main() {
     # Sanitize database.
     elif [[ "$1" = "-s" ]] || [[ "$1" = "--sanitize" ]]; then
         sanitize
-    
+
     # Super sanitize database.
     elif [[ "$1" = "-ss" ]] || [[ "$1" = "--super-sanitize" ]]; then
         super_sanitize

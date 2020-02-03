@@ -56,6 +56,34 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
+   * Download the latest backup from Acquia, using the API.
+   *
+   * @param $target
+   * @param $filename
+   *
+   * @command ma:download-latest-backup
+   *
+   * @return mixed
+   */
+  public function downloadLatestBackup($target, $filename) {
+    $url = $this->latestBackupUrl($target);
+    $connector = $this->getConnector();
+
+    if(strpos($url, Connector::BASE_URI) !== 0) {
+      throw new Error('Backup URL is not hosted on Acquia API. We\'re not sure what to do here.');
+    }
+    $url = substr($url, strlen(Connector::BASE_URI));
+    $this->logger()->success("Downloading backup to {$filename}. This might take a while...");
+    $response = $connector->makeRequest('get', $url, [], [
+      'sink' => $filename,
+    ]);
+    if($response->getStatusCode() > 299) {
+      throw new \Exception("Received {$response->getStatusCode()} while trying to download the database backup.");
+    }
+    $this->logger()->success('Finished downloading backup.');
+  }
+
+  /**
    * Deploy code and database (if needed).
    *
    * Copies Prod DB to target environment, then runs config import, updb,
@@ -256,13 +284,16 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   protected function getClient() {
+    return Client::factory($this->getConnector());
+  }
+
+  protected function getConnector() {
     $config = [
       // Easiest way to provide creds is in a .env file. See /.env.example
       'key' => getenv('AC_API2_KEY'),
       'secret' => getenv('AC_API2_SECRET'),
     ];
-    $connector = new Connector($config);
-    return Client::factory($connector);
+    return new Connector($config);
   }
 
   /**
