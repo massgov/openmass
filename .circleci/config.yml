@@ -310,6 +310,7 @@ jobs:
       - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
       - *no_host_check
       - *no_ssh_timeout
+      - fetch_drush_aliases
       - run: mkdir -p /tmp/results/junit
       - run:
           name: Nightcrawler
