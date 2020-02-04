@@ -64,6 +64,65 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
+   * Run `ma:deploy` at CircleCI, for better reliability and logging.
+   *
+   * @command ma:release
+   *
+   * @param string $target Target environment. Recognized values: dev, cd,
+   *   test, feature1, feature2, feature3, feature4, feature5, prod.
+   * @param string $git_ref Tag or branch to deploy. Must be pushed to Acquia.
+   * @param array $options The options list.
+   * @option ci-branch The branch that CircleCI should check out at start.
+   *
+   * @usage drush ma:release test tags/build-0.6.1
+   *   Deploy build-0.6.1 tag to the staging environment.
+   * @aliases ma-release
+   * @deploy
+   *
+   * @return string
+   *   A URL for viewing the build.
+   * @throws \Exception
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+  public function release($target, $git_ref, array $options = ['ci-branch' => 'develop']) {
+    // For production deployments, prompt the user if they are sure. If they say no, exit.
+    if ($target === 'prod') {
+      $this->confirmProd();
+    }
+
+    $client = new \GuzzleHttp\Client();
+    if (!$token = getenv('CIRCLECI_PERSONAL_API_TOKEN')) {
+      throw new \Exception('Missing CIRCLECI_PERSONAL_API_TOKEN. See .env.example for more details.');
+    }
+    $uri = "https://circleci.com/api/v2/project/github/massgov/openmass/pipeline";
+    $options = [
+      'headers' => ['Accept' => 'application/json'],
+      'auth' => [$token],
+      'form_params' => [
+        'branch' => $options['ci-branch'],
+        'parameters' => [
+          'post-trigger' => FALSE,
+          'webhook' => FALSE,
+          'ma-release' => TRUE,
+          'target' => $target,
+          'git-ref' => $git_ref,
+          'skip-maint' => $options['skip-maint'] ? '--refresh-db' : '',
+          'refresh-db' => $options['refresh-db'] ? '--skip-maint' : '',
+        ],
+      ],
+    ];
+    $response = $client->request('POST', $uri, $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('CircleCI API response was a ' . $code);
+    }
+
+    $body = json_decode((string)$response->getBody(), TRUE);
+    $id = $body['id'];
+    return $id;
+  }
+
+  /**
    * Deploy code and database (if needed).
    *
    * Copies Prod DB to target environment, then runs config import, updb,

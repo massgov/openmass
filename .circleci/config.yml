@@ -93,6 +93,22 @@ parameters:
     type: boolean
     default: false
 
+  # These params for currently used in drush ma:release
+  ma-release:
+    type: boolean
+    default: false
+  refresh-db:
+    type: string
+    default: ""
+  skip-maint:
+    type: string
+    default: ""
+  target:
+    type: string
+    default: ""
+  git-ref:
+    type: string
+    default: ""
 jobs:
   trigger_workflows:
     docker:
@@ -807,6 +823,18 @@ workflows:
             branches:
               only:
                 - develop
+
+  # Usually triggerred by drush ma:release.
+  deploy_ad_hoc:
+    when: << pipeline.parameters.ma-release >>
+    jobs:
+      - build
+      - deploy:
+          requires: [build]
+          target: << pipeline.parameters.target >>
+          gitRef: << pipeline.parameters.git-ref >>
+          skip-maint: << pipeline.parameters.skip-maint >>
+          refresh-db: << pipeline.parameters.refresh-db >>
 
   # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
