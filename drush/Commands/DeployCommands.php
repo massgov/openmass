@@ -10,6 +10,9 @@ use Consolidation\SiteProcess\Util\Shell;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\SiteAlias\SiteAliasManagerAwareInterface;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\Middleware;
 use Webmozart\PathUtil\Path;
 
 /**
@@ -90,7 +93,15 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->confirmProd();
     }
 
-    $client = new \GuzzleHttp\Client();
+    // Use our logger - https://stackoverflow.com/questions/32681165/how-do-you-log-all-api-calls-using-guzzle-6.
+    $stack = HandlerStack::create();
+    $stack->push(
+      Middleware::log(
+        $this->logger(),
+        new MessageFormatter(Drush::verbose() ? MessageFormatter::DEBUG : MessageFormatter::SHORT)
+      )
+    );
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
     if (!$token = getenv('CIRCLECI_PERSONAL_API_TOKEN')) {
       throw new \Exception('Missing CIRCLECI_PERSONAL_API_TOKEN. See .env.example for more details.');
     }
