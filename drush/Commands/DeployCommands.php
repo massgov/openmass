@@ -96,9 +96,8 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     }
     $uri = "https://circleci.com/api/v2/project/github/massgov/openmass/pipeline";
     $options = [
-      'headers' => ['Accept' => 'application/json'],
       'auth' => [$token],
-      'form_params' => [
+      'json' => [
         'branch' => $options['ci-branch'],
         'parameters' => [
           'post-trigger' => FALSE,
@@ -106,8 +105,8 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
           'ma-release' => TRUE,
           'target' => $target,
           'git-ref' => $git_ref,
-          'skip-maint' => $options['skip-maint'] ? '--refresh-db' : '',
-          'refresh-db' => $options['refresh-db'] ? '--skip-maint' : '',
+          'skip-maint' => $options['skip-maint'] ? '--skip-maint' : '',
+          'refresh-db' => $options['refresh-db'] ? '--refresh-db' : '',
         ],
       ],
     ];
@@ -118,8 +117,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     }
 
     $body = json_decode((string)$response->getBody(), TRUE);
-    $id = $body['id'];
-    return $id;
+    $this->logger()->success('Pipeline ' . $body['id'] . ' is viewable at https://circleci.com/gh/massgov/openmass.');
   }
 
   /**
