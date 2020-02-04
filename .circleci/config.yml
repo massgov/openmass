@@ -23,8 +23,8 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v9-{{ checksum "composer.lock" }}
-        - site-composer-v9-
+        - site-composer-v6-{{ checksum "composer.lock" }}
+        - site-composer-v6-
 
   save_composer_cache: &save_composer_cache
     save_cache:
@@ -800,14 +800,13 @@ workflows:
           requires: [build]
           sanitizeOption: --super-sanitize
           instance: comass/mysql-sanitized:super
-#    triggers:
-#      - schedule:
-#          cron: "32 21 * * *"
-#          filters:
-#            branches:
-#              only:
-#                - develop
-#                - fix-triggers
+    triggers:
+      - schedule:
+          cron: "32 21 * * *"
+          filters:
+            branches:
+              only:
+                - develop
 
   # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
