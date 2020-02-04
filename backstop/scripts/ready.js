@@ -26,11 +26,26 @@ module.exports = async function(page, scenario, vp) {
         '  bottom: 0;' +
         '  z-index: 100;' +
         '}' +
+        // Kill iframes (show blue box instead)
+        '.ma__iframe__container:after {' +
+        '  background: #357B8F;' +
+        '  content: \'\';' +
+        '  position: absolute;' +
+        '  top: 0;' +
+        '  left: 0;' +
+        '  right: 0;' +
+        '  bottom: 0;' +
+        '  z-index: 100;' +
+        '}' +
         // Kill google Maps (show a green box instead)
-        '.js-google-map {' +
+        // .js-google-map for dynamic maps
+        // .ma__google-map__map.static-image for static images
+        '.js-google-map,\n' +
+        '.ma__google-map__map.static-image {' +
         '  position: relative;' +
         '}' +
-        '.js-google-map:before {' +
+        '.js-google-map:before,\n' +
+        '.ma__google-map__map.static-image:before {' +
         '  background: #B2DEA2;\n' +
         '  content: \' \';\n' +
         '  display: block;\n' +
@@ -40,6 +55,21 @@ module.exports = async function(page, scenario, vp) {
         '  right: 0;\n' +
         '  bottom: 0;\n' +
         '  z-index: 100;\n' +
+        '}' +
+        // Kill banner image on QAG campaign landing page (show a black box instead)
+        '#ID1345331.ma__key-message--image, #imgID1345331 {' +
+        '  position: relative;' +
+        '}' +
+        '#ID1345331.ma__key-message--image:before, #imgID1345331:before {' +
+        '  background: #000000;\n' +
+        '  content: \' \';\n' +
+        '  display: block;\n' +
+        '  position: absolute;\n' +
+        '  top: 0;\n' +
+        '  left: 0;\n' +
+        '  right: 0;\n' +
+        '  bottom: 0;\n' +
+        '  z-index: 3;\n' +
         '}' +
         // Kill random background image on homepage.
         '#GUID935283478 {' +
