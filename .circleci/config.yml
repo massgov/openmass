@@ -362,6 +362,7 @@ jobs:
     steps:
       - attach_workspace: {at: /home/circleci}
       - setup_remote_docker
+      - fetch_drush_aliases
       - run: docker-compose up -d
       - run: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www
       # @todo Actually perform health check.
@@ -794,14 +795,14 @@ workflows:
           requires: [build]
           sanitizeOption: --super-sanitize
           instance: comass/mysql-sanitized:super
-    triggers:
-      - schedule:
-          cron: "32 21 * * *"
-          filters:
-            branches:
-              only:
-                - develop
-                - fix-triggers
+#    triggers:
+#      - schedule:
+#          cron: "32 21 * * *"
+#          filters:
+#            branches:
+#              only:
+#                - develop
+#                - fix-triggers
 
   # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
