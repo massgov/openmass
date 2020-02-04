@@ -55,7 +55,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       if(strpos($url, Connector::BASE_URI) !== 0) {
         throw new Error('Backup URL is not hosted on Acquia API. We\'re not sure what to do here.');
       }
-      $response = $connector->makeRequest('get', $url, [], [
+      $response = $connector->makeRequest('get', substr($url, strlen(Connector::BASE_URI)), [], [
         'allow_redirects' => FALSE,
       ]);
       return $response->getHeader('Location');
