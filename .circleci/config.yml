@@ -77,8 +77,12 @@ executors:
 
 commands:
   fetch_drush_aliases:
+    parameters:
+      destination:
+        type: string
+        default: "/var/www/code/drush/sites/self.site.yml"
     steps:
-      - run: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
+      - run: "curl -f -o $DESTINATION -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
 
 # See https://medium.com/labs42/monorepo-with-circleci-conditional-workflows-69e65d3f1bd0
 parameters:
@@ -362,7 +366,8 @@ jobs:
     steps:
       - attach_workspace: {at: /home/circleci}
       - setup_remote_docker
-      - fetch_drush_aliases
+      - fetch_drush_aliases:
+          destination: /home/circleci/code/drush/sites/self.site.yml
       - run: docker-compose up -d
       - run: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www
       # @todo Actually perform health check.
