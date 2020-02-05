@@ -515,12 +515,11 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "00 18 * * 4"
+          cron: "00 19 * * 3"
           filters:
             branches:
               only:
                 - develop
-                - fix-triggers
 
   # This is to automate the release branch only.
   release:
@@ -783,7 +782,6 @@ workflows:
             branches:
               only:
                 - develop
-                - fix-triggers
 
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
@@ -832,7 +830,6 @@ workflows:
             branches:
               only:
                 - develop
-                - fix-triggers
 
   # Nightly pm:security, runs at 2:00AM EST.
   nightly_pending_security:
@@ -847,4 +844,3 @@ workflows:
               branches:
                   only:
                       - develop
-                      - fix-triggers
