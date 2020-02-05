@@ -29,6 +29,9 @@
 {% set level = 1 %}
 
 {% block preContent %}
+  {% if tableauEmbeded %}
+    {{ attach_library('mass_theme/tableau') }}
+  {% endif %}
   {# If the contextual navigation should be set for this node, then add it. #}
   {% if node.computed_log_in_links is not empty %}
     {{ contextual_log_in_links }}

@@ -11,6 +11,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\node\NodeInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\mass_content_moderation\MassModeration;
 
 /**
  * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
@@ -183,7 +184,7 @@ function mass_alerts_mail($key, &$message, $params) {
  */
 function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
   // Only send notifications after an alert has been published.
-  if ($node->bundle() === "alert" && $node->moderation_state->target_id === 'published') {
+  if ($node->bundle() === "alert" && !MassModeration::isPrepublish($node)) {
     // Only send notifications if the alert is site-wide.
     $alert_placement = $node->get("field_alert_display")->getValue();
     if (!empty($alert_placement) && $alert_placement[0]['value'] === 'site_wide') {

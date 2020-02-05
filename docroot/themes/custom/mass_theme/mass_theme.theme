@@ -1481,6 +1481,18 @@ function mass_theme_preprocess_node_info_details(&$variables) {
   if ($variables['elements']['#view_mode'] == 'full') {
     /** @var \Drupal\node\Entity\Node $node */
     $node = $variables['node'];
+
+    $variables['tableauEmbeded'] = FALSE;
+
+    foreach ($node->get('field_info_details_sections')->referencedEntities() as $section) {
+      $ref_entities = $section->get('field_section_long_form_content')->referencedEntities();
+      foreach ($ref_entities as $entity) {
+        if ($entity->bundle() == 'tableau_embed') {
+          $variables['tableauEmbeded'] = TRUE;
+        }
+      }
+    }
+
     // Get the page title for title context.
     $page_title = $node->getTitle();
     // Set up options for formDownloads prepare.
