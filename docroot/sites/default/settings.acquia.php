@@ -94,6 +94,8 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   $settings['mass_caching.schemes'] = ['https'];
   // Allow media entity download to work with files from production.
   $config['media_entity_download.settings']['external_file_storage'] = 1;
+  // Disable developer-specific modules. See https://www.drupal.org/node/3079028.
+  $settings['config_exclude_modules'] = ['devel', 'webprofiler'];
   // Set domains to clear when issuing relative path purge requests.
   // @see \Drupal\mass_caching\ManualPurger
   switch($_ENV['AH_SITE_ENVIRONMENT']) {
