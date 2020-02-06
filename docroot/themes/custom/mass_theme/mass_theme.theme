@@ -5063,11 +5063,17 @@ function _get_layout(array $total_type_with_count, $total_count) {
   // If all content is Service Pages, user actionCards.
   // If content is Right Rail and Stacked Layout, use actionCards.
   if (
-    $total_type_with_count['action'] == $total_count ||
-    $total_type_with_count['service_page'] == $total_count ||
-    $total_type_with_count['action'] + $total_type_with_count['stacked_layout'] == $total_count ||
-    $total_type_with_count['action'] + $total_type_with_count['how_to_page'] + $total_type_with_count['service_details'] == $total_count ||
-    $total_type_with_count['action'] + $total_type_with_count['how_to_page'] + $total_type_with_count['stacked_layout'] + $total_type_with_count['guide_page'] == $total_count
+    $total_type_with_count['guide_page'] +
+    $total_type_with_count['how_to_page'] +
+    $total_type_with_count['location'] +
+    $total_type_with_count['location_details'] +
+    $total_type_with_count['org_page'] +
+    $total_type_with_count['right-rail'] +
+    $total_type_with_count['service_page'] +
+    $total_type_with_count['service_details'] +
+    $total_type_with_count['stacked_layout'] +
+    $total_type_with_count['topic_page']
+    == $total_count
   ) {
     return 'actionCards';
   }
