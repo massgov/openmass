@@ -1,3 +1,34 @@
+## [0.229.0] - February 5, 2020
+
+### Changed  
+
+-DP-17289: Authors can now enter hours for contacts in 5-minute increments.
+-DP-14197: Checking to see if there is a holiday or any changelogs are there before cutting the branch.  
+-DP-17014: Adjust Superset config to include promo page (aka campaign landing).
+-DP-16864: Exclude the static Google map images, iframes, campaign page header banners from the backstop test by covering them.
+-DP-17049: Add description metatag to curated lists and info details.
+-DP-17039: Allow multiple types for document media entity and display choices as checkboxes.
+-DP-16934: Allow forks to pass limited testing.
+-DP-16628: Render temp. unpublished links to "What you need to know" on the service page. 
+-DP-17287: For service details and info details, we changed conditional logic to show the data resource type field only if the data type field = "data resource" We add help text to the data type and data resource type fields on service details, info details, and curated list to define the options.
+-DP-17047: Modify the mg_type metatag to support multiple values.
+
+### Fixed  
+
+-DP-14197: Fixed to use the changelog markdown to the PR body and GitHub release tag instead of the placeholder.
+-DP-17313: Restore triggered workflows at CircleCI.
+-DP-17189: Fix sitewide alert notification function to use updated moderation states from mass_content_moderation.
+-DP-17005: Resolves an issue where the nightly database population fails due to missing Drush aliases and invalid API calls.
+-DP-17313: Resolves an issue where Nightcrawler would not crawl in CircleCI after release automation changes.
+-DP-17286: Resolves an issue where ma-refresh-local was unable to download the database over Acquia's V2 API.
+-DP-17333: Add missing "Entity\Media" class to fix `mass_serializer` cron job error.
+
+### Added
+
+-DP-16688: Add severity name to Syslog.
+-DP-17242: Python2 for CloudFlare deployment.
+-DP-17135: Add the ability to embed Tableau visualizations on info-details pages.
+    
 ## [0.228.0] -January 22, 2020
 
 ### Fixed
