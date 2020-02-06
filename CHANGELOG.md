@@ -8,8 +8,6 @@
 -DP-16864: Exclude the static Google map images, iframes, campaign page header banners from the backstop test by covering them.
 -DP-17049: Add description metatag to curated lists and info details.
 -DP-17039: Allow multiple types for document media entity and display choices as checkboxes.
--DP-17239: Updated Mayflower version to 8.14.0.
--DP-16804: Change the state organizations' menu from a button to a link directly to the page. (MF) 
 -DP-16934: Allow forks to pass limited testing.
 -DP-16628: Render temp. unpublished links to "What you need to know" on the service page. 
 -DP-17287: For service details and info details, we changed conditional logic to show the data resource type field only if the data type field = "data resource" We add help text to the data type and data resource type fields on service details, info details, and curated list to define the options.
