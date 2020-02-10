@@ -91,6 +91,7 @@ third_party_settings:
       children:
         - field_contact
         - field_info_details_related
+        - field_tableau_visualization
       parent_name: group_information_details_edit_f
       weight: 10
       format_type: tab
@@ -153,8 +154,8 @@ content:
     settings: {  }
     third_party_settings:
       conditional_fields:
-        7882a891-c073-474e-9549-c9afc45c40fa:
-          dependee: field_data_flag
+        d6eed0b6-1eff-44f0-86a4-2c8fddd7e0f0:
+          dependee: field_details_data_type
           settings:
             state: visible
             condition: value
@@ -164,7 +165,7 @@ content:
             values: {  }
             value_form:
               -
-                value: data
+                target_id: '77936'
             effect: show
             effect_options: {  }
             selector: ''
@@ -245,7 +246,7 @@ content:
     type: datetime_default
     region: content
   field_info_details_related:
-    weight: 29
+    weight: 28
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -335,7 +336,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 1
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }

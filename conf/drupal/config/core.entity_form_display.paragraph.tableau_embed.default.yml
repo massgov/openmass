@@ -1,0 +1,30 @@
+uuid: 084a45cb-caf8-4dc2-a2bf-ae16fd0b7741
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.tableau_embed.field_url
+    - paragraphs.paragraphs_type.tableau_embed
+  module:
+    - link
+id: paragraph.tableau_embed.default
+targetEntityType: paragraph
+bundle: tableau_embed
+mode: default
+content:
+  field_url:
+    weight: -99
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  paragraphs_type_help__default:
+    weight: -100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  status: true

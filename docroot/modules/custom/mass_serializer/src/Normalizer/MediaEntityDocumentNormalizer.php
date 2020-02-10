@@ -6,6 +6,7 @@ use Drupal\Core\Url;
 use Drupal\Component\Utility\Unicode;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
 use Drupal\media\MediaInterface;
 use Drupal\serialization\Normalizer\ContentEntityNormalizer;
 use Drupal\taxonomy\TermStorage;

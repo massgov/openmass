@@ -92,11 +92,15 @@ class DocumentPagesUrlGenerator extends UrlGeneratorBase {
 
     if (isset($entity->field_document_type)) {
       /** @var \Drupal\taxonomy\Entity\Term $type_term */
-      $type_term = $entity->field_document_type->entity;
-      if (!empty($type_term)) {
+      $type_terms = $entity->field_document_type->referencedEntities();
+      $term_slugs = [];
+      foreach ($type_terms as $term) {
+        $term_slugs[] = $utility_service->slugify($term->getName());
+      }
+      if (!empty($term_slugs)) {
         $data['pagemap']['metatags'][] = [
           'name' => 'mg_type',
-          'value' => $utility_service->slugify($type_term->getName()),
+          'value' => implode(',', $term_slugs),
         ];
       }
     }
