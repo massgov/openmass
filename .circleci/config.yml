@@ -482,6 +482,7 @@ workflows:
 
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_dev branch only.
   deploy_mayflower_cd:
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -540,6 +541,7 @@ workflows:
 
   # This is to automate the release branch only.
   release:
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -589,6 +591,7 @@ workflows:
 
   # This is to automate the hotfix branch only.
   hotfix:
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -637,6 +640,7 @@ workflows:
 
   # This is to automate the mayflower branch only.
   mayflower:
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -686,6 +690,7 @@ workflows:
 
   # This is to tag the release in the GitHub repository
   build_github_tag:
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -723,6 +728,7 @@ workflows:
   # This is to tag the release in the Acquia repository.
   # This will deploy the newly created tag to stage environment and production environment with hold/approval for each job.
   build_tag:
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
