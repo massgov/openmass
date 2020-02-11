@@ -423,7 +423,7 @@ jobs:
       - run: |
           mkdir -p /tmp/terraform
           curl -L -o /tmp/terraform/terraform.zip https://releases.hashicorp.com/terraform/${terraform_version}/terraform_0.12.7_linux_amd64.zip
-          unzip /tmp/terraform/terraform.zip -d /tmp/terraform/
+          gzip -d /tmp/terraform/terraform.zip
           mv /tmp/terraform/terraform .
           chmod +x ./terraform
           rm -r /tmp/terraform
