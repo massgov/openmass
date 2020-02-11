@@ -8,7 +8,7 @@ references:
     working_directory: /var/www/code
     docker:
       # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:1.0.13-ci
+      - image: massgov/drupal-container:1.0.14-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
 
@@ -48,7 +48,7 @@ executors:
         default: comass/mysql-sanitized:latest
     working_directory: /var/www/code
     docker:
-      - image: massgov/drupal-container:1.0.13-ci
+      - image: massgov/drupal-container:1.0.14-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           DOCKER_ENV: ci
@@ -416,6 +416,10 @@ jobs:
         - run: "drush pm:security"
 
   ma-cf-deploy:
+    parameters:
+      auto-approve:
+        type: string
+        default: ""
     <<: *container_config
     working_directory: /var/www/code/cloudflare
     steps:
@@ -423,12 +427,12 @@ jobs:
       - run: |
           mkdir -p /tmp/terraform
           curl -L -o /tmp/terraform/terraform.zip https://releases.hashicorp.com/terraform/${terraform_version}/terraform_0.12.7_linux_amd64.zip
-          gzip -d /tmp/terraform/terraform.zip
+          unzip /tmp/terraform/terraform.zip -d /tmp/terraform/
           mv /tmp/terraform/terraform .
           chmod +x ./terraform
-          rm -r /tmp/terraform
+          rm -rf /tmp/terraform
       - run: echo 'export PATH=/var/www/code/cloudflare:$PATH' >> $BASH_ENV
-      - run: scripts/cloudflare-deploy << pipeline.parameters.target >>
+      - run: scripts/cloudflare-deploy << parameters.auto-approve >> << pipeline.parameters.target >>
 
 workflows:
   version: 2
@@ -865,9 +869,15 @@ workflows:
   deploy_cloudflare:
     when: << pipeline.parameters.ma-cf-deploy >>
     jobs:
-#      - build
-      - ma-cf-deploy
-#          requires: [build]
+      - ma-cf-deploy:
+          name: view-plan
+      - hold:
+          type: approval
+          requires:
+            - view-plan
+      - ma-cf-deploy:
+          requires: [hold]
+          auto-approve: "--auto-approve"
 
 
 # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.

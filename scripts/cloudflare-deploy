@@ -15,6 +15,7 @@
 #
 #
 # The only argument this script takes is the name of the "target" you want to deploy to.
+# The only option this script takes is --auto-approve. This is used by CircleCI after a hold.
 #
 # The targets are:
 #   cf - The wwwcf.digital.mass.gov and editcf.digital.mass.gov domains
@@ -47,6 +48,11 @@ case $1 in
     ;;
 esac
 
+AUTO_APPROVE=""
+if [[ "$2" = "--auto-approve" ]] ; then
+  AUTO_APPROVE="-auto-approve"
+fi
+
 # Run pre-apply checks to be sure we have all the things we need.
 which chamber > /dev/null 2>&1 || {
   echo "Chamber binary not found. Please install Chamber: https://github.com/segmentio/chamber"; exit 1;
@@ -71,6 +77,6 @@ pushd "$ROOT_DIR/cloudflare"
     if [ "$WORKSPACE" ]; then
       terraform workspace select "$WORKSPACE"
     fi
-    chamber exec tf/massgov-cloudflare-deployment -- terraform apply
+    chamber exec tf/massgov-cloudflare-deployment -- terraform apply $AUTO_APPROVE
   popd
 popd
