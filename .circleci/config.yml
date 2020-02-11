@@ -93,6 +93,11 @@ parameters:
     type: boolean
     default: false
 
+  # These params for currently used in drush ma:cf-deploy
+  ma-cf-deploy:
+    type: boolean
+    default: false
+
   # These params for currently used in drush ma:release
   ma-release:
     type: boolean
@@ -103,6 +108,7 @@ parameters:
   skip-maint:
     type: string
     default: ""
+  # target also used by ma-cf-deploy
   target:
     type: string
     default: ""
@@ -408,6 +414,21 @@ jobs:
         - attach_workspace: {at: /var/www}
         - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
         - run: "drush pm:security"
+
+  ma-cf-deploy:
+    <<: *container_config
+    working_directory: /var/www/code/cloudflare
+    steps:
+      - run: curl -LOs https://github.com/segmentio/chamber/releases/download/${version}/chamber-2.7.5-linux-amd64
+      - run: |
+          mkdir -p /tmp/terraform
+          && curl -L -o /tmp/terraform/terraform.zip https://releases.hashicorp.com/terraform/${terraform_version}/terraform_0.12.7_linux_amd64.zip
+          && unzip /tmp/terraform/terraform.zip -d /tmp/terraform/
+          && mv /tmp/terraform/terraform .
+          && chmod +x ./terraform
+          && rm -r /tmp/terraform
+      - run: echo 'export PATH=/var/www/code/cloudflare:$PATH' >> $BASH_ENV
+      - run: scripts/cloudflare-deploy << pipeline.parameters.target >>
 
 workflows:
   version: 2
@@ -840,7 +861,16 @@ workflows:
           skip-maint: << pipeline.parameters.skip-maint >>
           refresh-db: << pipeline.parameters.refresh-db >>
 
-  # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
+  # Usually triggerred by drush ma:cf-deploy.
+  deploy_cloudflare:
+    when: << pipeline.parameters.ma-cf-deploy >>
+    jobs:
+#      - build
+      - ma-cf-deploy
+#          requires: [build]
+
+
+# Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
     jobs:
       - build
