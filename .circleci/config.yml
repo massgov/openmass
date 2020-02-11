@@ -422,11 +422,11 @@ jobs:
       - run: curl -LOs https://github.com/segmentio/chamber/releases/download/${version}/chamber-2.7.5-linux-amd64
       - run: |
           mkdir -p /tmp/terraform
-          && curl -L -o /tmp/terraform/terraform.zip https://releases.hashicorp.com/terraform/${terraform_version}/terraform_0.12.7_linux_amd64.zip
-          && unzip /tmp/terraform/terraform.zip -d /tmp/terraform/
-          && mv /tmp/terraform/terraform .
-          && chmod +x ./terraform
-          && rm -r /tmp/terraform
+          curl -L -o /tmp/terraform/terraform.zip https://releases.hashicorp.com/terraform/${terraform_version}/terraform_0.12.7_linux_amd64.zip
+          unzip /tmp/terraform/terraform.zip -d /tmp/terraform/
+          mv /tmp/terraform/terraform .
+          chmod +x ./terraform
+          rm -r /tmp/terraform
       - run: echo 'export PATH=/var/www/code/cloudflare:$PATH' >> $BASH_ENV
       - run: scripts/cloudflare-deploy << pipeline.parameters.target >>
 

@@ -24,9 +24,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
   var $site = 'prod:massgov';
 
-  // Populated during validate.
-  var $token = '';
-
   const CIRCLE_URI = 'https://circleci.com/api/v2/project/github/massgov/openmass/pipeline';
 
   /**
@@ -54,7 +51,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
-      'auth' => $this->token,
+      'auth' => [$this->getTokenCircle()],
       'json' => [
         'branch' => $options['ci-branch'],
         'parameters' => [
@@ -149,7 +146,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
-      'auth' => [$token],
+      'auth' => [$this->getTokenCircle()],
       'json' => [
         'branch' => $options['ci-branch'],
         'parameters' => [
@@ -407,10 +404,9 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @hook validate validate-circleci-token
    */
   protected function validateCircleCIToken() {
-    if (!$token = getenv('CIRCLECI_PERSONAL_API_TOKEN')) {
+    if (!$this->getTokenCircle()) {
       throw new \Exception('Missing CIRCLECI_PERSONAL_API_TOKEN. See .env.example for more details.');
     }
-    $this->token = $token;
   }
 
   /**
@@ -512,6 +508,13 @@ EOT;
     $stack = HandlerStack::create();
     $stack->push(Middleware::log($this->logger(), new MessageFormatter(Drush::verbose() ? MessageFormatter::DEBUG : MessageFormatter::SHORT)));
     return $stack;
+  }
+
+  /**
+   * @return array|false|string
+   */
+  protected function getTokenCircle() {
+    return getenv('CIRCLECI_PERSONAL_API_TOKEN');
   }
 
 }
