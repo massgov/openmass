@@ -103,7 +103,7 @@ resource "cloudflare_worker_route" "stage_route" {
 
 // ====== START STAGE PAGE RULES (for testing, have higher priority) ========
 
-resource "cloudflare_page_rule" "edit main" {
+resource "cloudflare_page_rule" "edit_main" {
   zone     = var.domain
   target   = "*.stage.mass.gov/*"
   priority = 101
@@ -116,7 +116,7 @@ resource "cloudflare_page_rule" "edit main" {
   }
 }
 
-resource "cloudflare_page_rule" "edit alerts_json" {
+resource "cloudflare_page_rule" "edit_alerts_json" {
   zone     = var.domain
   target   = "*.stage.mass.gov/alerts*"
   priority = 109
@@ -129,7 +129,7 @@ resource "cloudflare_page_rule" "edit alerts_json" {
   }
 }
 
-resource "cloudflare_page_rule" "edit alerts_jsonapi_node_alert" {
+resource "cloudflare_page_rule" "edit_alerts_jsonapi_node_alert" {
   zone     = var.domain
   target   = "*.stage.mass.gov/jsonapi/node/alert*"
   priority = 110
@@ -144,7 +144,7 @@ resource "cloudflare_page_rule" "edit alerts_jsonapi_node_alert" {
 
 // ====== START PROD PAGE RULES ========
 
-resource "cloudflare_page_rule" "www main" {
+resource "cloudflare_page_rule" "www_main" {
   zone     = var.domain
   target   = "*.mass.gov/*"
   priority = 1
@@ -157,7 +157,7 @@ resource "cloudflare_page_rule" "www main" {
   }
 }
 
-resource "cloudflare_page_rule" "www alerts_json" {
+resource "cloudflare_page_rule" "www_alerts_json" {
   zone     = var.domain
   target   = "*.mass.gov/alerts*"
   priority = 9
@@ -170,7 +170,7 @@ resource "cloudflare_page_rule" "www alerts_json" {
   }
 }
 
-resource "cloudflare_page_rule" "www alerts_jsonapi_node_alert" {
+resource "cloudflare_page_rule" "www_alerts_jsonapi_node_alert" {
   zone     = var.domain
   target   = "*.mass.gov/jsonapi/node/alert*"
   priority = 10
