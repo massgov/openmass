@@ -426,7 +426,7 @@ jobs:
       - run: curl -LOs https://github.com/segmentio/chamber/releases/download/${version}/chamber-2.7.5-linux-amd64
       - run: |
           mkdir -p /tmp/terraform
-          curl -L -o /tmp/terraform/terraform.zip https://releases.hashicorp.com/terraform/${terraform_version}/terraform_0.12.7_linux_amd64.zip
+          curl -f -L -o /tmp/terraform/terraform.zip https://releases.hashicorp.com/terraform/0.12.7/terraform_0.12.7_linux_amd64.zip
           unzip /tmp/terraform/terraform.zip -d /tmp/terraform/
           mv /tmp/terraform/terraform .
           chmod +x ./terraform
@@ -876,6 +876,7 @@ workflows:
           requires:
             - view-plan
       - ma-cf-deploy:
+          name: apply-plan
           requires: [hold]
           auto-approve: "--auto-approve"
 
