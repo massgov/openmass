@@ -443,7 +443,7 @@ jobs:
       - unless:
           condition: << parameters.auto-approve >>
           steps:
-            run: set +e && ./scripts/cloudflare-deploy << parameters.auto-approve >> << pipeline.parameters.target >>
+            run: true || ./scripts/cloudflare-deploy << parameters.auto-approve >> << pipeline.parameters.target >>
 
 workflows:
   version: 2
