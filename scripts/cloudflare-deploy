@@ -68,7 +68,7 @@ terraform --version | grep -q "$TFVERSION" || {
 pushd "$ROOT_DIR/cloudflare"
   if [ "$TARGET" == "environment" ]; then
     echo "Building cloudflare worker"
-    npm ci
+    npm install
     # Use Chamber when building worker to pull in CDN token.
     chamber exec tf/massgov-cloudflare-deployment -- npm run build
   fi
