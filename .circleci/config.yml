@@ -421,8 +421,8 @@ jobs:
         type: string
         default: ""
     <<: *container_config
-    working_directory: /var/www/code
     steps:
+      - checkout
       - run: curl -LOs https://github.com/segmentio/chamber/releases/download/${version}/chamber-2.7.5-linux-amd64
       - run: |
           mkdir -p /tmp/terraform
