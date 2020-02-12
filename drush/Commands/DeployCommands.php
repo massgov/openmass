@@ -69,7 +69,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     }
 
     $body = json_decode((string)$response->getBody(), TRUE);
-    $this->logger()->success('Pipeline ' . $body['id'] . ' is viewable at https://circleci.com/gh/massgov/openmass.');
+    $this->logger()->success('Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.');
   }
 
   /**
@@ -167,7 +167,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     }
 
     $body = json_decode((string)$response->getBody(), TRUE);
-    $this->logger()->success('Pipeline ' . $body['id'] . ' is viewable at https://circleci.com/gh/massgov/openmass.');
+    $this->logger()->success('Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.');
   }
 
   /**
