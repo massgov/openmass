@@ -434,9 +434,13 @@ jobs:
           chmod +x ./terraform
           rm -rf /tmp/terraform
       - run: echo 'export PATH=/var/www/code:$PATH' >> $BASH_ENV
-      # We expect to fail when this job runs before the hold. https://discuss.circleci.com/t/run-all-test-steps-even-if-one-fails/11229/12
-      - run: set +e
-      - run: ./scripts/cloudflare-deploy << parameters.auto-approve >> << pipeline.parameters.target >>
+      - unless:
+          # We expect to fail when this job runs *before* the hold. Keep it green in this case.
+          condition: << parameters.auto-approve >>
+          steps:
+            # See https://discuss.circleci.com/t/run-all-test-steps-even-if-one-fails/11229/12
+            - run: set +e
+      - run: set +e && ./scripts/cloudflare-deploy << parameters.auto-approve >> << pipeline.parameters.target >>
 
 workflows:
   version: 2
