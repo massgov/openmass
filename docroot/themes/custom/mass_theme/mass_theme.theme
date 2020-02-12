@@ -4291,36 +4291,6 @@ function mass_theme_preprocess_html(&$variables) {
     $node_type = $variables['node_type'];
   }
 
-  // Add metatag, if necessary, to allow nodes to be grouped by category.
-  if (isset($node_type)) {
-    $content_type_categories = [];
-    $content_type_categories['service_page'] =
-    $content_type_categories['how_to_page'] =
-    $content_type_categories['service_details'] =
-    $content_type_categories['guide_page'] = 'services';
-    $content_type_categories['news'] = 'news';
-    $content_type_categories['executive_order'] = 'laws-regulations';
-    $content_type_categories['org_page'] = 'state-organizations';
-    $content_type_categories['advisory'] = 'laws-regulations';
-    $content_type_categories['regulation'] = 'laws-regulations';
-    $content_type_categories['decision'] = 'laws-regulations';
-    $content_type_categories['rules'] = 'laws-regulations';
-
-    if (isset($content_type_categories[$node_type])) {
-      $content_category_tag = [
-        '#tag' => 'meta',
-        '#attributes' => [
-          'name' => 'category',
-          'content' => $content_type_categories[$node_type],
-        ],
-      ];
-      $variables['page']['#attached']['html_head'][] = [
-        $content_category_tag,
-        'category',
-      ];
-    }
-  }
-
   // Add Schema.org markup for body.
   $variables['deployment_identifier'] = Settings::get('deployment_identifier');
   if (isset($node_type)) {

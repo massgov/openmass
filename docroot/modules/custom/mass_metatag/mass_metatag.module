@@ -57,6 +57,16 @@ function mass_metatag_token_info() {
     'name' => t('jsonify links'),
     'description' => t("Create a JSON representation of a set of links contained within paragraphs."),
   ];
+  $info['tokens']['node']['mass_related_terms'] = [
+    'name' => t('Related taxonomy'),
+    'description' => t('The terms related to the current node.'),
+    'type' => 'node',
+  ];
+  $info['tokens']['node']['mass_services_category'] = [
+    'name' => t('Services tag'),
+    'description' => t('The Services category metatag.'),
+    'type' => 'node',
+  ];
 
   return $info;
 }
@@ -194,6 +204,35 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
 
           // Separate the organizations with a comma.
           $replacements[$original] = implode(',', $org_names);
+          break;
+
+        case 'mass_related_terms':
+          $tags = [];
+          if ($data['node']->hasField('field_details_data_type') && $data_type = $data['node']->get('field_details_data_type')) {
+            $items = $data_type->referencedEntities();
+            if (!empty($items)) {
+              $data_resources = $data['node']->get('field_data_resource_type')->referencedEntities();
+              if (!empty($data_resources)) {
+                foreach ($data_resources as $k => $resource) {
+                  $tags[$k] = $resource->get('field_dataresource_metatag')->getValue()[0]['value'];
+                }
+              }
+              else {
+                $tags[] = $items[0]->get('field_details_datatype_metatag')->getValue()[0]['value'];
+              }
+            }
+          }
+          $replacements[$original] = implode(',', $tags);
+          break;
+
+        case 'mass_services_category':
+          $tag = 'services';
+          if ($data['node']->hasField('field_data_flag') && $data_flag = $data['node']->get('field_data_flag')) {
+            if (!empty($data_flag->getValue())) {
+              $tag = 'data';
+            }
+          }
+          $replacements[$original] = $tag;
           break;
       }
     }
