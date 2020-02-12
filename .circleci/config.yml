@@ -421,7 +421,7 @@ jobs:
         type: string
         default: ""
     <<: *container_config
-    working_directory: /var/www/code/cloudflare
+    working_directory: /var/www/code
     steps:
       - run: curl -LOs https://github.com/segmentio/chamber/releases/download/${version}/chamber-2.7.5-linux-amd64
       - run: |
