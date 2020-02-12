@@ -93,6 +93,22 @@ parameters:
     type: boolean
     default: false
 
+  # These params for currently used in drush ma:release
+  ma-release:
+    type: boolean
+    default: false
+  refresh-db:
+    type: string
+    default: ""
+  skip-maint:
+    type: string
+    default: ""
+  target:
+    type: string
+    default: ""
+  git-ref:
+    type: string
+    default: ""
 jobs:
   trigger_workflows:
     docker:
@@ -466,6 +482,7 @@ workflows:
 
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_dev branch only.
   deploy_mayflower_cd:
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -523,6 +540,7 @@ workflows:
 
   # This is to automate the release branch only.
   release:
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -572,6 +590,7 @@ workflows:
 
   # This is to automate the hotfix branch only.
   hotfix:
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -620,6 +639,7 @@ workflows:
 
   # This is to automate the mayflower branch only.
   mayflower:
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -669,6 +689,7 @@ workflows:
 
   # This is to tag the release in the GitHub repository
   build_github_tag:
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -706,6 +727,7 @@ workflows:
   # This is to tag the release in the Acquia repository.
   # This will deploy the newly created tag to stage environment and production environment with hold/approval for each job.
   build_tag:
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -805,6 +827,18 @@ workflows:
             branches:
               only:
                 - develop
+
+  # Usually triggerred by drush ma:release.
+  deploy_ad_hoc:
+    when: << pipeline.parameters.ma-release >>
+    jobs:
+      - build
+      - deploy:
+          requires: [build]
+          target: << pipeline.parameters.target >>
+          gitRef: << pipeline.parameters.git-ref >>
+          skip-maint: << pipeline.parameters.skip-maint >>
+          refresh-db: << pipeline.parameters.refresh-db >>
 
   # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
