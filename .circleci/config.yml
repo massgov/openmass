@@ -423,7 +423,7 @@ jobs:
     <<: *container_config
     steps:
       - checkout
-      - run: curl -L -f -o chamber https://github.com/segmentio/chamber/releases/download/v2.7.5/chamber-v2.7.5-darwin-amd64
+      - run: curl -L -f -o chamber https://github.com/segmentio/chamber/releases/download/v2.7.5/chamber-v2.7.5-linux-amd64
       - run: chmod +x ./chamber
       - run: |
           mkdir -p /tmp/terraform
