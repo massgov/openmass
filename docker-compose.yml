@@ -2,7 +2,7 @@ version: '3.1'
 
 services:
   drupal:
-    image: "massgov/drupal-container:1.0.13-dev"
+    image: "massgov/drupal-container:1.0.14-dev"
     hostname: mass.local
     volumes:
       # Non OSX users may want to set VOLUME_FLAGS via the .env file.
@@ -103,7 +103,7 @@ services:
       - BLACKFIRE_SERVER_TOKEN
 
   backstop:
-    image: "backstopjs/backstopjs:v3.2.17"
+    image: "backstopjs/backstopjs:v3.9.2"
     volumes:
       - ./backstop:/src
     shm_size: 1gb

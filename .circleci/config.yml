@@ -8,9 +8,10 @@ references:
     working_directory: /var/www/code
     docker:
       # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:1.0.13-ci
+      - image: massgov/drupal-container:1.0.14-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
+          AWS_REGION: us-east-1
 
   # Dynamic hosts mean constantly checking interactively that we mean to connect to an unknown host. We ignore those here.
   no_host_check: &no_host_check
@@ -23,8 +24,8 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v9-{{ checksum "composer.lock" }}
-        - site-composer-v9-
+        - site-composer-v6-{{ checksum "composer.lock" }}
+        - site-composer-v6-
 
   save_composer_cache: &save_composer_cache
     save_cache:
@@ -48,7 +49,7 @@ executors:
         default: comass/mysql-sanitized:latest
     working_directory: /var/www/code
     docker:
-      - image: massgov/drupal-container:1.0.13-ci
+      - image: massgov/drupal-container:1.0.14-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           DOCKER_ENV: ci
@@ -77,8 +78,12 @@ executors:
 
 commands:
   fetch_drush_aliases:
+    parameters:
+      destination:
+        type: string
+        default: "/var/www/code/drush/sites/self.site.yml"
     steps:
-      - run: "curl -f -o /var/www/code/drush/sites/self.site.yml -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
+      - run: "curl -f -o << parameters.destination >> -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
 
 # See https://medium.com/labs42/monorepo-with-circleci-conditional-workflows-69e65d3f1bd0
 parameters:
@@ -89,6 +94,28 @@ parameters:
     type: boolean
     default: false
 
+  # These params for currently used in drush ma:cf-deploy
+  ma-cf-deploy:
+    type: boolean
+    default: false
+
+  # These params for currently used in drush ma:release
+  ma-release:
+    type: boolean
+    default: false
+  refresh-db:
+    type: string
+    default: ""
+  skip-maint:
+    type: string
+    default: ""
+  # target also used by ma-cf-deploy
+  target:
+    type: string
+    default: ""
+  git-ref:
+    type: string
+    default: ""
 jobs:
   trigger_workflows:
     docker:
@@ -310,6 +337,7 @@ jobs:
       - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
       - *no_host_check
       - *no_ssh_timeout
+      - fetch_drush_aliases
       - run: mkdir -p /tmp/results/junit
       - run:
           name: Nightcrawler
@@ -361,6 +389,8 @@ jobs:
     steps:
       - attach_workspace: {at: /home/circleci}
       - setup_remote_docker
+      - fetch_drush_aliases:
+          destination: /home/circleci/code/drush/sites/self.site.yml
       - run: docker-compose up -d
       - run: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www
       # @todo Actually perform health check.
@@ -385,6 +415,35 @@ jobs:
         - attach_workspace: {at: /var/www}
         - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
         - run: "drush pm:security"
+
+  ma-cf-deploy:
+    parameters:
+      auto-approve:
+        type: boolean
+        default: false
+    <<: *container_config
+    steps:
+      - checkout
+      - run: curl -L -f -o chamber https://github.com/segmentio/chamber/releases/download/v2.7.5/chamber-v2.7.5-linux-amd64
+      - run: chmod +x ./chamber
+      - run: |
+          mkdir -p /tmp/terraform
+          curl -f -L -o /tmp/terraform/terraform.zip https://releases.hashicorp.com/terraform/0.12.3/terraform_0.12.3_linux_amd64.zip
+          unzip /tmp/terraform/terraform.zip -d /tmp/terraform/
+          mv /tmp/terraform/terraform .
+          chmod +x ./terraform
+          rm -rf /tmp/terraform
+      - run: echo 'export PATH=/var/www/code:$PATH' >> $BASH_ENV
+      - when:
+          condition: << parameters.auto-approve >>
+          steps:
+            run: ./scripts/cloudflare-deploy << pipeline.parameters.target >> --auto-approve
+      - unless:
+          # We expect to fail when this job runs *before* the hold. Keep it green by appending `|| true`.
+          # See https://discuss.circleci.com/t/run-all-test-steps-even-if-one-fails/11229/12
+          condition: << parameters.auto-approve >>
+          steps:
+            run: ./scripts/cloudflare-deploy << pipeline.parameters.target >> || true
 
 workflows:
   version: 2
@@ -445,7 +504,6 @@ workflows:
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_develop_branch.
   # This will only happens on Sunday night 11 p.m. ETS to allow us to review Mayflower in Drupal on Mondays.
   mayflower_dev_branch:
-    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build
       - mayflower_develop_branch:
@@ -460,7 +518,7 @@ workflows:
 
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_dev branch only.
   deploy_mayflower_cd:
-    when: << pipeline.parameters.post-trigger >>
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -504,14 +562,13 @@ workflows:
   # This is to automate the creation of the release branch for Wednesday at 1 p.m. ET.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   release_branch:
-    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build
       - cut_release_branch:
           requires: [build]
     triggers:
       - schedule:
-          cron: "00 18 * * 3"
+          cron: "15 19 * * 3"
           filters:
             branches:
               only:
@@ -519,7 +576,7 @@ workflows:
 
   # This is to automate the release branch only.
   release:
-    when: << pipeline.parameters.post-trigger >>
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -569,7 +626,7 @@ workflows:
 
   # This is to automate the hotfix branch only.
   hotfix:
-    when: << pipeline.parameters.post-trigger >>
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -618,7 +675,7 @@ workflows:
 
   # This is to automate the mayflower branch only.
   mayflower:
-    when: << pipeline.parameters.post-trigger >>
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -668,7 +725,7 @@ workflows:
 
   # This is to tag the release in the GitHub repository
   build_github_tag:
-    when: << pipeline.parameters.post-trigger >>
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -706,7 +763,7 @@ workflows:
   # This is to tag the release in the Acquia repository.
   # This will deploy the newly created tag to stage environment and production environment with hold/approval for each job.
   build_tag:
-    when: << pipeline.parameters.post-trigger >>
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -770,7 +827,6 @@ workflows:
 
   # Daily run of test suite using super sanitized DB
   build_test_super:
-    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build
       - test:
@@ -784,12 +840,10 @@ workflows:
             branches:
               only:
                 - develop
-                - night-super-sanitized3
 
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
-    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build
       - populate:
@@ -810,9 +864,36 @@ workflows:
               only:
                 - develop
 
-  # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
+  # Usually triggerred by drush ma:release.
+  deploy_ad_hoc:
+    when: << pipeline.parameters.ma-release >>
+    jobs:
+      - build
+      - deploy:
+          requires: [build]
+          target: << pipeline.parameters.target >>
+          gitRef: << pipeline.parameters.git-ref >>
+          skip-maint: << pipeline.parameters.skip-maint >>
+          refresh-db: << pipeline.parameters.refresh-db >>
+
+  # Usually triggerred by drush ma:cf-deploy.
+  deploy_cloudflare:
+    when: << pipeline.parameters.ma-cf-deploy >>
+    jobs:
+      - ma-cf-deploy:
+          name: view-plan
+      - hold:
+          type: approval
+          requires:
+            - view-plan
+      - ma-cf-deploy:
+          name: apply-plan
+          requires: [hold]
+          auto-approve: true
+
+
+# Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
-    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build
       - deploy:
@@ -838,7 +919,6 @@ workflows:
 
   # Nightly pm:security, runs at 2:00AM EST.
   nightly_pending_security:
-    when: << pipeline.parameters.post-trigger >>
     jobs:
       - build
       - pending_security:

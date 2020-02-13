@@ -46,7 +46,9 @@ The service worker code lives in the [`src/`](src) directory. When you change it
 
 ## Deploying changes
 
-Before you can deploy any changes, you will need:
+Run `drush -v ma:cf-deploy [target]` (see list of valid targets below). You will then be linked to the CircleCI Pipelines page. Look for a Pipeline thats on Hold. Review the Plan presented there and approve if it looks OK.
+
+If you want to deploy changes from your local machine, you will need:
 
 * An AWS account that is allowed to access the Terraform state and stored Cloudflare credentials (contact the cloud team for this access).
 * [Terraform](https://www.terraform.io/downloads.html) installed locally. See [scripts/cloudflare-deploy](../scripts/cloudflare-deploy) for the correct version to use. [tfenv](https://github.com/tfutils/tfenv) helps with installing older versions.

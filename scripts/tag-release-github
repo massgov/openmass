@@ -27,7 +27,9 @@ generate_post_data()
     "tag_name":"${TAG}",
     "target_commitish": "master",
     "name": "${TAG}",
-    "body": cat /scripts/changelog-body.txt >
+    "body": "$(cat /scripts/changelog-body.txt)"
+    "draft": false,
+    "prerelease": false
  }
 EOF
 }
