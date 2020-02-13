@@ -437,7 +437,7 @@ jobs:
       - when:
           condition: << parameters.auto-approve >>
           steps:
-            run: ./scripts/cloudflare-deploy --auto-approve << pipeline.parameters.target >>
+            run: ./scripts/cloudflare-deploy << pipeline.parameters.target >> --auto-approve
       - unless:
           # We expect to fail when this job runs *before* the hold. Keep it green by appending `|| true`.
           # See https://discuss.circleci.com/t/run-all-test-steps-even-if-one-fails/11229/12
