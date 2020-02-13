@@ -8,9 +8,10 @@ references:
     working_directory: /var/www/code
     docker:
       # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:1.0.13-ci
+      - image: massgov/drupal-container:1.0.14-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
+          AWS_REGION: us-east-1
 
   # Dynamic hosts mean constantly checking interactively that we mean to connect to an unknown host. We ignore those here.
   no_host_check: &no_host_check
@@ -48,7 +49,7 @@ executors:
         default: comass/mysql-sanitized:latest
     working_directory: /var/www/code
     docker:
-      - image: massgov/drupal-container:1.0.13-ci
+      - image: massgov/drupal-container:1.0.14-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           DOCKER_ENV: ci
@@ -93,6 +94,11 @@ parameters:
     type: boolean
     default: false
 
+  # These params for currently used in drush ma:cf-deploy
+  ma-cf-deploy:
+    type: boolean
+    default: false
+
   # These params for currently used in drush ma:release
   ma-release:
     type: boolean
@@ -103,6 +109,7 @@ parameters:
   skip-maint:
     type: string
     default: ""
+  # target also used by ma-cf-deploy
   target:
     type: string
     default: ""
@@ -408,6 +415,35 @@ jobs:
         - attach_workspace: {at: /var/www}
         - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
         - run: "drush pm:security"
+
+  ma-cf-deploy:
+    parameters:
+      auto-approve:
+        type: boolean
+        default: false
+    <<: *container_config
+    steps:
+      - checkout
+      - run: curl -L -f -o chamber https://github.com/segmentio/chamber/releases/download/v2.7.5/chamber-v2.7.5-linux-amd64
+      - run: chmod +x ./chamber
+      - run: |
+          mkdir -p /tmp/terraform
+          curl -f -L -o /tmp/terraform/terraform.zip https://releases.hashicorp.com/terraform/0.12.3/terraform_0.12.3_linux_amd64.zip
+          unzip /tmp/terraform/terraform.zip -d /tmp/terraform/
+          mv /tmp/terraform/terraform .
+          chmod +x ./terraform
+          rm -rf /tmp/terraform
+      - run: echo 'export PATH=/var/www/code:$PATH' >> $BASH_ENV
+      - when:
+          condition: << parameters.auto-approve >>
+          steps:
+            run: ./scripts/cloudflare-deploy << pipeline.parameters.target >> --auto-approve
+      - unless:
+          # We expect to fail when this job runs *before* the hold. Keep it green by appending `|| true`.
+          # See https://discuss.circleci.com/t/run-all-test-steps-even-if-one-fails/11229/12
+          condition: << parameters.auto-approve >>
+          steps:
+            run: ./scripts/cloudflare-deploy << pipeline.parameters.target >> || true
 
 workflows:
   version: 2
@@ -840,7 +876,23 @@ workflows:
           skip-maint: << pipeline.parameters.skip-maint >>
           refresh-db: << pipeline.parameters.refresh-db >>
 
-  # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
+  # Usually triggerred by drush ma:cf-deploy.
+  deploy_cloudflare:
+    when: << pipeline.parameters.ma-cf-deploy >>
+    jobs:
+      - ma-cf-deploy:
+          name: view-plan
+      - hold:
+          type: approval
+          requires:
+            - view-plan
+      - ma-cf-deploy:
+          name: apply-plan
+          requires: [hold]
+          auto-approve: true
+
+
+# Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
     jobs:
       - build
