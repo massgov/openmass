@@ -419,8 +419,8 @@ jobs:
   ma-cf-deploy:
     parameters:
       auto-approve:
-        type: string
-        default: ""
+        type: boolean
+        default: false
     <<: *container_config
     steps:
       - checkout
@@ -434,16 +434,16 @@ jobs:
           chmod +x ./terraform
           rm -rf /tmp/terraform
       - run: echo 'export PATH=/var/www/code:$PATH' >> $BASH_ENV
-        # We expect to fail when this job runs *before* the hold. Keep it green in this case.
-        # See https://discuss.circleci.com/t/run-all-test-steps-even-if-one-fails/11229/12
       - when:
           condition: << parameters.auto-approve >>
           steps:
-            run: ./scripts/cloudflare-deploy << parameters.auto-approve >> << pipeline.parameters.target >>
+            run: ./scripts/cloudflare-deploy --auto-approve << pipeline.parameters.target >>
       - unless:
+          # We expect to fail when this job runs *before* the hold. Keep it green by appending `|| true`.
+          # See https://discuss.circleci.com/t/run-all-test-steps-even-if-one-fails/11229/12
           condition: << parameters.auto-approve >>
           steps:
-            run: true || ./scripts/cloudflare-deploy << parameters.auto-approve >> << pipeline.parameters.target >>
+            run: ./scripts/cloudflare-deploy << pipeline.parameters.target >> || true
 
 workflows:
   version: 2
@@ -889,7 +889,7 @@ workflows:
       - ma-cf-deploy:
           name: apply-plan
           requires: [hold]
-          auto-approve: "--auto-approve"
+          auto-approve: true
 
 
 # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
