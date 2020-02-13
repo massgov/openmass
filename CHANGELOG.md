@@ -1,19 +1,37 @@
+## [0.230.0] - February 12, 2020
+
+### Changed
+
+- DP-16813: Updated the Backstopjs version from 3.2.17 to 3.9.2.
+
+### Fixed
+
+- DP-17412: Fix how retrieve and push the release notes when tagging the master branch.
+- DP-17412: Edits and fixes to `template.yml` file used by developers to add a release note.
+- DP-17413: Fix the presentation issue of the related content in home page to always redner items with card no matter what conten types are added.
+
+### Added
+
+- DP-17054: Add robots rule to no-index any link containing string "?auHash=."
+- DP-17243: Bring back ma:release command.
+
+
 ## [0.229.0] - February 5, 2020
 
-### Changed  
+### Changed
 
 -DP-17289: Authors can now enter hours for contacts in 5-minute increments.
--DP-14197: Checking to see if there is a holiday or any changelogs are there before cutting the branch.  
+-DP-14197: Checking to see if there is a holiday or any changelogs are there before cutting the branch.
 -DP-17014: Adjust Superset config to include promo page (aka campaign landing).
 -DP-16864: Exclude the static Google map images, iframes, campaign page header banners from the backstop test by covering them.
 -DP-17049: Add description metatag to curated lists and info details.
 -DP-17039: Allow multiple types for document media entity and display choices as checkboxes.
 -DP-16934: Allow forks to pass limited testing.
--DP-16628: Render temp. unpublished links to "What you need to know" on the service page. 
+-DP-16628: Render temp. unpublished links to "What you need to know" on the service page.
 -DP-17287: For service details and info details, we changed conditional logic to show the data resource type field only if the data type field = "data resource" We add help text to the data type and data resource type fields on service details, info details, and curated list to define the options.
 -DP-17047: Modify the mg_type metatag to support multiple values.
 
-### Fixed  
+### Fixed
 
 -DP-14197: Fixed to use the changelog markdown to the PR body and GitHub release tag instead of the placeholder.
 -DP-17313: Restore triggered workflows at CircleCI.
@@ -28,7 +46,7 @@
 -DP-16688: Add severity name to Syslog.
 -DP-17242: Python2 for CloudFlare deployment.
 -DP-17135: Add the ability to embed Tableau visualizations on info-details pages.
-    
+
 ## [0.228.0] -January 22, 2020
 
 ### Fixed
