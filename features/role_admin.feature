@@ -28,6 +28,5 @@ Feature: Admin
       | administer users            |
 
   Scenario: Verify that the configuration is correct
-    Then dblog should not be installed
-    And dynamic_page_cache should be installed
+    Then dynamic_page_cache should be installed
     And the config "system.performance" "cache.page.max_age" should equal "604800"
