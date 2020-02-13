@@ -69,7 +69,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     }
 
     $body = json_decode((string)$response->getBody(), TRUE);
-    $this->logger()->success('Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.');
+    $this->logger()->success($this->getSuccessMessage($body));
   }
 
   /**
@@ -515,6 +515,17 @@ EOT;
    */
   protected function getTokenCircle() {
     return getenv('CIRCLECI_PERSONAL_API_TOKEN');
+  }
+
+  /**
+   * Return success message about how to view a Pipeline at CircleCI.
+   *
+   * @param array $body
+   *
+   * @return string
+   */
+  private function getSuccessMessage($body): string {
+    return 'Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.';
   }
 
 }
