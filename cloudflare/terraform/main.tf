@@ -88,7 +88,7 @@ resource "cloudflare_worker_script" "default_worker" {
 
 // The worker script for Prod
 resource "cloudflare_worker_route" "default_route" {
-  zone        = var.domain
+  zone_id        = var.domain
   pattern     = "*.mass.gov/*"
   script_name = "serviceworker"
 }
@@ -96,7 +96,7 @@ resource "cloudflare_worker_route" "default_route" {
 // The worker for Stage. Currently same as Prod. Change 'script_name' when testing worker on stage.
 // This pattern is more specific so should be selected for edit pages over the above route per https://developers.cloudflare.com/workers/api/route-matching/.
 resource "cloudflare_worker_route" "stage_route" {
-  zone        = var.domain
+  zone_id        = var.domain
   pattern     = "*.stage.mass.gov/*"
   script_name = "serviceworker"
 }
@@ -104,7 +104,7 @@ resource "cloudflare_worker_route" "stage_route" {
 // ====== START STAGE PAGE RULES (for testing, have higher priority) ========
 
 resource "cloudflare_page_rule" "edit_main" {
-  zone     = var.domain
+  zone_id     = var.domain
   target   = "*.stage.mass.gov/*"
   priority = 101
 
@@ -117,7 +117,7 @@ resource "cloudflare_page_rule" "edit_main" {
 }
 
 resource "cloudflare_page_rule" "edit_alerts_json" {
-  zone     = var.domain
+  zone_id     = var.domain
   target   = "*.stage.mass.gov/alerts*"
   priority = 109
 
@@ -130,7 +130,7 @@ resource "cloudflare_page_rule" "edit_alerts_json" {
 }
 
 resource "cloudflare_page_rule" "edit_alerts_jsonapi_node_alert" {
-  zone     = var.domain
+  zone_id     = var.domain
   target   = "*.stage.mass.gov/jsonapi/node/alert*"
   priority = 110
 
@@ -145,7 +145,7 @@ resource "cloudflare_page_rule" "edit_alerts_jsonapi_node_alert" {
 // ====== START PROD PAGE RULES ========
 
 resource "cloudflare_page_rule" "www_main" {
-  zone     = var.domain
+  zone_id     = var.domain
   target   = "*.mass.gov/*"
   priority = 1
 
@@ -158,7 +158,7 @@ resource "cloudflare_page_rule" "www_main" {
 }
 
 resource "cloudflare_page_rule" "www_alerts_json" {
-  zone     = var.domain
+  zone_id     = var.domain
   target   = "*.mass.gov/alerts*"
   priority = 9
 
@@ -171,7 +171,7 @@ resource "cloudflare_page_rule" "www_alerts_json" {
 }
 
 resource "cloudflare_page_rule" "www_alerts_jsonapi_node_alert" {
-  zone     = var.domain
+  zone_id     = var.domain
   target   = "*.mass.gov/jsonapi/node/alert*"
   priority = 10
 
