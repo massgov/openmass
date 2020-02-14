@@ -15,7 +15,6 @@ dependencies:
     - field.field.node.campaign_landing.field_promotional_kpi_choice
     - field.field.node.campaign_landing.field_sections
     - node.type.campaign_landing
-    - workflows.workflow.campaign_landing_page
   module:
     - conditional_fields
     - content_moderation
@@ -262,6 +261,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -339,6 +339,11 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  url_redirects:
+    weight: 50
+    settings: {  }
+    third_party_settings: {  }
+    region: content
 hidden:
   created: true
   promote: true
