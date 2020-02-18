@@ -65,7 +65,6 @@ function runQuery(alias, query) {
         .map(function(row) { return row.split('\t')}) // Explode each row on tabs.
     })
     .catch(function(result) {
-      process.exit(1);
       return Promise.reject('Error running SQL: ' + result.stderr);
     })
 }
