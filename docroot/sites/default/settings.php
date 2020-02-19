@@ -124,19 +124,7 @@ $config['system.performance']['fast_404']['exclude_paths'] = '/\/(?:styles)|(?:s
 $config['system.performance']['fast_404']['paths'] = '/\.(?:txt|png|gif|jpe?g|css|js|ico|swf|flv|cgi|bat|pl|dll|exe|asp)$/i';
 $config['system.performance']['fast_404']['html'] = '<!DOCTYPE html><html><head><title>404 Not Found</title></head><body><h1>Not Found</h1><p>The requested URL "@path" was not found on this server.</p></body></html>';
 
-/**
- * Location of the site configuration files.
- *
- * The $config_directories array specifies the location of file system
- * directories used for configuration data. On install, the "sync" directory is
- * created. This is used for configuration imports. The "active" directory is
- * not created by default since the default storage for active configuration is
- * the database rather than the file system. (This can be changed. See "Active
- * configuration settings" below).
- *
- */
-$config_directories = array();
-$config_directories[CONFIG_SYNC_DIRECTORY] = '../conf/drupal/config';
+$settings['config_sync_directory'] = '../conf/drupal/config';
 
 /**
  * Page caching:

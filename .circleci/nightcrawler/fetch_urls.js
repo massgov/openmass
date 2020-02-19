@@ -65,7 +65,6 @@ function runQuery(alias, query) {
         .map(function(row) { return row.split('\t')}) // Explode each row on tabs.
     })
     .catch(function(result) {
-      process.exit(1);
       return Promise.reject('Error running SQL: ' + result.stderr);
     })
 }
@@ -83,7 +82,7 @@ function runQuery(alias, query) {
  * @return Promise<Array<String>>
  */
 function fetchNodeUrls(alias, type, sampleSize) {
-  var query = "SELECT alias, CONCAT('/node/', nid) AS entity FROM node_field_data n INNER JOIN url_alias u ON CONCAT('/node/', n.nid) = u.source WHERE status = 1 AND type = '" + type + "' LIMIT " + sampleSize;
+  var query = "SELECT alias, CONCAT('/node/', nid) AS entity FROM node_field_data n INNER JOIN path_alias u ON CONCAT('/node/', n.nid) = u.path WHERE n.status = 1 AND type = '" + type + "' LIMIT " + sampleSize;
 
   return runQuery(alias, query).then(function(rows) {
     return rows.map(function(row) {

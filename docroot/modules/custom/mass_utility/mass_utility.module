@@ -13,6 +13,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\file\FileInterface;
+use Drupal\link\LinkItemInterface;
 use Drupal\media\MediaInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
@@ -323,6 +324,15 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
     }
   }
   elseif ($type == 'link') {
+    // Change description of internal+external widgets.
+    // This is needed because supportsExternalLinks() and supportsInternalLinks() are protected.
+    $link_type = $field_definition->getSetting('link_type');
+    $supportsExternal = (bool) ($link_type & LinkItemInterface::LINK_EXTERNAL);
+    $supportsInternal = (bool) ($link_type & LinkItemInterface::LINK_INTERNAL);
+    if ($supportsExternal && $supportsInternal) {
+      $element['uri']['#description'] = 'Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".';
+    }
+
     // Remove the domain from the field prefix for internal only links.
     if ($field_definition->getSetting('link_type') === 1) {
       if (isset($element['uri']['#field_prefix'])) {
