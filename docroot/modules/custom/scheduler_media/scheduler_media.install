@@ -36,3 +36,13 @@ function scheduler_media_uninstall() {
   // Delete the scheduled content view.
   \Drupal::configFactory()->getEditable('views.view.scheduler_scheduled_content')->delete();
 }
+
+/**
+ * Implements hook_update_N().
+ *
+ * Add the publish_state and unpublish_state schema info to media entities.
+ */
+function scheduler_media_update_8001() {
+  $entity_type = \Drupal::service('entity_type.manager')->getDefinition('media');
+  \Drupal::service('entity.definition_update_manager')->updateEntityType($entity_type);
+}
