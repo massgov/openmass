@@ -1,19 +1,30 @@
 
 
+## [0.231.1] - February 20, 2020
+
+### Fixed
+  - DP-17568: Resolve editor-facing view slowness by reapplying the content moderation index usage patch.
+
+### Changed
+  - DP-17568: Uninstalled the Devel module.
+  - DP-17568: Uninstalled the WebProfiler module.
+  - DP-17568: Uninstalled the Dblog module.
+
+
 ## [0.231.0] - February 19, 2020
 
 ### Fixed
   - DP-17507: Fix the `cat` command call in `tag-release-github` to read `changelog-body.txt` correctly.
   - DP-17527: Fixes Nightcrawler to work with Drupal 8.8.x
   - DP-17273: Update content moderation indeces patch.
-  
+
 ### Added
   - DP-17259: Add Cloudflare deployment at CircleCI and corresponding Drush command.
-  
+
 ### Changed
   - DP-17525: Update Mayflower to v9.40.1.
   - DP-17267: Upgrade Drupal core and a few modules to Drupal 8.8
-  
+
 ## [0.230.0] - February 12, 2020
 
 ### Changed
