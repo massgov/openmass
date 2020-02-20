@@ -167,7 +167,7 @@ class SqlEntitySanitizer {
     // Delete all records from the revision data table that aren't in the
     // active set.
     if ($revisionDataTable = $mapping->getRevisionDataTable()) {
-      $this->database->delete($mapping->getRevisionDataTable())
+      $this->database->delete($revisionDataTable)
         ->condition($type->getKey('revision'), $okIds, 'NOT IN')
         ->execute();
     }
