@@ -39,13 +39,10 @@ module.exports = async function(page, scenario, vp) {
         '}' +
         // Kill google Maps (show a green box instead)
         // .js-google-map for dynamic maps
-        // .ma__google-map__map.static-image for static images
-        '.js-google-map,\n' +
-        '.ma__google-map__map.static-image {' +
+        '.js-google-map {' +
         '  position: relative;' +
         '}' +
-        '.js-google-map:before,\n' +
-        '.ma__google-map__map.static-image:before {' +
+        '.js-google-map:before {' +
         '  background: #B2DEA2;\n' +
         '  content: \' \';\n' +
         '  display: block;\n' +
@@ -70,10 +67,6 @@ module.exports = async function(page, scenario, vp) {
         '  right: 0;\n' +
         '  bottom: 0;\n' +
         '  z-index: 3;\n' +
-        '}' +
-        // Kill random background image on homepage.
-        '#GUID935283478 {' +
-        '  background: #B2DEA2 !important;\n' +
         '}'
     });
 
@@ -85,6 +78,12 @@ module.exports = async function(page, scenario, vp) {
       jQuery.fx.off = true;
       // Immediately complete any in-progress animations.
       jQuery(':animated').finish();
+
+      // Undo the Google Optimize page-hiding snippet so we can access the page
+      // before the 2s timeout. See https://developers.google.com/optimize.
+      if(window.dataLayer && window.dataLayer.hide && window.dataLayer.hide.end) {
+        window.dataLayer.hide.end();
+      }
 
       // Replace random image credit on homepage.
       document.querySelectorAll('.ma__search-banner__image-name').forEach(function(e) {
@@ -100,9 +99,9 @@ module.exports = async function(page, scenario, vp) {
     // in local environments.
     await page.waitForFunction('jQuery.active == 0');
 
-    // Add a slight delay.  This covers up some of the jitter caused
-    // by weird network conditions, slow javascript, etc. We should
-    // work to reduce this number, since it represents instability
-    // in our styling.
-    await page.waitFor(2000);
+    // We can add a slight delay here. This can cover up jitter caused
+    // by weird network conditions, slow JS, etc, but if we need an extra
+    // delay after page load, it probably indicates there's a problem with
+    // performance.
+    // await page.waitFor(2000);
 }
