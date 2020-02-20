@@ -94,20 +94,16 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   $settings['mass_caching.schemes'] = ['https'];
   // Allow media entity download to work with files from production.
   $config['media_entity_download.settings']['external_file_storage'] = 1;
-  // Disable developer-specific modules. See https://www.drupal.org/node/3079028.
-  $excludes = ['devel', 'webprofiler', 'stage_file_proxy', 'dblog'];
   // Set domains to clear when issuing relative path purge requests.
   // @see \Drupal\mass_caching\ManualPurger
   switch($_ENV['AH_SITE_ENVIRONMENT']) {
     case 'prod':
-      $settings['config_exclude_modules'] = $excludes;
       // Disable once Stage File Proxy in off in Prod.
       $config['stage_file_proxy.settings']['origin'] = FALSE;
       $config['media_entity_download.settings']['external_file_storage'] = 0;
       $settings['mass_caching.hosts'] = ['edit.mass.gov', 'www.mass.gov'];
       break;
     case 'test':
-      $settings['config_exclude_modules'] = $excludes;
       $settings['mass_caching.hosts'] = [
         'stage.mass.gov',
         'edit.stage.mass.gov',
