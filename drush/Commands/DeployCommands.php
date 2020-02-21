@@ -207,9 +207,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
     $targetRecord = $this->siteAliasManager()->get('@' . $target);
 
-    // Build Cloud API client connection.
-    $cloudapi = $this->getClient();
-
     // Copy database, but only for non-prod deploys and when refresh-db is set.
     if (!$is_prod && $options['refresh-db']) {
       // This section resembles ma-refresh-local --db-prep-only. We don't call that
@@ -259,7 +256,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     }
 
     // Deploy the new code.
-    $operationResponse = $cloudapi->switchCode($targetRecord->get('uuid'), $git_ref);
+    $operationResponse = $this->getClient()->switchCode($targetRecord->get('uuid'), $git_ref);
     $href = $operationResponse->links->notification->href;
     $this->waitForTaskToComplete(basename($href));
 
@@ -308,7 +305,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
     // Get a list of all an environment's domains.
     // Note: This also returns load balancer URLs.
-    $domains = $cloudapi->domains($targetRecord->get('uuid'));
+    $domains = $this->getClient()->domains($targetRecord->get('uuid'));
     foreach ($domains as $domain) {
       // Skip Load Balancers.
       if (!preg_match('/.*\.elb\.amazonaws\.com$/', $domain->hostname)) {
@@ -318,7 +315,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
     if ($options['varnish']) {
       // Clear the cache for the domains.
-      $cloudapi->purgeVarnishCache($targetRecord->get('uuid'), $domains_web);
+      $this->getClient()->purgeVarnishCache($targetRecord->get('uuid'), $domains_web);
       $this->logger()->success("Purged full Varnish cache for in $target environment.");
     }
     else {
