@@ -209,10 +209,14 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
         case 'mass_related_terms':
           $tags = [];
           if ($data['node']->hasField('field_details_data_type') && $data_type = $data['node']->get('field_details_data_type')) {
+            $type_name = \Drupal::service('entity_type.manager')
+              ->getStorage('taxonomy_term')
+              ->load($data_type->getValue()[0]['target_id'])
+              ->get('name')->getValue()[0]['value'];
             $items = $data_type->referencedEntities();
             if (!empty($items)) {
               $data_resources = $data['node']->get('field_data_resource_type')->referencedEntities();
-              if (!empty($data_resources)) {
+              if (!empty($data_resources) && strpos($type_name, 'resource') !== FALSE) {
                 foreach ($data_resources as $k => $resource) {
                   $tags[$k] = $resource->get('field_dataresource_metatag')->getValue()[0]['value'];
                 }
@@ -580,6 +584,7 @@ function mass_metatag_form_node_form_alter(&$form, FormStateInterface $form_stat
       $form[$metatags_labels[$content_type]]['widget'][0]['advanced'][$item]['#access'] = FALSE;
     }
   }
+
 }
 
 /**
