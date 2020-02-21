@@ -221,7 +221,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
                   $tags[$k] = $resource->get('field_dataresource_metatag')->getValue()[0]['value'];
                 }
               }
-              else {
+              elseif (!empty($items[0]->get('field_details_datatype_metatag')->getValue())) {
                 $tags[] = $items[0]->get('field_details_datatype_metatag')->getValue()[0]['value'];
               }
             }
