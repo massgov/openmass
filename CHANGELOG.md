@@ -1,5 +1,14 @@
 
 
+## [0.231.2] - February 21, 2020
+
+### Fixed
+  - DP-17563: Resolves an issue where deployment commands were unable to complete due to Acquia token expiration.
+
+### Changed
+  - DP-17580: Update Mayflower to 9.40.2.
+
+
 ## [0.231.1] - February 20, 2020
 
 ### Fixed
