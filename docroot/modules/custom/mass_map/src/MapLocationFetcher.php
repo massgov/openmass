@@ -285,15 +285,6 @@ class MapLocationFetcher {
       });
     }
 
-    $gmap = [];
-    foreach ($locations['googleMap']['markers'] as $marker) {
-      $gmap[] = $marker['infoWindow']['name'];
-    }
-    $pi = [];
-    foreach ($locations['imagePromos']['items'] as $we) {
-      $pi[] = $we['title']['text'];
-    }
-
     // Scaffold out pagination data structure.
     // See @molecules/pagination.md
     $pages = [
