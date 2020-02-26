@@ -190,7 +190,7 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
   }
 
   $transitions = _mass_utility_user_transition_permissions($node);
-  if (!in_array('publish', $transitions)) {
+  if (!empty($transitions) && !in_array('publish', $transitions)) {
     $form['publish_on']['#access'] = FALSE;
   }
 
@@ -225,17 +225,20 @@ function mass_utility_node_presave(EntityInterface $entity) {
  * Verify a user has acess to the publish/unpublish transitions.
  */
 function _mass_utility_user_transition_permissions(EntityInterface $entity) {
+  $transitions = [];
   $moderation_information = \Drupal::service('content_moderation.moderation_information');
 
   $workflow = $moderation_information->getWorkflowForEntity($entity);
 
-  $type_plugin = $workflow->getTypePlugin();
+  if ($workflow) {
+    $type_plugin = $workflow->getTypePlugin();
 
-  $user = \Drupal::currentUser();
+    $user = \Drupal::currentUser();
 
-  $transitions = array_filter(['publish', 'unpublish'], function ($transition_id) use ($workflow, $user) {
-    return $user->hasPermission('use ' . $workflow->id() . ' transition ' . $transition_id);
-  });
+    $transitions = array_filter(['publish', 'unpublish'], function ($transition_id) use ($workflow, $user) {
+      return $user->hasPermission('use ' . $workflow->id() . ' transition ' . $transition_id);
+    });
+  }
 
   return $transitions;
 }
