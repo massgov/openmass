@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_utility\Commands;
 
+use Drupal\redirect\Entity\Redirect;
 use Drush\Commands\DrushCommands;
 use Drupal\Core\Url;
 use Drupal\Core\Database\Connection;
@@ -12,7 +13,6 @@ use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drush\Utils\StringUtils;
-use DrushBatchContext;
 use GuzzleHttp\Exception\RequestException;
 
 /**
@@ -266,7 +266,7 @@ class MassUtilityCommands extends DrushCommands {
     $ga_404_csv_file = new \SplFileObject($fullpath_ga_404_csv_file);
     $ga_404_csv_file->setFlags(\SplFileObject::READ_CSV | \SplFileObject::READ_AHEAD | \SplFileObject::DROP_NEW_LINE | \SplFileObject::SKIP_EMPTY);
     foreach ($ga_404_csv_file as $row) {
-      list($event_404_action, $event_404_url, $event_404_count) = $row;
+      [$event_404_action, $event_404_url, $event_404_count] = $row;
       // GA report has comma's in count (Eg: 43,216) so we remove them,
       // and make the count a "pure integer" value.
       $event_404_count = intval(str_replace(",", "", $event_404_count));
@@ -396,6 +396,92 @@ class MassUtilityCommands extends DrushCommands {
     $batch['progressive'] = FALSE;
     drush_backend_batch_process();
 
+  }
+
+  /**
+   * Copy D2D nodes into redirect entities.
+   *
+   * @command copyd2d
+   * @option limit
+   * @option min-hits
+   */
+  public function copyD2DRedirects($options = ['limit' => self::REQ, 'min-hits' => 50]) {
+    $query = $this->database->select('node__field_legacy_redirects_legacyurl', 'source')
+      ->fields('source', ['entity_id', 'delta']);
+    $query->addField('source', 'field_legacy_redirects_legacyurl_value', 'source');
+    $query->addField('target', 'field_legacy_redirects_ref_conte_target_id', 'target');
+    if ($options['limit']) {
+      $query->range(0, $options['limit']);
+    }
+    $query->innerJoin('node__field_legacy_redirects_ref_conte', 'target', 'source.entity_id = target.entity_id AND source.delta = target.delta');
+    $records = $query->execute()->fetchAll();
+    foreach ($records as $record) {
+      $record->source = parse_url($record->source, PHP_URL_PATH);
+      $record->target = '/node/' . $record->target;
+      if ($this->isActive($record->source, $options)) {
+        $this->saveRedirect($record);
+      }
+    }
+  }
+
+  /**
+   * Copy Legacy redirects into redirect entities.
+   *
+   * @command copyLegacy
+   * @option limit
+   * @option min-hits
+   */
+  public function copyLegacyRedirects($options = ['limit' => self::REQ, 'min-hits' => 50]) {
+    // Get full set.
+    $handle = fopen('modules/custom/mass_utility/data/legacy_docs_redirects.txt', 'r');
+    while (($record = fgetcsv($handle, 9000, ' ')) !== false) {
+      $values->source = $record[0];
+      $values->target = parse_url($record[1], PHP_URL_PATH);
+      if ($this->isActive($values->source, $options)) {
+        $this->saveRedirect($values);
+      }
+    }
+    fclose($handle);
+  }
+
+  protected function saveRedirect($record) {
+    /** @var Redirect $entity */
+    $entity = Redirect::create();
+    $entity->setSource($record->source);
+    $entity->setRedirect($record->target);
+    $entity->setStatusCode(301);
+    if ($entity->save()) {
+      $this->logger()->success('Saved ' . $record->source . ' as redirect entity ' . $entity->id());
+    }
+  }
+
+  private function isActive($source, $options) {
+    static $activity;
+    if (empty($activity)) {
+      $handle = fopen('modules/custom/mass_utility/data/Redirect-Analysis-2-25-2020.csv', 'r');
+      while (($record = fgetcsv($handle, 90000, ',')) !== FALSE) {
+        // This check omits the first row.
+        if ($record[0] !== 'URL') {
+          $activity[$record[0]] = $record;
+        }
+      }
+      fclose($handle);
+    }
+
+    if (!isset($activity[strtolower($source)])) {
+      $this->logger()->notice('Activity missing for ' . $source);
+      return FALSE;
+    }
+
+    $return = $activity[strtolower($source)][1] > $options['min-hits'];
+    if ($return) {
+      $this->logger()->notice('Starting save for ' . $source);
+    }
+    else {
+      $this->logger()->notice('Skipping due to insufficient activity ' . $source);
+    }
+
+    return $return;
   }
 
 }
