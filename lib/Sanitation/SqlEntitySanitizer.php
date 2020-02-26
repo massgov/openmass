@@ -85,31 +85,39 @@ class SqlEntitySanitizer {
       return;
     }
 
+    // Determine the name of the table that contains the published/status col.
+    $dataTable = $mapping->getFieldTableName($type->getKey('published'));
+    $baseTable = $mapping->getBaseTable();
+
     // First delete all unpublished records from the base data table.
-    $count = $this->database->delete($mapping->getDataTable())
+    $count = $this->database->delete($dataTable)
       ->condition($type->getKey('published'), 0)
       ->execute();
     $this->logger->info("Deleting $count unpublished {$type->id()} entities.");
 
     // Select the set of content that's left over. This is the "OK" set, which
     // we'll use as a whitelist when clearing data out of other tables.
-    $okIds = $this->database->select($mapping->getDataTable(), 'b')
+    $okIds = $this->database->select($dataTable, 'b')
       ->fields('b', [$type->getKey('id')]);
 
-    // Clean the base table.
-    $this->database->delete($mapping->getBaseTable())
-      ->condition($type->getKey('id'), $okIds, 'NOT IN')
-      ->execute();
+    // Clean the base table, if necessary.
+    if ($dataTable !== $baseTable) {
+      $this->database->delete($mapping->getBaseTable())
+        ->condition($type->getKey('id'), $okIds, 'NOT IN')
+        ->execute();
+    }
     if ($type->isRevisionable()) {
       // Clean the revision table.
       $this->database->delete($mapping->getRevisionTable())
         ->condition($type->getKey('id'), $okIds, 'NOT IN')
         ->execute();
 
-      // Clean the revision data table.
-      $this->database->delete($mapping->getRevisionDataTable())
-        ->condition($type->getKey('id'), $okIds, 'NOT IN')
-        ->execute();
+      // Clean the revision data table, if there is one.
+      if ($revisionDataTable = $mapping->getRevisionDataTable()) {
+        $this->database->delete($revisionDataTable)
+          ->condition($type->getKey('id'), $okIds, 'NOT IN')
+          ->execute();
+      }
     }
 
     // Delete all records from field data tables that don't have a matching
@@ -158,9 +166,11 @@ class SqlEntitySanitizer {
 
     // Delete all records from the revision data table that aren't in the
     // active set.
-    $this->database->delete($mapping->getRevisionDataTable())
-      ->condition($type->getKey('revision'), $okIds, 'NOT IN')
-      ->execute();
+    if ($revisionDataTable = $mapping->getRevisionDataTable()) {
+      $this->database->delete($revisionDataTable)
+        ->condition($type->getKey('revision'), $okIds, 'NOT IN')
+        ->execute();
+    }
 
     // Finally, delete all records from every field table that aren't in the
     // active set.

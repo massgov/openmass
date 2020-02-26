@@ -1,19 +1,73 @@
+
+
+## [0.231.2] - February 21, 2020
+
+### Fixed
+  - DP-17563: Resolves an issue where deployment commands were unable to complete due to Acquia token expiration.
+
+### Changed
+  - DP-17580: Update Mayflower to 9.40.2.
+
+
+## [0.231.1] - February 20, 2020
+
+### Fixed
+  - DP-17568: Resolve editor-facing view slowness by reapplying the content moderation index usage patch.
+
+### Changed
+  - DP-17568: Uninstalled the Devel module.
+  - DP-17568: Uninstalled the WebProfiler module.
+  - DP-17568: Uninstalled the Dblog module.
+
+
+## [0.231.0] - February 19, 2020
+
+### Fixed
+  - DP-17507: Fix the `cat` command call in `tag-release-github` to read `changelog-body.txt` correctly.
+  - DP-17527: Fixes Nightcrawler to work with Drupal 8.8.x
+  - DP-17273: Update content moderation indeces patch.
+
+### Added
+  - DP-17259: Add Cloudflare deployment at CircleCI and corresponding Drush command.
+
+### Changed
+  - DP-17525: Update Mayflower to v9.40.1.
+  - DP-17267: Upgrade Drupal core and a few modules to Drupal 8.8
+
+## [0.230.0] - February 12, 2020
+
+### Changed
+
+- DP-16813: Updated the Backstopjs version from 3.2.17 to 3.9.2.
+
+### Fixed
+
+- DP-17412: Fix how retrieve and push the release notes when tagging the master branch.
+- DP-17412: Edits and fixes to `template.yml` file used by developers to add a release note.
+- DP-17413: Fix the presentation issue of the related content in home page to always redner items with card no matter what conten types are added.
+
+### Added
+
+- DP-17054: Add robots rule to no-index any link containing string "?auHash=."
+- DP-17243: Bring back ma:release command.
+
+
 ## [0.229.0] - February 5, 2020
 
-### Changed  
+### Changed
 
 -DP-17289: Authors can now enter hours for contacts in 5-minute increments.
--DP-14197: Checking to see if there is a holiday or any changelogs are there before cutting the branch.  
+-DP-14197: Checking to see if there is a holiday or any changelogs are there before cutting the branch.
 -DP-17014: Adjust Superset config to include promo page (aka campaign landing).
 -DP-16864: Exclude the static Google map images, iframes, campaign page header banners from the backstop test by covering them.
 -DP-17049: Add description metatag to curated lists and info details.
 -DP-17039: Allow multiple types for document media entity and display choices as checkboxes.
 -DP-16934: Allow forks to pass limited testing.
--DP-16628: Render temp. unpublished links to "What you need to know" on the service page. 
+-DP-16628: Render temp. unpublished links to "What you need to know" on the service page.
 -DP-17287: For service details and info details, we changed conditional logic to show the data resource type field only if the data type field = "data resource" We add help text to the data type and data resource type fields on service details, info details, and curated list to define the options.
 -DP-17047: Modify the mg_type metatag to support multiple values.
 
-### Fixed  
+### Fixed
 
 -DP-14197: Fixed to use the changelog markdown to the PR body and GitHub release tag instead of the placeholder.
 -DP-17313: Restore triggered workflows at CircleCI.
@@ -28,7 +82,7 @@
 -DP-16688: Add severity name to Syslog.
 -DP-17242: Python2 for CloudFlare deployment.
 -DP-17135: Add the ability to embed Tableau visualizations on info-details pages.
-    
+
 ## [0.228.0] -January 22, 2020
 
 ### Fixed

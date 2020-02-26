@@ -141,9 +141,20 @@ class EntityOperations implements ContainerInjectionInterface {
       $media_entity = $entity->bundle->entity;
     }
 
+    if ($entity->getEntityTypeId() === 'media') {
+      // Only set the publish_state value if the publish_on field is set.
+      if (($entity->hasField('publish_on') && $entity->hasField('publish_state')) && !empty($entity->publish_on->value)) {
+        $entity->publish_state->setValue('published');
+      }
+      // Only set the unpublish_state value if the unpublish_on field is set.
+      if (($entity->hasField('unpublish_on') && $entity->hasField('unpublish_state')) && !empty($entity->unpublish_on->value)) {
+        $entity->unpublish_state->setValue('unpublished');
+      }
+    }
+
     if (is_null($media_entity) || !get_class($media_entity) == 'Drupal\media\Entity\MediaType') {
       return;
-    };
+    }
 
     if (isset($entity->devel_generate)) {
       static $publishing_enabled_types;
@@ -223,7 +234,7 @@ class EntityOperations implements ContainerInjectionInterface {
       return;
     }
     if ($this->mediaIsPage($entity) && !empty($entity->unpublish_on->value)) {
-      $unavailable_after = date(DATE_RFC850, $media->unpublish_on->value);
+      $unavailable_after = date(DATE_RFC850, $entity->unpublish_on->value);
       $build['#attached']['http_header'][] = ['X-Robots-Tag', 'unavailable_after: ' . $unavailable_after];
     }
   }

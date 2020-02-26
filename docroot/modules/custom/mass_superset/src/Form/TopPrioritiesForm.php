@@ -368,13 +368,13 @@ class TopPrioritiesForm extends FormBase {
 
     // Query the db for the 10 highest trafficked pages with lowest scores.
     $query = $this->database->select('node_field_data', 'n');
-    $query->leftjoin('url_alias', 'ua', "ua.source = CONCAT('/node/', n.nid)");
+    $query->leftjoin('path_alias', 'pa', "pa.path = CONCAT('/node/', n.nid)");
     $query->leftjoin('mass_superset_data', 'm', 'n.nid = m.nid');
     $query->leftjoin('node__field_organizations', 'o', 'n.nid = o.entity_id');
     $query->leftjoin('snooze', 's', 's.entity_id = n.nid');
     $query->fields('n', ['nid', 'type', 'title', 'changed']);
     $query->fields('m', ['pageviews', 'score']);
-    $query->fields('ua', ['alias']);
+    $query->fields('pa', ['alias']);
     $query->fields('o', ['field_organizations_target_id']);
     $query->fields('s', ['entity_id', 'last_updated']);
     $query->condition('o.field_organizations_target_id', $org_nid, '=');

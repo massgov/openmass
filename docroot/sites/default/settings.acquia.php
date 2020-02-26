@@ -98,7 +98,7 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   // @see \Drupal\mass_caching\ManualPurger
   switch($_ENV['AH_SITE_ENVIRONMENT']) {
     case 'prod':
-      // Disable Stage File Proxy in prod.
+      // Disable once Stage File Proxy in off in Prod.
       $config['stage_file_proxy.settings']['origin'] = FALSE;
       $config['media_entity_download.settings']['external_file_storage'] = 0;
       $settings['mass_caching.hosts'] = ['edit.mass.gov', 'www.mass.gov'];
