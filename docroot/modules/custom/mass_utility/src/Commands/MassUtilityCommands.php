@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_utility\Commands;
 
+use Drupal\Core\Entity\EntityStorageException;
 use Drupal\redirect\Entity\Redirect;
 use Drush\Commands\DrushCommands;
 use Drupal\Core\Url;
@@ -450,8 +451,13 @@ class MassUtilityCommands extends DrushCommands {
     $entity->setSource($record->source);
     $entity->setRedirect($record->target);
     $entity->setStatusCode(301);
-    if ($entity->save()) {
-      $this->logger()->success('Saved ' . $record->source . ' as redirect entity ' . $entity->id());
+    try {
+      if ($entity->save()) {
+        $this->logger()->success('Saved ' . $record->source . ' as Redirect ' . $entity->id());
+      }
+    } catch (EntityStorageException $e) {
+      // Keep going because during testing, duplicate redirect saves happen a lot.
+      $this->logger()->warning($e->getMessage());
     }
   }
 
