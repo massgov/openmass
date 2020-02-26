@@ -189,6 +189,11 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
     $form['unpublish_state']['#access'] = FALSE;
   }
 
+  $transitions = _mass_utility_user_transition_permissions($node);
+  if (!in_array('publish', $transitions)) {
+    $form['publish_on']['#access'] = FALSE;
+  }
+
   // For Intended Audience Field update the default value to 'Not Set'.
   if (isset($form['field_intended_audience'])) {
     $form['field_intended_audience']['widget']['#options']['_none'] = t('Not Set');
@@ -205,14 +210,34 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
  * Set the publish/unpublish_state fields to a default value.
  */
 function mass_utility_node_presave(EntityInterface $entity) {
-  // Only set the publish_state value if the publish_on field is set.
-  if (($entity->hasField('publish_on') && $entity->hasField('publish_state')) && !empty($entity->publish_on->value)) {
-    $entity->publish_state->setValue('published');
+  $transitions = _mass_utility_user_transition_permissions($entity);
+
+  if (!empty($transitions)) {
+    foreach ($transitions as $transition) {
+      if (($entity->hasField($transition . '_on') && $entity->hasField($transition . '_state')) && !empty($entity->{$transition . '_on'}->value)) {
+        $entity->{$transition . '_state'}->setValue($transition .'ed');
+      }
+    }
   }
-  // Only set the unpublish_state value if the unpublish_on field is set.
-  if (($entity->hasField('unpublish_on') && $entity->hasField('unpublish_state')) && !empty($entity->unpublish_on->value)) {
-    $entity->unpublish_state->setValue('unpublished');
-  }
+}
+
+/**
+ * Verify a user has acess to the publish/unpublish transitions.
+ */
+function _mass_utility_user_transition_permissions(EntityInterface $entity) {
+  $moderation_information = \Drupal::service('content_moderation.moderation_information');
+
+  $workflow = $moderation_information->getWorkflowForEntity($entity);
+
+  $type_plugin = $workflow->getTypePlugin();
+
+  $user = \Drupal::currentUser();
+
+  $transitions = array_filter(['publish', 'unpublish'], function ($transition_id) use ($workflow, $user) {
+    return $user->hasPermission('use ' . $workflow->id() . ' transition ' . $transition_id);
+  });
+
+  return $transitions;
 }
 
 /**
