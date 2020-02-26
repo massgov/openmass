@@ -1,6 +1,6 @@
 # Table of Contents
-See also: [Documentation for Mass Digital team](https://github.com/massgov/DS-Infrastructure/blob/develop/docs/massgov/README.md) (not public)
-  
+See also: [Documentation for Mass Digital team](https://github.com/massgov/massgov-internal-docs/blob/master/README.md) (not public)
+
 ## Developer basics
 - [Getting Started](https://github.com/massgov/openmass#getting-started)
   - Clone the repo; set up Docker and ahoy; workflow
@@ -21,13 +21,13 @@ See also: [Documentation for Mass Digital team](https://github.com/massgov/DS-In
 
 
 ## Modules
-Contributors should familiarize themselves with existing modules both custom and contrib, so they can find and copy established patterns, keep related code together, and generally keep the codebase organized. 
+Contributors should familiarize themselves with existing modules both custom and contrib, so they can find and copy established patterns, keep related code together, and generally keep the codebase organized.
 -  [Modules](modules.md)
    - [Adding a new module to composer](modules.md#adding-a-new-module-to-composer)
    - [Patching a module](modules.md#patching-a-module)
    - [Updating a dependency](modules.md#updating-a-dependency)
    - [Enabling development-only modules (e.g. Devel)](modules.md#enabling-development-only-modules-eg-devel)
-   
+
 
 ## Testing
 - [Testing](testing.md)
