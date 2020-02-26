@@ -215,7 +215,7 @@ function mass_utility_node_presave(EntityInterface $entity) {
   if (!empty($transitions)) {
     foreach ($transitions as $transition) {
       if (($entity->hasField($transition . '_on') && $entity->hasField($transition . '_state')) && !empty($entity->{$transition . '_on'}->value)) {
-        $entity->{$transition . '_state'}->setValue($transition .'ed');
+        $entity->{$transition . '_state'}->setValue($transition . 'ed');
       }
     }
   }
