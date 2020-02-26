@@ -1,22 +1,5 @@
 
 
-## [0.232.0] - February 26, 2020
-
-### Changed
-  - DP-17449: Update configuration to suppress Rabbit hole settings on info details, promo page.
-  - DP-16214: Update configuration of pathologic module to include rewriting links to bare mass.gov domain.
-  - DP-17534: Remove unused Terraform files.
-  - DP-17233: add date filter to promo pages iframe route.
-  - DP-17546: Update BackstopJS to the latest stable version (4.4.2)
-  - DP-17546: Speed up Backstop tests by removing the delay.
-  
-### Fixed
-  - DP-17571: Fixes nightly super-sanitized database build that broke following 8.8 update.
-  - DP-17546: Fix false positives for Google Maps in Backstop tests by hot-swapping images with placeholders.
-  - DP-17411: Integrated scheduler_media module with content moderation so documents can be scheduled for publish/unpublish.
-  
-
-
 ## [0.231.2] - February 21, 2020
 
 ### Fixed

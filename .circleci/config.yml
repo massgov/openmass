@@ -83,7 +83,7 @@ commands:
         type: string
         default: "/var/www/code/drush/sites/self.site.yml"
     steps:
-      - run: "curl -f -o << parameters.destination >> -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml"
+      - run: "curl -f -o << parameters.destination >> -L https://$GITHUB_DS_INFRASTRUCTURE_TOKEN@raw.githubusercontent.com/massgov/DS-Infrastructure/develop/docs/massgov/self.site.yml"
 
 # See https://medium.com/labs42/monorepo-with-circleci-conditional-workflows-69e65d3f1bd0
 parameters:
