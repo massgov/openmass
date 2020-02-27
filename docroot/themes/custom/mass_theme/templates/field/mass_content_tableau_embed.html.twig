@@ -12,8 +12,19 @@
  * @see template_preprocess_link_formatter_link_separate()
  */
 #}
-
-<div class="ma_tableau_container" style="max-width:100%">
+{% include "@atoms/09-media/figure.twig" with {
+  "figure": {
+    "align": "right",
+    "dataviz": {
+      "id": randId,
+      "size": "medium",
+      "src": url
+    },
+    "title": "",
+    "caption": "This is an optional caption that can wrap to multiple lines."
+  }
+} %}
+{# <div class="ma_tableau_container" style="max-width:100%">
   <div id="{{ randId }}"></div>
 </div>
 <script type="text/javascript">
@@ -21,4 +32,4 @@
     const url = "{{ url }}"
     new tableau.Viz(document.getElementById("{{ randId }}"), url);
   });
-</script>
+</script> #}
