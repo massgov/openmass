@@ -39,4 +39,5 @@ EOF
 }
 
 # Create a release on GitHub for the tag that was just created.
-curl --fail -u massgov-bot:${GITHUB_MASSGOV_BOT_TOKEN} -H "Content-Type:application/json" -X POST https://api.github.com/repos/massgov/openmass/releases --data "$(generate_post_data)"
+curl -X POST --data "$(generate_post_data)" --fail -u massgov-bot:"${GITHUB_MASSGOV_BOT_TOKEN}" -H "Content-Type:application/json" https://api.github.com/repos/massgov/openmass/releases
+
