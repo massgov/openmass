@@ -143,6 +143,10 @@
   {% set sidebar = true %}
 {% endif %}
 
+{% if (node.field_page_template.0.value == 'visual_story') %}
+  {% set sidebar = false %}
+{% endif %}
+
 {% block sidebar %}
   {{ content.extra_sidebar_contact }}
   {% if sideContent.linkList %}
