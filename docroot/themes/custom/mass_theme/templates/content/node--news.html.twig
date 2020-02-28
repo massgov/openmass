@@ -61,12 +61,14 @@
           {% include "@organisms/by-author/rich-text.twig" %}
         {% endif %}
         {% for i in range(1, numOfSections) %}
-          {% if pageContent[i]['title'] %}
-            {% set richText = pageContent[i]['title'] %}
-            {% include "@organisms/by-author/rich-text.twig" %}
-          {% endif %}
-          {% if pageContent[i]['richText'] %}
+          {% if pageContent[i]['title'] or pageContent[i]['richText'] %}
             {% set richText = pageContent[i]['richText'] %}
+            {% set richText = richText|merge({
+                'compHeading': {
+                  'title': pageContent[i]['title']['compHeading']['title'],
+                  'id': pageContent[i]['title']['compHeading']['id']
+                }
+            }) %}
             {% include "@organisms/by-author/rich-text.twig" %}
           {% endif %}
           {% if pageContent[i]['keyActions'] %}
