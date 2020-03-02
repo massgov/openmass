@@ -858,11 +858,11 @@ workflows:
           instance: comass/mysql-sanitized:super
     triggers:
       - schedule:
-          cron: "32 21 * * *"
+          cron: "00 16 * * *"
           filters:
             branches:
               only:
-                - develop
+                - fix_nightly_rebuild
 
   # Usually triggerred by drush ma:release.
   deploy_ad_hoc:
