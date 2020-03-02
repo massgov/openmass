@@ -20,7 +20,7 @@ class ServiceDetailsDataTabResourceMetadataTest extends MetadataTestCase {
     ]);
     $data_type_term = $this->createTerm(Vocabulary::load('tx_details_data_type'), [
       'name' => 'TestDataType',
-      'field_details_datatype_metatag' => 'test-data-tag',
+      'field_details_datatype_metatag' => 'test-resource-tag',
     ]);
     $resource_term = $this->createTerm(Vocabulary::load('tx_data_resource_type'), [
       'name' => 'TestDataResource',
