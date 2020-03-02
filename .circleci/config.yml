@@ -180,6 +180,10 @@ jobs:
     steps:
       - attach_workspace: {at: /var/www}
       - run:
+          command: echo $FOO
+          environment:
+            FOO: $AC_API_USER
+      - run:
           command: yarn danger ci --failOnErrors
           environment:
             DANGER_GITHUB_API_TOKEN: "$GITHUB_MASSGOV_BOT_TOKEN"
