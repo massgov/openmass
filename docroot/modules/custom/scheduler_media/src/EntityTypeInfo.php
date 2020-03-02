@@ -323,6 +323,10 @@ class EntityTypeInfo implements ContainerInjectionInterface {
 
       $media = $form_object->getEntity();
 
+      // Hide these by default so they can't be changed.
+      $form['publish_state']['#access'] = FALSE;
+      $form['unpublish_state']['#access'] = FALSE;
+
       // If neither publishing nor unpublishing are enabled for this media type then
       // the only thing to do is remove the fields from the form, then exit.
       if (!$publishing_enabled && !$unpublishing_enabled) {
@@ -361,6 +365,9 @@ class EntityTypeInfo implements ContainerInjectionInterface {
       // Attach the fields to group.
       $form['unpublish_on']['#group'] = 'scheduler_media_settings';
       $form['publish_on']['#group'] = 'scheduler_media_settings';
+
+      $form['publish_state']['#group'] = 'scheduler_media_settings';
+      $form['unpublish_state']['#group'] = 'scheduler_media_settings';
 
       // Show the field group as a vertical tab if this option is enabled.
       $use_vertical_tabs = $this->schedulerMediaManager->isDefaultSetting($type, 'fields_display_mode') === 'vertical_tab';
@@ -419,7 +426,11 @@ class EntityTypeInfo implements ContainerInjectionInterface {
       $content = $storage_form_display->get('content');
       $pluginDefinitions = $storage_form_display->get('pluginManager')->getDefinitions();
       $correct_widget_id = 'datetime_timestamp_no_default';
-      foreach (['publish_on' => $publishing_enabled, 'unpublish_on' => $unpublishing_enabled] as $field => $enabled) {
+      $fields = [
+        'publish_on' => $publishing_enabled,
+        'unpublish_on' => $unpublishing_enabled,
+      ];
+      foreach ($fields as $field => $enabled) {
         $actual_widget_id = $content[$field]['type'];
         if ($enabled && $actual_widget_id != $correct_widget_id) {
           drupal_set_message(t('The widget for field %field is incorrectly set to %wrong. This should be changed to %correct by an admin user via Field UI <a href="@link">content type form display</a> :not_available', [
