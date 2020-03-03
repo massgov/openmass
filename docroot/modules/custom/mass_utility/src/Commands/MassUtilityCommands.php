@@ -408,7 +408,7 @@ class MassUtilityCommands extends DrushCommands {
    *   This option is only to be used during development. Don't use it on Prod.
    * @option min-hits
    */
-  public function copyD2DRedirects($options = ['limit' => self::REQ, 'min-hits' => 50]) {
+  public function copyD2dRedirects($options = ['limit' => self::REQ, 'min-hits' => 50]) {
     $query = $this->database->select('node__field_legacy_redirects_legacyurl', 'source')
       ->fields('source', ['entity_id', 'delta'])
       ->condition('nfd.status', NodeInterface::PUBLISHED)
@@ -441,7 +441,7 @@ class MassUtilityCommands extends DrushCommands {
   public function copyLegacyRedirects($options = ['limit' => self::REQ, 'min-hits' => 50]) {
     // Get full set.
     $handle = fopen('modules/custom/mass_utility/data/legacy_docs_redirects.txt', 'r');
-    while (($record = fgetcsv($handle, 9000, ' ')) !== false) {
+    while (($record = fgetcsv($handle, 9000, ' ')) !== FALSE) {
       $values->source = $record[0];
       $values->target = parse_url($record[1], PHP_URL_PATH);
       if ($this->isActive($values->source, $options)) {
@@ -451,8 +451,14 @@ class MassUtilityCommands extends DrushCommands {
     fclose($handle);
   }
 
-  protected function saveRedirect($record) {
-    /** @var Redirect $entity */
+  /**
+   * Create a Redirect content entity.
+   *
+   * @param \stdClass $record
+   *   A stdClass with entity values.
+   */
+  protected function saveRedirect(\stdClass $record) {
+    /** @var \Drupal\redirect\Entity\Redirect $entity */
     $entity = Redirect::create();
     $entity->setSource($record->source);
     $entity->setRedirect($record->target);
@@ -461,13 +467,25 @@ class MassUtilityCommands extends DrushCommands {
       if ($entity->save()) {
         $this->logger()->success('Saved ' . $record->source . ' as Redirect ' . $entity->id());
       }
-    } catch (EntityStorageException $e) {
+    }
+    catch (EntityStorageException $e) {
       // Keep going because during testing, duplicate redirect saves happen a lot.
       $this->logger()->warning($e->getMessage());
     }
   }
 
-  private function isActive($source, $options) {
+  /**
+   * Check if an URL is active enough to merit creating a redirect.
+   *
+   * @param string $source
+   *   A source URL to check.
+   * @param array $options
+   *   The command option values.
+   *
+   * @return bool
+   *   Success or Failure.
+   */
+  private function isActive($source, array $options) {
     static $activity;
     if (empty($activity)) {
       $handle = fopen('modules/custom/mass_utility/data/Redirect-Analysis-2-25-2020.csv', 'r');
