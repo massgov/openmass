@@ -179,10 +179,10 @@ AddType application/octet-stream .rte
   RewriteRule (README|readme|INSTALL|INSTALL\.[a-z]+|CHANGELOG|COPYRIGHT|LICENSE|license|MAINTAINERS|UPDATE|UPGRADE|PATCHES)\.(txt|html) - [L,R=404]
 
   # Markdown and pdf files, which are used for documentation files with many names.
-#  RewriteCond %{REQUEST_URI} !^/files/
-#  RewriteCond %{REQUEST_URI} !^/sites/.+/files/
-#  RewriteCond %{REQUEST_URI} !^/hq2/
-#  RewriteRule (.*)\.(md|MD|pdf|markdown) - [L,R=404]
+  RewriteCond %{REQUEST_URI} !^/files/
+  RewriteCond %{REQUEST_URI} !^/sites/.+/files/
+  RewriteCond %{REQUEST_URI} !^/hq2/
+  RewriteRule (.*)\.(md|MD|markdown) - [L,R=404]
 
   # Misc specific files.
   RewriteCond %{REQUEST_URI} !^/files/
