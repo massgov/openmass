@@ -3,6 +3,7 @@
 namespace Drupal\mass_utility\Commands;
 
 use Drupal\Core\Entity\EntityStorageException;
+use Drupal\node\NodeInterface;
 use Drupal\redirect\Entity\Redirect;
 use Drush\Commands\DrushCommands;
 use Drupal\Core\Url;
@@ -409,13 +410,17 @@ class MassUtilityCommands extends DrushCommands {
    */
   public function copyD2DRedirects($options = ['limit' => self::REQ, 'min-hits' => 50]) {
     $query = $this->database->select('node__field_legacy_redirects_legacyurl', 'source')
-      ->fields('source', ['entity_id', 'delta']);
+      ->fields('source', ['entity_id', 'delta'])
+      ->condition('nfd.status', NodeInterface::PUBLISHED)
+      ->condition('ndlre.field_legacy_redirect_env_value', 0);
     $query->addField('source', 'field_legacy_redirects_legacyurl_value', 'source');
     $query->addField('target', 'field_legacy_redirects_ref_conte_target_id', 'target');
     if ($options['limit']) {
       $query->range(0, $options['limit']);
     }
     $query->innerJoin('node__field_legacy_redirects_ref_conte', 'target', 'source.entity_id = target.entity_id AND source.delta = target.delta');
+    $query->innerJoin('node_field_data', 'nfd', 'source.entity_id = nfd.nid');
+    $query->innerJoin('node__field_legacy_redirect_env', 'ndlre', 'source.entity_id = ndlre.entity_id');
     $records = $query->execute()->fetchAll();
     foreach ($records as $record) {
       $record->source = parse_url($record->source, PHP_URL_PATH);
