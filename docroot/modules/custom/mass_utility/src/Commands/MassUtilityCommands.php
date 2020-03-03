@@ -404,6 +404,7 @@ class MassUtilityCommands extends DrushCommands {
    *
    * @command copyd2d
    * @option limit
+   *   This option is only to be used during development. Don't use it on Prod.
    * @option min-hits
    */
   public function copyD2DRedirects($options = ['limit' => self::REQ, 'min-hits' => 50]) {
