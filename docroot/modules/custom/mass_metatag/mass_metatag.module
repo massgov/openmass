@@ -211,18 +211,15 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
           if ($data['node']->hasField('field_details_data_type') && $data_type = $data['node']->get('field_details_data_type')) {
             $items = $data_type->referencedEntities();
             if (!empty($items)) {
-              $type_name = \Drupal::service('entity_type.manager')
-                ->getStorage('taxonomy_term')
-                ->load($data_type->getValue()[0]['target_id'])
-                ->get('name')->getValue()[0]['value'];
-              $data_resources = $data['node']->get('field_data_resource_type')->referencedEntities();
-              if (!empty($data_resources) && strpos($type_name, 'resource') !== FALSE) {
-                foreach ($data_resources as $k => $resource) {
-                  $tags[$k] = $resource->get('field_dataresource_metatag')->getValue()[0]['value'];
+              $type_name = $items[0]->get('name')->getString();
+              $data_resources = $data['node']->get('field_data_resource_type');
+              if (!$data_resources->isEmpty() && strpos($type_name, 'resource') !== FALSE) {
+                foreach ($data_resources->referencedEntities() as $k => $resource) {
+                  $tags[$k] = $resource->get('field_dataresource_metatag')->getString();
                 }
               }
-              elseif (!empty($items[0]->get('field_details_datatype_metatag')->getValue())) {
-                $tags[] = $items[0]->get('field_details_datatype_metatag')->getValue()[0]['value'];
+              elseif (!$items[0]->get('field_details_datatype_metatag')->isEmpty()) {
+                $tags[] = $items[0]->get('field_details_datatype_metatag')->getString();
               }
             }
           }
