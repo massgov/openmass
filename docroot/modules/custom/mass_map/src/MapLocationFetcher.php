@@ -135,6 +135,7 @@ class MapLocationFetcher {
       // Populate the googleMap.markers and imagePromos data structures.
       $locations['googleMap']['markers'][$key]['infoWindow'] = $locations['imagePromos']['items'][$key]['infoWindow'];
       $locations['googleMap']['markers'][$key]['infoWindow']['name'] = Link::fromTextAndUrl($node->getTitle(), $node->toUrl())->toString();
+      $locations['googleMap']['markers'][$key]['infoWindow']['plain_text_title'] = $node->getTitle();
       $locations['googleMap']['markers'][$key]['infoWindow']['description'] = $node->hasField('field_lede') ? $node->field_lede->value : NULL;
       unset($locations['imagePromos']['items'][$key]['infoWindow']);
 
@@ -280,7 +281,7 @@ class MapLocationFetcher {
     // Sort map markers alphabetically by infoWindow Name by default.
     if (!empty($locations['googleMap']['markers'])) {
       usort($locations['googleMap']['markers'], function ($a, $b) {
-        return strcmp($a['infoWindow']['name'], $b['infoWindow']['name']);
+        return strcmp($a['infoWindow']['plain_text_title'], $b['infoWindow']['plain_text_title']);
       });
     }
 
