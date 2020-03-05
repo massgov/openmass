@@ -418,12 +418,12 @@ class MassUtilityCommands extends DrushCommands {
     if ($options['limit']) {
       $query->range(0, $options['limit']);
     }
-    $query->innerJoin('node__field_legacy_redirects_ref_conte', 'target', 'source.entity_id = target.entity_id AND source.delta = target.delta');
+    $query->innerJoin('node__field_legacy_redirects_ref_conte', 'target', 'source.entity_id = target.entity_id');
     $query->innerJoin('node_field_data', 'nfd', 'source.entity_id = nfd.nid');
     $query->innerJoin('node__field_legacy_redirect_env', 'ndlre', 'source.entity_id = ndlre.entity_id');
     $records = $query->execute()->fetchAll();
     foreach ($records as $record) {
-      $record->source = parse_url(rtrim($record->source. '/'), PHP_URL_PATH);
+      $record->source = rtrim(parse_url($record->source, PHP_URL_PATH), '/');
       $record->target = '/node/' . $record->target;
       if ($this->isActive($record->source, $options)) {
         $this->saveRedirect($record);
@@ -443,7 +443,7 @@ class MassUtilityCommands extends DrushCommands {
     $handle = fopen('modules/custom/mass_utility/data/legacy_docs_redirects.txt', 'r');
     while (($record = fgetcsv($handle, 9000, ' ')) !== FALSE) {
       $values->source = $record[0];
-      $values->target = parse_url(rtrim($record[1], '/'), PHP_URL_PATH);
+      $values->target = rtrim(parse_url($record[1], PHP_URL_PATH), '/');
       if ($this->isActive($values->source, $options)) {
         $this->saveRedirect($values);
       }
@@ -470,7 +470,7 @@ class MassUtilityCommands extends DrushCommands {
     }
     catch (EntityStorageException $e) {
       // Keep going because during testing, duplicate redirect saves happen a lot.
-      $this->logger()->warning($e->getMessage());
+      $this->logger()->debug($e->getMessage());
     }
   }
 
@@ -492,6 +492,7 @@ class MassUtilityCommands extends DrushCommands {
       while (($record = fgetcsv($handle, 90000, ',')) !== FALSE) {
         // This check omits the first row.
         if ($record[0] !== 'URL') {
+          $record[0] = rtrim($record[0], '/');
           $activity[$record[0]] = $record;
         }
       }
