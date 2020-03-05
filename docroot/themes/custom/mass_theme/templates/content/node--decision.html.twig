@@ -58,12 +58,14 @@
     }
   } %}
   <div class="main-content main-content--two">
+
+  <p>sections[i]['title'] :  {{ sections[i]['title'] }}</p>
     <div class="page-content">
         {% for i in range(1, numOfSections) %}
           {% if sections[i]['title'] or sections[i]['richText'] %}
             {% set richText = sections[i]['richText'] %}
             {% set richText = richText|merge({
-                'compHeading': sections[i]['title'],
+                'compHeading': sections[i]['title']['compHeading']['title'],
                 'id': ""
             }) %}
             {% include "@organisms/by-author/rich-text.twig" %}
