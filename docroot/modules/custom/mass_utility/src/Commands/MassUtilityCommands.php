@@ -423,7 +423,7 @@ class MassUtilityCommands extends DrushCommands {
     $query->innerJoin('node__field_legacy_redirect_env', 'ndlre', 'source.entity_id = ndlre.entity_id');
     $records = $query->execute()->fetchAll();
     foreach ($records as $record) {
-      $record->source = parse_url($record->source, PHP_URL_PATH);
+      $record->source = parse_url(rtrim($record->source. '/'), PHP_URL_PATH);
       $record->target = '/node/' . $record->target;
       if ($this->isActive($record->source, $options)) {
         $this->saveRedirect($record);
@@ -443,7 +443,7 @@ class MassUtilityCommands extends DrushCommands {
     $handle = fopen('modules/custom/mass_utility/data/legacy_docs_redirects.txt', 'r');
     while (($record = fgetcsv($handle, 9000, ' ')) !== FALSE) {
       $values->source = $record[0];
-      $values->target = parse_url($record[1], PHP_URL_PATH);
+      $values->target = parse_url(rtrim($record[1], '/'), PHP_URL_PATH);
       if ($this->isActive($values->source, $options)) {
         $this->saveRedirect($values);
       }
