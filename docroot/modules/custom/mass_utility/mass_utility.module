@@ -28,6 +28,7 @@ use Drupal\node\Entity\Node;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\user\Entity\User;
+use Drupal\redirect\Entity\Redirect;
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
@@ -1287,5 +1288,27 @@ function mass_utility_inline_entity_form_entity_form_alter(&$entity_form, &$form
     // Set the default value to published.
     $entity_form['moderation_state']['widget'][0]['state']['#default_value'] = 'published';
 
+  }
+}
+
+/**
+ * Implements hook_path_update().
+ *
+ * Update the media download link when a media entity alias is updated.
+ */
+function mass_utility_path_update(array $path) {
+  if ($path['alias'] != $path['original']['alias']) {
+    $params = Url::fromUserInput($path['source'])->getRouteParameters();
+    if (isset($params['media'])) {
+      $og_document_alias = $path['original']['alias'] . '/download';
+      if (!redirect_repository()->findMatchingRedirect($og_document_alias, [], $path['original']['langcode'])) {
+        $redirect = Redirect::create();
+        $redirect->setSource($og_document_alias);
+        $redirect->setRedirect($path['source'] . '/download');
+        $redirect->setLanguage($path['original']['langcode']);
+        $redirect->setStatusCode(\Drupal::config('redirect.settings')->get('default_status_code'));
+        $redirect->save();
+      }
+    }
   }
 }
