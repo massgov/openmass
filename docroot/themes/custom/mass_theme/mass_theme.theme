@@ -1511,6 +1511,11 @@ function mass_theme_preprocess_node_info_details(&$variables) {
       $sideContent['linkList'] = Organisms::prepareLinkList($node, 'field_info_details_related', $linkList_options);
       $variables['sideContent'] = $sideContent;
     }
+
+    // Hide sidebar when 'visual_story' is select from the field_page_template field.
+    if ($node->field_page_template && $node->field_page_template->value == 'visual_story') {
+      $variables['no_sidebar'] = TRUE;
+    }
   }
 }
 
