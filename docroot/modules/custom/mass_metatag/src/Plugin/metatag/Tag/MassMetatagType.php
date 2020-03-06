@@ -32,7 +32,7 @@ class MassMetatagType extends MetaNameBase {
     $element = parent::output();
     if (!empty($element['#attributes']['content'])) {
       $element['#attributes']['content'] =
-        _mass_metatag_slugify($element['#attributes']['content']);
+        _mass_metatag_slugify($element['#attributes']['content'], FALSE);
     }
     return $element;
   }

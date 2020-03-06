@@ -19,18 +19,25 @@ echo $TAG
 # Tag the master branch
 git tag $TAG
 
+# Use AWK's output record separator (ORS) to avoid JSON parsing issue.
+# https://linux.die.net/man/1/awk
+cat ./scripts/changelog-body.txt |  awk '{print}' ORS='\\n' > /tmp/changelog-body.txt
+
 # Create post data
 generate_post_data()
 {
   cat <<EOF
-{
-    "tag_name":"${TAG}",
-    "target_commitish": "master",
-    "name": "${TAG}",
-    "body": cat /scripts/changelog-body.txt >
- }
+  {
+  "tag_name": "${TAG}",
+  "target_commitish": "master",
+  "name": "${TAG}",
+  "body": "$(cat /tmp/changelog-body.txt)",
+  "draft": false,
+  "prerelease": false
+  }
 EOF
 }
 
 # Create a release on GitHub for the tag that was just created.
-curl --fail -u massgov-bot:${GITHUB_MASSGOV_BOT_TOKEN} -H "Content-Type:application/json" -X POST https://api.github.com/repos/massgov/openmass/releases --data "$(generate_post_data)"
+curl -X POST --data "$(generate_post_data)" --fail -u massgov-bot:"${GITHUB_MASSGOV_BOT_TOKEN}" -H "Content-Type:application/json" https://api.github.com/repos/massgov/openmass/releases
+

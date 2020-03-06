@@ -23,7 +23,6 @@ dependencies:
     - field.field.node.how_to_page.field_organizations
     - field.field.node.how_to_page.field_state_organization_tax
     - node.type.how_to_page
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - entity_browser_entity_form
@@ -140,6 +139,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -305,6 +305,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -316,6 +317,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
@@ -356,6 +358,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
@@ -369,6 +372,11 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  url_redirects:
+    weight: 50
+    settings: {  }
+    third_party_settings: {  }
+    region: content
 hidden:
   created: true
   path: true

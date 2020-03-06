@@ -86,9 +86,9 @@ class OneToOneProvider {
    */
   public function getDrupalMediaPaths() {
     $select = $this->database->select('media', 'm');
-    $select->leftJoin('url_alias', 'u', "u.source = CONCAT('/media/', m.mid)");
+    $select->leftJoin('path_alias', 'pa', "pa.path = CONCAT('/media/', m.mid)");
     $select->addField('m', 'mid');
-    $select->addField('u', 'alias');
+    $select->addField('pa', 'alias');
     foreach ($select->execute() as $row) {
       yield [
         'source' => '/media/' . $row->mid,
@@ -113,8 +113,8 @@ class OneToOneProvider {
    */
   public function getDrupalNodePaths() {
     $select = $this->database->select('node', 'n');
-    $select->innerJoin('url_alias', 'u', "u.source = CONCAT('/node/', n.nid)");
-    $select->addField('u', 'alias');
+    $select->innerJoin('path_alias', 'pa', "pa.path = CONCAT('/node/', n.nid)");
+    $select->addField('pa', 'alias');
     $select->addField('n', 'nid');
 
     foreach ($select->execute() as $row) {
@@ -134,8 +134,8 @@ class OneToOneProvider {
    */
   public function getDrupalLocationPages() {
     $select = $this->database->select('node', 'n');
-    $select->innerJoin('url_alias', 'u', "u.source = CONCAT('/node/', n.nid)");
-    $select->addField('u', 'alias');
+    $select->innerJoin('path_alias', 'pa', "pa.path = CONCAT('/node/', n.nid)");
+    $select->addField('pa', 'alias');
     $select->addField('n', 'nid');
     $select->condition('type', 'org_page');
 

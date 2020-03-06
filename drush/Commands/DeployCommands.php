@@ -10,6 +10,9 @@ use Consolidation\SiteProcess\Util\Shell;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\SiteAlias\SiteAliasManagerAwareInterface;
+use GuzzleHttp\HandlerStack;
+use GuzzleHttp\MessageFormatter;
+use GuzzleHttp\Middleware;
 use Webmozart\PathUtil\Path;
 
 /**
@@ -20,6 +23,54 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   use SiteAliasManagerAwareTrait;
 
   var $site = 'prod:massgov';
+
+  const CIRCLE_URI = 'https://circleci.com/api/v2/project/github/massgov/openmass/pipeline';
+
+  /**
+   * Run Cloudflare deployment at CircleCI, for better reliability and logging.
+   *
+   * @command ma:cf-deploy
+   *
+   * @param string $target Target environment. Recognized values: cf, stage, prod, global
+   * @option ci-branch The branch that CircleCI should check out at start.
+   *
+   * @aliases ma-cf-deploy
+   * @validate-circleci-token
+   *
+   * @return string
+   *   A URL for viewing the build.
+   * @throws \Exception
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+  public function cf($target, array $options = ['ci-branch' => 'develop']) {
+    // For production deployments, prompt the user if they are sure. If they say no, exit.
+    if ($target === 'prod') {
+      $this->confirmProd();
+    }
+
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'auth' => [$this->getTokenCircle()],
+      'json' => [
+        'branch' => $options['ci-branch'],
+        'parameters' => [
+          'post-trigger' => FALSE,
+          'webhook' => FALSE,
+          'ma-cf-deploy' => TRUE,
+          'target' => $target,
+        ],
+      ],
+    ];
+    $response = $client->request('POST', self::CIRCLE_URI, $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    $body = json_decode((string)$response->getBody(), TRUE);
+    $this->logger()->success($this->getSuccessMessage($body));
+  }
 
   /**
    * Write the download link for the most recent database backup to stdout.
@@ -64,6 +115,62 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
+   * Run `ma:deploy` at CircleCI, for better reliability and logging.
+   *
+   * @command ma:release
+   *
+   * @param string $target Target environment. Recognized values: dev, cd,
+   *   test, feature1, feature2, feature3, feature4, feature5, prod.
+   * @param string $git_ref Tag or branch to deploy. Must be pushed to Acquia.
+   * @param array $options The options list.
+   * @option ci-branch The branch that CircleCI should check out at start.
+   *
+   * @usage drush ma:release test tags/build-0.6.1
+   *   Deploy build-0.6.1 tag to the staging environment.
+   * @aliases ma-release
+   * @deploy
+   * @validate-circleci-token
+   *
+   * @return string
+   *   A URL for viewing the build.
+   * @throws \Exception
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+  public function release($target, $git_ref, array $options = ['ci-branch' => 'develop']) {
+    // For production deployments, prompt the user if they are sure. If they say no, exit.
+    if ($target === 'prod') {
+      $this->confirmProd();
+    }
+
+    // Use our logger - https://stackoverflow.com/questions/32681165/how-do-you-log-all-api-calls-using-guzzle-6.
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'auth' => [$this->getTokenCircle()],
+      'json' => [
+        'branch' => $options['ci-branch'],
+        'parameters' => [
+          'post-trigger' => FALSE,
+          'webhook' => FALSE,
+          'ma-release' => TRUE,
+          'target' => $target,
+          'git-ref' => $git_ref,
+          'skip-maint' => $options['skip-maint'] ? '--skip-maint' : '',
+          'refresh-db' => $options['refresh-db'] ? '--refresh-db' : '',
+        ],
+      ],
+    ];
+    $response = $client->request('POST', $this::CIRCLE_URI, $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('CircleCI API response was a ' . $code . 'Use -v for more Guzzle information.');
+    }
+
+    $body = json_decode((string)$response->getBody(), TRUE);
+    $this->logger()->success('Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.');
+  }
+
+  /**
    * Deploy code and database (if needed).
    *
    * Copies Prod DB to target environment, then runs config import, updb,
@@ -99,9 +206,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     ]);
 
     $targetRecord = $this->siteAliasManager()->get('@' . $target);
-
-    // Build Cloud API client connection.
-    $cloudapi = $this->getClient();
 
     // Copy database, but only for non-prod deploys and when refresh-db is set.
     if (!$is_prod && $options['refresh-db']) {
@@ -152,7 +256,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     }
 
     // Deploy the new code.
-    $operationResponse = $cloudapi->switchCode($targetRecord->get('uuid'), $git_ref);
+    $operationResponse = $this->getClient()->switchCode($targetRecord->get('uuid'), $git_ref);
     $href = $operationResponse->links->notification->href;
     $this->waitForTaskToComplete(basename($href));
 
@@ -201,7 +305,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
     // Get a list of all an environment's domains.
     // Note: This also returns load balancer URLs.
-    $domains = $cloudapi->domains($targetRecord->get('uuid'));
+    $domains = $this->getClient()->domains($targetRecord->get('uuid'));
     foreach ($domains as $domain) {
       // Skip Load Balancers.
       if (!preg_match('/.*\.elb\.amazonaws\.com$/', $domain->hostname)) {
@@ -211,7 +315,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
     if ($options['varnish']) {
       // Clear the cache for the domains.
-      $cloudapi->purgeVarnishCache($targetRecord->get('uuid'), $domains_web);
+      $this->getClient()->purgeVarnishCache($targetRecord->get('uuid'), $domains_web);
       $this->logger()->success("Purged full Varnish cache for in $target environment.");
     }
     else {
@@ -285,9 +389,20 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    */
   public function validate(CommandData $commandData) {
     $target = $commandData->input()->getArgument('target');
-    $available_targets = ['dev', 'cd', 'test', 'feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prod', 'ra'];
+    $available_targets = ['dev', 'cd', 'test', 'feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prod', 'ra', 'cf', 'global', 'stage'];
     if (!in_array($target, $available_targets)) {
       throw new \Exception('Invalid argument: target. \nYou entered "' . $target . '". Target must be one of: ' . implode(', ', $available_targets));
+    }
+  }
+
+  /**
+   * Validate the presence of a CircleCI token
+   *
+   * @hook validate validate-circleci-token
+   */
+  protected function validateCircleCIToken() {
+    if (!$this->getTokenCircle()) {
+      throw new \Exception('Missing CIRCLECI_PERSONAL_API_TOKEN. See .env.example for more details.');
     }
   }
 
@@ -379,6 +494,35 @@ EOT;
       ->confirm('This is a Production deployment. Are you damn sure?')) {
       throw new UserAbortException();
     }
+  }
+
+  /**
+   * Use our logger - https://stackoverflow.com/questions/32681165/how-do-you-log-all-api-calls-using-guzzle-6.
+   *
+   * @return \GuzzleHttp\HandlerStack
+   */
+  protected function getStack(): \GuzzleHttp\HandlerStack {
+    $stack = HandlerStack::create();
+    $stack->push(Middleware::log($this->logger(), new MessageFormatter(Drush::verbose() ? MessageFormatter::DEBUG : MessageFormatter::SHORT)));
+    return $stack;
+  }
+
+  /**
+   * @return array|false|string
+   */
+  protected function getTokenCircle() {
+    return getenv('CIRCLECI_PERSONAL_API_TOKEN');
+  }
+
+  /**
+   * Return success message about how to view a Pipeline at CircleCI.
+   *
+   * @param array $body
+   *
+   * @return string
+   */
+  private function getSuccessMessage($body): string {
+    return 'Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.';
   }
 
 }

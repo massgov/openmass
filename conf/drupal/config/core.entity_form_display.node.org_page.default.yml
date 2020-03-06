@@ -58,7 +58,6 @@ dependencies:
     - field.field.node.org_page.field_verification
     - image.style.thumbnail
     - node.type.org_page
-    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -309,6 +308,7 @@ content:
       rows: 9
       placeholder: ''
       summary_rows: 3
+      show_summary: false
     third_party_settings:
       conditional_fields: {  }
     region: content
@@ -581,6 +581,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -616,6 +617,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -646,6 +648,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -670,6 +673,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -679,6 +683,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -688,6 +693,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings:
       conditional_fields:
         20271695-42df-4ce9-87ba-e0d90e432e07:
@@ -723,6 +729,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -732,6 +739,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -742,6 +750,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
     region: content
   field_ref_orgs:
@@ -750,6 +759,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -797,6 +807,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings:
       conditional_fields:
         cd049f71-6b54-48ff-84e6-810858c53cb9:
@@ -840,6 +851,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings:
       conditional_fields: {  }
     type: entity_reference_autocomplete
@@ -946,6 +958,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
@@ -959,6 +972,11 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  url_redirects:
+    weight: 50
+    settings: {  }
+    third_party_settings: {  }
+    region: content
 hidden:
   created: true
   field_action_set__bg_narrow: true
