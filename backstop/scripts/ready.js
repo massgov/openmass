@@ -16,43 +16,21 @@ module.exports = async function(page, scenario, vp) {
         '  transition-delay: 0ms !important;\n' +
         '}' +
         // Kill Video embeds (show black box instead)
-        '.fluid-width-video-wrapper:after {' +
-        '  background: black;' +
-        '  content: \'\';' +
-        '  position: absolute;' +
-        '  top: 0;' +
-        '  left: 0;' +
-        '  right: 0;' +
-        '  bottom: 0;' +
-        '  z-index: 100;' +
-        '}' +
-        // Kill iframes (show blue box instead)
-        '.ma__iframe__container:after {' +
-        '  background: #357B8F;' +
-        '  content: \'\';' +
-        '  position: absolute;' +
-        '  top: 0;' +
-        '  left: 0;' +
-        '  right: 0;' +
-        '  bottom: 0;' +
-        '  z-index: 100;' +
-        '}' +
-        // Kill google Maps (show a green box instead)
-        // .js-google-map for dynamic maps
-        '.js-google-map {' +
+        '.fluid-width-video-wrapper, .ma__iframe__container, .js-google-map {' +
         '  position: relative;' +
         '}' +
-        '.js-google-map:before {' +
-        '  background: #B2DEA2;\n' +
-        '  content: \' \';\n' +
-        '  display: block;\n' +
-        '  position: absolute;\n' +
-        '  top: 0;\n' +
-        '  left: 0;\n' +
-        '  right: 0;\n' +
-        '  bottom: 0;\n' +
-        '  z-index: 100;\n' +
+        '.fluid-width-video-wrapper:after, .ma__iframe__container:after, .js-google-map:after {' +
+        '  content: \'\';' +
+        '  position: absolute;' +
+        '  top: 0;' +
+        '  left: 0;' +
+        '  right: 0;' +
+        '  bottom: 0;' +
+        '  z-index: 100;' +
         '}' +
+        '.fluid-width-video-wrapper:after { background: black; }' +
+        '.ma__iframe__container:after { background: #357B8F; }' +
+        '.js-google-map:after { background: #B2DEA2; }' +
         // Kill banner image on QAG campaign landing page (show a black box instead)
         '#ID1345331.ma__key-message--image, #imgID1345331 {' +
         '  position: relative;' +
