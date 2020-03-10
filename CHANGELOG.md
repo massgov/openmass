@@ -1,5 +1,16 @@
 
 
+## [0.234.0] - March 10, 2020
+
+### Fixed
+  - DP-17185: Add a redirect to the media download link when a media alias is changed.
+  - DP-17414: Add check for transition permissions before rendering scheduler form.
+
+### Added
+  - DP-12397: Add Drush commands for creating Druapl redirects from legacy.
+  - DP-17194: Added data tab metatags to service details info details and curated lists
+
+
 ## [0.233.0] - March 4, 2020
 
 ### Security
