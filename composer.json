@@ -4,7 +4,9 @@
     "type": "project",
     "license": "GPL-2.0",
     "autoload": {
-      "files": ["early.composer.php"]
+        "files": [
+            "early.composer.php"
+        ]
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -12,20 +14,20 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "platform": {
-          "php": "7.1.18"
+            "php": "7.1.18"
         },
         "discard-changes": true
     },
-    "repositories": [
-        {
+    "repositories": {
+        "0": {
             "type": "vcs",
             "url": "git@github.com:mikeyp/google_tag.git"
         },
-        {
+        "1": {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
         },
-        {
+        "2": {
             "type": "package",
             "package": {
                 "name": "desandro/imagesloaded",
@@ -37,7 +39,7 @@
                 }
             }
         },
-        {
+        "3": {
             "type": "package",
             "package": {
                 "name": "desandro/masonry",
@@ -49,7 +51,7 @@
                 }
             }
         },
-        {
+        "4": {
             "type": "package",
             "package": {
                 "name": "enyo/dropzone",
@@ -61,44 +63,48 @@
                 }
             }
         },
-      {
-        "type": "package",
-        "package": {
-          "name": "blakestein/datalayer",
-          "version": "master",
-          "type": "drupal-module",
-          "source": {
-            "url": "https://github.com/blakestein/drupal-datalayer-d8.git",
-            "type": "git",
-            "reference": "3b2ffa7"
-          }
+        "5": {
+            "type": "package",
+            "package": {
+                "name": "blakestein/datalayer",
+                "version": "master",
+                "type": "drupal-module",
+                "source": {
+                    "url": "https://github.com/blakestein/drupal-datalayer-d8.git",
+                    "type": "git",
+                    "reference": "3b2ffa7"
+                }
+            }
+        },
+        "6": {
+            "type": "package",
+            "package": {
+                "name": "d3/d3",
+                "version": "v3.5.17",
+                "type": "drupal-library",
+                "dist": {
+                    "url": "https://github.com/d3/d3/archive/v3.5.17.zip",
+                    "type": "zip"
+                }
+            }
+        },
+        "7": {
+            "type": "package",
+            "package": {
+                "name": "components/highlightjs",
+                "version": "9.7.0",
+                "type": "drupal-library",
+                "dist": {
+                    "url": "https://github.com/components/highlightjs/archive/9.7.0.zip",
+                    "type": "zip"
+                }
+            }
+        },
+        "drupal": {
+            "type": "composer",
+            "url": "https://packages.drupal.org/8"
         }
-      },
-      {
-         "type": "package",
-         "package": {
-             "name": "d3/d3",
-             "version": "v3.5.17",
-             "type": "drupal-library",
-             "dist": {
-                 "url": "https://github.com/d3/d3/archive/v3.5.17.zip",
-                 "type": "zip"
-             }
-         }
-      },
-      {
-         "type": "package",
-         "package": {
-             "name": "components/highlightjs",
-             "version": "9.7.0",
-             "type": "drupal-library",
-             "dist": {
-                 "url": "https://github.com/components/highlightjs/archive/9.7.0.zip",
-                 "type": "zip"
-             }
-         }
-      }
-    ],
+    },
     "require": {
         "php": ">=7.1",
         "blakestein/datalayer": "master",
@@ -196,6 +202,7 @@
         "drupal/tour_ui": "^1.0",
         "drupal/twig_field_value": "^1",
         "drupal/twig_tweak": "^1",
+        "drupal/twig_vardumper": "^1.2",
         "drupal/username_enumeration_prevention": "1.0-beta2",
         "drupal/video_embed_field": "^2.0",
         "drupal/view_mode_page": "^3.1",
@@ -208,7 +215,7 @@
         "drush/drush": "^10",
         "enyo/dropzone": "4.3.0",
         "guzzlehttp/guzzle": "^6.3",
-        "massgov/mayflower-artifacts": "dev-patternlab/DP-17483_dataviz-textwrapping-container",
+        "massgov/mayflower-artifacts": "dev-patternlab/DP-17483_dataviz-textwrapping-container-suggestions",
         "mikeyp/google_tag": "dev-8.x-1.x#3caa4f0b7f008576936ab7501d483bfcf58a4764",
         "phlak/semver": "^2.0",
         "phpunit/phpunit": "^6",
@@ -270,12 +277,24 @@
             "omit-defaults": false
         },
         "installer-paths": {
-            "docroot/core": ["type:drupal-core"],
-            "docroot/libraries/{$name}": ["type:drupal-library"],
-            "docroot/modules/contrib/{$name}": ["type:drupal-module"],
-            "docroot/profiles/contrib/{$name}": ["type:drupal-profile"],
-            "docroot/themes/contrib/{$name}": ["type:drupal-theme"],
-            "drush/contrib/{$name}": ["type:drupal-drush"]
+            "docroot/core": [
+                "type:drupal-core"
+            ],
+            "docroot/libraries/{$name}": [
+                "type:drupal-library"
+            ],
+            "docroot/modules/contrib/{$name}": [
+                "type:drupal-module"
+            ],
+            "docroot/profiles/contrib/{$name}": [
+                "type:drupal-profile"
+            ],
+            "docroot/themes/contrib/{$name}": [
+                "type:drupal-theme"
+            ],
+            "drush/contrib/{$name}": [
+                "type:drupal-drush"
+            ]
         },
         "patches": {
             "drupal/core": {
@@ -293,7 +312,7 @@
                 "Broken when provider !=entityTypeId; fixes broken handling of taxonomy terms (https://www.drupal.org/project/auto_entitylabel/issues/2923876#comment-12933629)": "https://www.drupal.org/files/issues/2019-01-19/auto_entitylabel-2923876-28-Broken-when-provider-entityId.patch"
             },
             "drupal/paragraphs_type_help": {
-              "Unable to enable the module": "https://www.drupal.org/files/issues/2019-02-11/paragraphs_type_help-2995397-3.patch"
+                "Unable to enable the module": "https://www.drupal.org/files/issues/2019-02-11/paragraphs_type_help-2995397-3.patch"
             },
             "drupal/workbench_moderation": {
                 "Fix type errors from WorkbenchModeration edit tab labeling (https://www.drupal.org/node/2769119#comment-11624207)": "https://www.drupal.org/files/issues/workbench_moderation-edit_tab-2769119-6.patch"
@@ -318,8 +337,7 @@
                 "Large amount of fields causes tab functionality to break": "https://www.drupal.org/files/issues/2019-03-28/large-amount-fields-3044224-2.patch"
             },
             "drupal/inline_entity_form": {
-                "Fixes field label when a new entity is created inline (https://www.drupal.org/project/inline_entity_form/issues/2842744)":
-                "https://www.drupal.org/files/issues/inline_entity_form-no_label_required_field_with_no_entries-2842744.patch"
+                "Fixes field label when a new entity is created inline (https://www.drupal.org/project/inline_entity_form/issues/2842744)": "https://www.drupal.org/files/issues/inline_entity_form-no_label_required_field_with_no_entries-2842744.patch"
             },
             "drupal/key": {
                 "Stop adding 'extensions' cache tag on unrelated config objects (https://www.drupal.org/project/key/issues/3080971)": "https://www.drupal.org/files/issues/2019-09-12/no-tag_1.patch"
