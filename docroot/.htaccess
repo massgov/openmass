@@ -182,7 +182,7 @@ AddType application/octet-stream .rte
   RewriteCond %{REQUEST_URI} !^/files/
   RewriteCond %{REQUEST_URI} !^/sites/.+/files/
   RewriteCond %{REQUEST_URI} !^/hq2/
-  RewriteRule (.*)\.(md|MD|pdf|markdown) - [L,R=404]
+  RewriteRule (.*)\.(md|MD|markdown) - [L,R=404]
 
   # Misc specific files.
   RewriteCond %{REQUEST_URI} !^/files/
