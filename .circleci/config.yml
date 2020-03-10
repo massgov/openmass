@@ -576,7 +576,6 @@ workflows:
 
   # This is to automate the release branch only.
   release:
-    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
