@@ -82,7 +82,7 @@ resource "cloudflare_firewall_rule" "edit_geo_whitelist" {
 resource "cloudflare_filter" "edit_geo_whitelist" {
   zone_id = var.zone_id
   expression = <<EXPR
-(http.host eq "${local.edit_domain}" and ip.geoip.subdivision_1_iso_code in {"US-MA" "US-NH" "US-CT" "US-MA" "US-RI"})
+(http.host eq "${local.edit_domain}" and ip.geoip.subdivision_1_iso_code in {"US-MA" "US-NH" "US-CT" "US-ME" "US-RI" "US-VT"})
 EXPR
 }
 
@@ -99,3 +99,4 @@ resource "cloudflare_filter" "edit_block_bots" {
 (http.host eq "${local.edit_domain}" and cf.client.bot)
 EXPR
 }
+
