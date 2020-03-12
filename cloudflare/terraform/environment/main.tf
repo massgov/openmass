@@ -72,16 +72,17 @@ resource "cloudflare_filter" "www_block" {
 EXPR
 }
 
-resource "cloudflare_firewall_rule" "edit_geo_restrict" {
-  action = "block"
-  filter_id = cloudflare_filter.edit_geo_restrict.id
+resource "cloudflare_firewall_rule" "edit_geo_whitelist" {
+  action = "bypass"
+  products = ["zoneLockdown"]
+  filter_id = cloudflare_filter.edit_geo_whitelist.id
   zone_id = var.zone_id
-  description = "Block ${local.edit_domain} outside the US."
+  description = "Whitelist states for ${local.edit_domain}."
 }
-resource "cloudflare_filter" "edit_geo_restrict" {
+resource "cloudflare_filter" "edit_geo_whitelist" {
   zone_id = var.zone_id
   expression = <<EXPR
-(http.host eq "${local.edit_domain}" and ip.geoip.country ne "US")
+(http.host eq "${local.edit_domain}" and ip.geoip.subdivision_1_iso_code in {"US-MA" "US-NH" "US-CT" "US-MA" "US-RI"})
 EXPR
 }
 
