@@ -2,9 +2,6 @@ provider "cloudflare" {
   # email pulled from $CLOUDFLARE_EMAIL
   # api_key pulled from $CLOUDFLARE_API_KEY
   # account_id pulled from $CLOUDFLARE_ACCOUNT_ID
-
-  // This is locked to a specific version to avoid an issue where page rules
-  // ended up missing TTL settings in 1.14.0.
   version = "2.4.0"
 }
 
