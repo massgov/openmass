@@ -1,11 +1,11 @@
 provider "cloudflare" {
   # email pulled from $CLOUDFLARE_EMAIL
-  # token pulled from $CLOUDFLARE_TOKEN
-  use_org_from_zone = var.domain
+  # api_key pulled from $CLOUDFLARE_API_KEY
+  # account_id pulled from $CLOUDFLARE_ACCOUNT_ID
 
   // This is locked to a specific version to avoid an issue where page rules
   // ended up missing TTL settings in 1.14.0.
-  version = "1.16.0"
+  version = "2.4.0"
 }
 
 locals {
@@ -16,7 +16,7 @@ locals {
 
 // ======== START DNS RECORDS =========
 resource "cloudflare_record" "edit_dns" {
-  domain  = var.domain
+  zone_id = var.zone_id
   name    = local.edit_domain
   value   = var.balancer_ip
   type    = "A"
@@ -24,7 +24,7 @@ resource "cloudflare_record" "edit_dns" {
 }
 
 resource "cloudflare_record" "www_dns" {
-  domain  = var.domain
+  zone_id = var.zone_id
   name    = local.www_domain
   value   = var.balancer_ip
   type    = "A"
@@ -38,13 +38,13 @@ resource "cloudflare_worker_script" "worker" {
 }
 
 resource "cloudflare_worker_route" "edit_route" {
-  zone        = var.domain
+  zone_id = var.zone_id
   pattern     = "${local.edit_domain}/*"
   script_name = cloudflare_worker_script.worker.name
 }
 
 resource "cloudflare_worker_route" "www_route" {
-  zone        = var.domain
+  zone_id = var.zone_id
   pattern     = "${local.www_domain}/*"
   script_name = cloudflare_worker_script.worker.name
 }
@@ -70,6 +70,31 @@ resource "cloudflare_filter" "www_block" {
       )
     )
 EXPR
-
 }
 
+resource "cloudflare_firewall_rule" "edit_geo_restrict" {
+  action = "block"
+  filter_id = cloudflare_filter.edit_geo_restrict.id
+  zone_id = var.zone_id
+  description = "Block ${local.edit_domain} outside the US."
+}
+resource "cloudflare_filter" "edit_geo_restrict" {
+  zone_id = var.zone_id
+  expression = <<EXPR
+(http.host eq "${local.edit_domain}" and ip.geoip.country ne "US")
+EXPR
+}
+
+
+resource "cloudflare_firewall_rule" "edit_block_bots" {
+  action = "block"
+  filter_id = cloudflare_filter.edit_block_bots.id
+  zone_id = var.zone_id
+  description = "Block ${local.edit_domain} for bots."
+}
+resource "cloudflare_filter" "edit_block_bots" {
+  zone_id = var.zone_id
+  expression = <<EXPR
+(http.host eq "${local.edit_domain}" and cf.client.bot)
+EXPR
+}
