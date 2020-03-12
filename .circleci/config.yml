@@ -519,7 +519,6 @@ workflows:
 
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_dev branch only.
   deploy_mayflower_cd:
-    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -577,7 +576,6 @@ workflows:
 
   # This is to automate the release branch only.
   release:
-    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
