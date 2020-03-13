@@ -45,6 +45,9 @@ export function edit(token) {
     if(isAlertsUrl(url)) {
       browserTTL = 60
     }
+    else if(isMediaDownloadUrl(url)) {
+      browserTTL = 60
+    }
     else if(isStaticUrl(url)) {
       browserTTL = RESPECT_ORIGIN
     }
@@ -64,7 +67,7 @@ export function edit(token) {
       }
     }
 
-    if(browserTTL !== RESPECT_ORIGIN && isDrupalResponse(response)) {
+    if(browserTTL !== RESPECT_ORIGIN) {
       response = overrideBrowserTTL(response)
     }
 
@@ -103,6 +106,10 @@ export function www(token) {
       edgeTTL = 60
       browserTTL = 60
     }
+    else if(isMediaDownloadUrl(url)) {
+      edgeTTL = RESPECT_ORIGIN
+      browserTTL = 60
+    }
     else if(isStaticUrl(url)) {
       edgeTTL = RESPECT_ORIGIN
       browserTTL = RESPECT_ORIGIN
@@ -127,7 +134,7 @@ export function www(token) {
     }
 
     // Apply browser TTL overrides.
-    if(browserTTL !== RESPECT_ORIGIN && isDrupalResponse(response)) {
+    if(browserTTL !== RESPECT_ORIGIN) {
       response = overrideBrowserTTL(response, browserTTL)
     }
 
