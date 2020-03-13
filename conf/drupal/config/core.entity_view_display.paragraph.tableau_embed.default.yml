@@ -3,15 +3,49 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.tableau_embed.field_tabl_administrative_title
+    - field.field.paragraph.tableau_embed.field_tabl_alignment
+    - field.field.paragraph.tableau_embed.field_tabl_display_size
+    - field.field.paragraph.tableau_embed.field_tabl_wrapping
     - field.field.paragraph.tableau_embed.field_url
     - paragraphs.paragraphs_type.tableau_embed
   module:
     - mass_content
+    - options
 id: paragraph.tableau_embed.default
 targetEntityType: paragraph
 bundle: tableau_embed
 mode: default
 content:
+  field_tabl_administrative_title:
+    weight: 1
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_tabl_alignment:
+    weight: 3
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_tabl_display_size:
+    weight: 2
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_tabl_wrapping:
+    weight: 4
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
   field_url:
     weight: 0
     label: hidden
