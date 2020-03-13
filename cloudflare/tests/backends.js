@@ -171,7 +171,7 @@ describe('WWW Backend', function() {
     })
   });
 
-  test(`Should not alter cache headers for non-Drupal responses`, async function() {
+  test(`Should alter cache headers for non-Drupal responses`, async function() {
     global.fetch = jest.fn(() => Promise.resolve(new Response('', {
       headers: new Headers({
         'Cache-Control': 'public, max-age=604800',
@@ -181,7 +181,7 @@ describe('WWW Backend', function() {
 
     const request = new Request('https://www.mass.gov/');
     const response = await www('TEST_TOKEN')(request);
-    expect(response.headers.get('cache-control')).toEqual('public, max-age=604800');
+    expect(response.headers.get('cache-control')).toEqual('public, max-age=1800');
   })
 
   const edgeTTLTests = [
