@@ -67,7 +67,7 @@ echo "\n";
 $ch = curl_init();
 
 $markdown = 'This PR may be closed after this branch is no longer needed. It is a requirement for automation to run since we have the Advanced Setting _Only build Pull Requests_ enabled at CircleCI.';
-$data = array("title" => "mayflower-dev-' . $branch_name to develop", "draft" => TRUE, "body" => $markdown, "head" => "mayflower-dev-' . $branch_name", "base" => "develop");
+$data = array("title" => "mayflower-dev-$branch_name to develop", "draft" => TRUE, "body" => $markdown, "head" => "mayflower-dev-$branch_name", "base" => "develop");
 $data_string = json_encode($data);
 
 curl_setopt($ch, CURLOPT_USERNAME, 'massgov-bot');
