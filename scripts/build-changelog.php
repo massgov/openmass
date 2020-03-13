@@ -152,7 +152,7 @@ $data = array("title" => "Release" . $version, "body" => $markdown, "head" => "r
 $data_string = json_encode($data);
 
 curl_setopt($ch, CURLOPT_USERNAME, 'massgov-bot');
-curl_setopt($ch, CURLOPT_PASSWORD, $_ENV['GITHUB_MASSGOV_BOT_TOKEN']);
+curl_setopt($ch, CURLOPT_PASSWORD, getenv('GITHUB_MASSGOV_BOT_TOKEN'));
 curl_setopt($ch, CURLOPT_POST, '-X');
 curl_setopt($ch, CURLOPT_USERAGENT, 'https://api.github.com/repos/massgov/openmass/');
 curl_setopt($ch, CURLOPT_URL, 'https://api.github.com/repos/massgov/openmass/pulls');
