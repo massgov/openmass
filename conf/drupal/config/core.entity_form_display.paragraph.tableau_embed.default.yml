@@ -27,7 +27,25 @@ content:
   field_tabl_alignment:
     weight: -96
     settings: {  }
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        e94b17ab-a051-41fa-b98e-cf8c5319ca55:
+          dependee: field_tabl_display_size
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: "Small\r\nMedium\r\nLarge"
+            value_form:
+              -
+                value: X-Large
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: paragraph
+          bundle: tableau_embed
     type: options_buttons
     region: content
   field_tabl_display_size:
