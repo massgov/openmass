@@ -5,6 +5,9 @@
 ### Changed
   - DP-17784: Shorten the media download cache lifetime for the browser to avoid content that changes quickly being cached.
 
+### Fixed
+  - DP-17785: Purge /download media urls when media is updated.
+
 
 ## [0.234.0] - March 10, 2020
 
