@@ -6,6 +6,7 @@
  */
 
 use Drupal\file\FileInterface;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Implements hook_file_insert().
@@ -70,5 +71,19 @@ function mass_caching_path_insert(array $path) {
 function mass_caching_path_update(array $path) {
   if ($path['alias'] !== $path['original']['alias']) {
     \Drupal::service('manual_purger')->purgePath($path['alias']);
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ *
+ * Purge media's path when the entity is updated.
+ */
+function mass_caching_entity_update(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() == 'media') {
+    $path = 'media/' . $entity->id() . '/download';
+    \Drupal::service('manual_purger')->purgePath($path);
+    $aliased_path = $entity->toUrl()->toString() . '/download';
+    \Drupal::service('manual_purger')->purgePath($aliased_path);
   }
 }
