@@ -263,4 +263,15 @@ describe('WWW Backend', function() {
     expect(fetch.mock.calls.length).toBe(1);
   });
 
+  test('Should set a short cache lifetime for media download redirects', async function() {
+    global.fetch = jest.fn(() => Promise.resolve(new Response('', {
+      status: 404,
+      headers: new Headers({
+        'Cache-Control': 'public, max-age=3000',
+      })
+    })));
+    const response = await www('TEST_TOKEN')(new Request('https://www.mass.gov/media/123/download'));
+    expect(response.headers.get('cache-control')).toEqual('public, max-age=60');
+  })
+
 });
