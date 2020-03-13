@@ -1,5 +1,11 @@
 
 
+## [0.234.1] - March 13, 2020
+
+### Changed
+  - DP-17784: Shorten the media download cache lifetime for the browser to avoid content that changes quickly being cached.
+
+
 ## [0.234.0] - March 10, 2020
 
 ### Fixed
