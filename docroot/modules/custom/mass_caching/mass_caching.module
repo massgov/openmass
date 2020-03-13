@@ -87,3 +87,17 @@ function mass_caching_entity_update(EntityInterface $entity) {
     \Drupal::service('manual_purger')->purgePath($aliased_path);
   }
 }
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Purge media's path when the entity is created.
+ */
+function mass_caching_entity_insert(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() == 'media') {
+    $path = 'media/' . $entity->id() . '/download';
+    \Drupal::service('manual_purger')->purgePath($path);
+    $aliased_path = $entity->toUrl()->toString() . '/download';
+    \Drupal::service('manual_purger')->purgePath($aliased_path);
+  }
+}
