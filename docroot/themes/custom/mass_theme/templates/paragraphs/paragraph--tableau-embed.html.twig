@@ -40,20 +40,11 @@
  * @ingroup themeable
  */
 #}
-{{ dump(content) }}
-
-{# <p>size: {{ content.field_tabl_display_size }}</p>
-<p>align: {{ content.field_tabl_alignment }}</p>
-<p>wrap: {{ content.wrapping }}</p>  #}
-{# {% block tableau %} #}
-{# {% include "@atoms/09-media/figure--dataviz.twig" with {
+{% include "@atoms/09-media/figure--dataviz.twig" with {
   "figure": {
-    "align": content.field_tabl_alignment,
-    "size": content.field_tabl_display_size,
-    "wrap": content.wrapping
-    "content": content
+    "align": content.field_tabl_alignment[0]["#markup"]|lower,
+    "wrap": content.field_tabl_wrapping[0]["#markup"] ? TRUE : FALSE,
+    "size": content.field_tabl_display_size[0]["#markup"]|lower,
+    "content": content.field_url
   }
-} %} #}
-{# {{ content }} #}
-
-{# {% endblock %} #}
+} %}
