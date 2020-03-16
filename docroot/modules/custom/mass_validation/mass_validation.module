@@ -1559,3 +1559,19 @@ function mass_validation_field_widget_paragraphs_form_alter(array &$element, For
     }
   }
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Hide the field_page_template field on the info_details node form for users
+ * without permission. Also rename the 'none' option in the field_page_template
+ * list.
+ */
+function mass_validation_form_node_info_details_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $user = \Drupal::currentUser();
+  if (!$user->hasPermission('set info details page template')) {
+    $form['field_page_template']['#attributes']['class'][] = 'js-hide';
+  }
+
+  $form['field_page_template']['widget']['#options']['_none'] = 'Information details';
+}
