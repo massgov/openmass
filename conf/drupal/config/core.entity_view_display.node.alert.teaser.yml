@@ -14,78 +14,14 @@ dependencies:
     - field.field.node.alert.field_target_pages_para_ref
     - node.type.alert
   module:
-    - entity_reference_revisions
-    - link
-    - options
     - user
 id: node.alert.teaser
 targetEntityType: node
 bundle: alert
 mode: teaser
 content:
-  field_alert:
-    type: entity_reference_revisions_entity_view
-    weight: 4
-    region: content
-    label: above
-    settings:
-      view_mode: default
-      link: ''
-    third_party_settings: {  }
-  field_alert_display:
-    type: list_default
-    weight: 3
-    region: content
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-  field_alert_ref_contact:
-    type: entity_reference_entity_view
-    weight: 5
-    region: content
-    label: above
-    settings:
-      link: true
-      view_mode: default
-    third_party_settings: {  }
-  field_alert_related_links_5:
-    type: link
-    weight: 6
-    region: content
-    label: above
-    settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
-    third_party_settings: {  }
-  field_alert_severity:
-    type: list_default
-    weight: 2
-    region: content
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-  field_organizations:
-    type: entity_reference_label
-    weight: 7
-    region: content
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-  field_target_pages_para_ref:
-    type: entity_reference_revisions_entity_view
-    weight: 1
-    region: content
-    label: above
-    settings:
-      view_mode: default
-      link: ''
-    third_party_settings: {  }
   links:
-    weight: 0
+    weight: 100
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -96,4 +32,11 @@ content:
     third_party_settings: {  }
 hidden:
   content_moderation_control: true
+  field_alert: true
+  field_alert_display: true
+  field_alert_ref_contact: true
+  field_alert_related_links_5: true
+  field_alert_severity: true
+  field_organizations: true
   field_state_organization_tax: true
+  field_target_pages_para_ref: true
