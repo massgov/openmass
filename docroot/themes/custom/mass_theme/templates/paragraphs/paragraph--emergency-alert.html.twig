@@ -52,3 +52,7 @@
 {{ content.field_emergency_alert_timestamp }}
 
 {{ content.field_emergency_alert_content }}
+
+{% if paragraph.field_emergency_alert_link_type.0.value is same as('1') and paragraph.field_emergency_alert_link.0.uri %}
+  {{ link('Read More', paragraph.field_emergency_alert_link.0.uri, {attributes: {class: 'ma--alerts--link'}}) }}
+{% endif %}
