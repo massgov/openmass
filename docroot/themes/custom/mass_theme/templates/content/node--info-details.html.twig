@@ -136,8 +136,10 @@
 
 {% endblock %}
 
-{% if (content.extra_sidebar_contact|render|trim is not empty) or (sideContent.linkList) %}
-  {% set sidebar = true %}
+{% if not no_sidebar %}
+  {% if (content.extra_sidebar_contact|render|trim is not empty) or (sideContent.linkList) %}
+    {% set sidebar = true %}
+  {% endif %}
 {% endif %}
 
 {% block sidebar %}
