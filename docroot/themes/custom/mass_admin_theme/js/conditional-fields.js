@@ -91,7 +91,7 @@
 
   Drupal.behaviors.alertsConditional = {
     attach: function (context) {
-      $('.field--name-field-emergency-alert-link-type', context).each(function() {
+      $('.field--name-field-emergency-alert-link-type', context).each(function () {
         var $type = $('input', this);
         var $container = $(this).closest('.paragraphs-subform');
         var $link = $container.find('.field--name-field-emergency-alert-link');
@@ -117,6 +117,6 @@
         handler();
       });
     }
-  }
+  };
 
 })(jQuery, Drupal);
