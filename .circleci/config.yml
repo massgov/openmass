@@ -503,7 +503,7 @@ workflows:
               <<: *branch_ignore
 
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_develop_branch.
-  # This will only happens on Sunday night 11 p.m. ETS to allow us to review Mayflower in Drupal on Mondays.
+  # This will only happens onThursday night 11 p.m. ETS to allow us to review Mayflower in Drupal on Mondays.
   mayflower_dev_branch:
     jobs:
       - build
@@ -511,7 +511,7 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "00 03 * * 1"
+          cron: "00 03 * * 5"
           filters:
             branches:
               only:
@@ -519,7 +519,6 @@ workflows:
 
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_dev branch only.
   deploy_mayflower_cd:
-    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -569,7 +568,7 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "00 18 * * 3"
+          cron: "00 17 * * 2"
           filters:
             branches:
               only:
@@ -577,7 +576,6 @@ workflows:
 
   # This is to automate the release branch only.
   release:
-    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -893,7 +891,7 @@ workflows:
           auto-approve: true
 
 
-# Daily deploy to the CD environment, runs at 11:00PM EST. Except for Sunday night the deploy_mayflower_cd uses the CD environment instead.
+# Daily deploy to the CD environment, runs at 11:00PM EST. Except for Thursday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
     jobs:
       - build
@@ -912,7 +910,7 @@ workflows:
           target: cd
     triggers:
       - schedule:
-          cron: "00 03 * * 0,2,3,4,5,6"
+          cron: "00 03 * * 0,1,2,3,4,6"
           filters:
             branches:
               only:
