@@ -40,23 +40,11 @@
  * @ingroup themeable
  */
 #}
-{{ vardumper(content.field_tabl_alignment) }}
-{#
-{{ dump(content.field_tabl_display_size) }}
- #}
-{{ dump(content.field_tabl_wrapping) }}
-<p style="color: red;">align: {{ content.field_tabl_alignment["#items"]["#list"][0]["#values"]["value"] }}</p>
-<p style="color: red;">align: {{ content.field_tabl_alignment["#items"][#list][0][#values]["value"] }}</p>
-
-<p style="color: purple;">align: {{ content.field_tabl_alignment }}</p>
-{# <p style="color: red;">align: {{ content.field_tabl_alignment[0]["#markup"].value }}</p> #}
-{# <p style="color: red;">wrap: {{ content.field_tabl_wrapping[0].value }}</p>
-<p style="color: red;">size: {{ content.field_tabl_display_size.value }}</p> #}
 {% include "@atoms/09-media/figure--dataviz.twig" with {
   "figure": {
-    "align": content.field_tabl_alignment[0]["#markup"],
-    "wrap": content.field_tabl_wrapping[0]["#markup"] ? TRUE : FALSE,
-    "size": content.field_tabl_display_size[0]["#markup"],
+    "align": content.field_tabl_alignment["#items"][0].value,
+    "wrap": content.field_tabl_wrapping["#items"][0].value ? TRUE : FALSE,
+    "size": content.field_tabl_display_size["#items"][0].value,
     "content": content.field_url
   }
 } %}
