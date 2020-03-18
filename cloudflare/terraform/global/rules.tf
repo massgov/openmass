@@ -8,9 +8,9 @@ locals {
  * Cloudflare's API respects setting page rule priority only if the priority is.
  */
 resource "cloudflare_page_rule" "default_www" {
+  zone_id = var.zone_id
   count    = length(var.www_domains)
   target   = "${element(var.www_domains, count.index)}/*"
-  zone     = var.domain
   priority = count.index
   actions {
     // This setting is only here because we need some action for the page rule.
@@ -22,14 +22,12 @@ resource "cloudflare_page_rule" "default_www" {
 }
 
 resource "cloudflare_page_rule" "default_edit" {
+  zone_id = var.zone_id
   count    = length(var.edit_domains)
   target   = "${element(var.edit_domains, count.index)}/*"
-  zone     = var.domain
   priority = length(var.www_domains) + count.index
   actions {
     cache_level    = "aggressive"
-    security_level = "essentially_off"
-    waf            = "off"
   }
 }
 

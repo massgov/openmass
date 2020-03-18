@@ -1,15 +1,12 @@
 provider "cloudflare" {
   # email pulled from $CLOUDFLARE_EMAIL
-  # token pulled from $CLOUDFLARE_TOKEN
-  use_org_from_zone = var.domain
-
-  // This is locked to a specific version to avoid an issue where page rules
-  // ended up missing TTL settings in 1.14.0.
-  version = "1.16.0"
+  # api_key pulled from $CLOUDFLARE_API_KEY
+  # account_id pulled from $CLOUDFLARE_ACCOUNT_ID
+  version = "2.4.0"
 }
 
 resource "cloudflare_zone_settings_override" "default" {
-  name = var.domain
+  zone_id = var.zone_id
   settings {
     always_online = "off"
     brotli        = "on"

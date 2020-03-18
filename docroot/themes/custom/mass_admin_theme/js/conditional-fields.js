@@ -89,39 +89,34 @@
     setTimeout(overrideNews, 1);
   })();
 
-  /**
-   * Alert Link Type.
-   * Hide or show options based on the value of the link type field.
-   *
-   * @param {string} val - link type value.
-   *
-   * Field values are defined in the link type field on the emergency_alert
-   * paragraph.
-   */
-  function processLinkType(val) {
-    switch (val) {
-      case '0':
-        $('.field--name-field-emergency-alert-link').hide();
-        $('.field--name-field-emergency-alert-content').show();
-        break;
-      case '1':
-        $('.field--name-field-emergency-alert-link').show();
-        $('.field--name-field-emergency-alert-content').hide();
-        break;
-      case '2':
-        $('.field--name-field-emergency-alert-link').hide();
-        $('.field--name-field-emergency-alert-content').hide();
-        break;
-      default:
+  Drupal.behaviors.alertsConditional = {
+    attach: function (context) {
+      $('.field--name-field-emergency-alert-link-type', context).each(function () {
+        var $type = $('input', this);
+        var $container = $(this).closest('.paragraphs-subform');
+        var $link = $container.find('.field--name-field-emergency-alert-link');
+        var $description = $container.find('.field--name-field-emergency-alert-content');
+        var handler = function () {
+          var val = $type.filter(':checked').val();
+          switch (val) {
+            case '0':
+              $link.hide();
+              $description.show();
+              break;
+            case '1':
+              $link.show();
+              $description.hide();
+              break;
+            case '2':
+              $link.hide();
+              $description.hide();
+          }
+        };
+
+        $type.change(handler);
+        handler();
+      });
     }
-  }
+  };
 
-  var $linkTypeFields = $('#edit-field-alert-0-subform-field-emergency-alert-link-type input');
-  var $linkTypeChecked = $('#edit-field-alert-0-subform-field-emergency-alert-link-type input[checked=checked]');
-  var linkType = $linkTypeChecked.val();
-  processLinkType(linkType);
-  $linkTypeFields.click(function () {
-    processLinkType($(this).val());
-  });
-
-})(jQuery);
+})(jQuery, Drupal);
