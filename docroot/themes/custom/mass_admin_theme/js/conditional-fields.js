@@ -133,8 +133,6 @@
           var $size = $(this).val();
           if ($size === 'x-large') {
             $('.field--name-field-tabl-alignment').hide();
-            $('#edit-field-info-details-sections-0-subform-field-section-long-form-content-0-subform-field-tabl-alignment-left').prop('checked', true);
-            $('#edit-field-info-details-sections-0-subform-field-section-long-form-content-0-subform-field-tabl-alignment-right').removeAttr('checked');
             $('.field--name-field-tabl-alignment .fieldgroup').removeAttr('required');
           }
           else {
