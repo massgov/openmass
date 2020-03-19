@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.paragraph.tableau_embed.field_tabl_administrative_title
     - field.field.paragraph.tableau_embed.field_tabl_alignment
+    - field.field.paragraph.tableau_embed.field_tabl_caption
     - field.field.paragraph.tableau_embed.field_tabl_display_size
     - field.field.paragraph.tableau_embed.field_tabl_wrapping
     - field.field.paragraph.tableau_embed.field_url
@@ -12,6 +13,7 @@ dependencies:
   module:
     - mass_content
     - options
+    - text
 id: paragraph.tableau_embed.default
 targetEntityType: paragraph
 bundle: tableau_embed
@@ -32,6 +34,13 @@ content:
     third_party_settings: {  }
     type: list_default
     region: content
+  field_tabl_caption:
+    weight: 5
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
   field_tabl_display_size:
     weight: 2
     label: hidden
@@ -41,7 +50,7 @@ content:
     region: content
   field_tabl_wrapping:
     weight: 4
-    label: above
+    label: hidden
     settings: {  }
     third_party_settings: {  }
     type: list_default

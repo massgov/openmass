@@ -5,12 +5,14 @@ dependencies:
   config:
     - field.field.paragraph.tableau_embed.field_tabl_administrative_title
     - field.field.paragraph.tableau_embed.field_tabl_alignment
+    - field.field.paragraph.tableau_embed.field_tabl_caption
     - field.field.paragraph.tableau_embed.field_tabl_display_size
     - field.field.paragraph.tableau_embed.field_tabl_wrapping
     - field.field.paragraph.tableau_embed.field_url
     - paragraphs.paragraphs_type.tableau_embed
   module:
     - link
+    - text
 id: paragraph.tableau_embed.default
 targetEntityType: paragraph
 bundle: tableau_embed
@@ -30,6 +32,14 @@ content:
     third_party_settings:
       conditional_fields: {  }
     type: options_buttons
+    region: content
+  field_tabl_caption:
+    weight: -94
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
     region: content
   field_tabl_display_size:
     weight: -97
