@@ -1,4 +1,4 @@
-@api @camp
+@api
 Feature: Promotional page (campaign_landing) Content type
   As a MassGov administrator,
   I want to be able to add campaign_landing content,
