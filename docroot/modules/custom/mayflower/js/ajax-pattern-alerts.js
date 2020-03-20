@@ -4,7 +4,7 @@
  *
  * Fields used in processing (formatted as query string):
  *  * fields[node--alert]=title,changed,entity_url,field_alert_severity,field_alert,field_target_pages_para_ref,field_alert_display
- *  * fields[paragraph--emergency_alert]=id,changed,field_emergency_alert_timestamp,field_emergency_alert_message,field_emergency_alert_link,field_emergency_alert_content
+ *  * fields[paragraph--emergency_alert]=drupal_internal__id,changed,field_emergency_alert_timestamp,field_emergency_alert_message,field_emergency_alert_link,field_emergency_alert_content
  *  * fields[paragraph--target_pages]=field_target_content_ref
  *  * include=field_target_pages_para_ref,field_alert
  *  * filter[status][value]=1
@@ -125,14 +125,14 @@
             else if (item.relationships.field_emergency_alert_content.data.length > 0) {
               if (currentAlertItem.attributes.field_alert_display === 'site_wide') {
                 serializedAlertParagraph.link = {
-                  href: '/alerts' + '#' + item.attributes.id,
+                  href: '/alerts' + '#' + item.attributes.drupal_internal__id,
                   text: 'Read more',
                   chevron: true
                 };
               }
               else if (currentAlertItem.attributes.field_alert_display === 'specific_target_pages') {
                 serializedAlertParagraph.link = {
-                  href: currentAlertItem.attributes.entity_url + '#' + item.attributes.id,
+                  href: currentAlertItem.attributes.entity_url + '#' + item.attributes.drupal_internal__id,
                   text: 'Read more',
                   chevron: true
                 };
