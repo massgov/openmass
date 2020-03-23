@@ -34,10 +34,6 @@ if(strpos($branch, "release") !== false){
 elseif (strpos($branch, "hotfix") !==false){
   $version->incrementPatch();
 }
-// If the commit message has the word "major" in it the tag will increment as major.
-elseif (strpos($branch, "major") !==false) {
-  $version->incrementMajor();
-}
 // If none of those words are found the tag will be unable to increment correctly.
 else {
   exit( "Unable to increment the Semantic version for the tag.");
@@ -48,14 +44,7 @@ echo "Here is the new tag" . " " . $version;
 echo "\n";
 echo "";
 
-$tag = exec('git tag' . " " . $version);
-
-// Double check the tag is correct from git tag above.
-echo "Checking what has been tagged in git:" . " " . $tag;
-echo "\n";
-echo "";
-
-// Create a Release in GitHub against master branch for GitHub tag.
+// Create a Release in GitHub against master branch. Github will create a corresponding tag.
 
 // Grab the body from the changelog-body.txt which is created by the build-chagnelog.php
 $markdown = file_get_contents('scripts/changelog-body.txt');
