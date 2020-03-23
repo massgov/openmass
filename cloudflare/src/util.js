@@ -108,6 +108,10 @@ export function isMediaDownloadUrl(url) {
   return url.pathname.match(/^\/media\/\d+\/download$/) || url.pathname.match(/^\/doc\/[^\/]+\/download$/)
 }
 
+export function isCovidURL(url) {
+  return url.pathname.match(/covid/);
+}
+
 export function isValidRedirect(response) {
   return response.status === 301 && response.headers.has('location');
 }
