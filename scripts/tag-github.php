@@ -13,16 +13,12 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 // This will grab the commit subject line from the last commit to master branch.
 $branch = exec('git log -1 --pretty=%s');
 
-echo "Last commit subject message:" . " " . $branch;
-echo "\n";
-echo "";
+echo "Last commit subject message:" . " " . $branch . "\n\n";
 
 // Find the most recent tag in GitHub master branch to update.
 $version = new SemVer\Version(`git describe --abbrev=0 --tags`);
 
-echo "Find the last tag created:" . " " . $version;
-echo "\n";
-echo "";
+echo "Find the last tag created:" . " " . $version . "\n\n";
 
 // The tag version will always be major.minor.patch (e.g. 0.235.0)
 
@@ -40,20 +36,18 @@ else {
 }
 
 // Display the increment tag from the conditional statement above.
-echo "Here is the new tag" . " " . $version;
-echo "\n";
-echo "";
+echo "Here is the new tag " . $version . "\n\n";
 
 // Create a Release in GitHub against master branch. Github will create a corresponding tag.
 
-// Grab the body from the changelog-body.txt which is created by the build-chagnelog.php
+// Grab the body from the changelog-body.txt which is created by the build-changelog.php
 $markdown = file_get_contents('scripts/changelog-body.txt');
 
 // Get cURL resource
 $ch = curl_init();
 
 // Create the tag release with all data
-$data = array("tag_name" => $tag, "target_commitish" => "master", "name" => $tag, "body" => $markdown, "draft" => false, "prerelease" => false);
+$data = ["tag_name" => (string)$version, "target_commitish" => "master", "name" => (string)$version, "body" => $markdown, "draft" => false, "prerelease" => false];
 $data_string = json_encode($data);
 
 curl_setopt($ch, CURLOPT_USERNAME, 'massgov-bot');
