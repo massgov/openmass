@@ -659,6 +659,45 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
           ],
         ];
         break;
+      case "campaign_landing":
+        $fields = [
+          [
+            'field' => 'field-meta-description',
+            'tag' => 'input',
+            'type' => 'text',
+          ],
+          [
+            'field' => 'field-organizations-0-target-id',
+            'tag' => 'input',
+            'type' => 'text',
+          ],
+          [
+            'field' => 'field-promotional-kpi-choice-ctr-button',
+            'tag' => 'input',
+            'type' => 'checkbox',
+          ],
+          [
+            'field' => 'field-promotional-kpi-choice-ctr-button-link',
+            'tag' => 'input',
+            'type' => 'checkbox',
+          ],
+          [
+            'field' => 'field-promotional-kpi-choice-pct-vid-play',
+            'tag' => 'input',
+            'type' => 'checkbox',
+          ],
+          [
+            'field' => 'field-promotional-kpi-choice-pct-vid-watch',
+            'tag' => 'input',
+            'type' => 'checkbox',
+          ],
+          [
+            'field' => 'field-promotional-kpi-choice-num-pgviews',
+            'tag' => 'input',
+            'type' => 'checkbox',
+          ],
+        ];
+        break;
       case "binder":
         $fields = [
           [
