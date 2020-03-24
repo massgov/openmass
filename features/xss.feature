@@ -72,6 +72,10 @@ Feature: As a Massachussetts constituent,
     Given I am viewing any page node
     Then I should not see any vulnerabilities
 
+  Scenario: Promotional Page should not have any vulnerabilities
+    Given I am viewing any campaign_landing node
+    Then I should not see any vulnerabilities
+
   Scenario: Regulations should not have any vulnerabilities
     Given I am viewing any regulation node
     Then I should not see any vulnerabilities
