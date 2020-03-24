@@ -158,3 +158,20 @@ Scenario: Ensure Editors can create, edit and otherwise manage Regulation nodes.
       | delete curated_list revisions  |
       | delete any curated_list content|
       | delete own curated_list content|
+
+  Scenario: Ensure Editors can create, edit and otherwise manage Promotional Page (campaign_landing) nodes.
+    Then the "editor" role should have the permissions:
+      | Permission                        |
+      | create campaign_landing content   |
+      | edit any campaign_landing content |
+      | edit own campaign_landing content |
+      | view campaign_landing revisions   |
+      | use campaign_landing_page transition needs_review              |
+      | use campaign_landing_page transition prepublished_draft        |
+      | use campaign_landing_page transition prepublished_needs_review |
+      | use campaign_landing_page transition to_draft                  |
+    Then the "editor" role should not have the permissions:
+      | Permission                          |
+      | delete campaign_landing revisions   |
+      | delete any campaign_landing content |
+      | delete own campaign_landing content |
