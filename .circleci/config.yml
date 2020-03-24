@@ -181,7 +181,7 @@ jobs:
       - attach_workspace: {at: /var/www}
       - run:
           #Fail when there is no PR. This helps avoid false positives given by Danger when no PR exists.
-          command: [ -z "${CIRCLE_PULL_REQUEST}" ] && DANGER_GITHUB_API_TOKEN=$GITHUB_MASSGOV_BOT_TOKEN yarn danger ci --failOnErrors
+          command: "[ -z ${CIRCLE_PULL_REQUEST} ] && DANGER_GITHUB_API_TOKEN=$GITHUB_MASSGOV_BOT_TOKEN yarn danger ci --failOnErrors"
 
   # Automate the tagging process in GitHub
   tagging_github:
