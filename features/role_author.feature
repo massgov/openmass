@@ -163,6 +163,23 @@ Feature: Author Role
       | delete any curated_list content|
       | delete own curated_list content|
 
+  Scenario: Ensure authors can create, edit and otherwise manage Promotional Page (campaign_landing) nodes.
+    Then the "author" role should have the permissions:
+      | Permission                        |
+      | create campaign_landing content   |
+      | edit any campaign_landing content |
+      | edit own campaign_landing content |
+      | view campaign_landing revisions   |
+      | use campaign_landing_page transition needs_review              |
+      | use campaign_landing_page transition prepublished_draft        |
+      | use campaign_landing_page transition prepublished_needs_review |
+      | use campaign_landing_page transition to_draft                  |
+    Then the "editor" role should not have the permissions:
+      | Permission                          |
+      | delete campaign_landing revisions   |
+      | delete any campaign_landing content |
+      | delete own campaign_landing content |
+
   Scenario: Verify that author's org field gets populated on new content
     Given "user_organization" terms:
       | name              | parent | description_field |

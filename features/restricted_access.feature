@@ -50,6 +50,9 @@ Feature: Restricted Access
     # Org page
     When I visit the node with restricted access to "testGranted" on "Test org page" "org_page" content
     Then I should get a 403 HTTP response
+    # Promotional Page
+    When I visit the node with restricted access to "testGranted" on "Test campaign landing" "campaign_landing" content
+    Then I should get a 403 HTTP response
     # Regulation
     When I visit the node with restricted access to "testGranted" on "Test Regulation" "regulation" content
     Then I should get a 403 HTTP response
@@ -107,6 +110,9 @@ Feature: Restricted Access
     Then I should get a 200 HTTP response
     # Org page:
     When I visit the node with restricted access to "testGranted" on "Test org page 2" "org_page" content
+    Then I should get a 200 HTTP response
+    # Promotional Page
+    When I visit the node with restricted access to "testGranted" on "Test campaign landing" "campaign_landing" content
     Then I should get a 200 HTTP response
     # Regulation
     When I visit the node with restricted access to "testGranted" on "Test Regulation" "regulation" content
