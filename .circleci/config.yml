@@ -192,8 +192,7 @@ jobs:
       # Identify the committer i.e. CircleCI deployment bot
       - run: git config --global user.email "circleci@example.com"
       - run: git config --global user.name "CircleCI Deployment Bot"
-      # Push this build to Acquia's master branch, and tag it there.
-      - run: scripts/tag-release-github
+      - run: php scripts/tag-github.php
 
   # Automate the tagging process by using the GitHub then pushing to Acquia repository.
   tagging_acquia:
