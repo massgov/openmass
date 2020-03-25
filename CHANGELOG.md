@@ -1,5 +1,22 @@
 
 
+## [0.236.0] - March 24, 2020
+
+### Changed
+  - DP-17886: Shorten edge cache TTLs on COVID-19 related pages.
+  - DP-17821: Update filter for basic dashboards (iframe route).
+  
+### Fixed
+  - DP-17924: Adjust PageSpecificAlert test since uid=1 is blocked.
+  - DP-17810: Fixed the json data to output the correct emergency_alert paragraph id for the alerts block.
+  - DP-17838: Make tagging for Hotfix releases work as patch release numbers
+  
+### Added
+  - DP-17851: Add a Redirect Manager role with redirect permissions.
+  - DP-16085: Add behat tests for the Promotional Page (campaign_landing) content-type.
+  
+
+
 ## [0.235.0] - March 17, 2020
 
 ### Fixed
