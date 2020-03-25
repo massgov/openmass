@@ -1,17 +1,17 @@
 
 
-## [0.232.0] - February 26, 2020
+## [0.236.0] - March 24, 2020
 
 ### Changed
-  - DP-17449: Update configuration to suppress Rabbit hole settings on info details, promo page.
-  - DP-16214: Update configuration of pathologic module to include rewriting links to bare mass.gov domain.
-  - DP-17534: Remove unused Terraform files.
-  - DP-17233: add date filter to promo pages iframe route.
-  - DP-17546: Update BackstopJS to the latest stable version (4.4.2)
-  - DP-17546: Speed up Backstop tests by removing the delay.
+  - DP-17886: Shorten edge cache TTLs on COVID-19 related pages.
+  - DP-17821: Update filter for basic dashboards (iframe route).
   
 ### Fixed
-  - DP-17571: Fixes nightly super-sanitized database build that broke following 8.8 update.
-  - DP-17546: Fix false positives for Google Maps in Backstop tests by hot-swapping images with placeholders.
-  - DP-17411: Integrated scheduler_media module with content moderation so documents can be scheduled for publish/unpublish.
+  - DP-17924: Adjust PageSpecificAlert test since uid=1 is blocked.
+  - DP-17810: Fixed the json data to output the correct emergency_alert paragraph id for the alerts block.
+  - DP-17838: Make tagging for Hotfix releases work as patch release numbers
+  
+### Added
+  - DP-17851: Add a Redirect Manager role with redirect permissions.
+  - DP-16085: Add behat tests for the Promotional Page (campaign_landing) content-type.
   

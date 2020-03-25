@@ -1,5 +1,45 @@
 
 
+## [0.236.0] - March 24, 2020
+
+### Changed
+  - DP-17886: Shorten edge cache TTLs on COVID-19 related pages.
+  - DP-17821: Update filter for basic dashboards (iframe route).
+  
+### Fixed
+  - DP-17924: Adjust PageSpecificAlert test since uid=1 is blocked.
+  - DP-17810: Fixed the json data to output the correct emergency_alert paragraph id for the alerts block.
+  - DP-17838: Make tagging for Hotfix releases work as patch release numbers
+  
+### Added
+  - DP-17851: Add a Redirect Manager role with redirect permissions.
+  - DP-16085: Add behat tests for the Promotional Page (campaign_landing) content-type.
+  
+
+
+## [0.235.0] - March 17, 2020
+
+### Fixed
+  - DP-17005: Fix deploy_mayflower_cd to always run on commits on mayflower-dev branch.
+  - DP-17781: Fix mayflower-dev not building when a PR is absent.
+  - DP-17808: Fix conditional states for emergency alert inputs not working properly.
+
+### Changed
+  - DP-17535: Remove ability to create documents inline on a Curated List node.
+  - DP-17737: Alter Cloudflare settings to change edit access for COVID-19.
+  - DP-17756: Update the data and time to trigger release_branch to 13:00 EST on Tuesdays, and change the schedule for mayflower_develop_branch from 11:00 PM Sunday EST to 11:00 PM Thursday EST, and adjust deploy_cd to skip the job on Thursday instead of Sunday to make cd env. available.
+  - DP-17791: Add "Read More" link to teasers shown on /alerts page.
+  - DP-17809: Fixed an issue where document download URLs were not being cleared from cache on initial creation of the document.
+  - DP-178181: |-
+    Updated Mayflower version to 9.44.0.
+         - DP-17625: Visual Story sidebar template and styles adjust. (MF)
+         - DP-17633: Fix geocoding for autocomplete results on location listings. (MF)
+
+### Added
+  - DP-17625: Add list field to info_details page to allow changing layout sidebar display.
+  - DP-17791: Add styling to alert links on alert list page.
+
+
 ## [0.234.1] - March 13, 2020
 
 ### Changed

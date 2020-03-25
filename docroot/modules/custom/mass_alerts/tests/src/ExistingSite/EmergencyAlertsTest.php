@@ -4,17 +4,16 @@ namespace Drupal\Tests\mass_alerts\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
-use Drupal\Tests\mass_utility\Traits\UserTestTrait;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
+use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests basic alert functionality, including JSONAPI customizations.
  */
 class EmergencyAlertsTest extends ExistingSiteBase {
 
-  // This trait brings in massgovLogin()
-  use UserTestTrait;
+  use LoginTrait;
 
   /**
    * Check that the JSONAPI output contains fields we care about.
@@ -63,7 +62,9 @@ class EmergencyAlertsTest extends ExistingSiteBase {
    * Since validation is form based, we post a form in this test.
    */
   public function testPageSpecificAlert() {
-    $this->massgovLogin(User::load(1));
+    $user = User::load(1)->set('status', 1);
+    $user->save();
+    $this->drupalLogin($user);
     $session = $this->getSession();
     $session->visit('/node/add/alert');
     $page = $session->getPage();

@@ -1,5 +1,5 @@
 
-const {isStaticUrl, isAlertsUrl, isDrupalResponse, isMediaDownloadUrl, isValidRedirect, isFileRedirect} = require('./util');
+const {isStaticUrl, isAlertsUrl, isCovidURL, isMediaDownloadUrl, isValidRedirect, isFileRedirect} = require('./util');
 // Used to ensure safe handling of content-disposition headers
 // for media download pre-resolution.
 const contentDisposition = require('content-disposition');
@@ -50,6 +50,11 @@ export function edit(token) {
     }
     else if(isStaticUrl(url)) {
       browserTTL = RESPECT_ORIGIN
+    }
+    // Temporarily shift all COVID-19 related pages to a 1 minute browser
+    // lifetime.
+    else if(isCovidURL(url)) {
+      browserTTL = 60;
     }
 
     let response = await fetch(backendRequest)
@@ -113,6 +118,12 @@ export function www(token) {
     else if(isStaticUrl(url)) {
       edgeTTL = RESPECT_ORIGIN
       browserTTL = RESPECT_ORIGIN
+    }
+    // Temporarily shift all COVID-19 related pages to a 1 minute edge/browser
+    // lifetime.
+    else if(isCovidURL(url)) {
+      edgeTTL = 60
+      browserTTL = 60;
     }
 
     // Fetch from the origin, overriding edge TTL if necessary.
