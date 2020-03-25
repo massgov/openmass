@@ -74,4 +74,28 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $this->assertContains('must show on at least one page', $page->getText());
   }
 
+  /**
+   * Assert that our validation prevents saving multiple sitewide alerts.
+   */
+  public function testSitewideAlert() {
+    // Save 1 sitewide alert to start with.
+    $this->createNode([
+      'type' => 'alert',
+      'field_alert_display' => 'site_wide',
+      'moderation_state' => 'published',
+      'status' => 1,
+    ]);
+
+    $user = User::load(1)->set('status', 1);
+    $user->save();
+    $this->drupalLogin($user);
+    $session = $this->getSession();
+    $session->visit('/node/add/alert');
+    $page = $session->getPage();
+    $page->fillField('field_alert_display', 'site_wide');
+    $page->selectFieldOption('moderation_state[0][state]', 'published');
+    $page->findButton('Save')->press();
+    $this->assertContains('A published site wide alert already exists.', $page->getText());
+  }
+
 }
