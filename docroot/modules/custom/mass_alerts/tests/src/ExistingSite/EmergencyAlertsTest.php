@@ -95,7 +95,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page->fillField('field_alert_display', 'site_wide');
     $page->selectFieldOption('moderation_state[0][state]', 'published');
     $page->findButton('Save')->press();
-    $this->assertContains('A published site wide alert already exists.', $page->getText());
+    $this->assertContains('This sitewide alert cannot be published because another sitewide alert is currently active:', $page->getText());
   }
 
 }

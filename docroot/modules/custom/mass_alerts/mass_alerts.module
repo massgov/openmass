@@ -12,6 +12,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\node\NodeInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\Entity\Node;
 
 /**
  * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
@@ -84,8 +85,12 @@ function _mass_alerts_validate_site_wide_alert_creation(array &$form, FormStateI
       if ($entity->id()) {
         $query->condition('nid', $entity->id(), '!=');
       }
-      if ($query->count()->execute() > 0) {
-        $form_state->setErrorByName('moderation_state', 'A published site wide alert already exists.');
+      $existing = $query->execute();
+      if (count($existing) > 0) {
+        if ($existingNode = Node::load(reset($existing))) {
+          $link = $existingNode->toLink()->toString();
+          $form_state->setError($form, t('This sitewide alert cannot be published because another sitewide alert is currently active: %link. Only one sitewide alert can be active at a time. To publish this alert, please unpublish the existing one first.', ['%link' => $link]));
+        }
       }
     }
   }
