@@ -14,6 +14,9 @@ use Drupal\Core\Entity\EntityInterface;
  * Purge the file's path when a file is created.
  */
 function mass_caching_file_insert(FileInterface $file) {
+  if (_mass_caching_uri_is_private($file->getFileUri())) {
+    return;
+  }
   // Must purge the file on all domains/schemes, so we
   // use a path purge here, which is converted to a url.
   $absolute = file_create_url($file->getFileUri());
@@ -27,6 +30,9 @@ function mass_caching_file_insert(FileInterface $file) {
  * Purge the file's path when a file is updated.
  */
 function mass_caching_file_update(FileInterface $file) {
+  if (_mass_caching_uri_is_private($file->getFileUri())) {
+    return;
+  }
   // Must purge the file on all domains/schemes, so we
   // use a path purge here, which is converted to a url.
   $absolute = file_create_url($file->getFileUri());
@@ -40,6 +46,25 @@ function mass_caching_file_update(FileInterface $file) {
  * Purge the file's path when a file is deleted.
  */
 function mass_caching_file_delete(FileInterface $file) {
+  if (_mass_caching_uri_is_private($file->getFileUri())) {
+    return;
+  }
+  // Must purge the file on all domains/schemes, so we
+  // use a path purge here, which is converted to a url.
+  $absolute = file_create_url($file->getFileUri());
+  $relative = file_url_transform_relative($absolute);
+  \Drupal::service('manual_purger')->purgePath($relative);
+}
+
+/**
+ * Implements hook_file_insert().
+ *
+ * Purge the file's path when a file is created.
+ */
+function mass_caching_file_move(FileInterface $file, FileInterface $source) {
+  if (_mass_caching_uri_is_private($file->getFileUri())) {
+    return;
+  }
   // Must purge the file on all domains/schemes, so we
   // use a path purge here, which is converted to a url.
   $absolute = file_create_url($file->getFileUri());
@@ -129,4 +154,18 @@ function mass_caching_entity_insert(EntityInterface $entity) {
   foreach (array_unique($paths) as $path) {
     $purger->purgePath($path);
   }
+}
+
+/**
+ * Determine whether a file uri is private.
+ *
+ * @param string $uri
+ *   A stream, referenced as "scheme://target" or "data:target".
+ *
+ * @return bool
+ *   TRUE if the uri is private FALSE if it is anything else.
+ */
+function _mass_caching_uri_is_private($uri) {
+  $file_system = \Drupal::service('file_system');
+  return strpos($file_system->uriScheme($uri), 'public');
 }
