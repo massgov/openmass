@@ -65,7 +65,7 @@ function mass_alerts_validate_alert_placement(array &$form, FormStateInterface $
  * Validates site wide alert creation.
  */
 function _mass_alerts_validate_site_wide_alert_creation(array &$form, FormStateInterface $form_state) {
-  $alert_display = $form_state->getValue(['field_alert_display', 0, 'value']);
+  $alert_display = $form_state->getValue(['field_alert_display', '0', 'value']);
   if ($alert_display == "site_wide") {
     // Only users with permission should be allowed site wide alert creation.
     if (!\Drupal::currentUser()->hasPermission('create site wide alerts')) {
