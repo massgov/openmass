@@ -79,6 +79,10 @@ class EmergencyAlertsTest extends ExistingSiteBase {
    * Assert that our validation prevents saving multiple sitewide alerts.
    */
   public function testSitewideAlert() {
+    $user = User::load(1)->set('status', 1);
+    $user->save();
+    $this->drupalLogin($user);
+
     // Save 1 sitewide alert to start with.
     $this->createNode([
       'type' => 'alert',
@@ -90,10 +94,6 @@ class EmergencyAlertsTest extends ExistingSiteBase {
         'field_emergency_alert_message' => 'test',
       ])
     ]);
-
-    $user = User::load(1)->set('status', 1);
-    $user->save();
-    $this->drupalLogin($user);
     $session = $this->getSession();
     $session->visit('/node/add/alert');
     $page = $session->getPage();
