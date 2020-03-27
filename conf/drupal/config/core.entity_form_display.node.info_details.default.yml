@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.info_details.field_banner_image
     - field.field.node.info_details.field_contact
     - field.field.node.info_details.field_data_flag
     - field.field.node.info_details.field_data_resource_type
@@ -22,12 +23,14 @@ dependencies:
     - field.field.node.info_details.field_reusable_label
     - field.field.node.info_details.field_short_desc
     - field.field.node.info_details.field_state_organization_tax
+    - image.style.thumbnail
     - node.type.info_details
     - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
     - field_group
+    - image
     - link
     - mass_validation
     - metatag
@@ -55,6 +58,7 @@ third_party_settings:
       children:
         - title
         - field_short_desc
+        - field_banner_image
         - field_info_detail_overview
         - group_header_media
         - field_info_details_date_publishe
@@ -107,7 +111,7 @@ third_party_settings:
       children:
         - field_info_details_header_media
       parent_name: group_overview
-      weight: 4
+      weight: 5
       format_type: fieldset
       format_settings:
         label: 'Header Media'
@@ -135,6 +139,14 @@ targetEntityType: node
 bundle: info_details
 mode: default
 content:
+  field_banner_image:
+    weight: 3
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
   field_contact:
     weight: 27
     settings:
@@ -146,13 +158,13 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_data_flag:
-    weight: 10
+    weight: 11
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_data_resource_type:
-    weight: 12
+    weight: 13
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -176,7 +188,7 @@ content:
     type: options_buttons
     region: content
   field_details_data_type:
-    weight: 11
+    weight: 12
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -216,7 +228,7 @@ content:
     type: string_textfield
     region: content
   field_info_detail_overview:
-    weight: 3
+    weight: 4
     settings:
       rows: 5
       placeholder: ''
@@ -224,7 +236,7 @@ content:
     type: text_textarea
     region: content
   field_info_details_date_publishe:
-    weight: 5
+    weight: 6
     settings: {  }
     third_party_settings: {  }
     type: datetime_default
@@ -242,7 +254,7 @@ content:
     third_party_settings: {  }
     region: content
   field_info_details_last_updated:
-    weight: 6
+    weight: 7
     settings: {  }
     third_party_settings: {  }
     type: datetime_default
@@ -279,13 +291,13 @@ content:
     type: metatag_firehose
     region: content
   field_intended_audience:
-    weight: 13
+    weight: 14
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 9
+    weight: 10
     settings:
       match_operator: CONTAINS
       size: 60
@@ -295,14 +307,14 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_page_template:
-    weight: 7
+    weight: 8
     settings: {  }
     third_party_settings: {  }
     type: options_select
     region: content
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 8
+    weight: 9
     region: content
     settings:
       match_operator: CONTAINS
