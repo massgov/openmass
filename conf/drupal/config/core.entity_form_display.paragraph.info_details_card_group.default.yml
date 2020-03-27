@@ -1,0 +1,52 @@
+uuid: 30955d73-92b4-4447-a26a-9aa4f5ae8c5b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.info_details_card_group.field_card_link
+    - field.field.paragraph.info_details_card_group.field_section_title
+    - field.field.paragraph.info_details_card_group.field_summary
+    - paragraphs.paragraphs_type.info_details_card_group
+  module:
+    - paragraphs
+id: paragraph.info_details_card_group.default
+targetEntityType: paragraph
+bundle: info_details_card_group
+mode: default
+content:
+  field_card_link:
+    type: entity_reference_paragraphs
+    weight: -97
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+    third_party_settings: {  }
+    region: content
+  field_section_title:
+    weight: -99
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_summary:
+    weight: -98
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+  paragraphs_type_help__default:
+    weight: -100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true
