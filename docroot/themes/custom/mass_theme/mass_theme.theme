@@ -4937,7 +4937,8 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
           'href' => $link[0]['href'],
           'text' => $link[0]['text'],
         ],
-        'type' => 'callout',
+        'level' => 3,
+        'type' => '',
         'description' => Helper::fieldFullView($p, 'field_content'),
         'links' => '',
         'seeAll' => $seeAll,
@@ -4946,14 +4947,6 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
     }
     $variables['sectionContent'][$numOfSections]['sectionThreeUp'] = $sections;
   }
-
-
-//  $sections = [];
-//  foreach ($entity->referencedEntities() as $index => $paragraph) {
-//     $variables['numOfSections'] = $index++;
-//     $sections[] = $paragraph;
-//     $variables['content'][$index]['sectionThreeUp'] = $sections;
-//  }
 }
 
 /**
