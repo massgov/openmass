@@ -1573,5 +1573,9 @@ function mass_validation_form_node_info_details_edit_form_alter(&$form, FormStat
     $form['field_page_template']['#attributes']['class'][] = 'js-hide';
   }
 
+  if (count(array_intersect(['administrator', 'content_team'], $user->getRoles())) === 0) {
+    $form['field_banner_image']['#attributes']['class'][] = 'js-hide';
+  }
+
   $form['field_page_template']['widget']['#options']['_none'] = 'Information details';
 }

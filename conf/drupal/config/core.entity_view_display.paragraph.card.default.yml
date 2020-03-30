@@ -1,0 +1,37 @@
+uuid: 282c7723-63ce-42d1-81f7-771ea1d5186f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.card.field_card_link
+    - field.field.paragraph.card.field_content
+    - paragraphs.paragraphs_type.card
+  module:
+    - link
+    - text
+id: paragraph.card.default
+targetEntityType: paragraph
+bundle: card
+mode: default
+content:
+  field_card_link:
+    weight: 0
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_content:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+hidden:
+  paragraphs_type_help__default: true
