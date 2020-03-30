@@ -1,20 +1,38 @@
 
 
+## [0.237.0] - March 30, 2020
+
+### Changed
+  - DP-16926: Uninstalled the paragraphs_type_help module.
+  - DP-17772: Block alerts in most BackstopJS tests.
+  - DP-17938: At CircleCI, fail Danger if no PR exists.
+  - DP-17961: Allow How-to and Form nodes to be added to binders.
+  - DP-17989: Only allow content admins to add Callout Link and Card paragraphs to the Info Details content type.
+
+### Fixed
+  - DP-17959: Fix github tagging during release
+
+### Added
+  - DP-17971: Add a field template to wrap callout links in rich text container as action items and css to style them.
+  - DP-17971: Adds info details card group paragraph type and styles.
+  - DP-17972: Added a new banner-image field to info_details node which provided an alternate header option.
+
+
 ## [0.236.0] - March 24, 2020
 
 ### Changed
   - DP-17886: Shorten edge cache TTLs on COVID-19 related pages.
   - DP-17821: Update filter for basic dashboards (iframe route).
-  
+
 ### Fixed
   - DP-17924: Adjust PageSpecificAlert test since uid=1 is blocked.
   - DP-17810: Fixed the json data to output the correct emergency_alert paragraph id for the alerts block.
   - DP-17838: Make tagging for Hotfix releases work as patch release numbers
-  
+
 ### Added
   - DP-17851: Add a Redirect Manager role with redirect permissions.
   - DP-16085: Add behat tests for the Promotional Page (campaign_landing) content-type.
-  
+
 
 
 ## [0.235.0] - March 17, 2020
