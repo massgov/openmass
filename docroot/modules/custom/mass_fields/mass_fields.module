@@ -18,6 +18,7 @@ use Drupal\Core\TypedData\Plugin\DataType\Uri;
 use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_entity_insert().
@@ -578,20 +579,20 @@ function mass_fields_theme() {
  * Block access to add "Callout Link" and "Card Group" paragraphs on the
  * info details node form unless the user is specially permissioned.
  */
-function mass_fields_form_node_info_details_edit_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $formState) {
+function mass_fields_form_node_info_details_edit_form_alter(&$form, FormStateInterface $formState) {
   $restricted_types = [
     'callout_link',
     'info_details_card_group',
   ];
-  if(isset($form['field_info_details_sections']) && isset($form['field_info_details_sections']['widget'])) {
-    foreach(Element::children($form['field_info_details_sections']['widget']) as $key) {
-      if(isset($form['field_info_details_sections']['widget'][$key]['subform'])) {
+  if (isset($form['field_info_details_sections']) && isset($form['field_info_details_sections']['widget'])) {
+    foreach (Element::children($form['field_info_details_sections']['widget']) as $key) {
+      if (isset($form['field_info_details_sections']['widget'][$key]['subform'])) {
         $subform =& $form['field_info_details_sections']['widget'][$key]['subform'];
-        foreach($restricted_types as $restricted_type) {
+        foreach ($restricted_types as $restricted_type) {
           $add_more_container =& $subform['field_section_long_form_content']['widget']['add_more'];
-          if(isset($add_more_container["add_more_button_{$restricted_type}"])) {
+          if (isset($add_more_container["add_more_button_{$restricted_type}"])) {
             $result = AccessResult::allowedIfHasPermission(\Drupal::currentUser(), 'special');
-            if(isset($add_more_container['#access'])) {
+            if (isset($add_more_container['#access'])) {
               $result = $result->andIf($add_more_container['#access']);
             }
             $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $result;
