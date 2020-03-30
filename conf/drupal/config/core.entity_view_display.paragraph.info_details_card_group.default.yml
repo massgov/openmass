@@ -3,9 +3,8 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.paragraph.info_details_card_group.field_card_link
+    - field.field.paragraph.info_details_card_group.field_card
     - field.field.paragraph.info_details_card_group.field_section_title
-    - field.field.paragraph.info_details_card_group.field_summary
     - paragraphs.paragraphs_type.info_details_card_group
   module:
     - entity_reference_revisions
@@ -14,9 +13,9 @@ targetEntityType: paragraph
 bundle: info_details_card_group
 mode: default
 content:
-  field_card_link:
+  field_card:
     type: entity_reference_revisions_entity_view
-    weight: 2
+    weight: 5
     label: above
     settings:
       view_mode: default
@@ -30,13 +29,6 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     type: string
-    region: content
-  field_summary:
-    weight: 1
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-    type: basic_string
     region: content
 hidden:
   paragraphs_type_help__default: true
