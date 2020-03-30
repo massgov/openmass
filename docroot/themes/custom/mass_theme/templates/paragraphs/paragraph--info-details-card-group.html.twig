@@ -43,6 +43,16 @@
 {% for i in range(1, numOfSections) %}
   {% if sectionContent[i]['sectionThreeUp'] %}
     {% set sectionThreeUp = sectionContent[i]['sectionThreeUp'] %}
-    {% include "@organisms/by-author/sections-three-up.twig" %}
+    {% set linkHeading = 3 %}
+    <section class="ma__sections-3up">
+      <div class="ma__sections-3up__container">
+        {% block sectionLinks %}
+          {% for sectionLinks in sectionThreeUp.sections %}
+            {% set sectionLinks = sectionLinks|merge({'level': linkHeading }) %}
+            {% include "@molecules/section-links.twig" with sectionLinks %}
+          {% endfor %}
+        {% endblock %}
+      </div>
+    </section>
   {% endif %}
 {% endfor %}
