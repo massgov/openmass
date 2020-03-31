@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\mass_utility\ExistingSite;
+namespace Drupal\Tests\mass_media\ExistingSite;
 
 use Drupal\file\Entity\File;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
