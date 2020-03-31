@@ -32,24 +32,24 @@ class AutomatedPurgingTest extends ExistingSiteBase {
     ]);
     $file->save();
     $this->markEntityForCleanup($file);
-    $this->assertCount(1, $this->getInvalidations('url', $file->createFileUrl()));
+    $this->assertCount(1, $this->getInvalidations('url', $file->url()));
     $file->set('uri', 'public://llama-44.txt');
     $file->save();
-    $this->assertCount(1, $this->getInvalidations('url', $file->createFileUrl()));
+    $this->assertCount(1, $this->getInvalidations('url', $file->url()));
   }
 
   /**
    * Test that purge is skipped for private files.
    */
   public function testFileCreationPrivateResultsInNoPurge() {
-    // Create a "Llama" media item  - private
+    // Create a "Llama" media item  - private.
     file_put_contents('private://llama-45.txt', 'Test');
     $file = File::create([
       'uri' => 'private://llama-45.txt',
     ]);
     $file->save();
     $this->markEntityForCleanup($file);
-    $this->assertCount(0, $this->getInvalidations('url', $file->createFileUrl()));
+    $this->assertCount(0, $this->getInvalidations('url', $file->url()));
   }
 
   /**
