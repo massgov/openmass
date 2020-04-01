@@ -1,8 +1,7 @@
+const {crawl, test, after} = require('lastcall-nightcrawler');
+const expect = require('expect');
+const {fetchTypes, fetchSamplesForType} = require('./fetch_urls');
 
-var Crawler = require('lastcall-nightcrawler');
-var RequestDriver = Crawler.drivers.request;
-const fetchAllUrlsFromDrush = require('./fetch_urls')
-const metrics = require('./metrics');
 
 /**
  * There are two undocumented flags you can use with this
@@ -61,74 +60,62 @@ function getAuth() {
   if(!process.env.LOWER_ENVIR_AUTH_USER) {
     throw new Error('LOWER_ENVIR_AUTH_USER environment variable has not been set. Please set it before attempting to run nightcrawler in this environment.')
   }
-  return {
-    user: process.env.LOWER_ENVIR_AUTH_USER.replace(/(^["']|["']$)/g, ''),
-    password: process.env.LOWER_ENVIR_AUTH_PASS.replace(/(^["']|["']$)/g, '')
-  };
+  return [
+    process.env.LOWER_ENVIR_AUTH_USER.replace(/(^["']|["']$)/g, ''),
+    process.env.LOWER_ENVIR_AUTH_PASS.replace(/(^["']|["']$)/g, '')
+  ].join(':')
 }
 
-var driver = new RequestDriver({
-  strictSSL: false,
-  // This number is arbitrary - we report performance statistics during
-  // the crawl - we just want to avoid a failure here due to timeout, which
-  // occurs for the first pageview on a cold cache.
-  timeout: 15000,
-  auth: auth,
-});
-var crawler = new Crawler('Mass.gov', driver);
-
-/**
- * Queue requests by querying the database.
- */
-crawler.on('setup', function() {
-  return fetchAllUrlsFromDrush(base, alias, sampleSize)
-    .then(function(requests) {
-      requests.forEach(function(request) {
-        crawler.enqueue(request);
-      })
-    })
-});
-
-// Collect additional data about each response.
-crawler.on('response.success', function(response, data) {
-  data.statusMessage = response.statusMessage;
-});
-
-/**
- * Analyze the data once it's been collected.
- */
-crawler.on('analyze', function(report, analysis) {
-  const responses = report.data;
-
-  analysis.addMetric('time', metrics.responseTime(responses, 'Average TTFB', 1250));
-  analysis.addMetric('500s', metrics.serverErrors(responses, '500 Requests', 0));
-  collectGroups(responses).forEach(function(group) {
-    const groupResponses = responses.filter(getGroupFilter(group))
-    analysis.addMetric(group+'.time', metrics.responseTime(groupResponses, 'Average TTFB: ' + group, 2250))
-    analysis.addMetric(group+'.500s', metrics.serverErrors(groupResponses, '500 Requests: ' + group, 0));
-  })
-  responses.forEach(function(response) {
-    var level = response.statusCode > 499 ? 2 : 0;
-    analysis.addResult(response.url, level, response.backendTime, response.statusMessage);
-  });
-});
-
-function getGroupFilter(group) {
-  return function(request) {
-    return request.group.indexOf(group) !== -1
+function average(points) {
+  if(points.length === 0) {
+    return 0;
   }
+  return points.reduce((c, t) => c + t, 0) / points.length;
 }
 
-function collectGroups(requests) {
-  return requests.reduce(function(groups, request) {
-    request.group.forEach(function(group) {
-      if(groups.indexOf(group) === -1) {
-        groups.push(group)
-      }
+const expectedTimes = {
+  default: 2250,
+  // Set time expectations for each content type here:
+  // info_details: 1000
+};
+
+module.exports = crawl('Mass.gov', async function() {
+  const totals = new Map();
+
+  test('Each URL should return a 2xx response code', function(unit) {
+    // Collect response time for each request.
+    const groupTotals = totals.get(unit.request.group) || [];
+    groupTotals.push(unit.response.time);
+    totals.set(unit.request.group, groupTotals);
+
+    // Assert that the response is not a server error.
+    expect(unit.response.statusCode).toBeLessThan(500);
+  });
+
+  // Fetch all content types from the system.
+  const types = await fetchTypes(alias);
+
+  // Assert average response time.
+  for(const type of types) {
+    const expectation = expectedTimes.hasOwnProperty(type) ? type : expectedTimes.default;
+    after(`Average response time for ${type} should be < ${expectation}`, function() {
+      const groupTimes = totals.get(`node:${type}`) || [];
+      expect(average(groupTimes)).toBeLessThan(expectation);
     })
-    return groups;
-  }, []);
-}
+  }
 
-module.exports = crawler;
+  // Return an async generator that fetches the URLs to crawl as we need them.
+  return async function* () {
+    for(const type of types) {
+      const urls = await fetchSamplesForType(alias, type, sampleSize);
+      for(const url of urls) {
+        yield {
+          url: `${base}${url}`,
+          group: ['node', `node:${type}`],
+          options: {auth, timeout: 15000}
+        }
+      }
+    }
+  }();
+});
 

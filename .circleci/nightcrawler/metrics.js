@@ -3,10 +3,10 @@ var metrics = require('lastcall-nightcrawler/dist/metrics');
 function responseTime(responses, label, max) {
   // Base our averages on only responses that have a backendTime property.
   var responsesWithTime = responses.filter(function(response) {
-    return response.hasOwnProperty('backendTime');
+    return response.hasOwnProperty('time');
   });
   var totalTime = responsesWithTime.reduce(function(sum, response) {
-    return sum + response.backendTime;
+    return sum + response.time;
   }, 0);
   var avgTime = responsesWithTime.length > 0
     ? totalTime / responsesWithTime.length

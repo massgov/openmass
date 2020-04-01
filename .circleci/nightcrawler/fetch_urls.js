@@ -1,26 +1,4 @@
-
-const Promise = require('bluebird')
-const request = require('request-promise');
-const cp = require('child-process-promise');
-
-function fetchUrls(base, alias, sampleSize) {
-  return fetchTypes(alias)
-    .then(function(types) {
-      return Promise.map(types, function(type) {
-        return fetchNodeUrls(alias, type, sampleSize)
-          .then(function(urls) {
-            return urls.map(function(url) {
-              return {
-                url: base + url,
-                group: ['node', 'node:' + type]
-              }
-            })
-          })
-      }, {concurrency: 2}).reduce(flattenResultArrays, [])
-    })
-}
-
-module.exports = fetchUrls;
+const cp = require('child_process');
 
 /**
  * Fetch an array of node types.
@@ -47,26 +25,35 @@ function fetchTypes(alias) {
  * @param string query
  *    The query to run.
  */
-function runQuery(alias, query) {
-  // var promise = cp.spawn('drush', [alias, 'ssh', 'drush sql-cli'], {capture: ['stdout', 'stderr']})
-  var promise = cp.spawn('drush', [alias, 'sql-cli'], {capture: ['stdout', 'stderr']})
+async function runQuery(alias, query) {
+  const child = cp.spawn('drush', [alias, 'sql-cli']);
+  return new Promise((resolve, reject) => {
+    let stdout = Buffer.from('');
+    let stderr = Buffer.from('');
 
-  return promise
-    .progress(function(child) {
-      child.stdin.setEncoding('utf-8')
-      child.stdin.write(query)
+    child.stdout.on('data', data => stdout = Buffer.concat([stdout, data]));
+    child.stderr.on('data', data => stderr = Buffer.concat([stderr, data]));
+    child.once('exit', (code, signal) => {
+      if(code === 0) {
+        resolve(
+          stdout.toString('utf8')
+            .trim()// Strip trailing newlines.
+            .split('\n') // Explode on newline.
+            .slice(1) // Cut off the header.
+            .map(row => row.split('\t')) // Split columns
+        );
+      }
+      else {
+        reject(`Exit with error code: ${code}. Message: ${stdout.toString()}`)
+      }
+    });
+    child.once('error', err => {
+      reject(err);
+    });
+    child.stdin.write(query, () => {
       child.stdin.end();
     })
-    .then(function(result) {
-      return result.stdout
-        .trim() // Strip trailing newlines.
-        .split('\n') // Explode on newline.
-        .slice(1) // Cut off the header.
-        .map(function(row) { return row.split('\t')}) // Explode each row on tabs.
-    })
-    .catch(function(result) {
-      return Promise.reject('Error running SQL: ' + result.stderr);
-    })
+  });
 }
 
 /**
@@ -81,7 +68,7 @@ function runQuery(alias, query) {
  *
  * @return Promise<Array<String>>
  */
-function fetchNodeUrls(alias, type, sampleSize) {
+function fetchSamplesForType(alias, type, sampleSize) {
   var query = "SELECT alias, CONCAT('/node/', nid) AS entity FROM node_field_data n INNER JOIN path_alias u ON CONCAT('/node/', n.nid) = u.path WHERE n.status = 1 AND type = '" + type + "' LIMIT " + sampleSize;
 
   return runQuery(alias, query).then(function(rows) {
@@ -91,6 +78,7 @@ function fetchNodeUrls(alias, type, sampleSize) {
   })
 }
 
-function flattenResultArrays(prev, curr) {
-  return prev.concat(curr);
+module.exports = {
+  fetchTypes,
+  fetchSamplesForType
 }
