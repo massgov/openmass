@@ -188,8 +188,8 @@ jobs:
     <<: *container_config
     working_directory: /var/www/code
     steps:
+      - attach_workspace: {at: /var/www}
       - *no_host_check
-      - checkout
       # Identify the committer i.e. CircleCI deployment bot
       - run: git config --global user.email "circleci@example.com"
       - run: git config --global user.name "CircleCI Deployment Bot"
