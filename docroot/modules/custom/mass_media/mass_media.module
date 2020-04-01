@@ -188,10 +188,11 @@ function mass_media_media_presave(MediaInterface $entity) {
       if (!empty($file_destination)) {
         $dirname = $file_system->dirname($file_destination);
         if (!file_prepare_directory($dirname, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS)) {
-          \Drupal::logger('mass_media')
-            ->error(t('Could not prepare directory needed to move file between public and private file systems.'));
+          throw new \RuntimeException("Unable to prepare directory for file move '$dirname'");
         }
-        file_move($file, $file_destination);
+        if (!file_move($file, $file_destination)) {
+          throw new \RuntimeException("Unable to move file to '$file_destination'");
+        }
       }
     }
   }
