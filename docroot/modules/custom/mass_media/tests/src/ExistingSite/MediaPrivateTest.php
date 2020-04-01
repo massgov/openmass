@@ -3,6 +3,7 @@
 namespace Drupal\Tests\mass_media\ExistingSite;
 
 use Drupal\file\Entity\File;
+use Drupal\mass_content_moderation\MassModeration;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
@@ -12,6 +13,34 @@ use weitzman\DrupalTestTraits\ExistingSiteBase;
 class MediaPrivateTest extends ExistingSiteBase {
 
   use MediaCreationTrait;
+
+  /**
+   * Media files are moved to private for new media draft.
+   */
+  public function testMovesFileToPrivateOnDraft() {
+    // Create a "Llama" media item.
+    file_put_contents('public://llama-43.txt', 'Test');
+    $file = File::create([
+      'uri' => 'public://llama-43.txt',
+    ]);
+    $media = $this->createMedia([
+      'title' => 'Llama',
+      'bundle' => 'document',
+      'field_upload_file' => [$file],
+    ]);
+    array_pop($this->cleanupEntities);
+    $media->setNewRevision();
+    $media->set('moderation_state', MassModeration::DRAFT)->save();
+    // Request cleanup after the switch to private has occurred.
+    $this->markEntityForCleanup($media);
+
+    $file2 = File::load($media->field_upload_file->target_id);
+    $fs = \Drupal::service('file_system');
+    $this->assertEquals('private', $fs->uriScheme($file2->getFileUri()));
+
+    // Make sure the original public file is gone. See mass_caching_file_move().
+    $this->assertFileNotExists($file->getFileUri());
+  }
 
   /**
    * Media files are moved to private on media unpublish.
