@@ -1,5 +1,18 @@
 
 
+## [0.237.1] - March 31, 2020
+
+### Changed
+  - DP-18016: Changed overrides/css/callout-link.css file name to be more generic to info details page, overrides/css/info-details-richtext.css.
+  - DP-18021: |-
+    Updated Mayflower version to 9.45.2.
+        - DP-17674: Add a new style for link list in service page. (MF)
+        - DP-18000: Make top-level nav items clickable. (MF)
+        - DP-18018: Add alternate style for COVID-19 link. (MF)
+
+### Added
+  - DP-18016: Add override style for the section links component in .ma__rich-text.
+
 ## [0.237.0] - March 30, 2020
 
 ### Changed
