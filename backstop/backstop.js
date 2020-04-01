@@ -39,10 +39,10 @@ const scenarios = pages.map(function(page) {
       auth = getAuth();
   }
   return {
-      label: page.label,
-      url: `${base}${page.url}`,
-      auth: auth,
-      misMatchThreshold: 0.05,
+    ...page,
+    url: `${base}${page.url}`,
+    misMatchThreshold: 0.05,
+    auth,
   }
 });
 
