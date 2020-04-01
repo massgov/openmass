@@ -29,6 +29,7 @@ class MediaPrivateTest extends ExistingSiteBase {
       'field_upload_file' => [$file],
     ]);
     array_pop($this->cleanupEntities);
+
     $media->setNewRevision();
     $media->set('moderation_state', MassModeration::DRAFT)->save();
     // Request cleanup after the switch to private has occurred.
