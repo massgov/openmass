@@ -1483,12 +1483,16 @@ function mass_theme_preprocess_node_info_details(&$variables) {
     $node = $variables['node'];
 
     $variables['tableauEmbeded'] = FALSE;
+    $variables['cardGroup'] = FALSE;
 
     foreach ($node->get('field_info_details_sections')->referencedEntities() as $section) {
       $ref_entities = $section->get('field_section_long_form_content')->referencedEntities();
-      foreach ($ref_entities as $entity) {
+      foreach ($ref_entities as $index => $entity) {
         if ($entity->bundle() == 'tableau_embed') {
           $variables['tableauEmbeded'] = TRUE;
+        }
+        if ($entity->bundle() == 'info_details_card_group') {
+          $variables['cardGroup'] = TRUE;
         }
       }
     }
@@ -4907,6 +4911,41 @@ function mass_theme_preprocess_paragraph(&$variables) {
   $function = __FUNCTION__ . '__' . $paragraph->getType();
   if (function_exists($function)) {
     $function($variables);
+  }
+}
+
+/**
+ * Implements hook_preprocess_paragraph().
+ *
+ * Process info_details card group/
+ */
+function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
+  $entity = $variables['paragraph'];
+
+  if (!$entity->field_card->isEmpty()) {
+    $entities = $entity->get('field_card')->referencedEntities();
+    foreach ($entities as $index => $p) {
+      $numOfSections = ++$index;
+      $variables['numOfSections'] = $numOfSections;
+      $link = Helper::separatedLinks($p, 'field_card_link');
+      $seeAll = [
+        'href' => $link[0]['href'],
+        'text' => 'more',
+      ];
+      $sectionLinks[] = [
+        'title' => [
+          'href' => $link[0]['href'],
+          'text' => $link[0]['text'],
+        ],
+        'level' => 3,
+        'type' => '',
+        'description' => Helper::fieldFullView($p, 'field_content'),
+        'links' => '',
+        'seeAll' => $seeAll,
+      ];
+      $sections = ['sections' => $sectionLinks];
+    }
+    $variables['sectionContent'][$numOfSections]['sectionThreeUp'] = $sections;
   }
 }
 

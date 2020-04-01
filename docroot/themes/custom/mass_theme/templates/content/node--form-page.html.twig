@@ -36,6 +36,7 @@
       {{ content.computed_related_to }}
     {% endblock %}
   {% endembed %}
+  {{ content.referencing_binders }}
   {% include "@organisms/by-template/page-header.twig" %}
 {% endblock %}
 
@@ -84,5 +85,6 @@
 {% endblock %}
 
 {% block postContent %}
+  {{ content.extra_node_pager }}
   {{ content.extra_org_feedback_form }}
 {% endblock %}
