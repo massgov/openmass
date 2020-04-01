@@ -40,7 +40,7 @@ echo "Here is the new tag " . $version . "\n\n";
 
 // Create a Release in GitHub against master branch. Github will create a corresponding tag.
 
-// Grab the body from the changelog-body.txt which is created by the build-changelog.php
+// Grab the body from the changelog-body.txt which is created by the build-changelog.php for releases only
 $markdown = file_get_contents('scripts/changelog-body.txt');
 
 // Get cURL resource
