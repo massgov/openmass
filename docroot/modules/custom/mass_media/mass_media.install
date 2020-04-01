@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @file
+ * Install/uninstall and update hooks related to the mass_media module.
+ */
+
+use Drupal\field\Entity\FieldStorageConfig;
+
+/**
+ * Implements hook_update_n().
+ *
+ * Change the field storage definition for the field_upload_file field to use
+ * the private filesystem as the default upload destination.
+ */
+function mass_media_update_8001() {
+  $old_config = FieldStorageConfig::loadByName('media', 'field_upload_file');
+  $old_config
+    ->setSetting('uri_scheme', 'private')
+    ->save();
+}
