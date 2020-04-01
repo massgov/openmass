@@ -18,6 +18,7 @@ use Drupal\Core\TypedData\Plugin\DataType\Uri;
 use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\Url;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_entity_insert().
@@ -147,6 +148,8 @@ function mass_fields_entity_extra_field_info() {
     'curated_list',
     'decision',
     'executive_order',
+    'form_page',
+    'how_to_page',
     'info_details',
     'regulation',
     'rules',
@@ -368,7 +371,7 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
         if ($entity->field_service_ref_actions_2->count() > 0 && !empty($build['field_service_ref_actions_2'])) {
           foreach ($entity->field_service_ref_actions_2->getValue() as $delta => $item) {
             if (strpos($item['uri'], 'entity:') !== FALSE) {
-              list($entity_type, $entity_id) = explode('/', str_replace('entity:', '', $item['uri']));
+              [$entity_type, $entity_id] = explode('/', str_replace('entity:', '', $item['uri']));
               $view_builder = $entityTypeManager->getViewBuilder('node');
               $storage = $entityTypeManager->getStorage('node');
               $node = $storage->load($entity_id);
@@ -393,7 +396,7 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
         if ($entity->field_service_ref_actions->count() > 0 && !empty($build['field_service_ref_actions'])) {
           foreach ($entity->field_service_ref_actions->getValue() as $delta => $item) {
             if (strpos($item['uri'], 'entity:') !== FALSE) {
-              list($entity_type, $entity_id) = explode('/', str_replace('entity:', '', $item['uri']));
+              [$entity_type, $entity_id] = explode('/', str_replace('entity:', '', $item['uri']));
               $view_builder = $entityTypeManager->getViewBuilder('node');
               $storage = $entityTypeManager->getStorage('node');
               $node = $storage->load($entity_id);
@@ -425,7 +428,7 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
         $build['extra_node_all_actions'] = $build['field_links_actions_3'];
         foreach ($entity->field_links_actions_3->getValue() as $delta => $item) {
           if (strpos($item['uri'], 'entity:') !== FALSE) {
-            list($entity_type, $entity_id) = explode('/', str_replace('entity:', '', $item['uri']));
+            [$entity_type, $entity_id] = explode('/', str_replace('entity:', '', $item['uri']));
 
             $view_builder = $entityTypeManager->getViewBuilder('node');
             $storage = $entityTypeManager->getStorage('node');
@@ -570,4 +573,34 @@ function mass_fields_theme() {
       ],
     ],
   ];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Block access to add "Callout Link" and "Card Group" paragraphs on the
+ * info details node form unless the user is specially permissioned.
+ */
+function mass_fields_form_node_info_details_edit_form_alter(&$form, FormStateInterface $formState) {
+  $restricted_types = [
+    'callout_link',
+    'info_details_card_group',
+  ];
+  if (isset($form['field_info_details_sections']) && isset($form['field_info_details_sections']['widget'])) {
+    foreach (Element::children($form['field_info_details_sections']['widget']) as $key) {
+      if (isset($form['field_info_details_sections']['widget'][$key]['subform'])) {
+        $subform =& $form['field_info_details_sections']['widget'][$key]['subform'];
+        foreach ($restricted_types as $restricted_type) {
+          $add_more_container =& $subform['field_section_long_form_content']['widget']['add_more'];
+          if (isset($add_more_container["add_more_button_{$restricted_type}"])) {
+            $result = AccessResult::allowedIfHasPermission(\Drupal::currentUser(), 'special');
+            if (isset($add_more_container['#access'])) {
+              $result = $result->andIf($add_more_container['#access']);
+            }
+            $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $result;
+          }
+        }
+      }
+    }
+  }
 }
