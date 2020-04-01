@@ -104,12 +104,7 @@
   }
 } %}
   {% block addressContactGroup %}
-    {{ content.field_ref_address|merge({
-      '#level': level,
-      '#link': {
-        'text': 'Directions'
-        }
-    }) }}
+    {{ content.field_ref_address|merge({'#level': level }) }}
   {% endblock %}
   {% block phoneContactGroup %}
     {{ content.field_ref_phone_number|merge({'#level': level }) }}
