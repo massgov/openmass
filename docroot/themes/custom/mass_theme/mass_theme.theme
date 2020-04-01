@@ -3432,12 +3432,14 @@ function mass_theme_preprocess_node_news_full(&$variables) {
           if ($org_page = reset($org_refs)) {
             $promo_options = [
               'title' => Helper::fieldValue($org_page, 'title'),
+              'alt' => Helper::fieldValue($org_page, 'title'),
             ];
           }
         }
         else {
           $promo_options = [
             'title' => Helper::fieldValue($signee_entity, $org_data['title']),
+            'alt' => Helper::fieldValue($signee_entity, $org_data['title']),
           ];
         }
       }
