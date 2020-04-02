@@ -425,7 +425,7 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
     }
     elseif ($field_name == 'field_page_group_page' || $field_name == 'field_page_page') {
       // Remove the domain from the field.
-      $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov. Allowed types include the following: Advisory, Curated List, Decision, Executive Order Page, Form, How To, Information Details, Regulation Page, or Rules of Court.',
+      $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov. Allowed types include the following: Advisory, Curated List, Decision, Executive Order Page, Form, How To, Information Details, Promotional Page, Regulation Page, or Rules of Court.',
         [
           '%front' => '<front>',
           '%add-node' => '/node/add',
