@@ -5077,7 +5077,7 @@ function _get_layout(array $total_type_with_count, $total_count) {
 
   // Tests for using Topic Card layout.
   // Pretty sure we don't use this layout anymore; there are no page types called 'topic' or 'subtopic'
-  // and we don't use stacked layout except for the homepage
+  // and we don't use stacked layout except for the homepage.
   if (
     $total_type_with_count['topic'] + $total_type_with_count['subtopic'] == $total_count ||
     $total_type_with_count['topic'] + $total_type_with_count['subtopic'] + $total_type_with_count['stacked_layout'] == $total_count ||
@@ -5089,7 +5089,7 @@ function _get_layout(array $total_type_with_count, $total_count) {
   // For all other types or combinations, use actionCards
   // This layout is the only one in active use
   // It's used in the "Features Services" section of the home page
-  // Where it's a part of the "search" paragraph
+  // where it's a part of the "search" paragraph.
   return 'actionCards';
 }
 
