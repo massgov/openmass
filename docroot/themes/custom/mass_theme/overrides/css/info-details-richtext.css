@@ -189,7 +189,6 @@
   border: none;
 }
 
-
 /*
   Nested .ma__rich-text
 
@@ -201,19 +200,20 @@
   In the section content container of div.ma__rich-text, when paragaraphs are added in separate rich text containers next each other as siblings(div.ma__rich-text + div.ma__rich-text), there is no margin between them.
 
   Below fix that issue.
+  To cover all child elements in the richtext container, set bottom margin to .ma__rich-text > .ma__rich-text:not(:last-child), not overriding .ma__rich-text>:last-child.
 */
-/*
-.ma__rich-text .ma__rich-text:not(:last-child) {
+
+.ma__rich-text > .ma__rich-text:not(:last-child) {
   margin-bottom: 21.75px;
-    margin-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
 }
 
 @media (min-width: 621px) {
-  .ma__rich-text .ma__rich-text:not(:last-child) {
+
+  .ma__rich-text > .ma__rich-text:not(:last-child) {
     margin-bottom: 1.75rem;
   }
-} */
-
+}
 
 /* TO DO */
 
@@ -237,4 +237,3 @@
   background-color: azure;
   position: relative;
 } */
-
