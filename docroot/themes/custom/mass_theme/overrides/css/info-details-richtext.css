@@ -188,3 +188,53 @@
   color: #14558f;
   border: none;
 }
+
+
+/*
+  Nested .ma__rich-text
+
+  paragrah rich text is wrapped with div.ma__rich-text as a part of section content. The section content is also have a wrapper container of div.ma__rich-text.
+
+  div.ma__rich-text p:last-child has 'margin-bottom: 0;'
+  div.ma__rich-text itself has NO MARGIN setting.
+
+  In the section content container of div.ma__rich-text, when paragaraphs are added in separate rich text containers next each other as siblings(div.ma__rich-text + div.ma__rich-text), there is no margin between them.
+
+  Below fix that issue.
+*/
+/*
+.ma__rich-text .ma__rich-text:not(:last-child) {
+  margin-bottom: 21.75px;
+    margin-bottom: 1.5rem;
+}
+
+@media (min-width: 621px) {
+  .ma__rich-text .ma__rich-text:not(:last-child) {
+    margin-bottom: 1.75rem;
+  }
+} */
+
+
+/* TO DO */
+
+/* .ma__pullquote__content::after {
+  content: '';
+  width: 75px;
+  height: 20px;
+  background-color: #388557;
+  background-image: -o-linear-gradient(330deg,#388557 65px,#fff 0);
+  background-image: linear-gradient(120deg,#388557 65px,#fff 0);
+  position: absolute;
+  top: 0;
+  left: 0;
+} */
+/*
+.ma__pullquote {
+  background-color: yellow;
+}
+
+.ma__pullquote__content {
+  background-color: azure;
+  position: relative;
+} */
+
