@@ -38,11 +38,22 @@ else {
 // Display the increment tag from the conditional statement above.
 echo "Here is the new tag " . $version . "\n\n";
 
+// Grab the body for the GitHub release tag includes what is being deployed
+// The following line is looking to see if this is hotfix tag. If so it will take the last commit from today from the CHANGELOG.md.
+// The last commit output is moved to the scripts/changelog-body.text to be used by the $markdown
+if(strpos($branch, "hotfix") !== false){
+
+  // Using git blame for today changes in the CHANGELOG.md and clean the output up before moving it to the scripts/changelog-body.txt.
+  exec("git blame -s --since=today -- CHANGELOG.md | grep -v '^\^' | sed -e 's/00000000...//' -e 's/[0-9]..//' > scripts/changelog-body.txt");
+  // Then grabbing the content from the changelog-body.txt. Reuse the content for the $markdown in the body.
+  $markdown = file_get_contents('scripts/changelog-body.txt');
+
+} else {
+  // If this is a release just use the changelog-body.txt that was created from build-changelog.php script (created the release branch)
+  $markdown = file_get_contents('scripts/changelog-body.txt');
+}
+
 // Create a Release in GitHub against master branch. Github will create a corresponding tag.
-
-// Grab the body from the changelog-body.txt which is created by the build-changelog.php for releases only
-$markdown = file_get_contents('scripts/changelog-body.txt');
-
 // Get cURL resource
 $ch = curl_init();
 
