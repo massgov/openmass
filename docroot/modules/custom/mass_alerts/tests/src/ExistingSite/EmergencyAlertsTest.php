@@ -4,6 +4,7 @@ namespace Drupal\Tests\mass_alerts\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
@@ -72,6 +73,34 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page->selectFieldOption('moderation_state[0][state]', 'published');
     $page->findButton('Save')->press();
     $this->assertContains('must show on at least one page', $page->getText());
+  }
+
+  /**
+   * Assert that our validation prevents saving multiple sitewide alerts.
+   */
+  public function testSitewideAlert() {
+    $user = User::load(1)->set('status', 1);
+    $user->save();
+    $this->drupalLogin($user);
+
+    // Save 1 sitewide alert to start with.
+    $this->createNode([
+      'type' => 'alert',
+      'field_alert_display' => 'site_wide',
+      'moderation_state' => 'published',
+      'status' => 1,
+      'field_alert' => Paragraph::create([
+        'type' => 'emergency_alert',
+        'field_emergency_alert_message' => 'test',
+      ])
+    ]);
+    $session = $this->getSession();
+    $session->visit('/node/add/alert');
+    $page = $session->getPage();
+    $page->fillField('field_alert_display', 'site_wide');
+    $page->selectFieldOption('moderation_state[0][state]', 'published');
+    $page->findButton('Save')->press();
+    $this->assertContains('This sitewide alert cannot be published because another sitewide alert is currently active:', $page->getText());
   }
 
 }
