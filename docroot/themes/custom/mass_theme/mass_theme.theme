@@ -5079,10 +5079,8 @@ function _get_layout(array $total_type_with_count, $total_count) {
   // Pretty sure we don't use this layout anymore; there are no page types called 'topic' or 'subtopic'
   // and we don't use stacked layout except for the homepage.
   if (
-    $total_type_with_count['topic'] + $total_type_with_count['subtopic'] == $total_count ||
-    $total_type_with_count['topic'] + $total_type_with_count['subtopic'] + $total_type_with_count['stacked_layout'] == $total_count ||
-    $total_type_with_count['topic'] + $total_type_with_count['subtopic'] + $total_type_with_count['topic_page'] + $total_type_with_count['service_page'] == $total_count ||
-    $total_type_with_count['topic'] + $total_type_with_count['subtopic'] + $total_type_with_count['topic_page'] + $total_type_with_count['stacked_layout'] == $total_count
+    $total_type_with_count['topic_page'] + $total_type_with_count['service_page'] == $total_count ||
+    $total_type_with_count['topic_page'] + $total_type_with_count['stacked_layout'] == $total_count
   ) {
     return 'topicCards';
   }
