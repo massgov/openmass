@@ -38,8 +38,9 @@ else {
 // Display the increment tag from the conditional statement above.
 echo "Here is the new tag " . $version . "\n\n";
 
-// Grab the body for the GitHub release tag includes what is being deployed
-// The following line is looking to see if this is hotfix tag. If so it will take the last commit from today from the CHANGELOG.md.
+// Grab the body for the GitHub release tag includes what is being deployed.
+// The following line is looking to see if this is hotfix tag. If so it will take the last commit from today within the CHANGELOG.md.
+// Note if a release happen the same day as hotfix it will take both changes from the CHANGELOG.md and post to the body. 
 // The last commit output is moved to the scripts/changelog-body.text to be used by the $markdown
 if(strpos($branch, "hotfix") !== false){
 
