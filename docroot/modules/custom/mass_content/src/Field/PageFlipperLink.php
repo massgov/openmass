@@ -74,6 +74,7 @@ class PageFlipperLink extends FieldItemList {
     }
 
     // Now let's build the link.
+    $tags = [];
     $links[$entity->id()][$direction] = [];
     foreach ($binders as $binder) {
       $id = $binder->id();
@@ -81,7 +82,10 @@ class PageFlipperLink extends FieldItemList {
       foreach ($binder->field_binder_pages->referencedEntities() as $paragraph) {
         $field = $paragraph->bundle() === 'page' ? 'field_page_page' : 'field_page_group_page';
         foreach ($paragraph->{$field} as $item) {
-          $uris[$item->uri] = $item;
+          if ($this->linkedNodeIsPublished($item)) {
+            $uris[$item->uri] = $item;
+            $tags[] = "node:" . Helper::entityFromUrl($item->getUrl())->id();
+          }
         }
       }
       $map = array_keys($uris);
@@ -106,11 +110,26 @@ class PageFlipperLink extends FieldItemList {
           'title' => $title,
           'uri' => $direction_link->uri,
           'options' => $direction_link->options,
+          'cache_tags' => $tags,
         ];
         $links[$entity->id()][$direction] = $link;
       }
     }
     return $links[$entity->id()][$direction];
+  }
+
+  /**
+   * Check if a node associated with a given URI is published.
+   *
+   * @param mixed $link
+   *   A link object.
+   *
+   * @return bool
+   *   TRUE if the node is published, FALSE otherwise.
+   */
+  protected function linkedNodeIsPublished($link) {
+    $node = Helper::entityFromUrl($link->getUrl());
+    return $node->isPublished();
   }
 
 }
