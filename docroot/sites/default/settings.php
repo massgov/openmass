@@ -185,12 +185,3 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
 if (PHP_SAPI === 'cli') {
   ini_set('memory_limit', '512M');
 }
-
-/**
- * Temporarily force loading of the media module's classes.
- *
- * This works around Drupal's enabled-module autoloader system so we
- * can make it through the deployment process during the Contrib -> Core
- * media switch.  Remove once this is deployed.
- */
-$class_loader->addPsr4('Drupal\\media\\', 'core/modules/media/src');
