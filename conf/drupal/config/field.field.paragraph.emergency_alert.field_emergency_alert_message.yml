@@ -5,25 +5,12 @@ dependencies:
   config:
     - field.storage.paragraph.field_emergency_alert_message
     - paragraphs.paragraphs_type.emergency_alert
-  module:
-    - geocoder_field
-third_party_settings:
-  geocoder_field:
-    method: none
-    field: parent_id
-    plugins: {  }
-    dumper: wkt
-    delta_handling: default
-    failure:
-      handling: preserve
-      status_message: true
-      log: true
 id: paragraph.emergency_alert.field_emergency_alert_message
 field_name: field_emergency_alert_message
 entity_type: paragraph
 bundle: emergency_alert
 label: Content
-description: 'The alert message content appears in a light yellow banner below the alert headline for sitewide alerts and in a bright yellow banner above the page title for page-specific alerts. Be concise: a large, modern screen can fit around 120 characters on one line; the message will wrap to multiple lines on smaller screens.'
+description: 'The content of the alert message will appear in a yellow banner above the title on target pages. Be concise. Limit length to about 75 characters to keep alerts to 2-3 lines on a phone. <br><br><strong>Sitewide alerts:</strong> The alert message content appears in a light yellow banner below the alert headline.'
 required: true
 translatable: false
 default_value: {  }

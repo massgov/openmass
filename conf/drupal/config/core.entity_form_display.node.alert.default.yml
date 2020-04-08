@@ -12,6 +12,7 @@ dependencies:
     - field.field.node.alert.field_state_organization_tax
     - field.field.node.alert.field_target_pages_para_ref
     - node.type.alert
+    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -38,8 +39,8 @@ third_party_settings:
       label: Alert
     group_severity_and_target_pages:
       children:
-        - field_alert_severity
         - field_alert_display
+        - title
         - field_target_pages_para_ref
         - field_organizations
       parent_name: group_alert
@@ -48,26 +49,26 @@ third_party_settings:
       format_settings:
         label: Overview
         formatter: open
-        description: 'An alert consists of a headline and one or more alert messages. For example, a weather alert may have one message about roads and another about public transportation.<a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/news-and-events/alerts" target="_blank"> Learn about using the Alerts content type.</a>'
+        description: "<p>Alerts appear on one or more target pages as a bright yellow banner above the page title. Alerts consist of a title and one or more messages. For example, a weather alert may have one message about roads and another about public transportation. <a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/news-and-events/alerts\" target=\"_blank\"> Learn about using the Alerts content type.</a></p>\r\n\r\n<p>NOTE: Alerts that appear at the very top of the page on every page on Mass.gov are called sitewide alerts. They can only be created with special permissions and are typically created only by the Governor’s office or MEMA.</p>"
         required_fields: true
         id: ''
         classes: ''
       label: Overview
     group_alert_headline:
       children:
-        - title
+        - field_alert_severity
         - field_alert
       parent_name: group_alert
       weight: 5
       format_type: tab
       format_settings:
-        label: Details
+        label: Content
         formatter: closed
-        description: 'Alerts appear as banners across the top of your content, and they can also display separately as full pages. When alerts appear as banners, the alert headline only appears for sitewide alerts (not for page-based alerts). The headline appears on the full page display for both sitewide and page-based alerts.'
+        description: ''
         required_fields: true
         id: ''
         classes: ''
-      label: Details
+      label: Content
     group_alert_sidebar:
       children:
         - field_alert_ref_contact
@@ -78,7 +79,7 @@ third_party_settings:
       format_settings:
         label: 'Additional info'
         formatter: closed
-        description: 'Information added here will appear in the sidebar on this alert''s full page display.'
+        description: '<p>Use these fields to add information to the sidebar of an alert detail page. Information added here will only be displayed to visitors if you choose the option to create a detail page in at least one message.</p>'
         required_fields: true
         id: ''
         classes: ''
@@ -90,12 +91,12 @@ mode: default
 content:
   created:
     type: datetime_timestamp
-    weight: 2
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   field_alert:
-    weight: 5
+    weight: 4
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -147,7 +148,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_state_organization_tax:
-    weight: 5
+    weight: 6
     settings:
       match_operator: CONTAINS
       size: 60
@@ -158,7 +159,7 @@ content:
     region: content
   field_target_pages_para_ref:
     type: entity_reference_paragraphs
-    weight: 4
+    weight: 5
     settings:
       title: 'Target page group'
       title_plural: 'Target page groups'
@@ -188,30 +189,30 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 12
     settings: {  }
     region: content
     third_party_settings: {  }
   path:
     type: path
-    weight: 3
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 6
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 4
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -225,7 +226,7 @@ content:
     third_party_settings: {  }
   uid:
     type: entity_reference_autocomplete
-    weight: 1
+    weight: 2
     settings:
       match_operator: CONTAINS
       size: 60
@@ -235,21 +236,21 @@ content:
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 7
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 11
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   promote: true
   status: true
