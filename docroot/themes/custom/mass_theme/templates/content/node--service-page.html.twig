@@ -44,11 +44,13 @@
     }
   } %}
     {% block primaryRelationship %}
-      {% set tags = content.field_organizations %}
+
+    {# {{ dump(content.field_organizations) }} #}
+      {# {% set tags = content.field_organizations %} #}
       {{ content.field_organizations }}
     {% endblock %}
     {% block secondaryRelationship %}
-      {% set tags = content.computed_related_to %}
+      {# {% set tags = content.computed_related_to %} #}
       {{ content.computed_related_to }}
     {% endblock %}
   {% endembed %}
