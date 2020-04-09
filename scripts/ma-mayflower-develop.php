@@ -63,24 +63,3 @@ echo "\n";
 echo "----------------------------------------------\n";
 echo "\n";
 
-// Get cURL resource
-$ch = curl_init();
-
-$markdown = 'This PR may be closed after this branch is no longer needed. It is a requirement for automation to run since we have the Advanced Setting _Only build Pull Requests_ enabled at CircleCI.';
-$data = array("title" => "mayflower-dev-$branch_name to develop", "draft" => TRUE, "body" => $markdown, "head" => "mayflower-dev-$branch_name", "base" => "develop");
-$data_string = json_encode($data);
-
-curl_setopt($ch, CURLOPT_USERNAME, 'massgov-bot');
-curl_setopt($ch, CURLOPT_PASSWORD, getenv('GITHUB_MASSGOV_BOT_TOKEN'));
-curl_setopt($ch, CURLOPT_POST, '-X');
-curl_setopt($ch, CURLOPT_USERAGENT, 'https://api.github.com/repos/massgov/openmass/');
-curl_setopt($ch, CURLOPT_URL, 'https://api.github.com/repos/massgov/openmass/pulls');
-# Accept header comes from https://developer.github.com/v3/pulls/#create-a-pull-request (draft PR feature is not released yet)
-curl_setopt($ch, CURLOPT_HTTPHEADER, array('Accept: application/vnd.github.shadow-cat-preview+json', 'Content-Type: application/json'));
-curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-
-// Send the request
-curl_exec($ch);
-
-// Close request to clear up some resources
-curl_close($ch);
