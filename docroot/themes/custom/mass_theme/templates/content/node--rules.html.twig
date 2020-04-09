@@ -13,14 +13,15 @@
   {% set secondaryIndicators = false %}
   {% if node.field_rules_related_collections is not empty %}
     {% set secondaryIndicators = {
-      "label": "related to"
+      "label": "offered by"
     } %}
   {% endif %}
 
   {% embed "@molecules/relationship-indicators.twig" with {
     "relationshipIndicators": {
+      "pageTitle": node.label,
       "primary": {
-        "label": "offered by"
+        "label": "part of"
       },
       "secondary": secondaryIndicators
     }

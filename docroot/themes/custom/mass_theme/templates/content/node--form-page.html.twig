@@ -17,14 +17,14 @@
   {% set secondaryIndicators = false %}
   {% if node.computed_related_to is not empty %}
     {% set secondaryIndicators = {
-      "label": "related to"
+      "label": "offered by"
     } %}
   {% endif %}
 
   {% embed "@molecules/relationship-indicators.twig" with {
     "relationshipIndicators": {
-      "primary": {
-        "label": "offered by"
+      "pageTitle": node.label,"primary": {
+        "label": "part of"
       },
       "secondary": secondaryIndicators
     }
