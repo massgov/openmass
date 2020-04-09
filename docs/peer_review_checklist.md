@@ -2,7 +2,7 @@
 
 ## General
 
-- [ ] Does the PR include a changelog.yml file ([see instructions](changelog_instructions.md))? 
+- [ ] Does the PR include a changelog.yml file ([see instructions](changelog_instructions.md))?
 - [ ] Does the code actually work? Does it perform its intended function, is the logic correct, etc.
 - [ ] Does the code break other stuff? (Acknowledge that you can't test everything, but think about it). A common offense: custom rendering of a field that is used in more than one place or in more than one context.
 - [ ] Is all the code easily understood? Does anything confuse you or give you pause?
@@ -23,7 +23,7 @@
 - [ ] Where third-party utilities are used, are returning errors being caught?
 - [ ] Are output values checked and encoded?
 - [ ] Are invalid parameter values handled?
-- [ ] Are secrets being committed into a public source code repository? 
+- [ ] Are secrets being committed into a public source code repository?
 
 ## Documentation
 
@@ -51,11 +51,7 @@
 - [ ] If a module is being added, is it widely used and well maintained? What does the issue queue look like?
 - [ ] If custom code is being added, does it replicate functionality that could be provided by a module?
 - [ ] If custom queries are being used, are the Drupal query methods being employed (to help with security and portability)?
-- [ ] If this is a new content type, have you followed the [Content Type Checklist](content-type-checklist.md)? Have access controls been considered and implemented with tests? 
+- [ ] If this is a new content type, have you followed the [Content Type Checklist](content-type-checklist.md)? Have access controls been considered and implemented with tests?
 - [ ] Is the logic in the right place?
 - [ ] If the code implements functional behavior that should occur regardless of the theming, it should be in a module. (We have not been good about this).
 - [ ] If it is purely presentational, can the logic be in the template? (unless it is Mass.gov specific logic and a Mayflower template).
-
-## Github Notes
-
-- [ ] If you are reviewing a PR against a branch, BEWARE, later updates to the branch may not be reflected in the comparison view. To fix, edit the branch, change the base branch, then change it back (Jes says "wiggle the branch").
