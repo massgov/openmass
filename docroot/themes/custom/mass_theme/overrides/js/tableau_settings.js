@@ -10,13 +10,13 @@
     attach: function (context, settings) {
 
       $(function () {
-        const minDesktop = 800;
-        const minTablet = 501;
+        var minDesktop = 800;
+        var minTablet = 501;
 
         $('.ma_tableau_container', context).each(function () {
-          let currentWidth = $(this).outerWidth();
+          var currentWidth = $(this).outerWidth();
 
-          let deviceType = 'phone';
+          var deviceType = 'phone';
           if (currentWidth >= minDesktop) {
             deviceType = 'desktop';
           }
@@ -24,12 +24,15 @@
             deviceType = 'tablet';
           }
 
-          let $tableauItem = $(this).children(".ma_tableau_item");
-          let id = $tableauItem.attr("id");
-          let url = $tableauItem.data("tableau-url");
-          let options = { device: deviceType };
+          var $tableauItem = $(this).children('.ma_tableau_item');
+          var id = $tableauItem.attr('id');
+          var url = $tableauItem.data('tableau-url');
+          var options = {device: deviceType};
 
+          /* eslint-disable */
           new tableau.Viz(document.getElementById(id), url, options);
+          /* eslint-enable */
+
         });
       });
 
