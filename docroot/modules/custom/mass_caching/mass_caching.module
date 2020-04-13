@@ -7,6 +7,8 @@
 
 use Drupal\file\FileInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\media\MediaInterface;
+use Drupal\redirect\Entity\Redirect;
 
 /**
  * Implements hook_file_insert().
@@ -117,16 +119,47 @@ function mass_caching_module_implements_alter(&$implementations, $hook) {
 /**
  * Implements hook_entity_update().
  *
- * Purge media's download path when the entity is updated. This is implemented
- * as a hook_entity_update() rather than hook_media_update because we need it to
+ * Purge media's download path and redirect's source URL when the entity is updated. This is implemented
+ * as a hook_entity_update() rather than hook_ENTITY_TYPE_update because we need it to
  * run after pathauto's hook_entity_update().
  */
 function mass_caching_entity_update(EntityInterface $entity) {
-  if ($entity->getEntityTypeId() !== 'media') {
-    return;
+  switch ($entity->getEntityTypeId()) {
+    case 'media':
+      mass_caching_purge_media($entity);
+      break;
+    case 'redirect':
+      mass_caching_purge_redirect($entity);
+      break;
   }
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Purge media's download path and redirect's source URL when an entity is created. This is implemented
+ * as a hook_entity_insert() rather than hook_ENTITY_TYPE_insert because we need it to
+ * run after pathauto's hook_entity_update().
+ */
+function mass_caching_entity_insert(EntityInterface $entity) {
+  switch ($entity->getEntityTypeId()) {
+    case 'media':
+      mass_caching_purge_media($entity);
+      break;
+    case 'redirect':
+      mass_caching_purge_redirect($entity);
+      break;
+  }
+}
+
+/**
+ * @param \Drupal\media\MediaInterface $entity
+ *
+ * @throws \Drupal\Core\Entity\EntityMalformedException
+ */
+function mass_caching_purge_media(MediaInterface $entity): void {
   $purger = \Drupal::service('manual_purger');
-  $paths = ['/media/' . $entity->id() . '/download'];
+  $paths[] = '/media/' . $entity->id() . '/download';
   $paths[] = $entity->toUrl()->toString() . '/download';
   // array_unique() because the entity provided URL for unaliased media
   // will be the same as /media/123/download.
@@ -136,24 +169,14 @@ function mass_caching_entity_update(EntityInterface $entity) {
 }
 
 /**
- * Implements hook_entity_insert().
+ * @param \Drupal\redirect\Entity\Redirect $entity
  *
- * Purge media's download path when the entity is created. This is implemented
- * as a hook_entity_insert() rather than hook_media_insert because we need it to
- * run after pathauto's hook_entity_update().
+ * @throws \Drupal\Core\Entity\EntityMalformedException
  */
-function mass_caching_entity_insert(EntityInterface $entity) {
-  if ($entity->getEntityTypeId() !== 'media') {
-    return;
-  }
+function mass_caching_purge_redirect(Redirect $entity): void {
   $purger = \Drupal::service('manual_purger');
-  $paths = ['/media/' . $entity->id() . '/download'];
-  $paths[] = $entity->toUrl()->toString() . '/download';
-  // array_unique() because the entity provided URL for unaliased media
-  // will be the same as /media/123/download.
-  foreach (array_unique($paths) as $path) {
-    $purger->purgePath($path);
-  }
+  $path = $entity->getSourceUrl();
+  $purger->purgePath($path);
 }
 
 /**
