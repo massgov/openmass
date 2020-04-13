@@ -12,6 +12,7 @@ use Drupal\Core\Access\AccessResult;
 use Drupal\node\NodeInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\Entity\Node;
 
 /**
  * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
@@ -64,8 +65,8 @@ function mass_alerts_validate_alert_placement(array &$form, FormStateInterface $
  * Validates site wide alert creation.
  */
 function _mass_alerts_validate_site_wide_alert_creation(array &$form, FormStateInterface $form_state) {
-  $alert_display_scope = $form_state->getValue('field_alert_display');
-  if ($alert_display_scope[0]["value"] == "site_wide") {
+  $alert_display = $form_state->getValue(['field_alert_display', '0', 'value']);
+  if ($alert_display == "site_wide") {
     // Only users with permission should be allowed site wide alert creation.
     if (!\Drupal::currentUser()->hasPermission('create site wide alerts')) {
       $form_state->setErrorByName('field_alert_display', t('Only users with elevated permissions can manage sitewide alerts.'));
@@ -73,23 +74,22 @@ function _mass_alerts_validate_site_wide_alert_creation(array &$form, FormStateI
 
     // A maximum of only 1 site wide alert should be publishable at any given time.
     // Only prevent publishing, not drafting.
-    $trigger = $form_state->getTriggeringElement();
-    if (array_key_exists('#moderation_state', $trigger) && $trigger['#moderation_state'] == "published") {
-      $thisFormsAlertNode = $form_state->getFormObject()->getEntity();
+    $moderationState = $form_state->getValue(['moderation_state', '0', 'value']);
+    if ($moderationState === 'published') {
+      $entity = $form_state->getFormObject()->getEntity();
       $query = \Drupal::entityQuery('node')
-        ->condition('status', NODE_PUBLISHED)
+        ->condition('status', NodeInterface::PUBLISHED)
         ->condition('type', 'alert')
         ->condition('field_alert_display', 'site_wide');
-      $result = $query->execute();
-      $existingAlertNodeIds = array_values($result);
-      if (count($existingAlertNodeIds) > 1) {
-        drupal_set_message(t("Multiple site wide alerts are already published."), 'error');
-        $form_state->setRebuild();
+      // Exclude the current node from our search if it's already been saved.
+      if ($entity->id()) {
+        $query->condition('nid', $entity->id(), '!=');
       }
-      else {
-        if (count($existingAlertNodeIds) == 1 && $existingAlertNodeIds[0] != $thisFormsAlertNode->id()) {
-          drupal_set_message(t("A published site wide alert already exists."), 'error');
-          $form_state->setRebuild();
+      $existing = $query->execute();
+      if (count($existing) > 0) {
+        if ($existingNode = Node::load(reset($existing))) {
+          $link = $existingNode->toLink()->toString();
+          $form_state->setError($form, t('This sitewide alert cannot be published because another sitewide alert is currently active: %link. Only one sitewide alert can be active at a time. To publish this alert, please unpublish the existing one first.', ['%link' => $link]));
         }
       }
     }

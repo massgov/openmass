@@ -1,5 +1,32 @@
 
 
+## [0.238.0] - April 7, 2020
+
+### Changed
+  - DP-15351: Added 2 new pages to the set of pages we use for our Backstop tests.
+  - DP-16701: Add alt value to a linked image for an organization as a signee in news page.
+  - DP-17901: Update Drupal core from 8.8.1 to 8.8.4.
+  - DP-17990: Updated emails sent to users when added or activated.
+  - DP-18030: Set the link text for address as "Direction" with uppercase "D" instead of lowercase "d" in org page.
+  - DP-18033: Update help text for banner images on info details and binders.
+  - DP-18039: Configure related_content paragraph to permit more content types and update theme to use actionCards layout (not bullets) as default layout.
+  - DP-18179: |-
+    Updated Mayflower version to 9.46.0.
+         - DP-15965: Changed capitalization of directions. (MF)
+         - DP-17387: Adjust css for decorative link in location listing for Chrome. Match the markup of assets/js/templates/locationListingRow.html to 02-molecules/image-promo.twig. (MF)
+
+### Fixed
+  - DP-17863: Document files should be added to the private filesystem by default.
+  - DP-17891: Add validation to prevent publishing more than 1 sitewide alert at a time.
+  - DP-18056: Fixed the body for both the Release PR and hotfix GitHub tagging.
+  - DP-18165: Resolve a performance regression due to alert URLs changing.
+
+### Added
+  - DP-17995: Added ability to link to promotional pages in the binder content-type.
+
+### Removed
+  - DP-15511: Removed the workbench_moderation and workbench_moderation_actions modules.
+
 ## [0.237.1] - March 31, 2020
 
 ### Changed

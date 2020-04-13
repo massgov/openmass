@@ -3432,12 +3432,14 @@ function mass_theme_preprocess_node_news_full(&$variables) {
           if ($org_page = reset($org_refs)) {
             $promo_options = [
               'title' => Helper::fieldValue($org_page, 'title'),
+              'alt' => Helper::fieldValue($org_page, 'title'),
             ];
           }
         }
         else {
           $promo_options = [
             'title' => Helper::fieldValue($signee_entity, $org_data['title']),
+            'alt' => Helper::fieldValue($signee_entity, $org_data['title']),
           ];
         }
       }
@@ -5065,7 +5067,7 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
  *   The twig layout to be used.
  */
 function _get_layout(array $total_type_with_count, $total_count) {
-  // If all content is "stacked_layout", we use "bullets".
+  // If all content is "stacked_layout" or "org," we use "bullets".
   if (
     $total_type_with_count['stacked_layout'] == $total_count ||
     $total_type_with_count['org_page'] == $total_count
@@ -5073,36 +5075,20 @@ function _get_layout(array $total_type_with_count, $total_count) {
     return 'bullets';
   }
 
-  // If all content is Right Rail, use actionCards.
-  // If all content is Service Pages, user actionCards.
-  // If content is Right Rail and Stacked Layout, use actionCards.
-  if (
-    $total_type_with_count['action'] +
-    $total_type_with_count['guide_page'] +
-    $total_type_with_count['how_to_page'] +
-    $total_type_with_count['location'] +
-    $total_type_with_count['location_details'] +
-    $total_type_with_count['org_page'] +
-    $total_type_with_count['service_page'] +
-    $total_type_with_count['service_details'] +
-    $total_type_with_count['stacked_layout'] +
-    $total_type_with_count['topic_page']
-    == $total_count
-  ) {
-    return 'actionCards';
-  }
-
   // Tests for using Topic Card layout.
+  // Pretty sure we don't use this layout anymore; there are no page types called 'topic' or 'subtopic'
+  // and we don't use stacked layout except for the homepage.
   if (
-    $total_type_with_count['topic'] + $total_type_with_count['subtopic'] == $total_count ||
-    $total_type_with_count['topic'] + $total_type_with_count['subtopic'] + $total_type_with_count['stacked_layout'] == $total_count ||
-    $total_type_with_count['topic'] + $total_type_with_count['subtopic'] + $total_type_with_count['topic_page'] + $total_type_with_count['service_page'] == $total_count ||
-    $total_type_with_count['topic'] + $total_type_with_count['subtopic'] + $total_type_with_count['topic_page'] + $total_type_with_count['stacked_layout'] == $total_count
+    $total_type_with_count['topic_page'] + $total_type_with_count['service_page'] == $total_count ||
+    $total_type_with_count['topic_page'] + $total_type_with_count['stacked_layout'] == $total_count
   ) {
     return 'topicCards';
   }
-
-  return 'bullets';
+  // For all other types or combinations, use actionCards
+  // This layout is the only one in active use
+  // It's used in the "Features Services" section of the home page
+  // where it's a part of the "search" paragraph.
+  return 'actionCards';
 }
 
 /**
