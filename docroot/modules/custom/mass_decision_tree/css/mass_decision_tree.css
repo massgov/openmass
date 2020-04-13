@@ -50,8 +50,24 @@
   color: white;
 }
 
-.page-content .ma__decision-tree-node__responses button + button {
-  margin-left: 15px;
+  .page-content .ma__decision-tree-node__responses button + button {
+    margin-left: 15px;
+  }
+
+@media (max-width: 620px) {
+  .page-content .ma__decision-tree-node__responses button {
+    width: 100%;
+    margin-bottom: 20px;
+    margin-left: 0;
+  }
+
+  .page-content .ma__decision-tree-node__responses button:last-child {
+    margin-bottom: 0;
+  }
+
+  .page-content .ma__decision-tree-node__responses button + button {
+    margin-left: 0;
+  }
 }
 
 .page-content.ma__decision-tree-node .back {
