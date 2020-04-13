@@ -128,6 +128,7 @@ function mass_caching_entity_update(EntityInterface $entity) {
     case 'media':
       mass_caching_purge_media($entity);
       break;
+
     case 'redirect':
       mass_caching_purge_redirect($entity);
       break;
@@ -146,18 +147,23 @@ function mass_caching_entity_insert(EntityInterface $entity) {
     case 'media':
       mass_caching_purge_media($entity);
       break;
+
     case 'redirect':
       mass_caching_purge_redirect($entity);
       break;
+
   }
 }
 
 /**
+ * Purge paths for media entities.
+ *
  * @param \Drupal\media\MediaInterface $entity
+ *   A media entity.
  *
  * @throws \Drupal\Core\Entity\EntityMalformedException
  */
-function mass_caching_purge_media(MediaInterface $entity): void {
+function mass_caching_purge_media(MediaInterface $entity) {
   $purger = \Drupal::service('manual_purger');
   $paths[] = '/media/' . $entity->id() . '/download';
   $paths[] = $entity->toUrl()->toString() . '/download';
@@ -169,11 +175,14 @@ function mass_caching_purge_media(MediaInterface $entity): void {
 }
 
 /**
+ * Purge source path for redirect entities.
+ *
  * @param \Drupal\redirect\Entity\Redirect $entity
+ *   A redirect entity.
  *
  * @throws \Drupal\Core\Entity\EntityMalformedException
  */
-function mass_caching_purge_redirect(Redirect $entity): void {
+function mass_caching_purge_redirect(Redirect $entity) {
   $purger = \Drupal::service('manual_purger');
   $path = $entity->getSourceUrl();
   $purger->purgePath($path);
