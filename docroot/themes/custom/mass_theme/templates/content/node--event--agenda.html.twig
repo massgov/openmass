@@ -23,10 +23,10 @@
     }
   } %}
     {% block primaryRelationship %}
-      {{ content.field_organizations }}
+      {{ content.computed_related_to }}
     {% endblock %}
     {% block secondaryRelationship %}
-      {{ content.computed_related_to }}
+      {{ content.field_organizations }}
     {% endblock %}
   {% endembed %}
   {# Update header to only print the properties needed for Agenda page, eg title and time of event. #}

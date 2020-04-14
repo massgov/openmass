@@ -13,6 +13,28 @@
 {% block preContent %}
   {#{% include "@organisms/by-template/breadcrumbs.twig" %}#}
   {% include "@organisms/by-template/content-eyebrow.twig" %}
+{#
+
+{% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "pageTitle": node.label,
+      "primary": {
+        "label": "part of"
+      },
+      "secondary": secondaryIndicators
+    }
+  } %}
+    {% block primaryRelationship %}
+      {{ content.computed_related_to }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+  {% endembed %}
+
+ #}
+
+
   {% include "@organisms/by-template/page-banner.twig" %}
 {% endblock %}
 

@@ -32,10 +32,10 @@
     }
   } %}
     {% block primaryRelationship %}
-      {{ content.field_organizations }}
+      {{ content.computed_related_to }}
     {% endblock %}
     {% block secondaryRelationship %}
-      {{ content.computed_related_to }}
+      {{ content.field_organizations }}
     {% endblock %}
   {% endembed %}
   {{ content.referencing_binders }}
