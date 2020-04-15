@@ -28,7 +28,6 @@ third_party_settings:
       children:
         - group_severity_and_target_pages
         - group_alert_headline
-        - group_alert_sidebar
       parent_name: ''
       weight: 0
       format_type: tabs
@@ -39,51 +38,37 @@ third_party_settings:
       label: Alert
     group_severity_and_target_pages:
       children:
-        - field_alert_display
         - title
+        - field_alert_display
         - field_target_pages_para_ref
-        - field_organizations
       parent_name: group_alert
       weight: 4
       format_type: tab
       format_settings:
-        label: Overview
+        label: 'Overview & Alert placement'
         formatter: open
-        description: "<p>Alerts appear on one or more target pages as a bright yellow banner above the page title. Alerts consist of a title and one or more messages. For example, a weather alert may have one message about roads and another about public transportation. <a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/news-and-events/alerts\" target=\"_blank\"> Learn about using the Alerts content type.</a></p>\r\n\r\n<p>NOTE: Alerts that appear at the very top of the page on every page on Mass.gov are called sitewide alerts. They can only be created with special permissions and are typically created only by the Governor’s office or MEMA.</p>"
+        description: "<p>There are 2 kinds of alerts: Page-level and Sitewide. Sitewide Alerts are typically created only by the Governor’s office or MEMA. You can only create create a Sitewide Alert if you have special permissions. </p>\r\n<p>All Alerts have a title and 1 or more messages. For example, a weather alert may have one message about roads and another about public transportation.</p>\r\n<p>You usually see Alerts as bright yellow banners on other pages, but each Alert also has a standalone Alert Detail page. <a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/news-and-events/alerts\" target=\"_blank\">See screenshots and learn more about the Alert content type.</a></p>"
         required_fields: true
         id: ''
         classes: ''
-      label: Overview
+      label: 'Overview & Alert placement'
     group_alert_headline:
       children:
         - field_alert_severity
         - field_alert
+        - field_alert_ref_contact
+        - field_alert_related_links_5
       parent_name: group_alert
       weight: 5
       format_type: tab
       format_settings:
-        label: Content
+        label: 'Alert content'
         formatter: closed
         description: ''
         required_fields: true
         id: ''
         classes: ''
-      label: Content
-    group_alert_sidebar:
-      children:
-        - field_alert_ref_contact
-        - field_alert_related_links_5
-      parent_name: group_alert
-      weight: 6
-      format_type: tab
-      format_settings:
-        label: 'Additional info'
-        formatter: closed
-        description: '<p>Use these fields to add information to the sidebar of an alert detail page. Information added here will only be displayed to visitors if you choose the option to create a detail page in at least one message.</p>'
-        required_fields: true
-        id: ''
-        classes: ''
-      label: 'Additional info'
+      label: 'Alert content'
 id: node.alert.default
 targetEntityType: node
 bundle: alert
@@ -96,7 +81,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_alert:
-    weight: 4
+    weight: 3
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -108,13 +93,13 @@ content:
     type: entity_reference_paragraphs
     region: content
   field_alert_display:
-    weight: 3
+    weight: 5
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_alert_ref_contact:
-    weight: 35
+    weight: 4
     settings:
       match_operator: CONTAINS
       size: 60
@@ -124,7 +109,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_alert_related_links_5:
-    weight: 36
+    weight: 5
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -138,7 +123,7 @@ content:
     type: options_buttons
     region: content
   field_organizations:
-    weight: 6
+    weight: 1
     settings:
       match_operator: CONTAINS
       size: 60
@@ -159,7 +144,7 @@ content:
     region: content
   field_target_pages_para_ref:
     type: entity_reference_paragraphs
-    weight: 5
+    weight: 6
     settings:
       title: 'Target page group'
       title_plural: 'Target page groups'
