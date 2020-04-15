@@ -130,7 +130,7 @@
 
 {% block sidebar %}
   {{ content.extra_sidebar_contact }}
-  {% if sideContent.linkList %}
+  {% if sideContent.linkList.links %}
     {% set linkList = sideContent.linkList %}
     {% set linkList = linkList|merge({'compHeading': {
       'title': linkList.compHeading.title,

@@ -1,5 +1,22 @@
 
 
+## [0.239.0] - April 14, 2020
+
+### Changed
+  - DP-18294: Updated Mayflower version to 9.47.0.
+    - DP-16029: Change the property value to set style for see all link in service page to match Mass.gov production. (MF)
+    - DP-16690: Changed text from less to fewer. (MF)
+  - DP-18269: Added purge when redirects are added/updated.
+  
+### Added
+  - DP-18241: Validate Mayflower to Drupal PR so that cut_release_branch workflow passes
+  - DP-17579: Add Tableau JS for sizing dashboard based on container width
+  
+### Fixed
+  - DP-17976: Stop unpublished nodes from showing up in page flipper.
+  
+
+
 ## [0.238.0] - April 7, 2020
 
 ### Changed
