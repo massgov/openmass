@@ -41,13 +41,14 @@ third_party_settings:
         - title
         - field_alert_display
         - field_target_pages_para_ref
+        - field_organizations
       parent_name: group_alert
       weight: 4
       format_type: tab
       format_settings:
         label: 'Overview & Alert placement'
         formatter: open
-        description: "<p>There are 2 kinds of alerts: Page-level and Sitewide. Sitewide Alerts are typically created only by the Governor’s office or MEMA. You can only create create a Sitewide Alert if you have special permissions. </p>\r\n<p>All Alerts have a title and 1 or more messages. For example, a weather alert may have one message about roads and another about public transportation.</p>\r\n<p>You usually see Alerts as bright yellow banners on other pages, but each Alert also has a standalone Alert Detail page. <a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/news-and-events/alerts\" target=\"_blank\">See screenshots and learn more about the Alert content type.</a></p>"
+        description: "<p>There are 2 kinds of alerts: Page-level and Sitewide. Sitewide Alerts are typically created only by the Governor’s office or MEMA. You can only create create a Sitewide Alert if you have special permissions. </p>\r\n<p>All Alerts have a title and 1 or more messages. For example, a weather alert may have one message about roads and another about public transportation.</p>\r\n<p>Alerts display in bright yellow banners, and each Alert also has a standalone Alert Detail page. <a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/news-and-events/alerts\" target=\"_blank\">See screenshots and learn more about the Alert content type.</a></p>"
         required_fields: true
         id: ''
         classes: ''
@@ -59,7 +60,7 @@ third_party_settings:
         - field_alert_ref_contact
         - field_alert_related_links_5
       parent_name: group_alert
-      weight: 5
+      weight: 6
       format_type: tab
       format_settings:
         label: 'Alert content'
@@ -123,7 +124,7 @@ content:
     type: options_buttons
     region: content
   field_organizations:
-    weight: 1
+    weight: 7
     settings:
       match_operator: CONTAINS
       size: 60
