@@ -13,26 +13,50 @@
 {% block preContent %}
   {#{% include "@organisms/by-template/breadcrumbs.twig" %}#}
   {% include "@organisms/by-template/content-eyebrow.twig" %}
-{#
+
+{% set primary = [] %}
+{% for item in relationshipIndicators.tags %}
+  {% set term = {
+      'title': item.text,
+      'href': item.href
+   } %}
+  {% set primary = primary|merge([ term ]) %}
+{% endfor %}
 
 {% embed "@molecules/relationship-indicators.twig" with {
     "relationshipIndicators": {
       "pageTitle": node.label,
       "primary": {
-        "label": "part of"
+        "label": "part of",
+        "tags": primary,
       },
-      "secondary": secondaryIndicators
+      "secondary": ""
     }
   } %}
     {% block primaryRelationship %}
-      {{ content.computed_related_to }}
+      {% for item in primary %}
+        {% include "@atoms/item-link.twig" with {
+          "itemLink": {
+            "title": item.title,
+            "href": item.href
+          }
+        } %}
+      {% endfor %}
     {% endblock %}
     {% block secondaryRelationship %}
-      {{ content.field_organizations }}
+      {# {{ content.field_organizations }} #}
+      {% for item in primary %}
+        {% include "@atoms/item-link.twig" with {
+          "itemLink": {
+            "title": item.title,
+            "href": item.href
+          }
+        } %}
+      {% endfor %}
     {% endblock %}
   {% endembed %}
 
- #}
+
 
 
   {% include "@organisms/by-template/page-banner.twig" %}

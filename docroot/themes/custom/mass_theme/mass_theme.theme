@@ -1344,8 +1344,14 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
       "headerTags" => $headerTags_options,
     ];
 
+    $relationshipIndicator_options = [
+      "tags" => $headerTags_options,
+    ];
+
     // Make contentEyebrow data structure available in twig template.
     $variables['contentEyebrow'] = Organisms::prepareContentEyebrow($contentEyebrow_options);
+
+    $variables['relationshipIndicators'] = Organisms::prepareRelationshipIndicators($relationshipIndicator_options);
 
     // Create the map of all possible field names to use.
     $map = [
