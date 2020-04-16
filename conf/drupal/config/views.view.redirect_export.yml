@@ -252,7 +252,7 @@ display:
           click_sort_column: value
           type: timestamp
           settings:
-            date_format: medium
+            date_format: html_date
             custom_date_format: ''
             timezone: ''
           group_column: value
@@ -493,22 +493,22 @@ display:
         type: data_field
         options:
           field_options:
-            redirect_source__path:
-              alias: ''
-              raw_output: false
-            redirect_redirect__uri:
-              alias: ''
-              raw_output: false
-            status_code:
-              alias: ''
-              raw_output: false
-            language:
+            rid:
               alias: ''
               raw_output: false
             created:
               alias: ''
               raw_output: false
-            operations:
+            redirect_source__path:
+              alias: redirect_from
+              raw_output: false
+            redirect_redirect__uri:
+              alias: redirect_to
+              raw_output: false
+            redirect_redirect__options:
+              alias: redirect_to_internal_id
+              raw_output: false
+            status_code:
               alias: ''
               raw_output: false
       export_limit: 0
