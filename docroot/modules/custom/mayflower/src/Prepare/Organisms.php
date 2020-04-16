@@ -1665,7 +1665,6 @@ class Organisms {
    *   The object that contains static data, widgets, and optional content.
    *
    * @see @molecules/relationship-indicator.twig
-   *
    */
   public static function prepareRelationshipIndicatorPrimary(array $options) {
 
