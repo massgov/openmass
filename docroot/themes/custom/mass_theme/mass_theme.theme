@@ -1351,7 +1351,7 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
     // Make contentEyebrow data structure available in twig template.
     $variables['contentEyebrow'] = Organisms::prepareContentEyebrow($contentEyebrow_options);
 
-    $variables['relationshipIndicators'] = Organisms::prepareRelationshipIndicators($relationshipIndicator_options);
+    $variables['relationshipIndicatorPrimary'] = Organisms::prepareRelationshipIndicatorPrimary($relationshipIndicator_options);
 
     // Create the map of all possible field names to use.
     $map = [

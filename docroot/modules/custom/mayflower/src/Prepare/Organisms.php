@@ -1667,14 +1667,14 @@ class Organisms {
    * @see @molecules/relationship-indicator.twig
    *
    */
-  public static function prepareRelationshipIndicators(array $options) {
+  public static function prepareRelationshipIndicatorPrimary(array $options) {
 
-    // Create the relationship indicator term data structure.
-    $relationshipIndicators = [
+    // Create the relationship indicator primary term data structure.
+    $relationshipIndicatorPrimary = [
       'tags' => array_key_exists('tags', $options) ? $options['tags']['taxonomyTerms'] : NULL,
     ];
 
-    return $relationshipIndicators;
+    return $relationshipIndicatorPrimary;
   }
 
   /**

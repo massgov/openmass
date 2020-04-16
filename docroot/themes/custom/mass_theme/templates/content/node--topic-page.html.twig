@@ -14,23 +14,32 @@
   {#{% include "@organisms/by-template/breadcrumbs.twig" %}#}
   {# {% include "@organisms/by-template/content-eyebrow.twig" %} #}
 
+{# {{ kint(content.field_organizations[0]) }} #}
+{# {{ content.field_organizations[0]['#title']['#markup'] }} #}
+
 {% set primary = [] %}
-{% for item in relationshipIndicators.tags %}
+{% for item in relationshipIndicatorPrimary.tags %}
   {% set term = {
       'title': item.text,
       'href': item.href
    } %}
   {% set primary = primary|merge([ term ]) %}
 {% endfor %}
+{#
+{% set secondary = [] %}
+{% for item in content.field_organizations %}
+
+{% endfor %} #}
 
 {% embed "@molecules/relationship-indicators.twig" with {
     "relationshipIndicators": {
       "pageTitle": node.label,
       "primary": {
-        "label": "part of",
-        "tags": primary,
+        "label": "part of"
       },
-      "secondary": ""
+      "secondary": {
+        "label": "offered by"
+      }
     }
   } %}
     {% block primaryRelationship %}
@@ -43,13 +52,23 @@
         } %}
       {% endfor %}
     {% endblock %}
+    {# {% extends "@custom_includes/field--relationship-indicator-links.twig" %} #}
     {% block secondaryRelationship %}
-      {# {{ content.field_organizations }} #}
+      {% for item in content.field_organizations %}
+{# <p style="color: red;">{{ item['#title']['#markup'] }}</p> #}
+{% set title = item['#title'] %}
+{# {{ title }} #}
+{% set href = item['#href'] %}
+{# {{ href }} #}
+        {% include "@atoms/item-link.twig"  with {
+          "itemLink": {
+            "title": title,
+            "href": href
+          }
+        }%}
+      {% endfor %}
     {% endblock %}
   {% endembed %}
-
-
-
 
   {% include "@organisms/by-template/page-banner.twig" %}
 {% endblock %}
