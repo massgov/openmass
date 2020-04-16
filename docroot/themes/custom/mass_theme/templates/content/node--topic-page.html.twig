@@ -14,22 +14,26 @@
   {#{% include "@organisms/by-template/breadcrumbs.twig" %}#}
   {# {% include "@organisms/by-template/content-eyebrow.twig" %} #}
 
-{# {{ kint(content.field_organizations[0]) }} #}
-{# {{ content.field_organizations[0]['#title']['#markup'] }} #}
-
 {% set primary = [] %}
 {% for item in relationshipIndicatorPrimary.tags %}
-  {% set term = {
+  {% set itemLink = {
       'title': item.text,
       'href': item.href
    } %}
-  {% set primary = primary|merge([ term ]) %}
+  {% set primary = primary|merge([ itemLink ]) %}
 {% endfor %}
-{#
+
 {% set secondary = [] %}
 {% for item in content.field_organizations %}
-
-{% endfor %} #}
+  {% set index = loop.index - 1 %}
+  {% if content.field_organizations[index]['#title'] %}
+    {% set itemLink = {
+        'title': content.field_organizations[index]['#title'],
+        'href': content.field_organizations[index]['#url']
+    } %}
+    {% set secondary = secondary|merge([ itemLink ]) %}
+  {% endif %}
+{% endfor %}
 
 {% embed "@molecules/relationship-indicators.twig" with {
     "relationshipIndicators": {
@@ -52,20 +56,14 @@
         } %}
       {% endfor %}
     {% endblock %}
-    {# {% extends "@custom_includes/field--relationship-indicator-links.twig" %} #}
     {% block secondaryRelationship %}
-      {% for item in content.field_organizations %}
-{# <p style="color: red;">{{ item['#title']['#markup'] }}</p> #}
-{% set title = item['#title'] %}
-{# {{ title }} #}
-{% set href = item['#href'] %}
-{# {{ href }} #}
-        {% include "@atoms/item-link.twig"  with {
+      {% for item in secondary %}
+        {% include "@atoms/item-link.twig" with {
           "itemLink": {
-            "title": title,
-            "href": href
+            "title": item.title,
+            "href": item.href
           }
-        }%}
+        } %}
       {% endfor %}
     {% endblock %}
   {% endembed %}
