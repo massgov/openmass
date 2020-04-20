@@ -680,6 +680,16 @@ workflows:
           filters:
             branches:
               only: /^mayflower\/.*$/
+      - validate:
+          requires: [build]
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+      - danger:
+          requires: [build]
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
       - push_acquia:
           filters:
             branches:

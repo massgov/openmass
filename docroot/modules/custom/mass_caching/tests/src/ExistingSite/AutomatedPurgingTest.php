@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_alerts\ExistingSite;
 
+use Drupal\Core\StreamWrapper\PrivateStream;
 use Drupal\file\Entity\File;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
@@ -36,6 +37,22 @@ class AutomatedPurgingTest extends ExistingSiteBase {
     $file->set('uri', 'public://llama-44.txt');
     $file->save();
     $this->assertCount(1, $this->getInvalidations('url', $file->url()));
+  }
+
+  /**
+   * Test that purge is skipped for private files.
+   */
+  public function testFileCreationPrivateResultsInNoPurge() {
+    $dir = PrivateStream::basePath();
+    file_prepare_directory($dir, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
+    // Create a "Llama" media item  - private.
+    file_put_contents('private://llama-45.txt', 'Test');
+    $file = File::create([
+      'uri' => 'private://llama-45.txt',
+    ]);
+    $file->save();
+    $this->markEntityForCleanup($file);
+    $this->assertCount(0, $this->getInvalidations('url', $file->url()));
   }
 
   /**

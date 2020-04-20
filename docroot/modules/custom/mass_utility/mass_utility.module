@@ -146,10 +146,18 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
 
   // Add link for contacting a user in the publish area.
   if (isset($form['meta']['author']['#markup'])) {
-    $title = $node->getTitle();
-    $author = $node->getOwner();
+    $title_prefix = 'Outreach about Mass.gov page "';
     $nid = $node->id();
-    $title_nid = "Outreach about Mass.gov page \"$title\" ($nid)";
+    $title_suffix = '" (' . $nid . ')';
+    $prefix_suffix_combo_lenth = strlen($title_prefix . $title_suffix);
+    // Fits title into 100 characters or less.
+    $title_max_length = 100 - $prefix_suffix_combo_lenth;
+    $title = $node->getTitle();
+    // Truncates title as needed when forming combined `$title_nid` string.
+    $title_nid = $title_prefix .
+      ((strlen($title) > $title_max_length) ? substr($title, 0, $title_max_length - 1) . '…' : $title) .
+      $title_suffix;
+    $author = $node->getOwner();
     $contact_url = new Url('entity.user.contact_form', ['user' => $author->id()], [
       // Set 'query' option for use by Prepopulate contrib module.
       // Will be used to pre-fill subject in contact form.
@@ -425,7 +433,7 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
     }
     elseif ($field_name == 'field_page_group_page' || $field_name == 'field_page_page') {
       // Remove the domain from the field.
-      $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov. Allowed types include the following: Advisory, Curated List, Decision, Executive Order Page, Form, How To, Information Details, Regulation Page, or Rules of Court.',
+      $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov. Allowed types include the following: Advisory, Curated List, Decision, Executive Order Page, Form, How To, Information Details, Promotional Page, Regulation Page, or Rules of Court.',
         [
           '%front' => '<front>',
           '%add-node' => '/node/add',
@@ -1089,88 +1097,6 @@ function mass_utility_post_update_events_event_type(&$sandbox = NULL) {
     $sandbox['progress']++;
   }
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
-}
-
-/**
- * Implements hook_ENTITY_TYPE_presave().
- *
- * Provides custom handling of uploaded files within Document media entities.
- * Desired behavior for Document media entities and their uploaded files:
- * - Published Documents will have a public uploaded file.
- * - Unpublished Documents will have a private uploaded file.
- */
-function mass_utility_media_presave(MediaInterface $entity) {
-  if ($entity->bundle() == 'document') {
-    // Loads file.
-    /** @var \Drupal\file\Entity\File $file */
-    $file = File::load($entity->field_upload_file->target_id);
-    if ($file) {
-      $file_uri = $file->getFileUri();
-      /** @var \Drupal\Core\File\FileSystem $file_system */
-      $file_system = \Drupal::service('file_system');
-      $file_scheme = $file_system->uriScheme($file_uri);
-      $file_uri_target = file_uri_target($file_uri);
-
-      // Checks for unpublished Documents to ensure file is private.
-      // Checks for published Documents to ensure file is public.
-      if (!$entity->isPublished() && $file_scheme == 'public') {
-        // Makes file private. File is public by default.
-        $file_destination = 'private://' . $file_uri_target;
-      }
-      elseif ($entity->isPublished() && $file_scheme == 'private') {
-        // Moves file from private to public, if necessary.
-        $file_destination = 'public://' . $file_uri_target;
-      }
-
-      // Moves file as needed.
-      if (!empty($file_destination)) {
-        $dirname = $file_system->dirname($file_destination);
-        if (!file_prepare_directory($dirname, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS)) {
-          \Drupal::logger('mass_utility')
-            ->error(t('Could not prepare directory needed to move file between public and private file systems.'));
-        }
-        file_move($file, $file_destination);
-      }
-    }
-  }
-}
-
-/**
- * Implements hook_file_move().
- *
- * Used in conjunction with mass_utility_media_presave(),
- * where file_move() must be used without the FILE_EXISTS_REPLACE option,
- * which leads to source file being left to linger as a temporary file.
- * file_move() calls the 'file_move' hook, which we use here to ensure
- * that the source file is deleted immediately.
- */
-function mass_utility_file_move(FileInterface $file, FileInterface $source) {
-  // Add temporary logging due to https://jira.mass.gov/browse/DP-16025
-  $file_system = \Drupal::service('file_system');
-  $msg_file = sprintf('File, Id: %s, Uri: %s Filename: %s, Realpath: %s', $file->id(), $file->getFileUri(), $file->getFilename(), $file_system->realpath($file->getFileUri()));
-  $msg_source = sprintf('Source, Id: %s, Uri: %s Filename: %s, Realpath: %s', $source->id(), $source->getFileUri(), $source->getFilename(), $file_system->realpath($source->getFileUri()));
-  Drupal::logger('mass_utility')->debug("$msg_file.\n\n$msg_source");
-
-  // Delete the original if it's not in use elsewhere.
-  $delete_source_document = FALSE;
-  $file_references = file_get_file_references($file);
-  $file_system = \Drupal::service('file_system');
-  foreach ($file_references as $key => $reference) {
-    // Checks for Document-related files moving between public/private schemes.
-    if (
-      $key == 'field_upload_file'
-      && !empty($media = reset($reference['media']))
-      && $media->bundle() == 'document'
-      && $file_system->uriScheme($file->getFileUri()) != $file_system->uriScheme($source->getFileUri())
-    ) {
-      $delete_source_document = TRUE;
-    }
-  }
-  if ($delete_source_document) {
-    // Deletes old file immediately to avoid unwanted temporary file duplicates.
-    // Cannot use File::delete() because $file and $source share same ID.
-    file_unmanaged_delete($source->getFileUri());
-  }
 }
 
 /**
