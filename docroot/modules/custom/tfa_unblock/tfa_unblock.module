@@ -7,25 +7,3 @@ use Drupal\user\UserInterface;
  * Contains tfa_unblock.module.
  */
 
-/**
- * Implements hook_user_login().
- */
-function tfa_unblock_user_login(UserInterface $account) {
-  /**
-   * Checks if user has TFA set up.
-   * If not, sends an error message that links to the user's TFA setup page.
-   * For reference on this usage of the `user.data` service:
-   *   - @see \Drupal\ga_login\Plugin\TfaValidation\GALoginTotpValidation::ready
-   *   - @see \Drupal\tfa\Plugin\TfaValidationInterface::ready
-   */
-  /** @var \Drupal\user\UserDataInterface $user_data */
-  $user_data = \Drupal::service('user.data');
-  if (empty($user_data->get('tfa', $account->id(), 'tfa_totp_seed'))) {
-    /** @var \Drupal\Core\Messenger\MessengerInterface $messenger */
-    $messenger = \Drupal::messenger();
-    $messenger->addError(t('
-      <p><strong>IMPORTANT:</strong></p>
-      <p>Please <a href=":url">set up 2-factor authentication</a> NOW or you will not be able to log in again.</p>
-    ', [':url' => '/user/' . $account->id() . '/security/tfa']));
-  }
-}
