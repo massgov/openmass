@@ -27,6 +27,7 @@
 
 ## Documentation
 
+- [ ] PRs that only change documentation may skip peer review if desired.
 - [ ] Do comments exist and describe the intent of the code?
 - [ ] Are all functions commented?
 - [ ] Is any unusual behavior or edge-case handling described?

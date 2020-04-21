@@ -13,7 +13,7 @@ field_name: field_alert
 entity_type: node
 bundle: alert
 label: 'Alert message(s)'
-description: 'An alert headline may have multiple messages. For example, a weather alert may have one message about roads and another about public transportation. Each alert message includes brief content, a timestamp (created or last updated), and can include a link and a detail page. See a sample alert <a href="http://mayflower.digital.mass.gov/?p=pages-guide">here</a>.'
+description: 'An Alert can have 1 or more Alert Messages. For example, a weather alert may have one message about roads and another about public transportation. Each Alert Message contains the brief text of the message, a timestamp, and a link. Most Alert Messages should link to an existing page, but a Message can link to the Alert Detail page, where you can add additional information.'
 required: false
 translatable: true
 default_value: {  }
@@ -151,6 +151,9 @@ settings:
       image:
         weight: 117
         enabled: false
+      about:
+        weight: 118
+        enabled: false
       issuer:
         weight: 118
         enabled: false
@@ -199,6 +202,9 @@ settings:
       pull_quote:
         weight: 133
         enabled: false
+      board_member:
+        weight: 133
+        enabled: false
       quick_action:
         weight: 134
         enabled: false
@@ -208,10 +214,16 @@ settings:
       regulation_section:
         weight: 136
         enabled: false
+      campaign_features:
+        weight: 137
+        enabled: false
       related_content:
         weight: 137
         enabled: false
       related_link:
+        weight: 138
+        enabled: false
+      card:
         weight: 138
         enabled: false
       rich_text:
@@ -229,6 +241,9 @@ settings:
       slideshow:
         weight: 143
         enabled: false
+      custom_html:
+        weight: 144
+        enabled: false
       stacked_band:
         weight: 144
         enabled: false
@@ -241,13 +256,112 @@ settings:
       state_organization:
         weight: 147
         enabled: false
+      event_agenda_section:
+        weight: 148
+        enabled: false
       subhead:
         weight: 148
         enabled: false
       target_pages:
         weight: 149
         enabled: false
+      event_minutes_section:
+        weight: 149
+        enabled: false
       video:
         weight: 150
+        enabled: false
+      featured_content_2up_item:
+        weight: 152
+        enabled: false
+      featured_content_single_item:
+        weight: 153
+        enabled: false
+      featured_item:
+        weight: 154
+        enabled: false
+      featured_item_mosaic:
+        weight: 155
+        enabled: false
+      file_download_single:
+        weight: 157
+        enabled: false
+      footnotes:
+        weight: 158
+        enabled: false
+      image_credit:
+        weight: 169
+        enabled: false
+      info_details_card_group:
+        weight: 170
+        enabled: false
+      key_message:
+        weight: 172
+        enabled: false
+      key_message_section:
+        weight: 173
+        enabled: false
+      link_group:
+        weight: 174
+        enabled: false
+      link_group_document:
+        weight: 175
+        enabled: false
+      link_group_link:
+        weight: 176
+        enabled: false
+      links_downloads:
+        weight: 178
+        enabled: false
+      list_board_members:
+        weight: 179
+        enabled: false
+      list_item_contact:
+        weight: 181
+        enabled: false
+      list_item_person:
+        weight: 184
+        enabled: false
+      list_manual_directory:
+        weight: 185
+        enabled: false
+      manage_account_link:
+        weight: 188
+        enabled: false
+      organization_grid:
+        weight: 196
+        enabled: false
+      page:
+        weight: 197
+        enabled: false
+      page_group:
+        weight: 198
+        enabled: false
+      rules_section:
+        weight: 207
+        enabled: false
+      rules_updates:
+        weight: 208
+        enabled: false
+      search_banner:
+        weight: 210
+        enabled: false
+      section_board_members:
+        weight: 212
+        enabled: false
+      section_heading_text:
+        weight: 213
+        enabled: false
+      section_long_form:
+        weight: 214
+        enabled: false
+      tableau_embed:
+        weight: 222
+        enabled: false
+      video_with_header:
+        weight: 225
+        enabled: false
+      video_with_section:
+        weight: 226
         enabled: false
 field_type: entity_reference_revisions
