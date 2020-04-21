@@ -3,6 +3,7 @@
 namespace Drupal\mayflower\Prepare;
 
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Url;
 use Drupal\mayflower\Helper;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Entity\ContentEntityInterface;
@@ -537,7 +538,8 @@ class Organisms {
         }
       }
       // On an internal link item, load the referenced node title.
-      elseif (strpos($field_value->getValue()['uri'], 'entity:node') !== FALSE) {
+      // DP-17511: If ref is empty warning can be thrown, adding isset check.
+      elseif (isset($field_value->getValue()['uri']) && strpos($field_value->getValue()['uri'], 'entity:node') !== FALSE) {
         $options['url'] = $field_value->getUrl();
         $options['text'] = $field_value->computed_title;
         if (method_exists($options['url'], 'getRouteParameters') && $options['url']->isRouted() == TRUE) {
@@ -552,7 +554,12 @@ class Organisms {
           }
         }
       }
+      // DP-17511: Solving issue when referenced entity is deleted.
+      elseif (isset($field_value->getValue()['target_id']) && !$field_value->getValue()['_loaded']) {
+        break;
+      }
       else {
+
         $url = $field_value->getUrl();
         $items[] = [
           'title' => [
@@ -560,6 +567,7 @@ class Organisms {
             'text' => $field_value->getValue()['title'] ?: $url,
           ],
         ];
+
       }
     }
 
