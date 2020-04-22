@@ -3850,8 +3850,7 @@ function mass_theme_preprocess_menu(&$variables) {
           }
           $icon = '';
           // Get icon.
-          if ($node->hasField('field_icon_term') && array_key_exists('0', $node->get('field_icon_term')
-              ->referencedEntities())) {
+          if ($node->hasField('field_icon_term') && array_key_exists('0', $node->get('field_icon_term')->referencedEntities())) {
             $icon = $node->get('field_icon_term')
               ->referencedEntities()[0]->get('field_sprite_name')->value;
           }
