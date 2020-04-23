@@ -81,9 +81,157 @@
   {% set response = "Your feedback will not receive a response." %}
   {% set noResponseDescription = "This form only gathers feedback about the website." %}
 {% endif %}
+
+<h2 style="color: red;">THEMING TEMPALTE BEGINS</h2>
+
 <div class="feedback-steps">
   <span id="feedback"></span>
   <div id="feedback-step-1" class="feedback-step" data-feedback-next="feedback-step-2">
+
+
+{# MF TEMPALTE BEGINS #}
+{% set requiredIndicator = ' <span aria-hidden="true"> * </span><span class="visually-hidden">required</span>' %}
+
+  {# =========== #}
+
+<div class="ma__mass-feedback-form">
+  <h2 class="visually-hidden">Feedback</h2>
+  <form class="ma__mass-feedback-form__form" method="post" novalidate action="https://www.formstack.com/forms/index.php" id="2521317">
+
+    <fieldset class="ma_feedback-fieldset feedback-load" role="radiogroup">
+      <legend>Did you find what you were looking for on this webpage?
+      <span aria-hidden="true"> * </span><span class="visually-hidden">required</span></legend>
+
+      {# {% set inputGroup = inputGroup %}
+      {% set inputGroup = inputGroup|merge({"required": title.required}) %}
+      {% include "@atoms/03-forms/input-group.twig" %} #}
+{# ### #}
+      <div class="ma__input-group__items ma__input-group__items--inline">
+        <div class="ma__input-group__item">
+          <span class="ma__input-radio">
+            <input
+              class="fsField required"
+              id="field47054416_1"
+              name="field47054416"
+              type="radio"
+              value="Yes"
+              aria-required="true"
+              required aria-invalid="false"
+              aria-invalid="false"
+              />
+
+            <label
+            class="fsOptionLabel ma__input-radio__label"
+            for="field47054416_1">Yes</label>
+          </span>
+        </div>
+
+        <div class="ma__input-group__item">
+          <span class="ma__input-radio">
+            <input
+              class="fsField required" id="field47054416_2" name="field47054416"
+              type="radio"
+              value="No"
+              required aria-required="true"
+              aria-invalid="false"
+              />
+
+            <label class="fsOptionLabel ma__input-radio__label"
+            for="field47054416_2">No</label>
+          </span>
+        </div>
+      </div>
+{# ### #}
+    </fieldset>
+
+{# END OF CURRENT EDIT #}
+<h2 style="color: purple;">END OF CURRENT EDIT</h2>
+{# END OF CURRENT EDIT #}
+
+
+    <div class="ma__mass-feedback-form__fields">
+      <fieldset class="ma_feedback-fieldset">
+        <legend class="feedback-response feedback-positive">
+          {{ queryAffirmative.value }}{{ queryAffirmative.required ? requiredIndicator : '' }}
+        </legend>
+
+        <legend class="feedback-response feedback-negative">
+          {{ queryNegative.value }}{{ queryNegative.required ? requiredIndicator : '' }}
+        </legend>
+
+        <p>{{ queryDescription }}</p>
+
+        {% if reportMessage %}
+          {% set pageAlert = reportMessage %}
+          {% include "@organisms/by-template/in-page-alert.twig" %}
+        {% endif %}
+        <div class="feedback-response feedback-positive">
+          {% set textarea = affirmativeTextarea %}
+          {% include "@atoms/03-forms/textarea.twig" %}
+        </div>
+        <div class="feedback-response feedback-negative">
+          {% set textarea = negativeTextarea %}
+          {% include "@atoms/03-forms/textarea.twig" %}
+        </div>
+
+        {% set helperText = helperText %}
+        {% include "@atoms/03-forms/helper-text.twig" %}
+
+        {% if Response %}
+        <div class="ma__mass-feedback-form__form--user-response feedback-response feedback-negative">
+          <legend>
+            {{ Response }}
+            {% if responseRequired.inputGroup %} {{ org }}? *{% endif %}
+            {% if noResponseDescription %}<a class="ma__content-link--chevron form--no-response">Why? </a>{% endif %}
+          </legend>
+
+          {% if noResponseDescription %}<p class="no-response-info">{{ noResponseDescription }}</p>{% endif %}
+
+          {% if responseRequired.inputGroup %}
+          <fieldset class="ma_feedback-fieldset user-response__contact">
+
+            {% set inputGroup = responseRequired.inputGroup %}
+            {% include "@atoms/03-forms/input-group.twig" %}
+
+            <div class="ma__mass-feedback-form__contact-form">
+              {% if responseRequired.responseDescription %}
+                <p class="response-info">{{ responseRequired.responseDescription }}</p>
+              {% endif %}
+
+              <div class="ma__mass-feedback-form__contact-form--items">
+              {% for input in contactInputs %}
+                <div class="contact-form--item">
+                  {% set inputText = input %}
+                  {% include "@atoms/03-forms/input-text.twig" %}
+                </div>
+              {% endfor %}
+              </div>
+
+            </div>
+          </fieldset>
+          {% endif %}
+
+        </div>
+        {% endif %}
+
+      </fieldset>
+    </div>
+
+    <fieldset class="ma_feedback-fieldset ma__mass-feedback-form__form--submit-wrapper">
+      <input id="" class="submitButton ma__button ma__button--small" type="submit" value="Send Feedback" />
+    </fieldset>
+
+    {% for element in hiddenElements %}
+      <input type="hidden" id="{{ element.id }}" name="{{ element.name }}" value="{{ element.value }}" class="{{ element.class }}" />
+    {% endfor %}
+  </form>
+</div>
+
+{# MF TEMPLATE ENDS #}
+
+
+
+
     {% include "@organisms/feedback/mass-feedback.twig" with {
       "formAction": "https://www.formstack.com/forms/index.php",
       "formId": "2521317",
