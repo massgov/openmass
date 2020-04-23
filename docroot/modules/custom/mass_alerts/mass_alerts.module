@@ -40,24 +40,35 @@ function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface 
  */
 function mass_alerts_validate_alert_placement(array &$form, FormStateInterface $form_state) {
   $field_alert_display = $form_state->getValue('field_alert_display');
-  if ($field_alert_display[0]['value'] == 'specific_target_pages') {
-    $para_ref = $form_state->getValue('field_target_pages_para_ref');
-    unset($para_ref['add_more']);
-    if (!empty($para_ref)) {
-      // The paragraph can be index 0 or index 1 in my testing. So just use current() to get the first one.
-      $subform = current($para_ref)['subform'];
-      if (empty($subform['field_target_content_ref'][0]['target_id'])) {
-        // No bueno. Set an error below.
+  $specific_pages = 'specific_target_pages';
+  $organization = 'by_organization';
+
+  // Array of alert display field options and corresponding paragraph field name.
+  $alert_displays = [
+    $specific_pages => 'field_target_pages_para_ref',
+    $organization => 'field_target_orgs_para_ref',
+  ];
+
+  foreach ($alert_displays as $selection => $paragraph_field_name) {
+    if ($field_alert_display[0]['value'] == $selection) {
+      $paragraph_reference = $form_state->getValue($paragraph_field_name);
+      unset($paragraph_reference['add_more']);
+      if (!empty($paragraph_reference)) {
+        // The paragraph can be index 0 or index 1 in my testing. So just use current() to get the first one.
+        $subform = current($paragraph_reference)['subform'];
+        if (!empty($subform['field_target_content_ref'][0]['target_id'])) {
+          // Requirements are satisfied.
+          return;
+        }
       }
-      else {
-        // Requirements are satisfied.
-        return;
+      if ($selection === $specific_pages) {
+        $form_state->setErrorByName('field_alert_display', t("An 'On specific pages' alert must show on at least one page. Instead of removing all Target pages, please unpublish the alert."));
       }
+      elseif ($selection === $organization) {
+        $form_state->setErrorByName('field_alert_display', t("A 'By Organization' alert must show on at least one organization."));
+      }
+      break;
     }
-    else {
-      // No bueno. Set an error below.
-    }
-    $form_state->setErrorByName('field_alert_display', t("An 'On specific pages' alert must show on at least one page. Instead of removing all Target pages, please unpublish the alert."));
   }
 }
 
