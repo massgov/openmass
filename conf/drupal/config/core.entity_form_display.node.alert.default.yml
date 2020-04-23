@@ -155,7 +155,25 @@ content:
       add_mode: button
       form_display_mode: default
       default_paragraph_type: target_organizations
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        87f25000-b331-46f5-a841-5188da8a248b:
+          dependee: field_alert_display
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: by_organization
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: alert
     region: content
   field_target_pages_para_ref:
     type: entity_reference_paragraphs
