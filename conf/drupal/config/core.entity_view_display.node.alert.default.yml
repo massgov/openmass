@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.alert.field_alert_severity
     - field.field.node.alert.field_organizations
     - field.field.node.alert.field_state_organization_tax
+    - field.field.node.alert.field_target_orgs_para_ref
     - field.field.node.alert.field_target_pages_para_ref
     - node.type.alert
   module:
@@ -78,6 +79,15 @@ content:
       link: true
     third_party_settings: {  }
     type: entity_reference_label
+    region: content
+  field_target_orgs_para_ref:
+    type: entity_reference_revisions_entity_view
+    weight: 9
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
     region: content
   field_target_pages_para_ref:
     type: entity_reference_revisions_entity_view

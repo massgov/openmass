@@ -1,0 +1,29 @@
+uuid: c2e00c1a-7833-43b2-aac3-bbe4fa9f958e
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_target_content_ref
+    - node.type.org_page
+    - paragraphs.paragraphs_type.target_organizations
+id: paragraph.target_organizations.field_target_content_ref
+field_name: field_target_content_ref
+entity_type: paragraph
+bundle: target_organizations
+label: 'Target organization'
+description: 'Start typing the title of the organization you want and select it from the autocomplete list.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference
