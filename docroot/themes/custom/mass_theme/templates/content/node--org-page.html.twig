@@ -345,6 +345,22 @@
         {{ content.field_sub_title }}
       {% endblock %}
 
+      {# Featured Message #}
+      {% block featuredMessage %}
+        {% if node.field_org_featured_message is not empty %}
+          {% embed "@organisms/by-author/stacked-row-section.twig" with {
+            "stackedRowSection": {
+              "title": "",
+              "id": "",
+            }
+          } %}
+            {% block stackedRowContentOverride %}
+              {{ content.field_org_featured_message }}
+            {% endblock %}
+          {% endembed %}
+        {% endif %}
+      {% endblock %}
+
       {# Featured Items Mosaic #}
       {% block featuredItemMosaic %}
         {% if node.field_org_featured_items is not empty %}
