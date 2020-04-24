@@ -27,7 +27,7 @@ class AjaxPatternBlock extends BlockBase implements BlockPluginInterface {
 
     $form['ajax_pattern_endpoint'] = [
       '#type' => 'textfield',
-      '#maxlength' => 512,
+      '#maxlength' => 1024,
       '#title' => $this->t('Data Endpoint'),
       '#description' => $this->t('The url for the endpoint which returns a data structure for the pattern you want to render (i.e. https://www.mass.gov/jsonapi/v1/alerts).'),
       '#default_value' => isset($config['ajax_pattern_endpoint']) ? $config['ajax_pattern_endpoint'] : '',
