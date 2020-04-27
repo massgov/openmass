@@ -20,6 +20,10 @@ use Drupal\node\Entity\Node;
 function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
   $form['#validate'][] = 'mass_alerts_validate_alert_placement';
+
+  if (!\Drupal::currentUser()->hasPermission('create site wide alerts')) {
+    $form['field_alert_display']['widget']['#disabled'] = TRUE;
+  }
 }
 
 /**
@@ -28,6 +32,10 @@ function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form
 function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
   $form['#validate'][] = 'mass_alerts_validate_alert_placement';
+
+  if (!\Drupal::currentUser()->hasPermission('create site wide alerts')) {
+    $form['field_alert_display']['widget']['#disabled'] = TRUE;
+  }
 }
 
 /**
