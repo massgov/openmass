@@ -47,13 +47,13 @@
     updateElements: function (context) {
       var template = $('#edit-field-template input:checked', context).val();
       if (template === 'custom') {
-        if ($('.field--name-field-service-ref-actions-2 table .custom-service-description', context).length) {
-          $('.field--name-field-service-ref-actions-2 table .custom-service-description', context).show();
-          $('.field--name-field-service-ref-actions-2 table .mass-description', context).hide();
+        if ($('.field--name-field-service-ref-actions-2 table tbody tr:first-child .custom-service-description', context).length) {
+          $('.field--name-field-service-ref-actions-2 table tbody tr:first-child .custom-service-description', context).show();
+          $('.field--name-field-service-ref-actions-2 table tbody tr:first-child .mass-description', context).hide();
         }
         else {
-          $('.field--name-field-service-ref-actions-2 table .mass-description', context).after(this.$conditionalFeaturedHelpText);
-          $('.field--name-field-service-ref-actions-2 table .mass-description', context).hide();
+          $('.field--name-field-service-ref-actions-2 table tbody tr:first-child .mass-description', context).after(this.$conditionalFeaturedHelpText);
+          $('.field--name-field-service-ref-actions-2 table tbody tr:first-child .mass-description', context).hide();
         }
         this.$conditionallyRequiredFields.addClass('form-required');
         this.$conditionallyHide.addClass('js-hide');
