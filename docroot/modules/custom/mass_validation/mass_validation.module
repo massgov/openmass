@@ -328,20 +328,6 @@ function mass_validation_form_node_service_page_form_alter(&$form, FormStateInte
 }
 
 /**
- * Implements hook_field_widget_WIDGET_TYPE_form_alter().
- */
-function mass_validation_field_widget_entity_reference_paragraphs_form_alter(&$element, &$form_state, $context) {
-  if (($context['items']->getName() != 'field_link_group')) {
-    return;
-  }
-  if ($element['#paragraph_type'] == 'link_group') {
-    $help_text = '<div class="service-help-text">You must have at least 1 <strong>Link group</strong>. The <strong>Link group title</strong> will be shown as a header for a list of links.<br><br>Consider organizing your content based on the order in which people would complete tasks, or by concept if your content is more informational. The sequence of headers and links could be based on popularity of content, from general to more specific resources, or chronologically.</div>';
-    $element['subform']['link_group_help']['#markup'] = Markup::create($help_text);
-    $element['subform']['link_group_help']['#weight'] = -100;
-  }
-}
-
-/**
  * For logic needed by both flavors of Service Page node form alter.
  *
  * @param array $form
