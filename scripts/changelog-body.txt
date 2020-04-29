@@ -1,17 +1,21 @@
 
 
-## [0.232.0] - February 26, 2020
+## [0.240.0] - April 21, 2020
 
 ### Changed
-  - DP-17449: Update configuration to suppress Rabbit hole settings on info details, promo page.
-  - DP-16214: Update configuration of pathologic module to include rewriting links to bare mass.gov domain.
-  - DP-17534: Remove unused Terraform files.
-  - DP-17233: add date filter to promo pages iframe route.
-  - DP-17546: Update BackstopJS to the latest stable version (4.4.2)
-  - DP-17546: Speed up Backstop tests by removing the delay.
+  - DP-18377: Added more languages to Google translate feature
+  - DP-13246: Changed the style of decision tree buttons below 620px width to line up vertically instead of horizontally.
+  - DP-18229: Changed field order, help text, and labels on Alert content type.
+  - DP-18015: Adjust nightcrawler test to remove action page type and adjust time thresholds.
+  
+### Security
+  - Updated vulnerable javascript packages with yarn
+  - DP-18035: 
   
 ### Fixed
-  - DP-17571: Fixes nightly super-sanitized database build that broke following 8.8 update.
-  - DP-17546: Fix false positives for Google Maps in Backstop tests by hot-swapping images with placeholders.
-  - DP-17411: Integrated scheduler_media module with content moderation so documents can be scheduled for publish/unpublish.
+  - DP-14628: Truncates node title as needed when contacting authors.
+  - DP-17619: Change the condition to check sideContent.linkList to check if its content is not null.
+  
+### Removed
+  - DP-17962: Removed the paragraphs_type_help module with composer
   

@@ -1,0 +1,40 @@
+uuid: c1c3743f-feb4-4de9-ae64-12a5d897ceae
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.card.field_card_link
+    - field.field.paragraph.card.field_content
+    - paragraphs.paragraphs_type.card
+  module:
+    - link
+    - text
+id: paragraph.card.default
+targetEntityType: paragraph
+bundle: card
+mode: default
+content:
+  field_card_link:
+    weight: -99
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_content:
+    weight: -98
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  paragraphs_type_help__default:
+    weight: -100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  status: true

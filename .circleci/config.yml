@@ -180,20 +180,20 @@ jobs:
     steps:
       - attach_workspace: {at: /var/www}
       - run:
-          command: "DANGER_GITHUB_API_TOKEN=$GITHUB_MASSGOV_BOT_TOKEN yarn danger ci --failOnErrors"
+          #Fail when there is no PR. This helps avoid false positives given by Danger when no PR exists.
+          command: "[ -n ${CIRCLE_PULL_REQUEST} ] && DANGER_GITHUB_API_TOKEN=$GITHUB_MASSGOV_BOT_TOKEN yarn danger ci --failOnErrors"
 
   # Automate the tagging process in GitHub
   tagging_github:
     <<: *container_config
     working_directory: /var/www/code
     steps:
+      - attach_workspace: {at: /var/www}
       - *no_host_check
-      - checkout
       # Identify the committer i.e. CircleCI deployment bot
       - run: git config --global user.email "circleci@example.com"
       - run: git config --global user.name "CircleCI Deployment Bot"
-      # Push this build to Acquia's master branch, and tag it there.
-      - run: scripts/tag-release-github
+      - run: php scripts/tag-github.php
 
   # Automate the tagging process by using the GitHub then pushing to Acquia repository.
   tagging_acquia:
@@ -677,6 +677,16 @@ workflows:
     when: << pipeline.parameters.webhook >>
     jobs:
       - build:
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+      - validate:
+          requires: [build]
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+      - danger:
+          requires: [build]
           filters:
             branches:
               only: /^mayflower\/.*$/

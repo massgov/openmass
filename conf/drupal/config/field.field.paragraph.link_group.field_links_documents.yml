@@ -14,7 +14,7 @@ field_name: field_links_documents
 entity_type: paragraph
 bundle: link_group
 label: 'Links / Documents'
-description: 'Choose an internal or external link, or any document. You can add up to 10 items.'
+description: "Choose an internal or external link, or any document. You can add up to 10 items.<br><br>\r\nWe suggest keeping most groups to 5 or fewer items so as not to overwhelm users. You can also overwrite the titles of links or documents to make your page cleaner.<br><br>Do not link to Organization, Service or Topic pages."
 required: true
 translatable: false
 default_value: {  }
@@ -141,8 +141,14 @@ settings:
       file_download:
         weight: 136
         enabled: false
+      campaign_features:
+        weight: 137
+        enabled: false
       file_download_single:
         weight: 137
+        enabled: false
+      card:
+        weight: 138
         enabled: false
       footnotes:
         weight: 138
@@ -163,6 +169,9 @@ settings:
         weight: 143
         enabled: false
       icon:
+        weight: 144
+        enabled: false
+      custom_html:
         weight: 144
         enabled: false
       icon_link:
@@ -188,6 +197,12 @@ settings:
         enabled: false
       links_downloads:
         weight: 152
+        enabled: false
+      featured_content_2up_item:
+        weight: 152
+        enabled: false
+      featured_content_single_item:
+        weight: 153
         enabled: false
       link_group:
         weight: 153
@@ -252,11 +267,20 @@ settings:
       organization_grid:
         weight: 170
         enabled: false
+      info_details_card_group:
+        weight: 170
+        enabled: false
       page:
         weight: 171
         enabled: false
+      key_message:
+        weight: 172
+        enabled: false
       page_group:
         weight: 172
+        enabled: false
+      key_message_section:
+        weight: 173
         enabled: false
       phone_number:
         weight: 173
@@ -329,5 +353,17 @@ settings:
         enabled: false
       video:
         weight: 196
+        enabled: false
+      search_banner:
+        weight: 210
+        enabled: false
+      tableau_embed:
+        weight: 222
+        enabled: false
+      video_with_header:
+        weight: 225
+        enabled: false
+      video_with_section:
+        weight: 226
         enabled: false
 field_type: entity_reference_revisions
