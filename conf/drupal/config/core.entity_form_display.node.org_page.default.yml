@@ -30,6 +30,7 @@ dependencies:
     - field.field.node.org_page.field_number_of_news_items
     - field.field.node.org_page.field_org_directory_page
     - field.field.node.org_page.field_org_featured_items
+    - field.field.node.org_page.field_org_featured_message
     - field.field.node.org_page.field_org_featured_news_items
     - field.field.node.org_page.field_org_our_orgs
     - field.field.node.org_page.field_org_page_thumbnail
@@ -58,6 +59,7 @@ dependencies:
     - field.field.node.org_page.field_verification
     - image.style.thumbnail
     - node.type.org_page
+    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -223,6 +225,7 @@ third_party_settings:
       label: News
     group_featured:
       children:
+        - field_org_featured_message
         - field_org_featured_items
       parent_name: group_node_edit_form
       weight: 22
@@ -601,12 +604,24 @@ content:
     region: content
   field_org_featured_items:
     type: entity_reference_paragraphs
-    weight: 23
+    weight: 104
     settings:
       title: Paragraph
       title_plural: Paragraphs
       edit_mode: open
       add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_org_featured_message:
+    type: entity_reference_paragraphs
+    weight: 103
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: button
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
@@ -846,7 +861,7 @@ content:
     type: link_default
     region: content
   field_state_organization_tax:
-    weight: 6
+    weight: 7
     settings:
       match_operator: CONTAINS
       size: 60
@@ -921,24 +936,24 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 11
     settings: {  }
     region: content
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 4
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 3
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -962,21 +977,21 @@ content:
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 5
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 10
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   field_action_set__bg_narrow: true
