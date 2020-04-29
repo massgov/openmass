@@ -167,10 +167,9 @@
     getSerializedPageAlertData: function getSerializedPageAlertData(responseData) {
       var serializedPageAlertData = {headerAlerts: []};
       var paragraphsWithCurrentPageAsTarget = [];
-      var paragraphsWithCurrentOrganizationAsTarget = [];
-      var orgPageIds = [];
       var currentPageUuid = null;
       var currentPageOrganizationList = window.dataLayer[0].entityField_organizations;
+      var orgPageIds = [];
 
       // If we do not know current page's uuid, we will
       // not be able to target it, so, abort.
@@ -207,35 +206,13 @@
         console.error(e);
       }
 
+      // Create array of organization UUIDs this page belongs to by looping by through the datalayer.
+      Object.keys(currentPageOrganizationList).forEach(function (key) {
+        orgPageIds.push(currentPageOrganizationList[key]['uuid']);
+      });
 
-      // Loop through organization node ids referenced through the json alert node.
-      // If any of the current page's organization node ids are included in these
-      // references then add it to an array.
-      try {
-        responseData.included.forEach(function (item) {
-          if (item.type !== 'node--org_page') {
-            return;
-          }
-          if (item.attributes.drupal_internal__nid !== null) {
-            for (var key in currentPageOrganizationList) {
-              if (currentPageOrganizationList.hasOwnProperty(key)) {
-                if (item.attributes.drupal_internal__nid == key) {
-                  orgPageIds.push(item.id);
-                }
-              }
-            }
-          }
-        });
-        if (orgPageIds.length === 0) {
-          return {};
-        }
-      }
-      catch (e) {
-        console.error(e);
-      }
-
-
-      // Now we want to be able to get the paragraph ids for some reason.
+      // Now we can see if any of the org nodes in the org paragraphs point at the current page.
+      // We do this by using UUIDs.
       try {
         responseData.included.forEach(function (item) {
           if (item.type !== 'paragraph--target_organizations') {
@@ -243,19 +220,17 @@
           }
           if (item.relationships.field_target_content_ref.data !== null) {
             if ($.inArray(item.relationships.field_target_content_ref.data.id, orgPageIds) !== -1) {
-              paragraphsWithCurrentOrganizationAsTarget.push(item.id);
+              paragraphsWithCurrentPageAsTarget.push(item.id);
             }
           }
         });
-        if (paragraphsWithCurrentOrganizationAsTarget.length === 0) {
+        if (paragraphsWithCurrentPageAsTarget.length === 0) {
           return {};
         }
       }
       catch (e) {
         console.error(e);
       }
-
-
 
       // Now we iterate on each alert data.
       responseData.data.forEach(function (item) {
@@ -269,20 +244,16 @@
         }
         var currentAlertItem = item;
 
-        if (item.attributes.field_alert_display === 'by_organization') {
-          var targetParagraphData = currentAlertItem.relationships.field_target_orgs_para_ref.data;
-          var paragraphsWithTarget = paragraphsWithCurrentOrganizationAsTarget;
-        }
-        else {
-          var targetParagraphData = currentAlertItem.relationships.field_target_pages_para_ref.data;
-          var paragraphsWithTarget = paragraphsWithCurrentPageAsTarget;
-        }
+        // Get the paragraph data from the correct field.
+        var targetParagraphData = (item.attributes.field_alert_display === 'by_organization')
+          ? currentAlertItem.relationships.field_target_orgs_para_ref.data
+          : currentAlertItem.relationships.field_target_pages_para_ref.data;
 
         // See if any paragraph in this alert is connected to current page
         // If yes, we want this alert.
         targetParagraphData.forEach(function (paraItem) {
           // NOTE: We have a polyfill to ensure Array.includes() works for us in all browsers.
-          if (paragraphsWithTarget.includes(paraItem.id)) {
+          if (paragraphsWithCurrentPageAsTarget.includes(paraItem.id)) {
             var alertDetailParagraphIds = Drupal.behaviors.mayflower.getAlertParagraphIds(currentAlertItem);
             var alertDetailParagraphData = Drupal.behaviors.mayflower.getAlertParagraphData(responseData, alertDetailParagraphIds, currentAlertItem);
             alertDetailParagraphData.forEach(function (alertData) {
