@@ -2,24 +2,16 @@
  * @file
  * Functions for serializing alerts jsonapi response to json accepted by mayflower ajax pattern.
  *
- * Fields used in processing (formatted as query string):
- *  * fields[node--alert]=title,changed,entity_url,field_alert_severity,field_alert,field_target_pages_para_ref,field_alert_display
- *  * fields[paragraph--emergency_alert]=drupal_internal__id,changed,field_emergency_alert_timestamp,field_emergency_alert_message,field_emergency_alert_link,field_emergency_alert_content
- *  * fields[paragraph--target_pages]=field_target_content_ref
- *  * include=field_target_pages_para_ref,field_alert
- *  * filter[status][value]=1
- *
- *  New json response
- *  /jsonapi/node/alert?
- *  page[limit]=250
+ *  New JSON response:
+ *  /jsonapi/node/alert
+ *  ?page[limit]=250
  *  &sort=-changed
- *  &include=field_target_pages_para_ref,field_target_orgs_para_ref.field_target_content_ref,field_alert
+ *  &include=field_target_pages_para_ref,field_target_orgs_para_ref,field_alert
  *  &filter[status][value]=1
  *  &fields[node--alert]=title,changed,entity_url,field_alert_severity,field_alert,field_target_pages_para_ref,field_target_orgs_para_ref,field_alert_display
  *  &fields[paragraph--emergency_alert]=drupal_internal__id,changed,field_emergency_alert_timestamp,field_emergency_alert_message,field_emergency_alert_link,field_emergency_alert_content
  *  &fields[paragraph--target_pages]=field_target_content_ref
  *  &fields[paragraph--target_organizations]=field_target_content_ref
- *  &fields[node--org_page]=drupal_internal__nid
  */
 
 (function ($, Drupal, drupalSettings) {
