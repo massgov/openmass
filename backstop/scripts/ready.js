@@ -77,6 +77,11 @@ module.exports = async function(page, scenario, vp) {
     // in local environments.
     await page.waitForFunction('jQuery.active == 0');
 
+    // Wait for all visible fonts to complete loading.
+    await page.evaluate(async function() {
+      await document.fonts.ready;
+    })
+
     // We can add a slight delay here. This can cover up jitter caused
     // by weird network conditions, slow JS, etc, but if we need an extra
     // delay after page load, it probably indicates there's a problem with
