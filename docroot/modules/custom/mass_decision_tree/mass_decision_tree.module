@@ -167,6 +167,26 @@ function mass_decision_tree_preprocess_node(&$variables) {
         $descendant['responses'] = $responses;
       }
 
+      // Multiple Answers.
+      if (Helper::isFieldPopulated($descendant_node, 'field_multiple_answers')) {
+        $answers = Helper::getReferencedEntitiesFromField($descendant_node, 'field_multiple_answers');
+        $responses = [];
+        foreach ($answers as $answer) {
+          $id = '';
+          $referenced_path = Helper::getReferencedEntitiesFromField($answer, "field_answer_path");
+          if (!empty($referenced_path)) {
+            $id = $referenced_path[0]->id();
+          }
+          $responses[] = [
+            'text' => Helper::fieldValue($answer, "field_answer_text"),
+            'explainer' => Helper::fieldValue($answer, "field_answer_explainer"),
+            'id' => $id,
+          ];
+        }
+        $descendant['responses'] = $responses;
+      }
+
+
       if (Helper::isFieldPopulated($descendant_node, 'field_add_video')) {
         $videos = Helper::getReferencedEntitiesFromField($descendant_node, 'field_add_video');
         $video = $videos[0];
