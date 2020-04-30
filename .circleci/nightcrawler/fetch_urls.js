@@ -29,7 +29,7 @@ module.exports = fetchUrls;
  * @return Promise<Array<String>>
  */
 function fetchTypes(alias) {
-  var query = "SELECT type FROM node_field_data WHERE type NOT IN ('contact_information', 'fee', 'person', 'legacy_redirects', 'decision_tree_branch', 'decision_tree_conclusion') AND status = 1 GROUP BY type"
+  var query = "SELECT type FROM node_field_data WHERE type NOT IN ('action', 'contact_information', 'fee', 'person', 'legacy_redirects', 'decision_tree_branch', 'decision_tree_conclusion') AND status = 1 GROUP BY type"
 
   return runQuery(alias, query)
     .then(function(rows) {

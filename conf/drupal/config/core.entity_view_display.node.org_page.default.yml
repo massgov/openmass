@@ -30,6 +30,7 @@ dependencies:
     - field.field.node.org_page.field_number_of_news_items
     - field.field.node.org_page.field_org_directory_page
     - field.field.node.org_page.field_org_featured_items
+    - field.field.node.org_page.field_org_featured_message
     - field.field.node.org_page.field_org_featured_news_items
     - field.field.node.org_page.field_org_our_orgs
     - field.field.node.org_page.field_org_page_thumbnail
@@ -344,6 +345,15 @@ content:
     type: entity_reference_revisions_entity_view
     weight: 22
     label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_org_featured_message:
+    type: entity_reference_revisions_entity_view
+    weight: 139
+    label: above
     settings:
       view_mode: default
       link: ''

@@ -345,11 +345,14 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
   if ($display->getComponent('extra_node_pager') && !empty($build['referencing_binders'][0])) {
     $pagers = ['page_next', 'page_previous'];
     foreach ($pagers as $pager) {
+      $cache_tags = [];
       $link[$pager] = NULL;
       if ($entity->hasField($pager) && $link_value = $entity->get($pager)->getValue()) {
+        $cache_tags = array_merge($link_value[0]['cache_tags']);
         $link[$pager] = [
           'url' => Url::fromUri($link_value[0]['uri']),
           'title' => $link_value[0]['title'],
+          'tags' => $link_value[0]['cache_tags'],
         ];
       }
     }
@@ -358,6 +361,9 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
       '#next' => $link['page_next'],
       '#previous' => $link['page_previous'],
       '#parent' => $entity->referencing_binders,
+      '#cache' => [
+        'tags' => $cache_tags,
+      ],
     ];
   }
 

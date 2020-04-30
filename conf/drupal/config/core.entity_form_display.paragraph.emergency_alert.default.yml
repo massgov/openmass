@@ -12,6 +12,7 @@ dependencies:
   module:
     - datetime
     - link
+    - maxlength
     - paragraphs
 id: paragraph.emergency_alert.default
 targetEntityType: paragraph
@@ -49,7 +50,10 @@ content:
     settings:
       size: 80
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      maxlength:
+        maxlength_js: 255
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
     type: string_textfield
     region: content
   field_emergency_alert_timestamp:
