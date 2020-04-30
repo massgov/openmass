@@ -243,9 +243,10 @@
 
         // See if any paragraph in this alert is connected to current page
         // If yes, we want this alert.
+        var exit = false;
         targetParagraphData.forEach(function (paraItem) {
           // NOTE: We have a polyfill to ensure Array.includes() works for us in all browsers.
-          if (paragraphsWithCurrentPageAsTarget.includes(paraItem.id)) {
+          if (paragraphsWithCurrentPageAsTarget.includes(paraItem.id) && !exit) {
             var alertDetailParagraphIds = Drupal.behaviors.mayflower.getAlertParagraphIds(currentAlertItem);
             var alertDetailParagraphData = Drupal.behaviors.mayflower.getAlertParagraphData(responseData, alertDetailParagraphIds, currentAlertItem);
             alertDetailParagraphData.forEach(function (alertData) {
@@ -262,8 +263,10 @@
               }
               serializedPageAlertData.headerAlerts.push(serializedAlertItem);
             });
-            // Exit the loop to prevent multiple copies.
-            return;
+            // Now that we got the alert paragraph data, we don't need to loop through any more paragraphs
+            // because we know this alert should appear. So exit the loop to prevent multiple copies.
+            // FYI using 'return' did not work here so I am using an 'exit' flag.
+            exit = true;
           }
         });
       });
