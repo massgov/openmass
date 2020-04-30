@@ -11,8 +11,8 @@
 {% set noResponseDescription = false %}
 {% set contactInputs = [] %}
 {% if node.field_constituent_communication.value == 'contact' %}
-  {% set response = "Would you like a response from" %}
-  {% set responseRequired = {
+  {# {% set response = "Would you like a response from" %} #}
+  {# {% set responseRequired = {
     "responseDescription": content.field_response_expectations,
     "inputGroup": {
       "required": true,
@@ -38,7 +38,7 @@
         }
       ]
     }
-  } %}
+  } %} #}
   {% set contactInputs = [
     {
       "hiddenLabel": false,
@@ -90,7 +90,9 @@
 
 
 {# MF TEMPALTE BEGINS #}
-{% set requiredIndicator = ' <span aria-hidden="true"> * </span><span class="visually-hidden">required</span>' %}
+{% set requiredIndicator %}
+ <span aria-hidden="true"> * </span><span class="visually-hidden">required</span>
+{% endset %}
 
   {# =========== #}
 
@@ -100,26 +102,25 @@
 
     <fieldset class="ma_feedback-fieldset feedback-load" role="radiogroup">
       <legend>Did you find what you were looking for on this webpage?
-      <span aria-hidden="true"> * </span><span class="visually-hidden">required</span></legend>
+      {{ requiredIndicator }}</legend>
 
       {# {% set inputGroup = inputGroup %}
       {% set inputGroup = inputGroup|merge({"required": title.required}) %}
       {% include "@atoms/03-forms/input-group.twig" %} #}
-{# ### #}
+{# Q1 #}
       <div class="ma__input-group__items ma__input-group__items--inline">
         <div class="ma__input-group__item">
           <span class="ma__input-radio">
             <input
-              class="fsField required"
+              class="fsField required js-q1"
               id="field47054416_1"
               name="field47054416"
               type="radio"
               value="Yes"
+              required
               aria-required="true"
-              required aria-invalid="false"
               aria-invalid="false"
               />
-
             <label
             class="fsOptionLabel ma__input-radio__label"
             for="field47054416_1">Yes</label>
@@ -129,10 +130,11 @@
         <div class="ma__input-group__item">
           <span class="ma__input-radio">
             <input
-              class="fsField required" id="field47054416_2" name="field47054416"
+              class="fsField required js-q1" id="field47054416_2" name="field47054416"
               type="radio"
               value="No"
-              required aria-required="true"
+              required
+              aria-required="true"
               aria-invalid="false"
               />
 
@@ -141,41 +143,65 @@
           </span>
         </div>
       </div>
-{# ### #}
+{# END Q1 #}
     </fieldset>
+
+    <div class="ma__mass-feedback-form__fields">
+      <fieldset class="ma_feedback-fieldset">
+
+{# response textarea #}
+
+  {# label-YES #}
+        <label class="feedback-response feedback-positive" for="field52940022">
+          Do you have anything else to tell us?
+        </label>
+  {# label-NO #}
+        <label class="feedback-response feedback-negative">
+          Please tell us what you were looking for.{{ requiredIndicator }}
+        </label>
+
+        <div id="note1" class="ma__disclaimer">
+          <p>We will use this information to improve the site.</p>
+        </div>
+
+  {# textarea-YES #}
+        <div class="feedback-response feedback-positive">
+          <textarea id="field52940022"
+                class="fsField"
+                name="field52940022"
+                maxlength="5000"
+                disabled="disabled"
+                aria-describedby="feedback-note"></textarea>
+        </div>
+{# textarea-NO #}
+        <div class="feedback-response feedback-negative">
+          <textarea id="field47054414"
+                class="fsField required"
+                name="field47054414"
+                required
+                aria-required="true"
+                aria-invalid="false"
+                maxlength="5000"
+                {# disabled="disabled" #}
+                aria-describedby="note1 note2"></textarea>
+        </div>
+
+        <div id="note2" class="ma__disclaimer">
+          <p>Do not include sensitive information, such as Social Security or bank account numbers.</p>
+        </div>
+
 
 {# END OF CURRENT EDIT #}
 <h2 style="color: purple;">END OF CURRENT EDIT</h2>
 {# END OF CURRENT EDIT #}
 
+{# {% if reportMessage %}
+  {% set pageAlert = reportMessage %}
+  {% include "@organisms/by-template/in-page-alert.twig" %}
+{% endif %} #}
 
-    <div class="ma__mass-feedback-form__fields">
-      <fieldset class="ma_feedback-fieldset">
-        <legend class="feedback-response feedback-positive">
-          {{ queryAffirmative.value }}{{ queryAffirmative.required ? requiredIndicator : '' }}
-        </legend>
-
-        <legend class="feedback-response feedback-negative">
-          {{ queryNegative.value }}{{ queryNegative.required ? requiredIndicator : '' }}
-        </legend>
-
-        <p>{{ queryDescription }}</p>
-
-        {% if reportMessage %}
-          {% set pageAlert = reportMessage %}
-          {% include "@organisms/by-template/in-page-alert.twig" %}
-        {% endif %}
-        <div class="feedback-response feedback-positive">
-          {% set textarea = affirmativeTextarea %}
-          {% include "@atoms/03-forms/textarea.twig" %}
-        </div>
-        <div class="feedback-response feedback-negative">
-          {% set textarea = negativeTextarea %}
-          {% include "@atoms/03-forms/textarea.twig" %}
-        </div>
-
-        {% set helperText = helperText %}
-        {% include "@atoms/03-forms/helper-text.twig" %}
+        {# {% set helperText = helperText %}
+        {% include "@atoms/03-forms/helper-text.twig" %} #}
 
         {% if Response %}
         <div class="ma__mass-feedback-form__form--user-response feedback-response feedback-negative">
@@ -217,9 +243,12 @@
       </fieldset>
     </div>
 
-    <fieldset class="ma_feedback-fieldset ma__mass-feedback-form__form--submit-wrapper">
+    <div class="ma_feedback-fieldset ma__mass-feedback-form__form--submit-wrapper">
+      <input class="submitButton ma__button ma__button--small" type="submit" value="Send Feedback" />
+    </div>
+    {# <fieldset class="ma_feedback-fieldset ma__mass-feedback-form__form--submit-wrapper">
       <input id="" class="submitButton ma__button ma__button--small" type="submit" value="Send Feedback" />
-    </fieldset>
+    </fieldset> #}
 
     {% for element in hiddenElements %}
       <input type="hidden" id="{{ element.id }}" name="{{ element.name }}" value="{{ element.value }}" class="{{ element.class }}" />
@@ -230,7 +259,7 @@
 {# MF TEMPLATE ENDS #}
 
 
-
+{#
 
     {% include "@organisms/feedback/mass-feedback.twig" with {
       "formAction": "https://www.formstack.com/forms/index.php",
@@ -356,6 +385,7 @@
       ]
     } %}
   </div>
+#}
   <div id="feedback-step-2" class="feedback-step hidden" data-feedback-next="feedback-step-3">
     {% set contact = false %}
     {% if node.field_constituent_communication.value == 'link' and node.field_feedback_com_link is not empty %}
@@ -623,3 +653,38 @@
   </div>
 </div>
 
+<script>
+const radioSelected = document.querySelector('.js-q1');
+const textareaElementsPositive = document.querySelectorAll('feedback-positive');
+const textareaElementsNegative = document.querySelectorAll('feedback-negative');
+// Show YES text area, hide NO text area.
+radioSelected.addEventListener('click', function(event){
+  // First click.
+  if (this.getAttribute('value') === 'yes') {
+    textareaElementsPositive.classList.add('is-open');
+  }
+  if (this.getAttribute('value') === 'no')
+  {
+    textareaElementsPositive.classList.add('is-open');
+  }
+  // Toggle
+    textareaElementsPositive.classList.toggle('is-open');
+});
+
+// Select all required fields.
+const requiredFields = document.querySelectorAll('fsField');
+// Submit button.
+const submitButton = document.querySelector('submitButton');
+// Validate required fields.
+submitButton.addEventListener('click', function(event){
+  for (const field of requiredFields) {
+    if (this.hasAttribute('checked')) {
+      console.log('We have a winner!');
+      break;
+    }
+    console.log('nothing checked');
+  }
+});
+// Mark invalid field.
+
+</script>
