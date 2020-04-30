@@ -16,6 +16,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Url;
+use Drupal\Core\Render\Markup;
 
 /**
  * Implements hook_help().
@@ -1571,6 +1572,10 @@ function mass_validation_form_node_info_details_edit_form_alter(&$form, FormStat
   $user = \Drupal::currentUser();
   if (!$user->hasPermission('set info details page template')) {
     $form['field_page_template']['#attributes']['class'][] = 'js-hide';
+  }
+
+  if (count(array_intersect(['administrator', 'content_team'], $user->getRoles())) === 0) {
+    $form['field_banner_image']['#attributes']['class'][] = 'js-hide';
   }
 
   $form['field_page_template']['widget']['#options']['_none'] = 'Information details';

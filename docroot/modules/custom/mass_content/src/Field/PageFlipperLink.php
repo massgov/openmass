@@ -57,6 +57,7 @@ class PageFlipperLink extends FieldItemList {
         ->condition('field_binder_pages.entity.field_page_group_page.uri', 'entity:node/' . $entity->id());
 
       $query->condition('type', 'binder')
+        ->condition('status', 1)
         ->condition($group);
       $results = $query->execute();
 
@@ -74,6 +75,7 @@ class PageFlipperLink extends FieldItemList {
     }
 
     // Now let's build the link.
+    $tags = [];
     $links[$entity->id()][$direction] = [];
     foreach ($binders as $binder) {
       $id = $binder->id();
@@ -81,7 +83,11 @@ class PageFlipperLink extends FieldItemList {
       foreach ($binder->field_binder_pages->referencedEntities() as $paragraph) {
         $field = $paragraph->bundle() === 'page' ? 'field_page_page' : 'field_page_group_page';
         foreach ($paragraph->{$field} as $item) {
-          $uris[$item->uri] = $item;
+          $node = Helper::entityFromUrl($item->getUrl());
+          if ($node->isPublished()) {
+            $uris[$item->uri] = $item;
+            $tags[] = "node:" . $node->id();
+          }
         }
       }
       $map = array_keys($uris);
@@ -106,6 +112,7 @@ class PageFlipperLink extends FieldItemList {
           'title' => $title,
           'uri' => $direction_link->uri,
           'options' => $direction_link->options,
+          'cache_tags' => $tags,
         ];
         $links[$entity->id()][$direction] = $link;
       }

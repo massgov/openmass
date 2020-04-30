@@ -7,6 +7,8 @@
 
 use Drupal\file\FileInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\media\MediaInterface;
+use Drupal\redirect\Entity\Redirect;
 
 /**
  * Implements hook_file_insert().
@@ -14,6 +16,9 @@ use Drupal\Core\Entity\EntityInterface;
  * Purge the file's path when a file is created.
  */
 function mass_caching_file_insert(FileInterface $file) {
+  if (_mass_caching_uri_is_private($file)) {
+    return;
+  }
   // Must purge the file on all domains/schemes, so we
   // use a path purge here, which is converted to a url.
   $absolute = file_create_url($file->getFileUri());
@@ -27,6 +32,9 @@ function mass_caching_file_insert(FileInterface $file) {
  * Purge the file's path when a file is updated.
  */
 function mass_caching_file_update(FileInterface $file) {
+  if (_mass_caching_uri_is_private($file)) {
+    return;
+  }
   // Must purge the file on all domains/schemes, so we
   // use a path purge here, which is converted to a url.
   $absolute = file_create_url($file->getFileUri());
@@ -40,6 +48,25 @@ function mass_caching_file_update(FileInterface $file) {
  * Purge the file's path when a file is deleted.
  */
 function mass_caching_file_delete(FileInterface $file) {
+  if (_mass_caching_uri_is_private($file)) {
+    return;
+  }
+  // Must purge the file on all domains/schemes, so we
+  // use a path purge here, which is converted to a url.
+  $absolute = file_create_url($file->getFileUri());
+  $relative = file_url_transform_relative($absolute);
+  \Drupal::service('manual_purger')->purgePath($relative);
+}
+
+/**
+ * Implements hook_file_move().
+ *
+ * Purge the file's path when a file is created.
+ */
+function mass_caching_file_move(FileInterface $file, FileInterface $source) {
+  if (_mass_caching_uri_is_private($file)) {
+    return;
+  }
   // Must purge the file on all domains/schemes, so we
   // use a path purge here, which is converted to a url.
   $absolute = file_create_url($file->getFileUri());
@@ -92,16 +119,53 @@ function mass_caching_module_implements_alter(&$implementations, $hook) {
 /**
  * Implements hook_entity_update().
  *
- * Purge media's download path when the entity is updated. This is implemented
- * as a hook_entity_update() rather than hook_media_update because we need it to
+ * Purge media's download path and redirect's source URL when the entity is updated. This is implemented
+ * as a hook_entity_update() rather than hook_ENTITY_TYPE_update because we need it to
  * run after pathauto's hook_entity_update().
  */
 function mass_caching_entity_update(EntityInterface $entity) {
-  if ($entity->getEntityTypeId() !== 'media') {
-    return;
+  switch ($entity->getEntityTypeId()) {
+    case 'media':
+      mass_caching_purge_media($entity);
+      break;
+
+    case 'redirect':
+      mass_caching_purge_redirect($entity);
+      break;
   }
+}
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Purge media's download path and redirect's source URL when an entity is created. This is implemented
+ * as a hook_entity_insert() rather than hook_ENTITY_TYPE_insert because we need it to
+ * run after pathauto's hook_entity_update().
+ */
+function mass_caching_entity_insert(EntityInterface $entity) {
+  switch ($entity->getEntityTypeId()) {
+    case 'media':
+      mass_caching_purge_media($entity);
+      break;
+
+    case 'redirect':
+      mass_caching_purge_redirect($entity);
+      break;
+
+  }
+}
+
+/**
+ * Purge paths for media entities.
+ *
+ * @param \Drupal\media\MediaInterface $entity
+ *   A media entity.
+ *
+ * @throws \Drupal\Core\Entity\EntityMalformedException
+ */
+function mass_caching_purge_media(MediaInterface $entity) {
   $purger = \Drupal::service('manual_purger');
-  $paths = ['/media/' . $entity->id() . '/download'];
+  $paths[] = '/media/' . $entity->id() . '/download';
   $paths[] = $entity->toUrl()->toString() . '/download';
   // array_unique() because the entity provided URL for unaliased media
   // will be the same as /media/123/download.
@@ -111,22 +175,30 @@ function mass_caching_entity_update(EntityInterface $entity) {
 }
 
 /**
- * Implements hook_entity_insert().
+ * Purge source path for redirect entities.
  *
- * Purge media's download path when the entity is created. This is implemented
- * as a hook_entity_insert() rather than hook_media_insert because we need it to
- * run after pathauto's hook_entity_update().
+ * @param \Drupal\redirect\Entity\Redirect $entity
+ *   A redirect entity.
+ *
+ * @throws \Drupal\Core\Entity\EntityMalformedException
  */
-function mass_caching_entity_insert(EntityInterface $entity) {
-  if ($entity->getEntityTypeId() !== 'media') {
-    return;
-  }
+function mass_caching_purge_redirect(Redirect $entity) {
   $purger = \Drupal::service('manual_purger');
-  $paths = ['/media/' . $entity->id() . '/download'];
-  $paths[] = $entity->toUrl()->toString() . '/download';
-  // array_unique() because the entity provided URL for unaliased media
-  // will be the same as /media/123/download.
-  foreach (array_unique($paths) as $path) {
-    $purger->purgePath($path);
-  }
+  $path = $entity->getSourceUrl();
+  $purger->purgePath($path);
+}
+
+/**
+ * Determine whether a file uri is private.
+ *
+ * @param Drupal\file\FileInterface $file
+ *   A file entity.
+ *
+ * @return bool
+ *   TRUE if the uri is private FALSE if it is anything else.
+ */
+function _mass_caching_uri_is_private(FileInterface $file) {
+  $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
+  $destination_scheme = $stream_wrapper_manager::getScheme($file->getFileUri());
+  return $destination_scheme === 'private';
 }

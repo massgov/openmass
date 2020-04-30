@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Site\Settings;
 use Drupal\views\Render\ViewsRenderPipelineMarkup;
+use Drupal\views\Views;
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -317,4 +318,27 @@ function mass_admin_theme_preprocess_views_view_field(&$variables) {
       . $variables['output'] . '</span>');
     $variables['output'] = $output;
   }
+}
+
+/**
+ * Implements template_preprocess_views_view().
+ *
+ * Add an CSV export link to the footer of the redirect view.
+ */
+function mass_admin_theme_preprocess_views_view__redirect(&$variables) {
+  if ($view = Views::getView('redirect_export')) {
+    $url = $view->setDisplay('data_export_1') ? $view->getUrl('data_export_1') : '';
+    $variables['footer']['csv_link'] = [
+      '#type' => 'link',
+      '#url' => $url,
+      '#title' => t('Redirect CSV Export'),
+      '#attributes' => [
+        'class' => [
+          'button',
+        ],
+        'target' => '_blank',
+      ],
+    ];
+  }
+
 }
