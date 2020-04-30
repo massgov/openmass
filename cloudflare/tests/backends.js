@@ -153,6 +153,7 @@ describe('WWW Backend', function() {
       ['https://www.mass.gov/alerts', 'public, max-age=604800, stale-if-error=604800, stale-while-revalidate=604800', 'public, max-age=60, stale-if-error=604800, stale-while-revalidate=604800'],
       ['https://www.mass.gov/', 'public, s-max-age=604800, max-age=604800, stale-if-error=604800, stale-while-revalidate=604800', 'public, s-max-age=604800, max-age=1800, stale-if-error=604800, stale-while-revalidate=604800'],
       ['https://www.mass.gov/', 'private', 'private'],
+      ['https://www.mass.gov/info-details/covid-19-cases-quarantine-and-monitoring', 'public, s-max-age=604800, max-age=604800, stale-if-error=604800, stale-while-revalidate=604800', 'public, s-max-age=604800, max-age=60, stale-if-error=604800, stale-while-revalidate=604800'],
   ]
   browserTTLTests.forEach(function([url, originResponseHeaders, expectedResponseHeaders]) {
 
@@ -171,7 +172,7 @@ describe('WWW Backend', function() {
     })
   });
 
-  test(`Should not alter cache headers for non-Drupal responses`, async function() {
+  test(`Should alter cache headers for non-Drupal responses`, async function() {
     global.fetch = jest.fn(() => Promise.resolve(new Response('', {
       headers: new Headers({
         'Cache-Control': 'public, max-age=604800',
@@ -181,7 +182,7 @@ describe('WWW Backend', function() {
 
     const request = new Request('https://www.mass.gov/');
     const response = await www('TEST_TOKEN')(request);
-    expect(response.headers.get('cache-control')).toEqual('public, max-age=604800');
+    expect(response.headers.get('cache-control')).toEqual('public, max-age=1800');
   })
 
   const edgeTTLTests = [
@@ -192,6 +193,7 @@ describe('WWW Backend', function() {
     ['https://www.mass.gov/jsonapi/node/alert?foo=bar', {cf: {cacheTtl: 60}}],
     // No override is expected for static assets.
     ['https://www.mass.gov/foo.jpg', {cf: {}}],
+    ['https://www.mass.gov/info-details/covid-19-cases-quarantine-and-monitoring', {cf: {cacheTtl: 60}}],
   ]
 
   edgeTTLTests.forEach(function([url, expectedOverrides]) {
@@ -262,5 +264,16 @@ describe('WWW Backend', function() {
     }))
     expect(fetch.mock.calls.length).toBe(1);
   });
+
+  test('Should set a short cache lifetime for media download redirects', async function() {
+    global.fetch = jest.fn(() => Promise.resolve(new Response('', {
+      status: 404,
+      headers: new Headers({
+        'Cache-Control': 'public, max-age=3000',
+      })
+    })));
+    const response = await www('TEST_TOKEN')(new Request('https://www.mass.gov/media/123/download'));
+    expect(response.headers.get('cache-control')).toEqual('public, max-age=60');
+  })
 
 });

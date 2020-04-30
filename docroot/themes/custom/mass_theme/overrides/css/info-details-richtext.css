@@ -1,0 +1,190 @@
+/**
+ * Override css for the callout link and the section links in .ma__rich-text.
+ */
+
+/*
+  Callout links
+*/
+
+/* .ma__action-finder */
+
+.ma__rich-text .ma__action-finder,
+.ma__rich-text .ma__action-finder--no-background {
+  background: none;
+}
+
+/* .ma__action-finder__container */
+
+.ma__rich-text .ma__action-finder__container {
+  padding: 0;
+}
+
+/* .ma__action-finder__items */
+
+.ma__rich-text .ma__action-finder__items {
+  margin-top: 21.75px;
+  margin-bottom: 1.75px;
+  margin-top: 1.5rem;
+  margin-bottom: calc(1.5rem - 20px);
+}
+
+@media (min-width: 621px) {
+  .ma__rich-text .ma__action-finder__items {
+    margin-top: 1.75rem;
+    margin-bottom: calc(1.75rem - 20px);
+  }
+}
+
+.ma__rich-text .ma__action-finder__items:not(.ma__action-finder__items--all) {
+  padding: 0;
+}
+
+/* .ma__callout-link */
+
+.ma__rich-text .ma__callout-link {
+  padding: 15px 20px;
+}
+
+@media (min-width: 621px) {
+  .ma__rich-text .ma__callout-link {
+    padding: 20px 30px;
+  }
+}
+
+/*
+  Cards
+*/
+
+/* .ma__sections-3up */
+
+.ma__rich-text .ma__sections-3up {
+  margin: 21.75px 0;
+  margin: 1.5rem 0;
+}
+
+@media (min-width: 621px) {
+  .ma__rich-text .ma__sections-3up {
+    margin: 1.75rem 0;
+  }
+}
+
+/* .ma__sections-3up__container */
+
+.ma__rich-text .ma__sections-3up__container {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+@media (min-width: 621px) {
+  .ma__rich-text .ma__sections-3up__container {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    -ms-flex-flow: row wrap;
+    flex-flow: row wrap;
+  }
+}
+
+/* margin adjustment for .ma__section-links style with * */
+
+@media (min-width: 951px) {
+  .ma__rich-text .ma__sections-3up__container > * {
+    margin-top: 0;
+  }
+}
+
+/* .ma__section-links */
+
+@media (max-width: 480px) {
+  .ma__rich-text .ma__section-links {
+    margin: 0 -20px;
+    width: calc(100% + 40px);
+  }
+
+  .ma__rich-text  .ma__section-links.is-open {
+    background-color: #fff;
+  }
+}
+
+/* override .ma__rich-text h3 specific styles */
+
+.ma__rich-text .ma__section-links__content h3:not(.ma__comp-heading),
+.ma__rich-text .ma__section-links__content h3:not(.ma__sidebar-heading) {
+  padding-bottom: 0;
+  width: auto;
+}
+
+.ma__rich-text h3.ma__section-links__title:after {
+  background: none;
+}
+
+.ma__rich-text .ma__section-links__content h3:not(.ma__comp-heading):after,
+.ma__rich-text .ma__section-links__content h3:not(.ma__sidebar-heading):after {
+  width: auto;
+  height: auto;
+  bottom: auto;
+  left: auto;
+  -webkit-transform: none;
+  -ms-transform: none;
+  transform: none;
+}
+
+/* .ma__section-links__title */
+
+.ma__rich-text .ma__section-links__content h3.ma__section-links__title {
+  font-size: 29px;
+  font-size: 2rem;
+  margin-bottom: .75em;
+  margin-bottom: .5em;
+}
+
+@media (max-width: 480px) {
+  .ma__rich-text .ma__section-links__content h3.ma__section-links__title {
+    -ms-flex-item-align: start;
+    align-self: flex-start;
+    font-size: 1.25em;
+  }
+}
+
+@media (min-width: 481px) {
+  .ma__rich-text h3.ma__section-links__title {
+    position: relative;
+    padding-bottom: 16px;
+  }
+}
+
+@media (min-width: 621px) {
+  .ma__rich-text h3.ma__section-links__title {
+    margin-bottom: 1em;
+  }
+}
+
+@media (min-width: 621px) {
+  .ma__rich-text h3.ma__section-links__title {
+    margin-bottom: .5em;
+  }
+}
+
+@media (max-width: 480px) {
+  .ma__rich-text .ma__section-links__content h3.ma__section-links__title:after {
+    content: "+";
+    top: 3px;
+    right: -5px;
+  }
+
+  .ma__rich-text .is-open h3.ma__section-links__title:after {
+    -webkit-transform: rotate(135deg);
+    -ms-transform: rotate(135deg);
+    transform: rotate(135deg);
+  }
+}
+
+@media (min-width: 481px) {
+  .ma__rich-text h3.ma__section-links__title:after {
+    width: 60px;
+  }
+}
+
+.ma__rich-text .ma__section-links__title a {
+  color: #14558f;
+  border: none;
+}

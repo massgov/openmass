@@ -160,9 +160,17 @@ class Molecules {
           $src = Helper::getFieldImageUrl($entity, 'activities_image', $fields['image']);
         }
 
+        $alt = '';
+        if ($entity->{$fields['image']}->alt) {
+          $alt = $entity->{$fields['image']}->alt;
+        }
+        else {
+          $alt = $options['alt'];
+        }
+
         $imagePromo['image'] = [
           'src' => $src,
-          'alt' => $entity->{$fields['image']}->alt,
+          'alt' => $alt,
           'href' => $href,
         ];
 

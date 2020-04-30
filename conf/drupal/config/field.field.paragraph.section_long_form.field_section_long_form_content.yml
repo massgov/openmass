@@ -4,8 +4,10 @@ status: true
 dependencies:
   config:
     - field.storage.paragraph.field_section_long_form_content
+    - paragraphs.paragraphs_type.callout_link
     - paragraphs.paragraphs_type.iframe
     - paragraphs.paragraphs_type.image
+    - paragraphs.paragraphs_type.info_details_card_group
     - paragraphs.paragraphs_type.pull_quote
     - paragraphs.paragraphs_type.rich_text
     - paragraphs.paragraphs_type.section_long_form
@@ -29,11 +31,13 @@ settings:
   handler_settings:
     negate: 0
     target_bundles:
+      callout_link: callout_link
       iframe: iframe
       image: image
       pull_quote: pull_quote
       rich_text: rich_text
       stat: stat
+      info_details_card_group: info_details_card_group
       video: video
       tableau_embed: tableau_embed
     target_bundles_drag_drop:
@@ -98,8 +102,8 @@ settings:
         weight: 105
         enabled: false
       callout_link:
+        enabled: true
         weight: 106
-        enabled: false
       completion_time:
         weight: 107
         enabled: false
@@ -126,6 +130,9 @@ settings:
         enabled: false
       event_agenda_section:
         weight: 115
+        enabled: false
+      about:
+        weight: 116
         enabled: false
       event_minutes_section:
         weight: 116
@@ -178,6 +185,9 @@ settings:
       links:
         weight: 131
         enabled: false
+      board_member:
+        weight: 131
+        enabled: false
       links_downloads:
         weight: 132
         enabled: false
@@ -186,6 +196,9 @@ settings:
         enabled: false
       list_item_document:
         weight: 134
+        enabled: false
+      campaign_features:
+        weight: 135
         enabled: false
       list_item_link:
         weight: 135
@@ -203,6 +216,9 @@ settings:
         weight: 139
         enabled: false
       media_contact:
+        weight: 141
+        enabled: false
+      custom_html:
         weight: 141
         enabled: false
       method:
@@ -229,13 +245,25 @@ settings:
       pull_quote:
         enabled: true
         weight: 149
+      featured_content_2up_item:
+        weight: 149
+        enabled: false
+      featured_content_single_item:
+        weight: 150
+        enabled: false
       quick_action:
         weight: 150
         enabled: false
       recommended_activity:
         weight: 151
         enabled: false
+      featured_item:
+        weight: 151
+        enabled: false
       regulation_section:
+        weight: 152
+        enabled: false
+      featured_item_mosaic:
         weight: 152
         enabled: false
       related_content:
@@ -247,6 +275,9 @@ settings:
       rich_text:
         enabled: true
         weight: 155
+      footnotes:
+        weight: 155
+        enabled: false
       rules_section:
         weight: 156
         enabled: false
@@ -280,16 +311,70 @@ settings:
       stat:
         enabled: true
         weight: 166
+      image_credit:
+        weight: 166
+        enabled: false
       state_organization:
         weight: 167
         enabled: false
       subhead:
         weight: 168
         enabled: false
+      info_details_card_group:
+        enabled: true
+        weight: 168
+      key_message:
+        weight: 168
+        enabled: false
       target_pages:
+        weight: 169
+        enabled: false
+      key_message_section:
         weight: 169
         enabled: false
       video:
         enabled: true
         weight: 170
+      link_group:
+        weight: 172
+        enabled: false
+      link_group_document:
+        weight: 173
+        enabled: false
+      link_group_link:
+        weight: 174
+        enabled: false
+      list_board_members:
+        weight: 175
+        enabled: false
+      list_item_contact:
+        weight: 177
+        enabled: false
+      list_item_person:
+        weight: 180
+        enabled: false
+      list_manual_directory:
+        weight: 181
+        enabled: false
+      manage_account_link:
+        weight: 184
+        enabled: false
+      organization_grid:
+        weight: 192
+        enabled: false
+      search_banner:
+        weight: 206
+        enabled: false
+      section_board_members:
+        weight: 208
+        enabled: false
+      tableau_embed:
+        enabled: true
+        weight: 218
+      video_with_header:
+        weight: 221
+        enabled: false
+      video_with_section:
+        weight: 222
+        enabled: false
 field_type: entity_reference_revisions

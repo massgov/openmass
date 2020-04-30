@@ -10,7 +10,7 @@
 {% set binder_table_rows = [] %}
 {# Build organization row. #}
 {% set binder_table_rows = binder_table_rows|merge([{
-  "label": node.field_binder_ref_organization.fieldDefinition.label ~ ':',
+  "label": 'Organization:',
   "items": binder_organization_items
 }]) %}
 
@@ -130,7 +130,7 @@
 
 {% block sidebar %}
   {{ content.extra_sidebar_contact }}
-  {% if sideContent.linkList %}
+  {% if sideContent.linkList.links %}
     {% set linkList = sideContent.linkList %}
     {% set linkList = linkList|merge({'compHeading': {
       'title': linkList.compHeading.title,

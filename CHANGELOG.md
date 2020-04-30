@@ -1,5 +1,187 @@
 
 
+## [0.241.0] - April 29, 2020
+
+### Added
+  - DP-18049: Shows message to users who login and have no 2FA setup.
+  - DP-18336: Wait for font to load during Backstop test
+  - Disable field_alert_display widget on Alert node for users w/o permission
+  - DP-18242: 
+  - DP-18246: Added CSV export button for exporting redirects.
+  - DP-18423: Add featured message to org page.
+  
+### Fixed
+  - DP-17574: Prevent 500 error when changing link in utility menu
+  - DP-18050: Adds login failure message for users attempting to login without TFA
+  
+### Changed
+  - DP-18429: Changing field_template permission to be visible for Author and Editor.
+  - DP-16023: Revise help text for fields related to custom link group service page.
+  - DP-17994: Change TFA configuration to disallow skipping setup and logging in without TFA
+  - DP-18492: Updated Mayflower version to 9.49.1.
+  - DP-18422  Add a new component to have rich text and callout link, adjust margin with/without callout message. (MF)
+  - DP-18315  Addded fonts for Khmer language support. (MF)
+  - DP-17792  Adjusted scss to rotate button arrow up when accordion opens. (MF)
+  - DP-18401: Update pfdp, mandrill, and focal point modules
+  
+
+
+## [0.240.0] - April 21, 2020
+
+### Changed
+  - DP-18377: Added more languages to Google translate feature
+  - DP-13246: Changed the style of decision tree buttons below 620px width to line up vertically instead of horizontally.
+  - DP-18229: Changed field order, help text, and labels on Alert content type.
+  - DP-18015: Adjust nightcrawler test to remove action page type and adjust time thresholds.
+  
+### Security
+  - Updated vulnerable javascript packages with yarn
+  - DP-18035: 
+  
+### Fixed
+  - DP-14628: Truncates node title as needed when contacting authors.
+  - DP-17619: Change the condition to check sideContent.linkList to check if its content is not null.
+  
+### Removed
+  - DP-17962: Removed the paragraphs_type_help module with composer
+  
+
+
+## [0.239.0] - April 14, 2020
+
+### Changed
+  - DP-18294: Updated Mayflower version to 9.47.0.
+    - DP-16029: Change the property value to set style for see all link in service page to match Mass.gov production. (MF)
+    - DP-16690: Changed text from less to fewer. (MF)
+  - DP-18269: Added purge when redirects are added/updated.
+  
+### Added
+  - DP-18241: Validate Mayflower to Drupal PR so that cut_release_branch workflow passes
+  - DP-17579: Add Tableau JS for sizing dashboard based on container width
+  
+### Fixed
+  - DP-17976: Stop unpublished nodes from showing up in page flipper.
+  
+
+
+## [0.238.0] - April 7, 2020
+
+### Changed
+  - DP-15351: Added 2 new pages to the set of pages we use for our Backstop tests.
+  - DP-16701: Add alt value to a linked image for an organization as a signee in news page.
+  - DP-17901: Update Drupal core from 8.8.1 to 8.8.4.
+  - DP-17990: Updated emails sent to users when added or activated.
+  - DP-18030: Set the link text for address as "Direction" with uppercase "D" instead of lowercase "d" in org page.
+  - DP-18033: Update help text for banner images on info details and binders.
+  - DP-18039: Configure related_content paragraph to permit more content types and update theme to use actionCards layout (not bullets) as default layout.
+  - DP-18179: |-
+    Updated Mayflower version to 9.46.0.
+         - DP-15965: Changed capitalization of directions. (MF)
+         - DP-17387: Adjust css for decorative link in location listing for Chrome. Match the markup of assets/js/templates/locationListingRow.html to 02-molecules/image-promo.twig. (MF)
+
+### Fixed
+  - DP-17863: Document files should be added to the private filesystem by default.
+  - DP-17891: Add validation to prevent publishing more than 1 sitewide alert at a time.
+  - DP-18056: Fixed the body for both the Release PR and hotfix GitHub tagging.
+  - DP-18165: Resolve a performance regression due to alert URLs changing.
+
+### Added
+  - DP-17995: Added ability to link to promotional pages in the binder content-type.
+
+### Removed
+  - DP-15511: Removed the workbench_moderation and workbench_moderation_actions modules.
+
+## [0.237.1] - March 31, 2020
+
+### Changed
+  - DP-18016: Changed overrides/css/callout-link.css file name to be more generic to info details page, overrides/css/info-details-richtext.css.
+  - DP-18021: |-
+    Updated Mayflower version to 9.45.2.
+        - DP-17674: Add a new style for link list in service page. (MF)
+        - DP-18000: Make top-level nav items clickable. (MF)
+        - DP-18018: Add alternate style for COVID-19 link. (MF)
+
+### Added
+  - DP-18016: Add override style for the section links component in .ma__rich-text.
+
+## [0.237.0] - March 30, 2020
+
+### Changed
+  - DP-16926: Uninstalled the paragraphs_type_help module.
+  - DP-17772: Block alerts in most BackstopJS tests.
+  - DP-17938: At CircleCI, fail Danger if no PR exists.
+  - DP-17961: Allow How-to and Form nodes to be added to binders.
+  - DP-17989: Only allow content admins to add Callout Link and Card paragraphs to the Info Details content type.
+
+### Fixed
+  - DP-17959: Fix github tagging during release
+
+### Added
+  - DP-17971: Add a field template to wrap callout links in rich text container as action items and css to style them.
+  - DP-17971: Adds info details card group paragraph type and styles.
+  - DP-17972: Added a new banner-image field to info_details node which provided an alternate header option.
+
+
+## [0.236.0] - March 24, 2020
+
+### Changed
+  - DP-17886: Shorten edge cache TTLs on COVID-19 related pages.
+  - DP-17821: Update filter for basic dashboards (iframe route).
+
+### Fixed
+  - DP-17924: Adjust PageSpecificAlert test since uid=1 is blocked.
+  - DP-17810: Fixed the json data to output the correct emergency_alert paragraph id for the alerts block.
+  - DP-17838: Make tagging for Hotfix releases work as patch release numbers
+
+### Added
+  - DP-17851: Add a Redirect Manager role with redirect permissions.
+  - DP-16085: Add behat tests for the Promotional Page (campaign_landing) content-type.
+
+
+
+## [0.235.0] - March 17, 2020
+
+### Fixed
+  - DP-17005: Fix deploy_mayflower_cd to always run on commits on mayflower-dev branch.
+  - DP-17781: Fix mayflower-dev not building when a PR is absent.
+  - DP-17808: Fix conditional states for emergency alert inputs not working properly.
+
+### Changed
+  - DP-17535: Remove ability to create documents inline on a Curated List node.
+  - DP-17737: Alter Cloudflare settings to change edit access for COVID-19.
+  - DP-17756: Update the data and time to trigger release_branch to 13:00 EST on Tuesdays, and change the schedule for mayflower_develop_branch from 11:00 PM Sunday EST to 11:00 PM Thursday EST, and adjust deploy_cd to skip the job on Thursday instead of Sunday to make cd env. available.
+  - DP-17791: Add "Read More" link to teasers shown on /alerts page.
+  - DP-17809: Fixed an issue where document download URLs were not being cleared from cache on initial creation of the document.
+  - DP-178181: |-
+    Updated Mayflower version to 9.44.0.
+         - DP-17625: Visual Story sidebar template and styles adjust. (MF)
+         - DP-17633: Fix geocoding for autocomplete results on location listings. (MF)
+
+### Added
+  - DP-17625: Add list field to info_details page to allow changing layout sidebar display.
+  - DP-17791: Add styling to alert links on alert list page.
+
+
+## [0.234.1] - March 13, 2020
+
+### Changed
+  - DP-17784: Shorten the media download cache lifetime for the browser to avoid content that changes quickly being cached.
+
+### Fixed
+  - DP-17785: Purge /download media urls when media is updated.
+
+
+## [0.234.0] - March 10, 2020
+
+### Fixed
+  - DP-17185: Add a redirect to the media download link when a media alias is changed.
+  - DP-17414: Add check for transition permissions before rendering scheduler form.
+
+### Added
+  - DP-12397: Add Drush commands for creating Druapl redirects from legacy.
+  - DP-17194: Added data tab metatags to service details info details and curated lists
+
+
 ## [0.233.0] - March 4, 2020
 
 ### Security
