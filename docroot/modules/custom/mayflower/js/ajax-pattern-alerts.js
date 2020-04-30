@@ -190,9 +190,6 @@
             }
           }
         });
-        if (paragraphsWithCurrentPageAsTarget.length === 0) {
-          return {};
-        }
       }
       catch (e) {
         console.error(e);
@@ -216,12 +213,15 @@
             }
           }
         });
-        if (paragraphsWithCurrentPageAsTarget.length === 0) {
-          return {};
-        }
       }
       catch (e) {
         console.error(e);
+      }
+
+      // If we found neither target paragraphs nor org paragraphs that have the
+      // current page as the target, then abort.
+      if (paragraphsWithCurrentPageAsTarget.length === 0) {
+        return {};
       }
 
       // Now we iterate on each alert data.
