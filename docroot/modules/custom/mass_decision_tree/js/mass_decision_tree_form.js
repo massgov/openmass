@@ -117,8 +117,6 @@
         });
         // Cycle through and label orphans.
         massLabelOrphans();
-        // Cycle through and label answers.
-        massLabelYesNo($row.closest('tbody'));
       };
       // Initial labeling on attach.
       massLabelOrphans();

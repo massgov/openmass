@@ -159,96 +159,100 @@ class DecisionTreeAdminForm extends FormBase {
     $nid = $info['child'];
     $child_node = $this->entityTypeManager->getStorage('node')->load($nid);
 
-    $info['index']++;
-    $types = [
-      'decision_tree_branch' => $this->t('Branch'),
-      'decision_tree_conclusion' => $this->t('Conclusion'),
-    ];
-
-    // TableDrag: Mark the table row as draggable.
-    $form['table-row'][$info['index']]['#attributes']['class'][] = 'draggable';
-
-    $form['table-row'][$info['index']]['#attributes']['data-type'] = strtolower($types[$child_node->bundle()]);
-
-    // Add the parent as a data attribute if there is one.
-    if (isset($info['parent']) && !empty($info['parent'])) {
-      $form['table-row'][$info['index']]['#attributes']['data-parent'] = $info['parent'];
-    }
-
-    // Never let conclusions be parents.
-    if ($child_node->bundle() === 'decision_tree_conclusion') {
-      $form['table-row'][$info['index']]['#attributes']['class'][] = 'tabledrag-leaf';
-    }
-
-    // Indent item on load.
-    if (isset($info['depth']) && $info['depth'] > 0) {
-      $indentation = [
-        '#theme' => 'indentation',
-        '#size' => $info['depth'],
+    if(!empty($child_node)) {
+      $info['index']++;
+      $types = [
+        'decision_tree_branch' => $this->t('Branch'),
+        'decision_tree_conclusion' => $this->t('Conclusion'),
       ];
-    }
 
-    // Title, type, and edit column data.
-    $form['table-row'][$info['index']]['title'] = [
-      '#markup' => '<a href="' . $child_node->toUrl()->toString() . '" class="decision-tree-form-title" id="' . $nid . '">' . $child_node->label() . '</a>',
-      '#prefix' => !empty($indentation) ? drupal_render($indentation) : '',
-    ];
+      // TableDrag: Mark the table row as draggable.
+      $form['table-row'][$info['index']]['#attributes']['class'][] = 'draggable';
 
-    $form['table-row'][$info['index']]['type'] = [
-      '#markup' => $types[$child_node->bundle()],
-    ];
+      $form['table-row'][$info['index']]['#attributes']['data-type'] = strtolower($types[$child_node->bundle()]);
 
-    $form['table-row'][$info['index']]['edit'] = [
-      '#markup' => '<a href="' . $child_node->toUrl('edit-form')->toString() . '">edit</a>',
-    ];
+      // Add the parent as a data attribute if there is one.
+      if (isset($info['parent']) && !empty($info['parent'])) {
+        $form['table-row'][$info['index']]['#attributes']['data-parent'] = $info['parent'];
+      }
 
-    // This is hidden from #tabledrag array (above).
-    // TableDrag: Weight column element.
-    $form['table-row'][$info['index']]['weight'] = [
-      '#parents' => ['table-row', $nid, 'weight'],
-      '#type' => 'weight',
-      '#title' => $this->t('Weight for ID @id', ['@id' => $nid]),
-      '#title_display' => 'invisible',
-      '#default_value' => -10,
-      // Classify the weight element for #tabledrag.
-      '#attributes' => [
-        'class' => ['row-weight'],
-      ],
-    ];
-    $form['table-row'][$info['index']]['parent']['id'] = [
-      '#parents' => ['table-row', $nid, 'id'],
-      '#type' => 'hidden',
-      '#value' => $nid,
-      '#attributes' => [
-        'class' => ['row-id'],
-      ],
-    ];
-    $form['table-row'][$info['index']]['parent']['pid'] = [
-      '#parents' => ['table-row', $nid, 'pid'],
-      '#type' => 'number',
-      '#size' => 3,
-      '#min' => 0,
-      '#title' => $this->t('Parent ID'),
-      '#default_value' => !empty($info['parent']) ? $info['parent'] : '',
-      '#attributes' => [
-        'class' => ['row-pid'],
-      ],
-    ];
+      // Never let conclusions be parents.
+      if ($child_node->bundle() === 'decision_tree_conclusion') {
+        $form['table-row'][$info['index']]['#attributes']['class'][] = 'tabledrag-leaf';
+      }
 
-    // Check for children and pass them in recursively.
-    if ($child_node->bundle() === 'decision_tree_branch') {
-      foreach ($child_node->field_multiple_answers as $answers) {
-        $answer = $answers->entity;
+      // Indent item on load.
+      if (isset($info['depth']) && $info['depth'] > 0) {
+        $indentation = [
+          '#theme' => 'indentation',
+          '#size' => $info['depth'],
+        ];
+      }
 
-        // Use now the entity to get the values you need.
-        $true_nid = $answer->field_answer_path->target_id;
+      // Title, type, and edit column data.
+      $form['table-row'][$info['index']]['title'] = [
+        '#markup' => '<a href="' . $child_node->toUrl()
+            ->toString() . '" class="decision-tree-form-title" id="' . $nid . '">' . $child_node->label() . '</a>',
+        '#prefix' => !empty($indentation) ? drupal_render($indentation) : '',
+      ];
 
-        if ($true_nid) {
-          $info['depth']++;
-          $info['child'] = $true_nid;
-          $info['parent'] = $nid;
-          $this->buildRow($form, $info);
-          $info['depth']--;
+      $form['table-row'][$info['index']]['type'] = [
+        '#markup' => $types[$child_node->bundle()],
+      ];
+
+      $form['table-row'][$info['index']]['edit'] = [
+        '#markup' => '<a href="' . $child_node->toUrl('edit-form')
+            ->toString() . '">edit</a>',
+      ];
+
+      // This is hidden from #tabledrag array (above).
+      // TableDrag: Weight column element.
+      $form['table-row'][$info['index']]['weight'] = [
+        '#parents' => ['table-row', $nid, 'weight'],
+        '#type' => 'weight',
+        '#title' => $this->t('Weight for ID @id', ['@id' => $nid]),
+        '#title_display' => 'invisible',
+        '#default_value' => -10,
+        // Classify the weight element for #tabledrag.
+        '#attributes' => [
+          'class' => ['row-weight'],
+        ],
+      ];
+      $form['table-row'][$info['index']]['parent']['id'] = [
+        '#parents' => ['table-row', $nid, 'id'],
+        '#type' => 'hidden',
+        '#value' => $nid,
+        '#attributes' => [
+          'class' => ['row-id'],
+        ],
+      ];
+      $form['table-row'][$info['index']]['parent']['pid'] = [
+        '#parents' => ['table-row', $nid, 'pid'],
+        '#type' => 'number',
+        '#size' => 3,
+        '#min' => 0,
+        '#title' => $this->t('Parent ID'),
+        '#default_value' => !empty($info['parent']) ? $info['parent'] : '',
+        '#attributes' => [
+          'class' => ['row-pid'],
+        ],
+      ];
+
+      // Check for children and pass them in recursively.
+      if ($child_node->bundle() === 'decision_tree_branch') {
+        foreach ($child_node->field_multiple_answers as $answers) {
+          $answer = $answers->entity;
+
+          // Use now the entity to get the values you need.
+          $true_nid = $answer->field_answer_path->target_id;
+
+          if ($true_nid) {
+            $info['depth']++;
+            $info['child'] = $true_nid;
+            $info['parent'] = $nid;
+            $this->buildRow($form, $info);
+            $info['depth']--;
+          }
         }
       }
     }
@@ -271,28 +275,28 @@ class DecisionTreeAdminForm extends FormBase {
     }
     // Loop through kids and look for changes.
     $changes = FALSE;
+    ksm($kids);
     foreach ($kids as $nid => $kid) {
+
       if ($nid) {
         $node = Node::load($nid);
-        foreach ($node->field_answers as $answers) {
+        $existing_order = [];
+        foreach ($node->field_multiple_answers as $p_index => $answers) {
           $answer = $answers->entity;
 
-          // Use now the entity to get the values you need.
-          $true_nid = $answer->field_true_answer_path->target_id;
-          $false_nid = $answer->field_false_answer_path->target_id;
 
-          if ($kid[0] !== $true_nid) {
-            // True answer changed, update it.
-            $answers->entity->field_true_answer_path->target_id = $kid[0];
-            $answers->entity->save();
-            $changes = TRUE;
-          }
-          if ($kid[1] !== $false_nid) {
-            // False answer changed, update it.
-            $answers->entity->field_false_answer_path->target_id = $kid[1];
-            $answers->entity->save();
-            $changes = TRUE;
-          }
+          ksm($p_index);
+          // Use now the entity to get the values you need.
+          $target_id = $answer->field_answer_path->target_id;
+          $existing_order[$p_index] = $target_id;
+          ksm($target_id);
+          ksm($answer->id());
+//          if ($kid[0] !== $true_nid) {
+//            // True answer changed, update it.
+//            $answers->entity->field_answer_path->target_id = $kid[0];
+//            $answers->entity->save();
+//            $changes = TRUE;
+//          }
         }
       }
     }
