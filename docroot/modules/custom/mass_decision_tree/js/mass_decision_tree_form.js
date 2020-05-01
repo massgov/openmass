@@ -65,18 +65,6 @@
         }
       });
 
-      // Hide all rows of depth > 1 for a sane entry point.
-      $('table#decisionTree tr.draggable', context).once('tree-detach').each(function () {
-        var $self = $(this);
-        if ($self.find('.js-indentation').length > 1) {
-          var parent = $self.data('parent');
-          if (typeof drupalSettings.detached[parent] === 'undefined') {
-            drupalSettings.detached[parent] = [];
-          }
-          drupalSettings.detached[parent].push($self.detach());
-        }
-      });
-
       // Detaches children of a row and stores them in drupalSettings.
       function massHideChildren(id, detached, $tbody) {
         $tbody.find('tr[data-parent="' + id + '"]').each(function () {
@@ -108,22 +96,6 @@
         });
       }
 
-      function massLabelYesNo($tbody) {
-        // Remove any existing answer labels before we begin.
-        $tbody.find('tr').removeClass(function (index, className) {
-          return (className.match(/(^|\s)answer-\S+/g) || []).join(' ');
-        });
-
-        $('table#decisionTree tr.draggable').each(function () {
-          var id = $(this).find('a.decision-tree-form-title').attr('id');
-          // Find rows with this id as parent and count them off.
-          $('tr[data-parent="' + id + '"]').each(function (i) {
-            var answerClass = 'answer-' + i;
-            $(this).addClass(answerClass);
-          });
-        });
-      }
-
       // Below we are hooking into Drupal core's tabledrag functionality.
       var tableDrag = Drupal.tableDrag.decisionTree;
 
@@ -150,7 +122,6 @@
       };
       // Initial labeling on attach.
       massLabelOrphans();
-      massLabelYesNo($('tbody', context));
     }
   };
 })(jQuery, Drupal);

@@ -242,6 +242,7 @@ class DecisionTreeAdminForm extends FormBase {
 
         // Use now the entity to get the values you need.
         $true_nid = $answer->field_answer_path->target_id;
+
         if ($true_nid) {
           $info['depth']++;
           $info['child'] = $true_nid;
