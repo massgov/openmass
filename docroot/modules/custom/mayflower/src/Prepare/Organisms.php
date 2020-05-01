@@ -556,7 +556,7 @@ class Organisms {
       }
       // DP-17511: Solving issue when referenced entity is deleted.
       elseif (isset($field_value->getValue()['target_id']) && !$field_value->getValue()['_loaded']) {
-        break;
+        continue;
       }
       else {
 
