@@ -53,7 +53,7 @@ class OrganizationAlertsClientSideTest extends ExistingSiteBase {
       'field_target_orgs_para_ref' => Paragraph::create([
         'type' => 'target_organizations',
         'field_target_content_ref' => $this->orgPageId,
-        //'field_target_content_ref' => ['target_id' => $this->org_page_id],
+        // 'field_target_content_ref' => ['target_id' => $this->org_page_id],.
       ]),
     ]);
   }
