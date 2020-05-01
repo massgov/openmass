@@ -237,22 +237,14 @@ class DecisionTreeAdminForm extends FormBase {
 
     // Check for children and pass them in recursively.
     if ($child_node->bundle() === 'decision_tree_branch') {
-      foreach ($child_node->field_answers as $answers) {
+      foreach ($child_node->field_multiple_answers as $answers) {
         $answer = $answers->entity;
 
         // Use now the entity to get the values you need.
-        $true_nid = $answer->field_true_answer_path->target_id;
+        $true_nid = $answer->field_answer_path->target_id;
         if ($true_nid) {
           $info['depth']++;
           $info['child'] = $true_nid;
-          $info['parent'] = $nid;
-          $this->buildRow($form, $info);
-          $info['depth']--;
-        }
-        $false_nid = $answer->field_false_answer_path->target_id;
-        if ($false_nid) {
-          $info['depth']++;
-          $info['child'] = $false_nid;
           $info['parent'] = $nid;
           $this->buildRow($form, $info);
           $info['depth']--;
