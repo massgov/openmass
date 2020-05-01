@@ -64,12 +64,17 @@ function mass_decision_tree_post_update_answers(&$sandbox) {
         $node->field_multiple_answers[] = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
       }
 
-      $node->field_answers= NULL;
+      $node->field_answers = NULL;
       $node->setNewRevision();
       $node->setRevisionUserId(1);
       $node->setRevisionCreationTime(REQUEST_TIME);
       $node->setRevisionLogMessage('Programmatic update to move content from field_answers to field_multiple_answers.');
       $node->save();
+
+      // Rerunning this to make sure it gets indexed in descendant_storage.
+      /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
+      $descendant_manager = \Drupal::getContainer()->get('descendant_manager');
+      $descendant_manager->index($node);
     }
     // Update the counter.
     $sandbox['progress']++;
