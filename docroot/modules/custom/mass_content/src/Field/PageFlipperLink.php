@@ -83,10 +83,11 @@ class PageFlipperLink extends FieldItemList {
       foreach ($binder->field_binder_pages->referencedEntities() as $paragraph) {
         $field = $paragraph->bundle() === 'page' ? 'field_page_page' : 'field_page_group_page';
         foreach ($paragraph->{$field} as $item) {
-          $node = Helper::entityFromUrl($item->getUrl());
-          if ($node->isPublished()) {
-            $uris[$item->uri] = $item;
-            $tags[] = "node:" . $node->id();
+          if ($node = Helper::entityFromUrl($item->getUrl())) {
+            if ($node->isPublished()) {
+              $uris[$item->uri] = $item;
+              $tags[] = "node:" . $node->id();
+            }
           }
         }
       }
