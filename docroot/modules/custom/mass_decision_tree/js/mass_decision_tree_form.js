@@ -51,8 +51,6 @@
                 }
               }
             }
-            // Label yes/no to catch newly displayed rows.
-            massLabelYesNo($self.closest('tbody'));
           });
           drupalSettings.detached.splice(id, 1);
         }

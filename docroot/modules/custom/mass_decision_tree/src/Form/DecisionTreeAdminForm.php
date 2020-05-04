@@ -7,7 +7,9 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
+use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 use Drupal\mass_content_api\DescendantManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -16,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Provides a decision tree admin form.
  */
 class DecisionTreeAdminForm extends FormBase {
-
+  use StringTranslationTrait;
   /**
    * The renderer.
    *
@@ -265,7 +267,9 @@ class DecisionTreeAdminForm extends FormBase {
     $rows = $form_state->getValue('table-row');
     $kids = [];
     // Build out all our kids before we loop through them.
+
     foreach ($rows as $row) {
+
       if (!$row['pid']) {
         $kids[0][] = $row['id'];
       }
@@ -273,36 +277,27 @@ class DecisionTreeAdminForm extends FormBase {
         $kids[$row['pid']][] = $row['id'];
       }
     }
-    // Loop through kids and look for changes.
-    $changes = FALSE;
-    ksm($kids);
     foreach ($kids as $nid => $kid) {
 
       if ($nid) {
         $node = Node::load($nid);
-        $existing_order = [];
-        foreach ($node->field_multiple_answers as $p_index => $answers) {
-          $answer = $answers->entity;
-
-
-          ksm($p_index);
-          // Use now the entity to get the values you need.
-          $target_id = $answer->field_answer_path->target_id;
-          $existing_order[$p_index] = $target_id;
-          ksm($target_id);
-          ksm($answer->id());
-//          if ($kid[0] !== $true_nid) {
-//            // True answer changed, update it.
-//            $answers->entity->field_answer_path->target_id = $kid[0];
-//            $answers->entity->save();
-//            $changes = TRUE;
-//          }
+        $order = [];
+        $paragraphs = Helper::getReferencedEntitiesFromField($node, 'field_multiple_answers');
+        foreach($paragraphs as $p) {
+          $p_node = Helper::getReferencedEntitiesFromField($p, 'field_answer_path');
+          if(!empty($p_node)) {
+            $p_nid = $p_node[0]->id();
+          }
+          $order[$p_nid] = ['target_id' => $p->id(), 'target_revision_id' => $p->getRevisionId()];
         }
+        $node->field_multiple_answers = NULL;
+        foreach ($kid as $c_nid) {
+          $node->field_multiple_answers[] = $order[$c_nid];
+        }
+        $node->save();
       }
     }
-    if ($changes) {
-      drupal_set_message('Your changes have been saved successfully!');
-    }
+    \Drupal::messenger()->addMessage($this->t('Your changes have been saved successfully!'), 'status');
   }
 
 }
