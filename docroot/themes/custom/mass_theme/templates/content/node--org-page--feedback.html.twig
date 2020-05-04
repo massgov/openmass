@@ -82,7 +82,7 @@
   {% set noResponseDescription = "This form only gathers feedback about the website." %}
 {% endif %}
 
-<h2 style="color: red;">THEMING TEMPALTE BEGINS</h2>
+<h2 style="color: red;">THEMING TEMPLATE BEGINS</h2>
 
 <div class="feedback-steps">
   <span id="feedback"></span>
@@ -98,7 +98,9 @@
 
 <div class="ma__mass-feedback-form">
   <h2 class="visually-hidden">Feedback</h2>
-  <form class="ma__mass-feedback-form__form" method="post" novalidate action="https://www.formstack.com/forms/index.php" id="2521317">
+  {# <form class="ma__mass-feedback-form__form" method="post" novalidate action="https://www.formstack.com/forms/index.php" id="2521317"> #}
+
+  <form class="ma__mass-feedback-form__form" method="post" novalidate action="{{ formAction }}" id="{{ formId }}">
 
     <fieldset class="ma_feedback-fieldset feedback-load" role="radiogroup">
       <legend>Did you find what you were looking for on this webpage?
@@ -186,22 +188,21 @@
                 aria-describedby="note1 note2"></textarea>
         </div>
 
-        <div id="note2" class="ma__disclaimer">
+        <div id="note2" class="ma__helper-text">
           <p>Do not include sensitive information, such as Social Security or bank account numbers.</p>
         </div>
+
+
+{# TODO: CHECK THE POSITIONING OF THIS COMPONENT. #}
+      {% if reportMessage %}
+        {% set pageAlert = reportMessage %}
+        {% include "@organisms/by-template/in-page-alert.twig" %}
+      {% endif %}
 
 
 {# END OF CURRENT EDIT #}
 <h2 style="color: purple;">END OF CURRENT EDIT</h2>
 {# END OF CURRENT EDIT #}
-
-{# {% if reportMessage %}
-  {% set pageAlert = reportMessage %}
-  {% include "@organisms/by-template/in-page-alert.twig" %}
-{% endif %} #}
-
-        {# {% set helperText = helperText %}
-        {% include "@atoms/03-forms/helper-text.twig" %} #}
 
         {% if Response %}
         <div class="ma__mass-feedback-form__form--user-response feedback-response feedback-negative">
