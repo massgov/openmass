@@ -231,7 +231,7 @@ class DecisionTreeAdminForm extends FormBase {
       $form['table-row'][$info['index']]['parent']['pid'] = [
         '#parents' => ['table-row', $nid, 'pid'],
         '#type' => 'number',
-        '#size' => 3,
+        '#size' => 6,
         '#min' => 0,
         '#title' => $this->t('Parent ID'),
         '#default_value' => !empty($info['parent']) ? $info['parent'] : '',
@@ -267,9 +267,7 @@ class DecisionTreeAdminForm extends FormBase {
     $rows = $form_state->getValue('table-row');
     $kids = [];
     // Build out all our kids before we loop through them.
-
     foreach ($rows as $row) {
-
       if (!$row['pid']) {
         $kids[0][] = $row['id'];
       }
@@ -277,10 +275,10 @@ class DecisionTreeAdminForm extends FormBase {
         $kids[$row['pid']][] = $row['id'];
       }
     }
-    foreach ($kids as $nid => $kid) {
 
-      if ($nid) {
-        $node = Node::load($nid);
+    foreach ($kids as $parent_nid => $kid) {
+      if ($parent_nid) {
+        $node = Node::load($parent_nid);
         $order = [];
         $paragraphs = Helper::getReferencedEntitiesFromField($node, 'field_multiple_answers');
         foreach($paragraphs as $p) {
@@ -290,14 +288,28 @@ class DecisionTreeAdminForm extends FormBase {
           }
           $order[$p_nid] = ['target_id' => $p->id(), 'target_revision_id' => $p->getRevisionId()];
         }
+
         $node->field_multiple_answers = NULL;
-        foreach ($kid as $c_nid) {
-          $node->field_multiple_answers[] = $order[$c_nid];
+        foreach ($kid as $nid) {
+          if (isset($order[$nid])) {
+            $node->field_multiple_answers[] = $order[$nid];
+          }
+          else {
+            $paragraph = \Drupal::entityTypeManager()
+              ->getStorage('paragraph')
+              ->loadByProperties(['field_answer_path' => $nid]);
+            $p_tmp = reset($paragraph);
+            $p = $p_tmp->createDuplicate();
+            $p->save();
+            $node->field_multiple_answers[] = ['target_id' => $p->id(), 'target_revision_id' => $p->getRevisionId()];
+          }
         }
+        $node->setNewRevision();
+        $node->setRevisionUserId(\Drupal::currentUser()->id());
+        $node->setRevisionCreationTime(REQUEST_TIME);
         $node->save();
       }
     }
     \Drupal::messenger()->addMessage($this->t('Your changes have been saved successfully!'), 'status');
   }
-
 }
