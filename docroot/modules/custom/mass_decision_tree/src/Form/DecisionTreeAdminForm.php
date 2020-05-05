@@ -161,7 +161,7 @@ class DecisionTreeAdminForm extends FormBase {
     $nid = $info['child'];
     $child_node = $this->entityTypeManager->getStorage('node')->load($nid);
 
-    if(!empty($child_node)) {
+    if (!empty($child_node)) {
       $info['index']++;
       $types = [
         'decision_tree_branch' => $this->t('Branch'),
@@ -193,8 +193,7 @@ class DecisionTreeAdminForm extends FormBase {
 
       // Title, type, and edit column data.
       $form['table-row'][$info['index']]['title'] = [
-        '#markup' => '<a href="' . $child_node->toUrl()
-            ->toString() . '" class="decision-tree-form-title" id="' . $nid . '">' . $child_node->label() . '</a>',
+        '#markup' => '<a href="' . $child_node->toUrl()->toString() . '" class="decision-tree-form-title" id="' . $nid . '">' . $child_node->label() . '</a>',
         '#prefix' => !empty($indentation) ? drupal_render($indentation) : '',
       ];
 
@@ -203,8 +202,7 @@ class DecisionTreeAdminForm extends FormBase {
       ];
 
       $form['table-row'][$info['index']]['edit'] = [
-        '#markup' => '<a href="' . $child_node->toUrl('edit-form')
-            ->toString() . '">edit</a>',
+        '#markup' => '<a href="' . $child_node->toUrl('edit-form')->toString() . '">edit</a>',
       ];
 
       // This is hidden from #tabledrag array (above).
@@ -281,9 +279,9 @@ class DecisionTreeAdminForm extends FormBase {
         $node = Node::load($parent_nid);
         $order = [];
         $paragraphs = Helper::getReferencedEntitiesFromField($node, 'field_multiple_answers');
-        foreach($paragraphs as $p) {
+        foreach ($paragraphs as $p) {
           $p_node = Helper::getReferencedEntitiesFromField($p, 'field_answer_path');
-          if(!empty($p_node)) {
+          if (!empty($p_node)) {
             $p_nid = $p_node[0]->id();
           }
           $order[$p_nid] = ['target_id' => $p->id(), 'target_revision_id' => $p->getRevisionId()];
@@ -312,4 +310,5 @@ class DecisionTreeAdminForm extends FormBase {
     }
     \Drupal::messenger()->addMessage($this->t('Your changes have been saved successfully!'), 'status');
   }
+
 }
