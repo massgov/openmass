@@ -61,6 +61,7 @@ function mass_decision_tree_post_update_answers(&$sandbox) {
         $paragraph->field_answer_explainer->value = $explainer;
         $paragraph->field_answer_path->target_id= $id;
         $paragraph->save();
+        $answer->delete();
         $node->field_multiple_answers[] = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
       }
 

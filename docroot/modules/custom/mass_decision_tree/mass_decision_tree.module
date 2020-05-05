@@ -253,6 +253,7 @@ function mass_decision_tree_form_alter(&$form, &$form_state, $form_id) {
   }
   elseif ($form_id == 'node_decision_tree_branch_edit_form' || $form_id == 'node_decision_tree_branch_form') {
     $form['title']['widget'][0]['value']['#description'] = FieldFilteredMarkup::create('The question you are asking in this branch.');
+    $form['field_answers']['#access'] = FALSE;
   }
   elseif ($form_id == 'node_decision_tree_conclusion_edit_form' || $form_id == 'node_decision_tree_conclusion_form') {
     $form['title']['widget'][0]['value']['#description'] = FieldFilteredMarkup::create('The title should state a definitive answer to the main question asked by the Decision Tree.');
