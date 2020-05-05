@@ -133,11 +133,13 @@
           var $size = $(this).val();
           if ($size === 'x-large') {
             $('.field--name-field-tabl-alignment').hide();
+            $('.field--name-field-tabl-wrapping').hide();
             $('.field--name-field-tabl-alignment .fieldgroup').removeAttr('required');
           }
           else {
             $('.field--name-field-tabl-alignment').show();
             $('.field--name-field-tabl-alignment .fieldgroup').prop('required', true);
+            $('.field--name-field-tabl-wrapping').show();
           }
         });
       })
