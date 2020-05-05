@@ -98,9 +98,7 @@
 
 <div class="ma__mass-feedback-form">
   <h2 class="visually-hidden">Feedback</h2>
-  {# <form class="ma__mass-feedback-form__form" method="post" novalidate action="https://www.formstack.com/forms/index.php" id="2521317"> #}
-
-  <form class="ma__mass-feedback-form__form" method="post" novalidate action="{{ formAction }}" id="{{ formId }}">
+  <form class="ma__mass-feedback-form__form" method="post" novalidate action="https://www.formstack.com/forms/index.php" id="2521317">
 
     <fieldset class="ma_feedback-fieldset feedback-load" role="radiogroup">
       <legend>Did you find what you were looking for on this webpage?
@@ -194,10 +192,22 @@
 
 
 {# TODO: CHECK THE POSITIONING OF THIS COMPONENT. #}
-      {% if reportMessage %}
-        {% set pageAlert = reportMessage %}
-        {% include "@organisms/by-template/in-page-alert.twig" %}
-      {% endif %}
+
+{# "reportMessage": (node.field_urgent_warning is empty or node.field_urgent_warning.value == 0) ? false : {
+  "id": "",
+  "text": "If you need to report child abuse, any other kind of abuse, or need urgent assistance, please click here.",
+  "href": "https://www.mass.gov/info-details/report-abuse-or-request-urgent-assistance",
+  "info": ""
+}, #}
+
+{% set reportMessage = node.field_urgent_warning is empty or node.field_urgent_warning.value == 0) ? false : {
+  "id": "",
+  "text": "If you need to report child abuse, any other kind of abuse, or need urgent assistance, please click here.",
+  "href": "https://www.mass.gov/info-details/report-abuse-or-request-urgent-assistance",
+  "info": ""
+} %}
+
+<h2>{{ reportMessage }}</h2>
 
 
 {# END OF CURRENT EDIT #}
@@ -258,6 +268,13 @@
 </div>
 
 {# MF TEMPLATE ENDS #}
+
+{# TODO: MOVE TO OVERRIDE CSS #}
+<style>
+  div.ma_feedback-fieldset {
+    margin-top: 45px;
+  }
+</style>
 
 
 {#
