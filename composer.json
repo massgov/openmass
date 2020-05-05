@@ -4,9 +4,7 @@
     "type": "project",
     "license": "GPL-2.0",
     "autoload": {
-        "files": [
-            "early.composer.php"
-        ]
+      "files": ["early.composer.php"]
     },
     "minimum-stability": "dev",
     "prefer-stable": true,
@@ -14,20 +12,20 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "platform": {
-            "php": "7.1.18"
+          "php": "7.1.18"
         },
         "discard-changes": true
     },
-    "repositories": {
-        "0": {
+    "repositories": [
+        {
             "type": "vcs",
             "url": "git@github.com:mikeyp/google_tag.git"
         },
-        "1": {
+        {
             "type": "composer",
             "url": "https://packages.drupal.org/8"
         },
-        "2": {
+        {
             "type": "package",
             "package": {
                 "name": "desandro/imagesloaded",
@@ -39,7 +37,7 @@
                 }
             }
         },
-        "3": {
+        {
             "type": "package",
             "package": {
                 "name": "desandro/masonry",
@@ -51,7 +49,7 @@
                 }
             }
         },
-        "4": {
+        {
             "type": "package",
             "package": {
                 "name": "enyo/dropzone",
@@ -63,48 +61,44 @@
                 }
             }
         },
-        "5": {
-            "type": "package",
-            "package": {
-                "name": "blakestein/datalayer",
-                "version": "master",
-                "type": "drupal-module",
-                "source": {
-                    "url": "https://github.com/blakestein/drupal-datalayer-d8.git",
-                    "type": "git",
-                    "reference": "3b2ffa7"
-                }
-            }
-        },
-        "6": {
-            "type": "package",
-            "package": {
-                "name": "d3/d3",
-                "version": "v3.5.17",
-                "type": "drupal-library",
-                "dist": {
-                    "url": "https://github.com/d3/d3/archive/v3.5.17.zip",
-                    "type": "zip"
-                }
-            }
-        },
-        "7": {
-            "type": "package",
-            "package": {
-                "name": "components/highlightjs",
-                "version": "9.7.0",
-                "type": "drupal-library",
-                "dist": {
-                    "url": "https://github.com/components/highlightjs/archive/9.7.0.zip",
-                    "type": "zip"
-                }
-            }
-        },
-        "drupal": {
-            "type": "composer",
-            "url": "https://packages.drupal.org/8"
+      {
+        "type": "package",
+        "package": {
+          "name": "blakestein/datalayer",
+          "version": "master",
+          "type": "drupal-module",
+          "source": {
+            "url": "https://github.com/blakestein/drupal-datalayer-d8.git",
+            "type": "git",
+            "reference": "3b2ffa7"
+          }
         }
-    },
+      },
+      {
+         "type": "package",
+         "package": {
+             "name": "d3/d3",
+             "version": "v3.5.17",
+             "type": "drupal-library",
+             "dist": {
+                 "url": "https://github.com/d3/d3/archive/v3.5.17.zip",
+                 "type": "zip"
+             }
+         }
+      },
+      {
+         "type": "package",
+         "package": {
+             "name": "components/highlightjs",
+             "version": "9.7.0",
+             "type": "drupal-library",
+             "dist": {
+                 "url": "https://github.com/components/highlightjs/archive/9.7.0.zip",
+                 "type": "zip"
+             }
+         }
+      }
+    ],
     "require": {
         "php": ">=7.1",
         "blakestein/datalayer": "master",
@@ -273,24 +267,12 @@
             "omit-defaults": false
         },
         "installer-paths": {
-            "docroot/core": [
-                "type:drupal-core"
-            ],
-            "docroot/libraries/{$name}": [
-                "type:drupal-library"
-            ],
-            "docroot/modules/contrib/{$name}": [
-                "type:drupal-module"
-            ],
-            "docroot/profiles/contrib/{$name}": [
-                "type:drupal-profile"
-            ],
-            "docroot/themes/contrib/{$name}": [
-                "type:drupal-theme"
-            ],
-            "drush/contrib/{$name}": [
-                "type:drupal-drush"
-            ]
+            "docroot/core": ["type:drupal-core"],
+            "docroot/libraries/{$name}": ["type:drupal-library"],
+            "docroot/modules/contrib/{$name}": ["type:drupal-module"],
+            "docroot/profiles/contrib/{$name}": ["type:drupal-profile"],
+            "docroot/themes/contrib/{$name}": ["type:drupal-theme"],
+            "drush/contrib/{$name}": ["type:drupal-drush"]
         },
         "patches": {
             "drupal/core": {
