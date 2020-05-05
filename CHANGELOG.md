@@ -1,5 +1,31 @@
 
 
+## [0.241.0] - April 29, 2020
+
+### Added
+  - DP-18049: Shows message to users who login and have no 2FA setup.
+  - DP-18336: Wait for font to load during Backstop test
+  - Disable field_alert_display widget on Alert node for users w/o permission
+  - DP-18242: 
+  - DP-18246: Added CSV export button for exporting redirects.
+  - DP-18423: Add featured message to org page.
+  
+### Fixed
+  - DP-17574: Prevent 500 error when changing link in utility menu
+  - DP-18050: Adds login failure message for users attempting to login without TFA
+  
+### Changed
+  - DP-18429: Changing field_template permission to be visible for Author and Editor.
+  - DP-16023: Revise help text for fields related to custom link group service page.
+  - DP-17994: Change TFA configuration to disallow skipping setup and logging in without TFA
+  - DP-18492: Updated Mayflower version to 9.49.1.
+  - DP-18422  Add a new component to have rich text and callout link, adjust margin with/without callout message. (MF)
+  - DP-18315  Addded fonts for Khmer language support. (MF)
+  - DP-17792  Adjusted scss to rotate button arrow up when accordion opens. (MF)
+  - DP-18401: Update pfdp, mandrill, and focal point modules
+  
+
+
 ## [0.240.0] - April 21, 2020
 
 ### Changed

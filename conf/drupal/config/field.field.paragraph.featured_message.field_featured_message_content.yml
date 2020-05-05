@@ -1,0 +1,32 @@
+uuid: 20cb43af-345e-4865-bda5-1076bb3ffcf9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_featured_message_content
+    - paragraphs.paragraphs_type.featured_message
+  module:
+    - allowed_formats
+    - text
+third_party_settings:
+  allowed_formats:
+    basic_html: basic_html
+    restricted_html: restricted_html
+    full_html: full_html
+    campaign_custom_html: '0'
+    campaign_landing_basic: '0'
+    campaign_landing_restricted: '0'
+    rules_of_court_section: '0'
+    plain_text: '0'
+id: paragraph.featured_message.field_featured_message_content
+field_name: field_featured_message_content
+entity_type: paragraph
+bundle: featured_message
+label: 'Featured message content'
+description: 'A short message containing the main details that visitors to your Organization page need to see.  '
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long
