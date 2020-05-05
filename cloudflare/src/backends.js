@@ -112,7 +112,7 @@ export function www(token) {
       browserTTL = 60
     }
     else if(isMediaDownloadUrl(url)) {
-      edgeTTL = RESPECT_ORIGIN
+      edgeTTL = 60
       browserTTL = 60
     }
     else if(isStaticUrl(url)) {
