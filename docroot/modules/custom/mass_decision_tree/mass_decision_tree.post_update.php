@@ -9,7 +9,6 @@ use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\mayflower\Helper;
 
-
 /**
  * Migrate data from field_answers to field_multiple_answers.
  */
@@ -38,9 +37,9 @@ function mass_decision_tree_post_update_answers(&$sandbox) {
 
   $nodes = Node::loadMultiple($nids);
 
-  foreach($nodes as $node){
+  foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
-    if(Helper::isFieldPopulated($node, 'field_answers')) {
+    if (Helper::isFieldPopulated($node, 'field_answers')) {
 
       $answers = Helper::getReferencedEntitiesFromField($node, 'field_answers');
       $answer = $answers[0];
@@ -59,7 +58,7 @@ function mass_decision_tree_post_update_answers(&$sandbox) {
         ]);
         $paragraph->field_answer_text->value = $text;
         $paragraph->field_answer_explainer->value = $explainer;
-        $paragraph->field_answer_path->target_id= $id;
+        $paragraph->field_answer_path->target_id = $id;
         $paragraph->save();
         $answer->delete();
         $node->field_multiple_answers[] = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
