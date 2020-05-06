@@ -161,7 +161,8 @@
       var paragraphsWithCurrentPageAsTarget = [];
       var currentPageUuid = null;
       var currentPageOrganizationList = window.dataLayer[0].entityField_organizations;
-      var orgPageIds = [];
+      var orgPageUuids = [];
+      var currentOrgIncluded = false;
 
       // If we do not know current page's uuid, we will
       // not be able to target it, so, abort.
@@ -195,10 +196,22 @@
         console.error(e);
       }
 
-      // Create array of organization UUIDs this page belongs to by looping by through the datalayer.
+      // Create array of organization UUIDs this current page belongs to.
       Object.keys(currentPageOrganizationList).forEach(function (key) {
-        orgPageIds.push(currentPageOrganizationList[key]['uuid']);
+        if (window.dataLayer[0].entityBundle === 'org_page') {
+          if (currentPageOrganizationList[key] === window.dataLayer[0].entityId) {
+            currentOrgIncluded = true;
+          }
+        }
+        orgPageUuids.push(currentPageOrganizationList[key]['uuid']);
       });
+
+      // Some organization nodes reference themselves in their own field_organizations field,
+      // but not all of them. This includes them if they do not reference themselves
+      // to ensure by_organization alerts appear on organization nodes.
+      if (window.dataLayer[0].entityBundle === 'org_page' && !currentOrgIncluded) {
+        orgPageUuids.push(currentPageUuid);
+      }
 
       // Now we can see if any of the org nodes in the org paragraphs point at the current page.
       // We do this by using UUIDs.
@@ -208,7 +221,7 @@
             return;
           }
           if (item.relationships.field_target_content_ref.data !== null) {
-            if ($.inArray(item.relationships.field_target_content_ref.data.id, orgPageIds) !== -1) {
+            if ($.inArray(item.relationships.field_target_content_ref.data.id, orgPageUuids) !== -1) {
               paragraphsWithCurrentPageAsTarget.push(item.id);
             }
           }
