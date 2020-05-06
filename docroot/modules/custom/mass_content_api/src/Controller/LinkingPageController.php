@@ -6,6 +6,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\mass_content_api\DescendantManagerInterface;
+use Drupal\mass_content_api\FieldProcessingTrait;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\node\Entity\Node;
@@ -16,6 +17,7 @@ use Drupal\node\Entity\Node;
  * @package Drupal\mass_content_api\Controller
  */
 class LinkingPageController extends ControllerBase {
+  use FieldProcessingTrait;
 
   /**
    * DescendantManager service interface.
@@ -68,13 +70,44 @@ class LinkingPageController extends ControllerBase {
         $this->t('Title'),
         $this->t('ID'),
         $this->t('Content Type'),
+        $this->t('Field label'),
       ],
-      '#empty' => $this->t('No pages link here.')
+      '#empty' => $this->t('No pages link here.'),
     ];
     $nid = $this->requestStack->getCurrentRequest()->attributes->get('node');
     $children = $this->descendantManager->getImpact($nid, 'node');
+
     foreach ($children as $k => $child) {
       $child_node = Node::load($child);
+
+      $field_names = $this->fetchNodeTypeConfig($child_node);
+      $descendants = $this->fetchRelations($child_node, $field_names);
+
+      $machine_name = '';
+      foreach ($descendants as $dependency_status => $fields) {
+        foreach ($fields as $name => $field) {
+
+          if ($dependency_status === 'linking_pages') {
+            foreach ($field as $field_info) {
+
+              if ($field_info['id'] == $nid) {
+                $machine_name = $name;
+              }
+            }
+          }
+        }
+      }
+
+      if (!empty($child_node->$machine_name)) {
+        $field_label = $child_node->$machine_name->getFieldDefinition()->getLabel();
+      }
+      else {
+        $top_field_machine_name = $this->fetchLinkingPageConfigRefTopParent($child_node, $machine_name);
+        if (!empty($child_node->$top_field_machine_name)) {
+          $field_label = $child_node->$top_field_machine_name->getFieldDefinition()->getLabel();
+        }
+      }
+
       $label = $child_node->label();
       $child_link = Url::fromRoute('entity.node.canonical', ['node' => $child]);
       $output['linking_nodes'][$k]['node'][] = [
@@ -89,6 +122,10 @@ class LinkingPageController extends ControllerBase {
       $output['linking_nodes'][$k]['type'][] = [
         '#type' => 'item',
         '#title' => $child_node->getType(),
+      ];
+      $output['linking_nodes'][$k]['field_label'][] = [
+        '#type' => 'item',
+        '#title' => $field_label,
       ];
     }
     return $output;
