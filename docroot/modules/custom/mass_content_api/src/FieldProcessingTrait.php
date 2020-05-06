@@ -47,44 +47,6 @@ trait FieldProcessingTrait {
   }
 
   /**
-   * Fetch the third party settings of a given content entity.
-   *
-   * If there are nested fields get top level field machine name.
-   *
-   * @param \Drupal\node\Entity\Node $node
-   *   A node object from which to retrieve any third party settings.
-   *
-   * @param string $field_name
-   *   A node object from which to retrieve any third party settings.
-   *
-   * @return mixed
-   *   If third party settings are present we return them otherwise we return
-   *   nothing.
-   */
-  public function fetchLinkingPageConfigRefTopParent(Node $node, $field_name) {
-    $type = $node->type->entity;
-    if (!$type) {
-      \Drupal::logger('mass_content_api')->warning('Node "@id" does not have a type', ['@id' => $node->id()]);
-      return [];
-    }
-    $node_settings = $type->getThirdPartySettings('mass_content_api');
-    $config = array_filter($node_settings);
-    $related_parent = '';
-    foreach ($config as $dependency_status => $specs) {
-      if ($dependency_status == 'linking_pages') {
-        foreach ($specs as $spec) {
-          if (strpos($spec, $field_name) !== FALSE) {
-            $spec_exploded = explode('>', $spec);
-            // First item in array is the top.
-            $related_parent = $spec_exploded[0];
-          }
-        }
-      }
-    }
-    return $related_parent;
-  }
-
-  /**
    * Fetch IDs and types of related entities given a content entity and config.
    *
    * Spec should be taken from the config array in the content entity's .yml
@@ -213,6 +175,7 @@ trait FieldProcessingTrait {
           $collected[$child_id] = [
             'id' => $child_id,
             'entity' => $child_entity_type,
+            'field_label' => $field_entity->getFieldDefinition()->getLabel(),
           ];
         }
       }
@@ -221,6 +184,7 @@ trait FieldProcessingTrait {
           $collected[$child->id()] = [
             'id' => $child->id(),
             'entity' => $child->getEntityTypeId(),
+            'field_label' => $field_entity->getFieldDefinition()->getLabel(),
           ];
         }
       }
@@ -233,6 +197,7 @@ trait FieldProcessingTrait {
             $collected[$matches[1]] = [
               'id' => $matches[1],
               'entity' => 'node',
+              'field_label' => $field_entity->getFieldDefinition()->getLabel(),
             ];
           }
         }

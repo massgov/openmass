@@ -6,6 +6,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\Core\Link;
 use Drupal\mass_content_api\DescendantManagerInterface;
+use Drupal\mass_content_api\FieldProcessingTrait;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\node\Entity\Node;
@@ -16,6 +17,7 @@ use Drupal\node\Entity\Node;
  * @package Drupal\mass_content_api\Controller
  */
 class MediaLinkingPageController extends ControllerBase {
+  use FieldProcessingTrait;
 
   /**
    * DescendantManager service interface.
@@ -68,13 +70,33 @@ class MediaLinkingPageController extends ControllerBase {
         $this->t('Node'),
         $this->t('NID'),
         $this->t('Node Type'),
+        $this->t('Field Label'),
       ],
-      '#empty' => $this->t('No pages link here.')
+      '#empty' => $this->t('No pages link here.'),
     ];
     $media_id = $this->requestStack->getCurrentRequest()->attributes->get('media');
     $children = $this->descendantManager->getImpact($media_id, 'media');
     foreach ($children as $k => $child_id) {
       $child_node = Node::load($child_id);
+
+      $field_names = $this->fetchNodeTypeConfig($child_node);
+      $descendants = $this->fetchRelations($child_node, $field_names);
+
+      $field_label = '';
+      foreach ($descendants as $dependency_status => $fields) {
+        foreach ($fields as $name => $field) {
+
+          if ($dependency_status === 'linking_pages') {
+            foreach ($field as $field_info) {
+
+              if ($field_info['id'] == $media_id) {
+                $field_label = $field_info['field_label'];
+              }
+            }
+          }
+        }
+      }
+
       $label = $child_node->label();
       $child_link = Url::fromRoute('entity.node.canonical', ['node' => $child_id]);
       $output['linking_nodes'][$k]['node'][] = [
@@ -89,6 +111,10 @@ class MediaLinkingPageController extends ControllerBase {
       $output['linking_nodes'][$k]['type'][] = [
         '#type' => 'item',
         '#title' => $child_node->getType(),
+      ];
+      $output['linking_nodes'][$k]['field_label'][] = [
+        '#type' => 'item',
+        '#title' => $field_label,
       ];
     }
     return $output;

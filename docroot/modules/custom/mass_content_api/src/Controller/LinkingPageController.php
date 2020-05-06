@@ -70,7 +70,7 @@ class LinkingPageController extends ControllerBase {
         $this->t('Title'),
         $this->t('ID'),
         $this->t('Content Type'),
-        $this->t('Field label'),
+        $this->t('Field Label'),
       ],
       '#empty' => $this->t('No pages link here.'),
     ];
@@ -83,7 +83,7 @@ class LinkingPageController extends ControllerBase {
       $field_names = $this->fetchNodeTypeConfig($child_node);
       $descendants = $this->fetchRelations($child_node, $field_names);
 
-      $machine_name = '';
+      $field_label = '';
       foreach ($descendants as $dependency_status => $fields) {
         foreach ($fields as $name => $field) {
 
@@ -91,20 +91,10 @@ class LinkingPageController extends ControllerBase {
             foreach ($field as $field_info) {
 
               if ($field_info['id'] == $nid) {
-                $machine_name = $name;
+                $field_label = $field_info['field_label'];
               }
             }
           }
-        }
-      }
-
-      if (!empty($child_node->$machine_name)) {
-        $field_label = $child_node->$machine_name->getFieldDefinition()->getLabel();
-      }
-      else {
-        $top_field_machine_name = $this->fetchLinkingPageConfigRefTopParent($child_node, $machine_name);
-        if (!empty($child_node->$top_field_machine_name)) {
-          $field_label = $child_node->$top_field_machine_name->getFieldDefinition()->getLabel();
         }
       }
 
