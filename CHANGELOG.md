@@ -1,3 +1,10 @@
+
+
+## [0.242.0] - May 5, 2020
+
+### Fixed
+  - DP-17511: Solving deleted referenced entity rendering issue causing fatal error
+  
 ## [0.241.1] - May 1, 2020
 
 ### Fixed
