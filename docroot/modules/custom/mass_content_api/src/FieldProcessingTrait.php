@@ -175,7 +175,7 @@ trait FieldProcessingTrait {
           $collected[$child_id] = [
             'id' => $child_id,
             'entity' => $child_entity_type,
-            'field_label' => $field_entity->getFieldDefinition()->getLabel(),
+            'field_label' => $field_entity->getFieldDefinition()->getLabel() ?? '',
           ];
         }
       }
@@ -184,7 +184,7 @@ trait FieldProcessingTrait {
           $collected[$child->id()] = [
             'id' => $child->id(),
             'entity' => $child->getEntityTypeId(),
-            'field_label' => $field_entity->getFieldDefinition()->getLabel(),
+            'field_label' => $field_entity->getFieldDefinition()->getLabel() ?? '',
           ];
         }
       }
@@ -197,7 +197,7 @@ trait FieldProcessingTrait {
             $collected[$matches[1]] = [
               'id' => $matches[1],
               'entity' => 'node',
-              'field_label' => $field_entity->getFieldDefinition()->getLabel(),
+              'field_label' => $field_entity->getFieldDefinition()->getLabel() ?? '',
             ];
           }
         }
