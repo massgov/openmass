@@ -251,7 +251,6 @@ class DecisionTreeAdminForm extends FormBase {
           $answer_path = $answer->field_answer_path->target_id;
 
           $answer_text = $answer->field_answer_text->value;
-          ksm($answer_text);
 
           if ($answer_path) {
             $info['depth']++;
