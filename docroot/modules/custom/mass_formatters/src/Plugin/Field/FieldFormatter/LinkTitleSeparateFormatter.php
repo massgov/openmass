@@ -36,8 +36,8 @@ class LinkTitleSeparateFormatter extends LinkSeparateFormatter {
         $uri = $items->getValue()[$page_key]['uri'];
         $url = Url::fromUri($uri);
 
-        if ($url->isRouted() && isset($url->getRouteParameters()['node'])) {
-          $node = \Drupal::entityTypeManager()->getStorage('node')->load($url->getRouteParameters()['node']);
+        if ($url->isRouted() && $nid = $url->getRouteParameters()['node']) {
+          $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
           $node_label = $node->label();
         }
         else {
