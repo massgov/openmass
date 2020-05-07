@@ -35,7 +35,15 @@ class LinkTitleSeparateFormatter extends LinkSeparateFormatter {
         // be formatted as trimmed.
         $uri = $items->getValue()[$page_key]['uri'];
         $url = Url::fromUri($uri);
-        $node_label = Node::load($url->getRouteParameters()['node'])->label();
+
+        if ($url->isRouted() && isset($url->getRouteParameters()['node'])) {
+          $node = \Drupal::entityTypeManager()->getStorage('node')->load($url->getRouteParameters()['node']);
+          $node_label = $node->label();
+        }
+        else {
+          $node_label = $element[$page_key]['#url_title'];
+        }
+
         // Set link title to node label or the trimmed format.
         $element[$page_key]['#title'] = (!empty($settings['trim_length'])) ? Unicode::truncate($node_label, $settings['trim_length'], FALSE, TRUE) : $node_label;
       }
