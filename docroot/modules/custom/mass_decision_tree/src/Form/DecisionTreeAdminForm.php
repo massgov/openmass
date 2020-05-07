@@ -190,10 +190,14 @@ class DecisionTreeAdminForm extends FormBase {
           '#size' => $info['depth'],
         ];
       }
+      $text = '';
+      if (isset($info['answer_text'])) {
+        $text = '[' . $info['answer_text'] . ']';
+      }
 
       // Title, type, and edit column data.
       $form['table-row'][$info['index']]['title'] = [
-        '#markup' => '<a href="' . $child_node->toUrl()->toString() . '" class="decision-tree-form-title" id="' . $nid . '">' . $child_node->label() . '</a>',
+        '#markup' => '<a href="' . $child_node->toUrl()->toString() . '" class="decision-tree-form-title" id="' . $nid . '">' . $text . ' ' . $child_node->label() . '</a>',
         '#prefix' => !empty($indentation) ? drupal_render($indentation) : '',
       ];
 
@@ -244,11 +248,15 @@ class DecisionTreeAdminForm extends FormBase {
           $answer = $answers->entity;
 
           // Use now the entity to get the values you need.
-          $true_nid = $answer->field_answer_path->target_id;
+          $answer_path = $answer->field_answer_path->target_id;
 
-          if ($true_nid) {
+          $answer_text = $answer->field_answer_text->value;
+          ksm($answer_text);
+
+          if ($answer_path) {
             $info['depth']++;
-            $info['child'] = $true_nid;
+            $info['child'] = $answer_path;
+            $info['answer_text'] = $answer_text ?? '';
             $info['parent'] = $nid;
             $this->buildRow($form, $info);
             $info['depth']--;
