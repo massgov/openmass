@@ -215,25 +215,24 @@
   }
 }
 
-/* TO DO */
-
-/* .ma__pullquote__content::after {
-  content: '';
-  width: 75px;
-  height: 20px;
-  background-color: #388557;
-  background-image: -o-linear-gradient(330deg,#388557 65px,#fff 0);
-  background-image: linear-gradient(120deg,#388557 65px,#fff 0);
-  position: absolute;
-  top: 0;
-  left: 0;
-} */
-/*
-.ma__pullquote {
-  background-color: yellow;
+/* pre existing figure styles */
+.ma__figure:not(.ma__dataviz) {
+  margin-right: 0;
+  margin-bottom: 0;
+  margin-left: 0;
+  padding-bottom: 0;
 }
-
-.ma__pullquote__content {
-  background-color: azure;
-  position: relative;
-} */
+.ma__rich-text .ma__figure:not(.ma__dataviz) {
+  margin-bottom: 1.5rem;
+  padding-bottom: 0;
+}
+@media (min-width: 621px) {
+  .ma__rich-text .ma__figure:not(.ma__dataviz) {
+    margin-bottom: 1.75rem;
+  }
+}
+.ma__figure:not(.ma__dataviz) .ma__figure__caption {
+  font-weight: bold;
+  padding: 1rem 0;
+  border-bottom: 1px solid #141414;
+}
