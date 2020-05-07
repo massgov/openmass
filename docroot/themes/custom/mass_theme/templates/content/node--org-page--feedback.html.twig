@@ -11,8 +11,8 @@
 {% set noResponseDescription = false %}
 {% set contactInputs = [] %}
 {% if node.field_constituent_communication.value == 'contact' %}
-  {# {% set response = "Would you like a response from" %} #}
-  {# {% set responseRequired = {
+  {% set response = "Would you like a response from" %}
+  {% set responseRequired = {
     "responseDescription": content.field_response_expectations,
     "inputGroup": {
       "required": true,
@@ -38,7 +38,7 @@
         }
       ]
     }
-  } %} #}
+  } %}
   {% set contactInputs = [
     {
       "hiddenLabel": false,
@@ -82,7 +82,16 @@
   {% set noResponseDescription = "This form only gathers feedback about the website." %}
 {% endif %}
 
-<h2 style="color: red;">THEMING TEMPLATE BEGINS</h2>
+{% if node.field_urgent_warning is empty or node.field_urgent_warning.value == 0 %}
+  {% set reportMessage = false %}
+{% else %}
+  {% set reportMessage = {
+    "id": "",
+    "text": "If you need to report child abuse, any other kind of abuse, or need urgent assistance, please click here.",
+    "href": "https://www.mass.gov/info-details/report-abuse-or-request-urgent-assistance",
+    "info": ""
+  } %}
+{% endif %}
 
 <div class="feedback-steps">
   <span id="feedback"></span>
@@ -104,10 +113,7 @@
       <legend>Did you find what you were looking for on this webpage?
       {{ requiredIndicator }}</legend>
 
-      {# {% set inputGroup = inputGroup %}
-      {% set inputGroup = inputGroup|merge({"required": title.required}) %}
-      {% include "@atoms/03-forms/input-group.twig" %} #}
-{# Q1 #}
+{# Q1: radio buttons #}
       <div class="ma__input-group__items ma__input-group__items--inline">
         <div class="ma__input-group__item">
           <span class="ma__input-radio">
@@ -149,7 +155,7 @@
     <div class="ma__mass-feedback-form__fields">
       <fieldset class="ma_feedback-fieldset">
 
-{# response textarea #}
+{# Q2: response textarea #}
 
   {# label-YES #}
         <label class="feedback-response feedback-positive" for="field52940022">
@@ -164,7 +170,7 @@
           <p>We will use this information to improve the site.</p>
         </div>
 
-  {# textarea-YES #}
+{# textarea-YES #}
         <div class="feedback-response feedback-positive">
           <textarea id="field52940022"
                 class="fsField"
@@ -182,7 +188,7 @@
                 aria-required="true"
                 aria-invalid="false"
                 maxlength="5000"
-                {# disabled="disabled" #}
+                disabled="disabled"
                 aria-describedby="note1 note2"></textarea>
         </div>
 
@@ -190,45 +196,53 @@
           <p>Do not include sensitive information, such as Social Security or bank account numbers.</p>
         </div>
 
-
-{# TODO: CHECK THE POSITIONING OF THIS COMPONENT. #}
-
-{# "reportMessage": (node.field_urgent_warning is empty or node.field_urgent_warning.value == 0) ? false : {
-  "id": "",
-  "text": "If you need to report child abuse, any other kind of abuse, or need urgent assistance, please click here.",
-  "href": "https://www.mass.gov/info-details/report-abuse-or-request-urgent-assistance",
-  "info": ""
-}, #}
-
-{% set reportMessage = node.field_urgent_warning is empty or node.field_urgent_warning.value == 0) ? false : {
-  "id": "",
-  "text": "If you need to report child abuse, any other kind of abuse, or need urgent assistance, please click here.",
-  "href": "https://www.mass.gov/info-details/report-abuse-or-request-urgent-assistance",
-  "info": ""
-} %}
-
-<h2>{{ reportMessage }}</h2>
-
-
-{# END OF CURRENT EDIT #}
-<h2 style="color: purple;">END OF CURRENT EDIT</h2>
-{# END OF CURRENT EDIT #}
-
-        {% if Response %}
+      {% if response %}
         <div class="ma__mass-feedback-form__form--user-response feedback-response feedback-negative">
-          <legend>
-            {{ Response }}
-            {% if responseRequired.inputGroup %} {{ org }}? *{% endif %}
-            {% if noResponseDescription %}<a class="ma__content-link--chevron form--no-response">Why? </a>{% endif %}
-          </legend>
-
-          {% if noResponseDescription %}<p class="no-response-info">{{ noResponseDescription }}</p>{% endif %}
-
+        {% if responseRequired %}
           {% if responseRequired.inputGroup %}
-          <fieldset class="ma_feedback-fieldset user-response__contact">
+          <fieldset class="ma_feedback-fieldset user-response__contact" role="radiogroup">
+            <legend>{{ response }} {{ org }}? {{ requiredIndicator }}{# * #}</legend>
 
-            {% set inputGroup = responseRequired.inputGroup %}
-            {% include "@atoms/03-forms/input-group.twig" %}
+            {# {% set inputGroup = responseRequired.inputGroup %} #}
+            <div class="ma__input-group">
+              <div class="ma__input-group__items ma__input-group__items--inline">
+                <div class="ma__input-group__item">
+                  <span class="ma__input-radio">
+                    <input
+                      class="fsField required"
+                      id="field70611737_1"
+                      name="field70611737"
+                      type="radio"
+                      value="Yes"
+                      required
+                      aria-required="true"
+                      aria-invalid="false"
+                      />
+                    <label
+                    class="fsOptionLabel ma__input-radio__label"
+                    for="field70611737_1">Yes</label>
+                  </span>
+                </div>
+
+                <div class="ma__input-group__item">
+                  <span class="ma__input-radio">
+                    <input
+                      class="fsField required"
+                      id="field70611737_2"
+                      name="field70611737"
+                      type="radio"
+                      value="No"
+                      required
+                      aria-required="true"
+                      aria-invalid="false"
+                      />
+                    <label
+                    class="fsOptionLabel ma__input-radio__label"
+                    for="field70611737_2">No</label>
+                  </span>
+                </div>
+              </div>{# .ma__input-group__items  #}
+            </div>{# .ma__input-group #}
 
             <div class="ma__mass-feedback-form__contact-form">
               {% if responseRequired.responseDescription %}
@@ -238,185 +252,183 @@
               <div class="ma__mass-feedback-form__contact-form--items">
               {% for input in contactInputs %}
                 <div class="contact-form--item">
-                  {% set inputText = input %}
-                  {% include "@atoms/03-forms/input-text.twig" %}
-                </div>
+                  <label
+                    for="{{ input.id }}"
+                    class="ma__label">{{input.labelText}}</label>
+                  <input
+                    class="ma__input"
+                    name="{{ input.name }}"
+                    id="{{ input.id }}"
+                    type="{{ input.type }}"
+                    data-type="{{ input.type }}" />
+                </div>{# .contact-form--item #}
               {% endfor %}
-              </div>
+              </div>{# .ma__mass-feedback-form__contact-form--items #}
 
-            </div>
+            </div>{# .ma__mass-feedback-form__contact-form #}
           </fieldset>
           {% endif %}
-
-        </div>
+        {% else %}
+          {% if noResponseDescription %}
+          <div>
+            {{ response }}
+            <button type="button" class="ma__content-link--chevron form--no-response" id="info-1" aria-expanded="false">Why? </button>
+          </div>
+          <p class="no-response-info" aria-labelledby="info-1">{{ noResponseDescription }}</p>
+          {% endif %}
         {% endif %}
+        </div>
+      {% endif %}
 
       </fieldset>
-    </div>
+    </div>{# .ma__mass-feedback-form__form--user-response feedback-response #}
 
     <div class="ma_feedback-fieldset ma__mass-feedback-form__form--submit-wrapper">
       <input class="submitButton ma__button ma__button--small" type="submit" value="Send Feedback" />
     </div>
-    {# <fieldset class="ma_feedback-fieldset ma__mass-feedback-form__form--submit-wrapper">
-      <input id="" class="submitButton ma__button ma__button--small" type="submit" value="Send Feedback" />
-    </fieldset> #}
 
+    {% set hiddenElements = [
+      {
+        "id": "field47056299",
+        "name": "field47056299",
+        "value": url('<current>'),
+        "class": "fsField"
+      },
+      {
+        "id": "field58154059",
+        "name": "field58154059",
+        "value": "entityId",
+        "class": "fsField data-layer-substitute"
+      },
+      {
+        "id": "field57432673",
+        "name": "field57432673",
+        "value": "entityId",
+        "class": "fsField data-layer-substitute"
+      },
+      {
+        "id": "field68798989",
+        "name": "field68798989",
+        "value": "uniqueId",
+        "class": "fsField unique-id-substitute"
+      },
+      {
+        "id": "form2521317",
+        "name": "form",
+        "value": "2521317"
+      },
+      {
+        "id": "viewkeyvx39GBYJhi",
+        "name": "viewkey",
+        "value": "vx39GBYJhi"
+      },
+      {
+        "id": "hidden_fields2521317",
+        "name": "hidden_fields",
+        "value": ""
+      },
+      {
+        "id": "submit2521317",
+        "name": "_submit",
+        "value": "1"
+      },
+      {
+        "id": "style_version2521317",
+        "name": "style_version",
+        "value": "3"
+      },
+      {
+        "id": "viewparam",
+        "name": "viewparam",
+        "value": "524744"
+      }
+    ] %}
     {% for element in hiddenElements %}
       <input type="hidden" id="{{ element.id }}" name="{{ element.name }}" value="{{ element.value }}" class="{{ element.class }}" />
     {% endfor %}
   </form>
 </div>
 
-{# MF TEMPLATE ENDS #}
-
 {# TODO: MOVE TO OVERRIDE CSS #}
 <style>
   div.ma_feedback-fieldset {
     margin-top: 45px;
   }
+  #note2 {
+    margin-bottom: .25em;
+    padding: 0;
+  }
+  #note2 p {
+    margin: 0;
+    padding: 0;
+  }
+  .ma__mass-feedback-form__form--user-response div {
+    margin-bottom: .25em;
+    padding: 0;
+    font-weight: 500;
+  }
+  button.ma__content-link--chevron {
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+    text-decoration: none;
+    font-weight: 700;
+    color: #14558f;
+    border: 0;
+    background: transparent;
+  }
+  .ma__mass-feedback-form__form--user-response.feedback-response
+  button.ma__content-link--chevron::after {
+    top: 0;
+  }
+  .ma__mass-feedback-form__form--user-response.is-open button.ma__content-link--chevron::after {
+    top: -4px;
+  }
+
 </style>
 
+{# END OF CURRENT EDIT #}
+{# <h2 style="color: purple;">END OF CURRENT EDIT</h2> #}
+{# END OF CURRENT EDIT #}
 
-{#
 
-    {% include "@organisms/feedback/mass-feedback.twig" with {
-      "formAction": "https://www.formstack.com/forms/index.php",
-      "formId": "2521317",
-      "title": {
-        "value": "Did you find what you were looking for on this webpage?",
-        "required": true
-      },
-      "org": org_name,
-      "queryAffirmative": {
-        "value": "Do you have anything else to tell us?",
-        "required": false
-      },
-      "queryNegative": {
-        "value": "Please tell us what you were looking for.",
-        "required": true
-      },
-      "queryDescription": "We will use this information to improve the site.",
-      "inputGroup": {
-        "required": true,
-        "inline": true,
-        "title": "",
-        "type": "radio",
-        "items": [
-          {
-            "name": "field47054416",
-            "value": "Yes",
-            "id": "field47054416_1",
-            "label": "Yes"
-          },
-          {
-            "name": "field47054416",
-            "value": "No",
-            "id": "field47054416_2",
-            "label": "No"
-          }
-        ]
-      },
-      "reportMessage": (node.field_urgent_warning is empty or node.field_urgent_warning.value == 0) ? false : {
-        "id": "",
-        "text": "If you need to report child abuse, any other kind of abuse, or need urgent assistance, please click here.",
-        "href": "https://www.mass.gov/info-details/report-abuse-or-request-urgent-assistance",
-        "info": ""
-      },
-      "affirmativeTextarea": {
-        "labelText": "Text Area",
-        "hiddenLabel": true,
-        "required": false,
-        "maxlength": 5000,
-        "id": "field52940022",
-        "name": "field52940022"
-      },
-      "negativeTextarea": {
-        "labelText": "Text Area",
-        "hiddenLabel": true,
-        "required": false,
-        "maxlength": 5000,
-        "id": "field47054414",
-        "name": "field47054414"
-      },
-      "helperText": {
-        "inputId": "GUID2738572489",
-        "message": "Do not include sensitive information, such as Social Security or bank account numbers."
-      },
-      "Response": response,
-      "noResponseDescription": noResponseDescription,
-      "contactInputs": contactInputs,
-      "hiddenElements": [
-        {
-          "id": "field47056299",
-          "name": "field47056299",
-          "value": url('<current>'),
-          "class": "fsField"
-        },
-        {
-          "id": "field58154059",
-          "name": "field58154059",
-          "value": "entityId",
-          "class": "fsField data-layer-substitute"
-        },
-        {
-          "id": "field57432673",
-          "name": "field57432673",
-          "value": "entityId",
-          "class": "fsField data-layer-substitute"
-        },
-        {
-          "id": "field68798989",
-          "name": "field68798989",
-          "value": "uniqueId",
-          "class": "fsField unique-id-substitute"
-        },
-        {
-          "id": "form2521317",
-          "name": "form",
-          "value": "2521317"
-        },
-        {
-          "id": "viewkeyvx39GBYJhi",
-          "name": "viewkey",
-          "value": "vx39GBYJhi"
-        },
-        {
-          "id": "hidden_fields2521317",
-          "name": "hidden_fields",
-          "value": ""
-        },
-        {
-          "id": "submit2521317",
-          "name": "_submit",
-          "value": "1"
-        },
-        {
-          "id": "style_version2521317",
-          "name": "style_version",
-          "value": "3"
-        },
-        {
-          "id": "viewparam",
-          "name": "viewparam",
-          "value": "524744"
-        }
-      ]
-    } %}
-  </div>
-#}
+{# MF TEMPLATE ENDS #}
+
+{# STEP 2 #}
   <div id="feedback-step-2" class="feedback-step hidden" data-feedback-next="feedback-step-3">
     {% set contact = false %}
     {% if node.field_constituent_communication.value == 'link' and node.field_feedback_com_link is not empty %}
       {% set contact = content.field_feedback_com_link[0]['#url'] %}
     {% endif %}
-    {% include "@organisms/feedback/mass-feedback-success.twig" with {
+    {# {% include "@organisms/feedback/mass-feedback-success.twig" with {
       "title": "Thanks, your message has been sent to",
       "action": "#",
       "org": org_name,
       "description": "Would you like to provide additional feedback to help improve Mass.gov?",
       "contactLink": contact
-    } %}
+    } %} #}
+    <div class="ma__mass-feedback-form ma__mass-feedback-form--success" id="feedback-success" data-mass-feedback-form>
+      <h3>Thanks, your message has been sent to {{ org_name }}!</h3>
+{# TODO: ADD VALID ACTION VALUE. OR REMOVE THE FORM, WHICH DOESN'T SEEM TO BE NECESSARY IN THIS CASE. #}
+      <form class="ma__mass-feedback-form__form" method="post" novalidate="" action="#" class="" id="">
+
+      {% if contact %}
+        <span class="ma__decorative-link">
+{# TODO: CHANGE THE 'CICK HERE' TEXT. #}
+          <a href="{{ contact }}">If you need to contact {{ org_name }}, please click here&nbsp;{{ icon('arrow') }}</a>
+        </span>
+      {% endif %}
+        <p>Would you like to provide additional feedback to help improve Mass.gov?</p>
+
+        <div class="ma__mass-feedback-form__form--submit-wrapper">
+{# CONFIRM: THIS SEEMS TO BE A SIMPLE LINK TO THE SURVEY PAGE.  #}
+          <input class="submitButton ma__button ma__button--small" type="submit" value="Start Survey" />
+        </div>
+      </form>
+    </div>
   </div>
+
+{# STEP 3 #}
   <div id="feedback-step-3" class="feedback-step hidden" data-feedback-next="feedback-step-4">
     {% include "@organisms/feedback/secondary-survey.twig" with {
       "formId": "3184363",
@@ -660,18 +672,25 @@
     } %}
   </div>
   <div id="feedback-step-4" class="feedback-step hidden">
-    {% include "@organisms/feedback/mass-feedback-thank-you.twig" with {
+    {# {% include "@organisms/feedback/mass-feedback-thank-you.twig" with {
       "title": "Thanks, your survey has been submitted to the Mass.gov team!",
       "description": "If you would like to continue helping us improve Mass.gov, join our user panel to test new features for the site.",
       "link": {
         "text": "Join user panel",
         "href": "https://www.mass.gov/user-panel?utm_source=survey"
       }
-    } %}
+    } %} #}
+    <div class="ma__mass-feedback-form thank-you-panel">
+      <h3>Thanks, your survey has been submitted to the Mass.gov team!</h3>
+      <p>If you would like to continue helping us improve Mass.gov, join our user panel to test new features for the site.</p>
+      <span class="ma__decorative-link">
+        <a href="https://www.mass.gov/user-panel?utm_source=survey">Join user panel&nbsp;{{ icon('arrow') }}</a>
+      </span>
+    </div>
   </div>
 </div>
 
-<script>
+{# <script>
 const radioSelected = document.querySelector('.js-q1');
 const textareaElementsPositive = document.querySelectorAll('feedback-positive');
 const textareaElementsNegative = document.querySelectorAll('feedback-negative');
@@ -680,6 +699,7 @@ radioSelected.addEventListener('click', function(event){
   // First click.
   if (this.getAttribute('value') === 'yes') {
     textareaElementsPositive.classList.add('is-open');
+    textareaElementsPositive.querySelector('.feedback-positive textarea').removeAttribute('disabled');
   }
   if (this.getAttribute('value') === 'no')
   {
@@ -705,4 +725,4 @@ submitButton.addEventListener('click', function(event){
 });
 // Mark invalid field.
 
-</script>
+</script> #}
