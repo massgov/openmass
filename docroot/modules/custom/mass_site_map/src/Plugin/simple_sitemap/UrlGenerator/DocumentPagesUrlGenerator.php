@@ -40,11 +40,11 @@ class DocumentPagesUrlGenerator extends UrlGeneratorBase {
     foreach ($files as $file) {
       // NOTE: We must pass URL object of the file url in our dataset, so that simple_sitemap module can apply baseurl
       // config settings to it.
-      $file_url = $file->url();
-      $file_url_object = Url::fromUri($file_url);
-      if ($file_url) {
+      $media_url = $entity->url();
+      $media_url_object = Url::fromUserInput($media_url . '/download', ['absolute' => TRUE]);
+      if ($media_url) {
         $data = [
-          'url' => $file_url_object,
+          'url' => $media_url_object,
           'lastmod' => date_iso8601($entity->getChangedTime()),
           'priority' => 0.5,
           'changefreq' => 'daily',
