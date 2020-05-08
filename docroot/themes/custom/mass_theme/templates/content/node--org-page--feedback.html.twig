@@ -81,7 +81,6 @@
   {% set response = "Your feedback will not receive a response." %}
   {% set noResponseDescription = "This form only gathers feedback about the website." %}
 {% endif %}
-
 {% if node.field_urgent_warning is empty or node.field_urgent_warning.value == 0 %}
   {% set reportMessage = false %}
 {% else %}
@@ -170,6 +169,24 @@
           <p>We will use this information to improve the site.</p>
         </div>
 
+      {# report message #}
+      {% if reportMessage %}
+        <section class="ma__in-page-alert js-in-page-alert" role="alert">
+          <div class="ma__in-page-alert__container">
+            <span class="ma__in-page-alert__message">
+              {% if reportMessage.href %}
+                {% set decorativeLink = reportMessage %}
+                {% include "@atoms/decorative-link.twig" %}
+              {% else %}
+                {{ reportMessage.text }}
+              {% endif %}
+            </span>
+          </div>
+          <button class="ma__in-page-alert__hide js-in-page-alert-link"
+            title="hide alert">+</button>
+        </section>
+      {% endif %}
+
 {# textarea-YES #}
         <div class="feedback-response feedback-positive">
           <textarea id="field52940022"
@@ -201,7 +218,7 @@
         {% if responseRequired %}
           {% if responseRequired.inputGroup %}
           <fieldset class="ma_feedback-fieldset user-response__contact" role="radiogroup">
-            <legend>{{ response }} {{ org }}? {{ requiredIndicator }}{# * #}</legend>
+            <legend>{{ response }} {{ org_name }}? {{ requiredIndicator }}{# * #}</legend>
 
             {# {% set inputGroup = responseRequired.inputGroup %} #}
             <div class="ma__input-group">
@@ -244,9 +261,9 @@
               </div>{# .ma__input-group__items  #}
             </div>{# .ma__input-group #}
 
-            <div class="ma__mass-feedback-form__contact-form">
+            <fieldset class="ma__mass-feedback-form__contact-form">
               {% if responseRequired.responseDescription %}
-                <p class="response-info">{{ responseRequired.responseDescription }}</p>
+                <legend class="response-info">{{ responseRequired.responseDescription }}</legend>
               {% endif %}
 
               <div class="ma__mass-feedback-form__contact-form--items">
@@ -265,8 +282,9 @@
               {% endfor %}
               </div>{# .ma__mass-feedback-form__contact-form--items #}
 
-            </div>{# .ma__mass-feedback-form__contact-form #}
+            </fieldset>{# .ma__mass-feedback-form__contact-form #}
           </fieldset>
+
           {% endif %}
         {% else %}
           {% if noResponseDescription %}
