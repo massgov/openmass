@@ -76,21 +76,19 @@ class MediaLinkingPageController extends ControllerBase {
     ];
     $media_id = $this->requestStack->getCurrentRequest()->attributes->get('media');
     $children = $this->descendantManager->getImpact($media_id, 'media');
+    $used_links = [];
     foreach ($children as $k => $child_id) {
       $child_node = Node::load($child_id);
 
       $field_names = $this->fetchNodeTypeConfig($child_node);
       $descendants = $this->fetchRelations($child_node, $field_names);
 
-      $field_label = '';
       foreach ($descendants as $dependency_status => $fields) {
         foreach ($fields as $name => $field) {
-
           if ($dependency_status === 'linking_pages') {
             foreach ($field as $field_info) {
-
               if ($field_info['id'] == $media_id) {
-                $field_label = $field_info['field_label'];
+                $used_links[$child_id][] = ['label' => $field_info['field_label'], 'used' => 0];
               }
             }
           }
@@ -112,10 +110,22 @@ class MediaLinkingPageController extends ControllerBase {
         '#type' => 'item',
         '#title' => $child_node->getType(),
       ];
-      $output['linking_nodes'][$k]['field_label'][] = [
-        '#type' => 'item',
-        '#title' => $field_label,
-      ];
+      if (!empty($used_links)) {
+        foreach ($used_links as $child_nid => $labels) {
+          if ($child_nid == $child_node->id()) {
+            foreach ($labels as $index => $label) {
+              if ($label['used'] == 0) {
+                $output['linking_nodes'][$k]['field_label'][] = [
+                  '#type' => 'item',
+                  '#title' => $label['label'],
+                ];
+                $used_links[$child_nid][$index]['used'] = 1;
+                break;
+              }
+            }
+          }
+        }
+      }
     }
     return $output;
   }
