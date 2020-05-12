@@ -62,8 +62,9 @@
         {% endif %}
         {% for i in range(1, numOfSections) %}
           {% if pageContent[i]['title'] %}
-            {% set richText = pageContent[i]['title'] %}
-            {% include "@organisms/by-author/rich-text.twig" %}
+            {% include "@atoms/04-headings/comp-heading.twig" with {
+              'compHeading': pageContent[i]['title']['compHeading']
+            } %}
           {% endif %}
           {% if pageContent[i]['richText'] %}
             {% set richText = pageContent[i]['richText'] %}
