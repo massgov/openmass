@@ -64,9 +64,9 @@ class RelatedNodes extends EntityReferenceFieldItemList {
   }
 
   /**
-   * Lists all the referencing content from a field
+   * Lists all the referencing content from a field.
    *
-   * @return array $nids.
+   * @return array
    *   A list of referenced nids.
    */
   public function fields() {
@@ -99,7 +99,7 @@ class RelatedNodes extends EntityReferenceFieldItemList {
   /**
    * Get nids that are referenced from the configured Link fields.
    *
-   * @return array $nids.
+   * @return array
    *   A list if nids.
    */
   protected function links() {
@@ -156,4 +156,3 @@ class RelatedNodes extends EntityReferenceFieldItemList {
   }
 
 }
-
