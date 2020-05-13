@@ -49,22 +49,15 @@ function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface 
 function mass_alerts_validate_alert_placement(array &$form, FormStateInterface $form_state) {
   $field_alert_display = $form_state->getValue('field_alert_display');
   if ($field_alert_display[0]['value'] == 'specific_target_pages') {
-    $para_ref = $form_state->getValue('field_target_pages_para_ref');
-    unset($para_ref['add_more']);
-    if (!empty($para_ref)) {
-      // The paragraph can be index 0 or index 1 in my testing. So just use current() to get the first one.
-      $subform = current($para_ref)['subform'];
-      if (empty($subform['field_target_content_ref'][0]['target_id'])) {
-        // No bueno. Set an error below.
-      }
-      else {
+    $target_nodes = $form_state->getValue('field_target_page');
+    unset($target_nodes['add_more']);
+    foreach ($target_nodes as $node) {
+      if ($node['target_id']) {
         // Requirements are satisfied.
         return;
       }
     }
-    else {
-      // No bueno. Set an error below.
-    }
+    // If no target_ids were found set error.
     $form_state->setErrorByName('field_alert_display', t("An 'On specific pages' alert must show on at least one page. Instead of removing all Target pages, please unpublish the alert."));
   }
 }
