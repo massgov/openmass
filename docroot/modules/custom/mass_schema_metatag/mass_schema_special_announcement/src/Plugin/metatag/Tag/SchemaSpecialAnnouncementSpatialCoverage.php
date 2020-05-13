@@ -20,4 +20,16 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaPlaceBase;
  * )
  */
 class SchemaSpecialAnnouncementSpatialCoverage extends SchemaPlaceBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function form($element = []) {
+    $form = parent::form($element);
+
+    $form['@type']['State'] = $this->t('State');
+
+    return $form;
+  }
+
 }
