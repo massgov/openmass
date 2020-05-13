@@ -8,6 +8,14 @@
  *  * fields[paragraph--target_pages]=field_target_content_ref
  *  * include=field_target_pages_para_ref,field_alert
  *  * filter[status][value]=1
+ *
+ * NEW JSON RESPONSE
+ * http://mass.local/jsonapi/node/alert?page[limit]=1&
+ * sort=-changed&
+ * include=field_alert&
+ * filter[status][value]=1&
+ * fields[node--alert]=title,changed,entity_url,field_alert_severity,field_alert,field_target_page,field_alert_display&
+ * fields[paragraph--emergency_alert]=drupal_internal__id,changed,field_emergency_alert_timestamp,field_emergency_alert_message,field_emergency_alert_link,field_emergency_alert_content
  */
 
 (function ($, Drupal, drupalSettings) {
@@ -151,7 +159,6 @@
 
     getSerializedPageAlertData: function getSerializedPageAlertData(responseData) {
       var serializedPageAlertData = {headerAlerts: []};
-      var paragraphsWithCurrentPageAsTarget = [];
       var currentPageUuid = null;
 
       // If we do not know current page's uuid, we will
@@ -166,32 +173,9 @@
         return {};
       }
 
-      try {
-        // In the response, paragraph references are included separately from
-        // the alerts. We collect any paragraphs references that hold
-        // the current page as a target.
-        // If the current page is in none of them, we abort.
-        responseData.included.forEach(function (item) {
-          if (item.type !== 'paragraph--target_pages') {
-            return;
-          }
-          if (item.relationships.field_target_content_ref.data !== null) {
-            if (item.relationships.field_target_content_ref.data.id === currentPageUuid) {
-              paragraphsWithCurrentPageAsTarget.push(item.id);
-            }
-          }
-        });
-        if (paragraphsWithCurrentPageAsTarget.length === 0) {
-          return {};
-        }
-      }
-      catch (e) {
-        console.error(e);
-      }
-
       // Now we iterate on each alert data.
       responseData.data.forEach(function (item) {
-        // Don't process if it not alert content
+        // Don't process if it not alert content.
         if (item.type !== 'node--alert') {
           return;
         }
@@ -200,9 +184,8 @@
           var currentAlertItem = item;
           // See if any paragraph in this alert is connected to current page
           // If yes, we want this alert.
-          currentAlertItem.relationships.field_target_pages_para_ref.data.forEach(function (paraItem) {
-            // NOTE: We have a polyfill to ensure Array.includes() works for us in all browsers.
-            if (paragraphsWithCurrentPageAsTarget.includes(paraItem.id)) {
+          currentAlertItem.relationships.field_target_page.data.forEach(function (paraItem) {
+            if (currentPageUuid === paraItem.id) {
               var alertDetailParagraphIds = Drupal.behaviors.mayflower.getAlertParagraphIds(currentAlertItem);
               var alertDetailParagraphData = Drupal.behaviors.mayflower.getAlertParagraphData(responseData, alertDetailParagraphIds, currentAlertItem);
               alertDetailParagraphData.forEach(function (alertData) {
