@@ -25,7 +25,7 @@ class SchemaSpecialAnnouncementAnnouncementLocation extends SchemaPlaceBase {
   use SchemaImageTrait;
 
   /**
-   * @inheritdoc
+   * Add AnnouncementLocation property options.
    */
   public function form($element = []) {
     $form = parent::form($element);
@@ -49,5 +49,5 @@ class SchemaSpecialAnnouncementAnnouncementLocation extends SchemaPlaceBase {
 
     return $form;
   }
-}
 
+}

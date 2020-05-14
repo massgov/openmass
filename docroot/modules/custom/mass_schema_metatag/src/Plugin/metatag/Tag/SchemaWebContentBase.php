@@ -86,4 +86,5 @@ class SchemaWebContentBase extends SchemaCreativeWorkBase {
     }
     return $items;
   }
+
 }
