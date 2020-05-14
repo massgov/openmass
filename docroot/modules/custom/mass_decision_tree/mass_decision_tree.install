@@ -79,3 +79,16 @@ function mass_decision_tree_update_8001() {
   // a hook_post_update().
   $old_instance->delete();
 }
+
+/**
+ * Remove Answers paragraph orphan data.
+ */
+function mass_decision_tree_update_8002() {
+  $paragraphs = \Drupal::entityTypeManager()
+    ->getStorage('paragraph')
+    ->loadByProperties(array('type' => 'answers'));
+
+  foreach ($paragraphs as $paragraph) {
+    $paragraph->delete();
+  }
+}
