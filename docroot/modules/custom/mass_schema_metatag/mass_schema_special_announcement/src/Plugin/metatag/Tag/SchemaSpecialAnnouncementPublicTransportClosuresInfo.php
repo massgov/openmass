@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 
-use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaUrlWebContentBase;
+use Drupal\mass_schema_metatag\Plugin\metatag\Tag\SchemaUrlWebContentBase;
 
 /**
  * Provides a plugin for the 'schema_special_announcement_public_transport_closures_info' meta tag.

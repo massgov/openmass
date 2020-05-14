@@ -27,7 +27,7 @@ class SchemaSpecialAnnouncementSpatialCoverage extends SchemaPlaceBase {
   public function form($element = []) {
     $form = parent::form($element);
 
-    $form['@type']['State'] = $this->t('State');
+    $form['@type']['#options']['State'] = $this->t('State');
 
     return $form;
   }
