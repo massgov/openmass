@@ -86,7 +86,7 @@ function mass_decision_tree_update_8001() {
 function mass_decision_tree_update_8002() {
   $paragraphs = \Drupal::entityTypeManager()
     ->getStorage('paragraph')
-    ->loadByProperties(array('type' => 'answers'));
+    ->loadByProperties(['type' => 'answers']);
 
   foreach ($paragraphs as $paragraph) {
     $paragraph->delete();
