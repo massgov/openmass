@@ -1,4 +1,7 @@
+## [0.243.1] - May 14, 2020
 
+### Changed
+  - DP-18750: Edit a meaningless char in a CSS file to regenerate URL.
 
 ## [0.243.0] - May 12, 2020
 
@@ -6,25 +9,25 @@
   - DP-17676: Add a field for caption in tableau embed paragraph and set a charactor limit to 500.
   - DP-17750: Add fields for administrative title, display size, alignment and wrapping. Add a new template, paragraph--tableau-embed.html.twig, to render tableau content in figure.twig aloing with align, size and wrapping options.
   - DP-18332: Added new functionality for multiple answers on Decision tree branch
-  
+
 ### Changed
   - DP-18653: Override figure style for pre-existing figure items.
   - DP-18588: Updated Mayflower version to 8.14.0.
   - DP-17483: Add datavisualization iframe to figure. (MF)
   - DP-17634: Add a link to sample caption content. (MF)
-  
+
 ### Fixed
   - DP-18615: Add check to featured message link formatter to stop 500 error
   - DP-18608: Fix for caching to prevent excess traffic from hitting backend
   - DP-16946: Switch urls in the sitemap to /download instead of /files
-  
+
 
 
 ## [0.242.0] - May 5, 2020
 
 ### Fixed
   - DP-17511: Solving deleted referenced entity rendering issue causing fatal error
-  
+
 ## [0.241.1] - May 1, 2020
 
 ### Fixed
