@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.node.decision_tree_branch.field_answers
     - field.field.node.decision_tree_branch.field_branch_disclaimer
     - field.field.node.decision_tree_branch.field_decision_root_ref
     - field.field.node.decision_tree_branch.field_description
@@ -40,7 +39,6 @@ third_party_settings:
         - field_description
         - field_more_info
         - field_multiple_answers
-        - field_answers
         - field_branch_disclaimer
         - field_decision_root_ref
         - field_organizations
@@ -59,18 +57,6 @@ targetEntityType: node
 bundle: decision_tree_branch
 mode: default
 content:
-  field_answers:
-    type: entity_reference_paragraphs
-    weight: 5
-    settings:
-      title: Answer
-      title_plural: Answers
-      edit_mode: open
-      add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings: {  }
-    region: content
   field_branch_disclaimer:
     weight: 6
     settings:
