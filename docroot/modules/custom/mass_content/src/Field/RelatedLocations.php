@@ -4,6 +4,7 @@ namespace Drupal\mass_content\Field;
 
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\Core\Field\EntityReferenceFieldItemList;
+use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 
 /**
@@ -59,7 +60,10 @@ class RelatedLocations extends EntityReferenceFieldItemList {
         foreach ($fields as $field) {
           foreach ($parent_nodes as $parent_node) {
             if ($parent_node->hasField($field)) {
-              $ref_count[$parent_node->id()] = count($parent_node->{$field});
+              // We check here to see if field has value to avoid broken links.
+              if (Helper::getReferencedEntitiesFromField($parent_node, $field)) {
+                $ref_count[$parent_node->id()] = count($parent_node->{$field});
+              }
             }
           }
         }
