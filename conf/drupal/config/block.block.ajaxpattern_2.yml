@@ -18,7 +18,7 @@ settings:
   label: 'Ajax Pattern: Page Alerts'
   provider: mayflower
   label_display: '0'
-  ajax_pattern_endpoint: '/jsonapi/node/alert?page[limit]=10&sort=-changed&include=field_alert&filter[status][value]=1&fields[node--alert]=title,changed,entity_url,field_alert_severity,field_alert,field_target_page,field_alert_display&fields[paragraph--emergency_alert]=drupal_internal__id,changed,field_emergency_alert_timestamp,field_emergency_alert_message,field_emergency_alert_link,field_emergency_alert_content'
+  ajax_pattern_endpoint: '/jsonapi/node/alert?page[limit]=250&sort=-changed&include=field_alert&filter[status][value]=1&fields[node--alert]=title,changed,entity_url,field_alert_severity,field_alert,field_target_page,field_target_organization,field_alert_display&fields[paragraph--emergency_alert]=drupal_internal__id,changed,field_emergency_alert_timestamp,field_emergency_alert_message,field_emergency_alert_link,field_emergency_alert_content'
   ajax_pattern_render_pattern: '@organisms/by-template/header-alerts.twig'
   ajax_pattern_custom_selector: js-ajax-page-alerts-jsonapi
 visibility:
