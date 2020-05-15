@@ -1,0 +1,29 @@
+uuid: d8ae7b8c-a5c3-4781-ac91-9e1d071470b9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_target_organization
+    - node.type.alert
+    - node.type.org_page
+id: node.alert.field_target_organization
+field_name: field_target_organization
+entity_type: node
+bundle: alert
+label: 'Target organization'
+description: 'Start typing the title of the page you want and select it from the autocomplete list.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference
