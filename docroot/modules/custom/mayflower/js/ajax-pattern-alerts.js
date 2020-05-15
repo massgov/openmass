@@ -192,9 +192,14 @@
 
       // Now we iterate on each alert node in the response.
       responseData.data.forEach(function (item) {
-        // Don't process if it not alert content and correct field_alert_display.
+
+        // Don't process if item is not alert data.
+        if (item.type !== 'node--alert') {
+          return;
+        }
+
+        // Don't process if item is not a relevant display.
         if (
-          item.type !== 'node--alert' &&
           item.attributes.field_alert_display !== 'by_organization' &&
           item.attributes.field_alert_display !== 'specific_target_pages'
         ) {
