@@ -76,6 +76,24 @@ class EmergencyAlertsTest extends ExistingSiteBase {
   }
 
   /**
+   * Assert that our validation prevents saving a organization-specific alert without any pages.
+   *
+   * Since validation is form based, we post a form in this test.
+   */
+  public function testOrganizationSpecificAlert() {
+    $user = User::load(1)->set('status', 1);
+    $user->save();
+    $this->drupalLogin($user);
+    $session = $this->getSession();
+    $session->visit('/node/add/alert');
+    $page = $session->getPage();
+    $page->fillField('field_alert_display', 'by_organization');
+    $page->selectFieldOption('moderation_state[0][state]', 'published');
+    $page->findButton('Save')->press();
+    $this->assertContains('must show on at least one organization', $page->getText());
+  }
+
+  /**
    * Assert that our validation prevents saving multiple sitewide alerts.
    */
   public function testSitewideAlert() {
