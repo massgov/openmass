@@ -14,7 +14,8 @@
   {% set response = "Would you like a response from" %}
   {% set responseRequired = {
     "responseDescription": content.field_response_expectations,
-    "inputGroup": {
+  } %}
+    {# "inputGroup": {
       "required": true,
       "inline": true,
       "title": "",
@@ -38,7 +39,7 @@
         }
       ]
     }
-  } %}
+  } %} #}
   {% set contactInputs = [
     {
       "hiddenLabel": false,
@@ -152,7 +153,7 @@
     </fieldset>
 
     <div class="ma__mass-feedback-form__fields">
-      <fieldset class="ma_feedback-fieldset">
+      <div class="ma_feedback-fieldset">
 
 {# Q2: response textarea #}
 
@@ -165,7 +166,7 @@
           Please tell us what you were looking for.{{ requiredIndicator }}
         </label>
 
-        <div id="note1" class="ma__disclaimer">
+        <div id="note1" class="ma__disclaimer" aria-hidden="true">
           <p>We will use this information to improve the site.</p>
         </div>
 
@@ -193,8 +194,7 @@
                 class="fsField"
                 name="field52940022"
                 maxlength="5000"
-                disabled="disabled"
-                aria-describedby="feedback-note"></textarea>
+                aria-describedby="note1 note2"></textarea>
         </div>
 {# textarea-NO #}
         <div class="feedback-response feedback-negative">
@@ -205,11 +205,10 @@
                 aria-required="true"
                 aria-invalid="false"
                 maxlength="5000"
-                disabled="disabled"
                 aria-describedby="note1 note2"></textarea>
         </div>
 
-        <div id="note2" class="ma__helper-text">
+        <div id="note2" class="ma__helper-text" aria-hidden="true">
           <p>Do not include sensitive information, such as Social Security or bank account numbers.</p>
         </div>
 
@@ -298,7 +297,7 @@
         </div>
       {% endif %}
 
-      </fieldset>
+      </div>
     </div>{# .ma__mass-feedback-form__form--user-response feedback-response #}
 
     <div class="ma_feedback-fieldset ma__mass-feedback-form__form--submit-wrapper">
@@ -367,345 +366,325 @@
   </form>
 </div>
 
-{# TODO: MOVE TO OVERRIDE CSS #}
-<style>
-  div.ma_feedback-fieldset {
-    margin-top: 45px;
-  }
-  #note2 {
-    margin-bottom: .25em;
-    padding: 0;
-  }
-  #note2 p {
-    margin: 0;
-    padding: 0;
-  }
-  .ma__mass-feedback-form__form--user-response div {
-    margin-bottom: .25em;
-    padding: 0;
-    font-weight: 500;
-  }
-  button.ma__content-link--chevron {
-    -webkit-transition: all 0.4s ease;
-    -o-transition: all 0.4s ease;
-    transition: all 0.4s ease;
-    text-decoration: none;
-    font-weight: 700;
-    color: #14558f;
-    border: 0;
-    background: transparent;
-  }
-  .ma__mass-feedback-form__form--user-response.feedback-response
-  button.ma__content-link--chevron::after {
-    top: 0;
-  }
-  .ma__mass-feedback-form__form--user-response.is-open button.ma__content-link--chevron::after {
-    top: -4px;
-  }
-
-</style>
-
-{# END OF CURRENT EDIT #}
-{# <h2 style="color: purple;">END OF CURRENT EDIT</h2> #}
-{# END OF CURRENT EDIT #}
-
-
-{# MF TEMPLATE ENDS #}
-
 {# STEP 2 #}
   <div id="feedback-step-2" class="feedback-step hidden" data-feedback-next="feedback-step-3">
     {% set contact = false %}
     {% if node.field_constituent_communication.value == 'link' and node.field_feedback_com_link is not empty %}
       {% set contact = content.field_feedback_com_link[0]['#url'] %}
     {% endif %}
-    {# {% include "@organisms/feedback/mass-feedback-success.twig" with {
-      "title": "Thanks, your message has been sent to",
-      "action": "#",
-      "org": org_name,
-      "description": "Would you like to provide additional feedback to help improve Mass.gov?",
-      "contactLink": contact
-    } %} #}
     <div class="ma__mass-feedback-form ma__mass-feedback-form--success" id="feedback-success" data-mass-feedback-form>
-      <h3>Thanks, your message has been sent to {{ org_name }}!</h3>
-{# TODO: ADD VALID ACTION VALUE. OR REMOVE THE FORM, WHICH DOESN'T SEEM TO BE NECESSARY IN THIS CASE. #}
-      <form class="ma__mass-feedback-form__form" method="post" novalidate="" action="#" class="" id="">
-
+      {# <form class="ma__mass-feedback-form__form" method="post" novalidate="" action="#"> #}
+      <div class="ma__mass-feedback-form__form">
+        <h3>Thanks, your message has been sent to {{ org_name }}!</h3>
       {% if contact %}
         <span class="ma__decorative-link">
-{# TODO: CHANGE THE 'CICK HERE' TEXT. #}
           <a href="{{ contact }}">If you need to contact {{ org_name }}, please click here&nbsp;{{ icon('arrow') }}</a>
         </span>
       {% endif %}
-        <p>Would you like to provide additional feedback to help improve Mass.gov?</p>
+        <p id="additional_feedback" aria-hidden="true">Would you like to provide additional feedback to help improve Mass.gov?</p>
 
         <div class="ma__mass-feedback-form__form--submit-wrapper">
-{# CONFIRM: THIS SEEMS TO BE A SIMPLE LINK TO THE SURVEY PAGE.  #}
-          <input class="submitButton ma__button ma__button--small" type="submit" value="Start Survey" />
+          <input class="submitButton ma__button ma__button--small" type="submit" value="Start Survey"  aria-describedby="additional_feedback" />
         </div>
-      </form>
     </div>
   </div>
 
 {# STEP 3 #}
   <div id="feedback-step-3" class="feedback-step hidden" data-feedback-next="feedback-step-4">
-    {% include "@organisms/feedback/secondary-survey.twig" with {
-      "formId": "3184363",
-      "formAction": "https://massgov.formstack.com/forms/index.php",
-      "radioScalesGroups": {
-        "title": "",
-        "startScaleLabel": "Strongly Disagree",
-        "endScaleLabel": "Strongly Agree",
-        "groups": [
-          {
-            "path": "@atoms/03-forms/radio-scale.twig",
-            "data": {
-            "radioScale": {
-              "legend": "This page is helpful.",
-              "required": true,
-              "groupID": "field68557157",
-              "name": "field68557157",
-              "items": [
+    <div class="ma__mass-feedback-form" id="feedback" data-mass-feedback-form>
+      <h2 class="visually-hidden">Survey</h2>
+
+      <form class="ma__mass-feedback-form__form" method="post" novalidate="" action="https://massgov.formstack.com/forms/index.php" id="3184363">
+        <fieldset class="ma_feedback-fieldset">
+          <legend>Tell us more about your experience</legend>
+          <p>How much do you agree with the following statements<span class="ma__visually-hidden"> in the scale of 1, Strongly Disagree, to 5, Strongly Agree</span>?</p>
+            <div class="ma__radio-scale__items" >
+              <div class="ma__radio-scale__item" aria-hidden="true">
+                <div class="ma__radio-scale">
+                  <div class="ma__radio-scale__radios">
+                    <div class="ma__radio-scale__label"> Strongly Disagree</div>
+                    <div class="ma__radio-scale__label"> Strongly Agree</div>
+                  </div>
+                </div>
+              </div>
+            {% set radioScalesGroups = [
                 {
-                  "value": "1",
-                  "id": "field68557157_1",
-                  "label": "1",
-                  "text": "",
-                  "checked": false
+                  "data": {
+                    "radioScale": {
+                      "legend": "This page is helpful.",
+                      "required": true,
+                      "groupID": "field68557157",
+                      "name": "field68557157",
+                      "items": [
+                        {
+                          "value": "1",
+                          "id": "field68557157_1",
+                          "label": "Strongly Disagree",
+                          "checked": false
+                        },
+                        {
+                          "value": "2",
+                          "id": "field68557157_2",
+                          "label": "",
+                          "checked": false
+                        },
+                        {
+                          "value": "3",
+                          "id": "field68557157_3",
+                          "label": "",
+                          "checked": false
+                        },
+                        {
+                          "value": "4",
+                          "id": "field68557157_4",
+                          "label": "",
+                          "checked": false
+                        },
+                        {
+                          "value": "5",
+                          "id": "field68557157_5",
+                          "label": "Strongly Agree",
+                          "checked": false
+                        }
+                      ]
+                    }
+                  }
                 },
-                {
-                  "value": "2",
-                  "id": "field68557157_2",
-                  "label": "2",
-                  "text": "",
-                  "checked": false
-                },
-                {
-                  "value": "3",
-                  "id": "field68557157_3",
-                  "label": "3",
-                  "text": "",
-                  "checked": false
-                },
-                {
-                  "value": "4",
-                  "id": "field68557157_4",
-                  "label": "4",
-                  "text": "",
-                  "checked": false
-                },
-                {
-                  "value": "5",
-                  "id": "field68557157_5",
-                  "label": "4",
-                  "text": "",
-                  "checked": false
+               {
+                "data": {
+                  "radioScale": {
+                    "legend": "This page is easy to use.",
+                    "required": true,
+                    "groupID": "field68557204",
+                    "name": "field68557204",
+                    "items": [
+                      {
+                        "value": "1",
+                        "id": "field68557204_1",
+                        "label": "Strongly Disagree",
+                        "checked": false
+                      },
+                      {
+                        "value": "2",
+                        "id": "field68557204_2",
+                        "label": "",
+                        "checked": false
+                      },
+                      {
+                        "value": "3",
+                        "id": "field68557204_3",
+                        "label": "3",
+                        "text": "",
+                        "checked": false
+                      },
+                      {
+                        "value": "4",
+                        "id": "field68557204_4",
+                        "label": "",
+                        "checked": false
+                      },
+                      {
+                        "value": "5",
+                        "id": "field68557204_5",
+                        "label": "Strongly Agree",
+                        "checked": false
+                      }
+                    ]
+                  }
                 }
-              ]
-            }
-          }
+              },
+              {
+                "data": {
+                  "radioScale": {
+                    "legend": "I am confident that I will find the information that I need.",
+                    "required": true,
+                    "groupID": "field68557235",
+                    "name": "field68557235",
+                    "items": [
+                      {
+                        "value": "1",
+                        "id": "field68557235_1",
+                        "label": "Strongly Disagree",
+                        "checked": false
+                      },
+                      {
+                        "value": "2",
+                        "id": "field68557235_2",
+                        "label": "",
+                        "checked": false
+                      },
+                      {
+                        "value": "3",
+                        "id": "field68557235_3",
+                        "label": "",
+                        "checked": false
+                      },
+                      {
+                        "value": "4",
+                        "id": "field68557235_4",
+                        "label": "",
+                        "checked": false
+                      },
+                      {
+                        "value": "5",
+                        "id": "field68557235_5",
+                        "label": "Strongly Agree",
+                        "checked": false
+                      }
+                    ]
+                  }
+                }
+              }
+            ] %}
+
+            {% for group in radioScalesGroups %}
+              <div class="ma__radio-scale__item">
+              {% for data in group %}
+                <fieldset class="ma__radio-scale" id="{{ data.radioScale.groupID }}">
+                  <legend class="ma__radio-scale__legend">{{ data.radioScale.legend }}</legend>
+                  <div class="ma__radio-scale__radios fieldset-content">
+                  {% for item in data.radioScale.items %}
+                    <label class="ma__radio-scale__label" for="{{ item.id }}">
+                      <input type="radio"
+                      class="ma__radio-scale__radio"
+                      id="{{ item.id }}"
+                      name="{{ data.radioScale.name }}"
+                      value="{{ item.value }}">
+                      <span class="ma__radio-scale__text">{{ item.value }}</span>{% if item.label %}<span class="ma__visually-hidden"> {{ item.label }}</span>{% endif %}
+                    </label>
+                  {% endfor %}
+                  </div>
+                </fieldset>
+              {% endfor %}
+              </div>
+            {% endfor %}
+            </div>
+          </div>
+
+          <div class="ma_feedback-fieldset">
+            <label for="field68557240"
+            class="ma__label">What did you come here to do today?</label>
+            <textarea
+              name="field68557240"
+              id="field68557240"
+              maxlength="500"></textarea>
+          </div>
+
+          <fieldset class="ma_feedback-fieldset">
+            <legend>Are you using Mass.gov for professional or personal reasons? {{ requiredIndicator }}</legend>
+
+            <div class="ma__input-group">
+              <div class="ma__input-group__items">
+                <div class="ma__input-group__item">
+                  <span class="ma__input-radio">
+                    <input
+                      name="field68557373"
+                      type="radio"
+                      value="Personal"
+                      id="field68557373_1"
+                      required="required">
+                    <label class="ma__input-radio__label" for="field68557373_1"><span>Personal</span></label>
+                  </span>
+                </div>
+                <div class="ma__input-group__item">
+                  <span class="ma__input-radio">
+                    <input
+                      name="field68557373"
+                      type="radio"
+                      value="Professional"
+                      id="field68557373_2"
+                      required="required">
+                    <label class="ma__input-radio__label" for="field68557373_2"><span>Professional</span></label>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </fieldset>
+
+          <div class="ma_feedback-fieldset">
+            <label for="field68557414"
+            class="ma__label">What other feedback do you have about Mass.gov? (Optional)</label>
+            <textarea
+              name="field68557414"
+              id="field68557414"
+              maxlength="1000"></textarea>
+          </div>
+
+          <fieldset class="ma_feedback-fieldset">
+            <legend>If we have additional questions about your feedback, can we contact you? If so, enter your email address below. (Optional)</legend>
+
+            <label
+              for="field68557501"
+              class="ma__label ma__label--optional ma__label--hidden">Email</label>
+            <input
+              class="ma__input"
+              name="field68557501"
+              id="field68557501"
+              type="email"
+              data-type="email"
+              style="width: 375px" />
+          </fieldset>
+
+          <div class="ma_feedback-fieldset">
+            <input class="submitButton ma__button ma__button--small" type="submit" value="Submit" />
+          </div>
+        </fieldset>
+
+        {% set step3HiddenElements = [
+          {
+            "id": "field68557708",
+            "name": "field68557708",
+            "value": "uniqueId",
+            "class": "fsField unique-id-substitute"
           },
           {
-            "path": "@atoms/03-forms/radio-scale.twig",
-            "data": {
-            "radioScale": {
-              "legend": "This page is easy to use.",
-              "required": true,
-              "groupID": "field68557204",
-              "name": "field68557204",
-              "items": [
-                {
-                  "value": "1",
-                  "id": "field68557204_1",
-                  "label": "1",
-                  "text": "",
-                  "checked": false
-                },
-                {
-                  "value": "2",
-                  "id": "field68557204_2",
-                  "label": "2",
-                  "text": "",
-                  "checked": false
-                },
-                {
-                  "value": "3",
-                  "id": "field68557204_3",
-                  "label": "3",
-                  "text": "",
-                  "checked": false
-                },
-                {
-                  "value": "4",
-                  "id": "field68557204_4",
-                  "label": "4",
-                  "text": "",
-                  "checked": false
-                },
-                {
-                  "value": "5",
-                  "id": "field68557204_5",
-                  "label": "4",
-                  "text": "",
-                  "checked": false
-                }
-              ]
-            }
-          }
+            "id": "form3184363",
+            "name": "form",
+            "value": "3184363"
           },
           {
-            "path": "@atoms/03-forms/radio-scale.twig",
-            "data": {
-            "radioScale": {
-              "legend": "I am confident that I will find the information that I need.",
-              "required": true,
-              "groupID": "field68557235",
-              "name": "field68557235",
-              "items": [
-                {
-                  "value": "1",
-                  "id": "field68557235_1",
-                  "label": "1",
-                  "text": "text",
-                  "checked": false
-                },
-                {
-                  "value": "2",
-                  "id": "field68557235_2",
-                  "label": "2",
-                  "text": "",
-                  "checked": false
-                },
-                {
-                  "value": "3",
-                  "id": "field68557235_3",
-                  "label": "3",
-                  "text": "",
-                  "checked": false
-                },
-                {
-                  "value": "4",
-                  "id": "field68557235_4",
-                  "label": "4",
-                  "text": "",
-                  "checked": false
-                },
-                {
-                  "value": "5",
-                  "id": "field68557235_5",
-                  "label": "4",
-                  "text": "",
-                  "checked": false
-                }
-              ]
-            }
-          }
-          }
-        ]
-      },
-      "doToday": {
-        "labelText": "Text Area",
-        "hiddenLabel": true,
-        "required": false,
-        "id": "field68557240",
-        "maxlength": 500,
-        "name": "field68557240"
-      },
-      "inputGroup": {
-        "required": true,
-        "inline": false,
-        "title": "",
-        "type": "radio",
-        "items": [
-          {
-            "name": "field68557373",
-            "value": "Personal",
-            "id": "field68557373_1",
-            "label": "Personal",
-            "checked": false
+            "id": "viewkeymLaeYhDMyl",
+            "name": "viewkey",
+            "value": "mLaeYhDMyl"
           },
           {
-            "name": "field68557373",
-            "value": "Professional",
-            "id": "field68557373_2",
-            "label": "Professional",
-            "checked": false
+            "id": "hidden_fields3184363",
+            "name": "hidden_fields",
+            "value": ""
+          },
+          {
+            "id": "submit3184363",
+            "name": "_submit",
+            "value": "1"
+          },
+          {
+            "id": "style_version3184363",
+            "name": "style_version",
+            "value": "3"
+          },
+          {
+            "id": "viewparam524744",
+            "name": "viewparam",
+            "value": "524744"
           }
-        ]
-      },
-      "otherFeedback": {
-        "labelText": "Text Area",
-        "hiddenLabel": true,
-        "required": false,
-        "id": "field68557414",
-        "maxlength": 1000,
-        "name": "field68557414"
-      },
-      "emailContact": {
-        "labelText": "Email",
-        "hiddenLabel": true,
-        "required": false,
-        "id": "field68557501",
-        "name": "field68557501",
-        "type": "email",
-        "width": "375"
-      },
-      "hiddenElements": [
-        {
-          "id": "field68557708",
-          "name": "field68557708",
-          "value": "uniqueId",
-          "class": "fsField unique-id-substitute"
-        },
-        {
-          "id": "form3184363",
-          "name": "form",
-          "value": "3184363"
-        },
-        {
-          "id": "viewkeymLaeYhDMyl",
-          "name": "viewkey",
-          "value": "mLaeYhDMyl"
-        },
-        {
-          "id": "hidden_fields3184363",
-          "name": "hidden_fields",
-          "value": ""
-        },
-        {
-          "id": "submit3184363",
-          "name": "_submit",
-          "value": "1"
-        },
-        {
-          "id": "style_version3184363",
-          "name": "style_version",
-          "value": "3"
-        },
-        {
-          "id": "viewparam524744",
-          "name": "viewparam",
-          "value": "524744"
-        }
-      ]
-    } %}
+        ] %}
+        {% for element in hiddenElements %}
+          <input type="hidden" id="{{ element.id }}" name="{{ element.name }}" value="{{ element.value }}" class="{{ element.class }}" />
+        {% endfor %}
+      </form>
   </div>
+
+{# STEP 4 #}
   <div id="feedback-step-4" class="feedback-step hidden">
-    {# {% include "@organisms/feedback/mass-feedback-thank-you.twig" with {
-      "title": "Thanks, your survey has been submitted to the Mass.gov team!",
-      "description": "If you would like to continue helping us improve Mass.gov, join our user panel to test new features for the site.",
-      "link": {
-        "text": "Join user panel",
-        "href": "https://www.mass.gov/user-panel?utm_source=survey"
-      }
-    } %} #}
     <div class="ma__mass-feedback-form thank-you-panel">
       <h3>Thanks, your survey has been submitted to the Mass.gov team!</h3>
-      <p>If you would like to continue helping us improve Mass.gov, join our user panel to test new features for the site.</p>
+      <p  id="userpanel" aria-hidden="true">If you would like to continue helping us improve Mass.gov, join our user panel to test new features for the site.</p>
       <span class="ma__decorative-link">
-        <a href="https://www.mass.gov/user-panel?utm_source=survey">Join user panel&nbsp;{{ icon('arrow') }}</a>
+        <a href="https://www.mass.gov/user-panel?utm_source=survey" aria-describedby="userpanel">Join user panel&nbsp;{{ icon('arrow') }}</a>
       </span>
     </div>
   </div>
+
 </div>
 
 {# <script>
@@ -744,3 +723,150 @@ submitButton.addEventListener('click', function(event){
 // Mark invalid field.
 
 </script> #}
+
+{# TODO: MOVE TO OVERRIDE CSS #}
+<style>
+  div.ma_feedback-fieldset {
+    margin-top: 45px;
+  }
+  .ma__input-radio label.ma__input-radio__label::before {
+    content: "";
+    background: transparent;
+  }
+  .ma__input-radio__label::after {
+    content: '';
+    position: absolute;
+    display: inline-block;
+    left: 8px;
+    top: 7px;
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+  }
+  .ma__input-radio input:checked + .ma__input-radio__label::after {
+    background: #141414;
+  }
+  #note2 {
+    margin-bottom: .25em;
+    padding: 0;
+  }
+  #note2 p {
+    margin: 0;
+    padding: 0;
+  }
+  .ma__mass-feedback-form__form--user-response div {
+    margin-bottom: .25em;
+    padding: 0;
+    font-weight: 500;
+  }
+  button.ma__content-link--chevron {
+    -webkit-transition: all 0.4s ease;
+    -o-transition: all 0.4s ease;
+    transition: all 0.4s ease;
+    text-decoration: none;
+    font-weight: 700;
+    color: #14558f;
+    border: 0;
+    background: transparent;
+  }
+  .ma__mass-feedback-form__form--user-response.feedback-response
+  button.ma__content-link--chevron::after {
+    top: 0;
+  }
+  .ma__mass-feedback-form__form--user-response.is-open button.ma__content-link--chevron::after {
+    top: -4px;
+  }
+  .ma__mass-feedback-form h2,
+  .ma__mass-feedback-form h3 {
+    max-width: 100%;
+    padding: 0;
+    margin-bottom: .25em;
+    padding: 0;
+    font-weight: 500;
+    font-size: 1.375rem;
+    line-height: 1.5;
+  }
+  .div.ma__radio-scale-groups {
+    margin-top: 45px;
+  }
+
+.ma__radio-scale__item[aria-hidden] {
+  margin-bottom: 10px;
+  padding-left: 50%;
+
+  text-align: center;
+  width: 10%;
+  line-height: 1;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #535353;
+}
+.ma__radio-scale__item[aria-hidden] .ma__radio-scale__label {
+  flex: 1;
+  border: none;
+
+  background: pink;
+}
+  .ma__radio-scale__items::before,
+  .ma__radio-scale::before,
+  .ma__radio-scale__items::after,
+  .ma__radio-scale::after {
+    content: "";
+    top: 0;
+    width: 0;
+display: none;
+  }
+{# radio scale focus fix  #}
+  .ma__radio-scale__label {
+    position: relative;
+  }
+  .ma__radio-scale__radio {
+    display: inline-block;
+    width: 100%;
+    opacity: 0;
+  }
+  .ma__radio-scale__text {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+  .ma__radio-scale__radio:focus + .ma__radio-scale__text {
+    outline: 1px auto #212121;
+    outline: 5px auto -webkit-focus-ring-color;
+  }
+
+  div.ma__mass-feedback-form__fields,
+  div.ma__mass-feedback-form__contact-form {
+    background-color: inherit;
+    max-height: 0vh;
+    overflow: hidden;
+    padding: 0.001em 1.25em;
+    position: relative;
+    visibility: hidden;
+    z-index: 1;
+
+    transition: max-height .2s ease-in-out, padding-top .2s ease-in-out, padding-bottom .2s ease-in-out;
+
+  }
+
+.ma__mass-feedback-form__form div.ma__mass-feedback-form__fields.is-open,
+  div.ma__mass-feedback-form__fields.is-open  {
+    visibility: visible;
+  }
+
+  .is-open {
+    max-height: 100vh;
+    overflow: auto;
+    padding: 1.25em;
+    visibility: visible;
+  }
+      {# display: block;
+    max-height: auto; #}
+
+
+  .hidden { display: block; }
+  .ma__ajax-pattern, .ma__header, .pre-content, .stacked-row-content {
+    display: none;
+}
+</style>
