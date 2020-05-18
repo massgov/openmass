@@ -531,7 +531,7 @@ workflows:
           name: backstop-dynamic-test
           requires: [build, test]
           reference: test
-          target: $CIRCLE_BRANCH
+          target: local
           filters:
             branches:
               <<: *branch_ignore
