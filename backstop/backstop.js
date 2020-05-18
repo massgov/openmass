@@ -35,7 +35,7 @@ const scenarios = pages.map(function(page) {
       auth = getAuth();
       break;
     case 'circleci':
-      base = 'http://localhost:80';
+      base = 'http://localhost:8080';
       break;
     default:
       base = `https://massgov${target}.prod.acquia-sites.com`;
