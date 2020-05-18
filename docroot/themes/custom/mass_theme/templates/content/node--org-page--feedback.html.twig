@@ -214,10 +214,10 @@
 
       {% if response %}
         <div class="ma__mass-feedback-form__form--user-response feedback-response feedback-negative">
-        {% if responseRequired %}
+        {% if response %}
           {% if responseRequired.inputGroup %}
           <fieldset class="ma_feedback-fieldset user-response__contact" role="radiogroup">
-            <legend>{{ response }} {{ org_name }}? {{ requiredIndicator }}{# * #}</legend>
+            <legend>{{ response }} {{ org_name }}? {{ requiredIndicator }}</legend>
 
             {# {% set inputGroup = responseRequired.inputGroup %} #}
             <div class="ma__input-group">
@@ -398,7 +398,8 @@
         <fieldset class="ma_feedback-fieldset">
           <legend>Tell us more about your experience</legend>
           <p>How much do you agree with the following statements<span class="ma__visually-hidden"> in the scale of 1, Strongly Disagree, to 5, Strongly Agree</span>?</p>
-            <div class="ma__radio-scale__items" >
+          <div class="ma__radio-scale__items" >
+           {# visual label for min-width: 650px #}
               <div class="ma__radio-scale__item" aria-hidden="true">
                 <div class="ma__radio-scale">
                   <div class="ma__radio-scale__radios">
@@ -407,6 +408,13 @@
                   </div>
                 </div>
               </div>
+            {# visual label for max-width: 620px #}
+            {% set visualScaleLabel %}
+              <div class="ma__radio-scale__radios" aria-hidden="true">
+                <div class="ma__radio-scale__label"> Strongly Disagree</div>
+                <div class="ma__radio-scale__label"> Strongly Agree</div>
+              </div>
+            {% endset %}
             {% set radioScalesGroups = [
                 {
                   "data": {
@@ -542,6 +550,7 @@
               {% for data in group %}
                 <fieldset class="ma__radio-scale" id="{{ data.radioScale.groupID }}">
                   <legend class="ma__radio-scale__legend">{{ data.radioScale.legend }}</legend>
+                  {{ visualScaleLabel }}
                   <div class="ma__radio-scale__radios fieldset-content">
                   {% for item in data.radioScale.items %}
                     <label class="ma__radio-scale__label" for="{{ item.id }}">
@@ -553,13 +562,12 @@
                       <span class="ma__radio-scale__text">{{ item.value }}</span>{% if item.label %}<span class="ma__visually-hidden"> {{ item.label }}</span>{% endif %}
                     </label>
                   {% endfor %}
-                  </div>
+                  </div>{# .ma__radio-scale__radios #}
                 </fieldset>
               {% endfor %}
-              </div>
+              </div>{# .ma__radio-scale__item #}
             {% endfor %}
-            </div>
-          </div>
+          </div>{# .ma__radio-scale__items #}
 
           <div class="ma_feedback-fieldset">
             <label for="field68557240"
@@ -672,6 +680,7 @@
           <input type="hidden" id="{{ element.id }}" name="{{ element.name }}" value="{{ element.value }}" class="{{ element.class }}" />
         {% endfor %}
       </form>
+    </div>
   </div>
 
 {# STEP 4 #}
@@ -723,150 +732,3 @@ submitButton.addEventListener('click', function(event){
 // Mark invalid field.
 
 </script> #}
-
-{# TODO: MOVE TO OVERRIDE CSS #}
-<style>
-  div.ma_feedback-fieldset {
-    margin-top: 45px;
-  }
-  .ma__input-radio label.ma__input-radio__label::before {
-    content: "";
-    background: transparent;
-  }
-  .ma__input-radio__label::after {
-    content: '';
-    position: absolute;
-    display: inline-block;
-    left: 8px;
-    top: 7px;
-    border-radius: 50%;
-    width: 8px;
-    height: 8px;
-  }
-  .ma__input-radio input:checked + .ma__input-radio__label::after {
-    background: #141414;
-  }
-  #note2 {
-    margin-bottom: .25em;
-    padding: 0;
-  }
-  #note2 p {
-    margin: 0;
-    padding: 0;
-  }
-  .ma__mass-feedback-form__form--user-response div {
-    margin-bottom: .25em;
-    padding: 0;
-    font-weight: 500;
-  }
-  button.ma__content-link--chevron {
-    -webkit-transition: all 0.4s ease;
-    -o-transition: all 0.4s ease;
-    transition: all 0.4s ease;
-    text-decoration: none;
-    font-weight: 700;
-    color: #14558f;
-    border: 0;
-    background: transparent;
-  }
-  .ma__mass-feedback-form__form--user-response.feedback-response
-  button.ma__content-link--chevron::after {
-    top: 0;
-  }
-  .ma__mass-feedback-form__form--user-response.is-open button.ma__content-link--chevron::after {
-    top: -4px;
-  }
-  .ma__mass-feedback-form h2,
-  .ma__mass-feedback-form h3 {
-    max-width: 100%;
-    padding: 0;
-    margin-bottom: .25em;
-    padding: 0;
-    font-weight: 500;
-    font-size: 1.375rem;
-    line-height: 1.5;
-  }
-  .div.ma__radio-scale-groups {
-    margin-top: 45px;
-  }
-
-.ma__radio-scale__item[aria-hidden] {
-  margin-bottom: 10px;
-  padding-left: 50%;
-
-  text-align: center;
-  width: 10%;
-  line-height: 1;
-  font-size: 1.1rem;
-  font-weight: 600;
-  color: #535353;
-}
-.ma__radio-scale__item[aria-hidden] .ma__radio-scale__label {
-  flex: 1;
-  border: none;
-
-  background: pink;
-}
-  .ma__radio-scale__items::before,
-  .ma__radio-scale::before,
-  .ma__radio-scale__items::after,
-  .ma__radio-scale::after {
-    content: "";
-    top: 0;
-    width: 0;
-display: none;
-  }
-{# radio scale focus fix  #}
-  .ma__radio-scale__label {
-    position: relative;
-  }
-  .ma__radio-scale__radio {
-    display: inline-block;
-    width: 100%;
-    opacity: 0;
-  }
-  .ma__radio-scale__text {
-    width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-  .ma__radio-scale__radio:focus + .ma__radio-scale__text {
-    outline: 1px auto #212121;
-    outline: 5px auto -webkit-focus-ring-color;
-  }
-
-  div.ma__mass-feedback-form__fields,
-  div.ma__mass-feedback-form__contact-form {
-    background-color: inherit;
-    max-height: 0vh;
-    overflow: hidden;
-    padding: 0.001em 1.25em;
-    position: relative;
-    visibility: hidden;
-    z-index: 1;
-
-    transition: max-height .2s ease-in-out, padding-top .2s ease-in-out, padding-bottom .2s ease-in-out;
-
-  }
-
-.ma__mass-feedback-form__form div.ma__mass-feedback-form__fields.is-open,
-  div.ma__mass-feedback-form__fields.is-open  {
-    visibility: visible;
-  }
-
-  .is-open {
-    max-height: 100vh;
-    overflow: auto;
-    padding: 1.25em;
-    visibility: visible;
-  }
-      {# display: block;
-    max-height: auto; #}
-
-
-  .hidden { display: block; }
-  .ma__ajax-pattern, .ma__header, .pre-content, .stacked-row-content {
-    display: none;
-}
-</style>
