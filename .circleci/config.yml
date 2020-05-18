@@ -527,6 +527,14 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
+      - backstop_dynamic:
+          name: backstop-test
+          requires: [build]
+          reference: test
+          target: *branch_ignore
+          filters:
+            branches:
+              <<: *branch_ignore
 
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_develop_branch.
   # This will only happens onThursday night 11 p.m. ETS to allow us to review Mayflower in Drupal on Mondays.
