@@ -9,7 +9,7 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaPlaceBase;
  *
  * @MetatagTag(
  *   id = "schema_special_announcement_spatial_coverage",
- *   label = @Translation("Spatial Coverage"),
+ *   label = @Translation("spatialCoverage"),
  *   description = @Translation("What geographical area does the announcement cover?"),
  *   name = "spatialCoverage",
  *   group = "schema_special_announcement",

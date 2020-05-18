@@ -11,7 +11,7 @@ use Drupal\schema_metatag\SchemaMetatagManager;
  *
  * @MetatagTag(
  *   id = "schema_special_announcement_location",
- *   label = @Translation("Announcement Location"),
+ *   label = @Translation("announcementLocation"),
  *   description = @Translation("Is there a specific Location that this involves?"),
  *   name = "announcementLocation",
  *   group = "schema_special_announcement",
