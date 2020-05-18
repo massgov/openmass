@@ -2,7 +2,7 @@
 
 namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 
-use Drupal\mass_schema_metatag\Plugin\metatag\Tag\SchemaUrlWebContentBase;
+use Drupal\mass_schema_metatag\Plugin\metatag\Tag\SchemaWebContentBase;
 
 /**
  * Provides a plugin for the 'TravelBans' meta tag.
@@ -23,6 +23,6 @@ use Drupal\mass_schema_metatag\Plugin\metatag\Tag\SchemaUrlWebContentBase;
  *   multiple = FALSE
  * )
  */
-class SchemaSpecialAnnouncementTravelBans extends SchemaUrlWebContentBase {
+class SchemaSpecialAnnouncementTravelBans extends SchemaWebContentBase {
 
 }
