@@ -15,31 +15,6 @@
   {% set responseRequired = {
     "responseDescription": content.field_response_expectations,
   } %}
-    {# "inputGroup": {
-      "required": true,
-      "inline": true,
-      "title": "",
-      "type": "radio",
-      "items": [
-        {
-          "name": "field70611737",
-          "value": "Yes",
-          "id": "field70611737_1",
-          "label": "Yes",
-          "required": true,
-          "checked": false
-        },
-        {
-          "name": "field70611737",
-          "value": "No",
-          "id": "field70611737_2",
-          "label": "No",
-          "required": true,
-          "checked": false
-        }
-      ]
-    }
-  } %} #}
   {% set contactInputs = [
     {
       "hiddenLabel": false,
@@ -97,13 +72,9 @@
   <span id="feedback"></span>
   <div id="feedback-step-1" class="feedback-step" data-feedback-next="feedback-step-2">
 
-
-{# MF TEMPALTE BEGINS #}
 {% set requiredIndicator %}
  <span aria-hidden="true"> * </span><span class="visually-hidden">required</span>
 {% endset %}
-
-  {# =========== #}
 
 <div class="ma__mass-feedback-form">
   <h2 class="visually-hidden">Feedback</h2>
@@ -118,7 +89,7 @@
         <div class="ma__input-group__item">
           <span class="ma__input-radio">
             <input
-              class="fsField required js-q1"
+              class="fsField required"
               id="field47054416_1"
               name="field47054416"
               type="radio"
@@ -136,7 +107,7 @@
         <div class="ma__input-group__item">
           <span class="ma__input-radio">
             <input
-              class="fsField required js-q1" id="field47054416_2" name="field47054416"
+              class="fsField required" id="field47054416_2" name="field47054416"
               type="radio"
               value="No"
               required
@@ -214,12 +185,9 @@
 
       {% if response %}
         <div class="ma__mass-feedback-form__form--user-response feedback-response feedback-negative">
-        {% if response %}
-          {% if responseRequired.inputGroup %}
+        {% if responseRequired %}
           <fieldset class="ma_feedback-fieldset user-response__contact" role="radiogroup">
             <legend>{{ response }} {{ org_name }}? {{ requiredIndicator }}</legend>
-
-            {# {% set inputGroup = responseRequired.inputGroup %} #}
             <div class="ma__input-group">
               <div class="ma__input-group__items ma__input-group__items--inline">
                 <div class="ma__input-group__item">
@@ -283,8 +251,6 @@
 
             </fieldset>{# .ma__mass-feedback-form__contact-form #}
           </fieldset>
-
-          {% endif %}
         {% else %}
           {% if noResponseDescription %}
           <div>
@@ -373,7 +339,6 @@
       {% set contact = content.field_feedback_com_link[0]['#url'] %}
     {% endif %}
     <div class="ma__mass-feedback-form ma__mass-feedback-form--success" id="feedback-success" data-mass-feedback-form>
-      {# <form class="ma__mass-feedback-form__form" method="post" novalidate="" action="#"> #}
       <div class="ma__mass-feedback-form__form">
         <h3>Thanks, your message has been sent to {{ org_name }}!</h3>
       {% if contact %}
@@ -693,42 +658,4 @@
       </span>
     </div>
   </div>
-
 </div>
-
-{# <script>
-const radioSelected = document.querySelector('.js-q1');
-const textareaElementsPositive = document.querySelectorAll('feedback-positive');
-const textareaElementsNegative = document.querySelectorAll('feedback-negative');
-// Show YES text area, hide NO text area.
-radioSelected.addEventListener('click', function(event){
-  // First click.
-  if (this.getAttribute('value') === 'yes') {
-    textareaElementsPositive.classList.add('is-open');
-    textareaElementsPositive.querySelector('.feedback-positive textarea').removeAttribute('disabled');
-  }
-  if (this.getAttribute('value') === 'no')
-  {
-    textareaElementsPositive.classList.add('is-open');
-  }
-  // Toggle
-    textareaElementsPositive.classList.toggle('is-open');
-});
-
-// Select all required fields.
-const requiredFields = document.querySelectorAll('fsField');
-// Submit button.
-const submitButton = document.querySelector('submitButton');
-// Validate required fields.
-submitButton.addEventListener('click', function(event){
-  for (const field of requiredFields) {
-    if (this.hasAttribute('checked')) {
-      console.log('We have a winner!');
-      break;
-    }
-    console.log('nothing checked');
-  }
-});
-// Mark invalid field.
-
-</script> #}
