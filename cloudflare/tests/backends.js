@@ -192,7 +192,7 @@ describe('WWW Backend', function() {
     ['https://www.mass.gov/alerts/foo', {cf: {cacheTtl: 60}}],
     ['https://www.mass.gov/jsonapi/node/alert?foo=bar', {cf: {cacheTtl: 60}}],
     // No override is expected for static assets.
-    ['https://www.mass.gov/foo.jpg', {cf: {}}],
+    ['https://www.mass.gov/foo.jpg', {cf: {cacheEverything: true}}],
     ['https://www.mass.gov/info-details/covid-19-cases-quarantine-and-monitoring', {cf: {cacheTtl: 60}}],
   ]
 
@@ -225,6 +225,12 @@ describe('WWW Backend', function() {
 
     expect(response).toEqual(response)
     expect(fetch.mock.calls.length).toBe(2);
+    // Make sure the initial subrequest sets cacheEverything to true so we cache
+    // html-like responses.
+    expect(fetch).toHaveBeenNthCalledWith(1, expect.anything(), expect.objectContaining({
+      cf: {cacheEverything: true}
+    }))
+
   });
   test('Should not allow infinite loops when handling media download redirects', async function() {
     global.fetch = jest.fn((request) => {
@@ -274,6 +280,6 @@ describe('WWW Backend', function() {
     })));
     const response = await www('TEST_TOKEN')(new Request('https://www.mass.gov/media/123/download'));
     expect(response.headers.get('cache-control')).toEqual('public, max-age=60');
-  })
+  });
 
 });

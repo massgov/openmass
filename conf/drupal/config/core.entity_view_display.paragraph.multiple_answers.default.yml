@@ -1,0 +1,39 @@
+uuid: 20d3e3f7-ac10-424e-95b8-da0364022f58
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.multiple_answers.field_answer_explainer
+    - field.field.paragraph.multiple_answers.field_answer_path
+    - field.field.paragraph.multiple_answers.field_answer_text
+    - paragraphs.paragraphs_type.multiple_answers
+id: paragraph.multiple_answers.default
+targetEntityType: paragraph
+bundle: multiple_answers
+mode: default
+content:
+  field_answer_explainer:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_answer_path:
+    weight: 1
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_answer_text:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }
