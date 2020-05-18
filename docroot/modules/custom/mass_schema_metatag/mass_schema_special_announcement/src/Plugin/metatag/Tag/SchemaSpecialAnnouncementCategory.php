@@ -5,7 +5,7 @@ namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 
 /**
- * Provides a plugin for the 'category' meta tag.
+ * Provides a plugin for the 'Category' meta tag.
  *
  * - 'id' should be a globally unique id.
  * - 'name' should match the Schema.org element name.

@@ -5,7 +5,7 @@ namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 use Drupal\mass_schema_metatag\Plugin\metatag\Tag\SchemaUrlWebContentBase;
 
 /**
- * Provides a plugin for the 'schema_special_announcement_disease_spread_statistics' meta tag.
+ * Provides a plugin for the 'DiseaseSpreadStatistics' meta tag.
  *
  * - 'id' should be a globally unique id.
  * - 'name' should match the Schema.org element name.

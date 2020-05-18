@@ -5,7 +5,7 @@ namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaDateBase;
 
 /**
- * Provides a plugin for the 'datePublished' meta tag.
+ * Provides a plugin for the 'DatePublished' meta tag.
  *
  * - 'id' should be a globally unique id.
  * - 'name' should match the Schema.org element name.

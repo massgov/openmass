@@ -5,7 +5,7 @@ namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 use Drupal\mass_schema_metatag\Plugin\metatag\Tag\SchemaUrlWebContentBase;
 
 /**
- * Provides a plugin for the 'schema_special_announcement_quarantine_guidelines' meta tag.
+ * Provides a plugin for the 'QuarantineGuidelines' meta tag.
  *
  * - 'id' should be a globally unique id.
  * - 'name' should match the Schema.org element name.

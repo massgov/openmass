@@ -7,7 +7,7 @@ use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaPlaceBase;
 use Drupal\schema_metatag\SchemaMetatagManager;
 
 /**
- * Provides a plugin for the 'SpatialCoverage' meta tag.
+ * Provides a plugin for the 'AnnouncementLocation' meta tag.
  *
  * @MetatagTag(
  *   id = "schema_special_announcement_location",

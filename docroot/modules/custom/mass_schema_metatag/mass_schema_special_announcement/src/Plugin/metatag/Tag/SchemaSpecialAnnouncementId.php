@@ -5,7 +5,7 @@ namespace Drupal\mass_schema_special_announcement\Plugin\metatag\Tag;
 use Drupal\schema_metatag\Plugin\metatag\Tag\SchemaNameBase;
 
 /**
- * Provides a plugin for the 'schema_special_announcement_id' meta tag.
+ * Provides a plugin for the 'Id' meta tag.
  *
  * @MetatagTag(
  *   id = "schema_special_announcement_id",
