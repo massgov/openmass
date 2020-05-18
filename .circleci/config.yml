@@ -251,9 +251,9 @@ jobs:
       - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
       # drupal-test-traits testing
-      - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom"'
+      #- run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom"'
       # Behat testing
-      - run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+      #- run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
