@@ -529,9 +529,9 @@ workflows:
               <<: *branch_ignore
       - backstop_dynamic:
           name: backstop-test
-          requires: [build]
+          requires: [build, test]
           reference: test
-          target: *branch_ignore
+          target: $CIRCLE_BRANCH
           filters:
             branches:
               <<: *branch_ignore
