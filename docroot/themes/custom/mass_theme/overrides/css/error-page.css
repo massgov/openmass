@@ -1,0 +1,33 @@
+/**
+ * Override css for the error pages to stop flickering.
+ */
+/* .ma__narrow-template--yellow:before {
+  background-color: rgba(246,197,27,0.15);
+}
+.ma__narrow-template:before {
+  content: "";
+  height: 200%;
+  position: absolute;
+  top: 0;
+  width: 200%;
+  z-index: -1;
+} */
+.ma__narrow-template--right:before {
+  /* -webkit-transform: rotate(-30deg);
+  -ms-transform: rotate(-30deg);
+  transform: rotate(-30deg);
+  -webkit-transform-origin: top left;
+  -ms-transform-origin: top left;
+  transform-origin: top left; */
+
+  -webkit-transform-style: preserve-3d;
+  -webkit-backface-visibility: hidden;
+}
+
+/* @media (min-width: 621px) {
+  .ma__narrow-template--right:before {
+    -webkit-animation: 3s narrow-template-bg-full-left;
+    animation: 3s narrow-template-bg-full-left;
+    left: calc(50% - 320px);
+  }
+} */
