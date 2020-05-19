@@ -6,6 +6,23 @@
   margin-top: 45px;
 }
 
+.feedback-steps .ma__textarea__wrapper::after {
+  content:'';
+}
+
+.feedback-steps .ma__textarea__wrapper div[aria-hidden] {
+  display: block;
+  line-height: 23.562px;
+  line-height: 1.625rem;
+  position: absolute;
+  bottom: 8px;
+  right: 5px;
+  top: auto;
+  font-size: 14.5px;
+  font-size: 1rem;
+  font-weight: 400;
+}
+
 .feedback-steps .ma__input-radio label.ma__input-radio__label::before {
   content: '';
   background: transparent;
@@ -167,32 +184,28 @@ button.ma__content-link--chevron::after {
 }
 
 div.ma__mass-feedback-form__fields,
-div.ma__mass-feedback-form__contact-form {
+.ma__mass-feedback-form__fields,
+.ma__mass-feedback-form__contact-form {
   background-color: inherit;
   max-height: 0vh;
   overflow: hidden;
   padding: 0.001em 1.25em;
   position: relative;
-  visibility: hidden;
+  display: none;
   z-index: 1;
   transition: max-height .2s ease-in-out, padding-top .2s ease-in-out, padding-bottom .2s ease-in-out;
 }
 
 div.ma__mass-feedback-form__fields.is-open,
-div.ma__mass-feedback-form__fields.is-open  {
-  visibility: visible;
+.ma__mass-feedback-form__fields.is-open,
+.ma__mass-feedback-form__contact-form.is-open  {
+  display: block;
 }
 
 .feedback-steps .is-open {
   max-height: 100vh;
   overflow: auto;
   padding: 1.25em;
-  visibility: visible;
+  display: block;
   background: transparent;
-}
-
-/* +++++ */
-  .hidden { display: block; }
-  .ma__ajax-pattern, .ma__header, .pre-content, .stacked-row-content {
-    display: none;
 }
