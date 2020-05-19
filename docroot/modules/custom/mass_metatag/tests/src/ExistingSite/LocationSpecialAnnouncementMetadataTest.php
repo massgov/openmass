@@ -6,6 +6,7 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\file\Entity\File;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
+use Symfony\Component\Serializer\NameConverter\CamelCaseToSnakeCaseNameConverter;
 
 /**
  * Location Special Announcement metadata tests.
@@ -42,7 +43,7 @@ class LocationSpecialAnnouncementMetadataTest extends MetadataTestCase {
       'field_bg_wide' => $image,
       'field_organizations' => [$org_node],
       'moderation_state' => 'published',
-      'field_location_metatags' => [
+      'field_location_metatags' => serialize(array_merge($this->getWebContentTestData(TRUE), [
         'schema_special_announcement_type' => 'SpecialAnnouncement',
         'schema_special_announcement_name' => 'test',
         'schema_special_announcement_text' => 'test',
@@ -62,70 +63,6 @@ class LocationSpecialAnnouncementMetadataTest extends MetadataTestCase {
             'postalCode' => '94043',
             'addressCountry' => 'USA',
           ],
-        ],
-        'schema_special_announcement_disease_spread_statistics' => [
-          '@type' => 'WebSite',
-          '@id' => 'http://schema.org',
-          'name' => 'test',
-          'url' => 'http://schema.org',
-          'sameAs' => 'http://schema.org',
-          'datePublished' => '2020-05-15',
-        ],
-        'schema_special_announcement_disease_prevention_info' => [
-          '@type' => 'WebPage',
-          '@id' => 'http://schema.org',
-          'name' => 'test',
-          'url' => 'http://schema.org',
-          'sameAs' => 'http://schema.org',
-          'datePublished' => '2020-05-15',
-        ],
-        'schema_special_announcement_getting_tested_info' => [
-          '@type' => 'WebPageElement',
-          '@id' => 'http://schema.org',
-          'name' => 'test',
-          'url' => 'http://schema.org',
-          'sameAs' => 'http://schema.org',
-          'datePublished' => '2020-05-15',
-        ],
-        'schema_special_announcement_government_benefits_info' => [
-          '@type' => 'WebContent',
-          '@id' => 'http://example.com',
-          'name' => 'test',
-          'url' => 'http://example.com',
-          'sameAs' => 'test',
-          'datePublished' => 'test',
-        ],
-        'schema_special_announcement_news_updates_and_guidelines' => [
-          '@type' => 'WebPage',
-          '@id' => 'test',
-          'name' => 'test',
-          'url' => 'test',
-          'sameAs' => 'test',
-          'datePublished' => '0000-00-00',
-        ],
-        'schema_special_announcement_public_transport_closures_info' => [
-          '@type' => 'WebPageElement',
-          '@id' => 'http://schema.org',
-          'name' => 'TEST',
-          'url' => 'http://schema.org',
-          'sameAs' => 'TEST',
-          'datePublished' => '0000-00-00',
-        ],
-        'schema_special_announcement_quarantine_guidelines' => [
-          '@type' => 'WebSite',
-          '@id' => 'http://schema.org',
-          'name' => 'http://url.com',
-          'url' => 'test',
-          'sameAs' => 'test',
-          'datePublished' => '0000-00-00',
-        ],
-        'schema_special_announcement_school_closures_info' => [
-          '@type' => 'WebSite',
-          '@id' => 'http://schema.org',
-          'name' => 'test',
-          'url' => 'http://schema.org',
-          'sameAs' => 'http://schema.org',
-          'datePublished' => '2020-05-15',
         ],
         'schema_special_announcement_spatial_coverage' => [
           '@type' => 'State',
@@ -149,15 +86,7 @@ class LocationSpecialAnnouncementMetadataTest extends MetadataTestCase {
             'name' => 'USA',
           ],
         ],
-        'schema_special_announcement_travel_bans' => [
-          '@type' => 'WebSite',
-          '@id' => 'http://schema.org',
-          'name' => 'http://url.com',
-          'url' => 'test',
-          'sameAs' => 'test',
-          'datePublished' => '0000-00-00',
-        ],
-      ],
+      ])),
     ]);
 
     return $node;
@@ -188,7 +117,7 @@ class LocationSpecialAnnouncementMetadataTest extends MetadataTestCase {
     $url = $entity->toUrl('canonical', ['absolute' => TRUE])->toString();
 
     return array_merge(parent::getExpectedMetadata($entity), [
-      $url . '#specialannouncement' => [
+      $url . '#specialannouncement' => array_merge($this->getWebContentTestData(), [
         '@context' => 'https://schema.org',
         '@type' => 'SpecialAnnouncement',
         '@id' => $url . '#specialannouncement',
@@ -210,70 +139,6 @@ class LocationSpecialAnnouncementMetadataTest extends MetadataTestCase {
             'postalCode' => '94043',
             'addressCountry' => 'USA',
           ],
-        ],
-        'diseasePreventionInfo' => [
-          '@type' => 'WebPage',
-          '@id' => 'http://schema.org',
-          'name' => 'test',
-          'url' => 'http://schema.org',
-          'sameAs' => 'http://schema.org',
-          'datePublished' => '2020-05-15',
-        ],
-        'diseaseSpreadStatistics' => [
-          '@type' => 'WebSite',
-          '@id' => 'http://schema.org',
-          'name' => 'test',
-          'url' => 'http://schema.org',
-          'sameAs' => 'http://schema.org',
-          'datePublished' => '2020-05-15',
-        ],
-        'governmentBenefitsInfo' => [
-          '@type' => 'WebContent',
-          '@id' => 'http://example.com',
-          'name' => 'test',
-          'url' => 'http://example.com',
-          'sameAs' => 'test',
-          'datePublished' => 'test',
-        ],
-        'gettingTestedInfo' => [
-          '@type' => 'WebPageElement',
-          '@id' => 'http://schema.org',
-          'name' => 'test',
-          'url' => 'http://schema.org',
-          'sameAs' => 'http://schema.org',
-          'datePublished' => '2020-05-15',
-        ],
-        'newsUpdatesAndGuidelines' => [
-          '@type' => 'WebPage',
-          '@id' => 'test',
-          'name' => 'test',
-          'url' => 'test',
-          'sameAs' => 'test',
-          'datePublished' => '0000-00-00',
-        ],
-        'publicTransportClosuresInfo' => [
-          '@type' => 'WebPageElement',
-          '@id' => 'http://schema.org',
-          'name' => 'TEST',
-          'url' => 'http://schema.org',
-          'sameAs' => 'TEST',
-          'datePublished' => '0000-00-00',
-        ],
-        'quarantineGuidelines' => [
-          '@type' => 'WebSite',
-          '@id' => 'http://schema.org',
-          'name' => 'http://url.com',
-          'url' => 'test',
-          'sameAs' => 'test',
-          'datePublished' => '0000-00-00',
-        ],
-        'schoolClosuresInfo' => [
-          '@type' => 'WebSite',
-          '@id' => 'http://schema.org',
-          'name' => 'test',
-          'url' => 'http://schema.org',
-          'sameAs' => 'http://schema.org',
-          'datePublished' => '2020-05-15',
         ],
         'spatialCoverage' => [
           '@type' => 'State',
@@ -297,16 +162,46 @@ class LocationSpecialAnnouncementMetadataTest extends MetadataTestCase {
             'name' => 'USA',
           ],
         ],
-        'travelBans' => [
-          '@type' => 'WebSite',
-          '@id' => 'http://schema.org',
-          'name' => 'http://url.com',
-          'url' => 'test',
-          'sameAs' => 'test',
-          'datePublished' => '0000-00-00',
-        ],
-      ],
+      ]),
     ]);
+  }
+
+  /**
+   * Function to populate test WebContent metadata.
+   */
+  private function getWebContentTestData($snake_case = FALSE) {
+    $webcontent_metadata = [];
+
+    $tags = [
+      'diseasePreventionInfo' => 'WebContent',
+      'diseaseSpreadStatistics' => 'WebPage',
+      'governmentBenefitsInfo' => 'WebPageElement',
+      'gettingTestedInfo' => 'WebSite',
+      'newsUpdatesAndGuidelines' => 'WebContent',
+      'publicTransportClosuresInfo' => 'WebPage',
+      'quarantineGuidelines' => 'WebPageElement',
+      'schoolClosuresInfo' => 'WebSite',
+      'travelBans' => 'WebContent',
+    ];
+
+    foreach ($tags as $tag => $webcontent_type) {
+      $tag_key = $tag;
+      if ($snake_case === TRUE) {
+        $name_converter = new CamelCaseToSnakeCaseNameConverter();
+        $tag_key = 'schema_special_announcement_' . $name_converter->normalize($tag);
+      }
+
+      $webcontent_metadata[$tag_key] = [
+        '@type' => $webcontent_type,
+        '@id' => 'http://schema.org/' . $tag,
+        'name' => 'http://schema.org/' . $tag,
+        'url' => 'http://schema.org/' . $tag,
+        'sameAs' => 'http://schema.org/' . $tag,
+        'datePublished' => '0000-00-00',
+      ];
+    }
+
+    return $webcontent_metadata;
   }
 
 }
