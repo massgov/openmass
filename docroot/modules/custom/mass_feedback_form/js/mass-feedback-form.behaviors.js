@@ -186,6 +186,9 @@
       }
 
       // Remaining character count.
+      // Need to set up separate presentations for sighted and screen reader users
+      // since aria-live is announced only container which contains a change.
+      // It doesn't announce nested containers to provide context.
       $('textarea[maxlength]').each(function(){
         const $el = $(this);
         const maxlength = $el.attr('maxlength');
@@ -199,8 +202,6 @@
         let randomId = Math.floor(Math.random() * 90000) + 10000;
 
         // Add a container for remaining char info.
-        // $el.parent().append('<div role="region" aria-live="polite" class="remainingChar"><span class="remainChar"></span><span class="ma__visually-hidden">characters remaining</span>/<span class="ma__visually-hidden">max character </span><span class="maxChar"></span></div>');
-
         $el.parent().append(`${message}<span role="region" aria-live="polite" class="remainingChar ma__visually-hidden">${remaining} characters remaining</span>`);
 
         // Associate text area and remaining charinfo container for aria-live region.
@@ -208,7 +209,6 @@
         $el.siblings('.remainingChar').attr('id', randomId);
 
         $el.next('.remainingChar').find('.remainChar').text(remaining);
-        // $el.next('.remainingChar').find('.maxChar').text(maxlength);
 
         $el.on('keyup mouseup blur', function(){
           remaining = maxlength - $el.val().length;
