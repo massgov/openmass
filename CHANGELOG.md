@@ -3,6 +3,23 @@
 ### Changed
   - DP-18750: Edit a meaningless char in a CSS file to regenerate URL.
 
+## [0.244.0] - May 19, 2020
+
+### Fixed
+  - DP-13022: Fix Danger check for a PR number.
+  - DP-18795: Removing robots disallow for doc top level folders.
+  - DP-18556: Fixed 500 error on taxonomy term pages.
+  
+### Added
+  - DP-18678: Added submodule for Schema.org SpecialAnnouncement.
+  
+### Changed
+  - DP-18790: Updated Mayflower version to 9.50.0.
+      - DP-18543: Update jquery from 3.4.0 to 3.5.1. (MF)
+      - DP-18591: Consolidate font weights into variables. (MF)
+  
+
+
 ## [0.243.0] - May 12, 2020
 
 ### Added
