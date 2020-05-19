@@ -529,7 +529,7 @@ workflows:
               <<: *branch_ignore
       - backstop_dynamic:
           name: backstop-dynamic-test
-          requires: [build, test]
+          requires: [build]
           reference: test
           target: circleci
           filters:
