@@ -61,8 +61,11 @@
     <div class="page-content">
         {% for i in range(1, numOfSections) %}
           {% if sections[i]['title'] %}
-            {% set richText = sections[i]['title'] %}
-            {% include "@organisms/by-author/rich-text.twig" %}
+            <div class="ma__rich-text">
+              {% include "@atoms/04-headings/comp-heading.twig" with {
+                'compHeading': sections[i]['title']['compHeading']
+              } %}
+            </div>
           {% endif %}
           {% if sections[i]['richText'] %}
             {% set richText = sections[i]['richText'] %}

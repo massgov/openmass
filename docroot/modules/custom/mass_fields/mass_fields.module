@@ -347,7 +347,8 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     foreach ($pagers as $pager) {
       $cache_tags = [];
       $link[$pager] = NULL;
-      if ($entity->hasField($pager) && $link_value = $entity->get($pager)->getValue()) {
+      if ($entity->hasField($pager) && !$entity->get($pager)->isEmpty()) {
+        $link_value = $entity->get($pager)->getValue();
         $cache_tags = array_merge($link_value[0]['cache_tags']);
         $link[$pager] = [
           'url' => Url::fromUri($link_value[0]['uri']),

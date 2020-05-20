@@ -51,8 +51,11 @@
       {% include "@atoms/09-media/iframe.twig" %}
     {% endif %}
     {% if pageContent[i]['title'] %}
-      {% set richText = pageContent[i]['title'] %}
-      {% include "@organisms/by-author/rich-text.twig" %}
+      <div class="ma__rich-text">
+        {% include "@atoms/04-headings/comp-heading.twig" with {
+          'compHeading': pageContent[i]['title']['compHeading']
+        } %}
+      </div>
     {% endif %}
     {% if pageContent[i]['richText'] %}
       {% set richText = pageContent[i]['richText'] %}
