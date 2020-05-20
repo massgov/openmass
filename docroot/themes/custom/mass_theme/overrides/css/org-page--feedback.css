@@ -28,15 +28,24 @@ div.ma_feedback-fieldset {
   background: transparent;
 }
 
+.feedback-steps .ma__input-radio__label {
+ padding-top: 3px;
+ padding-bottom: 3px;
+}
+
 .feedback-steps .ma__input-radio__label::after {
   content: '';
   position: absolute;
   display: inline-block;
-  left: 9px;
-  top: 7px;
+  left: 8px;
+  top: 8px;
   border-radius: 50%;
   width: 8px;
   height: 8px;
+}
+
+.feedback-steps .user-response__contact .ma__input-radio__label::after {
+  top: 7px;
 }
 
 .feedback-steps .ma__input-radio input:checked + .ma__input-radio__label::after {
@@ -54,7 +63,7 @@ div.ma_feedback-fieldset {
 }
 
 .ma__mass-feedback-form__form--user-response div {
-  margin-bottom: .25em;
+  /* margin-bottom: .25em; */
   padding: 0;
   font-weight: 500;
 }
@@ -203,8 +212,35 @@ div.ma__mass-feedback-form__fields.is-open,
 
 .feedback-steps .is-open {
   max-height: 100vh;
-  overflow: auto;
+  overflow: hidden;
   padding: 1.25em;
   display: block;
   background: transparent;
+}
+
+/* #feedback-step-1 */
+.feedback-steps .ma__mass-feedback-form__fields,
+.ma__mass-feedback-form__form--user-response .ma__mass-feedback-form__contact-form {
+  padding: 0;
+}
+
+.feedback-steps .ma__mass-feedback-form__form fieldset.user-response__contact {
+  margin-top: 0;
+}
+
+.ma__mass-feedback-form__form--user-response .ma__input-group {
+  margin-top: 15px;
+}
+
+.ma__mass-feedback-form__form--user-response .ma__mass-feedback-form__contact-form {
+  margin-top: 20px;
+}
+
+.ma__mass-feedback-form__contact-form .response-info {
+  font-weight: normal;
+  margin-bottom: 1rem;
+}
+
+.ma__mass-feedback-form__form--submit-wrapper {
+  margin-top: 45px;
 }
