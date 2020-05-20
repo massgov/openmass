@@ -37,54 +37,57 @@ class DocumentPagesUrlGenerator extends UrlGeneratorBase {
     $utility_service = \Drupal::service('mass_metatag.utilities');
 
     $files = $entity->get('field_upload_file')->referencedEntities();
-    foreach ($files as $file) {
-      // NOTE: We must pass URL object of the file url in our dataset, so that simple_sitemap module can apply baseurl
-      // config settings to it.
-      $file_url = $file->url();
-      $file_url_object = Url::fromUri($file_url);
-      if ($file_url) {
-        $data = [
-          'url' => $file_url_object,
-          'lastmod' => date_iso8601($entity->getChangedTime()),
-          'priority' => 0.5,
-          'changefreq' => 'daily',
-        ];
-        if ($start = $entity->get('field_start_date')->date) {
-          $data['pagemap']['metatags'][] = [
-            'name' => 'mg_date',
-            'value' => $start->format('Ymd'),
+    if ($entity->getEntityTypeId() == 'media') {
+      foreach ($files as $file) {
+        // NOTE: We must pass URL object of the file url in our dataset, so that simple_sitemap module can apply baseurl
+        // config settings to it.
+        $file_url = $file->url();
+        if ($file_url) {
+          $media_url = $entity->url();
+          $media_url_object = Url::fromUserInput($media_url . '/download', ['absolute' => TRUE]);
+          $data = [
+            'url' => $media_url_object,
+            'lastmod' => date_iso8601($entity->getChangedTime()),
+            'priority' => 0.5,
+            'changefreq' => 'daily',
           ];
-        }
-        // Add document category term name if present.
-        if ($category = $entity->get('field_category')) {
-          if ($term = $category->entity) {
+          if ($start = $entity->get('field_start_date')->date) {
             $data['pagemap']['metatags'][] = [
-              'name' => 'category',
-              'value' => $term->label(),
+              'name' => 'mg_date',
+              'value' => $start->format('Ymd'),
             ];
           }
-        }
-        if (isset($entity->field_organizations)) {
-          /** @var \Drupal\node\Entity\Node[] $org_nodes */
-          $org_nodes = $entity->field_organizations->referencedEntities();
-          $org_slugs = [];
-          foreach ($org_nodes as $org) {
-            $org_slugs += str_replace("-", "", $utility_service->getAllOrgsFromNode($org));
+          // Add document category term name if present.
+          if ($category = $entity->get('field_category')) {
+            if ($term = $category->entity) {
+              $data['pagemap']['metatags'][] = [
+                'name' => 'category',
+                'value' => $term->label(),
+              ];
+            }
           }
-          if (!empty($org_slugs)) {
-            $data['pagemap']['metatags'][] = [
-              'name' => 'mg_organization',
-              'value' => implode(',', $org_slugs),
-            ];
+          if (isset($entity->field_organizations)) {
+            /** @var \Drupal\node\Entity\Node[] $org_nodes */
+            $org_nodes = $entity->field_organizations->referencedEntities();
+            $org_slugs = [];
+            foreach ($org_nodes as $org) {
+              $org_slugs += str_replace("-", "", $utility_service->getAllOrgsFromNode($org));
+            }
+            if (!empty($org_slugs)) {
+              $data['pagemap']['metatags'][] = [
+                'name' => 'mg_organization',
+                'value' => implode(',', $org_slugs),
+              ];
+            }
           }
-        }
-        // Associate a file with its corresponding Media Entity title.
-        if ($field_title = $entity->get('field_title')) {
-          if ($title = $field_title->getValue()) {
-            $data['pagemap']['metatags'][] = [
-              'name' => 'mg_title',
-              'value' => $title[0]['value'],
-            ];
+          // Associate a file with its corresponding Media Entity title.
+          if ($field_title = $entity->get('field_title')) {
+            if ($title = $field_title->getValue()) {
+              $data['pagemap']['metatags'][] = [
+                'name' => 'mg_title',
+                'value' => $title[0]['value'],
+              ];
+            }
           }
         }
       }
