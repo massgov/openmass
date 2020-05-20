@@ -373,7 +373,12 @@ jobs:
           path: /home/circleci/code/backstop
 
   # Similar to Backstop job except it takes reference parameter as well.
-  backstop_hardcoded:
+  backstop_dynamic:
+    parameters:
+      reference:
+        type: string
+      target:
+        type: string
     working_directory: /home/circleci/code
     docker:
       # Need to use docker image for these steps.
@@ -383,8 +388,8 @@ jobs:
       - setup_remote_docker
       - run: docker-compose up --no-start backstop
       - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
-      - run: docker-compose run backstop reference --target=test --list=all
-      - run: docker-compose run backstop test --target=prod --list=all
+      - run: docker-compose run backstop reference --target=<< parameters.reference >> --list=all
+      - run: docker-compose run backstop test --target=<< parameters.target >> --list=all
       - run:
           command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
           when: always
@@ -518,12 +523,6 @@ workflows:
             branches:
               <<: *branch_ignore
       - cloudflare:
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
-      - backstop_hardcoded:
-          name: backstop-dynamic-test
           requires: [build]
           filters:
             branches:
@@ -871,9 +870,11 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - backstop_hardcoded:
+      - backstop_dynamic:
           name: backstop-prod
           requires: [deploy-tag-prod-acquia]
+          target: prod
+          reference: test
           filters:
             branches:
               ignore: /.*/
