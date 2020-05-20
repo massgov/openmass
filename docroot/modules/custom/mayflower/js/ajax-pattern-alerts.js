@@ -4,7 +4,7 @@
  *
  * JSON RESPONSE
  * /jsonapi/node/alert?
- * page[limit]=250
+ * page[limit]=300
  * &sort=-changed
  * &include=field_alert
  * &filter[status][value]=1
