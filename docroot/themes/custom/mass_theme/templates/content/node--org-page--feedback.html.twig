@@ -67,270 +67,271 @@
     "info": ""
   } %}
 {% endif %}
-
-<div class="feedback-steps">
-  <span id="feedback"></span>
-  <div id="feedback-step-1" class="feedback-step" data-feedback-next="feedback-step-2">
-
 {% set requiredIndicator %}
  <span aria-hidden="true"> * </span><span class="visually-hidden">required</span>
 {% endset %}
 
-<div class="ma__mass-feedback-form">
-  <h2 class="visually-hidden">Feedback</h2>
-  <form class="ma__mass-feedback-form__form" method="post" novalidate action="https://www.formstack.com/forms/index.php" id="2521317">
+<div class="feedback-steps">
+  <span id="feedback"></span>
+  <div id="feedback-step-1" class="feedback-step" data-feedback-next="feedback-step-2">
+    <div class="ma__mass-feedback-form">
+      <h2 class="visually-hidden">Feedback</h2>
+      <form class="ma__mass-feedback-form__form" method="post" novalidate action="https://www.formstack.com/forms/index.php" id="2521317">
+    {# Q1 #}
+        <fieldset class="ma_feedback-fieldset feedback-load" role="radiogroup">
+          <legend>Did you find what you were looking for on this webpage?
+          {{ requiredIndicator }}</legend>
+      {# Q1: radio buttons #}
+          <div class="ma__input-group__items ma__input-group__items--inline">
+            <div class="ma__input-group__item">
+              <span class="ma__input-radio">
+                <input
+                  class="fsField required"
+                  id="field47054416_1"
+                  name="field47054416"
+                  type="radio"
+                  value="Yes"
+                  required
+                  aria-required="true"
+                  aria-invalid="false"
+                  />
+                <label
+                class="fsOptionLabel ma__input-radio__label"
+                for="field47054416_1">Yes</label>
+              </span>
+            </div>
 
-    <fieldset class="ma_feedback-fieldset feedback-load" role="radiogroup">
-      <legend>Did you find what you were looking for on this webpage?
-      {{ requiredIndicator }}</legend>
+            <div class="ma__input-group__item">
+              <span class="ma__input-radio">
+                <input
+                  class="fsField required" id="field47054416_2" name="field47054416"
+                  type="radio"
+                  value="No"
+                  required
+                  aria-required="true"
+                  aria-invalid="false"
+                  />
 
-{# Q1: radio buttons #}
-      <div class="ma__input-group__items ma__input-group__items--inline">
-        <div class="ma__input-group__item">
-          <span class="ma__input-radio">
-            <input
-              class="fsField required"
-              id="field47054416_1"
-              name="field47054416"
-              type="radio"
-              value="Yes"
-              required
-              aria-required="true"
-              aria-invalid="false"
-              />
-            <label
-            class="fsOptionLabel ma__input-radio__label"
-            for="field47054416_1">Yes</label>
-          </span>
-        </div>
-
-        <div class="ma__input-group__item">
-          <span class="ma__input-radio">
-            <input
-              class="fsField required" id="field47054416_2" name="field47054416"
-              type="radio"
-              value="No"
-              required
-              aria-required="true"
-              aria-invalid="false"
-              />
-
-            <label class="fsOptionLabel ma__input-radio__label"
-            for="field47054416_2">No</label>
-          </span>
-        </div>
-      </div>
-{# END Q1 #}
-    </fieldset>
-
-    <div class="ma__mass-feedback-form__fields">
-      <div class="ma_feedback-fieldset">
-
-{# Q2: response textarea #}
-  {# label-YES #}
-        <label class="feedback-response feedback-positive" for="field52940022">
-          Do you have anything else to tell us?
-        </label>
-  {# label-NO #}
-        <label class="feedback-response feedback-negative">
-          Please tell us what you were looking for.{{ requiredIndicator }}
-        </label>
-
-        <div id="note1" class="ma__disclaimer" aria-hidden="true">
-          <p>We will use this information to improve the site.</p>
-        </div>
-
-      {# report message #}
-      {% if reportMessage %}
-        <section class="ma__in-page-alert js-in-page-alert" role="alert">
-          <div class="ma__in-page-alert__container">
-            <span class="ma__in-page-alert__message">
-              {% if reportMessage.href %}
-                {% set decorativeLink = reportMessage %}
-                {% include "@atoms/decorative-link.twig" %}
-              {% else %}
-                {{ reportMessage.text }}
-              {% endif %}
-            </span>
+                <label class="fsOptionLabel ma__input-radio__label"
+                for="field47054416_2">No</label>
+              </span>
+            </div>
           </div>
-          <button class="ma__in-page-alert__hide js-in-page-alert-link"
-            title="hide alert">+</button>
-        </section>
-      {% endif %}
+      {# END Q1 radio buttons #}
+        </fieldset>
+    {# END Q1 #}
 
-{# textarea-YES #}
-        <div class="feedback-response feedback-positive">
-          <textarea id="field52940022"
-                class="fsField"
-                name="field52940022"
-                maxlength="5000"
-                aria-describedby="note1 note2"></textarea>
-        </div>
+    {# Q2 #}
+        <div class="ma__mass-feedback-form__fields">
+          <div class="ma_feedback-fieldset">
 
-{# textarea-NO #}
-        <div class="feedback-response feedback-negative">
-          <textarea id="field47054414"
-                class="fsField required"
-                name="field47054414"
-                required
-                aria-required="true"
-                aria-invalid="false"
-                maxlength="5000"
-                aria-describedby="note1 note2"></textarea>
-        </div>
+      {# Q2: response textarea #}
+        {# label-YES #}
+            <label class="feedback-response feedback-positive" for="field52940022">
+              Do you have anything else to tell us?
+            </label>
+        {# label-NO #}
+            <label class="feedback-response feedback-negative">
+              Please tell us what you were looking for.{{ requiredIndicator }}
+            </label>
 
-        <div id="note2" class="ma__helper-text" aria-hidden="true">
-          <p>Do not include sensitive information, such as Social Security or bank account numbers.</p>
-        </div>
+            <div id="note1" class="ma__disclaimer" aria-hidden="true">
+              <p>We will use this information to improve the site.</p>
+            </div>
 
-      {% if response %}
-        <div class="ma__mass-feedback-form__form--user-response feedback-response feedback-negative">
-        {% if responseRequired %}
-          <fieldset class="ma_feedback-fieldset user-response__contact" role="radiogroup">
-            <legend>{{ response }} {{ org_name }}? {{ requiredIndicator }}</legend>
-            <div class="ma__input-group">
-              <div class="ma__input-group__items ma__input-group__items--inline">
-                <div class="ma__input-group__item">
-                  <span class="ma__input-radio">
-                    <input
-                      class="fsField required"
-                      id="field70611737_1"
-                      name="field70611737"
-                      type="radio"
-                      value="Yes"
-                      required
-                      aria-required="true"
-                      aria-invalid="false"
-                      />
-                    <label
-                    class="fsOptionLabel ma__input-radio__label"
-                    for="field70611737_1">Yes</label>
-                  </span>
-                </div>
-
-                <div class="ma__input-group__item">
-                  <span class="ma__input-radio">
-                    <input
-                      class="fsField required"
-                      id="field70611737_2"
-                      name="field70611737"
-                      type="radio"
-                      value="No"
-                      required
-                      aria-required="true"
-                      aria-invalid="false"
-                      />
-                    <label
-                    class="fsOptionLabel ma__input-radio__label"
-                    for="field70611737_2">No</label>
-                  </span>
-                </div>
-              </div>{# .ma__input-group__items  #}
-            </div>{# .ma__input-group #}
-
-            <fieldset class="ma__mass-feedback-form__contact-form">
-              {% if responseRequired.responseDescription %}
-                <legend class="response-info">{{ responseRequired.responseDescription }}</legend>
-              {% endif %}
-
-              <div class="ma__mass-feedback-form__contact-form--items">
-              {% for input in contactInputs %}
-                <div class="contact-form--item">
-                  <label
-                    for="{{ input.id }}"
-                    class="ma__label">{{input.labelText}}</label>
-                  <input
-                    class="ma__input"
-                    name="{{ input.name }}"
-                    id="{{ input.id }}"
-                    type="{{ input.type }}"
-                    data-type="{{ input.type }}" />
-                </div>{# .contact-form--item #}
-              {% endfor %}
-              </div>{# .ma__mass-feedback-form__contact-form--items #}
-
-            </fieldset>{# .ma__mass-feedback-form__contact-form #}
-          </fieldset>
-        {% else %}
-          {% if noResponseDescription %}
-          <div>
-            {{ response }}
-            <button type="button" class="ma__content-link--chevron form--no-response" id="info-1" aria-expanded="false">Why? </button>
-          </div>
-          <p class="no-response-info" aria-labelledby="info-1">{{ noResponseDescription }}</p>
+          {# report message #}
+          {% if reportMessage %}
+            <section class="ma__in-page-alert js-in-page-alert" role="alert">
+              <div class="ma__in-page-alert__container">
+                <span class="ma__in-page-alert__message">
+                  {% if reportMessage.href %}
+                    {% set decorativeLink = reportMessage %}
+                    {% include "@atoms/decorative-link.twig" %}
+                  {% else %}
+                    {{ reportMessage.text }}
+                  {% endif %}
+                </span>
+              </div>
+              <button class="ma__in-page-alert__hide js-in-page-alert-link"
+                title="hide alert">+</button>
+            </section>
           {% endif %}
-        {% endif %}
+
+      {# textarea-YES #}
+            <div class="feedback-response feedback-positive">
+              <textarea id="field52940022"
+                    class="fsField"
+                    name="field52940022"
+                    maxlength="5000"
+                    aria-describedby="note1 note2"></textarea>
+            </div>{# feedback-response feedback-positive #}
+
+      {# textarea-NO #}
+            <div class="feedback-response feedback-negative">
+              <textarea id="field47054414"
+                    class="fsField required"
+                    name="field47054414"
+                    required
+                    aria-required="true"
+                    aria-invalid="false"
+                    maxlength="5000"
+                    aria-describedby="note1 note2"></textarea>
+            </div>{# feedback-response feedback-negative #}
+
+            <div id="note2" class="ma__helper-text" aria-hidden="true">
+              <p>Do not include sensitive information, such as Social Security or bank account numbers.</p>
+            </div>
+
+          {% if response %}
+            <div class="ma__mass-feedback-form__form--user-response feedback-response feedback-negative">
+            {% if responseRequired %}
+              <fieldset class="ma_feedback-fieldset user-response__contact" role="radiogroup">
+                <legend>{{ response }} {{ org_name }}? {{ requiredIndicator }}</legend>
+                <div class="ma__input-group">
+                  <div class="ma__input-group__items ma__input-group__items--inline">
+                    <div class="ma__input-group__item">
+                      <span class="ma__input-radio">
+                        <input
+                          class="fsField required"
+                          id="field70611737_1"
+                          name="field70611737"
+                          type="radio"
+                          value="Yes"
+                          required
+                          aria-required="true"
+                          aria-invalid="false"
+                          />
+                        <label
+                        class="fsOptionLabel ma__input-radio__label"
+                        for="field70611737_1">Yes</label>
+                      </span>
+                    </div>{# ma__input-group__item #}
+
+                    <div class="ma__input-group__item">
+                      <span class="ma__input-radio">
+                        <input
+                          class="fsField required"
+                          id="field70611737_2"
+                          name="field70611737"
+                          type="radio"
+                          value="No"
+                          required
+                          aria-required="true"
+                          aria-invalid="false"
+                          />
+                        <label
+                        class="fsOptionLabel ma__input-radio__label"
+                        for="field70611737_2">No</label>
+                      </span>
+                    </div>{# ma__input-group__item #}
+                  </div>{# .ma__input-group__items  #}
+                </div>{# .ma__input-group #}
+
+                <fieldset class="ma__mass-feedback-form__contact-form">
+                  {% if responseRequired.responseDescription %}
+                    <legend class="response-info">{{ responseRequired.responseDescription }}</legend>
+                  {% endif %}
+
+                  <div class="ma__mass-feedback-form__contact-form--items">
+                  {% for input in contactInputs %}
+                    <div class="contact-form--item">
+                      <label
+                        for="{{ input.id }}"
+                        class="ma__label">{{input.labelText}}</label>
+                      <input
+                        class="ma__input"
+                        name="{{ input.name }}"
+                        id="{{ input.id }}"
+                        type="{{ input.type }}"
+                        data-type="{{ input.type }}" />
+                    </div>{# .contact-form--item #}
+                  {% endfor %}
+                  </div>{# .ma__mass-feedback-form__contact-form--items #}
+
+                </fieldset>{# .ma__mass-feedback-form__contact-form #}
+              </fieldset>{# .ma_feedback-fieldset user-response__contact #}
+            {% else %}
+              {% if noResponseDescription %}
+                <div>
+                  {{ response }}
+                  <button type="button" class="ma__content-link--chevron form--no-response" id="info-1" aria-expanded="false">Why? </button>
+                </div>
+                <p class="no-response-info" aria-labelledby="info-1">{{ noResponseDescription }}</p>
+              {% endif %}
+            {% endif %}
+            </div>
+          {% endif %}
+
+          </div>{# .ma_feedback-fieldset #}
+        </div>{# .ma__mass-feedback-form__fields #}
+    {# END Q2 #}
+
+        <div class="ma_feedback-fieldset ma__mass-feedback-form__form--submit-wrapper">
+          <input class="submitButton ma__button ma__button--small" type="submit" value="Send Feedback" />
         </div>
-      {% endif %}
 
-      </div>
-    </div>{# .ma__mass-feedback-form__form--user-response feedback-response #}
-
-    <div class="ma_feedback-fieldset ma__mass-feedback-form__form--submit-wrapper">
-      <input class="submitButton ma__button ma__button--small" type="submit" value="Send Feedback" />
-    </div>
-
-    {% set hiddenElements = [
-      {
-        "id": "field47056299",
-        "name": "field47056299",
-        "value": url('<current>'),
-        "class": "fsField"
-      },
-      {
-        "id": "field58154059",
-        "name": "field58154059",
-        "value": "entityId",
-        "class": "fsField data-layer-substitute"
-      },
-      {
-        "id": "field57432673",
-        "name": "field57432673",
-        "value": "entityId",
-        "class": "fsField data-layer-substitute"
-      },
-      {
-        "id": "field68798989",
-        "name": "field68798989",
-        "value": "uniqueId",
-        "class": "fsField unique-id-substitute"
-      },
-      {
-        "id": "form2521317",
-        "name": "form",
-        "value": "2521317"
-      },
-      {
-        "id": "viewkeyvx39GBYJhi",
-        "name": "viewkey",
-        "value": "vx39GBYJhi"
-      },
-      {
-        "id": "hidden_fields2521317",
-        "name": "hidden_fields",
-        "value": ""
-      },
-      {
-        "id": "submit2521317",
-        "name": "_submit",
-        "value": "1"
-      },
-      {
-        "id": "style_version2521317",
-        "name": "style_version",
-        "value": "3"
-      },
-      {
-        "id": "viewparam",
-        "name": "viewparam",
-        "value": "524744"
-      }
-    ] %}
-    {% for element in hiddenElements %}
-      <input type="hidden" id="{{ element.id }}" name="{{ element.name }}" value="{{ element.value }}" class="{{ element.class }}" />
-    {% endfor %}
-  </form>
-</div>
+        {% set hiddenElements = [
+          {
+            "id": "field47056299",
+            "name": "field47056299",
+            "value": url('<current>'),
+            "class": "fsField"
+          },
+          {
+            "id": "field58154059",
+            "name": "field58154059",
+            "value": "entityId",
+            "class": "fsField data-layer-substitute"
+          },
+          {
+            "id": "field57432673",
+            "name": "field57432673",
+            "value": "entityId",
+            "class": "fsField data-layer-substitute"
+          },
+          {
+            "id": "field68798989",
+            "name": "field68798989",
+            "value": "uniqueId",
+            "class": "fsField unique-id-substitute"
+          },
+          {
+            "id": "form2521317",
+            "name": "form",
+            "value": "2521317"
+          },
+          {
+            "id": "viewkeyvx39GBYJhi",
+            "name": "viewkey",
+            "value": "vx39GBYJhi"
+          },
+          {
+            "id": "hidden_fields2521317",
+            "name": "hidden_fields",
+            "value": ""
+          },
+          {
+            "id": "submit2521317",
+            "name": "_submit",
+            "value": "1"
+          },
+          {
+            "id": "style_version2521317",
+            "name": "style_version",
+            "value": "3"
+          },
+          {
+            "id": "viewparam",
+            "name": "viewparam",
+            "value": "524744"
+          }
+        ] %}
+        {% for element in hiddenElements %}
+          <input type="hidden" id="{{ element.id }}" name="{{ element.name }}" value="{{ element.value }}" class="{{ element.class }}" />
+        {% endfor %}
+      </form>{# .ma__mass-feedback-form__form #}
+    </div>{# .ma__mass-feedback-form #}
+  </div>{# #feedback-step-1 #}
 
 {# STEP 2 #}
   <div id="feedback-step-2" class="feedback-step hidden" data-feedback-next="feedback-step-3">
@@ -350,9 +351,10 @@
 
         <div class="ma__mass-feedback-form__form--submit-wrapper">
           <input class="submitButton ma__button ma__button--small" type="submit" value="Start Survey"  aria-describedby="additional_feedback" />
-        </div>
-    </div>
-  </div>
+        </div>{# .ma__mass-feedback-form__form--submit-wrapper #}
+      </div>{# .ma__mass-feedback-form__form #}
+    </div>{# .ma__mass-feedback-form #}
+  </div>{# .feedback-step-2 #}
 
 {# STEP 3 #}
   <div id="feedback-step-3" class="feedback-step hidden" data-feedback-next="feedback-step-4">
