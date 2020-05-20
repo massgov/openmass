@@ -146,27 +146,6 @@ function mass_decision_tree_preprocess_node(&$variables) {
         ];
       }
 
-      // Answers.
-      if (Helper::isFieldPopulated($descendant_node, 'field_answers')) {
-        $answers = Helper::getReferencedEntitiesFromField($descendant_node, 'field_answers');
-        $answer = $answers[0];
-        $choices = ['true', 'false'];
-        $responses = [];
-        foreach ($choices as $choice) {
-          $id = '';
-          $referenced_path = Helper::getReferencedEntitiesFromField($answer, "field_{$choice}_answer_path");
-          if (!empty($referenced_path)) {
-            $id = $referenced_path[0]->id();
-          }
-          $responses[] = [
-            'text' => Helper::fieldValue($answer, "field_{$choice}_answer_text"),
-            'explainer' => Helper::fieldValue($answer, "field_{$choice}_answer_explainer"),
-            'id' => $id,
-          ];
-        }
-        $descendant['responses'] = $responses;
-      }
-
       // Multiple Answers.
       if (Helper::isFieldPopulated($descendant_node, 'field_multiple_answers')) {
         $answers = Helper::getReferencedEntitiesFromField($descendant_node, 'field_multiple_answers');
@@ -252,7 +231,6 @@ function mass_decision_tree_form_alter(&$form, &$form_state, $form_id) {
   }
   elseif ($form_id == 'node_decision_tree_branch_edit_form' || $form_id == 'node_decision_tree_branch_form') {
     $form['title']['widget'][0]['value']['#description'] = FieldFilteredMarkup::create('The question you are asking in this branch.');
-    $form['field_answers']['#access'] = FALSE;
   }
   elseif ($form_id == 'node_decision_tree_conclusion_edit_form' || $form_id == 'node_decision_tree_conclusion_form') {
     $form['title']['widget'][0]['value']['#description'] = FieldFilteredMarkup::create('The title should state a definitive answer to the main question asked by the Decision Tree.');
