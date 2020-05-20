@@ -67,19 +67,22 @@ class RelatedLocations extends EntityReferenceFieldItemList {
             }
           }
         }
-
-        if (count($ref_count) > 2) {
-          $items = $this->sortParents($ref_count);
-        }
-        else {
-          $items = array_keys($ref_count);
+        if (!empty($ref_count)) {
+          if (count($ref_count) > 2) {
+            $items = $this->sortParents($ref_count);
+          }
+          else {
+            $items = array_keys($ref_count);
+          }
         }
       }
 
       $delta = 0;
-      foreach ($items as $item) {
-        $this->list[$delta] = $this->createItem($delta, ['target_id' => $item]);
-        $delta++;
+      if (!empty($items)) {
+        foreach ($items as $item) {
+          $this->list[$delta] = $this->createItem($delta, ['target_id' => $item]);
+          $delta++;
+        }
       }
     }
   }
