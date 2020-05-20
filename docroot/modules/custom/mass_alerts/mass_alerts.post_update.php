@@ -13,7 +13,7 @@ use Drupal\paragraphs\Entity\Paragraph;
  *
  * Migrate target page references from paragraph to field.
  */
-function mass_alerts_post_update_target_pages_5(&$sandbox) {
+function mass_alerts_post_update_target_pages(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   if (!isset($sandbox['total'])) {
@@ -47,12 +47,12 @@ function mass_alerts_post_update_target_pages_5(&$sandbox) {
 
   $nodes = Node::loadMultiple($nids);
 
+  // Loop through nodes in this batch.
   foreach ($nodes as $node) {
 
-    // This is for appending multiple items and saving the node once.
+    // This flag is for appending multiple items and saving the node just once.
     $has_target_id = FALSE;
 
-    // Loop through nodes in this batch.
     /** @var Drupal\node\Entity\Node $node */
     if ($node->hasField('field_target_pages_para_ref') && $node->hasField('field_target_page')) {
 
@@ -67,7 +67,8 @@ function mass_alerts_post_update_target_pages_5(&$sandbox) {
           $target_node_id = reset($paragraph->get('field_target_content_ref')->getValue());
 
           if ($target_node_id) {
-            // Prevent duplicates being copied into new field_target_page field.
+            // Prevent duplicates being copied into new field_target_page field
+            // by looking at the field to verify it is not already in there.
             $already_referenced = FALSE;
             foreach ($node->get('field_target_page')->referencedEntities() as $item) {
               if ($item->id() == $target_node_id['target_id']) {
