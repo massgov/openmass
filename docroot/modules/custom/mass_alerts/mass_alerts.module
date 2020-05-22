@@ -23,7 +23,7 @@ function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form
   $form['field_target_pages_para_ref']['#access'] = FALSE;
 
   if (!\Drupal::currentUser()->hasPermission('create site wide alerts')) {
-    $form['field_alert_display']['widget']['#disabled'] = TRUE;
+    unset($form['field_alert_display']['widget']['#options']['site_wide']);
   }
 }
 
@@ -36,7 +36,7 @@ function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface 
   $form['field_target_pages_para_ref']['#access'] = FALSE;
 
   if (!\Drupal::currentUser()->hasPermission('create site wide alerts')) {
-    $form['field_alert_display']['widget']['#disabled'] = TRUE;
+    unset($form['field_alert_display']['widget']['#options']['site_wide']);
   }
 }
 
