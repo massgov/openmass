@@ -334,13 +334,13 @@
   </div>{# #feedback-step-1 #}
 
 {# STEP 2 #}
-  <div id="feedback-step-2" class="feedback-step hidden" data-feedback-next="feedback-step-3">
+  <div id="feedback-step-2" class="feedback-step" data-feedback-next="feedback-step-3">
     {% set contact = false %}
     {% if node.field_constituent_communication.value == 'link' and node.field_feedback_com_link is not empty %}
       {% set contact = content.field_feedback_com_link[0]['#url'] %}
     {% endif %}
     <div class="ma__mass-feedback-form ma__mass-feedback-form--success" id="feedback-success" data-mass-feedback-form>
-      <div class="ma__mass-feedback-form__form">
+      <form class="ma__mass-feedback-form__form" method="post" novalidate action="#">
         <h3>Thanks, your message has been sent to {{ org_name }}!</h3>
       {% if contact %}
         <span class="ma__decorative-link">
@@ -352,7 +352,7 @@
         <div class="ma__mass-feedback-form__form--submit-wrapper">
           <input class="submitButton ma__button ma__button--small" type="submit" value="Start Survey"  aria-describedby="additional_feedback" />
         </div>{# .ma__mass-feedback-form__form--submit-wrapper #}
-      </div>{# .ma__mass-feedback-form__form #}
+      </form>
     </div>{# .ma__mass-feedback-form #}
   </div>{# .feedback-step-2 #}
 
