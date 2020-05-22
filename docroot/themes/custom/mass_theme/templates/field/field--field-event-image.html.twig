@@ -49,13 +49,13 @@
     {% endif %}
   {% endfor %}
   {% set src = versions|last %}
-  {% include "@atoms/09-media/figure.twig" with {
+  {% include "@atoms/09-media/figure--image.twig" with {
     "figure": {
       "image": {
         "alt": element['#items'][key].alt,
         "src": src.url,
         "versions": versions,
-          "sizes": "(min-width: 621px) 450px, 100vw"
+        "sizes": "(min-width: 621px) 450px, 100vw"
       }
     }
   } %}

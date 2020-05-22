@@ -181,7 +181,7 @@ jobs:
       - attach_workspace: {at: /var/www}
       - run:
           #Fail when there is no PR. This helps avoid false positives given by Danger when no PR exists.
-          command: "[ -n ${CIRCLE_PULL_REQUEST} ] && DANGER_GITHUB_API_TOKEN=$GITHUB_MASSGOV_BOT_TOKEN yarn danger ci --failOnErrors"
+          command: '[ -n "$CIRCLE_PULL_REQUEST" ] && DANGER_GITHUB_API_TOKEN=$GITHUB_MASSGOV_BOT_TOKEN yarn danger ci --failOnErrors'
 
   # Automate the tagging process in GitHub
   tagging_github:
@@ -363,6 +363,32 @@ jobs:
       - run: docker-compose up --no-start backstop
       - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
       - run: docker-compose run backstop reference --target=prod --list=all
+      - run: docker-compose run backstop test --target=<< parameters.target >> --list=all
+      - run:
+          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
+          when: always
+      - store_test_results:
+          path: /home/circleci/code/backstop/report
+      - store_artifacts:
+          path: /home/circleci/code/backstop
+
+  # Similar to Backstop job except it takes reference parameter as well.
+  backstop_dynamic:
+    parameters:
+      reference:
+        type: string
+      target:
+        type: string
+    working_directory: /home/circleci/code
+    docker:
+      # Need to use docker image for these steps.
+      - image: circleci/python:2.7.14
+    steps:
+      - checkout
+      - setup_remote_docker
+      - run: docker-compose up --no-start backstop
+      - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
+      - run: docker-compose run backstop reference --target=<< parameters.reference >> --list=all
       - run: docker-compose run backstop test --target=<< parameters.target >> --list=all
       - run:
           command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
@@ -828,6 +854,27 @@ workflows:
             - hold_for_prod
           target: prod
           gitRef: tags/$CIRCLE_TAG
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - hold_for_backstop:
+          type: approval
+          requires:
+            - build
+            - tagging_acquia
+            - deploy-tag-prod-acquia
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - backstop_dynamic:
+          name: backstop-prod
+          requires: [deploy-tag-prod-acquia]
+          target: prod
+          reference: test
           filters:
             branches:
               ignore: /.*/

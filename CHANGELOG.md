@@ -1,3 +1,81 @@
+## [0.243.1] - May 14, 2020
+
+### Changed
+  - DP-18750: Edit a meaningless char in a CSS file to regenerate URL.
+
+## [0.244.0] - May 19, 2020
+
+### Fixed
+  - DP-13022: Fix Danger check for a PR number.
+  - DP-18795: Removing robots disallow for doc top level folders.
+  - DP-18556: Fixed 500 error on taxonomy term pages.
+  
+### Added
+  - DP-18678: Added submodule for Schema.org SpecialAnnouncement.
+  
+### Changed
+  - DP-18790: Updated Mayflower version to 9.50.0.
+      - DP-18543: Update jquery from 3.4.0 to 3.5.1. (MF)
+      - DP-18591: Consolidate font weights into variables. (MF)
+  
+
+
+## [0.243.0] - May 12, 2020
+
+### Added
+  - DP-17676: Add a field for caption in tableau embed paragraph and set a charactor limit to 500.
+  - DP-17750: Add fields for administrative title, display size, alignment and wrapping. Add a new template, paragraph--tableau-embed.html.twig, to render tableau content in figure.twig aloing with align, size and wrapping options.
+  - DP-18332: Added new functionality for multiple answers on Decision tree branch
+
+### Changed
+  - DP-18653: Override figure style for pre-existing figure items.
+  - DP-18588: Updated Mayflower version to 8.14.0.
+  - DP-17483: Add datavisualization iframe to figure. (MF)
+  - DP-17634: Add a link to sample caption content. (MF)
+
+### Fixed
+  - DP-18615: Add check to featured message link formatter to stop 500 error
+  - DP-18608: Fix for caching to prevent excess traffic from hitting backend
+  - DP-16946: Switch urls in the sitemap to /download instead of /files
+
+
+
+## [0.242.0] - May 5, 2020
+
+### Fixed
+  - DP-17511: Solving deleted referenced entity rendering issue causing fatal error
+
+## [0.241.1] - May 1, 2020
+
+### Fixed
+  - DP-18544: Defensive code in PageFlipper.
+
+
+
+## [0.241.0] - April 29, 2020
+
+### Added
+  - DP-18049: Shows message to users who login and have no 2FA setup.
+  - DP-18336: Wait for font to load during Backstop test
+  - Disable field_alert_display widget on Alert node for users w/o permission
+  - DP-18242:
+  - DP-18246: Added CSV export button for exporting redirects.
+  - DP-18423: Add featured message to org page.
+
+### Fixed
+  - DP-17574: Prevent 500 error when changing link in utility menu
+  - DP-18050: Adds login failure message for users attempting to login without TFA
+
+### Changed
+  - DP-18429: Changing field_template permission to be visible for Author and Editor.
+  - DP-16023: Revise help text for fields related to custom link group service page.
+  - DP-17994: Change TFA configuration to disallow skipping setup and logging in without TFA
+  - DP-18492: Updated Mayflower version to 9.49.1.
+  - DP-18422  Add a new component to have rich text and callout link, adjust margin with/without callout message. (MF)
+  - DP-18315  Addded fonts for Khmer language support. (MF)
+  - DP-17792  Adjusted scss to rotate button arrow up when accordion opens. (MF)
+  - DP-18401: Update pfdp, mandrill, and focal point modules
+
 
 
 ## [0.240.0] - April 21, 2020
@@ -7,18 +85,18 @@
   - DP-13246: Changed the style of decision tree buttons below 620px width to line up vertically instead of horizontally.
   - DP-18229: Changed field order, help text, and labels on Alert content type.
   - DP-18015: Adjust nightcrawler test to remove action page type and adjust time thresholds.
-  
+
 ### Security
   - Updated vulnerable javascript packages with yarn
-  - DP-18035: 
-  
+  - DP-18035:
+
 ### Fixed
   - DP-14628: Truncates node title as needed when contacting authors.
   - DP-17619: Change the condition to check sideContent.linkList to check if its content is not null.
-  
+
 ### Removed
   - DP-17962: Removed the paragraphs_type_help module with composer
-  
+
 
 
 ## [0.239.0] - April 14, 2020
@@ -28,14 +106,14 @@
     - DP-16029: Change the property value to set style for see all link in service page to match Mass.gov production. (MF)
     - DP-16690: Changed text from less to fewer. (MF)
   - DP-18269: Added purge when redirects are added/updated.
-  
+
 ### Added
   - DP-18241: Validate Mayflower to Drupal PR so that cut_release_branch workflow passes
   - DP-17579: Add Tableau JS for sizing dashboard based on container width
-  
+
 ### Fixed
   - DP-17976: Stop unpublished nodes from showing up in page flipper.
-  
+
 
 
 ## [0.238.0] - April 7, 2020

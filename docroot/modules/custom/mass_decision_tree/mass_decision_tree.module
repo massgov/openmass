@@ -146,21 +146,19 @@ function mass_decision_tree_preprocess_node(&$variables) {
         ];
       }
 
-      // Answers.
-      if (Helper::isFieldPopulated($descendant_node, 'field_answers')) {
-        $answers = Helper::getReferencedEntitiesFromField($descendant_node, 'field_answers');
-        $answer = $answers[0];
-        $choices = ['true', 'false'];
+      // Multiple Answers.
+      if (Helper::isFieldPopulated($descendant_node, 'field_multiple_answers')) {
+        $answers = Helper::getReferencedEntitiesFromField($descendant_node, 'field_multiple_answers');
         $responses = [];
-        foreach ($choices as $choice) {
+        foreach ($answers as $answer) {
           $id = '';
-          $referenced_path = Helper::getReferencedEntitiesFromField($answer, "field_{$choice}_answer_path");
+          $referenced_path = Helper::getReferencedEntitiesFromField($answer, "field_answer_path");
           if (!empty($referenced_path)) {
             $id = $referenced_path[0]->id();
           }
           $responses[] = [
-            'text' => Helper::fieldValue($answer, "field_{$choice}_answer_text"),
-            'explainer' => Helper::fieldValue($answer, "field_{$choice}_answer_explainer"),
+            'text' => Helper::fieldValue($answer, "field_answer_text"),
+            'explainer' => Helper::fieldValue($answer, "field_answer_explainer"),
             'id' => $id,
           ];
         }

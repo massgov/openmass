@@ -51,8 +51,6 @@
                 }
               }
             }
-            // Label yes/no to catch newly displayed rows.
-            massLabelYesNo($self.closest('tbody'));
           });
           drupalSettings.detached.splice(id, 1);
         }
@@ -62,18 +60,6 @@
             drupalSettings.detached[id] = [];
           }
           massHideChildren(id, drupalSettings.detached, $self.closest('tbody'));
-        }
-      });
-
-      // Hide all rows of depth > 1 for a sane entry point.
-      $('table#decisionTree tr.draggable', context).once('tree-detach').each(function () {
-        var $self = $(this);
-        if ($self.find('.js-indentation').length > 1) {
-          var parent = $self.data('parent');
-          if (typeof drupalSettings.detached[parent] === 'undefined') {
-            drupalSettings.detached[parent] = [];
-          }
-          drupalSettings.detached[parent].push($self.detach());
         }
       });
 
@@ -108,22 +94,6 @@
         });
       }
 
-      function massLabelYesNo($tbody) {
-        // Remove any existing answer labels before we begin.
-        $tbody.find('tr').removeClass(function (index, className) {
-          return (className.match(/(^|\s)answer-\S+/g) || []).join(' ');
-        });
-
-        $('table#decisionTree tr.draggable').each(function () {
-          var id = $(this).find('a.decision-tree-form-title').attr('id');
-          // Find rows with this id as parent and count them off.
-          $('tr[data-parent="' + id + '"]').each(function (i) {
-            var answerClass = 'answer-' + i;
-            $(this).addClass(answerClass);
-          });
-        });
-      }
-
       // Below we are hooking into Drupal core's tabledrag functionality.
       var tableDrag = Drupal.tableDrag.decisionTree;
 
@@ -145,12 +115,9 @@
         });
         // Cycle through and label orphans.
         massLabelOrphans();
-        // Cycle through and label answers.
-        massLabelYesNo($row.closest('tbody'));
       };
       // Initial labeling on attach.
       massLabelOrphans();
-      massLabelYesNo($('tbody', context));
     }
   };
 })(jQuery, Drupal);
