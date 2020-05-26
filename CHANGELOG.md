@@ -1,3 +1,25 @@
+
+
+## [0.245.0] - May 26, 2020
+
+### Changed
+  - DP-17139: Change duration for the ma:queue-revision-cleanup drush command to be 14 months ago
+  - DP-18735: Simplifying code in the Circle Ci config file to avoid duplicates.
+  - DP-18453: Added new column to linking pages screen
+  
+### Fixed
+  - DP-18819: Fixed Jslint related issue.
+  - DP-18837: Reverts a change that impacted binder inner navigation on the site.
+  - DP-18625: Added bottom padding of 90px to disclaimer on decision tree
+  - DP-18819: Fixed Tableau visualization conditional fields toggle.
+  
+### Added
+  - DP-18735: Adding backstop to workflows
+  - DP-18558: Add a new hold to build_tag workflow for releasing without maint mode.
+  
+### Removed
+  - DP-18757: Removing deprecated 'Answeres' paragraph
+  
 ## [0.243.1] - May 14, 2020
 
 ### Changed
