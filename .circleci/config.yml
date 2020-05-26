@@ -351,6 +351,8 @@ jobs:
 
   backstop:
     parameters:
+      reference:
+        type: string
       target:
         type: string
     working_directory: /home/circleci/code
@@ -362,7 +364,7 @@ jobs:
       - setup_remote_docker
       - run: docker-compose up --no-start backstop
       - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
-      - run: docker-compose run backstop reference --target=prod --list=all
+      - run: docker-compose run backstop reference --target=<< parameters.reference >> --list=all
       - run: docker-compose run backstop test --target=<< parameters.target >> --list=all
       - run:
           command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
@@ -555,6 +557,7 @@ workflows:
           name: backstop-cd
           requires: [deploy-cd-refresh-db]
           target: cd
+          reference: prod
           filters:
             branches:
               only: /^mayflower-dev-.*/
@@ -619,6 +622,7 @@ workflows:
           name: backstop-test
           requires: [deploy-test-refresh-db]
           target: test
+          reference: prod
           filters:
             branches:
               only: /^release\/.*$/
@@ -668,6 +672,7 @@ workflows:
             name: backstop-test
             requires: [deploy-test-no-refresh-db]
             target: test
+            reference: prod
             filters:
               branches:
                 only: /^hotfix\/.*$/
@@ -728,6 +733,7 @@ workflows:
           name: backstop-test
           requires: [deploy-test-refresh-db]
           target: test
+          reference: prod
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -858,6 +864,27 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
+      - hold_for_backstop:
+          type: approval
+          requires:
+            - build
+            - tagging_acquia
+            - deploy-tag-prod-acquia
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - backstop:
+          name: backstop-prod
+          requires: [deploy-tag-prod-acquia]
+          target: prod
+          reference: test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
 
   # Daily run of test suite using super sanitized DB
   build_test_super:
@@ -943,6 +970,7 @@ workflows:
       - backstop:
           requires: [deploy-cd-refresh-db]
           target: cd
+          reference: prod
     triggers:
       - schedule:
           cron: "00 03 * * 0,1,2,3,4,6"
