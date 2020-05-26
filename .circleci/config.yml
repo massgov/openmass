@@ -869,7 +869,7 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - deploy-tag-prod-acquia
+            - deploy-tag-prod-acquia-maint
           filters:
             branches:
               ignore: /.*/
@@ -877,7 +877,7 @@ workflows:
               only: /.*/
       - backstop:
           name: backstop-prod
-          requires: [deploy-tag-prod-acquia]
+          requires: [deploy-tag-prod-acquia-maint]
           target: prod
           reference: test
           filters:
