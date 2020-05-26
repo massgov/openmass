@@ -815,7 +815,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold_for_prod:
+      - hold_for_prod_maint:
           type: approval
           requires:
             - build
@@ -826,14 +826,39 @@ workflows:
             tags:
               only: /.*/
       - deploy:
-          name: deploy-tag-prod-acquia
+          name: deploy-tag-prod-acquia-maint
           requires:
             - build
             - tagging_acquia
             - deploy-tag-stage-acquia
-            - hold_for_prod
+            - hold_for_prod_maint
           target: prod
           gitRef: tags/$CIRCLE_TAG
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - hold_for_prod_no_maint:
+          type: approval
+          requires:
+            - build
+            - tagging_acquia
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - deploy:
+          name: deploy-tag-prod-acquia-no-maint
+          requires:
+            - build
+            - tagging_acquia
+            - deploy-tag-stage-acquia
+            - hold_for_prod_no_maint
+          target: prod
+          gitRef: tags/$CIRCLE_TAG
+          skip-maint: --skip-maint
           filters:
             branches:
               ignore: /.*/
@@ -844,7 +869,7 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - deploy-tag-prod-acquia
+            - deploy-tag-prod-acquia-maint
           filters:
             branches:
               ignore: /.*/
@@ -852,7 +877,7 @@ workflows:
               only: /.*/
       - backstop:
           name: backstop-prod
-          requires: [deploy-tag-prod-acquia]
+          requires: [deploy-tag-prod-acquia-maint]
           target: prod
           reference: test
           filters:
