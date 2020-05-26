@@ -604,6 +604,9 @@ function mass_fields_form_node_info_details_edit_form_alter(&$form, FormStateInt
             if (isset($add_more_container['#access'])) {
               $result = $result->andIf($add_more_container['#access']);
             }
+            if (isset($form['field_details_enable_fields']['widget'])) {
+              $result = $form['field_details_enable_fields']['widget']['value']['#default_value'];
+            }
             $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $result;
           }
         }

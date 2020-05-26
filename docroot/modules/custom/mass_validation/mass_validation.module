@@ -1564,9 +1564,9 @@ function mass_validation_field_widget_paragraphs_form_alter(array &$element, For
 /**
  * Implements hook_form_FORM_ID_alter().
  *
- * Hide the field_page_template field on the info_details node form for users
- * without permission. Also rename the 'none' option in the field_page_template
- * list.
+ * Hide the field_page_template and field_details_enable_fields fields on the
+ * info_details node form for users without permission. Also rename the 'none'
+ * option in the field_page_template list.
  */
 function mass_validation_form_node_info_details_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $user = \Drupal::currentUser();
@@ -1574,9 +1574,22 @@ function mass_validation_form_node_info_details_edit_form_alter(&$form, FormStat
     $form['field_page_template']['#attributes']['class'][] = 'js-hide';
   }
 
-  if (count(array_intersect(['administrator', 'content_team'], $user->getRoles())) === 0) {
-    $form['field_banner_image']['#attributes']['class'][] = 'js-hide';
+  if (!$user->hasPermission('enable info details fields')) {
+    $form['field_details_enable_fields']['#attributes']['class'][] = 'js-hide';
   }
 
   $form['field_page_template']['widget']['#options']['_none'] = 'Information details';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Hide the field_details_enable_fields field on the info_details node form for users
+ * without permission.
+ */
+function mass_validation_form_node_info_details_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $user = \Drupal::currentUser();
+  if (!$user->hasPermission('enable info details fields')) {
+    $form['field_details_enable_fields']['#attributes']['class'][] = 'js-hide';
+  }
 }
