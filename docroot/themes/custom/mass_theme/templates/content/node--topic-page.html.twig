@@ -14,59 +14,66 @@
   {#{% include "@organisms/by-template/breadcrumbs.twig" %}#}
   {# {% include "@organisms/by-template/content-eyebrow.twig" %} #}
 
-{% set primary = [] %}
-{% for item in relationshipIndicatorPrimary.tags %}
-  {% set itemLink = {
-      'title': item.text,
-      'href': item.href
-   } %}
-  {% set primary = primary|merge([ itemLink ]) %}
-{% endfor %}
-
-{% set secondary = [] %}
-{% for item in content.field_organizations %}
-  {% set index = loop.index - 1 %}
-  {% if content.field_organizations[index]['#title'] %}
-    {% set itemLink = {
-        'title': content.field_organizations[index]['#title'],
-        'href': content.field_organizations[index]['#url']
-    } %}
-    {% set secondary = secondary|merge([ itemLink ]) %}
+  {% set primary = [] %}
+  {% if relationshipIndicatorPrimary or relationshipIndicatorPrimary.tags|length > 0  %}
+    {% for item in relationshipIndicatorPrimary.tags %}
+      {% set itemLink = {
+          'title': item.text,
+          'href': item.href
+      } %}
+      {% set primary = primary|merge([ itemLink ]) %}
+    {% endfor %}
+  {% else %}
+    {% set primary = null %}
   {% endif %}
-{% endfor %}
 
-{% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": {
-        "label": "part of"
-      },
-      "secondary": {
-        "label": secondary ? "offered by" : ""
-      }
-    }
-  } %}
-    {% block primaryRelationship %}
-      {% for item in primary %}
-        {% include "@atoms/item-link.twig" with {
-          "itemLink": {
-            "title": item.title,
-            "href": item.href
+  {% set secondary = null %}
+  {#
+  {% for item in content.field_organizations %}
+    {% set index = loop.index - 1 %}
+    {% if content.field_organizations[index]['#title'] %}
+      {% set itemLink = {
+          'title': content.field_organizations[index]['#title'],
+          'href': content.field_organizations[index]['#url']
+      } %}
+      {% set secondary = secondary|merge([ itemLink ]) %}
+    {% endif %}
+  {% endfor %}
+  #}
+  {% if primary %}
+    {% embed "@molecules/relationship-indicators.twig" with {
+        "relationshipIndicators": {
+          "pageTitle": node.label,
+          "primary": {
+            "label": "part of"
+          },
+          "secondary": {
+            "label": secondary ? "offered by" : ""
           }
-        } %}
-      {% endfor %}
-    {% endblock %}
-    {% block secondaryRelationship %}
-      {% for item in secondary %}
-        {% include "@atoms/item-link.twig" with {
-          "itemLink": {
-            "title": item.title,
-            "href": item.href
-          }
-        } %}
-      {% endfor %}
-    {% endblock %}
-  {% endembed %}
+        }
+      } %}
+      {% block primaryRelationship %}
+        {% for item in primary %}
+          {% include "@atoms/item-link.twig" with {
+            "itemLink": {
+              "title": item.title,
+              "href": item.href
+            }
+          } %}
+        {% endfor %}
+      {% endblock %}
+      {# {% block secondaryRelationship %}
+        {% for item in secondary %}
+          {% include "@atoms/item-link.twig" with {
+            "itemLink": {
+              "title": item.title,
+              "href": item.href
+            }
+          } %}
+        {% endfor %}
+      {% endblock %} #}
+    {% endembed %}
+  {% endif %}
 
   {% include "@organisms/by-template/page-banner.twig" %}
 {% endblock %}
