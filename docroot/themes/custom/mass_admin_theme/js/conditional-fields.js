@@ -128,22 +128,17 @@
    */
   Drupal.behaviors.tableauembedConditional = {
     attach: function (context) {
-      $('.field--name-field-tabl-display-size .form-select', context).change(function () {
-        $('.field--name-field-tabl-display-size .form-select option:selected').each(function () {
-          var $size = $(this).val();
-          if ($size === 'x-large') {
-            $('.field--name-field-tabl-alignment').hide();
-            $('.field--name-field-tabl-wrapping').hide();
-            $('.field--name-field-tabl-alignment .fieldgroup').removeAttr('required');
-          }
-          else {
-            $('.field--name-field-tabl-alignment').show();
-            $('.field--name-field-tabl-alignment .fieldgroup').prop('required', true);
-            $('.field--name-field-tabl-wrapping').show();
-          }
-        });
-      })
-        .change();
+      $('.field--name-field-tabl-display-size', context).change(function () {
+        if ($(this).find('option:selected').val() === 'x-large') {
+          $(this).siblings('.field--name-field-tabl-alignment').hide().find('.fieldgroup').removeAttr('required');
+          $(this).siblings('.field--name-field-tabl-wrapping').hide();
+        }
+        else {
+          $(this).siblings('.field--name-field-tabl-alignment').show().find('.fieldgroup').attr('required', 'required');
+          $(this).siblings('.field--name-field-tabl-wrapping').show();
+        }
+      }).change();
     }
   };
+
 })(jQuery, Drupal);

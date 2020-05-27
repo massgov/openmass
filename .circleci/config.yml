@@ -351,30 +351,6 @@ jobs:
 
   backstop:
     parameters:
-      target:
-        type: string
-    working_directory: /home/circleci/code
-    docker:
-      # Need to use docker image for these steps.
-      - image: circleci/python:2.7.14
-    steps:
-      - checkout
-      - setup_remote_docker
-      - run: docker-compose up --no-start backstop
-      - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
-      - run: docker-compose run backstop reference --target=prod --list=all
-      - run: docker-compose run backstop test --target=<< parameters.target >> --list=all
-      - run:
-          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
-          when: always
-      - store_test_results:
-          path: /home/circleci/code/backstop/report
-      - store_artifacts:
-          path: /home/circleci/code/backstop
-
-  # Similar to Backstop job except it takes reference parameter as well.
-  backstop_dynamic:
-    parameters:
       reference:
         type: string
       target:
@@ -581,6 +557,7 @@ workflows:
           name: backstop-cd
           requires: [deploy-cd-refresh-db]
           target: cd
+          reference: prod
           filters:
             branches:
               only: /^mayflower-dev-.*/
@@ -645,6 +622,7 @@ workflows:
           name: backstop-test
           requires: [deploy-test-refresh-db]
           target: test
+          reference: prod
           filters:
             branches:
               only: /^release\/.*$/
@@ -694,6 +672,7 @@ workflows:
             name: backstop-test
             requires: [deploy-test-no-refresh-db]
             target: test
+            reference: prod
             filters:
               branches:
                 only: /^hotfix\/.*$/
@@ -754,6 +733,7 @@ workflows:
           name: backstop-test
           requires: [deploy-test-refresh-db]
           target: test
+          reference: prod
           filters:
             branches:
               only: /^mayflower\/.*$/
@@ -835,7 +815,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold_for_prod:
+      - hold_for_prod_maint:
           type: approval
           requires:
             - build
@@ -846,14 +826,39 @@ workflows:
             tags:
               only: /.*/
       - deploy:
-          name: deploy-tag-prod-acquia
+          name: deploy-tag-prod-acquia-maint
           requires:
             - build
             - tagging_acquia
             - deploy-tag-stage-acquia
-            - hold_for_prod
+            - hold_for_prod_maint
           target: prod
           gitRef: tags/$CIRCLE_TAG
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - hold_for_prod_no_maint:
+          type: approval
+          requires:
+            - build
+            - tagging_acquia
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - deploy:
+          name: deploy-tag-prod-acquia-no-maint
+          requires:
+            - build
+            - tagging_acquia
+            - deploy-tag-stage-acquia
+            - hold_for_prod_no_maint
+          target: prod
+          gitRef: tags/$CIRCLE_TAG
+          skip-maint: --skip-maint
           filters:
             branches:
               ignore: /.*/
@@ -864,15 +869,15 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - deploy-tag-prod-acquia
+            - deploy-tag-prod-acquia-maint
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /.*/
-      - backstop_dynamic:
+      - backstop:
           name: backstop-prod
-          requires: [deploy-tag-prod-acquia]
+          requires: [deploy-tag-prod-acquia-maint]
           target: prod
           reference: test
           filters:
@@ -965,6 +970,7 @@ workflows:
       - backstop:
           requires: [deploy-cd-refresh-db]
           target: cd
+          reference: prod
     triggers:
       - schedule:
           cron: "00 03 * * 0,1,2,3,4,6"
