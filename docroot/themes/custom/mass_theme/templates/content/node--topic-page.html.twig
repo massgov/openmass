@@ -41,6 +41,11 @@
   {% endfor %}
   #}
   {% if primary %}
+    <style>
+      .ma__relationship-indicators {
+        border: none;
+      }
+    </style>
     {% embed "@molecules/relationship-indicators.twig" with {
         "relationshipIndicators": {
           "pageTitle": node.label,
