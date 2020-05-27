@@ -1575,7 +1575,7 @@ function mass_validation_form_node_info_details_edit_form_alter(&$form, FormStat
   }
 
   if (!$user->hasPermission('enable info details fields')) {
-    $form['field_details_enable_fields']['#attributes']['class'][] = 'js-hide';
+    $form['field_details_enable_fields']['#access'] = FALSE;
   }
 
   $form['field_page_template']['widget']['#options']['_none'] = 'Information details';
@@ -1590,6 +1590,6 @@ function mass_validation_form_node_info_details_edit_form_alter(&$form, FormStat
 function mass_validation_form_node_info_details_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $user = \Drupal::currentUser();
   if (!$user->hasPermission('enable info details fields')) {
-    $form['field_details_enable_fields']['#attributes']['class'][] = 'js-hide';
+    $form['field_details_enable_fields']['#access'] = FALSE;
   }
 }

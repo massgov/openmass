@@ -594,6 +594,14 @@ function mass_fields_form_node_info_details_edit_form_alter(&$form, FormStateInt
     'info_details_card_group',
   ];
   if (isset($form['field_info_details_sections']) && isset($form['field_info_details_sections']['widget'])) {
+    // Load the node and get field value form here
+    // to avoid loading it inside loop multiple times.
+    if (!empty($formState->getFormObject()->getEntity())) {
+      $node = $formState->getFormObject()->getEntity()->toArray();
+      if (!empty($node['field_details_enable_fields'][0]['value'])) {
+        $enabled_status = $node['field_details_enable_fields'][0]['value'];
+      }
+    }
     foreach (Element::children($form['field_info_details_sections']['widget']) as $key) {
       if (isset($form['field_info_details_sections']['widget'][$key]['subform'])) {
         $subform =& $form['field_info_details_sections']['widget'][$key]['subform'];
@@ -604,8 +612,10 @@ function mass_fields_form_node_info_details_edit_form_alter(&$form, FormStateInt
             if (isset($add_more_container['#access'])) {
               $result = $result->andIf($add_more_container['#access']);
             }
-            if (isset($form['field_details_enable_fields']['widget'])) {
-              $result = $form['field_details_enable_fields']['widget']['value']['#default_value'];
+            // Return field value as a result to determine
+            // access to the other fields.
+            if (isset($enabled_status)) {
+              $result = $enabled_status;
             }
             $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $result;
           }
