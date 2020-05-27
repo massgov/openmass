@@ -334,7 +334,7 @@
   </div>{# #feedback-step-1 #}
 
 {# STEP 2 #}
-  <div id="feedback-step-2" class="feedback-step" data-feedback-next="feedback-step-3">
+  <div id="feedback-step-2" class="feedback-step hidden" data-feedback-next="feedback-step-3">
     {% set contact = false %}
     {% if node.field_constituent_communication.value == 'link' and node.field_feedback_com_link is not empty %}
       {% set contact = content.field_feedback_com_link[0]['#url'] %}
@@ -643,7 +643,7 @@
             "value": "524744"
           }
         ] %}
-        {% for element in hiddenElements %}
+        {% for element in step3HiddenElements %}
           <input type="hidden" id="{{ element.id }}" name="{{ element.name }}" value="{{ element.value }}" class="{{ element.class }}" />
         {% endfor %}
       </form>
