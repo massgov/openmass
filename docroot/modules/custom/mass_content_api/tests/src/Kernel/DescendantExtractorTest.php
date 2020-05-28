@@ -24,23 +24,23 @@ class DescendantExtractorTest extends UnitTestCase {
       [
         0 => 'field_1',
         1 => '*',
-      ]
+      ],
     ];
 
     $entity_info = [
       'fields' => [
         'field_1' => [
           'type' => 'entity_reference',
-          'referenced_entities' => []
-        ]
-      ]
+          'referenced_entities' => [],
+        ],
+      ],
     ];
 
     $entity = $this->makeMockContentEntityInterface($entity_info);
     $result = $extractor->fetchRelations($entity, $spec);
 
     $expected = [
-      'parents' => []
+      'parents' => [],
     ];
 
     $this->assertEquals($expected, $result);
@@ -84,7 +84,7 @@ class DescendantExtractorTest extends UnitTestCase {
                         ],
                       ],
                     ],
-                  ]
+                  ],
                 ],
                 'field_4' => [
                   'type' => 'list',
@@ -109,10 +109,12 @@ class DescendantExtractorTest extends UnitTestCase {
           3 => [
             'id' => 3,
             'entity' => 'node',
+            'field_label' => '',
           ],
           4 => [
             'id' => 4,
             'entity' => 'node',
+            'field_label' => '',
           ],
         ],
       ],
@@ -133,14 +135,14 @@ class DescendantExtractorTest extends UnitTestCase {
         [
           0 => 'field_1',
           1 => '*',
-        ]
+        ],
       ],
       'children' => [
         [
           0 => 'field_2',
           1 => '*',
         ],
-      ]
+      ],
     ];
 
     $entity_info = [
@@ -154,13 +156,13 @@ class DescendantExtractorTest extends UnitTestCase {
                 'field_3' => [
                   'type' => 'list',
                   'list_items' => [
-                     'link' => ['entity:node/1', 'entity:node/2']
+                    'link' => ['entity:node/1', 'entity:node/2'],
                   ],
                 ],
                 'field_5' => [
                   'type' => 'list',
                   'list_items' => [
-                    'link' => ['entity:node/3', 'entity:node/4']
+                    'link' => ['entity:node/3', 'entity:node/4'],
                   ],
                 ],
               ],
@@ -205,20 +207,24 @@ class DescendantExtractorTest extends UnitTestCase {
           1 => [
             'id' => 1,
             'entity' => 'node',
+            'field_label' => '',
           ],
           2 => [
             'id' => 2,
             'entity' => 'node',
+            'field_label' => '',
           ],
         ],
         'field_5' => [
           3 => [
             'id' => 3,
             'entity' => 'node',
+            'field_label' => '',
           ],
           4 => [
             'id' => 4,
             'entity' => 'node',
+            'field_label' => '',
           ],
         ],
       ],
@@ -227,16 +233,19 @@ class DescendantExtractorTest extends UnitTestCase {
           5 => [
             'id' => 5,
             'entity' => 'node',
+            'field_label' => '',
           ],
         ],
         'field_6' => [
           6 => [
             'id' => 6,
             'entity' => 'node',
+            'field_label' => '',
           ],
           7 => [
             'id' => 7,
             'entity' => 'node',
+            'field_label' => '',
           ],
         ],
       ],
@@ -261,7 +270,7 @@ class DescendantExtractorTest extends UnitTestCase {
           1 => 'field_2',
           2 => 'field_3',
           3 => 'field_4',
-        ]
+        ],
       ],
     ];
 
@@ -296,8 +305,8 @@ class DescendantExtractorTest extends UnitTestCase {
                           ],
                         ],
                       ],
-                    ]
-                  ]
+                    ],
+                  ],
                 ],
               ],
             ],
@@ -316,10 +325,12 @@ class DescendantExtractorTest extends UnitTestCase {
           1 => [
             'id' => 1,
             'entity' => 'node',
+            'field_label' => '',
           ],
           2 => [
             'id' => 2,
             'entity' => 'node',
+            'field_label' => '',
           ],
         ],
       ],
@@ -342,7 +353,7 @@ class DescendantExtractorTest extends UnitTestCase {
           1 => 'field_2',
           2 => 'field_3',
           3 => '*',
-        ]
+        ],
       ],
     ];
 
@@ -389,8 +400,8 @@ class DescendantExtractorTest extends UnitTestCase {
                           ],
                         ],
                       ],
-                    ]
-                  ]
+                    ],
+                  ],
                 ],
               ],
             ],
@@ -409,30 +420,36 @@ class DescendantExtractorTest extends UnitTestCase {
           1 => [
             'id' => 1,
             'entity' => 'node',
+            'field_label' => '',
           ],
           2 => [
             'id' => 2,
             'entity' => 'node',
+            'field_label' => '',
           ],
         ],
         'field_5' => [
           3 => [
             'id' => 3,
             'entity' => 'node',
+            'field_label' => '',
           ],
           4 => [
             'id' => 4,
             'entity' => 'node',
+            'field_label' => '',
           ],
         ],
         'field_6' => [
           5 => [
             'id' => 5,
             'entity' => 'node',
+            'field_label' => '',
           ],
           6 => [
             'id' => 6,
             'entity' => 'node',
+            'field_label' => '',
           ],
         ],
       ],

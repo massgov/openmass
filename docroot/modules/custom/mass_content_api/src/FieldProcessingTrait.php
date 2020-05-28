@@ -38,6 +38,7 @@ trait FieldProcessingTrait {
     $related = [];
     foreach ($config as $dependency_status => $specs) {
       $related[$dependency_status] = [];
+
       foreach ($specs as $spec) {
         $related[$dependency_status][] = explode('>', $spec);
       }
@@ -164,6 +165,9 @@ trait FieldProcessingTrait {
    */
   private function collectFieldEntities(FieldItemListInterface $field_entity) {
     $collected = [];
+    if (!empty($field_entity->getFieldDefinition())) {
+      $field_label = $field_entity->getFieldDefinition()->getLabel();
+    }
     if ($field_entity instanceof EntityReferenceFieldItemListInterface) {
       // If we can extract entity type and ID without loading up the child,
       // do it. If this results in deleted/unpublished entities ending up in the
@@ -173,7 +177,8 @@ trait FieldProcessingTrait {
           $child_id = $item->target_id;
           $collected[$child_id] = [
             'id' => $child_id,
-            'entity' => $child_entity_type
+            'entity' => $child_entity_type,
+            'field_label' => $field_label ?? '',
           ];
         }
       }
@@ -182,6 +187,7 @@ trait FieldProcessingTrait {
           $collected[$child->id()] = [
             'id' => $child->id(),
             'entity' => $child->getEntityTypeId(),
+            'field_label' => $field_label ?? '',
           ];
         }
       }
@@ -194,6 +200,7 @@ trait FieldProcessingTrait {
             $collected[$matches[1]] = [
               'id' => $matches[1],
               'entity' => 'node',
+              'field_label' => $field_label ?? '',
             ];
           }
         }
