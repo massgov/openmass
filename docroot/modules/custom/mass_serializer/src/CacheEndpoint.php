@@ -237,7 +237,7 @@ class CacheEndpoint {
 
     file_save_data(json_encode($result), $cachename, FILE_EXISTS_REPLACE);
 
-    Drush::logger()->sucess('All pages combined. ' . count($data) . ' rows. ' . $cachename . ' saved.');
+    Drush::logger()->success('All pages combined. ' . count($data) . ' rows. ' . $cachename . ' saved.');
   }
 
 }
