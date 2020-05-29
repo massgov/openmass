@@ -486,14 +486,17 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
         array_push($more_links, $delta);
       }
     }
-    foreach ($more_links as $delta) {
-      // See paragraph--section.html.twig for the usage of this more link.
-      $build['field_service_detail_sections'][$delta]['more'] = [
-        'href' => Url::fromRoute('mass_more_lists.mass_more_lists_buildList', ['node' => $entity->id()])->toString(),
-        'text' => t('See all @count', ['@count' => $total]),
-        'chevron' => TRUE,
-        'labelContext' => t('See all of the resources for @title', ['@title' => $entity->label()]),
-      ];
+    if ($view_mode !== 'title_short_desc') {
+      foreach ($more_links as $delta) {
+        // See paragraph--section.html.twig for the usage of this more link.
+        $build['field_service_detail_sections'][$delta]['more'] = [
+          'href' => Url::fromRoute('mass_more_lists.mass_more_lists_buildList', ['node' => $entity->id()])
+            ->toString(),
+          'text' => t('See all @count', ['@count' => $total]),
+          'chevron' => TRUE,
+          'labelContext' => t('See all of the resources for @title', ['@title' => $entity->label()]),
+        ];
+      }
     }
   }
 }
