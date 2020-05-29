@@ -7,6 +7,39 @@
 {% extends '@templates/two-column.twig' %}
 
 {% block preContent %}
+  {% if pageHeader.relationshipIndicators %}
+    {% set relationshipIndicators = pageHeader.relationshipIndicators %}
+  {% endif %}
+  {% include "@molecules/relationship-indicators.twig" with {
+      "relationshipIndicators": {
+        "pageTitle": node.title.value,
+        "primary": {
+          "label": "part of",
+          "tags": [{
+            "href": url,
+            "title": node.title.value
+          }]
+        },
+        "secondary": null
+      },
+  } %}
+
+  {# {% if pageHeader.headerTags.taxonomyTerms or pageHeader.socialLinks.items %} #}
+  {% if pageHeader.socialLinks.items %}
+    <div class="ma__page-header__tags">
+      {#
+      {% if pageHeader.headerTags.taxonomyTerms %}
+        {% set headerTags = pageHeader.headerTags %}
+        {% include "@molecules/header-tags.twig" %}
+      {% endif %}
+      #}
+      {% if pageHeader.socialLinks.items %}
+        {% set socialLinks = pageHeader.socialLinks %}
+        {% include "@molecules/social-links.twig" %}
+      {% endif %}
+    </div>
+  {% endif %}
+
   {% include "@organisms/by-template/page-header.twig" with {
     "pageHeader": {
       "category": "",
@@ -20,13 +53,6 @@
           'url': url,
           'title': node.title.value
         }
-      },
-      "headerTags": {
-        "label": "Related to:",
-        "taxonomyTerms": [{
-          "href": url,
-          "text": node.title.value
-        }]
       }
     }
   } %}
