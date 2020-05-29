@@ -801,8 +801,8 @@ class MassContentContext extends RawDrupalContext implements SnippetAcceptingCon
   /**
    * Creates a 'page' type paragraph for the binder node.
    *
-   * This created paragraph links to the node title parameter and the current
-   * binder node references it.
+   * This function adds to the current binder node a paragraph that has a link
+   * field and links to the node title parameter passed into this function.
    *
    * @Given I add a page paragraph that links to :nodeTitle
    *
