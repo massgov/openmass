@@ -588,18 +588,46 @@ function mass_fields_theme() {
  * Block access to add "Callout Link" and "Card Group" paragraphs on the
  * info details node form unless the user is specially permissioned.
  */
-function mass_fields_form_node_info_details_edit_form_alter(&$form, FormStateInterface $formState) {
+function mass_fields_form_node_info_details_edit_form_alter(&$form, FormStateInterface $form_state) {
+  _mass_fields_info_details_enable_flag($form, $form_state);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Hide the field_details_enable_fields field on the info_details
+ * node form for users without permission.
+ */
+function mass_fields_form_node_info_details_form_alter(&$form, FormStateInterface $form_state) {
+  _mass_fields_info_details_enable_flag($form, $form_state);
+}
+
+/**
+ * Helper function to avoid duplicate codes.
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ */
+function _mass_fields_info_details_enable_flag(&$form, FormStateInterface $form_state) {
   $restricted_types = [
     'callout_link',
     'info_details_card_group',
   ];
+  $user = \Drupal::currentUser();
+  if (!$user->hasPermission('enable info details fields')) {
+    $form['field_details_enable_fields']['#access'] = FALSE;
+  }
+  else {
+    $form['field_banner_image']['#attributes']['class'][] = 'js-hide';
+  }
   if (isset($form['field_info_details_sections']) && isset($form['field_info_details_sections']['widget'])) {
     // Load the node and get field value form here
     // to avoid loading it inside loop multiple times.
-    if (!empty($formState->getFormObject()->getEntity())) {
-      $node = $formState->getFormObject()->getEntity()->toArray();
-      if (!empty($node['field_details_enable_fields'][0]['value'])) {
-        $enabled_status = $node['field_details_enable_fields'][0]['value'];
+    if (!empty($form_state->getFormObject()->getEntity())) {
+      $enabled_status = FALSE;
+      $node = $form_state->getFormObject()->getEntity()->toArray();
+      if (!empty($node['field_details_enable_fields'][0]['value']) && $node['field_details_enable_fields'][0]['value'] == 1) {
+        $enabled_status = TRUE;
       }
     }
     foreach (Element::children($form['field_info_details_sections']['widget']) as $key) {
@@ -608,16 +636,20 @@ function mass_fields_form_node_info_details_edit_form_alter(&$form, FormStateInt
         foreach ($restricted_types as $restricted_type) {
           $add_more_container =& $subform['field_section_long_form_content']['widget']['add_more'];
           if (isset($add_more_container["add_more_button_{$restricted_type}"])) {
-            $result = AccessResult::allowedIfHasPermission(\Drupal::currentUser(), 'special');
+            $result = AccessResult::allowedIfHasPermission(\Drupal::currentUser(), 'enable info details fields');
             if (isset($add_more_container['#access'])) {
               $result = $result->andIf($add_more_container['#access']);
             }
-            // Return field value as a result to determine
-            // access to the other fields.
-            if (isset($enabled_status)) {
-              $result = $enabled_status;
+            if ($result->isAllowed()) {
+              $form['field_banner_image']['#access'] = $result;
+              $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $result;
             }
-            $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $result;
+            elseif (isset($enabled_status)) {
+              // Return field value as a result to determine
+              // access to the other fields.
+              $form['field_banner_image']['#access'] = $enabled_status;
+              $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $enabled_status;
+            }
           }
         }
       }

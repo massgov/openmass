@@ -15,8 +15,6 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Component\Utility\UrlHelper;
-use Drupal\Core\Url;
-use Drupal\Core\Render\Markup;
 
 /**
  * Implements hook_help().
@@ -139,8 +137,8 @@ function _mass_validation_form_node_alert_form_validate(array &$form, FormStateI
  */
 function mass_validation_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_validation_field_organizations_validate';
-  // For 5 content types, setup field synchronization from a source field to field_organizations.
 
+  // For 5 content types, setup field synchronization from a source field to field_organizations.
   $fields = [
     'node_binder_form' => 'field_binder_ref_organization',
     'node_binder_edit_form' => 'field_binder_ref_organization',
@@ -1533,7 +1531,7 @@ function mass_validation_field_widget_paragraphs_form_alter(array &$element, For
           'visible' => 'image',
         ],
         'field_section_text_overlay_color' => [
-          'visible' => 'image'
+          'visible' => 'image',
         ],
         'field_background_color' => [
           'visible' => 'color',
@@ -1574,22 +1572,5 @@ function mass_validation_form_node_info_details_edit_form_alter(&$form, FormStat
     $form['field_page_template']['#attributes']['class'][] = 'js-hide';
   }
 
-  if (!$user->hasPermission('enable info details fields')) {
-    $form['field_details_enable_fields']['#access'] = FALSE;
-  }
-
   $form['field_page_template']['widget']['#options']['_none'] = 'Information details';
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- *
- * Hide the field_details_enable_fields field on the info_details node form for users
- * without permission.
- */
-function mass_validation_form_node_info_details_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $user = \Drupal::currentUser();
-  if (!$user->hasPermission('enable info details fields')) {
-    $form['field_details_enable_fields']['#access'] = FALSE;
-  }
 }
