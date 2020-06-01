@@ -10,6 +10,14 @@
 {% set level = 1 %}
 
 {% block preContent %}
+  {# Check if primary indicator content exists. #}
+  {% if content.computed_related_to[0] %}
+    {% set primaryIndicators = { "label": "part of" } %}
+    {% set primaryRelationshipContent = content.computed_related_to %}
+  {% else %}
+    {% set primaryIndicators = null %}
+    {% set primaryRelationshipContent = null %}
+  {% endif %}
   {% set secondaryIndicators = false %}
   {% if node.computed_related_to is not empty %}
     {% set secondaryIndicators = {
@@ -17,22 +25,23 @@
     } %}
   {% endif %}
 
-  {% embed "@molecules/relationship-indicators.twig" with {
-    "relationshipIndicators": {
-      "pageTitle": node.label,
-      "primary": {
-        "label": "part of"
-      },
-      "secondary": secondaryIndicators
-    }
-  } %}
-    {% block primaryRelationship %}
-      {{ content.computed_related_to }}
-    {% endblock %}
-    {% block secondaryRelationship %}
-      {{ content.field_organizations }}
-    {% endblock %}
-  {% endembed %}
+  {% if content.computed_related_to %}
+    {% embed "@molecules/relationship-indicators.twig" with {
+      "relationshipIndicators": {
+        "pageTitle": node.label,
+        "primary": primaryIndicators,
+        "secondary": secondaryIndicators
+      }
+    } %}
+      {% block primaryRelationship %}
+        {{ primaryRelationshipContent }}
+      {% endblock %}
+      {% block secondaryRelationship %}
+        {{ content.field_organizations }}
+      {% endblock %}
+    {% endembed %}
+  {% endif %}
+
   {{ content.referencing_binders }}
   {% include "@organisms/by-template/page-header.twig" %}
 {% endblock %}
