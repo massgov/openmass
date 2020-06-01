@@ -128,7 +128,7 @@ export function www(token) {
 
     // Fetch from the origin, overriding edge TTL if necessary.
     let response = await fetch(backendRequest, {
-      cf: edgeTTL !== RESPECT_ORIGIN ? {cacheTtl: edgeTTL} : {}
+      cf: edgeTTL !== RESPECT_ORIGIN ? {cacheTtl: edgeTTL} : {cacheEverything: true}
     });
 
     // Attempt to pre-resolve a media download redirect by fetching the file and returning

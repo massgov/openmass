@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.decision_tree_branch.field_decision_root_ref
     - field.field.node.decision_tree_branch.field_description
     - field.field.node.decision_tree_branch.field_more_info
+    - field.field.node.decision_tree_branch.field_multiple_answers
     - field.field.node.decision_tree_branch.field_organizations
     - field.field.node.decision_tree_branch.field_state_organization_tax
     - node.type.decision_tree_branch
@@ -59,6 +60,15 @@ content:
   field_more_info:
     type: entity_reference_revisions_entity_view
     weight: 3
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_multiple_answers:
+    type: entity_reference_revisions_entity_view
+    weight: 8
     label: above
     settings:
       view_mode: default

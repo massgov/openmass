@@ -70,6 +70,9 @@ class RelatedLocations extends EntityReferenceFieldItemList {
         else {
           $items = array_keys($ref_count);
         }
+        // DP-16699: Sometime parent can be the same node,
+        // filtering to resolve duplicates issue.
+        $items = array_unique($items);
       }
 
       $delta = 0;

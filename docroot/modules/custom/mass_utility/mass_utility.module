@@ -522,7 +522,7 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
         unset($element['subform']['field_listitemlink_item']['widget'][1]);
       }
     }
-    elseif ($field_name == 'field_about' || $field_name == 'field_org_featured_items') {
+    elseif ($field_name == 'field_about' || $field_name == 'field_org_featured_items' || $field_name == 'field_org_featured_message') {
       if (!empty($element['#description'])) {
         $element['description'] = [
           '#type' => 'container',
