@@ -20,9 +20,10 @@ use Drupal\node\Entity\Node;
 function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
   $form['#validate'][] = 'mass_alerts_validate_alert_placement';
+  $form['field_target_pages_para_ref']['#access'] = FALSE;
 
   if (!\Drupal::currentUser()->hasPermission('create site wide alerts')) {
-    $form['field_alert_display']['widget']['#disabled'] = TRUE;
+    unset($form['field_alert_display']['widget']['#options']['site_wide']);
   }
 }
 
@@ -32,9 +33,10 @@ function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form
 function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
   $form['#validate'][] = 'mass_alerts_validate_alert_placement';
+  $form['field_target_pages_para_ref']['#access'] = FALSE;
 
   if (!\Drupal::currentUser()->hasPermission('create site wide alerts')) {
-    $form['field_alert_display']['widget']['#disabled'] = TRUE;
+    unset($form['field_alert_display']['widget']['#options']['site_wide']);
   }
 }
 
@@ -48,24 +50,31 @@ function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface 
  */
 function mass_alerts_validate_alert_placement(array &$form, FormStateInterface $form_state) {
   $field_alert_display = $form_state->getValue('field_alert_display');
-  if ($field_alert_display[0]['value'] == 'specific_target_pages') {
-    $para_ref = $form_state->getValue('field_target_pages_para_ref');
-    unset($para_ref['add_more']);
-    if (!empty($para_ref)) {
-      // The paragraph can be index 0 or index 1 in my testing. So just use current() to get the first one.
-      $subform = current($para_ref)['subform'];
-      if (empty($subform['field_target_content_ref'][0]['target_id'])) {
-        // No bueno. Set an error below.
+
+  // Array of alert display field options and corresponding field name.
+  $alert_displays = [
+    'specific_target_pages' => 'field_target_page',
+    'by_organization' => 'field_target_organization',
+  ];
+
+  foreach ($alert_displays as $selection => $field_name) {
+    if ($field_alert_display[0]['value'] == $selection) {
+      $target_nodes = $form_state->getValue($field_name);
+      unset($target_nodes['add_more']);
+      foreach ($target_nodes as $node) {
+        if ($node['target_id']) {
+          // Requirements are satisfied.
+          return;
+        }
+      }
+      // If no target_ids were found set error.
+      if ($selection == 'specific_target_pages') {
+        $form_state->setErrorByName('field_alert_display', t("An 'On specific pages' alert must show on at least one page. Instead of removing all Target pages, please unpublish the alert."));
       }
       else {
-        // Requirements are satisfied.
-        return;
+        $form_state->setErrorByName('field_alert_display', t("A 'By Organization' alert must show on at least one organization."));
       }
     }
-    else {
-      // No bueno. Set an error below.
-    }
-    $form_state->setErrorByName('field_alert_display', t("An 'On specific pages' alert must show on at least one page. Instead of removing all Target pages, please unpublish the alert."));
   }
 }
 

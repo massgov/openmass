@@ -2,12 +2,14 @@
  * @file
  * Functions for serializing alerts jsonapi response to json accepted by mayflower ajax pattern.
  *
- * Fields used in processing (formatted as query string):
- *  * fields[node--alert]=title,changed,entity_url,field_alert_severity,field_alert,field_target_pages_para_ref,field_alert_display
- *  * fields[paragraph--emergency_alert]=drupal_internal__id,changed,field_emergency_alert_timestamp,field_emergency_alert_message,field_emergency_alert_link,field_emergency_alert_content
- *  * fields[paragraph--target_pages]=field_target_content_ref
- *  * include=field_target_pages_para_ref,field_alert
- *  * filter[status][value]=1
+ * JSON RESPONSE
+ * /jsonapi/node/alert?
+ * page[limit]=300
+ * &sort=-changed
+ * &include=field_alert
+ * &filter[status][value]=1
+ * &fields[node--alert]=title,changed,entity_url,field_alert_severity,field_alert,field_target_page,field_target_organization,field_alert_display
+ * &fields[paragraph--emergency_alert]=drupal_internal__id,changed,field_emergency_alert_timestamp,field_emergency_alert_message,field_emergency_alert_link,field_emergency_alert_content
  */
 
 (function ($, Drupal, drupalSettings) {
@@ -130,7 +132,10 @@
                   chevron: true
                 };
               }
-              else if (currentAlertItem.attributes.field_alert_display === 'specific_target_pages') {
+              else if (
+                currentAlertItem.attributes.field_alert_display === 'specific_target_pages' ||
+                currentAlertItem.attributes.field_alert_display === 'by_organization'
+              ) {
                 serializedAlertParagraph.link = {
                   href: currentAlertItem.attributes.entity_url + '#' + item.attributes.drupal_internal__id,
                   text: 'Read more',
@@ -151,8 +156,10 @@
 
     getSerializedPageAlertData: function getSerializedPageAlertData(responseData) {
       var serializedPageAlertData = {headerAlerts: []};
-      var paragraphsWithCurrentPageAsTarget = [];
       var currentPageUuid = null;
+      var currentPageOrganizationList = window.dataLayer[0].entityField_organizations;
+      var currentOrgIncluded = false;
+      var orgPageUuids = [];
 
       // If we do not know current page's uuid, we will
       // not be able to target it, so, abort.
@@ -166,64 +173,83 @@
         return {};
       }
 
-      try {
-        // In the response, paragraph references are included separately from
-        // the alerts. We collect any paragraphs references that hold
-        // the current page as a target.
-        // If the current page is in none of them, we abort.
-        responseData.included.forEach(function (item) {
-          if (item.type !== 'paragraph--target_pages') {
-            return;
+      // Create array of organization UUIDs this current page belongs to.
+      Object.keys(currentPageOrganizationList).forEach(function (key) {
+        if (window.dataLayer[0].entityBundle === 'org_page') {
+          if (currentPageOrganizationList[key] === window.dataLayer[0].entityId) {
+            currentOrgIncluded = true;
           }
-          if (item.relationships.field_target_content_ref.data !== null) {
-            if (item.relationships.field_target_content_ref.data.id === currentPageUuid) {
-              paragraphsWithCurrentPageAsTarget.push(item.id);
-            }
-          }
-        });
-        if (paragraphsWithCurrentPageAsTarget.length === 0) {
-          return {};
         }
-      }
-      catch (e) {
-        console.error(e);
+        orgPageUuids.push(currentPageOrganizationList[key]['uuid']);
+      });
+
+      // Some organization nodes reference themselves in their own field_organizations field,
+      // but not all of them. This includes them if they do not reference themselves
+      // to ensure by_organization alerts appear on organization nodes.
+      if (window.dataLayer[0].entityBundle === 'org_page' && !currentOrgIncluded) {
+        orgPageUuids.push(currentPageUuid);
       }
 
-      // Now we iterate on each alert data.
+      // Now we iterate on each alert node in the response.
       responseData.data.forEach(function (item) {
-        // Don't process if it not alert content
+
+        // Don't process if item is not alert data.
         if (item.type !== 'node--alert') {
           return;
         }
-        // See if the alert item is for specific target pages.
-        if (item.attributes.field_alert_display === 'specific_target_pages') {
-          var currentAlertItem = item;
-          // See if any paragraph in this alert is connected to current page
-          // If yes, we want this alert.
-          currentAlertItem.relationships.field_target_pages_para_ref.data.forEach(function (paraItem) {
-            // NOTE: We have a polyfill to ensure Array.includes() works for us in all browsers.
-            if (paragraphsWithCurrentPageAsTarget.includes(paraItem.id)) {
-              var alertDetailParagraphIds = Drupal.behaviors.mayflower.getAlertParagraphIds(currentAlertItem);
-              var alertDetailParagraphData = Drupal.behaviors.mayflower.getAlertParagraphData(responseData, alertDetailParagraphIds, currentAlertItem);
-              alertDetailParagraphData.forEach(function (alertData) {
-                // NOTE: getAlertParagraphData already sets the id such that it is unique and it changes everytime an alert content is udpated.
-                // We use it to show an alert again, if a user had previously dismissed it, but if the alert now has new updated content.
-                var serializedAlertItem = {
-                  id: alertData.id,
-                  text: alertData.message,
-                  href: alertData.link.href,
-                  info: ''
-                };
-                if (currentAlertItem.attributes.field_alert_severity && currentAlertItem.attributes.field_alert_severity === 'informational_notice') {
-                  serializedAlertItem.prefix = 'Notice';
-                }
-                serializedPageAlertData.headerAlerts.push(serializedAlertItem);
-              });
-              // Exit the loop to prevent multiple copies.
-              return;
-            }
-          });
+
+        // Don't process if item is not a relevant display.
+        if (
+          item.attributes.field_alert_display !== 'by_organization' &&
+          item.attributes.field_alert_display !== 'specific_target_pages'
+        ) {
+          return;
         }
+
+        var currentAlertItem = item;
+        var exit = false;
+        var alertReferenceFields;
+        var uuids = [];
+
+        if (item.attributes.field_alert_display === 'specific_target_pages') {
+          uuids.push(currentPageUuid);
+          alertReferenceFields = currentAlertItem.relationships.field_target_page;
+        }
+        else {
+          // Must be 'by_organization'.
+          uuids = orgPageUuids;
+          alertReferenceFields = currentAlertItem.relationships.field_target_organization;
+        }
+
+        // Loop through relevant alert fields.
+        alertReferenceFields.data.forEach(function (paraItem) {
+          if (exit) {
+            return;
+          }
+          // Only get data from the alert if has a relevant uuid to this current page.
+          if ($.inArray(paraItem.id, uuids) !== -1) {
+            var alertDetailParagraphIds = Drupal.behaviors.mayflower.getAlertParagraphIds(currentAlertItem);
+            var alertDetailParagraphData = Drupal.behaviors.mayflower.getAlertParagraphData(responseData, alertDetailParagraphIds, currentAlertItem);
+            alertDetailParagraphData.forEach(function (alertData) {
+              // NOTE: getAlertParagraphData already sets the id such that it is unique and it changes everytime an alert content is udpated.
+              // We use it to show an alert again, if a user had previously dismissed it, but if the alert now has new updated content.
+              var serializedAlertItem = {
+                id: alertData.id,
+                text: alertData.message,
+                href: alertData.link.href,
+                info: ''
+              };
+              if (currentAlertItem.attributes.field_alert_severity && currentAlertItem.attributes.field_alert_severity === 'informational_notice') {
+                serializedAlertItem.prefix = 'Notice';
+              }
+              serializedPageAlertData.headerAlerts.push(serializedAlertItem);
+            });
+            // Now that we got the alert data, we don't need to loop through this alert any more
+            // because we know this specific alert should appear. So exit the loop to prevent multiple copies.
+            // FYI using 'return' did not work here so I am using an 'exit' flag.
+            exit = true;
+          }
+        });
       });
 
       return serializedPageAlertData;

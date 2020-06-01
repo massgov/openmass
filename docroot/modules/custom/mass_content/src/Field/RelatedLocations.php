@@ -4,6 +4,7 @@ namespace Drupal\mass_content\Field;
 
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\Core\Field\EntityReferenceFieldItemList;
+use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 
 /**
@@ -59,16 +60,20 @@ class RelatedLocations extends EntityReferenceFieldItemList {
         foreach ($fields as $field) {
           foreach ($parent_nodes as $parent_node) {
             if ($parent_node->hasField($field)) {
-              $ref_count[$parent_node->id()] = count($parent_node->{$field});
+              // We check here to see if field has value to avoid broken links.
+              if (Helper::getReferencedEntitiesFromField($parent_node, $field)) {
+                $ref_count[$parent_node->id()] = count($parent_node->{$field});
+              }
             }
           }
         }
-
-        if (count($ref_count) > 2) {
-          $items = $this->sortParents($ref_count);
-        }
-        else {
-          $items = array_keys($ref_count);
+        if (!empty($ref_count)) {
+          if (count($ref_count) > 2) {
+            $items = $this->sortParents($ref_count);
+          }
+          else {
+            $items = array_keys($ref_count);
+          }
         }
         // DP-16699: Sometime parent can be the same node,
         // filtering to resolve duplicates issue.
@@ -76,9 +81,11 @@ class RelatedLocations extends EntityReferenceFieldItemList {
       }
 
       $delta = 0;
-      foreach ($items as $item) {
-        $this->list[$delta] = $this->createItem($delta, ['target_id' => $item]);
-        $delta++;
+      if (!empty($items)) {
+        foreach ($items as $item) {
+          $this->list[$delta] = $this->createItem($delta, ['target_id' => $item]);
+          $delta++;
+        }
       }
     }
   }
