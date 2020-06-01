@@ -402,7 +402,10 @@ function mass_metatag_datalayer_alter(&$data_layer) {
     $organizations = [];
     foreach ($ids as $id) {
       if ($node = Node::load($id)) {
-        $organizations[$id] = $node->getTitle();
+        $organizations[$id] = [
+          'title' => $node->getTitle(),
+          'uuid' => $node->uuid(),
+        ];
       }
     }
     $data_layer['entityField_organizations'] = $organizations;
