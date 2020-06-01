@@ -801,11 +801,14 @@ class Organisms {
     // Get related locations.
     foreach ($entity->{$fields['items']} as $item) {
       $ref_entity = $item->entity;
-      // Creates a map of fields that are on the entitiy.
-      $ref_map = [
-        'image' => ['field_bg_narrow', 'field_guide_page_bg_wide'],
-      ];
+      // Creates a map of fields that are on the entity.
       if ($ref_entity) {
+        if (method_exists($entity, 'isPublished') && !$ref_entity->isPublished()) {
+          continue;
+        }
+        $ref_map = [
+          'image' => ['field_bg_narrow', 'field_guide_page_bg_wide'],
+        ];
         $cache_tags = array_merge($cache_tags, $ref_entity->getCacheTags());
         // Determines which field names to use from the map.
         $field = Helper::getMappedFields($ref_entity, $ref_map);
