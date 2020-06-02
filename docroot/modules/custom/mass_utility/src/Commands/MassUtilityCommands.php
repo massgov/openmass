@@ -301,7 +301,7 @@ class MassUtilityCommands extends DrushCommands {
    * @option offset
    *   Determines how many records to skip. Defaults to 0.
    * @option timestamp
-   *   The timestamp to use when processing revisions. Defaults to 1 year ago.
+   *   The timestamp to use when processing revisions. Defaults to 14 months ago.
    *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Exception
@@ -321,7 +321,7 @@ class MassUtilityCommands extends DrushCommands {
     $idlist = !empty($options['idlist']) ? explode(',', $options['idlist']) : [];
     // If the user didn't provide a timestamp, then default to a year ago from
     // today's date.
-    $timestamp = !empty($options['timestamp']) ? $options['timestamp'] : strtotime('1 year ago');
+    $timestamp = !empty($options['timestamp']) ? $options['timestamp'] : strtotime('14 months ago');
 
     // Setup the variables that will be used by the while loop.
     $finished = FALSE;

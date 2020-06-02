@@ -10,6 +10,14 @@
 {% set level = 1 %}
 
 {% block preContent %}
+  {# Check if primary indicator content exists. #}
+  {% if content.computed_related_to[0] %}
+    {% set primaryIndicators = { "label": "part of" } %}
+    {% set primaryRelationshipContent = content.computed_related_to %}
+  {% else %}
+    {% set primaryIndicators = null %}
+    {% set primaryRelationshipContent = null %}
+  {% endif %}
   {% set secondaryIndicators = false %}
   {% if node.computed_related_to is not empty %}
     {% set secondaryIndicators = {
@@ -19,14 +27,13 @@
 
   {% embed "@molecules/relationship-indicators.twig" with {
     "relationshipIndicators": {
-      "pageTitle": node.label,"primary": {
-        "label": "part of"
-      },
+      "pageTitle": node.label,
+      "primary": primaryIndicators,
       "secondary": secondaryIndicators
     }
   } %}
     {% block primaryRelationship %}
-      {{ content.computed_related_to }}
+      {{ primaryRelationshipContent }}
     {% endblock %}
     {% block secondaryRelationship %}
       {{ content.field_organizations }}

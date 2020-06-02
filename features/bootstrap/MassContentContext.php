@@ -15,11 +15,12 @@ use Drupal\user\Entity\User;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\mass_entityaccess_userreference\Entity\UserRefAccess;
+use Behat\Behat\Context\SnippetAcceptingContext;
 
 /**
  * Defines content features specific to Mass.gov.
  */
-class MassContentContext extends RawDrupalContext {
+class MassContentContext extends RawDrupalContext implements SnippetAcceptingContext {
 
   /**
    * @var Object[] Array of action nodes keyed on 'title'.
@@ -795,6 +796,48 @@ class MassContentContext extends RawDrupalContext {
     if($referenced = $this->getNodesByTitle($type, $name)) {
       $this->drupalContext->getDriver()->nodeDelete(reset($referenced));
     }
+  }
+
+  /**
+   * Creates a 'page' type paragraph for the binder node.
+   *
+   * This function adds to the current binder node a paragraph that has a link
+   * field and links to the node title parameter passed into this function.
+   *
+   * @Given I add a page paragraph that links to :nodeTitle
+   *
+   * @param string $nodeTitle
+   *   Node title.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  public function iAddAPageParagraphThatLinksTo($nodeTitle) {
+
+    $reference_node = \Drupal::entityTypeManager()
+      ->getStorage('node')
+      ->loadByProperties(['title' => $nodeTitle]);
+    if (empty($reference_node)) {
+      throw new \Exception('Reference node does not exist.');
+    }
+    $reference_node = reset($reference_node);
+
+    $paragraph = Paragraph::create(['type' => 'page']);
+    $paragraph->set('field_page_page', [
+      'uri' => 'entity:node/' . $reference_node->id(),
+      'title' => $reference_node->getTitle(),
+    ]);
+    $paragraph->save();
+
+    if (empty($this->nodes)) {
+      throw new \Exception('No nodes have been created yet.');
+    }
+
+    $latest_node = end($this->nodes);
+    $node = Node::load($latest_node->nid);
+    $node->get('field_binder_pages')->appendItem($paragraph);
+    $node->save();
   }
 
 }

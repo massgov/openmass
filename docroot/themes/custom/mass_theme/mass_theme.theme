@@ -1338,18 +1338,19 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
       ];
     }
 
+    // contentEyebrow output is replaced with primay relationship indicator.
     // Set the contentEyebrow options.
-    $contentEyebrow_options = [
-      "hideBorder" => TRUE,
-      "headerTags" => $headerTags_options,
-    ];
+    // $contentEyebrow_options = [
+    //   "hideBorder" => TRUE,
+    //   "headerTags" => $headerTags_options,
+    // ];
 
     $relationshipIndicator_options = [
-      "tags" => $headerTags_options,
+      "tags" => $taxonomy_terms_unique,
     ];
 
     // Make contentEyebrow data structure available in twig template.
-    $variables['contentEyebrow'] = Organisms::prepareContentEyebrow($contentEyebrow_options);
+    // $variables['contentEyebrow'] = Organisms::prepareContentEyebrow($contentEyebrow_options);
 
     $variables['relationshipIndicatorPrimary'] = Organisms::prepareRelationshipIndicatorPrimary($relationshipIndicator_options);
 
@@ -2042,7 +2043,7 @@ function mass_theme_preprocess_node_decision(&$variables) {
  */
 function mass_theme_preprocess_node_regulation(&$variables) {
   $node = $variables['node'];
-  $category = '';
+  $category = 'Regulation';
   $publish_state = NULL;
   $cache_tags = [];
   $listingTable = [];
