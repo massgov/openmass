@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.info_details.field_data_flag
     - field.field.node.info_details.field_data_resource_type
     - field.field.node.info_details.field_details_data_type
+    - field.field.node.info_details.field_details_enable_fields
     - field.field.node.info_details.field_footnotes
     - field.field.node.info_details.field_image_credit
     - field.field.node.info_details.field_info_detail_overview
@@ -25,6 +26,7 @@ dependencies:
     - field.field.node.info_details.field_state_organization_tax
     - image.style.thumbnail
     - node.type.info_details
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -57,6 +59,7 @@ third_party_settings:
       children:
         - title
         - field_short_desc
+        - field_details_enable_fields
         - field_banner_image
         - field_info_detail_overview
         - group_header_media
@@ -110,7 +113,7 @@ third_party_settings:
       children:
         - field_info_details_header_media
       parent_name: group_overview
-      weight: 5
+      weight: 6
       format_type: fieldset
       format_settings:
         label: 'Header Media'
@@ -139,7 +142,7 @@ bundle: info_details
 mode: default
 content:
   field_banner_image:
-    weight: 3
+    weight: 4
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
@@ -157,13 +160,13 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_data_flag:
-    weight: 11
+    weight: 12
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_data_resource_type:
-    weight: 13
+    weight: 14
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -187,7 +190,7 @@ content:
     type: options_buttons
     region: content
   field_details_data_type:
-    weight: 12
+    weight: 13
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -210,6 +213,13 @@ content:
           bundle: info_details
     type: options_buttons
     region: content
+  field_details_enable_fields:
+    weight: 3
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
   field_footnotes:
     weight: 2
     settings:
@@ -227,7 +237,7 @@ content:
     type: string_textfield
     region: content
   field_info_detail_overview:
-    weight: 4
+    weight: 5
     settings:
       rows: 5
       placeholder: ''
@@ -235,7 +245,7 @@ content:
     type: text_textarea
     region: content
   field_info_details_date_publishe:
-    weight: 6
+    weight: 7
     settings: {  }
     third_party_settings: {  }
     type: datetime_default
@@ -253,7 +263,7 @@ content:
     third_party_settings: {  }
     region: content
   field_info_details_last_updated:
-    weight: 7
+    weight: 8
     settings: {  }
     third_party_settings: {  }
     type: datetime_default
@@ -290,13 +300,13 @@ content:
     type: metatag_firehose
     region: content
   field_intended_audience:
-    weight: 14
+    weight: 15
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 10
+    weight: 11
     settings:
       match_operator: CONTAINS
       size: 60
@@ -306,14 +316,14 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_page_template:
-    weight: 8
+    weight: 9
     settings: {  }
     third_party_settings: {  }
     type: options_select
     region: content
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 9
+    weight: 10
     region: content
     settings:
       match_operator: CONTAINS

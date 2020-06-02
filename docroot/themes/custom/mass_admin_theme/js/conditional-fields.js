@@ -128,22 +128,40 @@
    */
   Drupal.behaviors.tableauembedConditional = {
     attach: function (context) {
-      $('.field--name-field-tabl-display-size .form-select', context).change(function () {
-        $('.field--name-field-tabl-display-size .form-select option:selected').each(function () {
-          var $size = $(this).val();
-          if ($size === 'x-large') {
-            $('.field--name-field-tabl-alignment').hide();
-            $('.field--name-field-tabl-wrapping').hide();
-            $('.field--name-field-tabl-alignment .fieldgroup').removeAttr('required');
-          }
-          else {
-            $('.field--name-field-tabl-alignment').show();
-            $('.field--name-field-tabl-alignment .fieldgroup').prop('required', true);
-            $('.field--name-field-tabl-wrapping').show();
-          }
-        });
-      })
-        .change();
+      $('.field--name-field-tabl-display-size', context).change(function () {
+        if ($(this).find('option:selected').val() === 'x-large') {
+          $(this).siblings('.field--name-field-tabl-alignment').hide().find('.fieldgroup').removeAttr('required');
+          $(this).siblings('.field--name-field-tabl-wrapping').hide();
+        }
+        else {
+          $(this).siblings('.field--name-field-tabl-alignment').show().find('.fieldgroup').attr('required', 'required');
+          $(this).siblings('.field--name-field-tabl-wrapping').show();
+        }
+      }).change();
     }
   };
+
+  /**
+   * Enable/disable fields on info details.
+   *
+   * Hide or show the banner field (field_banner_image)
+   * based on the field_details_enable_fields value.
+   */
+  Drupal.behaviors.enableInfoFieldsConditional = {
+    attach: function (context) {
+      $('.field--name-field-details-enable-fields', context).change(function () {
+        if ($(this).find('input').prop('checked') === false) {
+          $(this).siblings('.field--name-field-banner-image').hide();
+          $(".field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content input[id$='-subform-field-section-long-form-content-add-more-add-more-button-callout-link']").hide();
+          $(".field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content input[id$='-subform-field-section-long-form-content-add-more-add-more-button-info-details-card-group']").hide();
+        }
+        else {
+          $(this).siblings('.field--name-field-banner-image').show();
+          $(".field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content input[id$='-subform-field-section-long-form-content-add-more-add-more-button-callout-link']").show();
+          $(".field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content input[id$='-subform-field-section-long-form-content-add-more-add-more-button-info-details-card-group']").show();
+        }
+      }).change();
+    }
+  };
+
 })(jQuery, Drupal);
