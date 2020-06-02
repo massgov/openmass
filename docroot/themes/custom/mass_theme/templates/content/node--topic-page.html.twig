@@ -14,8 +14,9 @@
   {#{% include "@organisms/by-template/breadcrumbs.twig" %}#}
   {# {% include "@organisms/by-template/content-eyebrow.twig" %} #}
 
-  {% set primary = [] %}
-  {% if relationshipIndicatorPrimary or relationshipIndicatorPrimary.tags|length > 0  %}
+  {% set primary = null %}
+  {% if relationshipIndicatorPrimary %}
+    {% set primary = [] %}
     {% for item in relationshipIndicatorPrimary.tags %}
       {% set itemLink = {
           'title': item.text,
@@ -23,8 +24,6 @@
       } %}
       {% set primary = primary|merge([ itemLink ]) %}
     {% endfor %}
-  {% else %}
-    {% set primary = null %}
   {% endif %}
 
   {% set secondary = null %}

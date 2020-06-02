@@ -1678,7 +1678,7 @@ class Organisms {
 
     // Create the relationship indicator primary term data structure.
     $relationshipIndicatorPrimary = [
-      'tags' => array_key_exists('tags', $options) ? $options['tags']['taxonomyTerms'] : NULL,
+      'tags' => array_key_exists('tags', $options) ? $options['tags'] : NULL,
     ];
 
     return $relationshipIndicatorPrimary;
