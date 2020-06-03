@@ -1,0 +1,65 @@
+<?php
+
+/**
+ * @file
+ * Installation functions for Mass Unpublish Reminder module.
+ */
+
+use Drupal\Core\Config\Entity\ConfigEntityStorage;
+use Drupal\Core\Database\Database;
+
+/**
+ * Implements hook_schema().
+ */
+function mass_unpublish_reminders_schema() {
+
+  // Unpublish reminder table.
+  $spec['mass_unpublish_reminders'] = [
+    'description' => 'Store the Mass notification data related to unpublish nodes.',
+    'fields' => [
+      'nid' => [
+        'description' => 'The Node ID.',
+        'type' => 'varchar_ascii',
+        'length' => ConfigEntityStorage::MAX_ID_LENGTH,
+        'not null' => TRUE,
+      ],
+      'reminder_sent' => [
+        'description' => 'The UNIX time stamp representing when the flag was last updated.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'disp-size' => 11,
+      ],
+    ],
+    'primary key' => ['nid'],
+  ];
+
+  return $spec;
+}
+
+/**
+ * Create new database table to hold snooze information for Top Priorties Block.
+ */
+function mass_unpublish_reminders_update_8001() {
+  if (!Database::getConnection()->schema()->tableExists('mass_unpublish_reminders')) {
+    $spec['mass_unpublish_reminders'] = [
+      'description' => 'Store the Mass notification data related to unpublish nodes.',
+      'fields' => [
+        'nid' => [
+          'description' => 'The Node ID.',
+          'type' => 'varchar_ascii',
+          'length' => ConfigEntityStorage::MAX_ID_LENGTH,
+          'not null' => TRUE,
+        ],
+        'reminder_sent' => [
+          'description' => 'The UNIX time stamp representing when the flag was last updated.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'disp-size' => 11,
+        ],
+      ],
+      'primary key' => ['nid'],
+    ];
+    $schema = Database::getConnection()->schema();
+    $schema->createTable('mass_unpublish_reminders', $spec);
+  }
+}

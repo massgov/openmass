@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_unpublish_reminders.module.
+ */
+
+use Drupal\Core\Database\Database;
+
+/**
+ * Implements hook_cron().
+ */
+function mass_unpublish_reminders_cron() {
+  // We need a way to bypass notifications (eg when we do bulk updates via drush).
+  $bypass_notification = isset($_ENV['MASS_REMINDERS_BYPASS']) ? (bool) $_ENV['MASS_REMINDERS_BYPASS'] : FALSE;
+
+  // Sends Unpublish notifications on local and Prod environments only when
+  // there is no bypass flag.
+  if ((!isset($_ENV['AH_SITE_ENVIRONMENT']) || $_ENV['AH_SITE_ENVIRONMENT'] == 'prod')
+    && !$bypass_notification) {
+    _mass_unpublish_reminders_cron_helper();
+  }
+}
+
+/**
+ * Helper function to keep cron code simple.
+ */
+function _mass_unpublish_reminders_cron_helper() {
+  if (Database::getConnection()->schema()->tableExists('mass_unpublish_reminders')) {
+
+    $start_timestamp = strtotime('today midnight');
+    $end_timestamp = strtotime('+8 days midnight') - 1;
+    $query = \Drupal::entityQuery('node')
+      ->condition('status', 1)
+      ->condition('type', ['alert', 'campaign_landing'], 'IN')
+      ->condition('unpublish_on', [
+        $start_timestamp,
+        $end_timestamp
+      ], 'BETWEEN');
+    $nids = $query->execute();
+
+    $database = \Drupal::database();
+    $query = $database->select('mass_unpublish_reminders', 'mur');
+    $query->fields('mur', ['nid', 'reminder_sent']);
+    $result = $query->execute()->fetchAll();
+    foreach ($result as $r) {
+      if (($key = array_search($r->nid, $nids)) !== false) {
+        // We remove an item from array to not send duplicate emails.
+        unset($nids[$key]);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function mass_unpublish_reminders_mail($key, &$message, $params) {
+  $options = ['langcode' => $message['langcode']];
+  switch ($key) {
+    case 'unpublish_reminder':
+      $system_site_mail = \Drupal::config('system.site')->get('mail');
+      // Ensures email headers match the From field.
+      $message['from'] = $message['headers']['From'] = $message['headers']['Sender'] = $message['headers']['Reply-to'] = $message['headers']['Return-Path'] = $system_site_mail;
+      $message['subject'] = t('Mass.gov page or alert will be unpublished in 1 week');
+      $message['body'][] = $params['message'];
+      break;
+  }
+}
