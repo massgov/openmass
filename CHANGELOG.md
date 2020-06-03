@@ -1,5 +1,28 @@
 
 
+## [0.246.0] - June 2, 2020
+
+### Added
+  - DP-18838: Add behat test for binder navigation and TOC.
+  - DP-18775: New checkbox added to Info details Content type to toggle Banner field, Callout and Card group buttons visibility.
+  - DP-18313: Add alerts by organization, swap page alert functionality from paragraph to entity-reference field.
+  - DP-18891: Add arcgis link to the iframe whitelist config.
+  
+### Fixed
+  - DP-16346: Solving broken links issue on location pages.
+  - DP-10442: Add missing regulation page eyebrow text.
+  
+### Security
+  - DP-18813: Drupal core update 8.8.4 -> 8.8.6
+  
+### Changed
+  - DP-18777: Changed Caption field order in Tableau paragraph form displays.
+  - DP-18921: Updated Mayflower version to 8.14.0.
+      - DP-18894: Remove param from font import statement to fix Drupal css aggregation issue. (MF)
+      - DP-18036: Update handlebars and node-sass. (MF)
+  
+
+
 ## [0.245.0] - May 26, 2020
 
 ### Changed
