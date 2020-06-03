@@ -190,11 +190,11 @@
       // since aria-live is announced only container which contains a change.
       // It doesn't announce nested containers to provide context.
       $('textarea[maxlength]').each(function(){
-        const $el = $(this);
-        const maxlength = $el.attr('maxlength');
+        var $el = $(this);
+        var maxlength = $el.attr('maxlength');
 
-        let remaining = maxlength - $el.val().length;
-        let message = `<div aria-hidden="true"><span class="remainChar">${remaining}</span>/${maxlength}</div>`;
+        var remaining = maxlength - $el.val().length;
+        var message = `<div aria-hidden="true"><span class="remainChar">${remaining}</span>/${maxlength}</div>`;
 
         $el.wrap('<div class="ma__textarea__wrapper"></div>');
 
