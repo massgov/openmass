@@ -874,6 +874,26 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
+      - backstop:
+          name: backstop-prod-maint
+          requires: [deploy-tag-prod-acquia-maint]
+          target: prod
+          reference: test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
+      - backstop:
+          name: backstop-prod-no-maint
+          requires: [deploy-tag-prod-acquia-no-maint]
+          target: prod
+          reference: test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
 
   # Daily run of test suite using super sanitized DB
   build_test_super:

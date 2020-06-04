@@ -25,7 +25,7 @@ const scenarios = pages.map(function(page) {
 
   switch (target) {
     case 'prod':
-      base = 'https://www.mass.gov';
+      base = 'https://edit.mass.gov';
       break;
     case 'local':
       base = 'http://mass.local';
