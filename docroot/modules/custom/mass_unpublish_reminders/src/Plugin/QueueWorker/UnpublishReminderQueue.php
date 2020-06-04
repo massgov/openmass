@@ -50,7 +50,7 @@ class UnpublishReminderQueue extends QueueWorkerBase {
       }
 
       if (!empty($cc_mails)) {
-        $params['headers']['Cc'] = implode(',', $cc_mails);
+        $params['headers']['Cc'] = implode(' ', $cc_mails);
       }
       $url = Url::fromRoute('entity.node.canonical', ['node' => $nid], ['absolute' => TRUE]);
       $link = Link::fromTextAndUrl($node->label(), $url);
@@ -61,7 +61,15 @@ class UnpublishReminderQueue extends QueueWorkerBase {
       $params['message'] = \Drupal::service('renderer')->renderPlain($renderable);
 
       $mailManager = \Drupal::service('plugin.manager.mail');
-      $mailManager->mail('mass_unpublish_reminders', 'unpublish_reminder', $author_mail, 'en', $params, TRUE);
+      $result = $mailManager->mail('mass_unpublish_reminders', 'unpublish_reminder', $author_mail, 'en', $params, TRUE);
+      if ($result['result'] == TRUE) {
+        $database = \Drupal::database();
+        $query = $database->insert('mass_unpublish_reminders');
+        $query->fields([
+          'nid' => $nid,
+          'reminder_sent' => \Drupal::time()->getRequestTime(),
+        ])->execute();
+      }
     }
   }
 
