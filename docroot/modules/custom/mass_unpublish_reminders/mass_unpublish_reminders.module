@@ -11,7 +11,15 @@ use Drupal\Core\Database\Database;
  * Implements hook_cron().
  */
 function mass_unpublish_reminders_cron() {
-  // We need a way to bypass notifications (eg when we do bulk updates via drush).
+  $last_run = Drupal::state()->get('mass_unpublish_reminders.last_cron', 0);
+  // Check if this function has been run in the
+  // last 24 hours (24 hours = 86400 seconds).
+  if ($last_run > REQUEST_TIME - 86400) {
+    return;
+  }
+
+  // We need a way to bypass notifications
+  // (eg when we do bulk updates via drush).
   $bypass_notification = isset($_ENV['MASS_REMINDERS_BYPASS']) ? (bool) $_ENV['MASS_REMINDERS_BYPASS'] : FALSE;
 
   // Sends Unpublish notifications on local and Prod environments only when
@@ -20,6 +28,7 @@ function mass_unpublish_reminders_cron() {
     && !$bypass_notification) {
     _mass_unpublish_reminders_cron_helper();
   }
+  Drupal::state()->set('mass_unpublish_reminder.last_cron', REQUEST_TIME);
 }
 
 /**
@@ -35,18 +44,38 @@ function _mass_unpublish_reminders_cron_helper() {
       ->condition('type', ['alert', 'campaign_landing'], 'IN')
       ->condition('unpublish_on', [
         $start_timestamp,
-        $end_timestamp
+        $end_timestamp,
       ], 'BETWEEN');
     $nids = $query->execute();
 
-    $database = \Drupal::database();
-    $query = $database->select('mass_unpublish_reminders', 'mur');
-    $query->fields('mur', ['nid', 'reminder_sent']);
-    $result = $query->execute()->fetchAll();
-    foreach ($result as $r) {
-      if (($key = array_search($r->nid, $nids)) !== false) {
-        // We remove an item from array to not send duplicate emails.
-        unset($nids[$key]);
+    if (!empty($nids)) {
+      $database = \Drupal::database();
+      $query = $database->select('mass_unpublish_reminders', 'mur');
+      $query->fields('mur', ['nid', 'reminder_sent']);
+      $result = $query->execute()->fetchAll();
+      if (!empty($result)) {
+        foreach ($result as $r) {
+          if (!empty($r->reminder_sent)) {
+            if (($key = array_search($r->nid, $nids)) !== FALSE) {
+              // We remove an item from array to not send duplicate emails.
+              unset($nids[$key]);
+            }
+          }
+        }
+      }
+
+      // Create queue to process emails.
+      $queue = \Drupal::queue('mass_unpublish_reminders_queue');
+      $queue->createQueue();
+      foreach ($nids as $nid) {
+        $query = $database->insert('mass_unpublish_reminders');
+        $query->fields([
+          'nid' => $nid,
+          // Initially we set this to be 0.
+          // This value will be set once actual email is sent.
+          'reminder_sent' => \Drupal::time()->getRequestTime(),
+        ])->execute();
+        $queue->createItem($nid);
       }
     }
   }
@@ -56,14 +85,27 @@ function _mass_unpublish_reminders_cron_helper() {
  * Implements hook_mail().
  */
 function mass_unpublish_reminders_mail($key, &$message, $params) {
-  $options = ['langcode' => $message['langcode']];
   switch ($key) {
     case 'unpublish_reminder':
       $system_site_mail = \Drupal::config('system.site')->get('mail');
       // Ensures email headers match the From field.
+      if (!empty($params['headers'])) {
+        $message['headers'] += $params['headers'];
+      }
       $message['from'] = $message['headers']['From'] = $message['headers']['Sender'] = $message['headers']['Reply-to'] = $message['headers']['Return-Path'] = $system_site_mail;
       $message['subject'] = t('Mass.gov page or alert will be unpublished in 1 week');
       $message['body'][] = $params['message'];
       break;
   }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function mass_unpublish_reminders_theme($existing, $type, $theme, $path) {
+  return [
+    'mass_reminder_mail_template' => [
+      'variables' => ['page_url' => NULL],
+    ],
+  ];
 }
