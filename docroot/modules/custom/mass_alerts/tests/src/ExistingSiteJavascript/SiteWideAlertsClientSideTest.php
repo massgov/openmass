@@ -9,7 +9,7 @@ use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
 /**
  * Test the client side of alert display.
  */
-class EmergencyAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
+class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
   const DURATION = 60000;
 
@@ -22,7 +22,7 @@ class EmergencyAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function testAlertDisplay() {
+  public function testSiteWideAlertDisplay() {
 //    $this->markTestSkipped('Fails when DB already has a sitewide alert showing.');
 
     $nids = \Drupal::entityQuery('node')
