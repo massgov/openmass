@@ -167,6 +167,28 @@ class EmergencyAlertsTest extends ExistingSiteBase {
   }
 
   /**
+   * Assert organization alert can be created by a user with the editor role.
+   */
+  public function testEditorRoleOrganizationAlert() {
+    $this->drupalLogin($this->editor);
+
+    $session = $this->getSession();
+    $session->visit('/node/add/alert');
+    $page = $session->getPage();
+    $page->fillField('edit-title-0-value', $this->randomMachineName());
+    $page->fillField('field_alert_display', 'by_organization');
+    $page->fillField('edit-field-target-organization-0-target-id', $this->orgNode->getTitle());
+    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
+    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
+    $page->fillField('edit-field-organizations-0-target-id', $this->orgNode->getTitle());
+    $page->fillField('edit-unpublish-on-0-value-date', '2037-07-01');
+    $page->fillField('edit-unpublish-on-0-value-time', '00:00:00');
+    $page->selectFieldOption('moderation_state[0][state]', 'published');
+    $page->pressButton('Save');
+    $this->assertContains('Current moderation state: published', $page->getText());
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function tearDown() {
