@@ -121,4 +121,37 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $this->assertContains('This sitewide alert cannot be published because another sitewide alert is currently active:', $page->getText());
   }
 
+  /**
+   * Assert specific page alert can be created by a user with the editor role.
+   */
+  public function testEditorRolePageSpecificAlert() {
+    $user = User::create(['name' => $this->randomMachineName()]);
+    $user->addRole('editor');
+    $user->activate();
+    $user->save();
+    $this->drupalLogin($user);
+
+    $org_node = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+
+    $session = $this->getSession();
+    $session->visit('/node/add/alert');
+    $page = $session->getPage();
+    $page->fillField('edit-title-0-value', $this->randomMachineName());
+    $page->fillField('field_alert_display', 'specific_target_pages');
+    $page->fillField('edit-field-target-page-0-target-id', $org_node->getTitle());
+    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
+    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
+    $page->fillField('edit-field-organizations-0-target-id', $org_node->getTitle());
+    $page->fillField('edit-unpublish-on-0-value-date', '2037-07-01');
+    $page->fillField('edit-unpublish-on-0-value-time', '00:00:00');
+    $page->selectFieldOption('moderation_state[0][state]', 'published');
+    $page->pressButton('Save');
+    $this->assertContains('Current moderation state: published', $page->getText());
+  }
+
 }
