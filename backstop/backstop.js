@@ -25,7 +25,7 @@ const scenarios = pages.map(function(page) {
 
   switch (target) {
     case 'prod':
-      base = 'https://edit.mass.gov';
+      base = 'https://www.mass.gov';
       break;
     case 'local':
       base = 'http://mass.local';
@@ -40,7 +40,7 @@ const scenarios = pages.map(function(page) {
   }
   return {
     ...page,
-    url: `${base}${page.url}`,
+    url: `${base}${page.url}?cachebuster=${Math.random().toString(36).substring(7)}`,
     misMatchThreshold: 0.05,
     auth,
   }
@@ -99,6 +99,6 @@ module.exports = {
     },
     "asyncCaptureLimit": 2,
     "asyncCompareLimit": 3,
-    "debug": false,
+    "debug": true,
     "debugWindow": false
 }
