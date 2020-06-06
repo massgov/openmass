@@ -99,6 +99,6 @@ module.exports = {
     },
     "asyncCaptureLimit": 2,
     "asyncCompareLimit": 3,
-    "debug": true,
+    "debug": false,
     "debugWindow": false
 }

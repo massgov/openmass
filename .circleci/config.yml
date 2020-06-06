@@ -865,16 +865,6 @@ workflows:
             tags:
               only: /.*/
       - backstop:
-          name: backstop-prod
-          requires: [deploy-tag-prod-acquia-maint]
-          target: prod
-          reference: test
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /.*/
-      - backstop:
           name: backstop-prod-maint
           requires: [deploy-tag-prod-acquia-maint]
           target: prod
