@@ -19,7 +19,7 @@
     {% set primaryRelationshipContent = null %}
   {% endif %}
   {% set secondaryIndicators = false %}
-  {% if node.field_rules_related_collections is not empty %}
+  {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
       "label": "offered by"
     } %}
@@ -36,7 +36,7 @@
       {{ primaryRelationshipContent }}
     {% endblock %}
     {% block secondaryRelationship %}
-      {{ content.field_organizations }}
+      {{ content.field_organizations[0] }}
     {% endblock %}
   {% endembed %}
   {{ content.referencing_binders }}
