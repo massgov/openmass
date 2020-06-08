@@ -62,7 +62,7 @@ executors:
           DTT_BASE_URL: http://mass.local
           DTT_API_URL: http://mass.local:9222
           BROWSERTEST_OUTPUT_DIRECTORY: /tmp
-#          MEMORY_LIMIT: 2GB
+          MEMORY_LIMIT: 2GB
       - image: << parameters.instance >>
         auth:
           username: $DOCKER_USER
@@ -72,7 +72,7 @@ executors:
           MYSQL_PASSWORD: circle
           MYSQL_DATABASE: circle
           MYSQL_RANDOM_ROOT_PASSWORD: 1
-          MEMORY_LIMIT: 2GB
+#          MEMORY_LIMIT: 2GB
         command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
       - image: memcached:1-alpine
         command: memcached -m 128
