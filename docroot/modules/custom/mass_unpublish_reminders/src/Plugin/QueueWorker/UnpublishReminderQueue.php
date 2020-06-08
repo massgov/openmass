@@ -5,7 +5,6 @@ namespace Drupal\mass_unpublish_reminders\Plugin\QueueWorker;
 use Drupal\Core\Queue\QueueWorkerBase;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Url;
-use Drupal\Core\Link;
 
 /**
  * Processes Tasks for mass_unpublish_reminders.
@@ -55,10 +54,9 @@ class UnpublishReminderQueue extends QueueWorkerBase {
         $params['headers']['cc'] = implode(',', $cc_mails);
       }
       $url = Url::fromRoute('entity.node.canonical', ['node' => $nid], ['absolute' => TRUE]);
-      $link = Link::fromTextAndUrl($node->label(), $url);
       $renderable = [
         '#theme' => 'mass_reminder_mail_template',
-        '#page_url' => $link,
+        '#page_url' => $url,
       ];
       $params['message'] = \Drupal::service('renderer')->renderPlain($renderable);
 
