@@ -25,7 +25,31 @@
 {% extends 'node.html.twig' %}
 
 {% block preContent %}
-  {% include "@organisms/by-template/content-eyebrow.twig" %}
+  {# {% include "@organisms/by-template/content-eyebrow.twig" %} #}
+  {# DP-18237: Output the content eyebrow data with @molecules/relationship-indicators.twig. #}
+  {% if contentEyebrow %}
+    {% set pagetitle = pageHeader.title ~ " for " ~ contentEyebrow.headerTags.taxonomyTerms[0].text %}
+    {% embed "@molecules/relationship-indicators.twig" with {
+        "relationshipIndicators": {
+          "pageTitle": pagetitle,
+          "primary": {
+            "label": "part of"
+          },
+          "secondary": null
+        }
+      } %}
+      {% block primaryRelationship %}
+        {% for item in contentEyebrow.headerTags.taxonomyTerms %}
+          {% include "@atoms/item-link.twig" with {
+            "itemLink": {
+              "title": item.text,
+              "href": item.href
+            }
+          } %}
+        {% endfor %}
+      {% endblock %}
+    {% endembed %}
+  {% endif %}
   {% include "@organisms/by-template/page-header.twig" %}
 {% endblock %}
 {% block main %}
