@@ -62,6 +62,7 @@ executors:
           DTT_BASE_URL: http://mass.local
           DTT_API_URL: http://mass.local:9222
           BROWSERTEST_OUTPUT_DIRECTORY: /tmp
+          MEMORY_LIMIT: 1GB
       - image: << parameters.instance >>
         auth:
           username: $DOCKER_USER
