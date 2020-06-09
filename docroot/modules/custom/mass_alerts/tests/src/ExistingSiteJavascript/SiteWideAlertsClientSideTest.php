@@ -13,6 +13,17 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
   const DURATION = 60000;
 
+  private $memoryLimit;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    parent::setUp();
+    $this->memoryLimit = ini_get('memory_limit');
+    ini_set('memory_limit', '1024M');
+  }
+
   /**
    * Test the client side of alert display.
    *
@@ -99,6 +110,15 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
     sleep(5);
     $jsWebAssert->statusCodeEquals(200);
     $jsWebAssert->pageTextNotContains($node->getTitle());
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function tearDown() {
+    parent::tearDown();
+    ini_set('memory_limit', $this->memoryLimit);
+    $this->memoryLimit = NULL;
   }
 
 }
