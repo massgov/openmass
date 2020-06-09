@@ -28,32 +28,32 @@ class SpecificPageAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
    * @throws \Behat\Mink\Exception\ResponseTextException
    */
   public function testPagesHaveOrgAlert() {
-    $alert_message = $this->randomString();
+    $alert_message = $this->randomMachineName();
 
     $org_node = $this->createNode([
       'type' => 'org_page',
-      'title' => $this->randomString(),
+      'title' => $this->randomMachineName(),
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
     $news_node = $this->createNode([
       'type' => 'news',
-      'title' => $this->randomString(),
+      'title' => $this->randomMachineName(),
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
     $event_node = $this->createNode([
       'type' => 'event',
-      'title' => $this->randomString(),
+      'title' => $this->randomMachineName(),
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
     $this->createNode([
       'type' => 'alert',
-      'title' => $this->randomString(),
+      'title' => $this->randomMachineName(),
       'field_alert_display' => 'specific_target_pages',
       'moderation_state' => MassModeration::PUBLISHED,
       'status' => 1,

@@ -29,18 +29,18 @@ class OrganizationAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
    */
   public function testPagesHaveOrgAlert() {
 
-    $alert_message = $this->randomString();
+    $alert_message = $this->randomMachineName();
 
     $org_node = $this->createNode([
       'type' => 'org_page',
-      'title' => $this->randomString(),
+      'title' => $this->randomMachineName(),
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
     $news_node = $this->createNode([
       'type' => 'news',
-      'title' => $this->randomString(),
+      'title' => $this->randomMachineName(),
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
       'field_organizations' => ['target_id' => $org_node->id()],
@@ -48,7 +48,7 @@ class OrganizationAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
     $this->createNode([
       'type' => 'alert',
-      'title' => $this->randomString(),
+      'title' => $this->randomMachineName(),
       'field_alert_display' => 'by_organization',
       'moderation_state' => MassModeration::PUBLISHED,
       'status' => 1,
