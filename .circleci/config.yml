@@ -62,7 +62,6 @@ executors:
           DTT_BASE_URL: http://mass.local
           DTT_API_URL: http://mass.local:9222
           BROWSERTEST_OUTPUT_DIRECTORY: /tmp
-          MEMORY_LIMIT: 3072M
       - image: << parameters.instance >>
         auth:
           username: $DOCKER_USER
@@ -252,7 +251,7 @@ jobs:
       - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
       # drupal-test-traits testing
-      - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom --debug"'
+      - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom"'
       # Behat testing
       - run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - store_test_results:

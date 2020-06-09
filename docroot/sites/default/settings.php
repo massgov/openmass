@@ -183,5 +183,5 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   }
 }
 if (PHP_SAPI === 'cli') {
-  ini_set('memory_limit', '512M');
+  ini_set('memory_limit', '2048M');
 }
