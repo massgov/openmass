@@ -864,20 +864,19 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold_for_backstop:
-          type: approval
-          requires:
-            - build
-            - tagging_acquia
-            - deploy-tag-prod-acquia-maint
+      - backstop:
+          name: backstop-prod-maint
+          requires: [deploy-tag-prod-acquia-maint]
+          target: prod
+          reference: test
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /.*/
       - backstop:
-          name: backstop-prod
-          requires: [deploy-tag-prod-acquia-maint]
+          name: backstop-prod-no-maint
+          requires: [deploy-tag-prod-acquia-no-maint]
           target: prod
           reference: test
           filters:

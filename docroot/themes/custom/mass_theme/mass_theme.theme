@@ -28,7 +28,6 @@ use Drupal\media\MediaInterface;
 use Drupal\mass_utility\RelatedToHelper;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
-use Drupal\user\Entity\User;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\DomCrawler\Crawler;
@@ -572,7 +571,7 @@ function mass_theme_preprocess_node_form_page(&$variables) {
       }
       catch (\Exception $e) {
         \Drupal::logger('mass_fields')->warning('Parsing of formstack URL failed: %message', [
-          '%message' => $e->getMessage()
+          '%message' => $e->getMessage(),
         ]);
       }
     }
@@ -1228,7 +1227,7 @@ function mass_theme_preprocess_node_location(&$variables) {
     'maxItems' => 3,
   ];
 
-  $suggestedPages = Organisms::prepareSuggestedPages($node, $suggested_options);
+  $suggestedPages = Organisms::prepareSuggestedPages($node, $suggested_options, $cache_tags);
 
   $compHeading_options = [
     'title' => $related_title,
@@ -2036,7 +2035,7 @@ function mass_theme_preprocess_node_decision(&$variables) {
  */
 function mass_theme_preprocess_node_regulation(&$variables) {
   $node = $variables['node'];
-  $category = '';
+  $category = 'Regulation';
   $publish_state = NULL;
   $cache_tags = [];
   $listingTable = [];
@@ -3662,6 +3661,7 @@ function mass_theme_preprocess_node_news_teaser(&$variables) {
  */
 function mass_theme_preprocess_node_guide_page(&$variables) {
   $node = $variables['node'];
+  $cache_tags = [];
 
   // Prepare the suggestedPages data object.
   $suggested_options = [
@@ -3669,7 +3669,13 @@ function mass_theme_preprocess_node_guide_page(&$variables) {
     'style' => 'thumbnail_130x160',
     'view' => 'guide',
   ];
-  $variables['suggestedPages'] = Organisms::prepareSuggestedPages($node, $suggested_options);
+  $variables['suggestedPages'] = Organisms::prepareSuggestedPages($node, $suggested_options, $cache_tags);
+  if (!empty($cache_tags)) {
+    // Merge arrays of existing and new cache tags and removes duplicates.
+    $merged_tags = Cache::mergeTags($node->getCacheTags(), $cache_tags);
+    // Add the cache tags to the render array.
+    $variables['#cache']['tags'] = $merged_tags;
+  }
 }
 
 /**
@@ -5787,7 +5793,7 @@ function mass_theme_preprocess_events_page(&$variables) {
   foreach (range(1, $total_pages) as $page) {
     $pages[] = [
       'active' => FALSE,
-      'text' => $page
+      'text' => $page,
     ];
   }
   if ($pages) {
@@ -6191,7 +6197,7 @@ function mass_theme_theme_suggestions_textarea_alter(array &$suggestions, array 
   // Drupal's attributes properly.  The "special" template just extends stable.
   $contact_textareas = [
     'field_reason_flagged[0][value]',
-    'message[0][value]'
+    'message[0][value]',
   ];
   if (in_array($variables['element']['#name'], $contact_textareas)) {
     $suggestions[] = 'textarea__drupal';

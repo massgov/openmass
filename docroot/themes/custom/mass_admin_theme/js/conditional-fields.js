@@ -141,4 +141,27 @@
     }
   };
 
+  /**
+   * Enable/disable fields on info details.
+   *
+   * Hide or show the banner field (field_banner_image)
+   * based on the field_details_enable_fields value.
+   */
+  Drupal.behaviors.enableInfoFieldsConditional = {
+    attach: function (context) {
+      $('.field--name-field-details-enable-fields', context).change(function () {
+        if ($(this).find('input').prop('checked') === false) {
+          $(this).siblings('.field--name-field-banner-image').hide();
+          $(".field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content input[id$='-subform-field-section-long-form-content-add-more-add-more-button-callout-link']").hide();
+          $(".field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content input[id$='-subform-field-section-long-form-content-add-more-add-more-button-info-details-card-group']").hide();
+        }
+        else {
+          $(this).siblings('.field--name-field-banner-image').show();
+          $(".field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content input[id$='-subform-field-section-long-form-content-add-more-add-more-button-callout-link']").show();
+          $(".field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content input[id$='-subform-field-section-long-form-content-add-more-add-more-button-info-details-card-group']").show();
+        }
+      }).change();
+    }
+  };
+
 })(jQuery, Drupal);
