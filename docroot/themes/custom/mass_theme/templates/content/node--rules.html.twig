@@ -11,15 +11,15 @@
 
 {% block preContent %}
   {# Check if primary indicator content exists. #}
-  {% if content.computed_related_to[0] %}
+  {% if content.field_rules_related_collections %}
     {% set primaryIndicators = { "label": "part of" } %}
-    {% set primaryRelationshipContent = content.computed_related_to %}
+    {% set primaryRelationshipContent = content.field_rules_related_collections %}
   {% else %}
     {% set primaryIndicators = null %}
     {% set primaryRelationshipContent = null %}
   {% endif %}
   {% set secondaryIndicators = false %}
-  {% if node.field_rules_related_collections is not empty %}
+  {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
       "label": "offered by"
     } %}
@@ -36,7 +36,7 @@
       {{ primaryRelationshipContent }}
     {% endblock %}
     {% block secondaryRelationship %}
-      {{ content.field_organizations }}
+      {{ content.field_organizations[0] }}
     {% endblock %}
   {% endembed %}
   {{ content.referencing_binders }}
