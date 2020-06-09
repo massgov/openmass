@@ -27,6 +27,8 @@ class UnpublishReminderQueue extends QueueWorkerBase {
       $author_mail = $author->getEmail();
       $params = [];
       $cc_mails = [];
+      $unpublish_date = '';
+      $url = '';
       if (!empty($author->get('field_user_org'))) {
         if ($org = $author->get('field_user_org')->getValue()) {
           $org_id = $org[0]['target_id'];
@@ -54,9 +56,17 @@ class UnpublishReminderQueue extends QueueWorkerBase {
         $params['headers']['cc'] = implode(',', $cc_mails);
       }
       $url = Url::fromRoute('entity.node.canonical', ['node' => $nid], ['absolute' => TRUE]);
+
+      if ($node->hasField('unpublish_on')) {
+        if (!empty($node->unpublish_on->value)) {
+          $unpublish_timestamp = $node->unpublish_on->value;
+          $unpublish_date = \Drupal::service('date.formatter')->format($unpublish_timestamp, 'custom', 'F d, Y h:i a');
+        }
+      }
       $renderable = [
         '#theme' => 'mass_reminder_mail_template',
         '#page_url' => $url,
+        '#unpublish_date' => $unpublish_date,
       ];
       $params['message'] = \Drupal::service('renderer')->renderPlain($renderable);
 

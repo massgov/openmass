@@ -99,7 +99,10 @@ function mass_unpublish_reminders_mail($key, &$message, $params) {
 function mass_unpublish_reminders_theme($existing, $type, $theme, $path) {
   return [
     'mass_reminder_mail_template' => [
-      'variables' => ['page_url' => NULL],
+      'variables' => [
+        'page_url' => NULL,
+        'unpublish_date' => NULL,
+      ],
     ],
   ];
 }
