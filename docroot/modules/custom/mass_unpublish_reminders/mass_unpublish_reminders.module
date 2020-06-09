@@ -57,6 +57,22 @@ function _mass_unpublish_reminders_cron_helper() {
       if (!empty($result)) {
         foreach ($result as $r) {
           if (!empty($r->reminder_sent)) {
+            $current_timestamp = \Drupal::time()->getRequestTime();
+            $current_datetime = new DateTime();
+            $current_datetime->setTimestamp($current_timestamp);
+            $reminder_datetime = new DateTime();
+            $reminder_timestamp = $r->reminder_sent;
+            $reminder_datetime->setTimestamp($reminder_timestamp);
+            $interval = $current_datetime->diff($reminder_datetime);
+            if ($interval->days > 7) {
+              // If it is more then 7 days then the unpublish date has been
+              // changed or node has been unpublished. We don't need to keep
+              // this anymore.
+              $database->delete('mass_unpublish_reminders')
+                ->condition('nid', $r->nid)
+                ->execute();
+            }
+
             if (($key = array_search($r->nid, $nids)) !== FALSE) {
               // We remove an item from array to not send duplicate emails.
               unset($nids[$key]);
