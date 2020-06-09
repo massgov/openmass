@@ -11,16 +11,6 @@
 
 {% block preContent %}
   {# Check if primary indicator content exists. #}
-  {# {% block primaryRelationship %}
-    {{ content.field_organizations }}
-  {% endblock %}
-  {% block secondaryRelationship %}
-    {{ content.field_rules_related_collections }}
-  {% endblock %} #}
-
-
-
-
   {% if content.field_rules_related_collections %}
     {% set primaryIndicators = { "label": "part of" } %}
     {% set primaryRelationshipContent = content.field_rules_related_collections %}
