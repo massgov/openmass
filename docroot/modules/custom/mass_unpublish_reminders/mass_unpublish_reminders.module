@@ -87,7 +87,7 @@ function mass_unpublish_reminders_mail($key, &$message, $params) {
       if (!empty($params['headers'])) {
         $message['headers'] += $params['headers'];
       }
-      $message['subject'] = t('Mass.gov page or alert will be unpublished in 1 week');
+      $message['subject'] = t('Mass.gov page or alert will be unpublished soon');
       $message['body'][] = $params['message'];
       break;
   }
