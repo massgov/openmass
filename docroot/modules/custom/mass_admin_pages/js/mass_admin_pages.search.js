@@ -12,7 +12,7 @@
 
       var $parent = $('.admin-category-list');
       var $categoryListItem = $('.admin-category-list > li');
-      var $contentTypeListItem = $('.admin-list li');
+      var $contentTypeListItem = $('.admin-list > li');
 
       $parent.append('<li class="no-results-msg" >No results found</li>');
       $('.no-results-msg').hide();
@@ -35,7 +35,7 @@
         var numTotal = 0;
         $categoryListItem.each(function () {
           var numShown = 0;
-          var $children = $(this).find('.admin-list li');
+          var $children = $(this).find($contentTypeListItem);
           $children.each(function () {
             if (!$(this).hasClass('hidden')) {
               numShown++;

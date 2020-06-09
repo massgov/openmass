@@ -40,7 +40,7 @@ const scenarios = pages.map(function(page) {
   }
   return {
     ...page,
-    url: `${base}${page.url}`,
+    url: `${base}${page.url}?cachebuster=${Math.random().toString(36).substring(7)}`,
     misMatchThreshold: 0.05,
     auth,
   }

@@ -1,5 +1,21 @@
 
 
+## [0.247.0] - June 9, 2020
+
+### Removed
+  - DP-18932: The hold-for-backstop job is not needed.
+  
+### Fixed
+  - DP-18778: Fixed bug on Add Content page where list-items were disappearing when filtering.
+  - DP-18812: Fixing related locations page not found issue when referenced node is deleted.
+  - DP-18983: Fix the visual difference of feedback module radio buttons in form page.
+  - DP-16160: Fix accessibility issues with feedback module.
+  
+### Added
+  - DP-18832: Improve the production post-deployment Backstop job
+  
+
+
 ## [0.246.0] - June 2, 2020
 
 ### Added
