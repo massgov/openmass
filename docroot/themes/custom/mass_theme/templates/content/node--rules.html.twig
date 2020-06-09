@@ -11,9 +11,10 @@
 
 {% block preContent %}
   {# Check if primary indicator content exists. #}
+  {# {{ kint(content.computed_related_to) }} #}
   {% if content.computed_related_to[0] %}
     {% set primaryIndicators = { "label": "part of" } %}
-    {% set primaryRelationshipContent = content.computed_related_to %}
+    {% set primaryRelationshipContent = content.computed_related_to[0] %}
   {% else %}
     {% set primaryIndicators = null %}
     {% set primaryRelationshipContent = null %}
