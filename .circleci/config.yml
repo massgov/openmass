@@ -252,7 +252,7 @@ jobs:
       - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
       # drupal-test-traits testing
-      - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom -d memory_limit=-1"'
+      - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom --debug"'
       # Behat testing
       - run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - store_test_results:
