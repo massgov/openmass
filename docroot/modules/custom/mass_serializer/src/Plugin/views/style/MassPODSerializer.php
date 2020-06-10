@@ -69,8 +69,8 @@ class MassPODSerializer extends Serializer implements CacheableDependencyInterfa
     ];
 
     // Add a count to the results.
-    if (isset($this->view->pager)) {
-      $data['count'] = $this->view->pager->getTotalItems();
+    if (isset($view->pager)) {
+      $data['count'] = $view->query->query()->countQuery()->execute()->fetchField();
     }
 
     $data['dataset'] = $rows;
