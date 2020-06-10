@@ -11,17 +11,6 @@ use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
  */
 class OrganizationAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
-  private $memoryLimit;
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setUp() {
-    parent::setUp();
-    $this->memoryLimit = ini_get('memory_limit');
-    ini_set('memory_limit', '1024M');
-  }
-
   /**
    * Test pages have organization alert displaying.
    *
@@ -70,15 +59,6 @@ class OrganizationAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
     $assert_session->pageTextContains($news_node->getTitle());
     $assert_session->waitForElement('css', '.ma__header-alert__message');
     $assert_session->pageTextContains($alert_message);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function tearDown() {
-    parent::tearDown();
-    ini_set('memory_limit', $this->memoryLimit);
-    $this->memoryLimit = NULL;
   }
 
 }

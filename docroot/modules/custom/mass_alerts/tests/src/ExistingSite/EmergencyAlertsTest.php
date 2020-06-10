@@ -16,7 +16,6 @@ class EmergencyAlertsTest extends ExistingSiteBase {
 
   use LoginTrait;
 
-  private $memoryLimit;
   private $editor;
   private $orgNode;
   private $emergencyAlertPublisher;
@@ -26,9 +25,6 @@ class EmergencyAlertsTest extends ExistingSiteBase {
    */
   public function setUp() {
     parent::setUp();
-
-    $this->memoryLimit = ini_get('memory_limit');
-    ini_set('memory_limit', '1024M');
 
     $user1 = User::create(['name' => $this->randomMachineName()]);
     $user1->addRole('editor');
@@ -238,9 +234,6 @@ class EmergencyAlertsTest extends ExistingSiteBase {
    */
   public function tearDown() {
     parent::tearDown();
-    ini_set('memory_limit', $this->memoryLimit);
-    $this->memoryLimit = NULL;
-
     $this->editor = NULL;
     $this->orgNode = NULL;
     $this->emergencyAlertPublisher = NULL;
