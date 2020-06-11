@@ -135,14 +135,14 @@ class CacheEndpoint {
         $filenames[] = $filename;
 
         // Spawn a separate process so memory does not run out.
-        $args = [$api, $this->display, $filename, $args[0], $offset];
-        $process = Drush::drush($self, 'mass-serializer-render-partial', $args, Drush::redispatchOptions());
+        $mserp_args = [$api, $this->display, $filename, $args[0], $offset];
+        $process = Drush::drush($self, 'mass-serializer-render-partial', $mserp_args, Drush::redispatchOptions());
         $process->mustRun();
       }
 
       // Spawn a separate process so memory does not run out.
-      $args = [$this->cacheName($api, $args, TRUE), implode(' ', $filenames)];
-      $process = Drush::drush($self, 'mass-serializer-merge-file', $args, Drush::redispatchOptions());
+      $msmf_args = [$this->cacheName($api, $args, TRUE), implode(' ', $filenames)];
+      $process = Drush::drush($self, 'mass-serializer-merge-file', $msmf_args, Drush::redispatchOptions());
       $process->mustRun();
     }
     catch (Exception $e) {
@@ -194,12 +194,10 @@ class CacheEndpoint {
    *   Name of the temp file you are saving.
    * @param array $args
    *   Arguments to supply to the view.
-   * @param bool $public
-   *   Choose between public or temp directory.
    * @param int $offset
    *   If using multiple pages, supply an offset to differentiate args.
    */
-  public function renderPartial($api, $display, $filename, array $args, $public = FALSE, $offset = 0) {
+  public function renderPartial($api, $display, $filename, array $args, $offset = 0) {
     $view = Views::getView($api);
 
     if (!$view) {
