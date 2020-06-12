@@ -368,7 +368,7 @@ function mass_metatag_page_attachments(array &$attachments) {
   $uri_parts = explode('/', $current_uri);
   $uri_end = end($uri_parts);
 
-  if (in_array($uri_end, $paths) && substr_count($current_uri, '/')) {
+  if (in_array($uri_end, $paths) && substr_count($current_uri, '/') > 1) {
     $noindex = [
       '#tag' => 'meta',
       '#attributes' => [
