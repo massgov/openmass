@@ -141,7 +141,10 @@ class CacheEndpoint {
       }
 
       // Spawn a separate process so memory does not run out.
-      $msmf_args = [$this->cacheName($api, $args, TRUE), implode(' ', $filenames)];
+      $msmf_args = [
+        $this->cacheName($api, $args, TRUE),
+        implode(' ', $filenames),
+      ];
       $process = Drush::drush($self, 'mass-serializer-merge-file', $msmf_args, Drush::redispatchOptions());
       $process->mustRun();
     }
