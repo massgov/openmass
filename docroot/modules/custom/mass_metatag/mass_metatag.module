@@ -14,6 +14,7 @@ use Drupal\node\NodeInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Path;
+use Drupal\Core\Url;
 
 /**
  * Implements hook_token_info().
@@ -363,12 +364,11 @@ function mass_metatag_page_attachments(array &$attachments) {
     'resources',
   ];
 
-  // Convert the array into a regex pattern for matching.
-  $patterns_flattened = implode('|', $paths);
-  $current_uri = \Drupal::request()->getRequestUri();
+  $current_uri = Url::fromRoute('<current>')->toString();
+  $uri_parts = explode('/', $current_uri);
+  $uri_end = end($uri_parts);
 
-  // URI has more than 1 segment and its ending matches one of the paths.
-  if ((preg_match("/\/$patterns_flattened$/", $current_uri) === 1) && substr_count($current_uri, '/') > 1) {
+  if (in_array($uri_end, $paths) && substr_count($current_uri, '/')) {
     $noindex = [
       '#tag' => 'meta',
       '#attributes' => [
