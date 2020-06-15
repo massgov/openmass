@@ -33,7 +33,7 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
     $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     foreach ($nodes as $node) {
       $node->moderation_state = MassModeration::UNPUBLISHED;
-      $node->save();x
+      $node->save();
     }
 
     $related = $this->createNode([
