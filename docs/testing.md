@@ -61,6 +61,9 @@ More information about setup or running Nightcrawler can be found in the [Nightc
 #### Open the report from the comparison 
 `open backstop/report/index.html`
 
+#### Run backstop at CircleCI 
+`drush ma:backstop`
+
 More information about setup or running Backstop can be found in the [Backstop documentation](https://github.com/massgov/openmass/blob/develop/backstop/README.md).
 
 ## Good tests

@@ -98,6 +98,13 @@ parameters:
   ma-cf-deploy:
     type: boolean
     default: false
+  # These params for currently used in drush ma:backstop. target is declared later.
+  ma-backstop:
+    type: boolean
+    default: false
+  reference:
+    type: string
+    default: ""
 
   # These params for currently used in drush ma:release
   ma-release:
@@ -109,7 +116,7 @@ parameters:
   skip-maint:
     type: string
     default: ""
-  # target also used by ma-cf-deploy
+  # target also used by ma-cf-deploy, ma-backstop
   target:
     type: string
     default: ""
@@ -923,6 +930,16 @@ workflows:
             branches:
               only:
                 - develop
+
+  # Usually triggerred by drush ma:backstop.
+  backstop_ad_hoc:
+    when: << pipeline.parameters.ma-backstop >>
+    jobs:
+      - build
+      - backstop:
+          requires: [build]
+          target: << pipeline.parameters.target >>
+          reference: << pipeline.parameters.reference >>
 
   # Usually triggerred by drush ma:release.
   deploy_ad_hoc:
