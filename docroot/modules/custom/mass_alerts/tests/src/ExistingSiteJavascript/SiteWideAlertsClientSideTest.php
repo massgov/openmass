@@ -33,7 +33,7 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
     $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     foreach ($nodes as $node) {
       $node->moderation_state = MassModeration::UNPUBLISHED;
-      $node->save();
+      $node->save();x
     }
 
     $related = $this->createNode([
@@ -63,7 +63,7 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
     $jsWebAssert = $this->assertSession();
 
     // Make sure homepage shows the alert.
-    $this->visit('');
+    $this->drupalGet('');
     $locator = '.ma__emergency-alerts h2';
     $jsWebAssert->waitForElementVisible('css', $locator, self::DURATION);
 
@@ -75,12 +75,12 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
     $jsWebAssert->pageTextContains($node->getTitle());
 
     // Visit an arbitrary page and make sure the alert appears.
-    $this->visit('/orgs/office-of-the-governor');
+    $this->drupalGet('/orgs/office-of-the-governor');
     $jsWebAssert->waitForElementVisible('css', $locator, self::DURATION);
     $jsWebAssert->statusCodeEquals(200);
     $jsWebAssert->pageTextContains($node->getTitle());
 
-    $this->visit('/alerts');
+    $this->drupalGet('/alerts');
     $jsWebAssert->pageTextContains($node->getTitle());
     $jsWebAssert->pageTextContains($alert_message_text);
     // A related link.
@@ -94,7 +94,7 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
     $node->save();
     // Dump browser cache.
     $this->getSession()->restart();
-    $this->visit('');
+    $this->drupalGet('');
     // Give time for element to appear (we don't expect it to ever do so).
     sleep(5);
     $jsWebAssert->statusCodeEquals(200);
