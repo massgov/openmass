@@ -67,6 +67,54 @@ module.exports = async function(page, scenario, vp) {
         '  right: 0;\n' +
         '  bottom: 0;\n' +
         '  z-index: 3;\n' +
+        '}' +
+        // [FREQUENTLY CHANGING CONTENT] Kill images in Updates From The Baker-Polito Administration on Governor's page (show a gray box instead)
+        '.ma__featured-item {' +
+        ' background-color: #888888;\n' +
+        '}' +
+        '.ma__featured-item__image, .ma__featured-item__image--large {' +
+        '  position: relative;' +
+        '}' +
+        '.ma__featured-item__image:before, .ma__featured-item__image--large:before {' +
+        '  background: #888888;\n' +
+        '  content: \' \';\n' +
+        '  display: block;\n' +
+        '  position: absolute;\n' +
+        '  top: 0;\n' +
+        '  left: 0;\n' +
+        '  right: 0;\n' +
+        '  bottom: 0;\n' +
+        '  z-index: 3;\n' +
+        '}' +
+        // [FREQUENTLY CHANGING CONTENT] Kill images and text in Recent news and announcements on Governor's page (show a gray box instead)
+        '.ma__press-listing__secondary-item .ma__press-teaser .ma__press-teaser__image {' +
+        '  position: relative;' +
+        '}' +
+        '.ma__press-listing__secondary-item .ma__press-teaser .ma__press-teaser__image:before {' +
+        '  background: #888888;\n' +
+        '  content: \' \';\n' +
+        '  display: block;\n' +
+        '  position: absolute;\n' +
+        '  top: 0;\n' +
+        '  left: 0;\n' +
+        '  right: 0;\n' +
+        '  bottom: 0;\n' +
+        '  z-index: 3;\n' +
+        '}' +
+        // [FREQUENTLY CHANGING CONTENT] Kill banner background image on Home page (show a gray box instead)
+        '.ma__search-banner {' +
+        '  position: relative;' +
+        '}' +
+        '.ma__search-banner:after {' +
+        ' background: #888888;\n' +
+        '  z-index: 1;\n' +
+        '  content: \' \';\n' +
+        '  display: block;\n' +
+        '  position: absolute;\n' +
+        '  top: 0;\n' +
+        '  left: 0;\n' +
+        '  right: 0;\n' +
+        '  bottom: 0;\n' +
         '}'
     });
 
@@ -91,6 +139,31 @@ module.exports = async function(page, scenario, vp) {
       });
       document.querySelectorAll('.ma__search-banner__image-author').forEach(function(e) {
         e.innerText = 'John Smith';
+      });
+
+      // [FREQUENTLY CHANGING CONTENT] Replace link text of popular searches on Home page
+      document.querySelectorAll('.ma__search-banner__links .ma__link-list__item a').forEach(function(e) {
+        e.innerText = 'Popular search query';
+      });
+
+      // [FREQUENTLY CHANGING CONTENT] Replace link text in Featured services on Home page.
+      document.querySelectorAll('.ma__stacked-row__section .ma__key-actions .ma__callout-link .ma__callout-link__container .ma__callout-link__text').forEach(function(e) {
+        e.innerText = 'Featured service link text';
+      });
+
+      // [FREQUENTLY CHANGING CONTENT] Kill News & updates on Home page (show a gray box instead)
+      document.querySelectorAll('.ma__split-columns__column > .ma__rich-text').forEach(function(e) {
+        e.innerHTML = '<article style="background-color: #888;"><span style="display: block; width: 100%; max-width: 100%; height: auto;">&nbsp;</span></article><h5>News title</h5>Teaser text';
+      });
+
+      // [FREQUENTLY CHANGING CONTENT] Replace Updates From The Baker-Polito Administration item title on governor's page.
+      document.querySelectorAll('.ma__featured-item__title-container .ma__featured-item__title span').forEach(function(e) {
+        e.innerText = 'Featured item title';
+      });
+
+      // [FREQUENTLY CHANGING CONTENT] Replace teaser content in Recent news & announcements item on governor's page.
+      document.querySelectorAll('.ma__press-listing__secondary-item .ma__press-teaser__details').forEach(function(e) {
+        e.innerText = 'Press teaser details';
       });
     }, scenario.url);
 
