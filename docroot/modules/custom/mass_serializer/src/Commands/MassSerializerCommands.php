@@ -63,8 +63,8 @@ class MassSerializerCommands extends DrushCommands implements SiteAliasManagerAw
    * @aliases mserp,mass-serializer-render-partial
    * @command ms:render-partial
    */
-  public function serializerRenderPartial($machine_name, $display, $filename, $term_id, $offset) {
-    $this->cacheEndpoint->renderPartial($machine_name, $display, $filename, [$term_id], FALSE, $offset);
+  public function serializerRenderPartial($machine_name, $display, $filename, $term_id, $offset = 0) {
+    $this->cacheEndpoint->renderPartial($machine_name, $display, $filename, [$term_id], $offset);
   }
 
   /**
