@@ -52,9 +52,9 @@ class RelatedNodes extends EntityReferenceFieldItemList {
    * {@inheritdoc}
    */
   public function computeValue() {
-    $nids_fields = $this->fields();
     $nids_links = $this->links();
-    $nids_total = array_merge($nids_fields, $nids_links);
+    $nids_fields = $this->fields();
+    $nids_total = array_diff($nids_links, $nids_fields);
     $nids = array_slice(array_filter(array_unique($nids_total)), 0, 25);
     $i = 0;
     foreach ($nids as $nid) {
@@ -128,15 +128,6 @@ class RelatedNodes extends EntityReferenceFieldItemList {
         // Discard the keys in $return as we don't care about revision ids.
         $nids = array_merge($nids, array_values($return));
       }
-    }
-
-    $types = $this->getSetting('types');
-    if (!empty($types)) {
-      $query = $this->getQuery();
-      $query->condition('type', $types, 'IN');
-      $return = $query->execute();
-      // Discard the keys in $return as we don't care about revision ids.
-      $nids = array_merge($nids, array_values($return));
     }
 
     return $nids;
