@@ -62,7 +62,6 @@ class UnPublishRemindersTest extends ExistingSiteBase {
     for ($x = 0; $x <= 4; $x++) {
       $users[] = $this->createUser([], NULL, FALSE, [
         'field_user_org' => $this->organization->tid->value,
-        'mail' => 'user' . $x . '@mass.local',
         'roles' => 'editor',
       ]);
     }
