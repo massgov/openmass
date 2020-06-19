@@ -8,7 +8,7 @@ references:
     working_directory: /var/www/code
     docker:
       # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:php73alpha-ci
+      - image: massgov/drupal-container:php74alpha-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           AWS_REGION: us-east-1
@@ -49,7 +49,7 @@ executors:
         default: comass/mysql-sanitized:latest
     working_directory: /var/www/code
     docker:
-      - image: massgov/drupal-container:php73alpha-ci
+      - image: massgov/drupal-container:php74alpha-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           DOCKER_ENV: ci
