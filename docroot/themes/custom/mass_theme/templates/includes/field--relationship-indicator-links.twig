@@ -37,11 +37,10 @@
  */
 #}
 {% for item in items %}
-  {% include "@atoms/11-text/wrapped-link.twig" with {
-    "wrappedLink": {
+  {% include "@atoms/item-link.twig" with {
+    "itemLink": {
       "href": item.content['#url'],
-      "title": item.content['#title'],
-      "class": "ma__relationship-indicators--term",
+      "title": item.content['#title']
     }
   } %}
 {% endfor %}

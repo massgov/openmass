@@ -1337,14 +1337,14 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
       ];
     }
 
-    // Set the contentEyebrow options.
-    $contentEyebrow_options = [
-      "hideBorder" => TRUE,
-      "headerTags" => $headerTags_options,
+    // contentEyebrow output is replaced with primay relationship indicator.
+    // Set the relationshipIndicator options.
+    $relationshipIndicator_options = [
+      "tags" => $taxonomy_terms_unique,
     ];
 
-    // Make contentEyebrow data structure available in twig template.
-    $variables['contentEyebrow'] = Organisms::prepareContentEyebrow($contentEyebrow_options);
+    // Make relationshipIndicatorPrimary data structure available in twig template.
+    $variables['relationshipIndicatorPrimary'] = Organisms::prepareRelationshipIndicatorPrimary($relationshipIndicator_options);
 
     // Create the map of all possible field names to use.
     $map = [
