@@ -14,7 +14,7 @@ use Drupal\Tests\Traits\Core\CronRunTrait;
 /**
  * Tests reminder emails functionality.
  */
-class UnPublishRemindersTest extends ExistingSiteBase {
+class UnpublishRemindersTest extends ExistingSiteBase {
 
   use MailCollectionAssertTrait;
 
