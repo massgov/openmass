@@ -7,26 +7,33 @@
 {% extends 'node--event.html.twig' %}
 
 {% block preContent %}
+  {# Check if primary indicator content exists. #}
+  {% if content.computed_related_to[0] %}
+    {% set primaryIndicators = { "label": "part of" } %}
+    {% set primaryRelationshipContent = content.computed_related_to %}
+  {% else %}
+    {% set primaryIndicators = null %}
+    {% set primaryRelationshipContent = null %}
+  {% endif %}
   {% set secondaryIndicators = false %}
-  {% if node.computed_related_to is not empty %}
+  {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "label": "related to"
+      "label": "offered by"
     } %}
   {% endif %}
 
   {% embed "@molecules/relationship-indicators.twig" with {
     "relationshipIndicators": {
-      "primary": {
-        "label": "offered by"
-      },
+      "pageTitle": node.label,
+      "primary": primaryIndicators,
       "secondary": secondaryIndicators
     }
   } %}
     {% block primaryRelationship %}
-      {{ content.field_organizations }}
+      {{ primaryRelationshipContent }}
     {% endblock %}
     {% block secondaryRelationship %}
-      {{ content.computed_related_to }}
+      {{ content.field_organizations }}
     {% endblock %}
   {% endembed %}
   {# Update header to only print the properties needed for Minutes page, eg title and time of event. #}
