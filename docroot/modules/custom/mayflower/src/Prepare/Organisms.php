@@ -1665,6 +1665,24 @@ class Organisms {
   }
 
   /**
+   * Returns the variables structure required to render a relationship indicator.
+   *
+   * @param array $options
+   *   The object that contains static data, widgets, and optional content.
+   *
+   * @see @molecules/relationship-indicator.twig
+   */
+  public static function prepareRelationshipIndicatorPrimary(array $options) {
+
+    // Create the relationship indicator primary term data structure.
+    $relationshipIndicatorPrimary = [
+      'tags' => array_key_exists('tags', $options) ? $options['tags'] : NULL,
+    ];
+
+    return $relationshipIndicatorPrimary;
+  }
+
+  /**
    * Returns the variables structure required to render steps unordered.
    *
    * @param object $entity
