@@ -369,7 +369,7 @@ function mass_metatag_page_attachments(array &$attachments) {
   $uri_end = end($uri_parts);
   $noindex_and_follow = FALSE;
 
-  if ($uri_parts[1] === 'doc' && $uri_end !== 'download') {
+  if (\Drupal::routeMatch()->getRouteName() === 'entity.media.canonical' && $uri_end !== 'download') {
     $noindex_and_follow = TRUE;
   }
 
