@@ -429,11 +429,11 @@ function _mass_metatag_slugify($string, $single = TRUE) {
 
   if ($single) {
     // Lowercase and remove characters which aren't alphanumeric or hyphens.
-    return preg_replace('/[^a-z\d-]/', '', strtolower($without_whitespace));
+    return preg_replace('/[^a-z\d\-]/', '', strtolower($without_whitespace));
   }
   else {
     // Allow commas as well as hyphens.
-    return preg_replace('/[^a-z\d-,]/', '', strtolower($without_whitespace));
+    return preg_replace('/[^a-z\d\-,]/', '', strtolower($without_whitespace));
   }
 }
 

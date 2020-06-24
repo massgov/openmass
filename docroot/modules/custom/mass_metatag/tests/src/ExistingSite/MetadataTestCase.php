@@ -27,7 +27,7 @@ abstract class MetadataTestCase extends ExistingSiteBase {
   public function testHasExpectedMetadata() {
     $entity = $this->getContent();
     $this->indexNode($entity);
-    $this->visit($entity->toUrl()->toString(FALSE));
+    $this->drupalGet($entity->toUrl());
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Entity page was loadable');
     $page = $this->getSession()->getPage();
 
