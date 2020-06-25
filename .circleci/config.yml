@@ -8,7 +8,7 @@ references:
     working_directory: /var/www/code
     docker:
       # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:1.0.14-ci
+      - image: massgov/drupal-container:1.0.15-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           AWS_REGION: us-east-1
@@ -24,12 +24,12 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v7-{{ checksum "composer.lock" }}
+        - site-composer-v9-{{ checksum "composer.lock" }}
 
   save_composer_cache: &save_composer_cache
     save_cache:
       name: Save Composer cache
-      key: site-composer-v7-{{ checksum "composer.lock" }}
+      key: site-composer-v9-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
   branch_ignore: &branch_ignore
@@ -48,7 +48,7 @@ executors:
         default: comass/mysql-sanitized:latest
     working_directory: /var/www/code
     docker:
-      - image: massgov/drupal-container:1.0.14-ci
+      - image: massgov/drupal-container:1.0.15-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           DOCKER_ENV: ci
