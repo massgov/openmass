@@ -54,22 +54,53 @@
 {% if hide_main_nav %}
   {% set header_class = ' ma__header--hidden' %}
 {% endif %}
-<header id="header" class="ma__header{{ header_class }}" role="banner">
-  <a href="#main-content" class="ma__header__skip-nav visually-hidden focusable">
-    {{ 'Skip to main content'|t }}
-  </a>
-  <div class="ma__header__container">
-    <div class="ma__header__logo">
-      {% include "@atoms/09-media/site-logo.twig" %}
-    </div>
-    {% if not search_header_suppression_flag %}
-      <div class="ma__header__search js-header-search-menu">
-        {% include directory ~ "/templates/includes/molecules-header-search.html.twig" with { 'searchFormId': "cse-header-search-form" } %}
+{% if header_version_mixed %}
+  <header class="ma__header__mixed{{ header_class }}" id="header">
+
+    <a class="ma__header__mixed__skip-nav visually-hidden focusable" href="#main-content">
+      {{ 'Skip to main content'|t }}
+    </a>
+
+    {{ page.header.mainnavigation_2 }}
+
+    <div class="ma__header__mixed__container">
+      <div class="ma__header__mixed__logo" tabindex="-1">
+        {% include "@atoms/09-media/site-logo.twig" %}
       </div>
-    {% endif %}
-  </div>
-  {{ page.header }}
-</header>
+      {% if not search_header_suppression_flag %}
+        <div class="ma__header__mixed__search ma__header__mixed__search-bar js-header-search-menu">
+          {% include directory ~ "/templates/includes/molecules-header-search.html.twig" with { 'searchFormId': "cse-header-search-form-mobile" } %}
+        </div>
+      {% endif %}
+    </div>
+
+    {{ page.header.mainnavigation }}
+
+    {{ page.header | without('mainnavigation', 'mainnavigation_2', 'mainnavigation_3') }}
+  </header>
+{% else %}
+  <header class="ma__header__hamburger{{ header_class }}" id="header">
+
+    <a class="ma__header__hamburger__skip-nav" href="#main-content">
+      {{ 'Skip to main content'|t }}
+    </a>
+
+    {{ page.header.mainnavigation_3 }}
+
+    <div class="ma__header__hamburger__container">
+      <div class="ma__header__hamburger__logo" tabindex="-1">
+        {% include "@atoms/09-media/site-logo.twig" %}
+      </div>
+      {% if not search_header_suppression_flag %}
+        <div class="ma__header__hamburger__search ma__header__hamburger__search-bar js-header-search-menu">
+          {% include directory ~ "/templates/includes/molecules-header-search.html.twig" with { 'searchFormId': "cse-search-form-mobile" } %}
+        </div>
+      {% endif %}
+    </div>
+
+    {{ page.header | without('mainnavigation', 'mainnavigation_2', 'mainnavigation_3') }}
+  </header>
+{% endif %}
 <main role="main" id="main-content" tabindex="-1"{% if main_class %} class="{{ main_class }}"{% endif %}>{# Keeping tabindex for accessibility purposes #}
   {% block preContent %}
     {% if page.pre_content %}
@@ -90,3 +121,4 @@
 {% if page.footer or page.footer_navigation %}
   {% include directory ~ "/templates/includes/organisms-footer.html.twig" %}
 {% endif %}
+

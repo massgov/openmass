@@ -170,3 +170,39 @@ function mayflower_preprocess_html(&$variables) {
 
   $variables['#attached']['drupalSettings']['mayflower']['utcOffsetString'] = $formattedOffset;
 }
+
+function mayflower_theme_suggestions_menu_alter(array &$suggestions, array $variables) {
+  if (isset($variables['attributes']['data-block-id'])) {
+    $block = \Drupal\block\Entity\Block::load($variables['attributes']['data-block-id']);
+    if ($block) {
+      array_unshift($suggestions, 'menu__' . str_replace('-', '_', $block->id()));
+    }
+  }
+}
+
+function mayflower_preprocess_block(array &$variables) {
+  if (!empty($variables['elements']['#id'])) {
+    $variables['content']['#attributes']['data-block-id'] = $variables['elements']['#id'];
+    $variables['sealImage'] = file_create_url(mayflower_get_path() . '/assets/images/stateseal.png');
+  }
+}
+
+function mayflower_preprocess_page(array &$variables) {
+  $header_mixed_urls = \Drupal::config('mass_utility.settings')->get('header_mixed_urls');
+  // Allow match with /node/nid or path alias.
+  $current_path = \Drupal::service('path.current')->getPath();
+  $current_uri = \Drupal::request()->getRequestUri();
+
+
+  // Check if Uri or Path matches.
+  $path_matcher = \Drupal::service('path.matcher');
+  if ($path_matcher->matchPath($current_uri, $header_mixed_urls) || $path_matcher->matchPath($current_path, $header_mixed_urls)) {
+    $variables['header_version_mixed'] = TRUE;
+  }
+  elseif ((\Drupal::service('path.matcher')->isFrontPage()) && (strpos($header_mixed_urls, '<front>') !== FALSE)) {
+    $variables['header_version_mixed'] = TRUE;
+  }
+  else {
+    $variables['header_version_mixed'] = FALSE;
+  }
+}
