@@ -33,9 +33,8 @@
 #}
 {% set ariaLabel = heading_id ?? 'main-navigation-heading' %}
 <nav class="ma__header__nav" role="navigation" aria-labelledby="{{ ariaLabel }}" id="main-navigation">
-  <div class="ma__header__utility-nav ma__header__utility-nav--wide">
-      {{ render_menu('utility') }}
-  </div>
+
+
   {# Label. If not displayed, we still provide it for screen readers. #}
   {% if not configuration.label_display %}
     {% set title_attributes = title_attributes.addClass('visually-hidden') %}
@@ -50,10 +49,13 @@
       <span>Menu</span><span class="ma__header__menu-icon"></span>
     </button>
   </div>
+  <div class="ma__header__utility-nav ma__header__utility-nav--narrow js-utility-nav--narrow">
+    {{ render_menu('utility') }}
+  </div>
   <div class="ma__header__nav-container">
     <div class="ma__header__nav-search">
       <section class="ma__header-search">
-        {% include directory ~ "/templates/includes/molecules-header-search.html.twig" with { 'searchFormId': "cse-search-form-mobile" } %}
+        {% include directory ~ "/templates/includes/molecules-header-search.html.twig" with { 'searchFormId': "cse-header-search-form" } %}
       </section>
     </div>
     <div class="ma__header__main-nav">
@@ -62,7 +64,7 @@
         {{ content }}
       {% endblock %}
     </div>
-    <div class="ma__header__utility-nav ma__header__utility-nav--narrow">
+    <div class="ma__header__utility-nav ma__header__utility-nav--narrow js-utility-nav--narrow">
       {{ render_menu('utility') }}
     </div>
   </div>
