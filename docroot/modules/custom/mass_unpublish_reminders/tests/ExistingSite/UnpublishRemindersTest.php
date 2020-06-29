@@ -35,12 +35,17 @@ class UnpublishRemindersTest extends ExistingSiteBase {
 
   protected $users;
 
+  protected $lastRun;
+
   /**
    * {@inheritdoc}
    */
   protected function setUp() {
     parent::setUp();
     $this->startMailCollection();
+
+    $last_run = \Drupal::state()->get('mass_unpublish_reminders.last_cron', 0);
+    $this->lastRun = $last_run;
 
     \Drupal::state()->set('mass_unpublish_reminder.last_cron', 0);
     $module_key = static::MASS_UNPUBLISH_MODULENAME . '.' . (static::MASS_UNPUBLISH_MAILKEY ?: 'none');
@@ -77,6 +82,7 @@ class UnpublishRemindersTest extends ExistingSiteBase {
     $this->author = NULL;
     $this->users = NULL;
 
+    \Drupal::state()->set('mass_unpublish_reminder.last_cron', $this->lastRun);
     $this->restoreMailSettings();
     parent::tearDown();
   }
