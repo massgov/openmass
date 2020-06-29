@@ -365,8 +365,7 @@ function mass_metatag_page_attachments(array &$attachments) {
   ];
 
   $current_path = \Drupal::service('path.current')->getPath();
-  $current_alias = \Drupal::service('path.alias_manager')->getAliasByPath($current_path);
-  $uri_parts = explode('/', $current_alias);
+  $uri_parts = explode('/', $current_path);
   $uri_end = end($uri_parts);
   $noindex_and_follow = FALSE;
 
@@ -374,7 +373,7 @@ function mass_metatag_page_attachments(array &$attachments) {
     $noindex_and_follow = TRUE;
   }
 
-  if (in_array($uri_end, $paths) && substr_count($current_alias, '/') > 1) {
+  if (in_array($uri_end, $paths) && substr_count($current_path, '/') > 1) {
     $noindex_and_follow = TRUE;
   }
 
