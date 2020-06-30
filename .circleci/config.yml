@@ -424,6 +424,7 @@ jobs:
         - attach_workspace: {at: /var/www}
         - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
         - run: "drush pm:security"
+        - run: "drush pm:security-php"
 
   ma-cf-deploy:
     parameters:
