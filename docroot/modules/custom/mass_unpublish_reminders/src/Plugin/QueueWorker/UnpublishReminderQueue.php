@@ -51,7 +51,7 @@ class UnpublishReminderQueue extends QueueWorkerBase {
       if (isset($cc_mails)) {
         $params['headers']['cc'] = implode(',', $cc_mails);
       }
-      $url = Url::fromRoute('entity.node.canonical', ['node' => $nid], ['absolute' => TRUE]);
+      $url = Url::fromRoute('entity.node.canonical', ['node' => $nid])->setAbsolute()->toString();
 
       if ($node->hasField('unpublish_on')) {
         if (!empty($node->unpublish_on->value)) {
@@ -59,12 +59,13 @@ class UnpublishReminderQueue extends QueueWorkerBase {
           $unpublish_date = \Drupal::service('date.formatter')->format($unpublish_timestamp, 'custom', 'F d, Y h:i a');
         }
       }
-      $renderable = [
-        '#theme' => 'mass_reminder_mail_template',
-        '#page_url' => $url,
-        '#unpublish_date' => $unpublish_date ?? '',
-      ];
-      $params['message'] = \Drupal::service('renderer')->renderPlain($renderable);
+
+      $params['message'] = t("A Promotional page or Alert that you or someone in your organization authored has an unpublish date that will arrive soon. At that time, the content will be unpublished.\nPage: :page_url\nUnpublish date: @unpublish_date\nIf you want to keep the page or alert, please review it, check its performance, and update it if necessary. You can then update the unpublish date.\nIf you no longer need a Promotional page or Alert, you can let it unpublish automatically or you can unpublish it manually now. If you think there could still be traffic to the Promotional page, please make a ServiceNow ticket to redirect that traffic to an appropriate page.\nIf you have any questions, please make a ServiceNow request.\n\nThank you.",
+        [
+          '@unpublish_date' => $unpublish_date,
+          ':page_url' => $url,
+        ]
+      );
 
       $mailManager = \Drupal::service('plugin.manager.mail');
       $result = $mailManager->mail('mass_unpublish_reminders', 'unpublish_reminder', $author_mail, 'en', $params, TRUE);
