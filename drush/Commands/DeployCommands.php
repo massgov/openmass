@@ -303,48 +303,8 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $href = $operationResponse->links->notification->href;
     $this->waitForTaskToComplete(basename($href));
 
-    if ($options['cache-rebuild']) {
-      // Rebuild cache_discovery ONLY.  This allows new plugins to be picked up
-      // immediately, without opening the door to potential fatal errors from
-      // the entire cache being dumped.
-      $process = Drush::drush($targetRecord, 'cache:clear', ['plugin'], ['debug' => TRUE]);
-      $process->mustRun();
-      $this->logger()->success('Plugin cache clear complete.');
-    }
-
-    // Run any pending DB updates.
-    // This goes before config import per https://www.drupal.org/node/2628144.
-    $entity_options = array('no-post-updates' => TRUE, 'verbose' => TRUE);
-    $process = Drush::drush($targetRecord, 'updb', [], $entity_options);
-    $process->mustRun($process->showRealtime());
-    $this->logger()->success("Database and entity updates completed in $target.");
-
-    // Import new config.
-    $process = Drush::drush($targetRecord, 'config:import');
-    $process->mustRun($process->showRealtime());
-    $this->logger()->success("Configuration imported in $target.");
-
-    // Run any pending post-deploy steps.
-    // This goes after config import.
-    $entity_options = array('post-updates' => TRUE, 'verbose' => TRUE, 'no-cache-clear' => TRUE);
-    $process = Drush::drush($targetRecord, 'updb', [], $entity_options);
-    $process->mustRun($process->showRealtime());
-    $this->logger()->success("Post updates completed in $target.");
-
-    if ($options['cache-rebuild']) {
-      // Do a final cache rebuild to allow all changes to be displayed.  This
-      // step was added as a catch-all... in theory all caches that need to be
-      // cleared should already be cleared at this point, however there are some
-      // places we've still encountered issues:
-      // 1. New/Updated page views do not show up until router cache clear.
-      // 2. Mayflower changes do not show up immediately.
-      // This step could be removed if workarounds are found for those two items.
-      $process = Drush::drush($targetRecord, 'cache:rebuild', [], ['verbose' => TRUE]);
-      // To avoid occasional rmdir errors, disable Drush cache for this call.
-      $process->setEnv(['DRUSH_PATHS_CACHE_DIRECTORY ' => '/dev/null']);
-      $process->mustRun();
-      $this->logger()->success('Cache rebuild complete.');
-    }
+    // Run deploy steps.
+    $process = Drush::drush($targetRecord, 'deploy', [], ['verbose' => TRUE]);
 
     // Get a list of all an environment's domains.
     // Note: This also returns load balancer URLs.
