@@ -305,6 +305,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
     // Run deploy steps.
     $process = Drush::drush($targetRecord, 'deploy', [], ['verbose' => TRUE]);
+    $process->mustRun($process->showRealtime());
 
     // Get a list of all an environment's domains.
     // Note: This also returns load balancer URLs.
