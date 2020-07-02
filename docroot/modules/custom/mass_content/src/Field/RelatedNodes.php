@@ -52,9 +52,9 @@ class RelatedNodes extends EntityReferenceFieldItemList {
    * {@inheritdoc}
    */
   public function computeValue() {
-    $nids_links = $this->links();
     $nids_fields = $this->fields();
-    $nids_total = array_diff($nids_links, $nids_fields);
+    $nids_links = $this->links();
+    $nids_total = array_merge($nids_fields, $nids_links);
     $nids = array_slice(array_filter(array_unique($nids_total)), 0, 25);
     $i = 0;
     foreach ($nids as $nid) {
