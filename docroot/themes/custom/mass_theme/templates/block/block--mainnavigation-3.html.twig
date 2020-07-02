@@ -31,20 +31,31 @@
  * http://www.w3.org/TR/WCAG-TECHS/H42.html for more information.
  */
 #}
+{# Hamburger menu only #}
 {% set ariaLabel = heading_id ?? 'main-navigation-heading' %}
 <nav class="ma__header__hamburger__nav" aria-labelledby="{{ ariaLabel }}"  id="main-navigation" role="navigation">
   <div class="ma__header__hamburger-wrapper">
 
     <div class="ma__header__hamburger__button-container js-sticky-header">
       <button type="button"
-              aria-label="Menu"
-              aria-popup="true"
+              aria-label="Open the main menu for mass.gov"
               aria-expanded="false"
               class="ma__header__hamburger__menu-button js-header-menu-button">
         <span class="ma__header__hamburger__menu-icon"></span>
-        <span class="ma__header__hamburger__menu-text js-header__menu-text">Menu</span>
+        {# Menu label with screen size greater than 620px. #}
+        <span class="ma__header__hamburger__menu-text ma__header__hamburger__desktop-label js-header__menu-text">Menu</span>
+        {# Menu label with screen size less than 620px. #}
+        <span class="ma__header__hamburger__menu-text ma__header__hamburger__mobile-label js-header__menu-text">Mass.gov</span>
       </button>
-    </div>
+      {# Skip button to search. #}
+      <button type="button"
+              aria-expanded="false"
+              class="ma__header__hamburger__search-access-button js-header-search-access-button">
+        <span class="ma__visually-hidden">Access to search</span>
+        {{ icon('search') }}
+      </button>
+    </div>{# .ma__header__hamburger__button-container #}
+
     <div class="ma__header__hamburger__utility-nav ma__header__hamburger__utility-nav--wide js-utility-nav--wide">
       {{ render_menu('utility') }}
     </div>
@@ -57,7 +68,7 @@
     <h2{{ title_attributes.setAttribute('id', ariaLabel) }}>{{ configuration.label }}</h2>
     {{ title_suffix }}
 
-    <div class="ma__header__hamburger__nav-container">
+    <div class="ma__header__hamburger__nav-container" aria-hidden="true">
       <div class="ma__header__hamburger__logo ma__header__hamburger__logo--mobile">
         {% include "@atoms/09-media/site-logo.twig" %}
       </div>
