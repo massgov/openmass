@@ -121,6 +121,9 @@ class SanitizationCommands extends DrushCommands {
     if ($input->getOption('sanitize-roles')) {
       $messages[] = 'Remove user-role assignments.';
     }
+    if ($input->getOption('sanitize-unpublish-reminders')) {
+      $messages[] = 'Remove unpublish reminders.';
+    }
   }
 
   /**
@@ -128,9 +131,10 @@ class SanitizationCommands extends DrushCommands {
    * @option sanitize-keyvalue Sanitize key_value table.
    * @option sanitize-entities Remove unpublished entities and old revisions of entities.
    * @option sanitize-roles Remove user role assignments.
+   * @option sanitize-unpublish-reminders Remove unpublish reminders.
    * @option sanitize-names Replace usernames with user+1, user+2, etc.
    */
-  public function options($options = ['sanitize-keyvalue' => FALSE, 'sanitize-entities' => FALSE, 'sanitize-names' => FALSE, 'sanitize-roles' => FALSE]) {
+  public function options($options = ['sanitize-keyvalue' => FALSE, 'sanitize-entities' => FALSE, 'sanitize-names' => FALSE, 'sanitize-roles' => FALSE, 'sanitize-unpublish-reminders' => FALSE]) {
   }
 
   /**
@@ -220,6 +224,24 @@ class SanitizationCommands extends DrushCommands {
       $this->logger()->error(dt('The user roles have not been truncated.'));
     } else {
       $this->logger()->success(dt('The user roles have been truncated.'));
+    }
+  }
+
+  /**
+   * Sanitize the database table for the unpublish reminders.
+   *
+   * @hook post-command sql-sanitize
+   */
+  public function unpublishReminders($result, CommandData $commandData) {
+    if (!$commandData->input()->getOption('sanitize-unpublish-reminders')) {
+      return;
+    }
+    // Remove all from the mass_unpublish_reminders table.
+    $reminders = Database::getConnection()->truncate('mass_unpublish_reminders')->execute();
+    if ($reminders) {
+      $this->logger()->error(dt('The unpublish reminders have not been truncated.'));
+    } else {
+      $this->logger()->success(dt('The unpublish reminders have been truncated.'));
     }
   }
 

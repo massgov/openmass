@@ -27,6 +27,49 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   const CIRCLE_URI = 'https://circleci.com/api/v2/project/github/massgov/openmass/pipeline';
 
   /**
+   * Run Backstop at CircleCI, for better reliability and logging.
+   *
+   * @command ma:backstop
+   *
+   * @param string $target Target environment.
+   * @param string $reference Reference environment.
+   * @option ci-branch The branch that CircleCI should check out at start.
+   *
+   * @aliases ma-backstop
+   * @validate-circleci-token
+   *
+   * @return string
+   *   A URL for viewing the build.
+   * @throws \Exception
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+  public function backstop($target, $reference, array $options = ['ci-branch' => 'develop']) {
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'auth' => [$this->getTokenCircle()],
+      'json' => [
+        'branch' => $options['ci-branch'],
+        'parameters' => [
+          'post-trigger' => FALSE,
+          'webhook' => FALSE,
+          'ma-backstop' => TRUE,
+          'target' => $target,
+          'reference' => $reference,
+        ],
+      ],
+    ];
+    $response = $client->request('POST', self::CIRCLE_URI, $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    $body = json_decode((string)$response->getBody(), TRUE);
+    $this->logger()->success($this->getSuccessMessage($body));
+  }
+
+  /**
    * Run Cloudflare deployment at CircleCI, for better reliability and logging.
    *
    * @command ma:cf-deploy

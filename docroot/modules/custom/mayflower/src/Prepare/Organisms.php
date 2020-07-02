@@ -3,7 +3,6 @@
 namespace Drupal\mayflower\Prepare;
 
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\Core\Url;
 use Drupal\mayflower\Helper;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Entity\ContentEntityInterface;
@@ -782,13 +781,15 @@ class Organisms {
    *   The object that contains the fields.
    * @param array $options
    *   An array of options for title, view, imageStyle.
+   * @param array &$cache_tags
+   *   The array of node cache tags.
    *
    * @see @organsms/by-author/suggested-pages.twig
    *
    * @return array
    *   Returns structured array.
    */
-  public static function prepareSuggestedPages($entity, array $options = []) {
+  public static function prepareSuggestedPages($entity, array $options = [], array &$cache_tags = []) {
     $pages = [];
 
     // Create the map of all possible field names to use.
@@ -797,33 +798,31 @@ class Organisms {
     ];
     // Determines which field names to use from the map.
     $fields = Helper::getMappedFields($entity, $map);
-    if ($entity->{$fields['items']}->isEmpty() || !method_exists($entity, 'hasField')) {
-      return [];
-    }
     // Get related locations.
     foreach ($entity->{$fields['items']} as $item) {
       $ref_entity = $item->entity;
-      if (!method_exists($ref_entity, 'hasField')) {
-        return [];
+      // Creates a map of fields that are on the entity.
+      if ($ref_entity) {
+        if (method_exists($entity, 'isPublished') && !$ref_entity->isPublished()) {
+          continue;
+        }
+        $ref_map = [
+          'image' => ['field_bg_narrow', 'field_guide_page_bg_wide'],
+        ];
+        $cache_tags = array_merge($cache_tags, $ref_entity->getCacheTags());
+        // Determines which field names to use from the map.
+        $field = Helper::getMappedFields($ref_entity, $ref_map);
+        $pages[] = [
+          'image' => Helper::getFieldImageUrl($ref_entity, isset($options['style']) ? $options['style'] : '', $field['image']),
+          'altTag' => $ref_entity->alt,
+          'link' => [
+            'type' => UrlHelper::isExternal($ref_entity->toURL()
+              ->toString()) ? 'external' : 'internal',
+            'href' => $ref_entity->toURL()->toString(),
+            'text' => $ref_entity->getTitle(),
+          ],
+        ];
       }
-      if (method_exists($entity, 'isPublished') && !$ref_entity->isPublished()) {
-        continue;
-      }
-      // Creates a map of fields that are on the entitiy.
-      $ref_map = [
-        'image' => ['field_bg_narrow', 'field_guide_page_bg_wide'],
-      ];
-      // Determines which field names to use from the map.
-      $field = Helper::getMappedFields($ref_entity, $ref_map);
-      $pages[] = [
-        'image' => Helper::getFieldImageUrl($ref_entity, isset($options['style']) ? $options['style'] : '', $field['image']),
-        'altTag' => $ref_entity->alt,
-        'link' => [
-          'type' => UrlHelper::isExternal($ref_entity->toURL()->toString()) ? 'external' : 'internal',
-          'href' => $ref_entity->toURL()->toString(),
-          'text' => $ref_entity->getTitle(),
-        ],
-      ];
     }
 
     // If a max number of items is specified and the page count exceeds it,
@@ -1449,7 +1448,6 @@ class Organisms {
           // - "10 dollars only"
           //
           // Our goal is to display fees as "$ x,xxx.yy" style output when possible.
-
           // 1. Just get the float value from all kinds of fee input (i.e. $val)
           $float_val = floatval($val);
           // 2. If the extracted float has a different numeric value, our input is a string
@@ -1664,6 +1662,24 @@ class Organisms {
     ];
 
     return $contentEyebrow;
+  }
+
+  /**
+   * Returns the variables structure required to render a relationship indicator.
+   *
+   * @param array $options
+   *   The object that contains static data, widgets, and optional content.
+   *
+   * @see @molecules/relationship-indicator.twig
+   */
+  public static function prepareRelationshipIndicatorPrimary(array $options) {
+
+    // Create the relationship indicator primary term data structure.
+    $relationshipIndicatorPrimary = [
+      'tags' => array_key_exists('tags', $options) ? $options['tags'] : NULL,
+    ];
+
+    return $relationshipIndicatorPrimary;
   }
 
   /**

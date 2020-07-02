@@ -16,6 +16,36 @@ class EmergencyAlertsTest extends ExistingSiteBase {
 
   use LoginTrait;
 
+  private $editor;
+  private $orgNode;
+  private $emergencyAlertPublisher;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setUp() {
+    parent::setUp();
+
+    $user1 = User::create(['name' => $this->randomMachineName()]);
+    $user1->addRole('editor');
+    $user1->activate();
+    $user1->save();
+    $this->editor = $user1;
+
+    $user2 = User::create(['name' => $this->randomMachineName()]);
+    $user2->addRole('emergency_alert_publisher');
+    $user2->activate();
+    $user2->save();
+    $this->emergencyAlertPublisher = $user2;
+
+    $this->orgNode = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+  }
+
   /**
    * Check that the JSONAPI output contains fields we care about.
    */
@@ -119,6 +149,110 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page->selectFieldOption('moderation_state[0][state]', 'published');
     $page->findButton('Save')->press();
     $this->assertContains('This sitewide alert cannot be published because another sitewide alert is currently active:', $page->getText());
+  }
+
+  /**
+   * Assert specific page alert can be created by a user with the editor role.
+   */
+  public function testEditorRolePageSpecificAlert() {
+    $page_title = $this->randomMachineName();
+    $this->drupalLogin($this->editor);
+    $session = $this->getSession();
+    $session->visit('/node/add/alert');
+    $page = $session->getPage();
+    $page->fillField('edit-title-0-value', $page_title);
+    $page->fillField('field_alert_display', 'specific_target_pages');
+    $page->fillField('edit-field-target-page-0-target-id', $this->orgNode->getTitle());
+    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
+    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
+    $page->fillField('edit-field-organizations-0-target-id', $this->orgNode->getTitle());
+    $page->fillField('edit-unpublish-on-0-value-date', '2037-07-01');
+    $page->fillField('edit-unpublish-on-0-value-time', '00:00:00');
+    $page->selectFieldOption('moderation_state[0][state]', 'published');
+    $page->pressButton('Save');
+    $this->assertContains($page_title, $page->getText());
+  }
+
+  /**
+   * Assert organization alert can be created by a user with the editor role.
+   */
+  public function testEditorRoleOrganizationAlert() {
+    $page_title = $this->randomMachineName();
+    $this->drupalLogin($this->editor);
+    $session = $this->getSession();
+    $session->visit('/node/add/alert');
+    $page = $session->getPage();
+    $page->fillField('edit-title-0-value', $page_title);
+    $page->fillField('field_alert_display', 'by_organization');
+    $page->fillField('edit-field-target-organization-0-target-id', $this->orgNode->getTitle());
+    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
+    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
+    $page->fillField('edit-field-organizations-0-target-id', $this->orgNode->getTitle());
+    $page->fillField('edit-unpublish-on-0-value-date', '2037-07-01');
+    $page->fillField('edit-unpublish-on-0-value-time', '00:00:00');
+    $page->selectFieldOption('moderation_state[0][state]', 'published');
+    $page->pressButton('Save');
+    $this->assertContains($page_title, $page->getText());
+  }
+
+  /**
+   * Assert site-wide alert can be created by a user with the emergency_alert_publisher role.
+   */
+  public function testEmergencyAlertPublisherRoleSiteWideAlert() {
+    $this->unPublishExistingSiteWideAlert();
+    $page_title = $this->randomMachineName();
+    $this->drupalLogin($this->emergencyAlertPublisher);
+    $session = $this->getSession();
+    $session->visit('/node/add/alert');
+    $page = $session->getPage();
+    $page->fillField('edit-title-0-value', $page_title);
+    $page->fillField('field_alert_display', 'site_wide');
+    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
+    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
+    $page->fillField('edit-field-organizations-0-target-id', $this->orgNode->getTitle());
+    $page->fillField('edit-unpublish-on-0-value-date', '2037-07-01');
+    $page->fillField('edit-unpublish-on-0-value-time', '00:00:00');
+    $page->selectFieldOption('moderation_state[0][state]', 'published');
+    $page->pressButton('Save');
+    $this->assertContains($page_title, $page->getText());
+  }
+
+  /**
+   * Assert site-wide alert cannot be created by a user with only the editor role.
+   */
+  public function testEditorRoleSiteWideAlert() {
+    $this->drupalLogin($this->editor);
+    $session = $this->getSession();
+    $session->visit('/node/add/alert');
+    $page = $session->getPage();
+    $this->assertNotContains('Sitewide on all Mass.gov pages', $page->getText());
+    $this->assertSession()->fieldNotExists('edit-field-alert-display-site-wide');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function tearDown() {
+    parent::tearDown();
+    $this->editor = NULL;
+    $this->orgNode = NULL;
+    $this->emergencyAlertPublisher = NULL;
+  }
+
+  /**
+   * Unpublish pre-existing site-wide alert, if any.
+   */
+  public function unPublishExistingSiteWideAlert() {
+    $nids = \Drupal::entityQuery('node')
+      ->condition('type', 'alert')
+      ->condition('status', 1)
+      ->condition('field_alert_display', 'site_wide')
+      ->execute();
+    $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
+    foreach ($nodes as $node) {
+      $node->moderation_state = MassModeration::UNPUBLISHED;
+      $node->save();
+    }
   }
 
 }

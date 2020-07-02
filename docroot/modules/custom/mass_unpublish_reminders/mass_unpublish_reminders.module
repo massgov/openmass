@@ -1,0 +1,159 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_unpublish_reminders.module.
+ */
+
+use Drupal\Core\Database\Database;
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_cron().
+ */
+function mass_unpublish_reminders_cron() {
+  $last_run = Drupal::state()->get('mass_unpublish_reminders.last_cron', 0);
+  $time = \Drupal::time()->getRequestTime();
+  // Check if this function has been run in the
+  // last 24 hours (24 hours = 86400 seconds).
+  if ($last_run > $time - 86400) {
+    return;
+  }
+
+  // We need a way to bypass notifications
+  // (eg when we do bulk updates via drush).
+  $bypass_notification = isset($_ENV['MASS_REMINDERS_BYPASS']) ? (bool) $_ENV['MASS_REMINDERS_BYPASS'] : FALSE;
+
+  // Sends Unpublish notifications on local and Prod environments only when
+  // there is no bypass flag.
+  if ((!isset($_ENV['AH_SITE_ENVIRONMENT']) || $_ENV['AH_SITE_ENVIRONMENT'] == 'prod')
+    && !$bypass_notification) {
+    _mass_unpublish_reminders_cron_helper();
+  }
+  Drupal::state()->set('mass_unpublish_reminder.last_cron', $time);
+}
+
+/**
+ * Helper function to keep cron code simple.
+ */
+function _mass_unpublish_reminders_cron_helper() {
+  if (Database::getConnection()
+    ->schema()
+    ->tableExists('mass_unpublish_reminders')) {
+
+    $start_timestamp = strtotime('today midnight');
+    $now = strtotime('now');
+    $week_ago = strtotime('-7 days midnight');
+    $end_timestamp = strtotime('+8 days midnight') - 1;
+    $query = \Drupal::entityQuery('node')
+      ->condition('status', 1)
+      ->condition('type', ['alert', 'campaign_landing'], 'IN')
+      ->condition('changed', [
+        $week_ago,
+        $now,
+      ], 'NOT BETWEEN');
+    $group = $query->andConditionGroup();
+    $group->condition('created', [
+      $week_ago,
+      $now,
+    ], 'NOT BETWEEN');
+    $query->condition($group);
+    $query->condition('unpublish_on', [
+      $start_timestamp,
+      $end_timestamp,
+    ], 'BETWEEN');
+    $nids = $query->execute();
+
+    if (!empty($nids)) {
+      $database = \Drupal::database();
+      $query = $database->select('mass_unpublish_reminders', 'mur');
+      $query->fields('mur', ['nid', 'reminder_sent']);
+      $result = $query->execute()->fetchAll();
+      if (!empty($result)) {
+        foreach ($result as $r) {
+          if (!empty($r->reminder_sent)) {
+            $current_timestamp = \Drupal::time()->getRequestTime();
+            $current_datetime = new DateTime();
+            $current_datetime->setTimestamp($current_timestamp);
+            $reminder_datetime = new DateTime();
+            $reminder_timestamp = $r->reminder_sent;
+            $reminder_datetime->setTimestamp($reminder_timestamp);
+            $interval = $current_datetime->diff($reminder_datetime);
+            if ($interval->days > 7) {
+              // If interval is more than 7 days, then the unpublish date has
+              // been changed or node has been unpublished. We don't need
+              // to keep this anymore.
+              $database->delete('mass_unpublish_reminders')
+                ->condition('nid', $r->nid)
+                ->execute();
+            }
+
+            if (($key = array_search($r->nid, $nids)) !== FALSE) {
+              // We remove an item from array to not send duplicate emails.
+              unset($nids[$key]);
+            }
+          }
+        }
+      }
+
+      // Create queue to process emails.
+      $queue = \Drupal::queue('mass_unpublish_reminders_queue');
+      $queue->createQueue();
+      foreach ($nids as $nid) {
+        $queue->createItem($nid);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function mass_unpublish_reminders_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'unpublish_reminder':
+      $system_site_mail = \Drupal::config('system.site')->get('mail');
+      // Ensures email headers match the From field.
+      $message['from'] = $message['headers']['From'] = $message['headers']['Sender'] = $message['headers']['Reply-to'] = $message['headers']['Return-Path'] = $system_site_mail;
+      if (!empty($params['headers'])) {
+        $message['headers'] += $params['headers'];
+      }
+      $message['subject'] = t('Your organization’s Mass.gov page or alert will be unpublished soon');
+      $message['body'][] = $params['message'];
+      break;
+  }
+}
+
+/**
+ * Implements hook_node_update().
+ *
+ * When a node is updated check to see if we need to update the
+ * mass_unpublish_reminders table accordingly.
+ */
+function mass_unpublish_reminders_node_update(EntityInterface $node) {
+  $types = [
+    'alert',
+    'campaign_landing',
+  ];
+  if (!in_array($node->bundle(), $types)) {
+    return;
+  }
+
+  if ($node->hasField('unpublish_on')) {
+    if (!empty($node->unpublish_on->value)) {
+      $unpublish_timestamp = $node->unpublish_on->value;
+      $current_timestamp = \Drupal::time()->getRequestTime();
+      $current_datetime = new DateTime();
+      $current_datetime->setTimestamp($current_timestamp);
+      $unpublish_datetime = new DateTime();
+      $unpublish_datetime->setTimestamp($unpublish_timestamp);
+      $interval = $current_datetime->diff($unpublish_datetime);
+      if ($interval->days > 7) {
+        $database = \Drupal::database();
+        $database->delete('mass_unpublish_reminders')
+          ->condition('nid', $node->id())
+          ->execute();
+      }
+    }
+  }
+}

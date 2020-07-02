@@ -1,5 +1,68 @@
 
 
+## [0.249.0] - June 23, 2020
+
+### Changed
+  - DP-19159: Updated Mayflower version to 9.52.1.
+    - DP-17150: Change the label of the secondary set. Change the width of each set. Adjust spacing. (MF)
+    - DP-17404: Match spacing with the current prod(develop) version. (MF)
+    - DP-17404: Align relationship the first terms in primary and secondary sets. (MF)
+    - DP-17404: Position the TOC below the relationship indicator. (MF)
+    - DP-17404: Put back missing mobileNav.js in index.js. (MF)
+    - DP-19085: Modify google-map.twig to print googleMap.link.info value and set it visualy hidden as context info for screen reader users. (MF)
+  - DP-18237: Adjust templates for Mayflower relationship indicator changes.
+  - DP-18237: Replace content eyebrow with relationshp indicator in topic page.
+  - DP-18638: Adjusted backstopJS alert test to wait for timestamp element before taking a screenshot.
+  - DP-18611: Set a paging limit for the Documents By Contributor view and fixed related issues.
+  - DP-15128: Set a page title as googlMap.link.info property value as static Google map directions link context for assistive technology.
+  - DP-19131: Bump composer cache key at CircleCI
+  
+### Added
+  - DP-18249: Enable upgrade_status and supporting modules.
+  - DP-16437: Generates reminders for users prior to content unpublish dates.
+  
+### Security
+  - DP-19115: Update Drupal core from 8.8.6 to 8.8.8.
+  
+
+
+## [0.248.0] - June 16, 2020
+
+### Added
+  - DP-18846: Additional testing for site-wide, organization, and page-specific alerts.
+  - DP-18958: Create method to run adhoc backstop jobs on CircleCI
+  
+### Changed
+  - DP-19097: Updated Mayflower version to 9.52.0.
+    - DP-15628: Make the parent container of TOC link function like a link by expanding clickable area. (MF)
+    - DP-17612: Adjust z-index of open search box to fix style issue on Firefox.  (MF)
+    - DP-18940: Adjusted the key-message template and styles to stop BG image display problem. (MF)
+  - DP-18926: Cover image and replace text with dummy one for componentns, which have frequently changing content, to avoid false positive in backstop; banner image, popular searches text, Featured services key action text, News and updates images and text on Home page, images and text in Updates From The Baker-Polito Administration, and images and teaser in Under Recent news and announcements.
+  
+### Fixed
+  - DP-18954: Fixes an issue with link fields breaking node views when linked internal content is deleted.
+  - DP-19070: Fixed issue where noindex was removed on certain pages matching a list of keywords.
+  - DP-19009: Fixing buttons too close together on decision tree style issue.
+  - DP-19027: Fixed broken bulk-operations select field on watched-content view.
+  
+
+
+## [0.247.0] - June 9, 2020
+
+### Removed
+  - DP-18932: The hold-for-backstop job is not needed.
+  
+### Fixed
+  - DP-18778: Fixed bug on Add Content page where list-items were disappearing when filtering.
+  - DP-18812: Fixing related locations page not found issue when referenced node is deleted.
+  - DP-18983: Fix the visual difference of feedback module radio buttons in form page.
+  - DP-16160: Fix accessibility issues with feedback module.
+  
+### Added
+  - DP-18832: Improve the production post-deployment Backstop job
+  
+
+
 ## [0.246.0] - June 2, 2020
 
 ### Added

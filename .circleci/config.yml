@@ -8,7 +8,7 @@ references:
     working_directory: /var/www/code
     docker:
       # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:1.0.14-ci
+      - image: massgov/drupal-container:1.0.15-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           AWS_REGION: us-east-1
@@ -24,13 +24,12 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v6-{{ checksum "composer.lock" }}
-        - site-composer-v6-
+        - site-composer-v9-{{ checksum "composer.lock" }}
 
   save_composer_cache: &save_composer_cache
     save_cache:
       name: Save Composer cache
-      key: site-composer-v6-{{ checksum "composer.lock" }}
+      key: site-composer-v9-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
   branch_ignore: &branch_ignore
@@ -49,7 +48,7 @@ executors:
         default: comass/mysql-sanitized:latest
     working_directory: /var/www/code
     docker:
-      - image: massgov/drupal-container:1.0.14-ci
+      - image: massgov/drupal-container:1.0.15-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           DOCKER_ENV: ci
@@ -98,6 +97,13 @@ parameters:
   ma-cf-deploy:
     type: boolean
     default: false
+  # These params for currently used in drush ma:backstop. target is declared later.
+  ma-backstop:
+    type: boolean
+    default: false
+  reference:
+    type: string
+    default: ""
 
   # These params for currently used in drush ma:release
   ma-release:
@@ -109,7 +115,7 @@ parameters:
   skip-maint:
     type: string
     default: ""
-  # target also used by ma-cf-deploy
+  # target also used by ma-cf-deploy, ma-backstop
   target:
     type: string
     default: ""
@@ -864,20 +870,19 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold_for_backstop:
-          type: approval
-          requires:
-            - build
-            - tagging_acquia
-            - deploy-tag-prod-acquia-maint
+      - backstop:
+          name: backstop-prod-maint
+          requires: [deploy-tag-prod-acquia-maint]
+          target: prod
+          reference: test
           filters:
             branches:
               ignore: /.*/
             tags:
               only: /.*/
       - backstop:
-          name: backstop-prod
-          requires: [deploy-tag-prod-acquia-maint]
+          name: backstop-prod-no-maint
+          requires: [deploy-tag-prod-acquia-no-maint]
           target: prod
           reference: test
           filters:
@@ -924,6 +929,16 @@ workflows:
             branches:
               only:
                 - develop
+
+  # Usually triggerred by drush ma:backstop.
+  backstop_ad_hoc:
+    when: << pipeline.parameters.ma-backstop >>
+    jobs:
+      - build
+      - backstop:
+          requires: [build]
+          target: << pipeline.parameters.target >>
+          reference: << pipeline.parameters.reference >>
 
   # Usually triggerred by drush ma:release.
   deploy_ad_hoc:
