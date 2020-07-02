@@ -44,14 +44,40 @@
   {{ title_suffix }}
 
   <div class="ma__header__button-container js-sticky-header">
-    <button class="ma__header__back-button js-close-sub-nav"><span>Back</span></button>
-    <button class="ma__header__menu-button js-header-menu-button">
+    <button type="button" class="ma__header__back-button js-close-sub-nav"><span>Back</span></button>
+    <button type="button"
+            aria-expanded="false"
+            aria-label="Open the main menu for mass.gov"
+            class="ma__header__menu-button js-header-menu-button">
       <span>Menu</span><span class="ma__header__menu-icon"></span>
+
+      {# Menu label with screen size greater than 620px. #}
+      {# <span class="ma__header__hamburger__menu-text ma__header__hamburger__desktop-label js-header__menu-text">Menu</span> #}
+      {# Menu label with screen size less than 620px. #}
+      {# <span class="ma__header__hamburger__menu-text ma__header__hamburger__mobile-label js-header__menu-text">Mass.gov</span> #}
+
     </button>
+
+    {# Skip button to search. #}
+    {# <button type="button"
+            aria-expanded="false"
+            class="ma__header__hamburger__search-access-button js-header-search-access-button">
+      <span class="ma__visually-hidden">Access to search</span>
+      {{ icon('search') }}
+    </button> #}
+
   </div>
+
+  {# 2 NARROW UTILITY NAVS? #}
   <div class="ma__header__utility-nav ma__header__utility-nav--narrow js-utility-nav--narrow">
     {{ render_menu('utility') }}
   </div>
+  {#
+  <div class="ma__header__hamburger__utility-nav ma__header__hamburger__utility-nav--wide js-utility-nav--wide">
+    {{ render_menu('utility') }}
+  </div>
+  #}
+
   <div class="ma__header__nav-container">
     <div class="ma__header__nav-search">
       <section class="ma__header-search">
