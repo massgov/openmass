@@ -21,3 +21,19 @@ queuers:
     plugin_id: purge_ui_block_queuer
     status: true
 queue: database_unique
+processors:
+  -
+    plugin_id: drush_purge_queue_work
+    status: true
+  -
+    plugin_id: drush_purge_invalidate
+    status: true
+  -
+    plugin_id: cron
+    status: false
+  -
+    plugin_id: lateruntime
+    status: false
+  -
+    plugin_id: purge_ui_block_processor
+    status: true
