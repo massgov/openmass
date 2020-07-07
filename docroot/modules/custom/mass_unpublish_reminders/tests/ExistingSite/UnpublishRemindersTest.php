@@ -35,6 +35,8 @@ class UnpublishRemindersTest extends ExistingSiteBase {
 
   protected $users;
 
+  protected $lastRun;
+
   /**
    * {@inheritdoc}
    */
@@ -42,6 +44,10 @@ class UnpublishRemindersTest extends ExistingSiteBase {
     parent::setUp();
     $this->startMailCollection();
 
+    $last_run = \Drupal::state()->get('mass_unpublish_reminders.last_cron', 0);
+    $this->lastRun = $last_run;
+
+    \Drupal::state()->set('mass_unpublish_reminder.last_cron', 0);
     $module_key = static::MASS_UNPUBLISH_MODULENAME . '.' . (static::MASS_UNPUBLISH_MAILKEY ?: 'none');
     $prefix = MailsystemManager::MAILSYSTEM_MODULES_CONFIG . '.' . $module_key;
 
@@ -76,6 +82,7 @@ class UnpublishRemindersTest extends ExistingSiteBase {
     $this->author = NULL;
     $this->users = NULL;
 
+    \Drupal::state()->set('mass_unpublish_reminder.last_cron', $this->lastRun);
     $this->restoreMailSettings();
     parent::tearDown();
   }
@@ -89,6 +96,8 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       'type' => 'alert',
       'title' => 'Test Alert',
       'uid' => $this->author->id(),
+      'created' => strtotime('-10 days'),
+      'changed' => strtotime('-9 days'),
       'unpublish_on' => strtotime('+3 days', \Drupal::time()->getRequestTime()),
       'moderation_state' => 'published',
     ]);
@@ -114,6 +123,8 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       'type' => 'campaign_landing',
       'title' => 'Test Promotional Page',
       'uid' => $this->author->id(),
+      'created' => strtotime('-10 days'),
+      'changed' => strtotime('-9 days'),
       'unpublish_on' => strtotime('+6 days', \Drupal::time()->getRequestTime()),
       'moderation_state' => 'published',
     ]);
