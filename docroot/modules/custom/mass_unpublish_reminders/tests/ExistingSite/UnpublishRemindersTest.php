@@ -2,14 +2,12 @@
 
 namespace Drupal\Tests\mass_unpublish_reminders\ExistingSite;
 
-use Drupal\mailsystem\MailsystemManager;
 use Drupal\taxonomy\Entity\Vocabulary;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\DrupalTestTraits\Mail\MailCollectionAssertTrait;
 use weitzman\DrupalTestTraits\Mail\MailCollectionTrait;
 use weitzman\DrupalTestTraits\Entity\UserCreationTrait;
 use weitzman\DrupalTestTraits\Entity\TaxonomyCreationTrait;
-use Drupal\Tests\Traits\Core\CronRunTrait;
 
 /**
  * Tests reminder emails functionality.
@@ -23,8 +21,6 @@ class UnpublishRemindersTest extends ExistingSiteBase {
   use UserCreationTrait;
 
   use TaxonomyCreationTrait;
-
-  use CronRunTrait;
 
   const MASS_UNPUBLISH_MODULENAME = 'mass_unpublish_reminders';
   const MASS_UNPUBLISH_MAILKEY = 'unpublish_reminder';
@@ -44,17 +40,14 @@ class UnpublishRemindersTest extends ExistingSiteBase {
     parent::setUp();
     $this->startMailCollection();
 
+    // mass.gov use a settings.vm.php config override. Override it so mail collection works.
+    // No better way than GLOBALS. See \Drupal\Core\Config\ConfigFactory::doGet.
+    $GLOBALS['config']['mailsystem.settings']['defaults']['sender'] = 'test_mail_collector';
+    $this->container->get('config.factory')->clearStaticCache();
+
     $last_run = \Drupal::state()->get('mass_unpublish_reminders.last_cron', 0);
     $this->lastRun = $last_run;
-
     \Drupal::state()->set('mass_unpublish_reminder.last_cron', 0);
-    $module_key = static::MASS_UNPUBLISH_MODULENAME . '.' . (static::MASS_UNPUBLISH_MAILKEY ?: 'none');
-    $prefix = MailsystemManager::MAILSYSTEM_MODULES_CONFIG . '.' . $module_key;
-
-    $config = $this->container->get('config.factory')->getEditable('mailsystem.settings');
-    $config->set($prefix . '.' . MailsystemManager::MAILSYSTEM_TYPE_FORMATTING, 'test_mail_collector');
-    $config->set($prefix . '.' . MailsystemManager::MAILSYSTEM_TYPE_SENDING, 'test_mail_collector');
-    $config->save();
 
     $this->organization = $this->createTerm(Vocabulary::load('user_organization'), [
       'name' => 'TestOrganization',
@@ -63,7 +56,7 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       'field_user_org' => $this->organization->tid->value,
       'mail' => 'testauthor@mass.local',
     ];
-    $this->author = $this->createUser([], 'TestNodeAuthor', FALSE, $author_values);
+    $this->author = $this->createUser([], NULL, FALSE, $author_values);
 
     for ($x = 0; $x <= 2; $x++) {
       $users[] = $this->createUser([], NULL, FALSE, [
@@ -101,8 +94,10 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       'unpublish_on' => strtotime('+3 days', \Drupal::time()->getRequestTime()),
       'moderation_state' => 'published',
     ]);
-
-    $this->cronRun();
+    // Send the emails.
+    /** @var \Drupal\Core\CronInterface $cron */
+    $cron = \Drupal::service('cron');
+    $cron->run();
 
     $this->assertMailCollection()
       ->seekToModule(static::MASS_UNPUBLISH_MODULENAME)
@@ -129,7 +124,10 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       'moderation_state' => 'published',
     ]);
 
-    $this->cronRun();
+    // Send the emails.
+    /** @var \Drupal\Core\CronInterface $cron */
+    $cron = \Drupal::service('cron');
+    $cron->run();
 
     $this->assertMailCollection()
       ->seekToModule(static::MASS_UNPUBLISH_MODULENAME)

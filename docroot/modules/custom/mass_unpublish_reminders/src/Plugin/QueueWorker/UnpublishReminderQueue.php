@@ -11,8 +11,7 @@ use Drupal\Core\Url;
  *
  * @QueueWorker(
  *   id = "mass_unpublish_reminders_queue",
- *   title = @Translation("Node Unpublish Reminders: email queue"),
- *   cron = {"time" = 60}
+ *   title = @Translation("Node Unpublish Reminders: email queue")
  * )
  */
 class UnpublishReminderQueue extends QueueWorkerBase {
@@ -21,7 +20,9 @@ class UnpublishReminderQueue extends QueueWorkerBase {
    * {@inheritdoc}
    */
   public function processItem($nid) {
-    $node = Node::load($nid);
+    if (!$node = Node::load($nid)) {
+      throw new \Exception("Unable to load node $nid");
+    }
     $author = $node->getOwner();
     if (!empty($author)) {
       $author_mail = $author->getEmail();
