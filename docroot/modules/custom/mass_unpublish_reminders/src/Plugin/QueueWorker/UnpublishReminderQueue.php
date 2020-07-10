@@ -70,7 +70,8 @@ class UnpublishReminderQueue extends QueueWorkerBase {
 
       $mailManager = \Drupal::service('plugin.manager.mail');
       $result = $mailManager->mail('mass_unpublish_reminders', 'unpublish_reminder', $author_mail, 'en', $params, TRUE);
-      if ($result['result'] == TRUE) {
+      if ($result['result']) {
+        // Log the email so we don't resend.
         $database = \Drupal::database();
         $query = $database->insert('mass_unpublish_reminders');
         $query->fields([
