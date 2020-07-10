@@ -96,7 +96,7 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       'moderation_state' => 'published',
     ]);
     // Look at upcoming transitions and enqueue the emails.
-    mass_unpublish_reminders_cron()
+    mass_unpublish_reminders_cron();
     // Send the emails.
     $this->runQueue('mass_unpublish_reminders_queue');
 
