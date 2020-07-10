@@ -12,7 +12,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @QueueWorker(
  *   id = "mass_utility_revisions_cleanup",
- *   title = @Translation("Cleanup revisions queued for deletion.")
+ *   title = @Translation("Cleanup revisions queued for deletion."),
+ *   cron = {"time" = 180}
  * )
  */
 class RevisionCleanupQueue extends QueueWorkerBase implements ContainerFactoryPluginInterface {

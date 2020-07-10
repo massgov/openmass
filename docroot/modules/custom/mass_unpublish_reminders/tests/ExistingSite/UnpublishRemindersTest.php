@@ -3,6 +3,7 @@
 namespace Drupal\Tests\mass_unpublish_reminders\ExistingSite;
 
 use Drupal\taxonomy\Entity\Vocabulary;
+use DrupalTest\QueueRunnerTrait\QueueRunnerTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\DrupalTestTraits\Mail\MailCollectionAssertTrait;
 use weitzman\DrupalTestTraits\Mail\MailCollectionTrait;
@@ -15,12 +16,10 @@ use weitzman\DrupalTestTraits\Entity\TaxonomyCreationTrait;
 class UnpublishRemindersTest extends ExistingSiteBase {
 
   use MailCollectionAssertTrait;
-
   use MailCollectionTrait;
-
   use UserCreationTrait;
-
   use TaxonomyCreationTrait;
+  use QueueRunnerTrait;
 
   const MASS_UNPUBLISH_MODULENAME = 'mass_unpublish_reminders';
   const MASS_UNPUBLISH_MAILKEY = 'unpublish_reminder';
@@ -39,6 +38,7 @@ class UnpublishRemindersTest extends ExistingSiteBase {
   protected function setUp() {
     parent::setUp();
     $this->startMailCollection();
+    $this->clearQueue('mass_unpublish_reminders_queue');
 
     // mass.gov use a settings.vm.php config override. Override it so mail collection works.
     // No better way than GLOBALS. See \Drupal\Core\Config\ConfigFactory::doGet.
@@ -76,6 +76,7 @@ class UnpublishRemindersTest extends ExistingSiteBase {
     $this->users = NULL;
 
     \Drupal::state()->set('mass_unpublish_reminder.last_cron', $this->lastRun);
+    $this->clearQueue('mass_unpublish_reminders_queue');
     $this->restoreMailSettings();
     parent::tearDown();
   }
@@ -94,10 +95,12 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       'unpublish_on' => strtotime('+3 days', \Drupal::time()->getRequestTime()),
       'moderation_state' => 'published',
     ]);
-    // Send the emails.
+    // Look at upcoming transitions and enqueue the emails.
     /** @var \Drupal\Core\CronInterface $cron */
     $cron = \Drupal::service('cron');
     $cron->run();
+    // Send the emails.
+    $this->runQueue('mass_unpublish_reminders_queue');
 
     $this->assertMailCollection()
       ->seekToModule(static::MASS_UNPUBLISH_MODULENAME)
@@ -124,10 +127,12 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       'moderation_state' => 'published',
     ]);
 
-    // Send the emails.
+    // Look at upcoming transitions and enqueue the emails.
     /** @var \Drupal\Core\CronInterface $cron */
     $cron = \Drupal::service('cron');
     $cron->run();
+    // Send the emails.
+    $this->runQueue('mass_unpublish_reminders_queue');
 
     $this->assertMailCollection()
       ->seekToModule(static::MASS_UNPUBLISH_MODULENAME)
