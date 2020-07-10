@@ -96,9 +96,7 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       'moderation_state' => 'published',
     ]);
     // Look at upcoming transitions and enqueue the emails.
-    /** @var \Drupal\Core\CronInterface $cron */
-    $cron = \Drupal::service('cron');
-    $cron->run();
+    mass_unpublish_reminders_cron()
     // Send the emails.
     $this->runQueue('mass_unpublish_reminders_queue');
 
@@ -128,9 +126,7 @@ class UnpublishRemindersTest extends ExistingSiteBase {
     ]);
 
     // Look at upcoming transitions and enqueue the emails.
-    /** @var \Drupal\Core\CronInterface $cron */
-    $cron = \Drupal::service('cron');
-    $cron->run();
+    mass_unpublish_reminders_cron();
     // Send the emails.
     $this->runQueue('mass_unpublish_reminders_queue');
 
