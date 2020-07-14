@@ -1,5 +1,21 @@
 
 
+## [0.252.0] - July 14, 2020
+
+### Added
+  - DP-19123: Add callout link and card to relationship indicator's content.computed_related_to in Advisory, Binder, Curated List, Decision, Decision tree, Event, Executive order, Form, Guide, How-to, Information details, Location, Location details, News, Person, Regulation, Rules of court, and Service details.
+  
+### Changed
+  - DP-15470: Disable cron and lateruntime purge processors
+  - DP-19197: Update several developer-centric packages for Drupal 9.
+  - DP-15829: RelatedNodes - several simple queries instead of 1 complex query
+  - DP-19314: Allow iframes of to domain app.powerbigov.us.
+  
+### Fixed
+  - DP-19338: Unpublish Reminder test was failing
+  
+
+
 ## [0.251.0] - July 7, 2020
 
 ### Changed
