@@ -47,6 +47,8 @@ executors:
         type: string
         default: comass/mysql-sanitized:latest
     working_directory: /var/www/code
+    # https://circleci.com/docs/2.0/configuration-reference/#resource_class
+    resource_class: xlarge
     docker:
       - image: massgov/drupal-container:1.0.15-ci
         environment:
