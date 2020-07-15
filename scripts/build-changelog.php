@@ -25,8 +25,9 @@ echo "";
 $holidayDates = array('01-01', '07-04', '11-14', '12-25');
 
 // Iterate over Changelog files
+$path = Path::join(dirname(__DIR__), 'changelogs');
 $finder = Finder::create()
-  ->in(__DIR__ . '/../changelogs')
+  ->in($path)
   ->name('*.yml')
   ->notName('template.yml');
 
@@ -65,8 +66,6 @@ echo "";
 
 // Update the changelog.md with the changelog files.
 $changes = [];
-$path = Path::join(dirname(__DIR__), 'changelogs');
-
 
 foreach($finder as $file) {
   $data = Yaml::parseFile($file->getPathname());
