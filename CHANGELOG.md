@@ -1,5 +1,34 @@
 
 
+## [0.251.0] - July 7, 2020
+
+### Changed
+  - DP-19316: Updated Mayflower version to 8.14.0.
+    - DP-18951: Feedback related markup removed from print styles. (MF)
+  
+### Fixed
+  - DP-19001: Fixed race condition where content changes would sometimes not show after saving.
+  
+
+
+## [0.250.0] - June 30, 2020
+
+### Changed
+  - DP-18252: Upgrade to PHP 7.3 for local dev and CI
+  - DP-19177: Updated typhonius/acquia-php-sdk-v2 to 1.2 version
+  - DP-19115: Updated Drupal core to 8.8.8.
+  - DP-19185: Longer timeouts for alerts in ExistingSite tests
+  
+### Fixed
+  - DP-19148: Fixed the robots metatag on the /tasks pages.
+  - DP-19182: Changing alert unpublish email template and fixing tests.
+  
+### Added
+  - DP-18776: Add page-template field permission for authors/editors on the info-details page.
+  - DP-19089: Add noindex and follow to the robots metatag for doc pages
+  
+
+
 ## [0.249.0] - June 23, 2020
 
 ### Changed
