@@ -50,24 +50,7 @@
 #}
 {{ page.emergency_alert }}
 {{ page.flag_links }}
-{#
-<header id="header" class="ma__header" role="banner">
-  <a href="#main-content" class="ma__header__skip-nav visually-hidden focusable">
-    {{ 'Skip to main content'|t }}
-  </a>
-  <div class="ma__header__container">
-    <div class="ma__header__logo">
-      {% include "@atoms/09-media/site-logo.twig" %}
-    </div>
-    {% if not search_header_suppression_flag %}
-      <div class="ma__header__search js-header-search-menu">
-        {% include directory ~ "/templates/includes/molecules-header-search.html.twig" with { 'searchFormId': "cse-header-search-form" } %}
-      </div>
-    {% endif %}
-  </div>
 
-</header>
-#}
 {% set header_class = "" %}
 {% if hide_main_nav %}
   {% set header_class = ' ma__header--hidden' %}
