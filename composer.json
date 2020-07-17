@@ -108,14 +108,13 @@
         "d3/d3": "3.5.*",
         "desandro/imagesloaded": "^4.1",
         "desandro/masonry": "^4.1",
-        "drupal-composer/drupal-scaffold": "2.3.0",
         "drupal/access_unpublished": "^1.0",
         "drupal/acquia_connector": "^2",
         "drupal/acquia_purge": "^1",
         "drupal/address": "^1.0",
         "drupal/admin_toolbar": "~1.0",
         "drupal/allowed_formats": "^1.1",
-        "drupal/auto_entitylabel": "2.x-dev",
+        "drupal/auto_entitylabel": "^3",
         "drupal/autologout": "^1.0",
         "drupal/cache_metrics": "^1",
         "drupal/clamav": "^1.0",
@@ -125,7 +124,8 @@
         "drupal/conditional_fields": "1.x-dev",
         "drupal/config_log": "^1",
         "drupal/content_export_yaml": "2.5",
-        "drupal/core": "~8.8.8",
+        "drupal/core-recommended": "~8.8.8",
+        "drupal/core-composer-scaffold": "~8.8.8",
         "drupal/csv_serialization": "^1",
         "drupal/devel": "^4",
         "drupal/diff": "1.x-dev",
@@ -147,7 +147,7 @@
         "drupal/google_map_field": "^1",
         "drupal/handy_cache_tags": "^1.0@alpha",
         "drupal/http_response_headers": "^2.0@alpha",
-        "drupal/imagick": "1.x-dev",
+        "drupal/imagick": "^1",
         "drupal/inline_entity_form": "1.x-dev",
         "drupal/jsonapi_page_limit": "^1",
         "drupal/key": "^1.10",
@@ -205,27 +205,10 @@
         "drupal/views_data_export": "1.x-dev",
         "drush/drush": "^10",
         "enyo/dropzone": "4.3.0",
-        "guzzlehttp/guzzle": "^6.3",
         "massgov/mayflower-artifacts": "9.53.0",
         "mikeyp/google_tag": "dev-8.x-1.x#3caa4f0b7f008576936ab7501d483bfcf58a4764",
         "phlak/semver": "^2.0",
         "phpunit/phpunit": "^6",
-        "symfony/class-loader": "~3.4.0",
-        "symfony/console": "~3.4.0",
-        "symfony/dependency-injection": "3.4.26",
-        "symfony/dom-crawler": "^3.4",
-        "symfony/event-dispatcher": "~3.4.0",
-        "symfony/filesystem": "~2.0",
-        "symfony/http-foundation": "3.4.35",
-        "symfony/http-kernel": "~3.4.0",
-        "symfony/polyfill-iconv": "^1.0",
-        "symfony/process": "~3.4.0",
-        "symfony/routing": "~3.4.0",
-        "symfony/serializer": "~3.4.0",
-        "symfony/translation": "~3.4.0",
-        "symfony/validator": "~3.4.0",
-        "symfony/yaml": "~3.4.5",
-        "twig/twig": "^1.38.2",
         "typhonius/acquia-php-sdk-v2": "~1.1",
         "vlucas/phpdotenv": "^2.4"
     },
@@ -237,7 +220,6 @@
         "behat/mink-selenium2-driver": "1.3.x-dev",
         "dmore/chrome-mink-driver": "^2.6",
         "drupal/coder": "^8.2.12",
-        "drupal/console": "^1.0.1",
         "drupal/drupal-extension": "^4.0.0beta1",
         "drupaltest/queue-runner-trait": "^1",
         "imbo/behat-api-extension": "^2.0",
@@ -253,20 +235,27 @@
     "conflict": {
         "drupal/drupal": "*"
     },
-    "scripts": {
-        "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold",
-        "post-create-project-cmd": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold"
-    },
     "extra": {
         "drupal-scaffold": {
-            "excludes": [
-                ".htaccess",
-                "robots.txt",
-                ".eslintrc",
-                ".eslintignore",
-                ".eslintrc.json"
-            ],
-            "omit-defaults": false
+            "locations": {
+                "web-root": "./docroot"
+            },
+            "gitignore": false,
+            "file-mapping": {
+                "[web-root]/INSTALL.txt": false,
+                "[web-root]/README.txt": false,
+                "[web-root]/.ht.router.php": false,
+                "[web-root]/example.gitignore": false,
+                "[web-root]/modules/README.txt": false,
+                "[web-root]/profiles/README.txt": false,
+                "[web-root]/sites/README.txt": false,
+                "[web-root]/themes/README.txt": false,
+                "[web-root]/.htaccess": false,
+                "[web-root]/robots.txt": false,
+                "[web-root]/.eslintrc": false,
+                "[web-root]/.eslintignore": false,
+                "[web-root]/.eslintrc.json": false
+            }
         },
         "installer-paths": {
             "docroot/core": ["type:drupal-core"],
@@ -287,9 +276,6 @@
                 "Fix batch error on Cloudflare (https://www.drupal.org/node/2879023)": "https://www.drupal.org/files/issues/2019-06-06/2879023-26.patch",
                 "Notice: Undefined index: #type in drupal_process_states() (https://www.drupal.org/project/drupal/issues/2700667)": "https://www.drupal.org/files/issues/2019-12-05/2700667-89.patch",
                 "IMPORTANT: Make content moderation views use indexes": "patches/content-moderation-add-views-filter-indices.patch"
-            },
-            "drupal/auto_entitylabel": {
-                "Broken when provider !=entityTypeId; fixes broken handling of taxonomy terms (https://www.drupal.org/project/auto_entitylabel/issues/2923876#comment-12933629)": "https://www.drupal.org/files/issues/2019-01-19/auto_entitylabel-2923876-28-Broken-when-provider-entityId.patch"
             },
             "drupal/password_policy": {
                 "Removes field updates from the install file. (https://www.drupal.org/node/2771129#comment-12108388)": "https://www.drupal.org/files/issues/password-policy-config-import-field-error-2771129-37-D8.patch"
