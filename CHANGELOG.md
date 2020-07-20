@@ -1,5 +1,50 @@
 
 
+## [0.252.0] - July 14, 2020
+
+### Added
+  - DP-19123: Add callout link and card to relationship indicator's content.computed_related_to in Advisory, Binder, Curated List, Decision, Decision tree, Event, Executive order, Form, Guide, How-to, Information details, Location, Location details, News, Person, Regulation, Rules of court, and Service details.
+  
+### Changed
+  - DP-15470: Disable cron and lateruntime purge processors
+  - DP-19197: Update several developer-centric packages for Drupal 9.
+  - DP-15829: RelatedNodes - several simple queries instead of 1 complex query
+  - DP-19314: Allow iframes of to domain app.powerbigov.us.
+  
+### Fixed
+  - DP-19338: Unpublish Reminder test was failing
+  
+
+
+## [0.251.0] - July 7, 2020
+
+### Changed
+  - DP-19316: Updated Mayflower version to 8.14.0.
+    - DP-18951: Feedback related markup removed from print styles. (MF)
+  
+### Fixed
+  - DP-19001: Fixed race condition where content changes would sometimes not show after saving.
+  
+
+
+## [0.250.0] - June 30, 2020
+
+### Changed
+  - DP-18252: Upgrade to PHP 7.3 for local dev and CI
+  - DP-19177: Updated typhonius/acquia-php-sdk-v2 to 1.2 version
+  - DP-19115: Updated Drupal core to 8.8.8.
+  - DP-19185: Longer timeouts for alerts in ExistingSite tests
+  
+### Fixed
+  - DP-19148: Fixed the robots metatag on the /tasks pages.
+  - DP-19182: Changing alert unpublish email template and fixing tests.
+  
+### Added
+  - DP-18776: Add page-template field permission for authors/editors on the info-details page.
+  - DP-19089: Add noindex and follow to the robots metatag for doc pages
+  
+
+
 ## [0.249.0] - June 23, 2020
 
 ### Changed
