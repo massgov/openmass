@@ -47,6 +47,8 @@ executors:
         type: string
         default: comass/mysql-sanitized:latest
     working_directory: /var/www/code
+    # https://circleci.com/docs/2.0/configuration-reference/#resource_class
+    resource_class: xlarge
     docker:
       - image: massgov/drupal-container:1.0.15-ci
         environment:
@@ -222,6 +224,8 @@ jobs:
       - run: composer validate
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: phpcs -v -n
+      # Make sure changelogs are parseable by PHP (since build-changelog.php requires that).
+      - run: php scripts/directory-yaml-parse.php
       # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
 
