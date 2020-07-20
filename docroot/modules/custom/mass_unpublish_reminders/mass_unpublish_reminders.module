@@ -13,10 +13,9 @@ use Drupal\Core\Entity\EntityInterface;
  */
 function mass_unpublish_reminders_cron() {
   $last_run = Drupal::state()->get('mass_unpublish_reminders.last_cron', 0);
-  $time = \Drupal::time()->getRequestTime();
   // Check if this function has been run in the
   // last 24 hours (24 hours = 86400 seconds).
-  if ($last_run > $time - 86400) {
+  if ($last_run > REQUEST_TIME - 86400) {
     return;
   }
 
@@ -30,38 +29,24 @@ function mass_unpublish_reminders_cron() {
     && !$bypass_notification) {
     _mass_unpublish_reminders_cron_helper();
   }
-  Drupal::state()->set('mass_unpublish_reminder.last_cron', $time);
+  Drupal::state()->set('mass_unpublish_reminder.last_cron', REQUEST_TIME);
 }
 
 /**
  * Helper function to keep cron code simple.
  */
 function _mass_unpublish_reminders_cron_helper() {
-  if (Database::getConnection()
-    ->schema()
-    ->tableExists('mass_unpublish_reminders')) {
+  if (Database::getConnection()->schema()->tableExists('mass_unpublish_reminders')) {
 
     $start_timestamp = strtotime('today midnight');
-    $now = strtotime('now');
-    $week_ago = strtotime('-7 days midnight');
     $end_timestamp = strtotime('+8 days midnight') - 1;
     $query = \Drupal::entityQuery('node')
       ->condition('status', 1)
       ->condition('type', ['alert', 'campaign_landing'], 'IN')
-      ->condition('changed', [
-        $week_ago,
-        $now,
-      ], 'NOT BETWEEN');
-    $group = $query->andConditionGroup();
-    $group->condition('created', [
-      $week_ago,
-      $now,
-    ], 'NOT BETWEEN');
-    $query->condition($group);
-    $query->condition('unpublish_on', [
-      $start_timestamp,
-      $end_timestamp,
-    ], 'BETWEEN');
+      ->condition('unpublish_on', [
+        $start_timestamp,
+        $end_timestamp,
+      ], 'BETWEEN');
     $nids = $query->execute();
 
     if (!empty($nids)) {
@@ -118,10 +103,24 @@ function mass_unpublish_reminders_mail($key, &$message, $params) {
       if (!empty($params['headers'])) {
         $message['headers'] += $params['headers'];
       }
-      $message['subject'] = t('Your organization’s Mass.gov page or alert will be unpublished soon');
+      $message['subject'] = t('Mass.gov page or alert will be unpublished soon');
       $message['body'][] = $params['message'];
       break;
   }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function mass_unpublish_reminders_theme($existing, $type, $theme, $path) {
+  return [
+    'mass_reminder_mail_template' => [
+      'variables' => [
+        'page_url' => NULL,
+        'unpublish_date' => NULL,
+      ],
+    ],
+  ];
 }
 
 /**

@@ -104,14 +104,14 @@ the Descendant Manager or authors will need to be aware of any pages linked to
 or from the content.
 
 When a field traversal path is updated (not necessarily when a new one is
-added) via the node type's `.yml` file you _must_ write a HOOK_deploy_NAME() hook to
+added) via the node type's `.yml` file you _must_ write a post-update hook to
 re-queue all content of the type being updated. This ensures the Descendant
 Manager processes these node relationships.
 
-An example HOOK_deploy_NAME() hook follows:
+An example post-update hook follows:
 
 ```
-function mass_content_api_deploy_queue_nodes_for_save() {
+function mass_content_api_post_update_queue_nodes_for_save() {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $bundles = ['service_page', 'org_page'];

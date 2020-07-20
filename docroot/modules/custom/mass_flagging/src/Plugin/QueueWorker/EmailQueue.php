@@ -9,7 +9,8 @@ use Drupal\Core\Queue\QueueWorkerBase;
  *
  * @QueueWorker(
  *   id = "mass_flagging_email_queue",
- *   title = @Translation("Watching task worker: email queue")
+ *   title = @Translation("Watching task worker: email queue"),
+ *   cron = {"time" = 60}
  * )
  */
 class EmailQueue extends QueueWorkerBase {

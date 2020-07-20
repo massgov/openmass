@@ -2,10 +2,6 @@
 
 namespace Drupal\mass_content\Field;
 
-use Drupal\Core\Entity\Query\QueryInterface;
-use Drupal\Core\Field\EntityReferenceFieldItemList;
-use Drupal\Core\TypedData\ComputedItemListTrait;
-
 /**
  * Related Nodes computed field.
  *
@@ -45,40 +41,34 @@ use Drupal\Core\TypedData\ComputedItemListTrait;
  *     Example:
  *       ->setSetting('types', ['news', 'organization'])
  */
-class RelatedNodes extends EntityReferenceFieldItemList {
-  use ComputedItemListTrait;
+class RelatedNodes extends QueryGeneratedEntityReferenceListUpdated {
+
+  protected $length = 25;
+
+  /**
+   * Array of nids already used on this related to field to filter results.
+   *
+   * @var array
+   */
+  protected $nids = [];
 
   /**
    * {@inheritdoc}
    */
   public function computeValue() {
-    $nids_fields = $this->fields();
-    $nids_links = $this->links();
-    $nids_total = array_merge($nids_fields, $nids_links);
-    $nids = array_slice(array_filter(array_unique($nids_total)), 0, 25);
-    $i = 0;
-    foreach ($nids as $nid) {
-      $this->list[] = $this->createItem($i, ['target_id' => $nid]);
-      $i++;
-    }
-  }
-
-  /**
-   * Lists all the referencing content from a field.
-   *
-   * @return array
-   *   A list of referenced nids.
-   */
-  public function fields() {
-    $nids = [];
+    // Lists all the referencing content from a field prior to building and
+    // running the query to find dynamic links.
     $fields = $this->getSetting('fields');
     if (!empty($fields)) {
       $entity = $this->getEntity();
       if (!$entity->isNew()) {
+        $i = 0;
+
         foreach ($fields as $field) {
           if ($entity->hasField($field)) {
-            /** @var \Drupal\node\Entity\Node $node */
             $nodes = $entity->get($field)->referencedEntities();
+
+            /** @var \Drupal\node\Entity\Node $node */
             foreach ($nodes as $node) {
               // If the node referenced by an event is an org_page, prevent
               // adding it as a reference on the event's page.
@@ -86,63 +76,55 @@ class RelatedNodes extends EntityReferenceFieldItemList {
                 continue;
               }
               else {
-                $nids[] = $node->id();
+                $this->nids[] = $node->id();
+                $this->list[] = $this->createItem($i, ['target_id' => $node->id()]);
+                $i++;
               }
             }
           }
         }
       }
     }
-    return $nids;
+    // Continues loading related content once the event caveat is handled.
+    parent::computeValue();
   }
 
   /**
-   * Get nids that are referenced from the configured Link fields.
-   *
-   * @return array
-   *   A list if nids.
+   * {@inheritdoc}
    */
-  protected function links() {
-    $nids = [];
+  protected function query() {
     /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
     $entity = $this->getEntity();
     $uri = 'entity:node/' . $entity->id();
+    $query = \Drupal::entityQuery('node');
+    $group = $query->orConditionGroup();
 
     $linkFields = $this->getSetting('linkFields');
     if (!empty($linkFields)) {
       foreach ($linkFields as $linkField) {
-        $query = $this->getQuery();
-        $query->condition($linkField . '.uri', $uri);
-        $return = $query->execute();
-        // Discard the keys in $return as we don't care about revision ids.
-        $nids = array_merge($nids, array_values($return));
+        $group->condition($linkField . '.uri', $uri);
       }
     }
 
     $referenceFields = $this->getSetting('referenceFields');
     if (!empty($referenceFields)) {
       foreach ($referenceFields as $referenceField) {
-        $query = $this->getQuery();
-        $query->condition($referenceField . '.target_id', $entity->id());
-        $return = $query->execute();
-        // Discard the keys in $return as we don't care about revision ids.
-        $nids = array_merge($nids, array_values($return));
+        $group->condition($referenceField . '.target_id', $entity->id());
       }
     }
 
-    return $nids;
-  }
+    $types = $this->getSetting('types');
+    if (!empty($types)) {
+      $query->condition('type', $types, 'IN');
+    }
+    $query->condition('status', 1)
+      ->condition($group);
 
-  /**
-   * Get an entity query object with common condition/range applied.
-   *
-   * @return \Drupal\Core\Entity\Query\QueryInterface
-   *   A query object.
-   */
-  protected function getQuery(): QueryInterface {
-    $query = \Drupal::entityQuery('node');
-    $query->condition('status', 1);
-    $query->range(0, 25);
+    // Filter out any related odes that were manually set against this content.
+    if (!empty($this->nids)) {
+      $query->condition('nid', $this->nids, 'NOT IN');
+    }
+
     return $query;
   }
 
