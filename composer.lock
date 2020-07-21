@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b741c6886e006de353649ed29478df5f",
+    "content-hash": "0bfa5b0e4d2fa01384c1348004046f8a",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4493,44 +4493,42 @@
         },
         {
             "name": "drupal/entity_browser",
-            "version": "1.0.0",
+            "version": "2.5.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/entity_browser.git",
-                "reference": "8.x-1.0"
+                "reference": "8.x-2.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/entity_browser-8.x-1.0.zip",
-                "reference": "8.x-1.0",
-                "shasum": "6bd7bbcda1eebacc3685e9edaad2ad29b525b2ad"
+                "url": "https://ftp.drupal.org/files/projects/entity_browser-8.x-2.5.zip",
+                "reference": "8.x-2.5",
+                "shasum": "29456b961f0f90ff064601ab8a382446a8143774"
             },
             "require": {
-                "drupal/core": "~8.0"
+                "drupal/core": "^8.8 || ^9"
             },
             "require-dev": {
-                "drupal/ctools": "*",
-                "drupal/inline_entity_form": "*",
-                "drupal/media_entity": "*",
-                "drupal/paragraphs": "*",
-                "drupal/token": "*"
+                "drupal/embed": "~1.0",
+                "drupal/entity_embed": "1.x-dev",
+                "drupal/entity_reference_revisions": "1.x-dev",
+                "drupal/entityqueue": "1.x-dev",
+                "drupal/inline_entity_form": "1.x-dev",
+                "drupal/paragraphs": "1.x-dev",
+                "drupal/token": "~1.0"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.0",
-                    "datestamp": "1502200443",
+                    "version": "8.x-2.5",
+                    "datestamp": "1588015429",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
                     }
                 },
-                "branch-alias": {
-                    "dev-8.x-1.x": "8.1.x-dev"
-                },
                 "patches_applied": {
-                    "Fix duplicated image selection when click use selected button": "https://www.drupal.org/files/issues/prevent-duplication.patch",
-                    "Fix for 'Undefined index: max_resolution' which occured what looking for max_resolution on non-images (https://www.drupal.org/node/2871372)": "https://www.drupal.org/files/issues/entity-browser-widget-context-small-fix-2871372-2.patch"
+                    "Fix duplicated image selection when click use selected button": "https://www.drupal.org/files/issues/prevent-duplication.patch"
                 }
             },
             "notification-url": "https://packages.drupal.org/8/downloads",
@@ -4581,8 +4579,8 @@
             "description": "Entity browsing and selecting component.",
             "homepage": "http://drupal.org/project/entity_browser",
             "support": {
-                "source": "http://cgit.drupalcode.org/entity_browser",
-                "issues": "http://drupal.org/project/issues/entity_browser",
+                "source": "https://git.drupalcode.org/project/entity_browser",
+                "issues": "https://www.drupal.org/project/issues/entity_browser",
                 "irc": "irc://irc.freenode.org/drupal-contribute"
             }
         },

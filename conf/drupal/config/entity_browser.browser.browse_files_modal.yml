@@ -2,6 +2,8 @@ uuid: 035d59f6-4d96-4434-94aa-72a85f436fdd
 langcode: und
 status: true
 dependencies:
+  config:
+    - views.view.file_entity_browser
   enforced:
     module:
       - file_browser
@@ -49,8 +51,8 @@ widgets:
       max_filesize: '100 MB'
       extensions: 'jpg jpeg gif png txt doc docx xls xlsx pdf ppt pps odt ods odp'
       clientside_resize: false
-      resize_width: null
-      resize_height: null
+      resize_width: 0
+      resize_height: 0
       resize_quality: !!float 1
       resize_method: contain
       thumbnail_method: contain
