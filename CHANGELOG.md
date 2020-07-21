@@ -1,5 +1,15 @@
 
 
+## [0.253.0] - July 21, 2020
+
+### Added
+  - DP-18527: Add PHP Yaml parse validation for changelog.yml files in PRs.
+  
+### Changed
+  - DP-15708: Speed up local development environment for latest Docker for Mac
+  
+
+
 ## [0.252.0] - July 14, 2020
 
 ### Added
