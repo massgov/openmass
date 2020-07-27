@@ -24,12 +24,12 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v10-{{ checksum "composer.lock" }}
+        - site-composer-v11-{{ checksum "composer.lock" }}
 
   save_composer_cache: &save_composer_cache
     save_cache:
       name: Save Composer cache
-      key: site-composer-v10-{{ checksum "composer.lock" }}
+      key: site-composer-v11-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
   branch_ignore: &branch_ignore
