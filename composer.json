@@ -108,13 +108,14 @@
         "d3/d3": "3.5.*",
         "desandro/imagesloaded": "^4.1",
         "desandro/masonry": "^4.1",
+        "drupal-composer/drupal-scaffold": "2.3.0",
         "drupal/access_unpublished": "^1.0",
         "drupal/acquia_connector": "^2",
         "drupal/acquia_purge": "^1",
         "drupal/address": "^1.0",
         "drupal/admin_toolbar": "~1.0",
         "drupal/allowed_formats": "^1.1",
-        "drupal/auto_entitylabel": "^3",
+        "drupal/auto_entitylabel": "2.x-dev",
         "drupal/autologout": "^1.0",
         "drupal/cache_metrics": "^1",
         "drupal/clamav": "^1.0",
@@ -124,8 +125,7 @@
         "drupal/conditional_fields": "1.x-dev",
         "drupal/config_log": "^1",
         "drupal/content_export_yaml": "2.5",
-        "drupal/core-recommended": "~8.8.8",
-        "drupal/core-composer-scaffold": "~8.8.8",
+        "drupal/core": "~8.8.8",
         "drupal/csv_serialization": "^1",
         "drupal/devel": "^4",
         "drupal/diff": "1.x-dev",
@@ -133,11 +133,11 @@
         "drupal/draggableviews": "1.x-dev",
         "drupal/dynamic_entity_reference": "^1.5",
         "drupal/encrypt": "^3",
-        "drupal/entity_browser": "^2",
+        "drupal/entity_browser": "^1",
         "drupal/entity_reference_revisions": "^1.7",
         "drupal/field_group": "^1.0@RC",
         "drupal/field_tokens": "^1.0@beta",
-        "drupal/file_browser": "^1",
+        "drupal/file_browser": "1.x-dev",
         "drupal/flag": "4.x-dev#468d1e0d1ecb7070525ac3924596cb939d825034",
         "drupal/flood_unblock": "^1",
         "drupal/focal_point": "^1.0@beta",
@@ -147,13 +147,13 @@
         "drupal/google_map_field": "^1",
         "drupal/handy_cache_tags": "^1.0@alpha",
         "drupal/http_response_headers": "^2.0@alpha",
-        "drupal/imagick": "^1",
+        "drupal/imagick": "1.x-dev",
         "drupal/inline_entity_form": "1.x-dev",
         "drupal/jsonapi_page_limit": "^1",
         "drupal/key": "^1.10",
         "drupal/key_value_field": "1.x-dev",
         "drupal/libraries": "^3",
-        "drupal/linkit": "^6",
+        "drupal/linkit": "^4.3",
         "drupal/mandrill": "^1",
         "drupal/maxlength": "^1.0@beta",
         "drupal/media_entity": "2.0-beta3",
@@ -174,7 +174,7 @@
         "drupal/pathauto": "^1",
         "drupal/pathologic": "1.x-dev#4f9f3fdcf1e0b224c4d8650e383a769f40abf9bf",
         "drupal/prepopulate": "^2.0@alpha",
-        "drupal/private_files_download_permission": "^3",
+        "drupal/private_files_download_permission": "^2.0",
         "drupal/purge": "^3.0@beta",
         "drupal/purge_queues": "^1.0",
         "drupal/quick_node_clone": "^1.11",
@@ -196,7 +196,6 @@
         "drupal/twig_field_value": "^1",
         "drupal/twig_tweak": "^1",
         "drupal/upgrade_status": "^2",
-        "drupal/upgrade_rector": "^1",
         "drupal/username_enumeration_prevention": "1.0-beta2",
         "drupal/video_embed_field": "^2.0",
         "drupal/view_mode_page": "^3.1",
@@ -206,10 +205,27 @@
         "drupal/views_data_export": "1.x-dev",
         "drush/drush": "^10",
         "enyo/dropzone": "4.3.0",
+        "guzzlehttp/guzzle": "^6.3",
         "massgov/mayflower-artifacts": "9.53.0",
         "mikeyp/google_tag": "dev-8.x-1.x#3caa4f0b7f008576936ab7501d483bfcf58a4764",
         "phlak/semver": "^2.0",
         "phpunit/phpunit": "^6",
+        "symfony/class-loader": "~3.4.0",
+        "symfony/console": "~3.4.0",
+        "symfony/dependency-injection": "3.4.26",
+        "symfony/dom-crawler": "^3.4",
+        "symfony/event-dispatcher": "~3.4.0",
+        "symfony/filesystem": "~2.0",
+        "symfony/http-foundation": "3.4.35",
+        "symfony/http-kernel": "~3.4.0",
+        "symfony/polyfill-iconv": "^1.0",
+        "symfony/process": "~3.4.0",
+        "symfony/routing": "~3.4.0",
+        "symfony/serializer": "~3.4.0",
+        "symfony/translation": "~3.4.0",
+        "symfony/validator": "~3.4.0",
+        "symfony/yaml": "~3.4.5",
+        "twig/twig": "^1.38.2",
         "typhonius/acquia-php-sdk-v2": "~1.1",
         "vlucas/phpdotenv": "^2.4"
     },
@@ -221,6 +237,7 @@
         "behat/mink-selenium2-driver": "1.3.x-dev",
         "dmore/chrome-mink-driver": "^2.6",
         "drupal/coder": "^8.2.12",
+        "drupal/console": "^1.0.1",
         "drupal/drupal-extension": "^4.0.0beta1",
         "drupaltest/queue-runner-trait": "^1",
         "imbo/behat-api-extension": "^2.0",
@@ -236,27 +253,20 @@
     "conflict": {
         "drupal/drupal": "*"
     },
+    "scripts": {
+        "drupal-scaffold": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold",
+        "post-create-project-cmd": "DrupalComposer\\DrupalScaffold\\Plugin::scaffold"
+    },
     "extra": {
         "drupal-scaffold": {
-            "locations": {
-                "web-root": "./docroot"
-            },
-            "gitignore": false,
-            "file-mapping": {
-                "[web-root]/INSTALL.txt": false,
-                "[web-root]/README.txt": false,
-                "[web-root]/.ht.router.php": false,
-                "[web-root]/example.gitignore": false,
-                "[web-root]/modules/README.txt": false,
-                "[web-root]/profiles/README.txt": false,
-                "[web-root]/sites/README.txt": false,
-                "[web-root]/themes/README.txt": false,
-                "[web-root]/.htaccess": false,
-                "[web-root]/robots.txt": false,
-                "[web-root]/.eslintrc": false,
-                "[web-root]/.eslintignore": false,
-                "[web-root]/.eslintrc.json": false
-            }
+            "excludes": [
+                ".htaccess",
+                "robots.txt",
+                ".eslintrc",
+                ".eslintignore",
+                ".eslintrc.json"
+            ],
+            "omit-defaults": false
         },
         "installer-paths": {
             "docroot/core": ["type:drupal-core"],
@@ -278,6 +288,9 @@
                 "Notice: Undefined index: #type in drupal_process_states() (https://www.drupal.org/project/drupal/issues/2700667)": "https://www.drupal.org/files/issues/2019-12-05/2700667-89.patch",
                 "IMPORTANT: Make content moderation views use indexes": "patches/content-moderation-add-views-filter-indices.patch"
             },
+            "drupal/auto_entitylabel": {
+                "Broken when provider !=entityTypeId; fixes broken handling of taxonomy terms (https://www.drupal.org/project/auto_entitylabel/issues/2923876#comment-12933629)": "https://www.drupal.org/files/issues/2019-01-19/auto_entitylabel-2923876-28-Broken-when-provider-entityId.patch"
+            },
             "drupal/password_policy": {
                 "Removes field updates from the install file. (https://www.drupal.org/node/2771129#comment-12108388)": "https://www.drupal.org/files/issues/password-policy-config-import-field-error-2771129-37-D8.patch"
             },
@@ -294,7 +307,8 @@
                 "500 error: Possible infinite loop": "https://www.drupal.org/files/issues/2019-02-15/diff-500-errors-possible-infinite-loop-3033455-2-d8.patch"
             },
             "drupal/entity_browser": {
-                "Fix duplicated image selection when click use selected button": "https://www.drupal.org/files/issues/prevent-duplication.patch"
+                "Fix duplicated image selection when click use selected button": "https://www.drupal.org/files/issues/prevent-duplication.patch",
+                "Fix for 'Undefined index: max_resolution' which occured what looking for max_resolution on non-images (https://www.drupal.org/node/2871372)": "https://www.drupal.org/files/issues/entity-browser-widget-context-small-fix-2871372-2.patch"
             },
             "drupal/field_group": {
                 "Provide page level error messaging when publishing validation is not met": "https://www.drupal.org/files/issues/field_group-validation-2787179-9.patch",
@@ -307,14 +321,8 @@
             "drupal/key": {
                 "Stop adding 'extensions' cache tag on unrelated config objects (https://www.drupal.org/project/key/issues/3080971)": "https://www.drupal.org/files/issues/2019-09-12/no-tag_1.patch"
             },
-            "drupal/linkit": {
-                "Link shown after the autocomplete selection is the bare node/xxx link, not the alias (https://www.drupal.org/project/linkit/issues/2877535#comment-13505105)": "https://www.drupal.org/files/issues/2020-03-11/2877535-12.patch"
-            },
             "drupal/media": {
                 "Add index to media changed field (https://www.drupal.org/node/2944569)": "patches/DP-7726_media_changed_index.patch"
-            },
-            "drupal/media_entity_actions": {
-                "Provide an upgrade path to core (https://www.drupal.org/project/media_entity_actions/issues/2998468#comment-13681602)": "https://www.drupal.org/files/issues/2020-06-10/2998468-15.patch"
             },
             "drupal/media_entity_download": {
                 "CKeditor Plugin - using a combined patch to avoid conflict (https://www.drupal.org/node/2928318)": "https://www.drupal.org/files/issues/media_entity_download-ckeditor_plugin-2928318-11-d8.patch"
@@ -347,6 +355,9 @@
             },
             "drupal/views_data_export": {
                 "Batch Support": "https://www.drupal.org/files/issues/2018-09-24/2789531-149.patch"
+            },
+            "drupal/entity_embed": {
+                "Use array for class attribute in EntityEmbedBuilder.php": "https://www.drupal.org/files/issues/2019-04-02/entity-embed-beta2-3021505-12.patch"
             },
             "drupal/quick_node_clone": {
                 "2979426 - Ensures per-content type permissions are respected": "https://www.drupal.org/files/issues/2019-08-16/quick_node_clone-permissions_not_respected-2979426-13.patch"

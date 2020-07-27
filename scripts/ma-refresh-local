@@ -155,6 +155,24 @@ function sql_create() {
 }
 
 
+function cache_rebuild() {
+    # Rebuild Drupal caches
+    echo
+    echo "${HEADING}[+] Run cache:rebuild ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y cache:rebuild
+    nonzero_exit
+}
+
+
+function cache_rebuild_discovery() {
+    # Rebuild only cache_discovery
+    echo
+    echo "${HEADING}[+] Rebuilding discovery cache ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y php-eval "\Drupal::cache('discovery')->invalidateAll();"
+    nonzero_exit
+}
+
+
 function sanitize() {
     # Sanitize the database by removing or obfuscating user data.
     echo
@@ -172,11 +190,30 @@ function super_sanitize() {
     nonzero_exit
 }
 
-function deploy() {
-    # Run deploy.
+
+function updatedb() {
+    # Apply any database updates required (as with running update.php).
     echo
-    echo "${HEADING}[+] Run deploy ${TEXTRESET}" | tee -a $LOGFILE_NAME
-    drush -y deploy
+    echo "${HEADING}[+] Update database ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y updatedb --no-post-updates
+    nonzero_exit
+}
+
+
+function config_import() {
+    # Import configuration from a config directory.
+    echo
+    echo "${HEADING}[+] Configuration import ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y config:import
+    nonzero_exit
+}
+
+
+function post_updates() {
+    # Run 'updatedb --post-updates'.
+    echo
+    echo "${HEADING}[+] Apply post updates ${TEXTRESET}" | tee -a $LOGFILE_NAME
+    drush -y updatedb --post-updates=1
     nonzero_exit
 }
 
@@ -185,13 +222,21 @@ function common_tasks() {
     # Common local environment refresh tasks.
     import_backup
     sanitize
-    deploy
+    cache_rebuild
+    updatedb
+    config_import
+    post_updates
+    cache_rebuild
 }
 
 
 function skip_db_prep() {
     # When '--skip-db-prep' is passed.
-    deploy
+    cache_rebuild_discovery
+    updatedb
+    config_import
+    post_updates
+    cache_rebuild
 }
 
 
