@@ -16,14 +16,14 @@ third_party_settings:
     reverse_geocode_field: {  }
     hidden: false
     disabled: false
-    plugins:
-      - opencage
     dumper: wkt
     delta_handling: default
     failure:
       handling: empty
       status_message: true
       log: true
+    providers:
+      - random
 id: paragraph.address.field_geofield
 field_name: field_geofield
 entity_type: paragraph
