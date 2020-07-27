@@ -71,7 +71,6 @@ class UnpublishReminderQueue extends QueueWorkerBase {
         ]
       );
 
-
       // Log the email so we don't resend. We log first, because we really don't want
       // to re-send these emails. Its better if they never get sent.
       try {
@@ -81,7 +80,8 @@ class UnpublishReminderQueue extends QueueWorkerBase {
           'nid' => $nid,
           'reminder_sent' => \Drupal::time()->getRequestTime(),
         ])->execute();
-      } catch (\Exception $e) {
+      }
+      catch (\Exception $e) {
         // It shouldn't happen, but we are seeing an already existing nid being
         // reprocessed. Rather than rewrite_mass_unpublish_reminders_cron_helper(),
         // lets mark this item as processed, and keep processing the queue. See
