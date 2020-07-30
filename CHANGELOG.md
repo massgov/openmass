@@ -1,5 +1,23 @@
 
 
+## [0.253.0] - July 29, 2020
+
+### Changed
+  - DP-19498: Updated Mayflower version to 9.53.1.
+      - DP-19187: Set up styles for relationship indicator .single component links. (MF)
+      - DP-19187: Correct the sample for relationship indicator .single component. (MF)
+  - DP-19198: D9 upgrade packages - media. Also update to drupal/core-recommended.
+  - DP-15708: Speed up local development environment for latest Docker for Mac
+  
+### Added
+  - DP-18527: Add PHP Yaml parse validation for changelog.yml files in PRs.
+  - DP-19497: Added back dom-crawler library
+  
+### Fixed
+  - DP-19494: Harden unpublish reminder queue worker
+  
+
+
 ## [0.252.0] - July 14, 2020
 
 ### Added
