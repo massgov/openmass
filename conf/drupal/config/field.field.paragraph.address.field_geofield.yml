@@ -10,20 +10,20 @@ dependencies:
     - geofield
 third_party_settings:
   geocoder_field:
-    method: source
+    method: geocode
     weight: 0
-    geocode_field: field_address_address
-    reverse_geocode_field: {  }
-    hidden: false
+    skip_not_empty_value: 0
     disabled: false
+    hidden: false
+    providers:
+      - opencage
     dumper: wkt
-    delta_handling: default
     failure:
       handling: empty
       status_message: true
       log: true
-    providers:
-      - random
+    field: field_address_address
+    delta_handling: default
 id: paragraph.address.field_geofield
 field_name: field_geofield
 entity_type: paragraph
