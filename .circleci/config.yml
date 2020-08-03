@@ -573,7 +573,7 @@ workflows:
             branches:
               only: /^mayflower-dev-.*/
 
-  # This is to automate the creation of the release branch for Wednesday at 1 p.m. ET.
+  # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   release_branch:
     jobs:
@@ -582,7 +582,7 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "20 18 * * 2"
+          cron: "00 17 * * 3"
           filters:
             branches:
               only:
