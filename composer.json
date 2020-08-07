@@ -111,7 +111,7 @@
         "drupal/access_unpublished": "^1.0",
         "drupal/acquia_connector": "^2",
         "drupal/acquia_purge": "^1",
-        "drupal/address": "^1.0",
+        "drupal/address": "^1",
         "drupal/admin_toolbar": "~1.0",
         "drupal/allowed_formats": "^1.1",
         "drupal/auto_entitylabel": "^3",
@@ -142,8 +142,8 @@
         "drupal/flood_unblock": "^1",
         "drupal/focal_point": "^1.0@beta",
         "drupal/ga_login": "1.0.0-alpha4",
-        "drupal/geocoder": "2.x-dev#460c11d1f558fc9710fc86abd8f5b564aa163d60",
-        "drupal/geofield": "^1.0@alpha",
+        "drupal/geocoder": "^3",
+        "drupal/geofield": "^1",
         "drupal/google_map_field": "^1",
         "drupal/handy_cache_tags": "^1.0@alpha",
         "drupal/http_response_headers": "^2.0@alpha",
@@ -206,11 +206,11 @@
         "drupal/views_data_export": "1.x-dev",
         "drush/drush": "^10",
         "enyo/dropzone": "4.3.0",
+        "geocoder-php/open-cage-provider": "^4.4",
         "massgov/mayflower-artifacts": "9.53.1",
         "mikeyp/google_tag": "dev-8.x-1.x#3caa4f0b7f008576936ab7501d483bfcf58a4764",
         "phlak/semver": "^2.0",
         "phpunit/phpunit": "^6",
-        "symfony/dom-crawler": "^3.4",
         "typhonius/acquia-php-sdk-v2": "~1.1",
         "vlucas/phpdotenv": "^2.4"
     },
@@ -296,6 +296,9 @@
             },
             "drupal/entity_browser": {
                 "Fix duplicated image selection when click use selected button": "https://www.drupal.org/files/issues/prevent-duplication.patch"
+            },
+            "drupal/geocoder": {
+                "The post_update script fails when not all plugins are present in 3.x (https://www.drupal.org/project/geocoder/issues/3152846#comment-13705805)": "https://www.drupal.org/files/issues/2020-06-18/geocoder_upgrade_3152846-2.patch"
             },
             "drupal/field_group": {
                 "Provide page level error messaging when publishing validation is not met": "https://www.drupal.org/files/issues/field_group-validation-2787179-9.patch",
