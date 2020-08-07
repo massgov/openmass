@@ -11,6 +11,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\Entity\Node;
 
 /**
  * Implements hook_entity_bundle_field_info().
@@ -639,7 +640,7 @@ function mass_content_node_update(EntityInterface $node) {
   $nid = $node->id();
 
   // Retrieve the vid value via Node::load to get the currently cached value.
-  $vid_cache = \Drupal\node\Entity\Node::load($nid)->getRevisionId();
+  $vid_cache = Node::load($nid)->getRevisionId();
 
   // Query for vid.
   $database = \Drupal::database();
@@ -651,6 +652,10 @@ function mass_content_node_update(EntityInterface $node) {
     ->fetchField();
 
   if ($vid_db !== $vid_cache) {
-    Drupal::logger('content')->info('Node @nid updated to revision @vid_db in the database, but revision @vid_cache was retrieved from cache.', ['@nid' => $nid, '@vid_db' => $vid_db, '@vid_cache' => $vid_cache]);
+    Drupal::logger('content')->info('Node @nid updated to revision @vid_db in the database, but revision @vid_cache was retrieved from cache.', [
+      '@nid' => $nid,
+      '@vid_db' => $vid_db,
+      '@vid_cache' => $vid_cache
+    ]);
   }
 }
