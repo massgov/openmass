@@ -1,5 +1,20 @@
 
 
+## [0.254.0] - August 11, 2020
+
+### Added
+  - DP-19570: Logging to detect node publishing issues.
+  - DP-19497: Add back symfony/dom-crawler as required package.
+  
+### Changed
+  - DP-19199: Update geo modules and address module in prep fo Drupal 9
+  - DP-19464: Update several security related Contrib modules.
+  - DP-19651: Updated Mayflower version to 9.54.0.
+      - DP-19538: Consolidate font sizes into a variable scale. (MF)
+      - Bump elliptic from 6.5.2 to 6.5.3. (MF)
+  
+
+
 ## [0.253.0] - July 29, 2020
 
 ### Changed
