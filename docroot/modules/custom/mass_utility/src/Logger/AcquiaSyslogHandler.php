@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_utility\Logger;
 
+use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\SyslogHandler;
 use Monolog\Logger;
@@ -28,7 +29,7 @@ class AcquiaSyslogHandler extends SyslogHandler {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultFormatter() {
+  public function getDefaultFormatter(): FormatterInterface {
     return new LineFormatter(self::FORMAT);
   }
 
