@@ -12,7 +12,8 @@ Feature:
 
   Scenario: Visit a page I should not be allowed to see
     Given I am on "/user/1/edit"
-    Then I should see the 403 error page
+#    Not a 403 because we have username_enumeration_prevention.
+    Then I should see the 404 error page
     Given I am on "/admin"
     Then I should see the 403 error page
     When I am on "/admin/reports"
