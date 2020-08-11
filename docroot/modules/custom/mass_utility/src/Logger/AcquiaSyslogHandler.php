@@ -36,7 +36,7 @@ class AcquiaSyslogHandler extends SyslogHandler {
   /**
    * {@inheritdoc}
    */
-  protected function processRecord(array $record) {
+  protected function processRecord(array $record): array {
     global $base_url;
 
     $record['extra'] += [
