@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_utility\Logger;
 
+use Monolog\Formatter\FormatterInterface;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler;
 
@@ -14,7 +15,7 @@ class DockerStreamHandler extends StreamHandler {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultFormatter() {
+  public function getDefaultFormatter(): FormatterInterface {
     return new LineFormatter(self::FORMAT);
   }
 

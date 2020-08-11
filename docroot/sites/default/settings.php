@@ -161,7 +161,7 @@ $settings['entity_update_batch_size'] = 250;
 $config['mandrill.settings']['mandrill_api_key'] = getenv('MANDRILL_API_KEY');
 $config['scheduler.settings']['lightweight_cron_access_key'] = getenv('LIGHTWEIGHT_CRON_ACCESS_KEY');
 $config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
-$config['geocoder.settings']['plugin_options']['opencage']['apikey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
+$config['geocoder.geocoder_provider.opencage']['configuration']['apiKey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
 
 // If in an Acquia Cloud environment
 if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
