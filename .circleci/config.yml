@@ -249,8 +249,10 @@ jobs:
       - run: dockerize -wait tcp://localhost:3306 -timeout 2m
       # Run drush updatedb and cim.
       - run: scripts/ma-refresh-local --skip-db-prep
-      # Get a status
+      # Get an overview
       - run: drush status
+      - run: cat /proc/cpuinfo
+      - run: cat /proc/meminfo
       # config-export and error if there are differences.
       # This makes sure our committed config matches what is exported by Drupal.
       # If this fails, the usual fix is to commit the diff that is reported.
@@ -261,7 +263,7 @@ jobs:
       - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
       # drupal-test-traits testing
-      - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom"'
+      - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom --log-junit /tmp/test-results/dtt/junit.xml"'
       # Behat testing
       - run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - store_test_results:
@@ -272,6 +274,9 @@ jobs:
       - store_artifacts:
           # DTT saves page output for all requests.
           path: /var/www/code/docroot/sites/simpletest/browser_output
+      - store_artifacts:
+          # Save Junit files for timing inspection.
+          path: /tmp/test-results
 
   cloudflare:
     <<: *container_config
