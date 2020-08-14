@@ -235,6 +235,8 @@ jobs:
       instance:
         type: string
         default: comass/mysql-sanitized:latest
+      command:
+        type: string
     executor:
       name: base
       instance: << parameters.instance >>
@@ -262,10 +264,15 @@ jobs:
       # Ensure files and DTT directories are writable by www-data
       - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
-      # drupal-test-traits testing
-      - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom --log-junit /tmp/test-results/dtt/junit.xml"'
-      # Behat testing
-      - run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+      # Run DTT or Behat test command
+      - when:
+          condition: "equal: [ behat, << parameters.command >> ]"
+          steps:
+            run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+      - when:
+          condition: "equal: [ phpunit, << parameters.command >> ]"
+          steps:
+           run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -510,6 +517,15 @@ workflows:
             branches:
               <<: *branch_ignore
       - test:
+          name: test-phpunit
+          command: phpunit
+          requires: [build]
+          filters:
+            branches:
+              <<: *branch_ignore
+      - test:
+          name: test-behat
+          command: behat
           requires: [build]
           filters:
             branches:
@@ -547,6 +563,15 @@ workflows:
             branches:
               only: /^mayflower-dev-.*/
       - test:
+          name: test-phpunit
+          command: phpunit
+          requires: [build]
+          filters:
+            branches:
+              only: /^mayflower-dev-.*/
+      - test:
+          name: test-behat
+          command: behat
           requires: [build]
           filters:
             branches:
@@ -605,6 +630,15 @@ workflows:
             branches:
               only: /^release\/.*$/
       - test:
+          name: test-phpunit
+          command: phpunit
+          requires: [build]
+          filters:
+            branches:
+              only: /^release\/.*$/
+      - test:
+          name: test-behat
+          command: behat
           requires: [build]
           filters:
             branches:
@@ -656,10 +690,19 @@ workflows:
             branches:
               only: /^hotfix\/.*$/
       - test:
+          name: test-phpunit
+          command: phpunit
           requires: [build]
           filters:
            branches:
              only: /^hotfix\/.*$/
+      - test:
+          name: test-behat
+          command: behat
+          requires: [build]
+          filters:
+            branches:
+              only: /^hotfix\/.*$/
       - hold:
             type: approval
             requires:
@@ -716,6 +759,15 @@ workflows:
             branches:
               only: /^mayflower\/.*$/
       - test:
+          name: test-phpunit
+          command: phpunit
+          requires: [build]
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+      - test:
+          name: test-behat
+          command: behat
           requires: [build]
           filters:
             branches:
@@ -767,6 +819,15 @@ workflows:
             branches:
               only: master
       - test:
+          name: test-phpunit
+          command: phpunit
+          requires: [build]
+          filters:
+            branches:
+              only: master
+      - test:
+          name: test-behat
+          command: behat
           requires: [build]
           filters:
             branches:
@@ -906,7 +967,13 @@ workflows:
     jobs:
       - build
       - test:
-          name: test-super
+          name: test-phpunit-super
+          command: phpunit
+          instance: comass/mysql-sanitized:super
+          requires: [build]
+      - test:
+          name: test-super-behat
+          command: behat
           instance: comass/mysql-sanitized:super
           requires: [build]
     triggers:
@@ -940,7 +1007,7 @@ workflows:
               only:
                 - develop
 
-  # Usually triggerred by drush ma:backstop.
+  # Usually triggered by drush ma:backstop.
   backstop_ad_hoc:
     when: << pipeline.parameters.ma-backstop >>
     jobs:
@@ -950,7 +1017,7 @@ workflows:
           target: << pipeline.parameters.target >>
           reference: << pipeline.parameters.reference >>
 
-  # Usually triggerred by drush ma:release.
+  # Usually triggered by drush ma:release.
   deploy_ad_hoc:
     when: << pipeline.parameters.ma-release >>
     jobs:
@@ -962,7 +1029,7 @@ workflows:
           skip-maint: << pipeline.parameters.skip-maint >>
           refresh-db: << pipeline.parameters.refresh-db >>
 
-  # Usually triggerred by drush ma:cf-deploy.
+  # Usually triggered by drush ma:cf-deploy.
   deploy_cloudflare:
     when: << pipeline.parameters.ma-cf-deploy >>
     jobs:
