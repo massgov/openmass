@@ -228,12 +228,7 @@ jobs:
       - run: php scripts/directory-yaml-parse.php
       # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
-        # config-export and error if there are differences.
-        # This makes sure our committed config matches what is exported by Drupal.
-        # If this fails, the usual fix is to commit the diff that is reported.
-      - run: "drush config:export -y"
-      - run: git diff -w --exit-code
-      - run: git reset --hard
+
 
   test:
     parameters:
@@ -261,6 +256,12 @@ jobs:
       - run: drush status
       - run: cat /proc/cpuinfo
       - run: cat /proc/meminfo
+      # config-export and error if there are differences.
+      # This makes sure our committed config matches what is exported by Drupal.
+      # If this fails, the usual fix is to commit the diff that is reported.
+      - run: "drush config:export -y"
+      - run: git diff -w --exit-code
+      - run: git reset --hard
       # Ensure files and DTT directories are writable by www-data
       - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
