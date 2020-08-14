@@ -6,11 +6,11 @@ Feature:
 
   Scenario: Anonymous users cannot see the contact form
     Given I am an anonymous user
-    Then I should not have access to "/user/3315476/contact"
+    Then I should not have access to "/user/936/contact"
 
   Scenario: Editors can see and use the contact form
     Given I am logged in as a user with the "editor" role
-    When I visit "/user/3315476/contact"
+    When I visit "/user/936/contact"
     And I fill in the following:
       | Subject | Test            |
       | Message | This is a test. |
@@ -20,7 +20,7 @@ Feature:
     Given I am logged in as a user with the "editor" role
     And I am viewing an event:
       | title            | Test      |
-      | uid              | 3315476   |
+      | uid              | 936   |
       | moderation_state | published |
     And I click "Edit"
     Then I should see the link "Contact the author"
