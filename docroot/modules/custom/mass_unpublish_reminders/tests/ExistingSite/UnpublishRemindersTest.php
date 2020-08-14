@@ -36,7 +36,6 @@ class UnpublishRemindersTest extends ExistingSiteBase {
    * {@inheritdoc}
    */
   protected function setUp() {
-    $this->markTestSkipped('Too slow');
     parent::setUp();
     $this->startMailCollection();
     $this->clearQueue('mass_unpublish_reminders_queue');
