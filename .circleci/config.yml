@@ -236,7 +236,8 @@ jobs:
         type: string
         default: comass/mysql-sanitized:latest
       command:
-        type: string
+        type: enum
+        enum: ['phpunit', 'behat']
     executor:
       name: base
       instance: << parameters.instance >>
@@ -266,11 +267,15 @@ jobs:
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
       # Run DTT or Behat test command
       - when:
-          condition: "equal: [ behat, << parameters.command >> ]"
+          condition:
+            and:
+              - equal: [ behat, << parameters.command >> ]
           steps:
             run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - when:
-          condition: "equal: [ phpunit, << parameters.command >> ]"
+          condition:
+            and:
+              - equal: [ phpunit, << parameters.command >> ]
           steps:
            run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
