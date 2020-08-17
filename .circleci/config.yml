@@ -235,6 +235,9 @@ jobs:
       instance:
         type: string
         default: comass/mysql-sanitized:latest
+      command:
+        type: enum
+        enum: ['phpunit', 'behat']
     executor:
       name: base
       instance: << parameters.instance >>
@@ -249,8 +252,10 @@ jobs:
       - run: dockerize -wait tcp://localhost:3306 -timeout 2m
       # Run drush updatedb and cim.
       - run: scripts/ma-refresh-local --skip-db-prep
-      # Get a status
+      # Get an overview
       - run: drush status
+      - run: cat /proc/cpuinfo
+      - run: cat /proc/meminfo
       # config-export and error if there are differences.
       # This makes sure our committed config matches what is exported by Drupal.
       # If this fails, the usual fix is to commit the diff that is reported.
@@ -260,10 +265,19 @@ jobs:
       # Ensure files and DTT directories are writable by www-data
       - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
-      # drupal-test-traits testing
-      - run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom"'
-      # Behat testing
-      - run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+      # Run DTT or Behat test command
+      - when:
+          condition:
+            and:
+              - equal: [ behat, << parameters.command >> ]
+          steps:
+            run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+      - when:
+          condition:
+            and:
+              - equal: [ phpunit, << parameters.command >> ]
+          steps:
+           run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -272,6 +286,9 @@ jobs:
       - store_artifacts:
           # DTT saves page output for all requests.
           path: /var/www/code/docroot/sites/simpletest/browser_output
+      - store_artifacts:
+          # Save Junit files for timing inspection.
+          path: /tmp/test-results
 
   cloudflare:
     <<: *container_config
@@ -505,6 +522,15 @@ workflows:
             branches:
               <<: *branch_ignore
       - test:
+          name: test-phpunit
+          command: phpunit
+          requires: [build]
+          filters:
+            branches:
+              <<: *branch_ignore
+      - test:
+          name: test-behat
+          command: behat
           requires: [build]
           filters:
             branches:
@@ -542,6 +568,15 @@ workflows:
             branches:
               only: /^mayflower-dev-.*/
       - test:
+          name: test-phpunit
+          command: phpunit
+          requires: [build]
+          filters:
+            branches:
+              only: /^mayflower-dev-.*/
+      - test:
+          name: test-behat
+          command: behat
           requires: [build]
           filters:
             branches:
@@ -600,6 +635,15 @@ workflows:
             branches:
               only: /^release\/.*$/
       - test:
+          name: test-phpunit
+          command: phpunit
+          requires: [build]
+          filters:
+            branches:
+              only: /^release\/.*$/
+      - test:
+          name: test-behat
+          command: behat
           requires: [build]
           filters:
             branches:
@@ -651,10 +695,19 @@ workflows:
             branches:
               only: /^hotfix\/.*$/
       - test:
+          name: test-phpunit
+          command: phpunit
           requires: [build]
           filters:
            branches:
              only: /^hotfix\/.*$/
+      - test:
+          name: test-behat
+          command: behat
+          requires: [build]
+          filters:
+            branches:
+              only: /^hotfix\/.*$/
       - hold:
             type: approval
             requires:
@@ -711,6 +764,15 @@ workflows:
             branches:
               only: /^mayflower\/.*$/
       - test:
+          name: test-phpunit
+          command: phpunit
+          requires: [build]
+          filters:
+            branches:
+              only: /^mayflower\/.*$/
+      - test:
+          name: test-behat
+          command: behat
           requires: [build]
           filters:
             branches:
@@ -762,6 +824,15 @@ workflows:
             branches:
               only: master
       - test:
+          name: test-phpunit
+          command: phpunit
+          requires: [build]
+          filters:
+            branches:
+              only: master
+      - test:
+          name: test-behat
+          command: behat
           requires: [build]
           filters:
             branches:
@@ -901,7 +972,13 @@ workflows:
     jobs:
       - build
       - test:
-          name: test-super
+          name: test-phpunit-super
+          command: phpunit
+          instance: comass/mysql-sanitized:super
+          requires: [build]
+      - test:
+          name: test-super-behat
+          command: behat
           instance: comass/mysql-sanitized:super
           requires: [build]
     triggers:
@@ -935,7 +1012,7 @@ workflows:
               only:
                 - develop
 
-  # Usually triggerred by drush ma:backstop.
+  # Usually triggered by drush ma:backstop.
   backstop_ad_hoc:
     when: << pipeline.parameters.ma-backstop >>
     jobs:
@@ -945,7 +1022,7 @@ workflows:
           target: << pipeline.parameters.target >>
           reference: << pipeline.parameters.reference >>
 
-  # Usually triggerred by drush ma:release.
+  # Usually triggered by drush ma:release.
   deploy_ad_hoc:
     when: << pipeline.parameters.ma-release >>
     jobs:
@@ -957,7 +1034,7 @@ workflows:
           skip-maint: << pipeline.parameters.skip-maint >>
           refresh-db: << pipeline.parameters.refresh-db >>
 
-  # Usually triggerred by drush ma:cf-deploy.
+  # Usually triggered by drush ma:cf-deploy.
   deploy_cloudflare:
     when: << pipeline.parameters.ma-cf-deploy >>
     jobs:
