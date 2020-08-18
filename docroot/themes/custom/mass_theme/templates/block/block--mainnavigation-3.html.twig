@@ -42,10 +42,8 @@
               aria-expanded="false"
               class="ma__header__hamburger__menu-button js-header-menu-button">
         <span class="ma__header__hamburger__menu-icon"></span>
-        {# Menu label with screen size greater than 620px. #}
-        <span class="ma__header__hamburger__menu-text ma__header__hamburger__desktop-label js-header__menu-text">Menu</span>
-        {# Menu label with screen size less than 620px. #}
-        <span class="ma__header__hamburger__menu-text ma__header__hamburger__mobile-label js-header__menu-text">Mass.gov</span>
+        {# Visible menu label is managed with CSS.  The button has aria-label and the button label via aria-label is visible to screen reader users. #}
+        <span class="ma__header__hamburger__menu-text js-header__menu-text"></span>
       </button>
       {# Skip button to search. #}
       <button type="button"
