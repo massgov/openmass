@@ -1,5 +1,14 @@
 
 
+## [0.255.0] - August 18, 2020
+
+### Fixed
+  - DP-19677: Investigate continued issue with slow builds in CircleCI
+  - DP-19523: Render featured message text with its format
+  - DP-19670: ELK cannot parse Acquia massgov records
+  
+
+
 ## [0.254.0] - August 11, 2020
 
 ### Added
