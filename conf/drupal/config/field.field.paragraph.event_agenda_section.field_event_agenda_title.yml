@@ -5,17 +5,19 @@ dependencies:
   config:
     - field.storage.paragraph.field_event_agenda_title
     - paragraphs.paragraphs_type.event_agenda_section
+  module:
+    - geocoder_field
 third_party_settings:
   geocoder_field:
     method: none
     field: parent_id
-    plugins: {  }
     dumper: wkt
     delta_handling: default
     failure:
       handling: preserve
       status_message: true
       log: true
+    providers: {  }
 id: paragraph.event_agenda_section.field_event_agenda_title
 field_name: field_event_agenda_title
 entity_type: paragraph

@@ -5,10 +5,8 @@ services:
     image: "massgov/drupal-container:1.0.15-dev"
     hostname: mass.local
     volumes:
-      # Non OSX users may want to set VOLUME_FLAGS via the .env file.
-      - .:/var/www/mass.local:${VOLUME_FLAGS-cached}
+      - .:/var/www/mass.local:${VOLUME_FLAGS-delegated}
       # Configures SSH
-      - .docker/config:/root/.ssh/config:${VOLUME_FLAGS-cached}
       - .docker/.bashrc:/root/.bashrc
     # Get Acquia SSH keys into container.
     secrets:
