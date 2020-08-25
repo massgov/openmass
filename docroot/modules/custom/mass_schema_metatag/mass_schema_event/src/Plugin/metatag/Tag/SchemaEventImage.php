@@ -37,8 +37,6 @@ class SchemaEventImage extends SchemaImageBase {
   public function output() {
     $element = parent::output();
 
-    $element['#attributes']['content'] = [];
-
     $images = SchemaMetatagManager::unserialize($this->value());
     foreach ($images as $image) {
       // If it is null, continue;.
