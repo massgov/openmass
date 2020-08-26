@@ -39,9 +39,9 @@ class SchemaPlacePhoto extends SchemaImageBase {
    * {@inheritdoc}
    */
   public function output() {
-    if (!$element = parent::output()) {
-      return $element;
-    }
+    $element = parent::output();
+
+    $element['#attributes']['content'] = [];
 
     $images = SchemaMetatagManager::unserialize($this->value());
     foreach ($images as $image) {
