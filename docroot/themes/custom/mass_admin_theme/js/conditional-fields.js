@@ -141,6 +141,21 @@
     }
   };
 
+  Drupal.behaviors.iframeConditional = {
+    attach: function (context) {
+      $('.field--name-field-iframe-display-size', context).change(function () {
+        if ($(this).find('option:selected').val() === 'x-large') {
+          $(this).siblings('.field--name-field-iframe-alignment').hide().find('.fieldgroup').removeAttr('required');
+          $(this).siblings('.field--name-field-iframe-wrapping').hide();
+        }
+        else {
+          $(this).siblings('.field--name-field-iframe-alignment').show().find('.fieldgroup').attr('required', 'required');
+          $(this).siblings('.field--name-field-iframe-wrapping').show();
+        }
+      }).change();
+    }
+  }
+
   /**
    * Enable/disable fields on info details.
    *
