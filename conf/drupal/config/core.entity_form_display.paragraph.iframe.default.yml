@@ -8,6 +8,7 @@ dependencies:
     - field.field.paragraph.iframe.field_iframe_accessibility_title
     - field.field.paragraph.iframe.field_iframe_admin_title
     - field.field.paragraph.iframe.field_iframe_alignment
+    - field.field.paragraph.iframe.field_iframe_caption
     - field.field.paragraph.iframe.field_iframe_display_size
     - field.field.paragraph.iframe.field_iframe_wrapping
     - field.field.paragraph.iframe.field_media_display
@@ -15,6 +16,7 @@ dependencies:
     - paragraphs.paragraphs_type.iframe
   module:
     - link
+    - text
 id: paragraph.iframe.default
 targetEntityType: paragraph
 bundle: iframe
@@ -48,6 +50,14 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
+    region: content
+  field_iframe_caption:
+    weight: 7
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
     region: content
   field_iframe_display_size:
     weight: 4
