@@ -35,7 +35,9 @@ class SchemaEventImage extends SchemaImageBase {
    * {@inheritdoc}
    */
   public function output() {
-    $element = parent::output();
+    if (!$element = parent::output()) {
+      return $element;
+    }
 
     $images = SchemaMetatagManager::unserialize($this->value());
     foreach ($images as $image) {
