@@ -36,16 +36,18 @@
  * @ingroup themeable
  */
 #}
-{% include "@atoms/09-media/iframe.twig" with {
-  "iframe": {
-    "align": content.field_iframe_alignment["#items"][0].value,
-    "wrap": content.field_iframe_wrapping["#items"][0].value ? TRUE : FALSE,
-    "size": content.field_iframe_display_size["#items"][0].value,
-    "src": paragraph.field_url.uri,
-    "title": paragraph.field_iframe_accessibility_title.value,
-    "height": paragraph.field_height.value,
-    "position": paragraph.field_media_display.value,
-    "caption": paragraph.field_caption.value
+{% include "@atoms/09-media/figure--iframe.twig" with {
+  "figure": {
+    "align": paragraph.field_iframe_alignment.value,
+    "wrap": paragraph.field_iframe_wrapping.value ? TRUE : FALSE,
+    "size": paragraph.field_iframe_display_size.value,
+    "iframe": {
+      "src": paragraph.field_url.uri,
+      "title": paragraph.field_iframe_accessibility_title.value,
+      "height": paragraph.field_height.value,
+      "position": paragraph.field_media_display.value,
+      "caption": paragraph.field_caption.value
+    }
   }
 } %}
 {{ content }}
