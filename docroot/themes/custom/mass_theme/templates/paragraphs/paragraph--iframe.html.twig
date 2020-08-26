@@ -38,6 +38,9 @@
 #}
 {% include "@atoms/09-media/iframe.twig" with {
   "iframe": {
+    "align": content.field_iframe_alignment["#items"][0].value,
+    "wrap": content.field_iframe_wrapping["#items"][0].value ? TRUE : FALSE,
+    "size": content.field_iframe_display_size["#items"][0].value,
     "src": paragraph.field_url.uri,
     "title": paragraph.field_iframe_accessibility_title.value,
     "height": paragraph.field_height.value,
