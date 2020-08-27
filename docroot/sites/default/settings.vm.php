@@ -94,12 +94,6 @@ if($memcached_host = getenv('MEMCACHED_HOST')) {
   $settings = $configureMemcache($settings);
 }
 
-// Use a DTT error handler in the Site Under Test (SUT).
-// Only set DTT_COPY_ERRORS in a testing environment to avoid exposing errors to the world.
-if (!defined('PHPUNIT_COMPOSER_INSTALL') && getenv('DTT_COPY_ERRORS')) {
-  set_error_handler('\weitzman\DrupalTestTraits\Error::handler');
-}
-
 /**
  * Loads secrets, if available.
  *
