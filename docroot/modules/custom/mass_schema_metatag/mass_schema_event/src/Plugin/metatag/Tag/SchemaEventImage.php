@@ -35,22 +35,36 @@ class SchemaEventImage extends SchemaImageBase {
    * {@inheritdoc}
    */
   public function output() {
-    if (!$element = parent::output()) {
-      return $element;
-    }
+    $value = SchemaMetatagManager::recomputeSerializedLength($this->value());
+    $value = unserialize($value);
+    $value = array_merge($value, [
+      '@type' => 'ImageObject',
+    ]);
+    $this->setValue(SchemaMetatagManager::serialize($value));
 
-    $images = SchemaMetatagManager::unserialize($this->value());
-    foreach ($images as $image) {
-      // If it is null, continue;.
-      if (empty($image)) {
-        continue;
+    $element = parent::output();
+
+    if (!empty($element)) {
+      $element['#attributes']['content'] = [];
+      $images = SchemaMetatagManager::unserialize($this->value());
+
+      if (empty($images['url'])) {
+        return '';
       }
 
-      $url = json_decode($image, TRUE);
-      $element['#attributes']['content'][] = [
-        '@type' => 'ImageObject',
-        'url' => $url,
-      ];
+      $images = explode(', ', $images['url']);
+
+      foreach ($images as $url) {
+        // If it is null, continue;.
+        if (empty($url)) {
+          continue;
+        }
+
+        $element['#attributes']['content'][] = [
+          '@type' => 'ImageObject',
+          'url' => json_decode($url, TRUE),
+        ];
+      }
     }
 
     return $element;
