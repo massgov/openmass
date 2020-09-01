@@ -277,7 +277,7 @@ jobs:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-           run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom --log-junit /tmp/test-results/dtt/junit.xml"'
+           run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
