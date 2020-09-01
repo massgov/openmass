@@ -16,7 +16,7 @@ class AcquiaNewRelicHandler extends NewRelicHandler {
   /**
    * {@inheritdoc}
    */
-  public function write(array $record) {
+  public function write(array $record): void {
     // Graceful failure if New Relic isn't enabled. On Acquia, NR is not enabled
     // in Drush contexts, so this prevents the exception that would otherwise
     // be thrown.

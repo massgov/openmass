@@ -5,17 +5,19 @@ dependencies:
   config:
     - field.storage.paragraph.field_listdynamic_title
     - paragraphs.paragraphs_type.list_dynamic
+  module:
+    - geocoder_field
 third_party_settings:
   geocoder_field:
     method: none
     field: parent_id
-    plugins: {  }
     dumper: wkt
     delta_handling: default
     failure:
       handling: preserve
       status_message: true
       log: true
+    providers: {  }
 id: paragraph.list_dynamic.field_listdynamic_title
 field_name: field_listdynamic_title
 entity_type: paragraph
