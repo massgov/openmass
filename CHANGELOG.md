@@ -1,5 +1,15 @@
 
 
+## [0.256.0] - September 1, 2020
+
+### Changed
+  - DP-19463: D9 upgrade packages - Analytics/Metadata
+  
+### Fixed
+  - DP-19740: Release automation - Avoid file deletion exception
+  
+
+
 ## [0.255.0] - August 18, 2020
 
 ### Fixed
