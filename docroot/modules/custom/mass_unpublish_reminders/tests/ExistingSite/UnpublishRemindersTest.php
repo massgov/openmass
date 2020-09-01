@@ -106,7 +106,9 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       ->countEquals(1);
 
     $mails = $this->getMails();
-    $this->assertTrue(isset($mails[0]['headers']['cc']));
+    $this->assertNotEmpty($mails);
+    $this->assertNotEmpty($mails[0]['headers']);
+    $this->assertNotEmpty($mails[0]['headers']['cc']);
 
   }
 
