@@ -666,11 +666,22 @@ function mass_metatag_dataset(array &$attachments) {
     ];
   }
 
+  $description = '';
+  if ($node->hasField('field_service_detail_lede')) {
+    $description = $node->get('field_service_detail_lede')->getString();
+  }
+  elseif ($node->hasField('field_curatedlist_lede')) {
+    $description = $node->get('field_curatedlist_lede')->getString();
+  }
+  elseif ($node->hasField('field_short_desc')) {
+    $description = $node->get('field_short_desc')->getString();
+  }
+
   $items = [
     '@context' => 'https://schema.org/',
     '@type' => 'Dataset',
     'name' => $node->label(),
-    'description' => $node->hasField('field_short_desc') ? $node->get('field_short_desc')->getString() : '',
+    'description' => $description,
     'creator' => $creators,
     'spatialCoverage' => 'Massachusetts',
     'url' => $node->toUrl()->setAbsolute()->toString(),
