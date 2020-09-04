@@ -104,10 +104,6 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       ->seekToModule(static::MASS_UNPUBLISH_MODULENAME)
       ->seekToRecipient($this->author->mail->value)
       ->countEquals(1);
-
-    $mails = $this->getMails();
-    $this->assertTrue(isset($mails[0]['headers']['cc']));
-
   }
 
   /**
@@ -134,10 +130,6 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       ->seekToModule(static::MASS_UNPUBLISH_MODULENAME)
       ->seekToRecipient($this->author->mail->value)
       ->countEquals(1);
-
-    $mails = $this->getMails();
-    $this->assertTrue(isset($mails[0]['headers']['cc']));
-
   }
 
 }

@@ -35,6 +35,13 @@ class SchemaCollectionPagePrimaryImageOfPage extends SchemaImageBase {
    * {@inheritdoc}
    */
   public function output() {
+    $value = SchemaMetatagManager::recomputeSerializedLength($this->value());
+    $value = unserialize($value);
+    $value = array_merge($value, [
+      '@type' => 'ImageObject',
+    ]);
+    $this->setValue(SchemaMetatagManager::serialize($value));
+
     $element = parent::output();
 
     if (!empty($element)) {
