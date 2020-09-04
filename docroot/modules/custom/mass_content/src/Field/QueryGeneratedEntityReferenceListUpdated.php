@@ -10,7 +10,7 @@ use Drupal\Core\TypedData\ComputedItemListTrait;
  *
  * This can be used to make the results of any query a property on an entity.
  *
- * Currently being used by RelatedNodes.php, PersonOrgRoles.php, and DYnamicDirectoryByLabel.php.
+ * Currently being used by PersonOrgRoles.php, and DynamicDirectoryByLabel.php.
  */
 abstract class QueryGeneratedEntityReferenceListUpdated extends EntityReferenceFieldItemList {
   use ComputedItemListTrait;

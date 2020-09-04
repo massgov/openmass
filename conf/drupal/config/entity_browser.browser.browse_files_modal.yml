@@ -2,6 +2,8 @@ uuid: 035d59f6-4d96-4434-94aa-72a85f436fdd
 langcode: und
 status: true
 dependencies:
+  config:
+    - views.view.file_entity_browser
   enforced:
     module:
       - file_browser
@@ -48,6 +50,12 @@ widgets:
       dropzone_description: 'Click or drop files here to upload them'
       max_filesize: '100 MB'
       extensions: 'jpg jpeg gif png txt doc docx xls xlsx pdf ppt pps odt ods odp'
+      clientside_resize: false
+      resize_width: 0
+      resize_height: 0
+      resize_quality: !!float 1
+      resize_method: contain
+      thumbnail_method: contain
       submit_text: 'Select entities'
       auto_select: false
     uuid: 735d146c-a4b2-4327-a057-d109e0905e05

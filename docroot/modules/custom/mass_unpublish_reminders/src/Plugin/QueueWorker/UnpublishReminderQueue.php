@@ -3,6 +3,8 @@
 namespace Drupal\mass_unpublish_reminders\Plugin\QueueWorker;
 
 use Drupal\Core\Queue\QueueWorkerBase;
+use Drupal\Core\Queue\RequeueException;
+use Drupal\Core\Queue\SuspendQueueException;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Url;
 
@@ -11,8 +13,7 @@ use Drupal\Core\Url;
  *
  * @QueueWorker(
  *   id = "mass_unpublish_reminders_queue",
- *   title = @Translation("Node Unpublish Reminders: email queue"),
- *   cron = {"time" = 60}
+ *   title = @Translation("Node Unpublish Reminders: email queue")
  * )
  */
 class UnpublishReminderQueue extends QueueWorkerBase {
@@ -21,7 +22,10 @@ class UnpublishReminderQueue extends QueueWorkerBase {
    * {@inheritdoc}
    */
   public function processItem($nid) {
-    $node = Node::load($nid);
+    if (!$node = Node::load($nid)) {
+      // Just mark this item as processed. The node is eligible in next cron run.
+      return;
+    }
     $author = $node->getOwner();
     if (!empty($author)) {
       $author_mail = $author->getEmail();
@@ -51,7 +55,7 @@ class UnpublishReminderQueue extends QueueWorkerBase {
       if (isset($cc_mails)) {
         $params['headers']['cc'] = implode(',', $cc_mails);
       }
-      $url = Url::fromRoute('entity.node.canonical', ['node' => $nid], ['absolute' => TRUE]);
+      $url = Url::fromRoute('entity.node.canonical', ['node' => $nid])->setAbsolute()->toString();
 
       if ($node->hasField('unpublish_on')) {
         if (!empty($node->unpublish_on->value)) {
@@ -59,22 +63,36 @@ class UnpublishReminderQueue extends QueueWorkerBase {
           $unpublish_date = \Drupal::service('date.formatter')->format($unpublish_timestamp, 'custom', 'F d, Y h:i a');
         }
       }
-      $renderable = [
-        '#theme' => 'mass_reminder_mail_template',
-        '#page_url' => $url,
-        '#unpublish_date' => $unpublish_date ?? '',
-      ];
-      $params['message'] = \Drupal::service('renderer')->renderPlain($renderable);
 
-      $mailManager = \Drupal::service('plugin.manager.mail');
-      $result = $mailManager->mail('mass_unpublish_reminders', 'unpublish_reminder', $author_mail, 'en', $params, TRUE);
-      if ($result['result'] == TRUE) {
+      $params['message'] = t("A Promotional page or Alert that you or someone in your organization authored has an unpublish date that will arrive soon. At that time, the content will be unpublished.\nPage: :page_url\nUnpublish date: @unpublish_date\nIf you want to keep the page or alert, please review it, check its performance, and update it if necessary. You can then update the unpublish date.\nIf you no longer need a Promotional page or Alert, you can let it unpublish automatically or you can unpublish it manually now. If you think there could still be traffic to the Promotional page, please make a ServiceNow ticket to redirect that traffic to an appropriate page.\nIf you have any questions, please make a ServiceNow request.\n\nThank you.",
+        [
+          '@unpublish_date' => $unpublish_date,
+          ':page_url' => $url,
+        ]
+      );
+
+      // Log the email so we don't resend. We log first, because we really don't want
+      // to re-send these emails. Its better if they never get sent.
+      try {
         $database = \Drupal::database();
         $query = $database->insert('mass_unpublish_reminders');
         $query->fields([
           'nid' => $nid,
           'reminder_sent' => \Drupal::time()->getRequestTime(),
         ])->execute();
+      }
+      catch (\Exception $e) {
+        // It shouldn't happen, but we are seeing an already existing nid being
+        // reprocessed. Rather than rewrite_mass_unpublish_reminders_cron_helper(),
+        // lets mark this item as processed, and keep processing the queue. See
+        // https://jira.mass.gov/browse/DP-19494.
+        return;
+      }
+
+      $mailManager = \Drupal::service('plugin.manager.mail');
+      if (!$mailManager->mail('mass_unpublish_reminders', 'unpublish_reminder', $author_mail, 'en', $params, TRUE)) {
+        // Something is really wrong with mail enqueue.
+        throw new SuspendQueueException('Unable to send mass_unpublish_reminder email');
       }
     }
   }
