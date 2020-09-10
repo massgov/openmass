@@ -661,7 +661,7 @@ function mass_metatag_dataset(array &$attachments) {
   foreach ($orgs as $org) {
     $creators[] = [
       '@type' => 'Organization',
-      'url' => $node->toUrl()->setAbsolute()->toString(),
+      'url' => $org->toUrl()->setAbsolute()->toString(),
       'name' => $org->label(),
     ];
   }
