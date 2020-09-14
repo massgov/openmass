@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.info_details.field_banner_image
     - field.field.node.info_details.field_contact
     - field.field.node.info_details.field_data_flag
+    - field.field.node.info_details.field_data_format
     - field.field.node.info_details.field_data_resource_type
     - field.field.node.info_details.field_details_data_type
     - field.field.node.info_details.field_details_enable_fields
@@ -70,6 +71,7 @@ third_party_settings:
         - field_organizations
         - field_data_flag
         - field_details_data_type
+        - field_data_format
         - field_data_resource_type
         - field_intended_audience
       parent_name: group_information_details_edit_f
@@ -165,8 +167,14 @@ content:
     third_party_settings: {  }
     type: options_buttons
     region: content
-  field_data_resource_type:
+  field_data_format:
     weight: 14
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_data_resource_type:
+    weight: 15
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -182,6 +190,23 @@ content:
             value_form:
               -
                 target_id: '77936'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: info_details
+        e106c183-8ac6-4f84-948f-c081641c2580:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
             effect: show
             effect_options: {  }
             selector: ''
@@ -295,12 +320,13 @@ content:
     region: content
   field_infodetails_metatags:
     weight: 6
-    settings: {  }
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
   field_intended_audience:
-    weight: 15
+    weight: 16
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
