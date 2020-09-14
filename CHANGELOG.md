@@ -1,5 +1,63 @@
 
 
+## [0.255.0] - August 18, 2020
+
+### Fixed
+  - DP-19677: Investigate continued issue with slow builds in CircleCI
+  - DP-19523: Render featured message text with its format
+  - DP-19670: ELK cannot parse Acquia massgov records
+  
+
+
+## [0.254.0] - August 11, 2020
+
+### Added
+  - DP-19570: Logging to detect node publishing issues.
+  - DP-19497: Add back symfony/dom-crawler as required package.
+  
+### Changed
+  - DP-19199: Update geo modules and address module in prep fo Drupal 9
+  - DP-19464: Update several security related Contrib modules.
+  - DP-19651: Updated Mayflower version to 9.54.0.
+      - DP-19538: Consolidate font sizes into a variable scale. (MF)
+      - Bump elliptic from 6.5.2 to 6.5.3. (MF)
+  
+
+
+## [0.253.0] - July 29, 2020
+
+### Changed
+  - DP-19498: Updated Mayflower version to 9.53.1.
+      - DP-19187: Set up styles for relationship indicator .single component links. (MF)
+      - DP-19187: Correct the sample for relationship indicator .single component. (MF)
+  - DP-19198: D9 upgrade packages - media. Also update to drupal/core-recommended.
+  - DP-15708: Speed up local development environment for latest Docker for Mac
+  
+### Added
+  - DP-18527: Add PHP Yaml parse validation for changelog.yml files in PRs.
+  - DP-19497: Added back dom-crawler library
+  
+### Fixed
+  - DP-19494: Harden unpublish reminder queue worker
+  
+
+
+## [0.252.0] - July 14, 2020
+
+### Added
+  - DP-19123: Add callout link and card to relationship indicator's content.computed_related_to in Advisory, Binder, Curated List, Decision, Decision tree, Event, Executive order, Form, Guide, How-to, Information details, Location, Location details, News, Person, Regulation, Rules of court, and Service details.
+  
+### Changed
+  - DP-15470: Disable cron and lateruntime purge processors
+  - DP-19197: Update several developer-centric packages for Drupal 9.
+  - DP-15829: RelatedNodes - several simple queries instead of 1 complex query
+  - DP-19314: Allow iframes of to domain app.powerbigov.us.
+  
+### Fixed
+  - DP-19338: Unpublish Reminder test was failing
+  
+
+
 ## [0.251.0] - July 7, 2020
 
 ### Changed
