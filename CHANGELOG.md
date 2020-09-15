@@ -1,5 +1,18 @@
 
 
+## [0.256.0] - September 15, 2020
+
+### Fixed
+  - DP-19740: Release automation - Avoid file deletion exception
+  - DP-19192: Stops bots submitting feedback forms. Stops double form submission. Uses formstack ID as uniqueID for survey.
+  
+### Changed
+  - DP-19463: D9 upgrade packages - Analytics/Metadata
+  - DP-19132: Look into issues with redirects not working with all capitalization variations
+  - DP-19770: Update analytics tab dashboards to new ones using BQ data
+  
+
+
 ## [0.255.0] - August 18, 2020
 
 ### Fixed
