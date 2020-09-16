@@ -2,6 +2,7 @@
 
 ### Fixed
   - DP-19934: Fixed datalayer output issues.
+  - DP-19938: Rolled back Google Tag Manager.
 
 ## [0.256.0] - September 15, 2020
 
