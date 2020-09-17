@@ -5,16 +5,15 @@
  * Contains mass_metatag.module.
  */
 
-use Drupal\Core\Render\BubbleableMetadata;
-use Drupal\mayflower\Helper;
 use Drupal\Core\Field\FieldItemList;
-use Drupal\link\LinkItemInterface;
-use Drupal\user\Entity\User;
-use Drupal\node\NodeInterface;
-use Drupal\node\Entity\Node;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Path;
-use Drupal\Core\Url;
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\link\LinkItemInterface;
+use Drupal\mayflower\Helper;
+use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
+use Drupal\schema_metatag\SchemaMetatagManager;
+use Drupal\user\Entity\User;
 
 /**
  * Implements hook_token_info().
@@ -302,6 +301,8 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
  */
 function mass_metatag_page_attachments(array &$attachments) {
   mass_metatag_dataformat($attachments);
+  // Manually add dataset JSON-LD.
+  mass_metatag_dataset($attachments);
 
   // We proceed to add metatags "mg_backend_user_id" and "mg_backend_user_org"
   // only if the current user is a logged in user of our product, and the
@@ -662,5 +663,67 @@ function mass_metatag_metatags_attachments_alter(array &$metatag_attachments) {
       }
     }
   }
+}
 
+/**
+ * Add a JSON-LD dataset when specified.
+ *
+ * @param array $attachments
+ *   Attachments as per hook_page_attachments().
+ *
+ * @throws \Drupal\Core\Entity\EntityMalformedException
+ */
+function mass_metatag_dataset(array &$attachments) {
+  $route_match = Drupal::routeMatch();
+  /** @var Drupal\Node\NodeInterface $node */
+  if ($route_match->getRouteName() == 'entity.node.canonical' && ($node = $route_match->getParameter('node')) && $node instanceof NodeInterface) {
+    if (!$node->hasField('field_data_flag') || $node->get('field_data_flag')->isEmpty()) {
+      // Skip inapplicable nodes.
+      return;
+    }
+  }
+  else {
+    return;
+  }
+
+  $creators = [];
+  $orgs = $node->get('field_organizations')->referencedEntities();
+  foreach ($orgs as $org) {
+    $creators[] = [
+      '@type' => 'Organization',
+      'url' => $org->toUrl()->setAbsolute()->toString(),
+      'name' => $org->label(),
+    ];
+  }
+
+  $description = '';
+  if ($node->hasField('field_service_detail_lede')) {
+    $description = $node->get('field_service_detail_lede')->getString();
+  }
+  elseif ($node->hasField('field_curatedlist_lede')) {
+    $description = $node->get('field_curatedlist_lede')->getString();
+  }
+  elseif ($node->hasField('field_short_desc')) {
+    $description = $node->get('field_short_desc')->getString();
+  }
+
+  $items = [
+    '@context' => 'https://schema.org/',
+    '@type' => 'Dataset',
+    'name' => $node->label(),
+    'description' => $description,
+    'creator' => $creators,
+    'spatialCoverage' => 'Massachusetts',
+    'url' => $node->toUrl()->setAbsolute()->toString(),
+  ];
+  $jsonld = SchemaMetatagManager::encodeJsonld($items);
+  $attachments['#attached']['html_head']['schema_dataset'] = [
+    [
+      '#type' => 'html_tag',
+      '#tag' => 'script',
+      '#value' => $jsonld,
+      '#attributes' => ['type' => 'application/ld+json'],
+    ],
+    'mass_schema_dataset',
+  ];
 }
