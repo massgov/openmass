@@ -19,7 +19,6 @@ dependencies:
     - node.type.service_details
     - workflows.workflow.editorial
   module:
-    - conditional_fields
     - content_moderation
     - field_group
     - link
@@ -117,23 +116,6 @@ content:
     settings: {  }
     third_party_settings:
       conditional_fields:
-        0d0eec4c-575f-4990-83a1-bf916e4989b3:
-          dependee: field_details_data_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                target_id: null
-            effect: show
-            effect_options: {  }
-            selector: ''
-          entity_type: node
-          bundle: service_details
         059e1875-9070-4b1e-a224-5f46b5775dff:
           dependee: field_data_flag
           settings:
@@ -151,13 +133,30 @@ content:
             selector: ''
           entity_type: node
           bundle: service_details
-    type: options_select
+    type: options_buttons
     region: content
   field_data_resource_type:
     weight: 29
     settings: {  }
     third_party_settings:
-      conditional_fields: {  }
+      conditional_fields:
+        7c963835-0b23-42d3-87a3-91e3640510a2:
+          dependee: field_details_data_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                target_id: '77936'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_details
     type: options_buttons
     region: content
   field_details_data_type:
