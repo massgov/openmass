@@ -301,6 +301,8 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
  * Implements hook_page_attachments().
  */
 function mass_metatag_page_attachments(array &$attachments) {
+  mass_metatag_dataformat($attachments);
+
   // We proceed to add metatags "mg_backend_user_id" and "mg_backend_user_org"
   // only if the current user is a logged in user of our product, and the
   // admin theme is active (which could be both admin routes, and non-frontend
@@ -387,6 +389,29 @@ function mass_metatag_page_attachments(array &$attachments) {
     ];
     $attachments['#attached']['html_head'][] = [$noindex, 'noindex'];
   }
+}
+
+function mass_metatag_dataformat(&$attachments) {
+  $route_match = Drupal::routeMatch();
+  /** @var Drupal\Node\NodeInterface $node */
+  if ($route_match->getRouteName() == 'entity.node.canonical' && ($node = $route_match->getParameter('node')) && $node instanceof NodeInterface) {
+    if (!$node->hasField('field_data_format') || $node->get('field_data_format')->isEmpty()) {
+      // Skip inapplicable nodes.
+      return;
+    }
+  }
+  else {
+    return;
+  }
+
+  $tag = [
+    '#tag' => 'meta',
+    '#attributes' => [
+      'name' => 'mg_encoding_format',
+      'content' => $node->get('field_data_format')->getString(),
+    ],
+  ];
+  $attachments['#attached']['html_head'][] = [$tag, 'mg_encoding_format'];
 }
 
 /**
