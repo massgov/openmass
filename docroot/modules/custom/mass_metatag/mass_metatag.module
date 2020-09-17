@@ -394,9 +394,10 @@ function mass_metatag_page_attachments(array &$attachments) {
 /**
  * Add data format metatag if needed.
  *
- * @param $attachments
+ * @param array $attachments
+ *   A render array.
  */
-function mass_metatag_dataformat(&$attachments) {
+function mass_metatag_dataformat(array &$attachments) {
   $route_match = Drupal::routeMatch();
   /** @var Drupal\Node\NodeInterface $node */
   if ($route_match->getRouteName() == 'entity.node.canonical' && ($node = $route_match->getParameter('node')) && $node instanceof NodeInterface) {
