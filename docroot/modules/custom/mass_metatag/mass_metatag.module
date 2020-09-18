@@ -300,6 +300,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
  * Implements hook_page_attachments().
  */
 function mass_metatag_page_attachments(array &$attachments) {
+  mass_metatag_dataformat($attachments);
   // Manually add dataset JSON-LD.
   mass_metatag_dataset($attachments);
 
@@ -389,6 +390,35 @@ function mass_metatag_page_attachments(array &$attachments) {
     ];
     $attachments['#attached']['html_head'][] = [$noindex, 'noindex'];
   }
+}
+
+/**
+ * Add data format metatag if needed.
+ *
+ * @param array $attachments
+ *   A render array.
+ */
+function mass_metatag_dataformat(array &$attachments) {
+  $route_match = Drupal::routeMatch();
+  /** @var Drupal\Node\NodeInterface $node */
+  if ($route_match->getRouteName() == 'entity.node.canonical' && ($node = $route_match->getParameter('node')) && $node instanceof NodeInterface) {
+    if (!$node->hasField('field_data_format') || $node->get('field_data_format')->isEmpty()) {
+      // Skip inapplicable nodes.
+      return;
+    }
+  }
+  else {
+    return;
+  }
+
+  $tag = [
+    '#tag' => 'meta',
+    '#attributes' => [
+      'name' => 'mg_encoding_format',
+      'content' => str_replace(' ', '', $node->get('field_data_format')->getString()),
+    ],
+  ];
+  $attachments['#attached']['html_head'][] = [$tag, 'mg_encoding_format'];
 }
 
 /**
