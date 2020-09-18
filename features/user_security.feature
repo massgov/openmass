@@ -9,7 +9,7 @@ Feature: User Security
     And I am on "/user/password"
     When I fill in "name" with "foobar test xyz"
     And I press "Submit"
-    Then I should see "Further instructions have been sent to your e-mail address"
+    Then I should see "If the username or email address exists and is active, further instructions have been sent to your email address."
 
   Scenario: Verify anonymous_user cannot create content of these types
     And I should not have access to "/node/add/action"
