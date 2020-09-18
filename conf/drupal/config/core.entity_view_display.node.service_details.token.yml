@@ -4,6 +4,11 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.token
+    - field.field.node.service_details.field_data_flag
+    - field.field.node.service_details.field_data_format
+    - field.field.node.service_details.field_data_resource_type
+    - field.field.node.service_details.field_details_data_type
+    - field.field.node.service_details.field_intended_audience
     - field.field.node.service_details.field_organizations
     - field.field.node.service_details.field_service_detail_contact
     - field.field.node.service_details.field_service_detail_lede
@@ -70,9 +75,14 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  computed_log_in_links: true
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
+  field_data_flag: true
+  field_data_format: true
+  field_data_resource_type: true
+  field_details_data_type: true
   field_intended_audience: true
   field_organizations: true
   field_service_detail_contact: true

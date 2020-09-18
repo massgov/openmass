@@ -5,17 +5,19 @@ dependencies:
   config:
     - field.storage.node.field_person_role_title
     - node.type.person
+  module:
+    - geocoder_field
 third_party_settings:
   geocoder_field:
     method: none
     field: title
-    plugins: {  }
     dumper: wkt
     delta_handling: default
     failure:
       handling: preserve
       status_message: true
       log: true
+    providers: {  }
 id: node.person.field_person_role_title
 field_name: field_person_role_title
 entity_type: node

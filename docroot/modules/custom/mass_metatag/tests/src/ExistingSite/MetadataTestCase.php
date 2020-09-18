@@ -80,7 +80,6 @@ abstract class MetadataTestCase extends ExistingSiteBase {
    */
   protected function getExpectedMetatags(ContentEntityInterface $entity) {
     return [
-      'title' => sprintf('%s | Mass.gov', $entity->label()),
       'og:title' => $entity->label(),
       'og:site_name' => 'Mass.gov',
       'og:url' => $entity->toUrl('canonical', ['absolute' => TRUE])->toString(),

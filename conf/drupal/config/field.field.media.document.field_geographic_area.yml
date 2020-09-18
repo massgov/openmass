@@ -12,13 +12,13 @@ third_party_settings:
   geocoder_field:
     method: none
     field: name
-    plugins: {  }
     dumper: wkt
     delta_handling: default
     failure:
       handling: preserve
       status_message: true
       log: true
+    providers: {  }
 id: media.document.field_geographic_area
 field_name: field_geographic_area
 entity_type: media
@@ -29,5 +29,6 @@ required: false
 translatable: false
 default_value: {  }
 default_value_callback: ''
-settings: {  }
+settings:
+  backend: geofield_backend_default
 field_type: geofield
