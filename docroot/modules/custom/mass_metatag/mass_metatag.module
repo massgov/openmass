@@ -415,7 +415,7 @@ function mass_metatag_dataformat(array &$attachments) {
     '#tag' => 'meta',
     '#attributes' => [
       'name' => 'mg_encoding_format',
-      'content' => $node->get('field_data_format')->getString(),
+      'content' => str_replace(' ', '', $node->get('field_data_format')->getString()),
     ],
   ];
   $attachments['#attached']['html_head'][] = [$tag, 'mg_encoding_format'];
