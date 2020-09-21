@@ -70,7 +70,6 @@
             var $submitBtn = $('input[type="submit"]', $form);
             $submitBtn.click(function () {
               $(this).prop('disabled', true);
-              $form.submit();
             });
 
             $form.ajaxForm({
