@@ -1,0 +1,42 @@
+version: '3.1'
+
+services:
+  drupal:
+    volumes:
+      - code:/var/www/mass.local
+
+volumes:
+  # Create a volume to store and share synchronized code.
+  code:
+
+# Set up Mutagen synchronization and forwarding. See https://mutagen.io/documentation/orchestration/compose
+x-mutagen:
+  sync:
+    defaults:
+      ignore:
+        vcs: true
+      permissions:
+        defaultFileMode: 0644
+        defaultDirectoryMode: 0755
+    code:
+      alpha: "."
+      beta: "volume://code"
+      mode: "two-way-resolved"
+      ignore:
+        paths:
+          - "/.idea"
+          - "/cloudflare"
+#          - "!/api/{entrypoint.sh,go.mod,go.sum,server.go}"
+#          - "!/frontend/"
+#          - "/frontend/*"
+#          - "!/frontend/{entrypoint.sh,gulpfile.js,index.html,package*.json}"
+#          - "!/web/"
+#          - "/web/*"
+#          - "!/web/{entrypoint.sh,go.mod,go.sum,server.go}"
+#  forward:
+#    api:
+#      source: "tcp:localhost:8081"
+#      destination: "network://default:tcp:api:8081"
+#    web:
+#      source: "tcp:localhost:8080"
+#      destination: "network://default:tcp:web:8080"

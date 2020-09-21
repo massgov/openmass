@@ -21,23 +21,25 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 
 1. Install Docker for [Mac](https://docs.docker.com/docker-for-mac/install/) or [Windows](https://docs.docker.com/docker-for-windows/install/). If using Linux, skip this step.
 
+1. [Install Mutagen](https://mutagen.io/documentation/introduction/installation) (beta channel) - `brew install mutagen-io/mutagen/mutagen-beta`
+
 1. Edit your `hosts` file and add the following line:
     ```
     127.0.0.1 mass.local portainer.mass.local mailhog.mass.local
     ```
     1. **Mac/Linux:** `/etc/hosts`
     1. **Windows:** `c:\windows\system32\drivers\etc\hosts`
-    
+
 ### Ahoy (optional)
 
 1. In order for the Ahoy aliases to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
     ```bash
     sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
     ```
-1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database). 
+1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database).
 1. Run `ahoy comi` to fetch all dependencies.
 
-###### Notes 
+###### Notes
 - It takes a few minutes for the `mysql` container start up.
 - Mass Digital team members: see additional information at [Mass Digital Developers](https://github.com/massgov/massgov-internal-docs/blob/master/development-massgov-team.md).
 
