@@ -68,8 +68,8 @@
           else {
             // This is to stop a double click submitting the form twice
             var $submitBtn = $('input[type="submit"]', $form);
-            $submitBtn.click(function () {
-              $(this).prop('disabled', true);
+            $form.submit(function () {
+              $submitBtn.prop('disabled', true);
             });
 
             $form.ajaxForm({
