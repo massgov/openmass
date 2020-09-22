@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.curated_list.field_curatedlist_metatags
     - field.field.node.curated_list.field_curatedlist_overview
     - field.field.node.curated_list.field_data_flag
+    - field.field.node.curated_list.field_data_format
     - field.field.node.curated_list.field_intended_audience
     - field.field.node.curated_list.field_list_data_type
     - field.field.node.curated_list.field_list_directory_section
@@ -17,6 +18,7 @@ dependencies:
     - field.field.node.curated_list.field_related_links
     - field.field.node.curated_list.field_state_organization_tax
     - node.type.curated_list
+    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -51,6 +53,7 @@ third_party_settings:
         - field_organizations
         - field_data_flag
         - field_list_data_type
+        - field_data_format
         - field_intended_audience
       parent_name: group_curated_list_edit_form
       weight: 8
@@ -146,7 +149,8 @@ content:
     region: content
   field_curatedlist_metatags:
     weight: 2
-    settings: {  }
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
@@ -164,8 +168,32 @@ content:
     third_party_settings: {  }
     type: options_buttons
     region: content
-  field_intended_audience:
+  field_data_format:
     weight: 10
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        16cc3026-50f2-49f7-9870-a1685da70880:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: curated_list
+    type: options_buttons
+    region: content
+  field_intended_audience:
+    weight: 11
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -313,9 +341,9 @@ content:
     third_party_settings: {  }
   url_redirects:
     weight: 50
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   path: true
