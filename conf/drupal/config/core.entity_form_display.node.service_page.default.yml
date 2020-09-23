@@ -3,10 +3,14 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.service_page.field_data_flag
+    - field.field.node.service_page.field_data_format
+    - field.field.node.service_page.field_data_resource_type
     - field.field.node.service_page.field_event_quantity
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
     - field.field.node.service_page.field_link_group
+    - field.field.node.service_page.field_list_data_type
     - field.field.node.service_page.field_location_button_label
     - field.field.node.service_page.field_location_button_short_desc
     - field.field.node.service_page.field_log_in_links
@@ -34,6 +38,7 @@ dependencies:
     - field.field.node.service_page.field_template
     - image.style.thumbnail
     - node.type.service_page
+    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -72,6 +77,10 @@ third_party_settings:
         - field_service_bg_narrow
         - field_image_credit
         - field_organizations
+        - field_data_flag
+        - field_list_data_type
+        - field_data_resource_type
+        - field_data_format
         - field_intended_audience
       parent_name: group_service_edit_form
       weight: 20
@@ -196,6 +205,60 @@ targetEntityType: node
 bundle: service_page
 mode: default
 content:
+  field_data_flag:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_data_format:
+    weight: 5
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        33bf60c7-9a01-4a6c-a247-db24f6ad7180:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form: {  }
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: options_select
+    region: content
+  field_data_resource_type:
+    weight: 4
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        b2b0ad8f-fb07-420b-a960-f57f1a8cf823:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form: {  }
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: entity_reference_autocomplete
+    region: content
   field_event_quantity:
     weight: 48
     settings: {  }
@@ -211,7 +274,7 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 2
+    weight: 6
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -245,6 +308,32 @@ content:
             selector: ''
           entity_type: node
           bundle: service_page
+    region: content
+  field_list_data_type:
+    weight: 3
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        277eabc4-e828-4078-88ec-cfdfbaaa4610:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form: {  }
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: entity_reference_autocomplete
     region: content
   field_location_button_label:
     weight: 45
@@ -362,6 +451,8 @@ content:
       collapsible: false
       collapsed: false
       allow_duplicate: false
+      revision: false
+      allow_edit: true
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
@@ -446,8 +537,9 @@ content:
     type: link_default
     region: content
   field_service_metatags:
-    weight: 6
-    settings: {  }
+    weight: 5
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
@@ -556,6 +648,8 @@ content:
       collapsible: false
       collapsed: false
       allow_duplicate: false
+      revision: false
+      allow_edit: true
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: video_browser
@@ -571,7 +665,7 @@ content:
     type: link_default
     region: content
   field_state_organization_tax:
-    weight: 7
+    weight: 6
     settings:
       match_operator: CONTAINS
       size: 60
@@ -600,7 +694,7 @@ content:
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 8
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -629,21 +723,21 @@ content:
     region: content
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 9
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 11
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   path: true

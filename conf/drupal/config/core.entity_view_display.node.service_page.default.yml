@@ -3,10 +3,14 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.service_page.field_data_flag
+    - field.field.node.service_page.field_data_format
+    - field.field.node.service_page.field_data_resource_type
     - field.field.node.service_page.field_event_quantity
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
     - field.field.node.service_page.field_link_group
+    - field.field.node.service_page.field_list_data_type
     - field.field.node.service_page.field_location_button_label
     - field.field.node.service_page.field_location_button_short_desc
     - field.field.node.service_page.field_log_in_links
@@ -69,6 +73,28 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_data_flag:
+    weight: 31
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_data_format:
+    weight: 34
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_data_resource_type:
+    weight: 33
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
   field_event_quantity:
     weight: 30
     label: above
@@ -99,6 +125,14 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    region: content
+  field_list_data_type:
+    weight: 32
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
     region: content
   field_location_button_label:
     weight: 23
