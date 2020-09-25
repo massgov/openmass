@@ -208,7 +208,8 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
 
         case 'mass_related_terms':
           $tags = [];
-          if ($data['node']->hasField('field_details_data_type') && $data_type = $data['node']->get('field_details_data_type')) {
+          $term_ref_name = $data['node']->getType() == 'service_page' ? 'field_list_data_type' : 'field_details_data_type';
+          if ($data['node']->hasField($term_ref_name) && $data_type = $data['node']->get($term_ref_name)) {
             $items = $data_type->referencedEntities();
             if (!empty($items)) {
               $type_name = $items[0]->get('name')->getString();
