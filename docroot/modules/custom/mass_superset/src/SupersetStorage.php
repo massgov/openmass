@@ -127,7 +127,7 @@ class SupersetStorage implements SupersetStorageInterface {
     $time = \Drupal::time()->getRequestTime();
     // Fetch data from Superset.
     $query =
-        'SELECT * FROM analytics.vw_pageviews_scores_1_month WHERE node_id IN(' . implode(', ', $ids) . ')';
+        'SELECT * FROM analytics.pageviews_scores_1_month WHERE node_id IN(' . implode(', ', $ids) . ')';
     $options = [
       'base_uri' => $this->settings['SUPERSET_URL'],
       'username' => $this->settings['SUPERSET_USERNAME'],
@@ -147,7 +147,7 @@ class SupersetStorage implements SupersetStorageInterface {
         [
           'nid' => $stat['node_id'],
           'pageviews' => $stat['pageviews'],
-          'score' => $stat['Overall Score'],
+          'score' => $stat['gpa_score'],
           'last_updated' => $time,
         ]
       );
