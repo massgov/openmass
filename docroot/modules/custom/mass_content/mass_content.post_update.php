@@ -263,3 +263,35 @@ function mass_content_post_update_location_icons(&$sandbox) {
     }
   }
 }
+
+/**
+ * Migrate iframe paragraph fields.
+ */
+function mass_content_post_update_iframe_fields() {
+  $nids = \Drupal::entityQuery('node')
+    ->condition('status', 1)
+    ->condition('type', 'info_details')
+    ->condition('field_info_details_sections.entity:paragraph.field_section_long_form_content.entity:paragraph.field_iframe_admin_title.value', "", "!=")
+    ->execute();
+
+  $node_storage = \Drupal::entityManager()->getStorage('node');
+  $nodes = $node_storage->loadMultiple($nids);
+
+  foreach ($nodes as $node) {
+    foreach ($node->field_info_details_sections as $info_details_section) {
+      $info_details_section_paragraph = Paragraph::load($info_details_section->target_id);
+      foreach ($info_details_section_paragraph->field_section_long_form_content as $section_long_form_content) {
+        $section_long_form_content_paragraph = Paragraph::load($section_long_form_content->target_id);
+        if ($section_long_form_content_paragraph->field_media_display->value == 'normal') {
+          $section_long_form_content_paragraph->field_iframe_display_size->value = 'large';
+        }
+        elseif ($section_long_form_content_paragraph->field_media_display->value == 'full') {
+          $section_long_form_content_paragraph->field_iframe_display_size->value= 'x-large';
+        }
+        $section_long_form_content_paragraph->field_iframe_caption->value = $section_long_form_content_paragraph->field_caption->value;
+        $section_long_form_content_paragraph->field_iframe_caption->format = 'basic_html';
+        $section_long_form_content_paragraph->save();
+      }
+    }
+  }
+}
