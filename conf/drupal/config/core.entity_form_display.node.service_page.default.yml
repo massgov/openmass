@@ -209,7 +209,7 @@ content:
     weight: 2
     settings: {  }
     third_party_settings: {  }
-    type: options_select
+    type: options_buttons
     region: content
   field_data_format:
     weight: 5
@@ -225,25 +225,23 @@ content:
             values_set: 1
             value: ''
             values: {  }
-            value_form: {  }
+            value_form:
+              -
+                value: data
             effect: show
             effect_options: {  }
             selector: ''
           entity_type: node
           bundle: service_page
-    type: options_select
+    type: options_buttons
     region: content
   field_data_resource_type:
     weight: 4
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
+    settings: {  }
     third_party_settings:
       conditional_fields:
-        b2b0ad8f-fb07-420b-a960-f57f1a8cf823:
-          dependee: field_data_flag
+        81d04873-9b00-4880-a678-79ef5ddb6c90:
+          dependee: field_list_data_type
           settings:
             state: visible
             condition: value
@@ -251,13 +249,15 @@ content:
             values_set: 1
             value: ''
             values: {  }
-            value_form: {  }
+            value_form:
+              -
+                target_id: '77936'
             effect: show
             effect_options: {  }
             selector: ''
           entity_type: node
           bundle: service_page
-    type: entity_reference_autocomplete
+    type: options_buttons
     region: content
   field_event_quantity:
     weight: 48
@@ -311,11 +311,7 @@ content:
     region: content
   field_list_data_type:
     weight: 3
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
+    settings: {  }
     third_party_settings:
       conditional_fields:
         277eabc4-e828-4078-88ec-cfdfbaaa4610:
@@ -333,7 +329,24 @@ content:
             selector: ''
           entity_type: node
           bundle: service_page
-    type: entity_reference_autocomplete
+        f821cfd8-e1a1-4963-9e6c-564761bd5ce2:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: options_buttons
     region: content
   field_location_button_label:
     weight: 45
