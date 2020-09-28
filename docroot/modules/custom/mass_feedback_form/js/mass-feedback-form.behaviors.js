@@ -23,6 +23,10 @@
       var PHONE = 'field70611804';
       var SURVEY_EMAIL = 'field68557501';
       var PLEASE_TELL_US = 'field47054414';
+
+      // This field is used by the feedback manager to join the survey (second) with the first submission
+      var MG_FEEDBACK_ID = 'field68557708';
+
       // For certain form inputs, use a value from the data layer.
       $('.data-layer-substitute', context).each(function (index) {
         var $this = $(this);
@@ -45,7 +49,6 @@
       $('.feedback-steps', context).each(function (index) {
         var $self = $(this);
         var feedback = $self.find('#feedback')[0];
-        var id = Date.now() + Math.floor(Math.random() * 1000);
         var $steps = $self.find('.feedback-step');
         // Loop for each step.
         $steps.each(function (index) {
@@ -63,10 +66,10 @@
           }
           // Setup steps that submit to formstack via ajax (using jquery form).
           else {
-            $step.find('.unique-id-substitute').each(function (index) {
-              var $this = $(this);
-              $this.val(id);
-              $this.removeClass('unique-id-substitute');
+            // This is to stop a double click submitting the form twice
+            var $submitBtn = $('input[type="submit"]', $form);
+            $form.submit(function () {
+              $submitBtn.prop('disabled', true);
             });
 
             $form.ajaxForm({
@@ -76,6 +79,13 @@
             });
             window['form' + $form.attr('id')] = {
               onPostSubmit: function (message) {
+                // If MG_FEEDBACK_ID is 'uniqueId', then we are submitting the first (feedback) form
+                // so we now need to set the MG_FEEDBACK_ID value with the ID returned from formstack.
+                var submissionId = message.submission;
+                if ($('#' + MG_FEEDBACK_ID).val() === 'uniqueId') {
+                  $('#' + MG_FEEDBACK_ID).val(submissionId);
+                }
+
                 $step.addClass('hidden');
                 $self.find('#' + nextId).removeClass('hidden');
                 feedback.scrollIntoView();
@@ -130,6 +140,7 @@
       function validateForm(data, $form) {
         var validates = true;
         var message = '<p class="error">Please go back and fill in any required fields (marked with an *)</p>';
+
         // Switch validation based on presence of "Did you find ...".
         var $didYouFind = $form.find('[name="' + DID_YOU_FIND + '"]');
         if ($didYouFind.length > 0) {
@@ -168,8 +179,27 @@
           }
         }
 
+        // Checks to avoid bots submitting the form
+        //
+        // On the first form, the Feedback manager lambda will populate this field,
+        // so a populated field was a bot, we honey potted him/her/they
+        if ($form.find('#field68798989').length && $('#field68798989').val()) {
+          // We don't need to show the bot anything
+          return false;
+        }
+
+        // On the second form, the value will be assigned the formstack ID on submission
+        // so a default value of 'uniqueId' is not acceptable since we always want the survey
+        // to be tied to the first form
+        if ($form.find('#' + MG_FEEDBACK_ID).length && $('#' + MG_FEEDBACK_ID).val() === 'uniqueId') {
+          // We don't need to show the bot anything
+          return false;
+        }
+
         if (!validates) {
           getMessaging($form).html(message);
+          var $submitBtn = $('input[type="submit"]', $form);
+          $submitBtn.prop('disabled', false);
         }
 
         return validates;
