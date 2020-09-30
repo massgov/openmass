@@ -1,3 +1,30 @@
+
+
+## [0.258.0] - September 29, 2020
+
+### Changed
+  - DP-20059: Backport for allowing iframes from the domain calc.a4we.org.
+  
+### Fixed
+  - DP-19974: Remove form submit in button click to stop double formstack submissions
+  
+
+
+## [0.257.0] - September 22, 2020
+
+### Changed
+  - DP-19935: Fixes the iFrame URLs for our web analytics Superset dashboards.
+  
+### Added
+  - DP-19886: Add data format field to curated list, info details and service details
+  - DP-19390: Tag data pages in Drupal so that Google knows they are data
+  
+### Fixed
+  - DP-19478: Verify that tests pass after resolving mismatched entity definitions
+  
+### Security
+  - DP-19941: Drupal core updated to version 8.8.10
+  
 ## [0.256.1] - September 16, 2020
 
 ### Fixed
