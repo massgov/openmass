@@ -1,5 +1,15 @@
 
 
+## [0.258.0] - September 29, 2020
+
+### Changed
+  - DP-20059: Backport for allowing iframes from the domain calc.a4we.org.
+  
+### Fixed
+  - DP-19974: Remove form submit in button click to stop double formstack submissions
+  
+
+
 ## [0.257.0] - September 22, 2020
 
 ### Changed
