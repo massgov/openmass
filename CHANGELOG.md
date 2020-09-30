@@ -1,3 +1,20 @@
+## [0.256.1] - September 16, 2020
+
+### Fixed
+  - DP-19934: Fixed datalayer output issues.
+  - DP-19938: Rolled back Google Tag Manager.
+
+## [0.256.0] - September 15, 2020
+
+### Fixed
+  - DP-19740: Release automation - Avoid file deletion exception
+  - DP-19192: Stops bots submitting feedback forms. Stops double form submission. Uses formstack ID as uniqueID for survey.
+
+### Changed
+  - DP-19463: D9 upgrade packages - Analytics/Metadata
+  - DP-19132: Look into issues with redirects not working with all capitalization variations
+  - DP-19770: Update analytics tab dashboards to new ones using BQ data
+
 
 
 ## [0.255.0] - August 18, 2020
@@ -6,7 +23,7 @@
   - DP-19677: Investigate continued issue with slow builds in CircleCI
   - DP-19523: Render featured message text with its format
   - DP-19670: ELK cannot parse Acquia massgov records
-  
+
 
 
 ## [0.254.0] - August 11, 2020
@@ -14,14 +31,14 @@
 ### Added
   - DP-19570: Logging to detect node publishing issues.
   - DP-19497: Add back symfony/dom-crawler as required package.
-  
+
 ### Changed
   - DP-19199: Update geo modules and address module in prep fo Drupal 9
   - DP-19464: Update several security related Contrib modules.
   - DP-19651: Updated Mayflower version to 9.54.0.
       - DP-19538: Consolidate font sizes into a variable scale. (MF)
       - Bump elliptic from 6.5.2 to 6.5.3. (MF)
-  
+
 
 
 ## [0.253.0] - July 29, 2020
@@ -32,30 +49,30 @@
       - DP-19187: Correct the sample for relationship indicator .single component. (MF)
   - DP-19198: D9 upgrade packages - media. Also update to drupal/core-recommended.
   - DP-15708: Speed up local development environment for latest Docker for Mac
-  
+
 ### Added
   - DP-18527: Add PHP Yaml parse validation for changelog.yml files in PRs.
   - DP-19497: Added back dom-crawler library
-  
+
 ### Fixed
   - DP-19494: Harden unpublish reminder queue worker
-  
+
 
 
 ## [0.252.0] - July 14, 2020
 
 ### Added
   - DP-19123: Add callout link and card to relationship indicator's content.computed_related_to in Advisory, Binder, Curated List, Decision, Decision tree, Event, Executive order, Form, Guide, How-to, Information details, Location, Location details, News, Person, Regulation, Rules of court, and Service details.
-  
+
 ### Changed
   - DP-15470: Disable cron and lateruntime purge processors
   - DP-19197: Update several developer-centric packages for Drupal 9.
   - DP-15829: RelatedNodes - several simple queries instead of 1 complex query
   - DP-19314: Allow iframes of to domain app.powerbigov.us.
-  
+
 ### Fixed
   - DP-19338: Unpublish Reminder test was failing
-  
+
 
 
 ## [0.251.0] - July 7, 2020
@@ -63,10 +80,10 @@
 ### Changed
   - DP-19316: Updated Mayflower version to 8.14.0.
     - DP-18951: Feedback related markup removed from print styles. (MF)
-  
+
 ### Fixed
   - DP-19001: Fixed race condition where content changes would sometimes not show after saving.
-  
+
 
 
 ## [0.250.0] - June 30, 2020
@@ -76,15 +93,15 @@
   - DP-19177: Updated typhonius/acquia-php-sdk-v2 to 1.2 version
   - DP-19115: Updated Drupal core to 8.8.8.
   - DP-19185: Longer timeouts for alerts in ExistingSite tests
-  
+
 ### Fixed
   - DP-19148: Fixed the robots metatag on the /tasks pages.
   - DP-19182: Changing alert unpublish email template and fixing tests.
-  
+
 ### Added
   - DP-18776: Add page-template field permission for authors/editors on the info-details page.
   - DP-19089: Add noindex and follow to the robots metatag for doc pages
-  
+
 
 
 ## [0.249.0] - June 23, 2020
@@ -103,14 +120,14 @@
   - DP-18611: Set a paging limit for the Documents By Contributor view and fixed related issues.
   - DP-15128: Set a page title as googlMap.link.info property value as static Google map directions link context for assistive technology.
   - DP-19131: Bump composer cache key at CircleCI
-  
+
 ### Added
   - DP-18249: Enable upgrade_status and supporting modules.
   - DP-16437: Generates reminders for users prior to content unpublish dates.
-  
+
 ### Security
   - DP-19115: Update Drupal core from 8.8.6 to 8.8.8.
-  
+
 
 
 ## [0.248.0] - June 16, 2020
@@ -118,36 +135,36 @@
 ### Added
   - DP-18846: Additional testing for site-wide, organization, and page-specific alerts.
   - DP-18958: Create method to run adhoc backstop jobs on CircleCI
-  
+
 ### Changed
   - DP-19097: Updated Mayflower version to 9.52.0.
     - DP-15628: Make the parent container of TOC link function like a link by expanding clickable area. (MF)
     - DP-17612: Adjust z-index of open search box to fix style issue on Firefox.  (MF)
     - DP-18940: Adjusted the key-message template and styles to stop BG image display problem. (MF)
   - DP-18926: Cover image and replace text with dummy one for componentns, which have frequently changing content, to avoid false positive in backstop; banner image, popular searches text, Featured services key action text, News and updates images and text on Home page, images and text in Updates From The Baker-Polito Administration, and images and teaser in Under Recent news and announcements.
-  
+
 ### Fixed
   - DP-18954: Fixes an issue with link fields breaking node views when linked internal content is deleted.
   - DP-19070: Fixed issue where noindex was removed on certain pages matching a list of keywords.
   - DP-19009: Fixing buttons too close together on decision tree style issue.
   - DP-19027: Fixed broken bulk-operations select field on watched-content view.
-  
+
 
 
 ## [0.247.0] - June 9, 2020
 
 ### Removed
   - DP-18932: The hold-for-backstop job is not needed.
-  
+
 ### Fixed
   - DP-18778: Fixed bug on Add Content page where list-items were disappearing when filtering.
   - DP-18812: Fixing related locations page not found issue when referenced node is deleted.
   - DP-18983: Fix the visual difference of feedback module radio buttons in form page.
   - DP-16160: Fix accessibility issues with feedback module.
-  
+
 ### Added
   - DP-18832: Improve the production post-deployment Backstop job
-  
+
 
 
 ## [0.246.0] - June 2, 2020
@@ -157,20 +174,20 @@
   - DP-18775: New checkbox added to Info details Content type to toggle Banner field, Callout and Card group buttons visibility.
   - DP-18313: Add alerts by organization, swap page alert functionality from paragraph to entity-reference field.
   - DP-18891: Add arcgis link to the iframe whitelist config.
-  
+
 ### Fixed
   - DP-16346: Solving broken links issue on location pages.
   - DP-10442: Add missing regulation page eyebrow text.
-  
+
 ### Security
   - DP-18813: Drupal core update 8.8.4 -> 8.8.6
-  
+
 ### Changed
   - DP-18777: Changed Caption field order in Tableau paragraph form displays.
   - DP-18921: Updated Mayflower version to 8.14.0.
       - DP-18894: Remove param from font import statement to fix Drupal css aggregation issue. (MF)
       - DP-18036: Update handlebars and node-sass. (MF)
-  
+
 
 
 ## [0.245.0] - May 26, 2020
@@ -179,20 +196,20 @@
   - DP-17139: Change duration for the ma:queue-revision-cleanup drush command to be 14 months ago
   - DP-18735: Simplifying code in the Circle Ci config file to avoid duplicates.
   - DP-18453: Added new column to linking pages screen
-  
+
 ### Fixed
   - DP-18819: Fixed Jslint related issue.
   - DP-18837: Reverts a change that impacted binder inner navigation on the site.
   - DP-18625: Added bottom padding of 90px to disclaimer on decision tree
   - DP-18819: Fixed Tableau visualization conditional fields toggle.
-  
+
 ### Added
   - DP-18735: Adding backstop to workflows
   - DP-18558: Add a new hold to build_tag workflow for releasing without maint mode.
-  
+
 ### Removed
   - DP-18757: Removing deprecated 'Answeres' paragraph
-  
+
 ## [0.243.1] - May 14, 2020
 
 ### Changed
@@ -204,15 +221,15 @@
   - DP-13022: Fix Danger check for a PR number.
   - DP-18795: Removing robots disallow for doc top level folders.
   - DP-18556: Fixed 500 error on taxonomy term pages.
-  
+
 ### Added
   - DP-18678: Added submodule for Schema.org SpecialAnnouncement.
-  
+
 ### Changed
   - DP-18790: Updated Mayflower version to 9.50.0.
       - DP-18543: Update jquery from 3.4.0 to 3.5.1. (MF)
       - DP-18591: Consolidate font weights into variables. (MF)
-  
+
 
 
 ## [0.243.0] - May 12, 2020

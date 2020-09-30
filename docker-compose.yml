@@ -90,6 +90,8 @@ services:
   memcached:
     image: memcached:1-alpine
     command: memcached -m 128
+    ports:
+      - '${MEMCACHED_PORT-11211}:11211'
 
   chrome:
     image: previousnext/chrome-headless:65
