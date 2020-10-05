@@ -10,12 +10,6 @@ variable "domain" {
   type        = string
 }
 
-variable "balancer_ip" {
-  default     = "52.55.144.180"
-  description = "Load balancer IP."
-  type        = string
-}
-
 variable "www_domains" {
   type = map(string)
   default = {
