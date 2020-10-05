@@ -43,6 +43,9 @@ function mass_content_deploy_iframe_fields(&$sandbox) {
       foreach ($info_details_section_paragraph->field_section_long_form_content as $section_long_form_content) {
         $section_long_form_content_paragraph = Paragraph::load($section_long_form_content->target_id);
 
+        // Set alignment to 'left' for all.
+        $section_long_form_content_paragraph->field_iframe_alignment->value = 'left';
+
         // Migrate and map iframe display size values.
         if ($section_long_form_content_paragraph->field_media_display->value == 'normal') {
           $section_long_form_content_paragraph->field_iframe_display_size->value = 'large';
