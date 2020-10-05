@@ -10,6 +10,12 @@ variable "domain" {
   type        = string
 }
 
+variable "balancer_ip" {
+  default     = "get-from-environment"
+  description = "Load balancer IP."
+  type        = string
+}
+
 variable "www_domains" {
   type = map(string)
   default = {
