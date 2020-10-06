@@ -1,5 +1,13 @@
 
 
+## [0.259.0] - October 6, 2020
+
+### Changed
+  - DP-20094: Modified help text of data resource type field on both the info details and service details pages.
+  - DP-20112: Allowing iframing of domain w.soundcloud.com.
+  
+
+
 ## [0.258.0] - September 29, 2020
 
 ### Changed
