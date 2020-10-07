@@ -209,7 +209,7 @@ function mass_media_media_presave(MediaInterface $entity) {
  */
 function mass_media_file_move(FileInterface $file, FileInterface $source) {
   $file_system = \Drupal::service('file_system');
-  
+
   // Delete the original if it's not in use elsewhere.
   $delete_source_document = FALSE;
   $file_references = file_get_file_references($file);
