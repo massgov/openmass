@@ -4,6 +4,7 @@ services:
   drupal:
     volumes:
       - code:/var/www/mass.local
+      - ./.circleci/drupal/on-docker-boot.sh:/on-docker-boot.sh
 
 volumes:
   # Create a volume to store and share synchronized code.

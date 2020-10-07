@@ -9,8 +9,12 @@ commands:
     cmd: ahoy exec bash
     usage: Open a shell inside the container.
 
+  ps:
+    cmd: mutagen compose ps "$@"
+    usage: View status of containers and mutagen file sync.
+
   up:
-    cmd: mutagen compose up -d "$@"
+    cmd: mutagen compose -f docker-compose.mutagen.yml -f docker-compose.yml up -d "$@"
     usage: Start the containers.
 
   down:
