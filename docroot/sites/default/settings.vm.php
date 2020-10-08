@@ -40,16 +40,6 @@ $config['mailsystem.settings']['defaults']['formatter'] = 'php_mail';
 // Our production account is wired to [REDACTED]@gmail.com.
 $config['field.field.paragraph.address.field_geofield']['third_party_settings']['geocoder_field']['plugins'] = ['random'];
 
-// @todo Remove once we are on Drupal 8..9 or 9.x. See https://www.drupal.org/node/3116384
-/**
- * Class Loader.
- *
- * If the APC extension is detected, the Symfony APC class loader is used for
- * performance reasons. Detection can be prevented by setting
- * class_loader_auto_detect to false, as in the example below.
- */
-$settings['class_loader_auto_detect'] = FALSE;
-
 if(getenv('DOCKER_ENV')) {
   // Docker service configuration.
   $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.docker.yml';
