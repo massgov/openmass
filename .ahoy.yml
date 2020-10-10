@@ -26,7 +26,7 @@ commands:
     usage: Stop the containers.
 
   pull:
-    cmd: mutagen compose down --remove-orphans && mutagen compose pull && mutagen compose up -d
+    cmd: mutagen compose down --remove-orphans && mutagen compose pull && ahoy up
     usage: Refresh the database.
 
   updatedb:
@@ -63,7 +63,7 @@ commands:
 
   blackfire:
     cmd: ahoy exec blackfire "$@"
-    usage: "Profile CLI requests. Usages: blackfire curl http://mass.local OR blackfire run --samples=10 drush st"
+    usage: "Profile requests. Usages: blackfire curl http://mass.local OR blackfire run --samples=10 drush st"
 
   backstop:
     usage: Run BackstopJS visual regression tests.
