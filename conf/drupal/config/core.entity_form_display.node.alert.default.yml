@@ -12,11 +12,9 @@ dependencies:
     - field.field.node.alert.field_state_organization_tax
     - field.field.node.alert.field_target_organization
     - field.field.node.alert.field_target_page
-    - field.field.node.alert.field_target_pages_para_ref
     - node.type.alert
     - workflows.workflow.editorial
   module:
-    - conditional_fields
     - content_moderation
     - field_group
     - link
@@ -202,19 +200,6 @@ content:
           entity_type: node
           bundle: alert
     type: entity_reference_autocomplete
-    region: content
-  field_target_pages_para_ref:
-    type: entity_reference_paragraphs
-    weight: 8
-    settings:
-      title: 'Target page group'
-      title_plural: 'Target page groups'
-      edit_mode: open
-      add_mode: button
-      form_display_mode: default
-      default_paragraph_type: target_pages
-    third_party_settings:
-      conditional_fields: {  }
     region: content
   moderation_state:
     type: moderation_state_default
