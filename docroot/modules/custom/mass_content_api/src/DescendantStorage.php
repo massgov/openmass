@@ -29,7 +29,7 @@ class DescendantStorage implements DescendantStorageInterface {
   /**
    * If enabling this, please fix bug where debug is a giant text string, too large for its column.
    *
-   * @var boolean
+   * @var bool
    */
   private $debug = FALSE;
 
