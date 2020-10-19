@@ -15,7 +15,7 @@ locals {
 resource "cloudflare_record" "edit_dns" {
   zone_id = var.zone_id
   name    = local.edit_domain
-  value   = var.balancer_ip
+  value   = var.BALANCER_IP
   type    = "A"
   proxied = true
 }
@@ -23,7 +23,7 @@ resource "cloudflare_record" "edit_dns" {
 resource "cloudflare_record" "www_dns" {
   zone_id = var.zone_id
   name    = local.www_domain
-  value   = var.balancer_ip
+  value   = var.BALANCER_IP
   type    = "A"
   proxied = true
 }
