@@ -71,7 +71,7 @@ class SupersetDatabaseClient {
       'headers' => [
         'X-CSRFToken' => $this->csrfToken,
       ],
-      'form_params' => [
+      'json' => [
         // Client ID must be a random string.
         'client_id' => bin2hex(random_bytes(5)),
         'json' => TRUE,

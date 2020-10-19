@@ -90,3 +90,15 @@ function mass_superset_update_8001() {
     $schema->createTable('snooze', $spec);
   }
 }
+
+/**
+ * Restart mass_superset queues.
+ */
+function mass_superset_update_8002() {
+  // This was previously set to 2023 preventing superset data from being added
+  // to the queue in mass_superset_cron().
+  \Drupal::state()->set('mass_superset.last_run', 0);
+  // Clear old data out of the mass_superset_data table that populates the
+  // needs attention views/dashboards.
+  Database::getConnection()->truncate('mass_superset_data')->execute();
+}

@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @QueueWorker(
  *   id = "mass_superset_data_queue",
  *   title = @Translation("Superset node data queue processing"),
- *   cron = {"time" = 120}
+ *   cron = {"time" = 300}
  * )
  */
 class SupersetDataQueueWorker extends QueueWorkerBase implements ContainerFactoryPluginInterface {
