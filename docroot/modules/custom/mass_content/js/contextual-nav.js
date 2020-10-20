@@ -7,5 +7,5 @@
   'use strict';
   var $contextual_nav = $('.contextual-nav').html();
   $('.contextual-nav').detach();
-  $('li.js-util-nav-toggle:last-child .ma__utility-nav__content-body').prepend($contextual_nav);
+  $('.js-util-nav-toggle').next().find('.ma__utility-nav__content-body').prepend($contextual_nav);
 })(window, document, jQuery);
