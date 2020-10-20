@@ -4,11 +4,20 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
+    - field.field.node.service_page.field_data_flag
+    - field.field.node.service_page.field_data_format
+    - field.field.node.service_page.field_data_resource_type
+    - field.field.node.service_page.field_event_quantity
     - field.field.node.service_page.field_image_credit
+    - field.field.node.service_page.field_intended_audience
+    - field.field.node.service_page.field_link_group
+    - field.field.node.service_page.field_list_data_type
     - field.field.node.service_page.field_location_button_label
     - field.field.node.service_page.field_location_button_short_desc
+    - field.field.node.service_page.field_log_in_links
     - field.field.node.service_page.field_organizations
     - field.field.node.service_page.field_ref_contact_info
+    - field.field.node.service_page.field_related_organization_type
     - field.field.node.service_page.field_service_bg_narrow
     - field.field.node.service_page.field_service_bg_wide
     - field.field.node.service_page.field_service_body
@@ -27,6 +36,7 @@ dependencies:
     - field.field.node.service_page.field_service_video
     - field.field.node.service_page.field_services_social_links
     - field.field.node.service_page.field_state_organization_tax
+    - field.field.node.service_page.field_template
     - node.type.service_page
   module:
     - user
@@ -54,12 +64,20 @@ hidden:
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
+  field_data_flag: true
+  field_data_format: true
+  field_data_resource_type: true
+  field_event_quantity: true
   field_image_credit: true
   field_intended_audience: true
+  field_link_group: true
+  field_list_data_type: true
   field_location_button_label: true
   field_location_button_short_desc: true
+  field_log_in_links: true
   field_organizations: true
   field_ref_contact_info: true
+  field_related_organization_type: true
   field_service_bg_narrow: true
   field_service_bg_wide: true
   field_service_body: true
@@ -80,3 +98,4 @@ hidden:
   field_service_video: true
   field_services_social_links: true
   field_state_organization_tax: true
+  field_template: true

@@ -10,8 +10,8 @@ variable "domain" {
   type        = string
 }
 
-variable "balancer_ip" {
-  default     = "52.55.144.180"
+variable "BALANCER_IP" {
+  default     = "get-from-environment"
   description = "Load balancer IP."
   type        = string
 }
