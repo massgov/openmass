@@ -25,7 +25,13 @@ class DescendantStorage implements DescendantStorageInterface {
   private $database;
   private $table;
   private $debugTable;
-  private $debug = TRUE;
+
+  /**
+   * If enabling this, please fix bug where debug is a giant text string, too large for its column.
+   *
+   * @var bool
+   */
+  private $debug = FALSE;
 
   /**
    * Constructor.

@@ -208,11 +208,7 @@ function mass_media_media_presave(MediaInterface $entity) {
  * that the source file is deleted immediately.
  */
 function mass_media_file_move(FileInterface $file, FileInterface $source) {
-  // Add temporary logging due to https://jira.mass.gov/browse/DP-16025
   $file_system = \Drupal::service('file_system');
-  $msg_file = sprintf('File, Id: %s, Uri: %s Filename: %s, Realpath: %s', $file->id(), $file->getFileUri(), $file->getFilename(), $file_system->realpath($file->getFileUri()));
-  $msg_source = sprintf('Source, Id: %s, Uri: %s Filename: %s, Realpath: %s', $source->id(), $source->getFileUri(), $source->getFilename(), $file_system->realpath($source->getFileUri()));
-  Drupal::logger('mass_media')->debug("$msg_file.\n\n$msg_source");
 
   // Delete the original if it's not in use elsewhere.
   $delete_source_document = FALSE;

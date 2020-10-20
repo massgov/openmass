@@ -118,6 +118,8 @@ describe('WWW Backend', function() {
 
   const urlTests = [
     ['https://www.mass.gov/abc?foo=bar', 'https://www.mass.gov/abc?foo=bar'],
+    ['https://www.mass.gov/abc?_fb=foo', 'https://www.mass.gov/abc'],
+    ['https://www.mass.gov/abc?_ga=foo', 'https://www.mass.gov/abc'],
     ['https://www.mass.gov/abc?utm_source=foo', 'https://www.mass.gov/abc'],
     ['https://www.mass.gov/abc?utm_source=foo&bar=baz', 'https://www.mass.gov/abc?bar=baz'],
   ]
