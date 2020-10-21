@@ -352,6 +352,10 @@
             "stackedRowSection": {
               "title": "",
               "id": "",
+              "borderless": true
+            },
+            "stackedRow": {
+              "borderless": true
             }
           } %}
             {% block stackedRowContentOverride %}
@@ -368,6 +372,10 @@
             "stackedRowSection": {
               "title": "",
               "id": "",
+              "borderless": true
+            },
+            "stackedRow": {
+              "borderless": true
             }
           } %}
             {% block stackedRowContentOverride %}
@@ -383,7 +391,11 @@
           {% embed "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": {
               "title":"",
-              "id":""
+              "id":"",
+              "borderless": true
+            },
+            "stackedRow": {
+              "borderless": true
             }
           } %}
             {% block stackedRowContentOverride %}
@@ -436,7 +448,11 @@
             "stackedRowSection": {
               "title": "Who we serve"|t,
               "overrideSideBar": node.field_social_links is not empty and node.field_subtype.value == 'General Organization',
-              "sideBar": sidebar
+              "sideBar": sidebar,
+              "borderless": true
+            },
+            "stackedRow": {
+              "borderless": true
             }
           } %}
             {% block stackedRowContentOverride %}
@@ -459,7 +475,11 @@
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
-            "id":""
+            "id":"",
+            "borderless": true
+          },
+          "stackedRow": {
+            "borderless": true
           }
         } %}
           {% block stackedRowContentOverride %}
@@ -473,7 +493,11 @@
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
-            "id":""
+            "id":"",
+            "borderless": true
+          },
+          "stackedRow": {
+            "borderless": true
           }
         } %}
           {% block stackedRowContentOverride %}
@@ -517,7 +541,11 @@
           {% embed "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": {
               "title":"",
-              "id":""
+              "id":"",
+              "borderless": true
+            },
+            "stackedRow": {
+              "borderless": true
             }
           } %}
             {% block stackedRowContentOverride %}
@@ -546,16 +574,24 @@
       {# Recent news & announcements #}
       {% block recentNews %}
         {% if news %}
+          {% set news = news|merge({'borderless': true}) %}
           {% include "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": news,
+            "stackedRow": {
+            "borderless": true
+            }
           } %}
         {% endif %}
       {% endblock %}
 
       {% block events %}
         {% if events %}
+          {% set events = events|merge({'borderless': true}) %}
           {% include "@organisms/by-author/stacked-row-section.twig" with {
-            "stackedRowSection": events
+            "stackedRowSection": events,
+            "stackedRow": {
+              "borderless": true
+            }
           } %}
         {% endif %}
       {% endblock %}
@@ -576,7 +612,11 @@
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
-            "id":""
+            "id":"",
+            "borderless": true
+          },
+          "stackedRow": {
+            "borderless": true
           }
         } %}
           {% block stackedRowContentOverride %}
@@ -596,7 +636,11 @@
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
-            "id":""
+            "id":"",
+            "borderless": true
+          },
+          "stackedRow": {
+            "borderless": true
           }
         } %}
           {% block stackedRowContentOverride %}
@@ -632,7 +676,11 @@
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
-            "id":""
+            "id":"",
+            "borderless": true
+          },
+          "stackedRow": {
+            "borderless": true
           }
         } %}
           {% block stackedRowContentOverride %}
@@ -687,7 +735,11 @@
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
-            "id":""
+            "id":"",
+            "borderless": true
+          },
+          "stackedRow": {
+            "borderless": true
           }
         } %}
           {% block stackedRowContentOverride %}
@@ -715,7 +767,17 @@
     {# Events, Locations, and Related Organizations are still preprocessed in and are available for all types. #}
     {% for stackedRowSection in stackedRowSections %}
       {% set stackedRowSection = stackedRowSection|merge({'level': level}) %}
-      {% include "@organisms/by-author/stacked-row-section.twig" %}
+      {% embed "@organisms/by-author/stacked-row-section.twig" with {
+        "stackedRowSection": {
+          "title":"",
+          "id":"",
+          "borderless": true
+        },
+        "stackedRow": {
+          "borderless": true
+        },
+      } %}
+      {% endembed %}
       {# Add Google Maps API only when a map is included in the page. #}
       {% if stackedRowSection.pageContent[0].path == '@organisms/by-author/mapped-locations.twig' %}
         {{ attach_library('mass_map/google-map-api') }}
