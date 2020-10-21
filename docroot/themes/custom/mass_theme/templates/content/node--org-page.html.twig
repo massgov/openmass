@@ -3,7 +3,7 @@
  * @file
  * Theme override to display the full view mode of the Org page content type.
  */
- #}
+#}
 {% extends 'node.html.twig' %}
 
 {# Set top heading level for the page. #}
@@ -306,9 +306,9 @@
                   <span class="custom-option-item__label">
                     {{ icon('alert') }} {{ 'Get updates'|t }}
                   </span>
-                    <ul class="ma__link-list__items ma__link-list__items--no-bullets">
-                      {{ content.field_get_updates_links }}
-                    </ul>
+                  <ul class="ma__link-list__items ma__link-list__items--no-bullets">
+                    {{ content.field_get_updates_links }}
+                  </ul>
                 </div>
               {% endif %}
             {% endblock %}
@@ -345,41 +345,13 @@
         {{ content.field_sub_title }}
       {% endblock %}
 
-      {# Featured Message #}
-      {% block featuredMessage %}
-        {% if node.field_org_featured_message is not empty %}
-          {% if stackedRow is not empty %}
-            {% set stackedRow = stackedRow | merge({"borderless": true}) %}
-          {% else %}
-            {% set stackedRow = {"borderless": true} %}
-          {% endif %}
-          {% embed "@organisms/by-author/stacked-row-section.twig" with {
-            "stackedRowSection": {
-              "title": "",
-              "id": "",
-              "borderless": true
-            }
-          } %}
-            {% block stackedRowContentOverride %}
-              {{ content.field_org_featured_message }}
-            {% endblock %}
-          {% endembed %}
-        {% endif %}
-      {% endblock %}
-
       {# Featured Items Mosaic #}
       {% block featuredItemMosaic %}
         {% if node.field_org_featured_items is not empty %}
-          {% if stackedRow is not empty %}
-            {% set stackedRow = stackedRow | merge({"borderless": true}) %}
-          {% else %}
-            {% set stackedRow = {"borderless": true} %}
-          {% endif %}
           {% embed "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": {
               "title": "",
               "id": "",
-              "borderless": true
             }
           } %}
             {% block stackedRowContentOverride %}
@@ -392,16 +364,10 @@
       {# Contact / Org Logo #}
       {% block contactAndLogo %}
         {% if node.field_ref_contact_info_1 is not empty %}
-          {% if stackedRow is not empty %}
-            {% set stackedRow = stackedRow | merge({"borderless": true}) %}
-          {% else %}
-            {% set stackedRow = {"borderless": true} %}
-          {% endif %}
           {% embed "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": {
               "title":"",
-              "id":"",
-              "borderless": true
+              "id":""
             }
           } %}
             {% block stackedRowContentOverride %}
@@ -450,17 +416,11 @@
       {% endif %}
       {% block whoWeServe %}
         {% if node.body is not empty %}
-          {% if stackedRow is not empty %}
-            {% set stackedRow = stackedRow | merge({"borderless": true}) %}
-          {% else %}
-            {% set stackedRow = {"borderless": true} %}
-          {% endif %}
           {% embed "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": {
               "title": "Who we serve"|t,
               "overrideSideBar": node.field_social_links is not empty and node.field_subtype.value == 'General Organization',
-              "sideBar": sidebar,
-              "borderless": true
+              "sideBar": sidebar
             }
           } %}
             {% block stackedRowContentOverride %}
@@ -480,16 +440,10 @@
 
       {# Our organizations #}
       {% if node.field_org_our_orgs is not empty %}
-        {% if stackedRow is not empty %}
-          {% set stackedRow = stackedRow | merge({"borderless": true}) %}
-        {% else %}
-          {% set stackedRow = {"borderless": true} %}
-        {% endif %}
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
-            "id":"",
-            "borderless": true
+            "id":""
           }
         } %}
           {% block stackedRowContentOverride %}
@@ -500,16 +454,10 @@
 
       {# Services #}
       {% block servicesSection %}
-        {% if stackedRow is not empty %}
-          {% set stackedRow = stackedRow | merge({"borderless": true}) %}
-        {% else %}
-          {% set stackedRow = {"borderless": true} %}
-        {% endif %}
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
-            "id":"",
-            "borderless": true
+            "id":""
           }
         } %}
           {% block stackedRowContentOverride %}
@@ -550,16 +498,10 @@
       {# Featured Topics #}
       {% block featuredTopics %}
         {% if node.field_ref_card_view_6 is not empty %}
-          {% if stackedRow is not empty %}
-            {% set stackedRow = stackedRow | merge({"borderless": true}) %}
-          {% else %}
-            {% set stackedRow = {"borderless": true} %}
-          {% endif %}
           {% embed "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": {
               "title":"",
-              "id":"",
-              "borderless": true
+              "id":""
             }
           } %}
             {% block stackedRowContentOverride %}
@@ -588,48 +530,34 @@
       {# Recent news & announcements #}
       {% block recentNews %}
         {% if news %}
-          {% set news = news|merge({'borderless': true}) %}
           {% include "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": news,
-            "stackedRow": {
-            "borderless": true
-            }
           } %}
         {% endif %}
       {% endblock %}
 
       {% block events %}
         {% if events %}
-          {% set events = events|merge({'borderless': true}) %}
           {% include "@organisms/by-author/stacked-row-section.twig" with {
-            "stackedRowSection": events,
+            "stackedRowSection": events
           } %}
         {% endif %}
       {% endblock %}
 
-    {# Elected Officials #}
+      {# Elected Officials #}
     {% elseif subtype == 'Elected Official' %}
       {# Short Description #}
       {{ block('shortDescription') }}
-
-      {# Featured Message #}
-      {{ block('featuredMessage') }}
 
       {# Featured Items Mosaic #}
       {{ block('featuredItemMosaic') }}
 
       {# About section #}
       {% if node.field_about is not empty %}
-        {% if stackedRow is not empty %}
-          {% set stackedRow = stackedRow | merge({"borderless": true}) %}
-        {% else %}
-          {% set stackedRow = {"borderless": true} %}
-        {% endif %}
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
-            "id":"",
-            "borderless": true
+            "id":""
           }
         } %}
           {% block stackedRowContentOverride %}
@@ -646,16 +574,10 @@
 
       {# Our organizations #}
       {% if node.field_org_our_orgs is not empty %}
-        {% if stackedRow is not empty %}
-          {% set stackedRow = stackedRow | merge({"borderless": true}) %}
-        {% else %}
-          {% set stackedRow = {"borderless": true} %}
-        {% endif %}
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
-            "id":"",
-            "borderless": true
+            "id":""
           }
         } %}
           {% block stackedRowContentOverride %}
@@ -680,24 +602,15 @@
       {# Short Description #}
       {{ block('shortDescription') }}
 
-      {# Featured Message #}
-      {{ block('featuredMessage') }}
-
       {# Featured Items Mosaic #}
       {{ block('featuredItemMosaic') }}
 
       {# About section #}
       {% if node.field_about is not empty %}
-        {% if stackedRow is not empty %}
-          {% set stackedRow = stackedRow | merge({"borderless": true}) %}
-        {% else %}
-          {% set stackedRow = {"borderless": true} %}
-        {% endif %}
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
-            "id":"",
-            "borderless": true
+            "id":""
           }
         } %}
           {% block stackedRowContentOverride %}
@@ -749,16 +662,10 @@
 
       {# Our organizations #}
       {% if node.field_org_our_orgs is not empty %}
-        {% if stackedRow is not empty %}
-          {% set stackedRow = stackedRow | merge({"borderless": true}) %}
-        {% else %}
-          {% set stackedRow = {"borderless": true} %}
-        {% endif %}
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
-            "id":"",
-            "borderless": true
+            "id":""
           }
         } %}
           {% block stackedRowContentOverride %}
@@ -786,13 +693,7 @@
     {# Events, Locations, and Related Organizations are still preprocessed in and are available for all types. #}
     {% for stackedRowSection in stackedRowSections %}
       {% set stackedRowSection = stackedRowSection|merge({'level': level}) %}
-      {% if stackedRow is not empty %}
-        {% set stackedRow = stackedRow | merge({"borderless": true}) %}
-      {% else %}
-        {% set stackedRow = {"borderless": true} %}
-      {% endif %}
       {% include "@organisms/by-author/stacked-row-section.twig" %}
-      {% endembed %}
       {# Add Google Maps API only when a map is included in the page. #}
       {% if stackedRowSection.pageContent[0].path == '@organisms/by-author/mapped-locations.twig' %}
         {{ attach_library('mass_map/google-map-api') }}
