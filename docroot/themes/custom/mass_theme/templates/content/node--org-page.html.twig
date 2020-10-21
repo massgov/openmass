@@ -791,13 +791,7 @@
       {% else %}
         {% set stackedRow = {"borderless": true} %}
       {% endif %}
-      {% embed "@organisms/by-author/stacked-row-section.twig" with {
-        "stackedRowSection": {
-          "title":"",
-          "id":"",
-          "borderless": true
-        }
-      } %}
+      {% include "@organisms/by-author/stacked-row-section.twig" %}
       {% endembed %}
       {# Add Google Maps API only when a map is included in the page. #}
       {% if stackedRowSection.pageContent[0].path == '@organisms/by-author/mapped-locations.twig' %}
