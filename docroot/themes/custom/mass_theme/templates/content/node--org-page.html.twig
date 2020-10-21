@@ -348,13 +348,15 @@
       {# Featured Message #}
       {% block featuredMessage %}
         {% if node.field_org_featured_message is not empty %}
+          {% if stackedRow is not empty %}
+            {% set stackedRow = stackedRow | merge({"borderless": true}) %}
+          {% else %}
+            {% set stackedRow = {"borderless": true} %}
+          {% endif %}
           {% embed "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": {
               "title": "",
               "id": "",
-              "borderless": true
-            },
-            "stackedRow": {
               "borderless": true
             }
           } %}
@@ -368,13 +370,15 @@
       {# Featured Items Mosaic #}
       {% block featuredItemMosaic %}
         {% if node.field_org_featured_items is not empty %}
+          {% if stackedRow is not empty %}
+            {% set stackedRow = stackedRow | merge({"borderless": true}) %}
+          {% else %}
+            {% set stackedRow = {"borderless": true} %}
+          {% endif %}
           {% embed "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": {
               "title": "",
               "id": "",
-              "borderless": true
-            },
-            "stackedRow": {
               "borderless": true
             }
           } %}
@@ -388,13 +392,15 @@
       {# Contact / Org Logo #}
       {% block contactAndLogo %}
         {% if node.field_ref_contact_info_1 is not empty %}
+          {% if stackedRow is not empty %}
+            {% set stackedRow = stackedRow | merge({"borderless": true}) %}
+          {% else %}
+            {% set stackedRow = {"borderless": true} %}
+          {% endif %}
           {% embed "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": {
               "title":"",
               "id":"",
-              "borderless": true
-            },
-            "stackedRow": {
               "borderless": true
             }
           } %}
@@ -444,14 +450,16 @@
       {% endif %}
       {% block whoWeServe %}
         {% if node.body is not empty %}
+          {% if stackedRow is not empty %}
+            {% set stackedRow = stackedRow | merge({"borderless": true}) %}
+          {% else %}
+            {% set stackedRow = {"borderless": true} %}
+          {% endif %}
           {% embed "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": {
               "title": "Who we serve"|t,
               "overrideSideBar": node.field_social_links is not empty and node.field_subtype.value == 'General Organization',
               "sideBar": sidebar,
-              "borderless": true
-            },
-            "stackedRow": {
               "borderless": true
             }
           } %}
@@ -472,13 +480,15 @@
 
       {# Our organizations #}
       {% if node.field_org_our_orgs is not empty %}
+        {% if stackedRow is not empty %}
+          {% set stackedRow = stackedRow | merge({"borderless": true}) %}
+        {% else %}
+          {% set stackedRow = {"borderless": true} %}
+        {% endif %}
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
             "id":"",
-            "borderless": true
-          },
-          "stackedRow": {
             "borderless": true
           }
         } %}
@@ -490,13 +500,15 @@
 
       {# Services #}
       {% block servicesSection %}
+        {% if stackedRow is not empty %}
+          {% set stackedRow = stackedRow | merge({"borderless": true}) %}
+        {% else %}
+          {% set stackedRow = {"borderless": true} %}
+        {% endif %}
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
             "id":"",
-            "borderless": true
-          },
-          "stackedRow": {
             "borderless": true
           }
         } %}
@@ -538,13 +550,15 @@
       {# Featured Topics #}
       {% block featuredTopics %}
         {% if node.field_ref_card_view_6 is not empty %}
+          {% if stackedRow is not empty %}
+            {% set stackedRow = stackedRow | merge({"borderless": true}) %}
+          {% else %}
+            {% set stackedRow = {"borderless": true} %}
+          {% endif %}
           {% embed "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": {
               "title":"",
               "id":"",
-              "borderless": true
-            },
-            "stackedRow": {
               "borderless": true
             }
           } %}
@@ -589,9 +603,6 @@
           {% set events = events|merge({'borderless': true}) %}
           {% include "@organisms/by-author/stacked-row-section.twig" with {
             "stackedRowSection": events,
-            "stackedRow": {
-              "borderless": true
-            }
           } %}
         {% endif %}
       {% endblock %}
@@ -609,13 +620,15 @@
 
       {# About section #}
       {% if node.field_about is not empty %}
+        {% if stackedRow is not empty %}
+          {% set stackedRow = stackedRow | merge({"borderless": true}) %}
+        {% else %}
+          {% set stackedRow = {"borderless": true} %}
+        {% endif %}
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
             "id":"",
-            "borderless": true
-          },
-          "stackedRow": {
             "borderless": true
           }
         } %}
@@ -633,13 +646,15 @@
 
       {# Our organizations #}
       {% if node.field_org_our_orgs is not empty %}
+        {% if stackedRow is not empty %}
+          {% set stackedRow = stackedRow | merge({"borderless": true}) %}
+        {% else %}
+          {% set stackedRow = {"borderless": true} %}
+        {% endif %}
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
             "id":"",
-            "borderless": true
-          },
-          "stackedRow": {
             "borderless": true
           }
         } %}
@@ -673,13 +688,15 @@
 
       {# About section #}
       {% if node.field_about is not empty %}
+        {% if stackedRow is not empty %}
+          {% set stackedRow = stackedRow | merge({"borderless": true}) %}
+        {% else %}
+          {% set stackedRow = {"borderless": true} %}
+        {% endif %}
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
             "id":"",
-            "borderless": true
-          },
-          "stackedRow": {
             "borderless": true
           }
         } %}
@@ -732,13 +749,15 @@
 
       {# Our organizations #}
       {% if node.field_org_our_orgs is not empty %}
+        {% if stackedRow is not empty %}
+          {% set stackedRow = stackedRow | merge({"borderless": true}) %}
+        {% else %}
+          {% set stackedRow = {"borderless": true} %}
+        {% endif %}
         {% embed "@organisms/by-author/stacked-row-section.twig" with {
           "stackedRowSection": {
             "title":"",
             "id":"",
-            "borderless": true
-          },
-          "stackedRow": {
             "borderless": true
           }
         } %}
@@ -767,15 +786,17 @@
     {# Events, Locations, and Related Organizations are still preprocessed in and are available for all types. #}
     {% for stackedRowSection in stackedRowSections %}
       {% set stackedRowSection = stackedRowSection|merge({'level': level}) %}
+      {% if stackedRow is not empty %}
+        {% set stackedRow = stackedRow | merge({"borderless": true}) %}
+      {% else %}
+        {% set stackedRow = {"borderless": true} %}
+      {% endif %}
       {% embed "@organisms/by-author/stacked-row-section.twig" with {
         "stackedRowSection": {
           "title":"",
           "id":"",
           "borderless": true
-        },
-        "stackedRow": {
-          "borderless": true
-        },
+        }
       } %}
       {% endembed %}
       {# Add Google Maps API only when a map is included in the page. #}
