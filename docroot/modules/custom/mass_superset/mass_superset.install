@@ -102,3 +102,15 @@ function mass_superset_update_8002() {
   // needs attention views/dashboards.
   Database::getConnection()->truncate('mass_superset_data')->execute();
 }
+
+/**
+ * Add unique constraint to mass_supserset_data.nid.
+ */
+function mass_superset_update_8003() {
+  // Clear old data out of the mass_superset_data table that populates the
+  // needs attention views/dashboards.
+  $conn = Database::getConnection();
+  $conn->truncate('mass_superset_data')->execute();
+  $schema = $conn->schema();
+  $schema->addUniqueKey('mass_superset_data', 'unique_nid', ['nid']);
+}
