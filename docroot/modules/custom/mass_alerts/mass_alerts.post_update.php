@@ -95,4 +95,19 @@ function mass_alerts_post_update_target_pages(&$sandbox) {
     return t('Migrated the data from field_target_pages_para_ref to field_target_page for @nodes Alert nodes.', ["@nodes" => $sandbox['total']]);
   }
 
+  /**
+   * Implements hook_post_update_NAME.
+   *
+   * Empty unused paragraphs.
+   */
+  function mass_alerts_post_update_target_pages_paragraphs(&$sandbox) {
+    $entityTypeManager = Drupal::entityTypeManager();
+    $storage = $entityTypeManager->getStorage('paragraph');
+    $query = $storage->getQuery();
+    $bundleKey = $entityTypeManager->getDefinition('paragraph')->getKey('bundle');
+    $query = $query->condition($bundleKey, 'target_pages');
+    $result = $query->execute();
+    $entities = $storage->loadMultiple($result);
+    $storage->delete($entities);
+  }
 }
