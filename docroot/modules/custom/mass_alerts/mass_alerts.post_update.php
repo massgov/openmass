@@ -100,7 +100,7 @@ function mass_alerts_post_update_target_pages(&$sandbox) {
    *
    * Empty unused paragraphs.
    */
-  function mass_alerts_post_update_target_pages_paragraphs(&$sandbox) {
+  function mass_alerts_post_update_paragraphs_target_pages(&$sandbox) {
     $entityTypeManager = Drupal::entityTypeManager();
     $storage = $entityTypeManager->getStorage('paragraph');
     $query = $storage->getQuery();
