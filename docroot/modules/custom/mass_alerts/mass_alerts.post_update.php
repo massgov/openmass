@@ -110,4 +110,5 @@ function mass_alerts_post_update_target_pages(&$sandbox) {
     $entities = $storage->loadMultiple($result);
     $storage->delete($entities);
   }
+
 }
