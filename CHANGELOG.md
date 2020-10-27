@@ -1,5 +1,16 @@
 
 
+## [0.261.0] - October 27, 2020
+
+### Changed
+  - DP-19227: Rename the 'none' option in the field_page_template list.
+  
+### Removed
+  - DP-19034: Remove unused paragraph from alerts
+  - DP-20337: Remove unused alert paragraphs from DB.
+  
+
+
 ## [0.260.0] - October 20, 2020
 
 ### Changed
