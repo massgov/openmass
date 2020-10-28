@@ -42,9 +42,6 @@ if (file_exists($secrets_file_global)) {
  */
 if (!$cli && ($is_prod || $is_mass_gov)) {
   if ($_SERVER['HTTP_MASS_CDN_FWD'] !== getenv('MASS_CDN_TOKEN')) {
-    var_dump($_SERVER);
-    echo "\n\n cdn token below\n\n";
-    var_dump(getenv('MASS_CDN_TOKEN'));
     throw new AccessDeniedHttpException('Only requests sent through Cloudflare CDN are allowed.');
   }
 }
