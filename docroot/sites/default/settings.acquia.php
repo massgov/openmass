@@ -41,7 +41,7 @@ if (file_exists($secrets_file_global)) {
  * mass-cdn-fwd value can be found in the $secrets_file_global file.
  */
 if (!$cli && ($is_prod || $is_mass_gov)) {
-  if ($_SERVER['mass-cdn-fwd'] !== getenv('MASS_CDN_TOKEN')) {
+  if ($_SERVER['HTTP_MASS_CDN_FWD'] !== getenv('MASS_CDN_TOKEN')) {
     var_dump($_SERVER);
     echo "\n\n cdn token below\n\n";
     var_dump(getenv('MASS_CDN_TOKEN'));
