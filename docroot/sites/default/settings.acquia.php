@@ -3,7 +3,7 @@
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 $is_prod = isset($_ENV['AH_NON_PRODUCTION']) && $_ENV['AH_NON_PRODUCTION'];
-$is_mass_gov = strpos($_SERVER['HTTP_HOST'], 'mass.gov');
+$is_mass_gov = preg_match("/\.mass\.gov$/", $_SERVER["HTTP_HOST"]);
 
 /**
  * Loads environment-specific secrets, if available.
