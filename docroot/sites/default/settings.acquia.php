@@ -3,8 +3,8 @@
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 $is_prod = isset($_ENV['AH_NON_PRODUCTION']) && $_ENV['AH_NON_PRODUCTION'];
-$cli = (php_sapi_name() == 'cli');
-$is_mass_gov = !$cli && preg_match("/\.mass\.gov$/", $_SERVER["HTTP_HOST"]);
+$cli = php_sapi_name() == 'cli';
+$is_mass_gov = preg_match("/\.mass\.gov$/", $_SERVER["HTTP_HOST"]);
 
 /**
  * Loads environment-specific secrets, if available.
@@ -40,7 +40,7 @@ if (file_exists($secrets_file_global)) {
  * token, which must be present in the `mass-cdn-fwd` header.
  * mass-cdn-fwd value can be found in the $secrets_file_global file.
  */
-if ($is_prod || $is_mass_gov) {
+if (!$cli && ($is_prod || $is_mass_gov)) {
   if ($_SERVER['mass-cdn-fwd'] !== getenv('MASS_CDN_TOKEN')) {
     throw new AccessDeniedHttpException('Only requests sent through Cloudflare CDN are allowed.');
   }
