@@ -3,7 +3,8 @@
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 $is_prod = isset($_ENV['AH_NON_PRODUCTION']) && $_ENV['AH_NON_PRODUCTION'];
-$is_mass_gov = preg_match("/\.mass\.gov$/", $_SERVER["HTTP_HOST"]);
+$cli = (php_sapi_name() == 'cli');
+$is_mass_gov = !$cli && preg_match("/\.mass\.gov$/", $_SERVER["HTTP_HOST"]);
 
 /**
  * Loads environment-specific secrets, if available.
@@ -74,7 +75,6 @@ $settings = $configureMemcache($settings);
  *
  * @see https://docs.acquia.com/articles/password-protect-your-non-production-environments-acquia-hosting#phpfpm
  */
-$cli = (php_sapi_name() == 'cli');
 if (!$cli && $is_prod) {
   $username = getenv('LOWER_ENVIR_AUTH_USER');
   $password = getenv('LOWER_ENVIR_AUTH_PASS');
