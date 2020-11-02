@@ -136,23 +136,17 @@ class SupersetStorage implements SupersetStorageInterface {
       'schema' => 'analytics',
     ];
     $stats = $this->supersetDatabaseClient->runQuery($query, $options);
-    $insert = $this->database->insert($this->table)->fields([
-      'nid',
-      'pageviews',
-      'score',
-      'last_updated',
-    ]);
     foreach ($stats['data'] as $stat) {
-      $insert->values(
-        [
+      $this->database->merge($this->table)
+        ->key('nid', $stat['node_id'])
+        ->fields([
           'nid' => $stat['node_id'],
           'pageviews' => $stat['pageviews'],
           'score' => $stat['gpa_score'],
           'last_updated' => $time,
-        ]
-      );
+        ])
+        ->execute();
     }
-    $insert->execute();
     return TRUE;
   }
 
