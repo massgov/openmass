@@ -1526,7 +1526,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
  * Implements hook_preprocess_node().
  */
 function mass_theme_preprocess_node_error_page(&$variables) {
-  $variables['sealImage'] = file_create_url(mayflower_get_path() . '/assets/images/stateseal.png');
+  $variables['sealImage'] = file_create_url(mayflower_get_path() . '/assets/images/logo/stateseal.png');
 }
 
 /**
@@ -4384,7 +4384,7 @@ function mass_theme_preprocess_page(&$variables) {
   if (theme_get_setting('languages', 'mass_theme')) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
   }
-  $variables['sealImage'] = file_create_url(mayflower_get_path() . '/assets/images/stateseal.png');
+  $variables['sealImage'] = file_create_url(mayflower_get_path() . '/assets/images/logo/stateseal.png');
 
   if ($node = \Drupal::routeMatch()->getParameter('node')) {
     $node = $variables['node'];
@@ -5950,7 +5950,7 @@ function mass_theme_form_views_exposed_form_alter(&$form, FormStateInterface $fo
  *   directly instead of using this function.
  */
 function icon_path($icon) {
-  $icon_path = DRUPAL_ROOT . '/' . mayflower_get_path() . '/assets/images/svg-icons/';
+  $icon_path = DRUPAL_ROOT . '/' . mayflower_get_path() . '/assets/images/icons/';
 
   if (file_exists($icon_path . strtolower($icon) . '.svg')) {
     return strtolower($icon);
