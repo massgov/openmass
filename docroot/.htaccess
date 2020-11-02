@@ -120,21 +120,17 @@ AddType application/octet-stream .rte
   # above.
   RewriteRule "(^|/)\.(?!well-known)" - [F]
 
-  #--- START: CDN Verification and edit access ----#
-  # In certain settings, we only want to allow requests through if they
-  # come directly from our CDN.  We control this access using a shared
-  # token, which must be present in the `mass-cdn-fwd` header. This is
-  # where we validate that token.  The `cdnverify` environment variable
-  # is used as a flag to indicate whether we need to verify it or not.
+  #--- START: Edit access ----#
   #
   # Also, for security, we require that certain actions (user login, any
   # admin action) goes through a special "edit" domain.  This is enforced
   # at the CDN level, but we also enforce it here for defense in depth.
   # The `allowedit` environment variable is used as a flag to indicate
   # whether we should allow this level of access or not.
+  #
+  # Note: CDN token verification has moved to settings.acquia.php. See https://jira.mass.gov/browse/DP-20164.
 
   # Start with default values:
-  RewriteRule ^ - [E=cdnverify]
   RewriteRule ^ - [E=allowedit:0]
 
   # Verify CDN in production always.
@@ -156,12 +152,6 @@ AddType application/octet-stream .rte
   RewriteCond %{HTTP_HOST} ^wwwcf\.digital\.mass.gov$
   RewriteRule ^ - [E=allowedit:0]
 
-  # In non-prod Acquia environments, verify our CDN token only on the custom domains:
-  # cdnverify enforcement happens in settings.acquia.php
-  RewriteCond %{ENV:AH_SITE_ENVIRONMENT} !^prod$
-  RewriteCond %{HTTP_HOST} .*.mass.gov$
-  RewriteRule ^ - [E=cdnverify:1]
-
   # In non-Acquia contexts, allow edit anywhere.
   RewriteCond %{ENV:AH_SITE_ENVIRONMENT} ^$
   RewriteRule ^ - [E=allowedit:1]
@@ -169,7 +159,7 @@ AddType application/octet-stream .rte
   # And block access on non-edit domains:
   RewriteCond %{ENV:allowedit} !^1$
   RewriteRule ^((scripts|profile|includes|\.php|install\.php|update\.php|xmlrpc\.php)/?(.*)?)$ - [F]
-  #---- END: CDN Verification and edit access ----#
+  #---- END: edit access ----#
 
 
   #---- START: Hardening rules ----
