@@ -1,3 +1,12 @@
+
+
+## [0.262.0] - November 2, 2020
+
+### Fixed
+  - DP-20164: Fixed CDN Token verification
+  - DP-20331: Fix duplicate records in content views
+  - DP-20374: Remove obsolete Texta font styles and load the Noto Sans fonts properly in Mass.gov and edit.mass.gov
+  
 ## [0.261.0] - October 27, 2020
 
 ### Changed
