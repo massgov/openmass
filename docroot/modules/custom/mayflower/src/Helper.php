@@ -474,7 +474,7 @@ class Helper {
    *   icons.
    */
   public static function getIconPath($icon) {
-    $expected_path = sprintf('%s/assets/images/svg-icons/%s.svg', mayflower_get_path(), strtolower($icon));
+    $expected_path = sprintf('%s/assets/images/icons/%s.svg', mayflower_get_path(), strtolower($icon));
 
     if (file_exists($expected_path)) {
       return strtolower($icon);
