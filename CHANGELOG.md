@@ -1,5 +1,45 @@
 
 
+## [0.262.0] - November 2, 2020
+
+### Fixed
+  - DP-20164: Fixed CDN Token verification
+  - DP-20331: Fix duplicate records in content views
+  - DP-20374: Remove obsolete Texta font styles and load the Noto Sans fonts properly in Mass.gov and edit.mass.gov
+  
+## [0.261.0] - October 27, 2020
+
+### Changed
+  - DP-19227: Rename the 'none' option in the field_page_template list.
+  - DP-20297: Admin font changed to Noto to match Mayflower v10.
+  - DP-20385: Updated Mayflower version to 10.0.0.
+    - DP-17982: Refactor RichText component to render raw HTML without dangerouslySetInnerHTML. (MF)
+    - DP-18263: Refactor TeaserListing and convert it to a composition component. (MF)
+    - DP-19414: Icon has been refactored from one component into many icon components. Each .svg icon file is now generated into its own React component at build time with SVGR and SVG Sprite Loader is no longer used. (MF)
+    - DP-19539: Allow adding multiple logos, added stackedLogo prop to support multiple logo layout. (MF)
+    - DP-19541: Extend HeaderSlim component to allow passing in custom components/HTML elements into the utility nav (blue bar) and the main header area, providing basic layout and styles. (MF)
+    - DP-20050: Switch fonts from Texta to Noto Sans, removed fallback fonts and added language support. (MF)
+    - DP-20241: Remove extra space above the sticky table header. (MF)
+    - DP-18263: Removed NWB package and replaced its usage with gulp. Combined lib(es5) and es(es6) directory in dist, and added Webpack/Babel aliases to flatten the structure of the mayflower-react published package. Removed storybook specific data from published package. Cleaned up all component styles in mayflower-react to rely on mayflower-assets peer dependency. (MF)
+    - Restructure mono repo — group all projects under packages folder. Use rush and pnpm to manage and share dependencies. (MF)
+    - DP-18263: Remove PressTeaser molecule from mayflower-react npm package. (MF)
+    - DP-18263: Remove GeneralTeaser and Teaser organisms from mayflower-react npm package. (MF)
+    - DP-19539: Use address html tag for contact info in footer. (MF)
+    - DP-19539: Removed mommentJS import. (MF)
+    - DP-20050: Added $fonts-enable-rtl global variable to allow setting direction to "right-to-left" for languages like Arabic, Persian, Urdu and Hebrew. (MF)
+    - DP-20050: Added $fonts-langs-support global variable to conditionally load and render additional fonts for language support. (MF)
+    - DP-20050: Added $fonts-display-global global variable to control the custom fonts download and render behavior. (MF)
+
+### Fixed
+Fixed:
+  - DP-20364: Adjust the checked state display of the radio button in the feedback component with Mayflower v.10.
+
+### Removed
+  - DP-19034: Remove unused paragraph from alerts
+  - DP-20337: Remove unused alert paragraphs from DB.
+
+
+
 ## [0.260.0] - October 20, 2020
 
 ### Changed
@@ -68,21 +108,21 @@
     - DP-20039: Remove transition value causing Safari to crash in iOS 12. (MF)
     - DP-20055: Removed Firefox-specific code causing menu overlay issues in Firefox. (MF)
   - DP-20203: Add a container for alert overlay to mass_theme/templates/layout/page--node--without-main.html.twig.
-  
+
 ### Added
   - DP-19120: Adding new hamburger navigation header and ability to choose between hamburger and mixed version headers.
   - DP-19887: Add data fields to service_page
   - DP-20110: Update Cloudflare caching rules to exclude certain analytics query strings
-  
+
 ### Fixed
   - DP-19120: Resolved merge conflicts
   - DP-19787: Fix the needs attention views
   - DP-19876: Contextual menu class selector modified to reflect new navigation structure.
-  
+
 ### Removed
   - DP-19747: Debug loggings
   - DP-20115: Balancer address
-  
+
 
 
 ## [0.259.0] - October 6, 2020
@@ -90,34 +130,34 @@
 ### Changed
   - DP-20094: Modified help text of data resource type field on both the info details and service details pages.
   - DP-20112: Allowing iframing of domain w.soundcloud.com.
-  
+
 
 
 ## [0.258.0] - September 29, 2020
 
 ### Changed
   - DP-20059: Backport for allowing iframes from the domain calc.a4we.org.
-  
+
 ### Fixed
   - DP-19974: Remove form submit in button click to stop double formstack submissions
-  
+
 
 
 ## [0.257.0] - September 22, 2020
 
 ### Changed
   - DP-19935: Fixes the iFrame URLs for our web analytics Superset dashboards.
-  
+
 ### Added
   - DP-19886: Add data format field to curated list, info details and service details
   - DP-19390: Tag data pages in Drupal so that Google knows they are data
-  
+
 ### Fixed
   - DP-19478: Verify that tests pass after resolving mismatched entity definitions
-  
+
 ### Security
   - DP-19941: Drupal core updated to version 8.8.10
-  
+
 ## [0.256.1] - September 16, 2020
 
 ### Fixed

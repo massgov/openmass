@@ -15,7 +15,7 @@ class MayflowerExtension extends \Twig_Extension {
    * Constructor.
    */
   public function __construct() {
-    $this->iconDirectory = sprintf('%s/assets/images/svg-icons',
+    $this->iconDirectory = sprintf('%s/assets/images/icons',
       mayflower_get_path()
     );
   }

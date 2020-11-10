@@ -1,125 +1,436 @@
-/*
- * @file
- * Fonts.
- * This file should be used for importing fontface fonts ONLY. No styling should be done here.
- */
-
-/* Light | 300 */
 @font-face {
-  font-family: 'Texta';
-  src: url("../../fonts/texta-light-webfont.eot");
-  src: url("../../fonts/texta-light-webfont.eot?#iefix") format("embedded-opentype"),
-  url("../../fonts/texta-light-webfont.woff") format("woff"),
-  url("../../fonts/texta-light-webfont.ttf") format("truetype"),
-  url("../../fonts/texta-light-webfont.svg#open_sansregular") format("svg");
-  font-weight: 300;
+  font-family: "Noto Sans";
+  src: url("../../fonts/noto/Latin/NotoSans-Regular.eot?#iefix") format("embedded-opentype"), url("../../fonts/noto/Latin/NotoSans-Regular.woff") format("woff"), url("../../fonts/noto/Latin/NotoSans-Regular.ttf") format("truetype"), url("../../fonts/noto/Latin/NotoSans-Regular.svg#NotoSans-Regular") format("svg");
   font-style: normal;
+  font-display: "swap";
 }
-
-/* Light | italic */
+/* The fallback non-variable Noto Sans Italic font */
 @font-face {
-  font-family: 'Texta';
-  src: url("../../fonts/texta-lightitalic-webfont.eot");
-  src: url("../../fonts/texta-lightitalic-webfont.eot?#iefix") format("embedded-opentype"),
-  url("../../fonts/texta-lightitalic-webfont.woff") format("woff"),
-  url("../../fonts/texta-lightitalic-webfont.ttf") format("truetype"),
-  url("../../fonts/texta-lightitalic-webfont.svg#open_sansregular") format("svg");
-  font-weight: 300;
+  font-family: "Noto Sans";
+  src: url("../../fonts/noto/Latin/NotoSans-Italic.eot?#iefix") format("embedded-opentype"), url("../../fonts/noto/Latin/NotoSans-Italic.woff") format("woff"), url("../../fonts/noto/Latin/NotoSans-Italic.ttf") format("truetype"), url("../../fonts/noto/Latin/NotoSans-Italic.svg#NotoSans-Italic") format("svg");
   font-style: italic;
+  font-display: "swap";
 }
-
-/* Book | 400 */
+@supports (font-variation-settings: normal) {
+  /* The variable font of Noto Sans */
+  @font-face {
+    font-family: "Noto Sans VF";
+    src: url("../../fonts/noto/Latin/NotoSans-VF.eot?#iefix") format("embedded-opentype"), url("../../fonts/noto/Latin/NotoSans-VF.woff") format("woff"), url("../../fonts/noto/Latin/NotoSans-VF.ttf") format("truetype"), url("../../fonts/noto/Latin/NotoSans-VF.svg#NotoSans-Regular") format("svg");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: "swap";
+  }
+  /* The variable font of Noto Sans Italic */
+  @font-face {
+    font-family: "Noto Sans VF";
+    src: url("../../fonts/noto/Latin/NotoSansItalic-VF.eot?#iefix") format("embedded-opentype"), url("../../fonts/noto/Latin/NotoSansItalic-VF.woff") format("woff"), url("../../fonts/noto/Latin/NotoSansItalic-VF.ttf") format("truetype"), url("../../fonts/noto/Latin/NotoSansItalic-VF.svg#NotoSans-Italic") format("svg");
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: "swap";
+  }
+  /* The variable font of Noto Sans Mono */
+  @font-face {
+    font-family: "Noto Sans Mono VF";
+    src: url("../../fonts/noto/Mono/NotoSansMono-VF.woff") format("woff"), url("../../fonts/noto/Mono/NotoSansMono-VF.eot?#iefix") format("embedded-opentype"), url("../../fonts/noto/Mono/NotoSansMono-VF.ttf") format("truetype"), url("../../fonts/noto/Mono/NotoSansMono-VF.svg#NotoSans-Mono") format("svg");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: "swap";
+  }
+}
+/* Set $fonts-langs-support in _global.scss to enable/disable imports of additional fonts for language support.
+ * By default $fonts-langs-support is set to true
+ * To disable:
+ * @forward "00-base/configure" with (
+     $fonts-langs-support: false
+   );
+*/
+@supports (font-variation-settings: normal) {
+  @font-face {
+    font-family: "Noto Sans Arabic VF";
+    src: url("../../fonts/noto/Arabic/NotoSansArabic-VF-subset.woff2") format("woff2"), url("../../fonts/noto/Arabic/NotoSansArabic-VF-subset.woff") format("woff");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: "swap";
+    unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+1EE00-1EEFF;
+  }
+}
 @font-face {
-  font-family: 'Texta';
-  src: url("../../fonts/texta-book-webfont.eot");
-  src: url("../../fonts/texta-book-webfont.eot?#iefix") format("embedded-opentype"),
-  url("../../fonts/texta-book-webfont.woff") format("woff"),
-  url("../../fonts/texta-book-webfont.ttf") format("truetype"),
-  url("../../fonts/texta-book-webfont.svg#open_sansregular") format("svg");
+  font-family: "Noto Sans Arabic";
+  src: url("../../fonts/noto/Arabic/NotoSansArabic-Bold-subset.woff2") format("woff2"), url("../../fonts/noto/Arabic/NotoSansArabic-Bold-subset.woff") format("woff");
+  font-weight: 550;
+  font-style: normal;
+  font-display: "swap";
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+1EE00-1EEFF;
+}
+@font-face {
+  font-family: "Noto Sans Arabic";
+  src: url("../../fonts/noto/Arabic/NotoSansArabic-Regular-subset.woff2") format("woff2"), url("../../fonts/noto/Arabic/NotoSansArabic-Regular-subset.woff") format("woff");
   font-weight: 400;
   font-style: normal;
+  font-display: "swap";
+  unicode-range: U+0600-06FF, U+0750-077F, U+08A0-08FF, U+FB50-FDFF, U+FE70-FEFF, U+1EE00-1EEFF;
 }
-
-/* Book | italic */
+@supports (font-variation-settings: normal) {
+  @font-face {
+    font-family: "Noto Sans Hebrew VF";
+    src: url("../../fonts/noto/Hebrew/NotoSansHebrew-VF-subset.woff2") format("woff2"), url("../../fonts/noto/Hebrew/NotoSansHebrew-VF-subset.woff") format("woff");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: "swap";
+    unicode-range: U+0590-05FF, U+FB1D-FB4F;
+  }
+}
 @font-face {
-  font-family: 'Texta';
-  src: url("../../fonts/texta-bookitalic-webfont.eot");
-  src: url("../../fonts/texta-bookitalic-webfont.eot?#iefix") format("embedded-opentype"),
-  url("../../fonts/texta-bookitalic-webfont.woff") format("woff"),
-  url("../../fonts/texta-bookitalic-webfont.ttf") format("truetype"),
-  url("../../fonts/texta-bookitalic-webfont.svg#open_sansregular") format("svg");
+  font-family: "Noto Sans Hebrew";
+  src: url("../../fonts/noto/Hebrew/NotoSansHebrew-Bold-subset.woff2") format("woff2"), url("../../fonts/noto/Hebrew/NotoSansHebrew-Bold-subset.woff") format("woff");
+  font-weight: 550;
+  font-style: normal;
+  font-display: "swap";
+  unicode-range: U+0590-05FF, U+FB1D-FB4F;
+}
+@font-face {
+  font-family: "Noto Sans Hebrew";
+  src: url("../../fonts/noto/Hebrew/NotoSansHebrew-Regular-subset.woff2") format("woff2"), url("../../fonts/noto/Hebrew/NotoSansHebrew-Regular-subset.woff") format("woff");
   font-weight: 400;
-  font-style: italic;
-}
-
-/* Medium | 500 */
-@font-face {
-  font-family: 'Texta';
-  src: url("../../fonts/texta-medium-webfont.eot");
-  src: url("../../fonts/texta-medium-webfont.eot?#iefix") format("embedded-opentype"),
-  url("../../fonts/texta-medium-webfont.woff") format("woff"),
-  url("../../fonts/texta-medium-webfont.ttf") format("truetype"),
-  url("../../fonts/texta-medium-webfont.svg#open_sansregular") format("svg");
-  font-weight: 500;
   font-style: normal;
+  font-display: "swap";
+  unicode-range: U+0590-05FF, U+FB1D-FB4F;
 }
-
-/* Medium | italic */
-@font-face {
-  font-family: 'Texta';
-  src: url("../../fonts/texta-mediumitalic-webfont.eot");
-  src: url("../../fonts/texta-mediumitalic-webfont.eot?#iefix") format("embedded-opentype"),
-  url("../../fonts/texta-mediumitalic-webfont.woff") format("woff"),
-  url("../../fonts/texta-mediumitalic-webfont.ttf") format("truetype"),
-  url("../../fonts/texta-mediumitalic-webfont.svg#open_sansregular") format("svg");
-  font-weight: 500;
-  font-style: italic;
+@supports (font-variation-settings: normal) {
+  @font-face {
+    font-family: "Noto Sans Khmer VF";
+    src: url("../../fonts/noto/Khmer/NotoSansKhmer-VF-subset.woff2") format("woff2"), url("../../fonts/noto/Khmer/NotoSansKhmer-VF-subset.woff") format("woff");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: "swap";
+    unicode-range: U+1780-17FF, U+19E0-19FF;
+  }
 }
-
-/* Bold | 700 */
 @font-face {
-  font-family: 'Texta';
-  src: url("../../fonts/texta-bold-webfont.eot");
-  src: url("../../fonts/texta-bold-webfont.eot?#iefix") format("embedded-opentype"),
-  url("../../fonts/texta-bold-webfont.woff") format("woff"),
-  url("../../fonts/texta-bold-webfont.ttf") format("truetype"),
-  url("../../fonts/texta-bold-webfont.svg#open_sansregular") format("svg");
-  font-weight: 700;
+  font-family: "Noto Sans Khmer";
+  src: url("../../fonts/noto/Khmer/NotoSansKhmer-Bold-subset.woff2") format("woff2"), url("../../fonts/noto/Khmer/NotoSansKhmer-Bold-subset.woff") format("woff");
+  font-weight: 550;
   font-style: normal;
+  font-display: "swap";
+  unicode-range: U+1780-17FF, U+19E0-19FF;
 }
-
-/* Bold | Italic */
 @font-face {
-  font-family: 'Texta';
-  src: url("../../fonts/texta-bolditalic-webfont.eot");
-  src: url("../../fonts/texta-bolditalic-webfont.eot?#iefix") format("embedded-opentype"),
-  url("../../fonts/texta-bolditalic-webfont.woff") format("woff"),
-  url("../../fonts/texta-bolditalic-webfont.ttf") format("truetype"),
-  url("../../fonts/texta-bolditalic-webfont.svg#open_sansregular") format("svg");
-  font-weight: 700;
-  font-style: italic;
-}
-
-/* Black | 800 */
-@font-face {
-  font-family: 'Texta';
-  src: url("../../fonts/texta-black-webfont.eot");
-  src: url("../../fonts/texta-black-webfont.eot?#iefix") format("embedded-opentype"),
-  url("../../fonts/texta-black-webfont.woff") format("woff"),
-  url("../../fonts/texta-black-webfont.ttf") format("truetype"),
-  url("../../fonts/texta-black-webfont.svg#open_sansregular") format("svg");
-  font-weight: 800;
+  font-family: "Noto Sans Khmer";
+  src: url("../../fonts/noto/Khmer/NotoSansKhmer-Regular-subset.woff2") format("woff2"), url("../../fonts/noto/Khmer/NotoSansKhmer-Regular-subset.woff") format("woff");
+  font-weight: 400;
   font-style: normal;
+  font-display: "swap";
+  unicode-range: U+1780-17FF, U+19E0-19FF;
+}
+@supports (font-variation-settings: normal) {
+  @font-face {
+    font-family: "Noto Sans Myanmar VF";
+    src: url("../../fonts/noto/Myanmar/NotoSansMyanmar-VF-subset.woff2") format("woff2"), url("../../fonts/noto/Myanmar/NotoSansMyanmar-VF-subset.woff") format("woff");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: "swap";
+    unicode-range: U+1000-109F, U+AA60-AA7F, U+A9E0-A9FF;
+  }
+}
+@font-face {
+  font-family: "Noto Sans Myanmar";
+  src: url("../../fonts/noto/Myanmar/NotoSansMyanmar-Bold-subset.woff2") format("woff2"), url("../../fonts/noto/Myanmar/NotoSansMyanmar-Bold-subset.woff") format("woff");
+  font-weight: 550;
+  font-style: normal;
+  font-display: "swap";
+  unicode-range: U+1000-109F, U+AA60-AA7F, U+A9E0-A9FF;
+}
+@font-face {
+  font-family: "Noto Sans Myanmar";
+  src: url("../../fonts/noto/Myanmar/NotoSansMyanmar-Regular-subset.woff2") format("woff2"), url("../../fonts/noto/Myanmar/NotoSansMyanmar-Regular-subset.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: "swap";
+  unicode-range: U+1000-109F, U+AA60-AA7F, U+A9E0-A9FF;
+}
+html {
+  font-family: "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif;
 }
 
-/* Black | Italic */
-@font-face {
-  font-family: 'Texta';
-  src: url("../../fonts/texta-blackitalic-webfont.eot");
-  src: url("../../fonts/texta-blackitalic-webfont.eot?#iefix") format("embedded-opentype"),
-  url("../../fonts/texta-blackitalic-webfont.woff") format("woff"),
-  url("../../fonts/texta-blackitalic-webfont.ttf") format("truetype"),
-  url("../../fonts/texta-blackitalic-webfont.svg#open_sansregular") format("svg");
-  font-weight: 800;
-  font-style: italic;
+*:lang(ar) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(fa) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ps) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ur) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(wni) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(zdj) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(aeb) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(arq) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ars) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ary) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(arz) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(bej) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(bgn) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(bqi) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ckb) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(dcc) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(doi) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(fia) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(gbz) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(gjk) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(gju) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(glk) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(haz) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(hnd) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(hno) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(khw) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(kvx) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(kxp) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(lah) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(lki) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(lrc) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(luz) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(mfa) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(mvy) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(mzn) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(prd) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(rmt) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(sdh) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(skr) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(trw) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(aii) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(az) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(inh) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ky) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(kk) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ku) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(tg) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(tk) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(tly) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ttt) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ug) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(uz) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(aii-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(az-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(inh-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ky-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(kk-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ku-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(tg-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(tk-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(tly-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ttt-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ug-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(uz-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(bal-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(brh-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(dyo-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ha-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(id-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ms-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(so-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(sus-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(swb-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(tr-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(tru-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(wo-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(hi-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(hif-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(ks-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(sd-Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(Arab) {
+  font-family: "Noto Sans Arabic VF", "Noto Sans Arabic", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+
+*:lang(iw) {
+  font-family: "Noto Sans Hebrew VF", "Noto Sans Hebrew", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(he) {
+  font-family: "Noto Sans Hebrew VF", "Noto Sans Hebrew", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(jpr) {
+  font-family: "Noto Sans Hebrew VF", "Noto Sans Hebrew", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(jrb) {
+  font-family: "Noto Sans Hebrew VF", "Noto Sans Hebrew", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(lad) {
+  font-family: "Noto Sans Hebrew VF", "Noto Sans Hebrew", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(yi) {
+  font-family: "Noto Sans Hebrew VF", "Noto Sans Hebrew", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(Hebr) {
+  font-family: "Noto Sans Hebrew VF", "Noto Sans Hebrew", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+
+*:lang(km) {
+  font-family: "Noto Sans Khmer VF", "Noto Sans Khmer", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(Khmr) {
+  font-family: "Noto Sans Khmer VF", "Noto Sans Khmer", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+
+*:lang(my) {
+  font-family: "Noto Sans Myanmar VF", "Noto Sans Myanmar", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
+}
+*:lang(Mymr) {
+  font-family: "Noto Sans Myanmar VF", "Noto Sans Myanmar", "Noto Sans VF", "Noto Sans", "Helvetica", "Arial", sans-serif !important;
 }
