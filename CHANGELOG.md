@@ -1,5 +1,24 @@
 
 
+## [0.263.0] - November 10, 2020
+
+### Changed
+  - DP-20398: Update the image paths for the state seal and svg icons with Mayflower v.10.1.0.
+  - DP-19008: ClamAV disabled at Acquia
+  - DP-19364: Remove uninstalled modules and upgrade performance modules.
+  - DP-20394: Updated Mayflower version to 10.1.0.
+      - Images: Rename assets/static/images/svg-icons to assets/static/images/icons and move checkmark.svg into the icons folder. (MF)
+      - Images: Move stateseal PNGs into a folder named logo. (MF)
+      - DP-20363: Fine tune line-height setting in the components. (MF)
+  
+### Fixed
+  - DP-19550: Removed unneeded horizontal lines on org pages.
+  
+### Security
+  - DP-19696: Security updates to Cloudflare and dependencies.
+  
+
+
 ## [0.262.0] - November 2, 2020
 
 ### Fixed
