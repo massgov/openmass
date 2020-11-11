@@ -1,12 +1,36 @@
 
 
+## [0.263.0] - November 10, 2020
+
+### Fixed
+  - DP-19550: Removed unneeded horizontal lines on org pages.
+  - DP-20468: Fix font issue on Macs running El Capitan, Yosemite, Mavericks (10.11, 10.10, 10.9) with Firefox and Safari for admin theme.
+
+### Changed
+  - DP-19008: ClamAV disabled at Acquia
+  - DP-19364: Remove uninstalled modules and upgrade performance modules.
+  - DP-20394: |-
+      Updated Mayflower version to 10.1.0.
+            - Images: Rename assets/static/images/svg-icons to assets/static/images/icons and move checkmark.svg into the icons folder. (MF)
+            - Images: Move stateseal PNGs into a folder named logo. (MF)
+            - DP-20363: Fine tune line-height setting in the components. (MF)
+  - DP-20398: Update the image paths for the state seal and svg icons with Mayflower v.10.1.0.
+  - DP-20465: |-
+      Updated Mayflower version to 10.1.2.
+            - DP-20468: Fix font issue on Macs running El Capitan, Yosemite, Mavericks (10.11, 10.10, 10.9) with Firefox and Safari. (MF)
+
+### Security
+  - DP-19696: Security updates to Cloudflare and dependencies.
+
+
+
 ## [0.262.0] - November 2, 2020
 
 ### Fixed
   - DP-20164: Fixed CDN Token verification
   - DP-20331: Fix duplicate records in content views
   - DP-20374: Remove obsolete Texta font styles and load the Noto Sans fonts properly in Mass.gov and edit.mass.gov
-  
+
 ## [0.261.0] - October 27, 2020
 
 ### Changed

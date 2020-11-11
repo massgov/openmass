@@ -3,7 +3,7 @@
  * @file
  * Theme override to display the full view mode of the Org page content type.
  */
- #}
+#}
 {% extends 'node.html.twig' %}
 
 {# Set top heading level for the page. #}
@@ -306,9 +306,9 @@
                   <span class="custom-option-item__label">
                     {{ icon('alert') }} {{ 'Get updates'|t }}
                   </span>
-                    <ul class="ma__link-list__items ma__link-list__items--no-bullets">
-                      {{ content.field_get_updates_links }}
-                    </ul>
+                  <ul class="ma__link-list__items ma__link-list__items--no-bullets">
+                    {{ content.field_get_updates_links }}
+                  </ul>
                 </div>
               {% endif %}
             {% endblock %}
@@ -560,7 +560,7 @@
         {% endif %}
       {% endblock %}
 
-    {# Elected Officials #}
+      {# Elected Officials #}
     {% elseif subtype == 'Elected Official' %}
       {# Short Description #}
       {{ block('shortDescription') }}
