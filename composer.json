@@ -91,10 +91,11 @@
         "christian-riesen/base32": "^1.3.1",
         "components/highlightjs": "9.7.*",
         "composer/installers": "^1.2",
-        "cweagans/composer-patches": "1.6.1",
+        "cweagans/composer-patches": "^1.7",
         "d3/d3": "3.5.*",
         "desandro/imagesloaded": "^4.1",
         "desandro/masonry": "^4.1",
+        "deviantintegral/composer-gavel": "^0.3.0",
         "drupal/access_unpublished": "^1.0",
         "drupal/acquia_connector": "^2",
         "drupal/acquia_purge": "^1",
@@ -110,8 +111,8 @@
         "drupal/composer_deploy": "^1.4",
         "drupal/conditional_fields": "1.x-dev",
         "drupal/config_log": "^1",
-        "drupal/core-composer-scaffold": "~8.8.8",
-        "drupal/core-recommended": "~8.8.8",
+        "drupal/core-composer-scaffold": "~8.9.8",
+        "drupal/core-recommended": "~8.9.8",
         "drupal/csv_serialization": "^1",
         "drupal/datalayer": "^1",
         "drupal/devel": "^4",
@@ -181,7 +182,7 @@
         "drupal/twig_field_value": "^1",
         "drupal/twig_tweak": "^1",
         "drupal/upgrade_rector": "^1",
-        "drupal/upgrade_status": "^2",
+        "drupal/upgrade_status": "^3",
         "drupal/username_enumeration_prevention": "^1",
         "drupal/video_embed_field": "^2.0",
         "drupal/view_mode_page": "^3.1",
@@ -224,6 +225,7 @@
         "drupal/drupal": "*"
     },
     "extra": {
+        "composer-version": "^2",
         "drupal-scaffold": {
             "locations": {
                 "web-root": "./docroot"
@@ -256,9 +258,8 @@
         "patches": {
             "drupal/core": {
                 "Don't break if telephone number is less than 6 digits. (https://www.drupal.org/node/2575577#comment-11750724)": "https://www.drupal.org/files/issues/2575577-11.patch",
-                "Link autocomplete content type filter": "https://www.drupal.org/files/issues/2019-05-28/link-autocomplete-ct-filter-2887376-39-8.7.x.patch",
+                "Link autocomplete content type filter": "https://www.drupal.org/files/issues/2020-10-27/link-autocomplete-ct-filter-2887376-43-8.9.x.patch",
                 "Fix config-import when uninstalling a theme": "https://www.drupal.org/files/issues/2018-04-04/2958649-1.patch",
-                "Fix a 500 error with the pfdp file download": "patches/DP-9479-error-pfdp-file-download.patch",
                 "Remove final from a class in order to inherit from it": "patches/DP-11721-jsonapi-serializer.patch",
                 "Remove type hint which allows usage in combination with workbench_moderation": "patches/jsonapi-2.3.0-no-type-hint.patch",
                 "Fix batch error on Cloudflare (https://www.drupal.org/node/2879023)": "https://www.drupal.org/files/issues/2019-06-06/2879023-26.patch",
