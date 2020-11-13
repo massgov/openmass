@@ -192,7 +192,7 @@ function normalizeRequest(request) {
   const url = new URL(request.url)
   const newQS = new URLSearchParams(url.searchParams);
   for (let key of newQS.keys()) {
-    if(key.startsWith('utm_')) {
+    if(key.startsWith('utm_') || key.startsWith('_fb') || key.startsWith('_ga')) {
       newQS.delete(key);
     }
   }

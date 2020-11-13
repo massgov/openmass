@@ -542,7 +542,7 @@ workflows:
               <<: *branch_ignore
 
   # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_develop_branch.
-  # This will only happens onThursday night 11 p.m. ETS to allow us to review Mayflower in Drupal on Mondays.
+  # This only happens on Thursday night 11 p.m. ETS to allow us to review Mayflower in Drupal on Mondays.
   mayflower_dev_branch:
     jobs:
       - build
@@ -550,7 +550,7 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "00 03 * * 5"
+          cron: "00 04 * * 5"
           filters:
             branches:
               only:
@@ -617,7 +617,7 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "15 17 * * 2"
+          cron: "00 18 * * 2"
           filters:
             branches:
               only:
@@ -1070,7 +1070,7 @@ workflows:
           reference: prod
     triggers:
       - schedule:
-          cron: "00 03 * * 0,1,2,3,4,6"
+          cron: "00 04 * * 0,1,2,3,4,6"
           filters:
             branches:
               only:

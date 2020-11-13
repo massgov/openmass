@@ -1,20 +1,187 @@
 
 
+## [0.263.0] - November 10, 2020
+
+### Fixed
+  - DP-19550: Removed unneeded horizontal lines on org pages.
+  - DP-20468: Fix font issue on Macs running El Capitan, Yosemite, Mavericks (10.11, 10.10, 10.9) with Firefox and Safari for admin theme.
+
+### Changed
+  - DP-19008: ClamAV disabled at Acquia
+  - DP-19364: Remove uninstalled modules and upgrade performance modules.
+  - DP-20394: |-
+      Updated Mayflower version to 10.1.0.
+            - Images: Rename assets/static/images/svg-icons to assets/static/images/icons and move checkmark.svg into the icons folder. (MF)
+            - Images: Move stateseal PNGs into a folder named logo. (MF)
+            - DP-20363: Fine tune line-height setting in the components. (MF)
+  - DP-20398: Update the image paths for the state seal and svg icons with Mayflower v.10.1.0.
+  - DP-20465: |-
+      Updated Mayflower version to 10.1.2.
+            - DP-20468: Fix font issue on Macs running El Capitan, Yosemite, Mavericks (10.11, 10.10, 10.9) with Firefox and Safari. (MF)
+
+### Security
+  - DP-19696: Security updates to Cloudflare and dependencies.
+
+
+
+## [0.262.0] - November 2, 2020
+
+### Fixed
+  - DP-20164: Fixed CDN Token verification
+  - DP-20331: Fix duplicate records in content views
+  - DP-20374: Remove obsolete Texta font styles and load the Noto Sans fonts properly in Mass.gov and edit.mass.gov
+
+## [0.261.0] - October 27, 2020
+
+### Changed
+  - DP-19227: Rename the 'none' option in the field_page_template list.
+  - DP-20297: Admin font changed to Noto to match Mayflower v10.
+  - DP-20385: Updated Mayflower version to 10.0.0.
+    - DP-17982: Refactor RichText component to render raw HTML without dangerouslySetInnerHTML. (MF)
+    - DP-18263: Refactor TeaserListing and convert it to a composition component. (MF)
+    - DP-19414: Icon has been refactored from one component into many icon components. Each .svg icon file is now generated into its own React component at build time with SVGR and SVG Sprite Loader is no longer used. (MF)
+    - DP-19539: Allow adding multiple logos, added stackedLogo prop to support multiple logo layout. (MF)
+    - DP-19541: Extend HeaderSlim component to allow passing in custom components/HTML elements into the utility nav (blue bar) and the main header area, providing basic layout and styles. (MF)
+    - DP-20050: Switch fonts from Texta to Noto Sans, removed fallback fonts and added language support. (MF)
+    - DP-20241: Remove extra space above the sticky table header. (MF)
+    - DP-18263: Removed NWB package and replaced its usage with gulp. Combined lib(es5) and es(es6) directory in dist, and added Webpack/Babel aliases to flatten the structure of the mayflower-react published package. Removed storybook specific data from published package. Cleaned up all component styles in mayflower-react to rely on mayflower-assets peer dependency. (MF)
+    - Restructure mono repo — group all projects under packages folder. Use rush and pnpm to manage and share dependencies. (MF)
+    - DP-18263: Remove PressTeaser molecule from mayflower-react npm package. (MF)
+    - DP-18263: Remove GeneralTeaser and Teaser organisms from mayflower-react npm package. (MF)
+    - DP-19539: Use address html tag for contact info in footer. (MF)
+    - DP-19539: Removed mommentJS import. (MF)
+    - DP-20050: Added $fonts-enable-rtl global variable to allow setting direction to "right-to-left" for languages like Arabic, Persian, Urdu and Hebrew. (MF)
+    - DP-20050: Added $fonts-langs-support global variable to conditionally load and render additional fonts for language support. (MF)
+    - DP-20050: Added $fonts-display-global global variable to control the custom fonts download and render behavior. (MF)
+
+### Fixed
+Fixed:
+  - DP-20364: Adjust the checked state display of the radio button in the feedback component with Mayflower v.10.
+
+### Removed
+  - DP-19034: Remove unused paragraph from alerts
+  - DP-20337: Remove unused alert paragraphs from DB.
+
+
+
+## [0.260.0] - October 20, 2020
+
+### Changed
+  - DP-19328: Update the <head> content generation logic in /themes/custom/mass_theme/templates/layout/page--node--without-main.html.twig for binder page.
+  - DP-0161: Updates iFrame for events, forms, news, and law library content types.
+  - DP-20172: Key message button link text maximum characters increased to 50.
+  - DP-20268: Updated Mayflower version to 9.56.0.
+    - DP-17154: Change the label of the hamburger menu button on mobile width. (MF)
+    - DP-17154: Change the location of the logo based on screen widths. (MF)
+    - DP-17154: Match the style of the utility nav elements to the main nav ones in the hamburger menu. (MF)
+    - DP-17155: Set focus on the linked state seal in the hamburger menu  from a lower element with 'shift + tab'. (MF)
+    - DP-17155: Set focus on the menu button from the linked state seal in the hamburger menu with 'shift + tab' from a lower element. (MF)
+    - DP-17155: Set an open submenu not to collapse as focus moves to another menu unit. (MF)
+    - DP-19330: Expand the menu button width to fill the available space on the blue bar when it's labeled as "close" with the screen size 840px and smaller. (MF)
+    - DP-19331: Set the height of the nav bar consistent regardless of screen sizes. (MF)
+    - DP-19332: Position the nav bar below the site wide alert. (MF)
+    - DP-19332: Remove the extra top space to position the alert container to the top of the page. (MF)
+    - DP-19335: Make the font size for the menu button consistent regardless of the screen size. (MF)
+    - DP-19335: Set the button label "Mass.gov" changes to "Close" when the hamburger menu is open. (MF)
+    - DP-19335: The menu button always lines up to the state seal on the left regardless of the screen size when the seal is visible. (MF)
+    - DP-19336: Fixes to address off-screen scroll behavior and console errors (MF)
+    - DP-19337: Set only one menu is open at a time including the "log in to" content. (MF)
+    - DP-19337: Make the open/close animation consistent. (MF)
+    - DP-19337: Adjust the position of the bottom border of "Log In To…" content in the hamburger menu. (MF)
+    - DP-19354: Addded Color stories and color gradients. (MF)
+    - DP-19879: Adjust menu overlay position and timing in mobile and Firefox in desktop. (MF)
+    - DP-19953: Style the log in to content in the menu container. (MF)
+    - DP-19984: Remove chevron from links in the menu container. (MF)
+    - DP-19984: Align the text and icon in the last sub menu items vertically centered. (MF)
+    - DP-20091: Change z-index value variables for overlay components for consistency. (MF)
+    - DP-20096: Clean up and streamline some timing functions, unused variables and functions. (MF)
+    - DP-20119: Switch the main navigation to the new one in all page types which have the main navigation. (MF)
+    - DP-20119: Adjust sticky table heaer z-index value to be under the main manu bar. (MF)
+    - DP-20163: Remove extra space and bottom border from the search component in menu container. (MF)
+    - DP-20176: Fix utility sub container open/close state icon with keyboard navigation. (MF)
+    - DP-17154: Add a 'jump to search' button on the utility nav bar in mobile display. (MF)
+    - DP-17154: Set up to render the log-in-to content in the utility nav in the hamburger menu. (MF)
+    - DP-17155: Set up tabbing behaviors at the last elements in various conditions in the hamburger menu. (MF)
+    - DP-17155: Set up behaviors with 'escape' key at the last elements in various conditions in the hamburger menu. (MF)
+    - DP-17200: Added new hamburger naviagation and the header with mixed version of navigation.
+    - DP-19739: Enable keyboard users to navigate sub set elements with up/down arrow keys. (MF)
+    - DP-19878: Removed touchend events from the menu and search buttons. (MF)
+    - DP-19879: Add overlay to alert as the menu is open. (MF)
+    - DP-20091: Add new variables for z-index values for overlay navigation components and the overlay shade. (MF)
+    - DP-19683: Set the overlay below the blue nav bar when it has active alerts. (MF)
+    - DP-19738: For IE11, add polyfill to enable 'NodeList.prototype.forEach()' and escape key definition of 'e.key === Esc'. (MF)
+    - DP-19739: Enable Voiceover to navigate the flyout content. (MF)
+    - DP-19783: Set focus on the menu container from the menu button while the container is open with tab. (MF)
+    - DP-19889: Make the menu container stay open and scrollable. (MF)
+    - DP-19783: Fixed log in to menu width. (MF)
+    - DP-20029: Fixed search button issues caused by resize events (MF)
+    - DP-20037: Fix the page not to scroll up to the top of the page as the menu closes. (MF)
+    - DP-20038: Fix the alert shifts as sub components open in the menu container. (MF)
+    - DP-20038: Enable scrolling in the menu container to the bottom. (MF)
+    - DP-20054: Addresses a timing issue with jump to search that prevented it from working on some Android devices. (MF)
+    - DP-20085: Fixed sticky TOC on the newer global nav. (MF)
+    - DP-20090: Fixed menu icon, text, search alignment. (MF)
+    - DP-20092: Fixed global nav issues when text truncation enabled. (MF)
+    - DP-20080: Fix the varying height value for the menu container whenever the menu opens in ios. (MF)
+    - DP-20085: Put back the lost fix for sticky TOC positioning. (MF)
+    - DP-20181: Set focus on the menu button from the logo link in the menu container with shift + tab. (MF)
+    - DP-20201: Move window scrollTo and remove inline body styling when closing the global nav menu. (MF)
+    - DP-20209: Move window scrollTo and remove inline body styling when closing the global nav menu. (MF)
+    - DP-20209: Fixed global nav scrolling for small devices. (MF)
+    - DP-19738: Replace "e.which", which is deprecated, with "e.code". (MF)
+    - DP-20039: Remove transition value causing Safari to crash in iOS 12. (MF)
+    - DP-20055: Removed Firefox-specific code causing menu overlay issues in Firefox. (MF)
+  - DP-20203: Add a container for alert overlay to mass_theme/templates/layout/page--node--without-main.html.twig.
+
+### Added
+  - DP-19120: Adding new hamburger navigation header and ability to choose between hamburger and mixed version headers.
+  - DP-19887: Add data fields to service_page
+  - DP-20110: Update Cloudflare caching rules to exclude certain analytics query strings
+
+### Fixed
+  - DP-19120: Resolved merge conflicts
+  - DP-19787: Fix the needs attention views
+  - DP-19876: Contextual menu class selector modified to reflect new navigation structure.
+
+### Removed
+  - DP-19747: Debug loggings
+  - DP-20115: Balancer address
+
+
+
+## [0.259.0] - October 6, 2020
+
+### Changed
+  - DP-20094: Modified help text of data resource type field on both the info details and service details pages.
+  - DP-20112: Allowing iframing of domain w.soundcloud.com.
+
+
+
+## [0.258.0] - September 29, 2020
+
+### Changed
+  - DP-20059: Backport for allowing iframes from the domain calc.a4we.org.
+
+### Fixed
+  - DP-19974: Remove form submit in button click to stop double formstack submissions
+
+
+
 ## [0.257.0] - September 22, 2020
 
 ### Changed
   - DP-19935: Fixes the iFrame URLs for our web analytics Superset dashboards.
-  
+
 ### Added
   - DP-19886: Add data format field to curated list, info details and service details
   - DP-19390: Tag data pages in Drupal so that Google knows they are data
-  
+
 ### Fixed
   - DP-19478: Verify that tests pass after resolving mismatched entity definitions
-  
+
 ### Security
   - DP-19941: Drupal core updated to version 8.8.10
-  
+
 ## [0.256.1] - September 16, 2020
 
 ### Fixed

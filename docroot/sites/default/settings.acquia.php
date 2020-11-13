@@ -2,6 +2,10 @@
 
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
+$is_prod = isset($_ENV['AH_PRODUCTION']) && $_ENV['AH_PRODUCTION'];
+$cli = php_sapi_name() == 'cli';
+$is_mass_gov = preg_match("/\.mass\.gov$/", $_SERVER["HTTP_HOST"]);
+
 /**
  * Loads environment-specific secrets, if available.
  *
@@ -32,14 +36,14 @@ if (file_exists($secrets_file_global)) {
 }
 
 /**
- * Protect our origin against direct access.
- *
- * cdnverify is set in .htaccess.
- *
+ * Protect our origin against direct access. We control this access using a shared
+ * token, which must be present in the `mass-cdn-fwd` header.
  * mass-cdn-fwd value can be found in the $secrets_file_global file.
  */
-if (getenv('cdnverify') && $_SERVER['mass-cdn-fwd'] !== getenv('MASS_CDN_TOKEN')) {
-  throw new AccessDeniedHttpException('Only requests sent through Cloudflare CDN are allowed.');
+if (!$cli && ($is_prod || $is_mass_gov)) {
+  if ($_SERVER['HTTP_MASS_CDN_FWD'] !== getenv('MASS_CDN_TOKEN')) {
+    throw new AccessDeniedHttpException('Only requests sent through Cloudflare CDN are allowed.');
+  }
 }
 
 /**
@@ -47,6 +51,10 @@ if (getenv('cdnverify') && $_SERVER['mass-cdn-fwd'] !== getenv('MASS_CDN_TOKEN')
  */
 $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.acquia.yml';
 
+/**
+ * Temporarily disable ClamAV. See https://jira.mass.gov/browse/DP-19008.
+ */
+$config['clamav.settings']['enabled'] = 0;
 
 /**
  * Configure file directory paths.
@@ -71,8 +79,7 @@ $settings = $configureMemcache($settings);
  *
  * @see https://docs.acquia.com/articles/password-protect-your-non-production-environments-acquia-hosting#phpfpm
  */
-$cli = (php_sapi_name() == 'cli');
-if (!$cli && isset($_ENV['AH_NON_PRODUCTION']) && $_ENV['AH_NON_PRODUCTION']) {
+if (!$cli && !$is_prod) {
   $username = getenv('LOWER_ENVIR_AUTH_USER');
   $password = getenv('LOWER_ENVIR_AUTH_PASS');
   $is_testing_page = strpos($_SERVER['REQUEST_URI'], '/topics/hunting-fishing') !== FALSE;
