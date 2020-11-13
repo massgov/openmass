@@ -140,7 +140,7 @@ jobs:
       - checkout
       # See https://stackoverflow.com/questions/18126559/how-can-i-download-a-single-raw-file-from-a-private-github-repo-using-the-comman
       - *restore_composer_cache
-      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
+      - run: {name: 'Composer install', command: 'composer install -vvv --no-interaction --optimize-autoloader'}
       - *save_composer_cache
       # Same for yarn - https://circleci.com/docs/2.0/yarn/#caching
       - restore_cache:
