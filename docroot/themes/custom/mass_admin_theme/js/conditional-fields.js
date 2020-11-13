@@ -154,7 +154,7 @@
         }
       }).change();
     }
-  }
+  };
 
   /**
    * Enable/disable fields on info details.
