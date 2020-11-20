@@ -1,0 +1,36 @@
+uuid: 6a5a23b1-0444-48fb-989d-9d753ba10610
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_service_kpi_choice
+field_name: field_service_kpi_choice
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: application_starts
+      label: 'Application starts'
+    -
+      value: application_submits
+      label: 'Application submits'
+    -
+      value: clicks_to_paidleave
+      label: 'Number of clicks to paidleave.mass.gov from mass.gov'
+    -
+      value: time_between_start_submit
+      label: 'Time between application start and submit'
+    -
+      value: task_completion_rate
+      label: 'Task completion rate'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 5
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

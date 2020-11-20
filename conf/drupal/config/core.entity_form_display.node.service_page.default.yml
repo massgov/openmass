@@ -23,6 +23,7 @@ dependencies:
     - field.field.node.service_page.field_service_eligibility_info
     - field.field.node.service_page.field_service_file
     - field.field.node.service_page.field_service_key_info_links_6
+    - field.field.node.service_page.field_service_kpi_choice
     - field.field.node.service_page.field_service_lede
     - field.field.node.service_page.field_service_links
     - field.field.node.service_page.field_service_metatags
@@ -60,6 +61,7 @@ third_party_settings:
         - group_tasks_key_info
         - group_map
         - group_additional_info
+        - group_key_performance_indicators
       parent_name: ''
       weight: 1
       format_type: tabs
@@ -150,7 +152,7 @@ third_party_settings:
         - field_service_ref_services_6
         - group_additional_resources
       parent_name: group_service_edit_form
-      weight: 25
+      weight: 24
       format_type: tab
       format_settings:
         id: ''
@@ -200,6 +202,19 @@ third_party_settings:
         id: additional-resources
         classes: ''
       label: 'Additional resources'
+    group_key_performance_indicators:
+      children:
+        - field_service_kpi_choice
+      parent_name: group_service_edit_form
+      weight: 25
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: 'KPIs allow you to define what counts as success for this page. <a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/promotional-page/key-performance-indicators" target="_blank">Learn about choosing Key Performance Indicators.</a>'
+        required_fields: true
+      label: 'Key Performance Indicators'
 id: node.service_page.default
 targetEntityType: node
 bundle: service_page
@@ -514,6 +529,12 @@ content:
           entity_type: node
           bundle: service_page
     type: link_default
+    region: content
+  field_service_kpi_choice:
+    weight: 51
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
     region: content
   field_service_lede:
     weight: -4
