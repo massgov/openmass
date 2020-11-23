@@ -116,6 +116,48 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
+   * Run file scan deployment at CircleCI, for better reliability and logging.
+   *
+   * @command ma:fs-deploy
+   *
+   * @option ci-branch The branch that CircleCI should check out at start.
+   *
+   * @aliases ma-fs-deploy
+   * @validate-circleci-token
+   *
+   * @return string
+   *   A URL for viewing the build.
+   * @throws \Exception
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+  public function fs($target, array $options = ['ci-branch' => 'develop']) {
+    // Prompt the user if they are sure. If they say no, exit.
+    $this->confirmProd();
+
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'auth' => [$this->getTokenCircle()],
+      'json' => [
+        'branch' => $options['ci-branch'],
+        'parameters' => [
+          'post-trigger' => FALSE,
+          'webhook' => FALSE,
+          'ma-fs-deploy' => TRUE,
+        ],
+      ],
+    ];
+    $response = $client->request('POST', self::CIRCLE_URI, $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    $body = json_decode((string)$response->getBody(), TRUE);
+    $this->logger()->success($this->getSuccessMessage($body));
+  }
+
+  /**
    * Write the download link for the most recent database backup to stdout.
    *
    * @param string $target Target environment. Recognized values: dev, cd, test, feature1, feature2, feature3, feature4, feature5, prod.

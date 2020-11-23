@@ -99,6 +99,12 @@ parameters:
   ma-cf-deploy:
     type: boolean
     default: false
+
+  # These params for currently used in drush ma:fs-deploy
+  ma-fs-deploy:
+    type: boolean
+    default: false
+
   # These params for currently used in drush ma:backstop. target is declared later.
   ma-backstop:
     type: boolean
@@ -297,6 +303,11 @@ jobs:
       - run: "cd cloudflare && yarn install"
       - run: "cd cloudflare && npm test"
 
+  filescan:
+    <<: *container_config
+    steps:
+      - attach_workspace: { at: /var/www }
+
   # Cut the release branch for Wednesday release only
   cut_release_branch:
     <<: *container_config
@@ -475,6 +486,35 @@ jobs:
           condition: << parameters.auto-approve >>
           steps:
             run: ./scripts/cloudflare-deploy << pipeline.parameters.target >> || true
+
+  ma-fs-deploy:
+    parameters:
+      auto-approve:
+        type: boolean
+        default: false
+    <<: *container_config
+    steps:
+      - checkout
+      - run: curl -L -f -o chamber https://github.com/segmentio/chamber/releases/download/v2.7.5/chamber-v2.7.5-linux-amd64
+      - run: chmod +x ./chamber
+      - run: |
+          mkdir -p /tmp/terraform
+          curl -f -L -o /tmp/terraform/terraform.zip https://releases.hashicorp.com/terraform/0.12.3/terraform_0.12.3_linux_amd64.zip
+          unzip /tmp/terraform/terraform.zip -d /tmp/terraform/
+          mv /tmp/terraform/terraform .
+          chmod +x ./terraform
+          rm -rf /tmp/terraform
+      - run: echo 'export PATH=/var/www/code:$PATH' >> $BASH_ENV
+      - when:
+          condition: << parameters.auto-approve >>
+          steps:
+            run: ./scripts/filescan-deploy << pipeline.parameters.target >> --auto-approve
+      - unless:
+          # We expect to fail when this job runs *before* the hold. Keep it green by appending `|| true`.
+          # See https://discuss.circleci.com/t/run-all-test-steps-even-if-one-fails/11229/12
+          condition: << parameters.auto-approve >>
+          steps:
+            run: ./scripts/filescan-deploy || true
 
 workflows:
   version: 2
@@ -1049,6 +1089,20 @@ workflows:
           requires: [hold]
           auto-approve: true
 
+  # Usually triggered by drush ma:fs-deploy.
+  deploy_filescan:
+    when: << pipeline.parameters.ma-fs-deploy >>
+    jobs:
+      - ma-fs-deploy:
+          name: view-fs-plan
+      - hold:
+          type: approval
+          requires:
+            - view-fs-plan
+      - ma-fs-deploy:
+          name: apply-fs-plan
+          requires: [ hold ]
+          auto-approve: true
 
 # Daily deploy to the CD environment, runs at 11:00PM EST. Except for Thursday night the deploy_mayflower_cd uses the CD environment instead.
   deploy_cd:
