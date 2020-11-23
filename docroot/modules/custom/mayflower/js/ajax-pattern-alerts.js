@@ -90,7 +90,6 @@
     getAlertParagraphData: function getAlertParagraphData(responseData, alertParagraphIds, currentAlertItem) {
       var alertParagraphData = [];
       try {
-        //
         responseData.included.forEach(function (item) {
           // NOTE: We have a polyfill to ensure Array.includes() works for us in all browsers.
           if (item.type === 'paragraph--emergency_alert' && alertParagraphIds.includes(item.id)) {
@@ -106,17 +105,18 @@
               message: item.attributes.field_emergency_alert_message,
               timeStamp: timeStamp
             };
-            // Start with empty alert link for serialized alert data
+            // Start with empty alert link for serialized alert data.
             serializedAlertParagraph.link = {
               href: null,
               text: null
             };
-            // If alert HAS a link, use it
-            if (item.attributes.field_emergency_alert_link && item.attributes.field_emergency_alert_link.uri) {
+            // If alert HAS a link, use it.
+            if (item.attributes.field_emergency_alert_link && item.attributes.field_emergency_alert_link.uri && item.attributes.field_emergency_alert_link_type === '1') {
               serializedAlertParagraph.link = {
                 href: item.attributes.field_emergency_alert_link.uri,
                 text: 'Read more',
-                chevron: true
+                chevron: true,
+                type: item.attributes.field_emergency_alert_link_type
               };
             }
             // If alert has NO link, but has "body"
@@ -129,17 +129,20 @@
                 serializedAlertParagraph.link = {
                   href: '/alerts' + '#' + item.attributes.drupal_internal__id,
                   text: 'Read more',
-                  chevron: true
+                  chevron: true,
+                  type: item.attributes.field_emergency_alert_link_type
                 };
               }
               else if (
                 currentAlertItem.attributes.field_alert_display === 'specific_target_pages' ||
                 currentAlertItem.attributes.field_alert_display === 'by_organization'
               ) {
+
                 serializedAlertParagraph.link = {
                   href: currentAlertItem.attributes.entity_url + '#' + item.attributes.drupal_internal__id,
                   text: 'Read more',
-                  chevron: true
+                  chevron: true,
+                  type: item.attributes.field_emergency_alert_link_type
                 };
               }
             }
@@ -237,7 +240,8 @@
                 id: alertData.id,
                 text: alertData.message,
                 href: alertData.link.href,
-                info: ''
+                info: '',
+                type: alertData.link.type
               };
               if (currentAlertItem.attributes.field_alert_severity && currentAlertItem.attributes.field_alert_severity === 'informational_notice') {
                 serializedAlertItem.prefix = 'Notice';
