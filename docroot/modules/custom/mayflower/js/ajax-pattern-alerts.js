@@ -240,9 +240,11 @@
                 id: alertData.id,
                 text: alertData.message,
                 href: alertData.link.href,
-                info: '',
-                type: alertData.link.type
+                info: ''
               };
+              if (alertData.link.type === '2') {
+                serializedAlertItem.href = '';
+              }
               if (currentAlertItem.attributes.field_alert_severity && currentAlertItem.attributes.field_alert_severity === 'informational_notice') {
                 serializedAlertItem.prefix = 'Notice';
               }
