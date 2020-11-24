@@ -32,13 +32,3 @@ terraform --version | grep -q "$TFVERSION" || {
   echo "Terraform was found, but is not the right version. Please use Terraform $TFVERSION"; exit 1;
 }
 
-pushd "$ROOT_DIR/filescan"
-  echo "Scanning files"
-  pushd "$ROOT_DIR/filescan/terraform"
-    terraform init -upgrade
-    if [ "$WORKSPACE" ]; then
-      terraform workspace select "$WORKSPACE"
-    fi
-    chamber exec tf/massgov-filescan-deployment -- terraform apply $AUTO_APPROVE
-  popd
-popd
