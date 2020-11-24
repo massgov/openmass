@@ -59,7 +59,6 @@ dependencies:
     - field.field.node.org_page.field_verification
     - image.style.thumbnail
     - node.type.org_page
-    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -934,6 +933,13 @@ content:
           bundle: org_page
     type: boolean_checkbox
     region: content
+  langcode:
+    type: language_select
+    weight: 2
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 11

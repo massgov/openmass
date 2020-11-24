@@ -18,6 +18,8 @@ dependencies:
     - field.field.node.how_to_page.field_how_to_taxo_action_type
     - field.field.node.how_to_page.field_how_to_time
     - field.field.node.how_to_page.field_how_to_what_you_need
+    - field.field.node.how_to_page.field_intended_audience
+    - field.field.node.how_to_page.field_manage_your_account
     - field.field.node.how_to_page.field_organizations
     - field.field.node.how_to_page.field_state_organization_tax
     - node.type.how_to_page
@@ -28,6 +30,11 @@ targetEntityType: node
 bundle: how_to_page
 mode: teaser
 content:
+  extra_node_pager:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
   links:
     weight: 1
     region: content
@@ -39,6 +46,7 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  computed_log_in_links: true
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
@@ -57,5 +65,10 @@ hidden:
   field_how_to_time: true
   field_how_to_what_you_need: true
   field_intended_audience: true
+  field_manage_your_account: true
   field_organizations: true
   field_state_organization_tax: true
+  langcode: true
+  page_next: true
+  page_previous: true
+  referencing_binders: true

@@ -18,7 +18,6 @@ dependencies:
     - field.field.node.curated_list.field_related_links
     - field.field.node.curated_list.field_state_organization_tax
     - node.type.curated_list
-    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -286,6 +285,13 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  langcode:
+    type: language_select
+    weight: 2
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 100
