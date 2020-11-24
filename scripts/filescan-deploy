@@ -31,4 +31,3 @@ which terraform > /dev/null 2>&1 || {
 terraform --version | grep -q "$TFVERSION" || {
   echo "Terraform was found, but is not the right version. Please use Terraform $TFVERSION"; exit 1;
 }
-
