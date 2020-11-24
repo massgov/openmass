@@ -1,4 +1,36 @@
 
+## [0.264.0] - November 24, 2020
+
+### Added
+  - DP-19156: Exclude footer, feedback and sitewide alerts from page snippets in Google.
+  - DP-20111: Add mp4 as an allowed file extension to the Select field in the Document media type.
+
+### Fixed
+  - DP-19391: Added new iframe fields to match tableau and migrated values.
+  - DP-20086: Prevent bulk update of author from sending watch emails.
+  - DP-20499: Add override css for sticky nav positioning with admin bar.
+  - DP-20556: Alerts - "Message link" field logic fix to always control the behavior of the alert message.
+  - DP-20578: Fixes Behat XSS errors related to new rich text iframe caption field.
+
+### Changed
+  - DP-20113: Converted iframe whitelist and Header configurations to not be in code.
+  - DP-20166: Upgrade Drupal core to 8.9.
+  - DP-20518: |-
+        Updated Mayflower version to 10.2.0.
+              - DP-19391: Added raw to iframe templates. (MF)
+  - DP-20543: Added a test page that shows Tableau. visualizations in various sizes and formats.
+  - DP-20563: |-
+        Updated Mayflower version to 10.3.0.
+              - DP-19520: Specify the link color for the second unit. (MF)
+              - DP-20499: Align stikcy nav to the top of the page with screen width 780px and less. (MF)
+              - Added PNG and SVG formats for all official state seal variations stateseal.[png|svg], stateseal-color.[png|svg], stateseal-black.[png|svg], stateseal-white.[png|svg]. (MF)
+              - Changed global.scss path for static assets to point to unpkg CDN url. (MF)
+              - Changed main nav js for window resize to use addEventListener instead of undefined addEventHandler. (MF)
+              - Renamed variable names to be unique for each module file, allowing those files to be combined without conflicts for static js generation. (MF)
+              - Optimize and standardize existing state seals PNGs in assets to reduce file sizes for web usage without sacrificing qualities. (MF)
+
+
+
 
 ## [0.264.0] - November 17, 2020
 

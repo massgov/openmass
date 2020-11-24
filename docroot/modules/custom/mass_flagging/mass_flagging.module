@@ -64,7 +64,8 @@ function mass_flagging_node_insert(Node $node) {
 function mass_flagging_node_update_insert_send_notifications(Node $node) {
   // Only send notifications after a node has been published.
   // This excludes any nodes in one of multiple 'prepublished' states.
-  if (!MassModeration::isPrepublish($node)) {
+  $is_vbo = Drupal::routeMatch()->getRouteName() == 'system.batch_page.json';
+  if (!MassModeration::isPrepublish($node) && !$is_vbo) {
     $flag_service = \Drupal::service('flag');
     $watch_flag = \Drupal::entityTypeManager()
       ->getStorage('flag')

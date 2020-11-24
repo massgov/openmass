@@ -1,0 +1,34 @@
+/**
+ * Keep the admin toolbar item visible.
+ */
+.toolbar-fixed .ma__sticky-nav[data-sticky=middle] {
+  z-index: 501;
+}
+
+/**
+ * Keep the sticky nav visible under admin toolbar.
+ */
+
+@media (max-width: 780px) {
+  .toolbar-fixed .ma__sticky-nav[data-sticky=middle],
+  .toolbar-fixed.toolbar-tray-open.toolbar-vertical .ma__sticky-nav[data-sticky=middle] {
+    top: 56px;
+  }
+
+  .toolbar-fixed.toolbar-tray-open.toolbar-horizontal .ma__sticky-nav[data-sticky=middle] {
+    top: 116px;
+  }
+
+  .toolbar-fixed.toolbar-tray-open.toolbar-vertical .ma__sticky-nav[data-sticky=middle] {
+    width: calc(100% - 200px);
+    left: 200px;
+  }
+}
+
+@media (max-width: 620px) {
+  .toolbar-fixed.toolbar-tray-open.toolbar-vertical .ma__sticky-nav[data-sticky=middle] {
+    top: 55px;
+    width: calc(100% - 181.25px);
+    left: 181.25px;
+  }
+}
