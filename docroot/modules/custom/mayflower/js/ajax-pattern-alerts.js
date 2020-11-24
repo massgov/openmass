@@ -146,6 +146,9 @@
                 };
               }
             }
+            if (item.attributes.field_emergency_alert_link_type === '2') {
+              serializedAlertParagraph.link = '';
+            }
             alertParagraphData.push(serializedAlertParagraph);
           }
         });
