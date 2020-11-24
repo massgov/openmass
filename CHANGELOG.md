@@ -1,5 +1,16 @@
 
 
+## [0.264.0] - November 17, 2020
+
+### Fixed
+  - DP-19391: Added new iframe fields to match tableau and migrated values.
+  
+### Changed
+  - DP-20518: Updated Mayflower version to 10.2.0.
+      - DP-19391: Added raw to iframe templates. (MF)
+  
+
+
 ## [0.263.0] - November 10, 2020
 
 ### Fixed

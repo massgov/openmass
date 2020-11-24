@@ -8,33 +8,30 @@ dependencies:
     - field.field.paragraph.iframe.field_height
     - field.field.paragraph.iframe.field_iframe_accessibility_title
     - field.field.paragraph.iframe.field_iframe_admin_title
+    - field.field.paragraph.iframe.field_iframe_alignment
+    - field.field.paragraph.iframe.field_iframe_caption
+    - field.field.paragraph.iframe.field_iframe_display_size
+    - field.field.paragraph.iframe.field_iframe_wrapping
     - field.field.paragraph.iframe.field_media_display
     - field.field.paragraph.iframe.field_url
     - paragraphs.paragraphs_type.iframe
   module:
     - link
+    - text
 id: paragraph.iframe.media_caption_and_display
 targetEntityType: paragraph
 bundle: iframe
 mode: media_caption_and_display
 content:
-  field_caption:
-    weight: 5
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_height:
-    weight: 3
+    weight: 2
     settings:
       placeholder: ''
     third_party_settings: {  }
     type: number
     region: content
   field_iframe_accessibility_title:
-    weight: 4
+    weight: 3
     settings:
       size: 60
       placeholder: ''
@@ -49,14 +46,34 @@ content:
     third_party_settings: {  }
     type: string_textfield
     region: content
-  field_media_display:
-    weight: 1
+  field_iframe_alignment:
+    type: options_buttons
+    weight: 6
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
+  field_iframe_caption:
+    type: text_textarea
+    weight: 4
     region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_iframe_display_size:
+    type: options_select
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_iframe_wrapping:
+    type: options_buttons
+    weight: 7
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_url:
-    weight: 2
+    weight: 1
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -70,5 +87,7 @@ content:
     region: content
 hidden:
   created: true
+  field_caption: true
+  field_media_display: true
   status: true
   uid: true
