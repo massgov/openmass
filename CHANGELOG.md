@@ -8,9 +8,9 @@
 ### Fixed
   - DP-19391: Added new iframe fields to match tableau and migrated values.
   - DP-20086: Prevent bulk update of author from sending watch emails.
-  - DP-20499: Add override css for sticky nav positioning with admin bar. 
+  - DP-20499: Add override css for sticky nav positioning with admin bar.
   - DP-20556: Alerts - "Message link" field logic fix to always control the behavior of the alert message.
-  - DP-20578: Fixes Behat XSS errors related to new rich text iframe caption field
+  - DP-20578: Fixes Behat XSS errors related to new rich text iframe caption field.
 
 ### Changed
   - DP-20113: Converted iframe whitelist and Header configurations to not be in code.
@@ -18,7 +18,7 @@
   - DP-20518: |-
         Updated Mayflower version to 10.2.0.
               - DP-19391: Added raw to iframe templates. (MF)
-  - DP-20543: Added a test page that shows Tableau visualizations in various sizes and formats.
+  - DP-20543: Added a test page that shows Tableau. visualizations in various sizes and formats.
   - DP-20563: |-
         Updated Mayflower version to 10.3.0.
               - DP-19520: Specify the link color for the second unit. (MF)
