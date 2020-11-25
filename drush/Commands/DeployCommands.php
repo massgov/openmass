@@ -132,7 +132,9 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    */
   public function fs($target, array $options = ['ci-branch' => 'develop']) {
     // Prompt the user if they are sure. If they say no, exit.
-    $this->confirmProd();
+    if ($target == 'prod') {
+      $this->confirmProd();
+    }
 
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
@@ -144,6 +146,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
           'post-trigger' => FALSE,
           'webhook' => FALSE,
           'ma-fs-deploy' => TRUE,
+          'target' => $target,
         ],
       ],
     ];
