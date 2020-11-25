@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.curated_list.field_curatedlist_overview
     - field.field.node.curated_list.field_data_flag
     - field.field.node.curated_list.field_data_format
+    - field.field.node.curated_list.field_english_version
     - field.field.node.curated_list.field_intended_audience
     - field.field.node.curated_list.field_list_data_type
     - field.field.node.curated_list.field_list_directory_section
@@ -52,6 +53,7 @@ third_party_settings:
         - field_curatedlist_overview
         - field_organizations
         - langcode
+        - field_english_version
         - field_data_flag
         - field_list_data_type
         - field_data_format
@@ -164,13 +166,13 @@ content:
     type: text_textarea
     region: content
   field_data_flag:
-    weight: 9
+    weight: 10
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_data_format:
-    weight: 11
+    weight: 12
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -193,14 +195,24 @@ content:
           bundle: curated_list
     type: options_buttons
     region: content
+  field_english_version:
+    weight: 9
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
   field_intended_audience:
-    weight: 12
+    weight: 13
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_list_data_type:
-    weight: 10
+    weight: 11
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -278,7 +290,7 @@ content:
     type: link_default
     region: content
   field_state_organization_tax:
-    weight: 7
+    weight: 6
     settings:
       match_operator: CONTAINS
       size: 60
@@ -296,19 +308,19 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 11
     settings: {  }
     region: content
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -337,18 +349,18 @@ content:
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 6
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }

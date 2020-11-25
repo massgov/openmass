@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.alert.field_alert_ref_contact
     - field.field.node.alert.field_alert_related_links_5
     - field.field.node.alert.field_alert_severity
+    - field.field.node.alert.field_english_version
     - field.field.node.alert.field_organizations
     - field.field.node.alert.field_state_organization_tax
     - field.field.node.alert.field_target_organization
@@ -71,6 +72,14 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: list_default
+    region: content
+  field_english_version:
+    weight: 11
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
     region: content
   field_organizations:
     weight: 8

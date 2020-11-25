@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.info_details.field_data_resource_type
     - field.field.node.info_details.field_details_data_type
     - field.field.node.info_details.field_details_enable_fields
+    - field.field.node.info_details.field_english_version
     - field.field.node.info_details.field_footnotes
     - field.field.node.info_details.field_image_credit
     - field.field.node.info_details.field_info_detail_overview
@@ -70,6 +71,7 @@ third_party_settings:
         - field_reusable_label
         - field_organizations
         - langcode
+        - field_english_version
         - field_data_flag
         - field_details_data_type
         - field_data_format
@@ -163,13 +165,13 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_data_flag:
-    weight: 13
+    weight: 14
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_data_format:
-    weight: 15
+    weight: 16
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -193,7 +195,7 @@ content:
     type: options_buttons
     region: content
   field_data_resource_type:
-    weight: 16
+    weight: 17
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -217,7 +219,7 @@ content:
     type: options_buttons
     region: content
   field_details_data_type:
-    weight: 14
+    weight: 15
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -246,6 +248,16 @@ content:
       display_label: true
     third_party_settings: {  }
     type: boolean_checkbox
+    region: content
+  field_english_version:
+    weight: 13
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
     region: content
   field_footnotes:
     weight: 2
@@ -328,7 +340,7 @@ content:
     type: metatag_firehose
     region: content
   field_intended_audience:
-    weight: 17
+    weight: 18
     settings: {  }
     third_party_settings: {  }
     type: options_buttons

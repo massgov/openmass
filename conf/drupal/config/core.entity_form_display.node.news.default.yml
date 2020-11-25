@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.news.field_english_version
     - field.field.node.news.field_image_credit
     - field.field.node.news.field_intended_audience
     - field.field.node.news.field_news_body
@@ -135,6 +136,16 @@ targetEntityType: node
 bundle: news
 mode: default
 content:
+  field_english_version:
+    weight: 101
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
   field_image_credit:
     weight: 35
     settings:
