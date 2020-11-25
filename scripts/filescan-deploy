@@ -16,6 +16,8 @@ set -e
 
 TFVERSION="v0.12.3"
 
+ROOT_DIR="$(cd -P "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+
 AUTO_APPROVE=""
 if [[ "$2" = "--auto-approve" ]] ; then
   AUTO_APPROVE="-auto-approve"
