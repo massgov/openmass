@@ -4,11 +4,10 @@ provider "aws" {
 
 terraform {
   backend "s3" {
-    bucket               = "application-configurations"
-    key                  = "terraform/state/massgov.filescan.tfstate"
-    workspace_key_prefix = "terraform/state/workspaces"
-    region               = "us-east-1"
-    dynamodb_table       = "terraform"
+    bucket = "application-configurations"
+    key = "terraform/state/massgov.filescan.tfstate"
+    region = "us-east-1"
+    dynamodb_table = "terraform"
   }
 }
 
