@@ -35,6 +35,6 @@ terraform --version | grep -q "$TFVERSION" || {
 pushd "$ROOT_DIR/filescan"
   pushd "$ROOT_DIR/filescan/terraform"
     terraform init -upgrade
-    chamber exec tf/massgov-filescan-deployment -- terraform plan $AUTO_APPROVE
+    chamber exec tf/massgov-filescan-deployment -- terraform plan
   popd
 popd
