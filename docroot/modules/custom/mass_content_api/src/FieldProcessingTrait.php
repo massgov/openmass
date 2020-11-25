@@ -95,6 +95,7 @@ trait FieldProcessingTrait {
         $related[$dependency_status] = array_merge($related[$dependency_status], $this->traverseRelations($entity, $fields));
       }
     }
+
     return $related;
   }
 
@@ -139,10 +140,9 @@ trait FieldProcessingTrait {
     }
     else {
       foreach ($search_fields as $field) {
-        $collected[$field->getName()] = $this->collectFieldEntities($field);
+        $collected[] = $this->collectFieldEntities($field);
       }
     }
-
     return array_filter($collected);
   }
 
