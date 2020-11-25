@@ -15,6 +15,7 @@ dependencies:
     - field.field.node.campaign_landing.field_promotional_kpi_choice
     - field.field.node.campaign_landing.field_sections
     - node.type.campaign_landing
+    - workflows.workflow.campaign_landing_page
   module:
     - conditional_fields
     - content_moderation
@@ -31,6 +32,7 @@ third_party_settings:
         - title
         - field_meta_description
         - field_organizations
+        - langcode
       parent_name: group_campaign_landing_edit_form
       weight: 6
       format_type: tab
@@ -96,7 +98,8 @@ mode: default
 content:
   field_campaign_landing_metatags:
     weight: 2
-    settings: {  }
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
@@ -256,7 +259,7 @@ content:
     type: string_textfield
     region: content
   field_organizations:
-    weight: 5
+    weight: 3
     settings:
       match_operator: CONTAINS
       size: 60
@@ -292,7 +295,7 @@ content:
     region: content
   langcode:
     type: language_select
-    weight: 2
+    weight: 4
     region: content
     settings:
       include_locked: true
@@ -348,9 +351,9 @@ content:
     third_party_settings: {  }
   url_redirects:
     weight: 50
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   promote: true

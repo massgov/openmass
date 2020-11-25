@@ -22,6 +22,7 @@ dependencies:
     - field.field.node.news.field_state_organization_tax
     - image.style.thumbnail
     - node.type.news
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -44,6 +45,7 @@ third_party_settings:
         - field_news_lede
         - field_news_summary
         - field_organizations
+        - langcode
         - field_intended_audience
       parent_name: group_node_edit_form
       weight: 1
@@ -142,7 +144,7 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 8
+    weight: 9
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -212,7 +214,8 @@ content:
     region: content
   field_news_metatags:
     weight: 5
-    settings: {  }
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
@@ -309,7 +312,7 @@ content:
     region: content
   langcode:
     type: language_select
-    weight: 2
+    weight: 8
     region: content
     settings:
       include_locked: true
@@ -369,9 +372,9 @@ content:
     third_party_settings: {  }
   url_redirects:
     weight: 50
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   path: true

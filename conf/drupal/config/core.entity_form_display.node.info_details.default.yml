@@ -27,6 +27,7 @@ dependencies:
     - field.field.node.info_details.field_state_organization_tax
     - image.style.thumbnail
     - node.type.info_details
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -68,6 +69,7 @@ third_party_settings:
         - field_page_template
         - field_reusable_label
         - field_organizations
+        - langcode
         - field_data_flag
         - field_details_data_type
         - field_data_format
@@ -161,13 +163,13 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_data_flag:
-    weight: 12
+    weight: 13
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_data_format:
-    weight: 14
+    weight: 15
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -191,7 +193,7 @@ content:
     type: options_buttons
     region: content
   field_data_resource_type:
-    weight: 15
+    weight: 16
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -215,7 +217,7 @@ content:
     type: options_buttons
     region: content
   field_details_data_type:
-    weight: 13
+    weight: 14
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -326,7 +328,7 @@ content:
     type: metatag_firehose
     region: content
   field_intended_audience:
-    weight: 16
+    weight: 17
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -377,7 +379,7 @@ content:
     region: content
   langcode:
     type: language_select
-    weight: 2
+    weight: 12
     region: content
     settings:
       include_locked: true
