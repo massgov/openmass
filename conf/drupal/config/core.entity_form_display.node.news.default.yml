@@ -47,6 +47,7 @@ third_party_settings:
         - field_news_summary
         - field_organizations
         - langcode
+        - field_english_version
         - field_intended_audience
       parent_name: group_node_edit_form
       weight: 1
@@ -137,13 +138,31 @@ bundle: news
 mode: default
 content:
   field_english_version:
-    weight: 101
+    weight: 9
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        1dcbfbdf-f6f6-4055-9002-e6dd4986a8b9:
+          dependee: langcode
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: en
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: news
     type: entity_reference_autocomplete
     region: content
   field_image_credit:
@@ -155,7 +174,7 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 9
+    weight: 10
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
