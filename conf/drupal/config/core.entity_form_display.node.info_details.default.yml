@@ -256,7 +256,25 @@ content:
       match_limit: 10
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        02672ac6-949c-49a0-aa62-d386fcf45dd1:
+          dependee: langcode
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: English
+            value_form:
+              -
+                value: en
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: info_details
     type: entity_reference_autocomplete
     region: content
   field_footnotes:

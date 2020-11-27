@@ -134,7 +134,25 @@ content:
       match_limit: 10
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        0b90cc3c-979b-491e-b627-79a7affbd52a:
+          dependee: langcode
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: en
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: alert
     type: entity_reference_autocomplete
     region: content
   field_organizations:
