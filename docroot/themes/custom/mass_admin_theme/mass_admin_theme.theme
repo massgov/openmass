@@ -342,3 +342,45 @@ function mass_admin_theme_preprocess_views_view__redirect(&$variables) {
   }
 
 }
+
+/**
+ * Implements hook_preprocess_input__submit(array &$variables).
+ */
+function mass_admin_theme_preprocess_input__submit(array &$variables) {
+  $attr_value = &$variables['attributes']['value'];
+
+  // Hide "Add media" button from selection of existing files since it is
+  // replaced by "Select Entities" button.
+  if (!is_string($attr_value) && $attr_value->getUntranslatedString() == 'Add @type_singular') {
+    if (!empty($attr_value->getArguments()['@type_singular']) &&
+      strpos($attr_value->getArguments()['@type_singular']->getUntranslatedString(), "media") !== FALSE) {
+      $needles = [
+        "field-service-detail-sections",
+        "field-video",
+        "field-info-details-sections",
+        "field-executive-order-downloads",
+        "field-regulation-download",
+        "field-rules-download",
+        "field-decision-download",
+        "field-advisory-download",
+        "field-curatedlist-list-section",
+        "field-binder-appendix",
+        "field-downloads",
+        "field-event-minutes-download",
+        "field-event-ref-downloads",
+        "field-event-agenda-download",
+        "field-how-to-next-steps",
+        "field-how-to-files",
+        "field-location-details-sections",
+        "field-guide-page-sections",
+        "field-service-video",
+        "field-service-file"
+      ];
+      foreach ($needles as $needle) {
+        if (strpos($variables['attributes']['id'], $needle) !== FALSE) {
+          $variables['attributes']['class'][] = 'visually-hidden';
+        }
+      }
+    }
+  }
+}
