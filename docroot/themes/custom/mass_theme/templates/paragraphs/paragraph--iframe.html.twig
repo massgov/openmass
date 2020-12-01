@@ -36,13 +36,24 @@
  * @ingroup themeable
  */
 #}
-{% include "@atoms/09-media/iframe.twig" with {
-  "iframe": {
-    "src": paragraph.field_url.uri,
-    "title": paragraph.field_iframe_accessibility_title.value,
-    "height": paragraph.field_height.value,
-    "position": paragraph.field_media_display.value,
-    "caption": paragraph.field_caption.value
+{% set caption = {
+  '#type':   'processed_text',
+  '#text':    paragraph.field_iframe_caption.value,
+  '#format':  paragraph.field_iframe_caption.format,
+} %}
+
+{% include "@atoms/09-media/figure--iframe.twig" with {
+  "figure": {
+    "align": paragraph.field_iframe_alignment.value,
+    "wrap": paragraph.field_iframe_wrapping.value ? TRUE : FALSE,
+    "size": paragraph.field_iframe_display_size.value,
+    "iframe": {
+      "src": paragraph.field_url.uri,
+      "title": paragraph.field_iframe_accessibility_title.value,
+      "height": paragraph.field_height.value,
+      "position": paragraph.field_iframe_display_size.value,
+      "caption": caption
+    }
   }
 } %}
 {{ content }}

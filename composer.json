@@ -103,39 +103,40 @@
         "drupal/allowed_formats": "^1.1",
         "drupal/auto_entitylabel": "^3",
         "drupal/autologout": "^1",
-        "drupal/cache_metrics": "^1",
+        "drupal/cache_metrics": "^2",
         "drupal/clamav": "^1.0",
         "drupal/cloudflare": "^1.0@alpha",
         "drupal/components": "^1",
-        "drupal/composer_deploy": "^1",
+        "drupal/composer_deploy": "^1.4",
         "drupal/conditional_fields": "1.x-dev",
+        "drupal/config_filter": "^2.2",
+        "drupal/config_ignore": "2.x-dev",
         "drupal/config_log": "^1",
-        "drupal/content_export_yaml": "2.5",
-        "drupal/core-composer-scaffold": "~8.8.8",
-        "drupal/core-recommended": "~8.8.8",
+        "drupal/core-composer-scaffold": "~8.9.8",
+        "drupal/core-recommended": "~8.9.8",
         "drupal/csv_serialization": "^1",
         "drupal/datalayer": "^1",
         "drupal/devel": "^4",
         "drupal/devel_entity_updates": "^3.0",
         "drupal/diff": "1.x-dev",
-        "drupal/docson": "^1.0",
         "drupal/draggableviews": "1.x-dev",
         "drupal/dynamic_entity_reference": "^1.5",
         "drupal/encrypt": "^3",
+        "drupal/entity": "1.0.0-rc3",
         "drupal/entity_browser": "^2",
         "drupal/entity_reference_revisions": "^1.7",
         "drupal/field_group": "^1.0@RC",
         "drupal/field_tokens": "^1.0@beta",
         "drupal/file_browser": "^1",
         "drupal/flag": "4.x-dev#468d1e0d1ecb7070525ac3924596cb939d825034",
-        "drupal/flood_unblock": "^1",
+        "drupal/flood_unblock": "^3",
         "drupal/focal_point": "^1.0@beta",
         "drupal/ga_login": "1.0.0-alpha4",
         "drupal/geocoder": "^3",
         "drupal/geofield": "^1",
         "drupal/google_map_field": "^1",
-        "drupal/handy_cache_tags": "^1.0@alpha",
-        "drupal/http_response_headers": "^2.0@alpha",
+        "drupal/handy_cache_tags": "^1",
+        "drupal/http_response_headers": "^2",
         "drupal/imagick": "^1",
         "drupal/inline_entity_form": "1.x-dev",
         "drupal/jsonapi_page_limit": "^1",
@@ -145,8 +146,6 @@
         "drupal/linkit": "^6",
         "drupal/mandrill": "^1",
         "drupal/maxlength": "^1.0@beta",
-        "drupal/media_entity": "2.0-beta3",
-        "drupal/media_entity_actions": "^1.0@alpha",
         "drupal/media_entity_download": "^2.0.0",
         "drupal/memcache": "^2",
         "drupal/metatag": "^1",
@@ -164,8 +163,8 @@
         "drupal/pathologic": "1.x-dev#4f9f3fdcf1e0b224c4d8650e383a769f40abf9bf",
         "drupal/prepopulate": "^2.0@alpha",
         "drupal/private_files_download_permission": "^3",
-        "drupal/purge": "^3.0@beta",
-        "drupal/purge_queues": "^1.0",
+        "drupal/purge": "^3",
+        "drupal/purge_queues": "^1",
         "drupal/quick_node_clone": "^1.11",
         "drupal/rabbit_hole": "^1",
         "drupal/real_aes": "^2",
@@ -181,11 +180,10 @@
         "drupal/stage_file_proxy": "^1.0@alpha",
         "drupal/subpathauto": "^1",
         "drupal/tfa": "1.0.0-alpha4",
-        "drupal/tour_ui": "^1.0",
         "drupal/twig_field_value": "^1",
         "drupal/twig_tweak": "^1",
         "drupal/upgrade_rector": "^1",
-        "drupal/upgrade_status": "^2",
+        "drupal/upgrade_status": "^3",
         "drupal/username_enumeration_prevention": "^1",
         "drupal/video_embed_field": "^2.0",
         "drupal/view_mode_page": "^3.1",
@@ -196,7 +194,7 @@
         "drush/drush": "^10",
         "enyo/dropzone": "4.3.0",
         "geocoder-php/open-cage-provider": "^4.4",
-        "massgov/mayflower-artifacts": "10.1.0",
+        "massgov/mayflower-artifacts": "10.3.0",
         "mikeyp/google_tag": "dev-8.x-1.x#3caa4f0b7f008576936ab7501d483bfcf58a4764",
         "phlak/semver": "^2.0",
         "phpunit/phpunit": "^6",
@@ -260,9 +258,8 @@
         "patches": {
             "drupal/core": {
                 "Don't break if telephone number is less than 6 digits. (https://www.drupal.org/node/2575577#comment-11750724)": "https://www.drupal.org/files/issues/2575577-11.patch",
-                "Link autocomplete content type filter": "https://www.drupal.org/files/issues/2019-05-28/link-autocomplete-ct-filter-2887376-39-8.7.x.patch",
+                "Link autocomplete content type filter": "https://www.drupal.org/files/issues/2020-10-27/link-autocomplete-ct-filter-2887376-43-8.9.x.patch",
                 "Fix config-import when uninstalling a theme": "https://www.drupal.org/files/issues/2018-04-04/2958649-1.patch",
-                "Fix a 500 error with the pfdp file download": "patches/DP-9479-error-pfdp-file-download.patch",
                 "Remove final from a class in order to inherit from it": "patches/DP-11721-jsonapi-serializer.patch",
                 "Remove type hint which allows usage in combination with workbench_moderation": "patches/jsonapi-2.3.0-no-type-hint.patch",
                 "Fix batch error on Cloudflare (https://www.drupal.org/node/2879023)": "https://www.drupal.org/files/issues/2019-06-06/2879023-26.patch",
@@ -289,7 +286,8 @@
             },
             "drupal/field_group": {
                 "Provide page level error messaging when publishing validation is not met": "https://www.drupal.org/files/issues/field_group-validation-2787179-9.patch",
-                "Large amount of fields causes tab functionality to break": "https://www.drupal.org/files/issues/2019-03-28/large-amount-fields-3044224-2.patch"
+                "Large amount of fields causes tab functionality to break": "https://www.drupal.org/files/issues/2019-03-28/large-amount-fields-3044224-2.patch",
+                "Fixes an issue with missing horizontal tab titles (https://www.drupal.org/project/field_group/issues/3104205)": "patches/DP-20166_fix-missings-horizontal-tab-titles.patch"
             },
             "drupal/inline_entity_form": {
                 "Fixes field label when a new entity is created inline (https://www.drupal.org/project/inline_entity_form/issues/2842744)": "https://www.drupal.org/files/issues/inline_entity_form-no_label_required_field_with_no_entries-2842744.patch",
@@ -303,9 +301,6 @@
             },
             "drupal/media": {
                 "Add index to media changed field (https://www.drupal.org/node/2944569)": "patches/DP-7726_media_changed_index.patch"
-            },
-            "drupal/media_entity_actions": {
-                "Provide an upgrade path to core (https://www.drupal.org/project/media_entity_actions/issues/2998468#comment-13681602)": "https://www.drupal.org/files/issues/2020-06-10/2998468-15.patch"
             },
             "drupal/media_entity_download": {
                 "CKeditor Plugin - using a combined patch to avoid conflict (https://www.drupal.org/node/2928318)": "https://www.drupal.org/files/issues/media_entity_download-ckeditor_plugin-2928318-11-d8.patch"
@@ -340,6 +335,7 @@
                 "2979426 - Ensures per-content type permissions are respected": "https://www.drupal.org/files/issues/2019-08-16/quick_node_clone-permissions_not_respected-2979426-13.patch"
             }
         },
-        "composer-exit-on-patch-failure": true
+        "composer-exit-on-patch-failure": true,
+        "composer-version": "^1"
     }
 }
