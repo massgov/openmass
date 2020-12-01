@@ -69,15 +69,16 @@ trait FieldProcessingTrait {
    * listed field and any values collected are collected at face-value.
    * The presence of the '>' character presents two (2) use-cases. In the first
    * use-case we may append a second field immediately following the '>'
-   * character. This will signify the traversal of the first field UNTIL we reach
-   * the second. Upon reaching the second we collect it and only it.
+   * character. This will signify the traversal of the first field UNTIL we
+   * reach the second. Upon reaching the second we collect it and only it.
    * In the second use-case we append an asterisk (*) to the '>' character. This
    * Allows us to tell the _fetchRelations() method to traverse the first field
    * entirely. And collect all the link and entity reference fields it finds at
    * the end.
    * A Note: This WILL NOT traverse into node, media, etc. entity types for risk
    * of creating recursive reference loops from an entity to itself. We stop
-   * traversal at entity references but allow them to continue through paragraphs.
+   * traversal at entity references but allow them to continue through
+   * paragraphs.
    *
    * @param \Drupal\Core\Entity\ContentEntityInterface $entity
    *   The entity to execute traversal on.
@@ -133,8 +134,7 @@ trait FieldProcessingTrait {
     else {
       $search_fields = [];
     }
-
-
+    
     // If we have a spec left to follow, recurse into children.
     if ($spec) {
       foreach ($search_fields as $field) {
