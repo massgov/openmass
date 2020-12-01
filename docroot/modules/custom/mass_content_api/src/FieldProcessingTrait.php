@@ -94,8 +94,8 @@ trait FieldProcessingTrait {
       $related[$dependency_status] = [];
       foreach ($field_sets as $fields) {
         $related[$dependency_status] = array_merge($related[$dependency_status], $this->traverseRelations($entity, $fields));
-        $this->collected = [];
       }
+      $this->collected = [];
     }
 
     return $related;
