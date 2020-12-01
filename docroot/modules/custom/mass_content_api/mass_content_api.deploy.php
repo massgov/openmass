@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Implementations of hook_deploy_NAME() for Mass Content API.
+ */
+
+/**
  * Queue campaign_landing nodes to be saved.
  *
  * Updating campaign_landing content type with linking pages.
