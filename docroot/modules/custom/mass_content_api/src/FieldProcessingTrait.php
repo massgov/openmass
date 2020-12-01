@@ -93,11 +93,19 @@ trait FieldProcessingTrait {
       $related[$dependency_status] = [];
       foreach ($field_sets as $fields) {
         $related[$dependency_status] = array_merge($related[$dependency_status], $this->traverseRelations($entity, $fields));
+        $this->collected = [];
       }
     }
 
     return $related;
   }
+
+  /**
+   * Used to store result from traverseRelations recursive function.
+   *
+   * @var array
+   */
+  private $collected = [];
 
   /**
    * Given a single entity and a single spec, follow the spec and fetch relations.
@@ -126,24 +134,32 @@ trait FieldProcessingTrait {
       $search_fields = [];
     }
 
-    $collected = [];
 
     // If we have a spec left to follow, recurse into children.
     if ($spec) {
       foreach ($search_fields as $field) {
         if ($field instanceof EntityReferenceFieldItemListInterface) {
           foreach ($field->referencedEntities() as $referenced) {
-            $collected = array_merge_recursive($collected, $this->traverseRelations($referenced, $spec));
+            $this->collected = array_merge_recursive($this->collected, $this->traverseRelations($referenced, $spec));
           }
         }
       }
     }
     else {
       foreach ($search_fields as $field) {
-        $collected[] = $this->collectFieldEntities($field);
+        $this->collected[] = $this->collectFieldEntities($field);
       }
     }
-    return array_filter($collected);
+    foreach ($this->collected as $col) {
+      foreach ($col as $c) {
+        $new[$c['field_name']][$c['id']] = $c;
+      }
+    }
+
+    if (isset($new)) {
+      $this->collected = $new;
+    }
+    return array_filter($this->collected);
   }
 
   /**
@@ -165,9 +181,11 @@ trait FieldProcessingTrait {
    */
   private function collectFieldEntities(FieldItemListInterface $field_entity) {
     $collected = [];
+
     if (!empty($field_entity->getFieldDefinition())) {
       $field_label = $field_entity->getFieldDefinition()->getLabel();
     }
+    $field_name = $field_entity->getName();
     if ($field_entity instanceof EntityReferenceFieldItemListInterface) {
       // If we can extract entity type and ID without loading up the child,
       // do it. If this results in deleted/unpublished entities ending up in the
@@ -179,6 +197,7 @@ trait FieldProcessingTrait {
             'id' => $child_id,
             'entity' => $child_entity_type,
             'field_label' => $field_label ?? '',
+            'field_name' => $field_name ?? '',
           ];
         }
       }
@@ -188,6 +207,7 @@ trait FieldProcessingTrait {
             'id' => $child->id(),
             'entity' => $child->getEntityTypeId(),
             'field_label' => $field_label ?? '',
+            'field_name' => $field_name ?? '',
           ];
         }
       }
@@ -201,6 +221,7 @@ trait FieldProcessingTrait {
               'id' => $matches[1],
               'entity' => 'node',
               'field_label' => $field_label ?? '',
+              'field_name' => $field_name ?? '',
             ];
           }
         }
