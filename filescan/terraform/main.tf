@@ -24,7 +24,7 @@ resource "aws_s3_bucket_public_access_block" "av_definitions_bucket" {
   restrict_public_buckets = true
 }
 
-data "aws_iam_policy_document" "bucket_antivirus_update_role" {
+data "aws_iam_policy_document" "av_definitions_bucket_update_role" {
   statement {
     actions = ["sts:AssumeRole"]
 
@@ -35,7 +35,7 @@ data "aws_iam_policy_document" "bucket_antivirus_update_role" {
   }
 }
 
-data "aws_iam_policy_document" "bucket_antivirus_update_policy" {
+data "aws_iam_policy_document" "av_definitions_bucket_update_policy" {
   statement {
     effect = "Allow"
 
@@ -78,30 +78,30 @@ data "aws_iam_policy_document" "bucket_antivirus_update_policy" {
   }
 }
 
-resource "aws_iam_policy" "bucket_antivirus_update" {
-  name     = "${var.name_prefix}-bucket-antivirus-update-policy"
-  policy   = data.aws_iam_policy_document.bucket_antivirus_update_policy.json
+resource "aws_iam_policy" "av_definitions_bucket_update" {
+  name   = "${var.name_prefix}-bucket-antivirus-update-policy"
+  policy = data.aws_iam_policy_document.av_definitions_bucket_update_policy.json
 }
 
-resource "aws_iam_role" "bucket_antivirus_update" {
+resource "aws_iam_role" "av_definitions_bucket_update" {
   name               = "${var.name_prefix}-bucket-antivirus-update-role"
-  assume_role_policy = data.aws_iam_policy_document.bucket_antivirus_update_role.json
+  assume_role_policy = data.aws_iam_policy_document.av_definitions_bucket_update_role.json
 }
 
-resource "aws_iam_role_policy_attachment" "bucket_antivirus_update" {
-  role       = aws_iam_role.bucket_antivirus_update.name
-  policy_arn = aws_iam_policy.bucket_antivirus_update.arn
+resource "aws_iam_role_policy_attachment" "av_definitions_bucket_update" {
+  role       = aws_iam_role.av_definitions_bucket_update.name
+  policy_arn = aws_iam_policy.av_definitions_bucket_update.arn
 }
 
-module "clamav_definition_update" {
-  source          = "github.com/massgov/mds-terraform-common//lambda?ref=1.0.19"
-  package         = "${path.module}/../dist/lambda.zip"
-  name            = "${var.name_prefix}-bucket-antivirus-update"
-  human_name      = "Mass.gov file scanning ClamAV definition update"
-  runtime         = "python3.7"
-  memory_size     = 1024
-  timeout         = 300
-  handler         = "update.lambda_handler"
+module "av_definitions_bucket_update_lambda" {
+  source      = "github.com/massgov/mds-terraform-common//lambda?ref=1.0.19"
+  package     = "${path.module}/../dist/lambda.zip"
+  name        = "${var.name_prefix}-bucket-antivirus-update"
+  human_name  = "Mass.gov file scanning ClamAV definition update"
+  runtime     = "python3.7"
+  memory_size = 1024
+  timeout     = 300
+  handler     = "update.lambda_handler"
   environment = {
     variables = {
       AV_DEFINITION_S3_BUCKET = aws_s3_bucket.av_definitions_bucket.bucket
@@ -116,16 +116,16 @@ resource "aws_cloudwatch_event_rule" "every_three_hours" {
   schedule_expression = "rate(3 hours)"
 }
 
-resource "aws_cloudwatch_event_target" "check_foo_every_one_minute" {
+resource "aws_cloudwatch_event_target" "check_av_every_three_hours" {
   rule      = aws_cloudwatch_event_rule.every_three_hours.name
   target_id = "lambda"
-  arn       = module.clamav_definition_update.function_arn
+  arn       = module.av_definitions_bucket_update_lambda.function_arn
 }
 
-resource "aws_lambda_permission" "allow_cloudwatch_to_call_check_foo" {
+resource "aws_lambda_permission" "allow_cloudwatch_to_call_check_av" {
   statement_id  = "AllowExecutionFromCloudWatch"
   action        = "lambda:InvokeFunction"
-  function_name = module.clamav_definition_update.function_name
+  function_name = module.av_definitions_bucket_update_lambda.function_name
   principal     = "events.amazonaws.com"
   source_arn    = aws_cloudwatch_event_rule.every_three_hours.arn
 }
