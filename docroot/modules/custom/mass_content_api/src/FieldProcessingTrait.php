@@ -134,7 +134,7 @@ trait FieldProcessingTrait {
     else {
       $search_fields = [];
     }
-    
+
     // If we have a spec left to follow, recurse into children.
     if ($spec) {
       foreach ($search_fields as $field) {
