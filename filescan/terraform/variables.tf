@@ -1,3 +1,8 @@
+variable "name_prefix" {
+  type = string
+  default = "massgov-filescan"
+}
+
 variable "av_definitions_bucket_name" {
   type = string
   default = "clamav-definitions.digital.mass.gov"
