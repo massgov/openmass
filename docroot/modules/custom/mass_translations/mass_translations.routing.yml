@@ -1,0 +1,18 @@
+mass_translations.translations:
+  path: '/node/{node}/translations'
+  defaults:
+    _controller: '\Drupal\mass_translations\Controller\TranslationsController::content'
+    _title: 'Translations'
+  options:
+    _node_operation_route: TRUE
+  requirements:
+    _permission: 'view Translations tab'
+mass_translations.media_translations:
+  path: '/media/{media}/translations'
+  defaults:
+    _controller: '\Drupal\mass_translations\Controller\MediaTranslationsController::content'
+    _title: 'Translations'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'view Translations tab'
