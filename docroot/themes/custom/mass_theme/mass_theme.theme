@@ -6361,7 +6361,9 @@ function mass_theme_preprocess_media_document(array &$variables) {
 function media_file_changed_time(MediaInterface $entity, $field_name) {
   $file = $entity->{$field_name}->entity;
   if (!$file instanceof File) {
-    throw new FileNotFoundException('Media bundle is missing file for media entity: ' . $entity->label() . "(" . $entity->id() . ")");
+    if ((!isset($_ENV['AH_SITE_ENVIRONMENT']) || $_ENV['AH_SITE_ENVIRONMENT'] == 'prod')) {
+      throw new FileNotFoundException('Media bundle is missing file for media entity: ' . $entity->label() . "(" . $entity->id() . ")");
+    }
   }
   return DrupalDateTime::createFromTimestamp($entity->{$field_name}->entity->getChangedTime())->format('Y-m-d');
 }
