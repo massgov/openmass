@@ -5,7 +5,7 @@ namespace Drupal\mass_translations\Controller;
 use Drupal\Core\Controller\ControllerBase;
 
 /**
- * Class MediaImpactController.
+ * Class MediaTranslationsController.
  *
  * @package Drupal\mass_translations\Controller
  */

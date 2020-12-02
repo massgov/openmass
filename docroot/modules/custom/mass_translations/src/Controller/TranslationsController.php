@@ -5,11 +5,10 @@ namespace Drupal\mass_translations\Controller;
 use Drupal\Core\Controller\ControllerBase;
 
 /**
- * Class ImpactController.
+ * Class TranslationsController.
  *
  * @package Drupal\mass_translations\Controller
  */
-
 class TranslationsController extends ControllerBase {
 
   public function content() {
