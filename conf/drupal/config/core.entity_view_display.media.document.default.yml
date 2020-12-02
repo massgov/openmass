@@ -29,6 +29,7 @@ dependencies:
     - field.field.media.document.field_license
     - field.field.media.document.field_link_classic_massgov
     - field.field.media.document.field_link_related_content
+    - field.field.media.document.field_media_english_version
     - field.field.media.document.field_oclc_number
     - field.field.media.document.field_organizations
     - field.field.media.document.field_other_license_url
@@ -109,6 +110,15 @@ content:
       link: false
     third_party_settings: {  }
     type: entity_reference_label
+    region: content
+  field_media_english_version:
+    type: entity_reference_entity_view
+    weight: 101
+    label: above
+    settings:
+      view_mode: default
+      link: false
+    third_party_settings: {  }
     region: content
   field_organizations:
     weight: 5

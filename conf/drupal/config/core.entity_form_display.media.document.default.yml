@@ -29,6 +29,7 @@ dependencies:
     - field.field.media.document.field_license
     - field.field.media.document.field_link_classic_massgov
     - field.field.media.document.field_link_related_content
+    - field.field.media.document.field_media_english_version
     - field.field.media.document.field_oclc_number
     - field.field.media.document.field_organizations
     - field.field.media.document.field_other_license_url
@@ -43,6 +44,7 @@ dependencies:
     - field.field.media.document.field_title
     - field.field.media.document.field_upload_file
     - media.type.document
+    - workflows.workflow.media_states
   module:
     - content_moderation
     - datetime
@@ -87,6 +89,7 @@ third_party_settings:
         - field_alternative_title
         - field_geographic_area
         - field_language
+        - field_media_english_version
         - field_content_type
         - field_subjects
         - field_additional_info
@@ -156,6 +159,8 @@ content:
       placeholder: ''
       key_label: Key
       value_label: Value
+      description_label: Description
+      description_rows: 5
     third_party_settings: {  }
     type: key_value_textfield
     region: content
@@ -174,7 +179,7 @@ content:
     type: options_select
     region: content
   field_checksum:
-    weight: 53
+    weight: 52
     settings:
       size: 60
       placeholder: ''
@@ -182,7 +187,7 @@ content:
     type: string_textfield
     region: content
   field_conform:
-    weight: 47
+    weight: 46
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -228,7 +233,7 @@ content:
     type: entity_reference_autocomplete_tags
     region: content
   field_data_dictionary:
-    weight: 54
+    weight: 53
     settings:
       rows: 5
       placeholder: ''
@@ -236,7 +241,7 @@ content:
     type: text_textarea
     region: content
   field_data_quality:
-    weight: 48
+    weight: 47
     settings:
       display_label: true
     third_party_settings: {  }
@@ -281,7 +286,7 @@ content:
     type: datetime_default
     region: content
   field_file_migration_id:
-    weight: 51
+    weight: 50
     settings:
       size: 60
       placeholder: ''
@@ -324,7 +329,7 @@ content:
     type: options_select
     region: content
   field_link_classic_massgov:
-    weight: 52
+    weight: 51
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -339,8 +344,18 @@ content:
     third_party_settings: {  }
     type: link_default
     region: content
+  field_media_english_version:
+    weight: 38
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
   field_oclc_number:
-    weight: 50
+    weight: 49
     settings:
       size: 60
       placeholder: ''
@@ -374,7 +389,7 @@ content:
     type: options_select
     region: content
   field_rights:
-    weight: 46
+    weight: 45
     settings:
       size: 60
       placeholder: ''
@@ -398,7 +413,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_system_of_records:
-    weight: 49
+    weight: 48
     settings:
       placeholder_url: ''
       placeholder_title: ''
