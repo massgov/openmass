@@ -6292,14 +6292,11 @@ function mass_theme_preprocess_media_document(array &$variables) {
     $list_table_rows = [];
 
     // Get the attached file from the media entity.
-    try {
+    if ($media_file_changed_time = media_file_changed_time($media, 'field_upload_file')) {
       $list_table_rows[] = [
         'label' => 'Last Updated:',
-        'text' => media_file_changed_time($media, 'field_upload_file'),
+        'text' => $media_file_changed_time,
       ];
-    }
-    catch (FileNotFoundException $e) {
-      \Drupal::logger('media.documents')->error($e->getMessage());
     }
 
     $creator = $media->field_creator->entity;
@@ -6355,15 +6352,15 @@ function mass_theme_preprocess_media_document(array &$variables) {
  *
  * @return string
  *   Date formatted Y-m-d for the file last changed date.
- *
- * @throws \FileNotFoundException
  */
 function media_file_changed_time(MediaInterface $entity, $field_name) {
   $file = $entity->{$field_name}->entity;
   if (!$file instanceof File) {
-    if ((!isset($_ENV['AH_SITE_ENVIRONMENT']) || $_ENV['AH_SITE_ENVIRONMENT'] == 'prod')) {
-      throw new FileNotFoundException('Media bundle is missing file for media entity: ' . $entity->label() . "(" . $entity->id() . ")");
-    }
+    \Drupal::logger('media.documents')->error('Media bundle is missing file for media entity: @entity_label (@entity_id)', [
+      '@entity_label' => $entity->label(),
+      '@entity_id' => $entity->id(),
+    ]);
+    return '';
   }
   return DrupalDateTime::createFromTimestamp($entity->{$field_name}->entity->getChangedTime())->format('Y-m-d');
 }
