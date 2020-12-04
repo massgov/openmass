@@ -1,4 +1,14 @@
 
+
+## [0.265.0] - December 1, 2020
+
+### Security
+  - DP-20592: Drupal core security update to version 8.9.10.
+  
+### Fixed
+  - DP-19553: Authoring experience improved when adding existing media as download.
+  
+
 ## [0.264.0] - November 24, 2020
 
 ### Added
