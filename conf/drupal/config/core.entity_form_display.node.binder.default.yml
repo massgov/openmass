@@ -24,6 +24,7 @@ dependencies:
     - field.field.node.binder.field_state_organization_tax
     - image.style.thumbnail
     - node.type.binder
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -150,8 +151,9 @@ content:
     type: datetime_default
     region: content
   field_binder_metatags:
-    weight: 6
-    settings: {  }
+    weight: 5
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
@@ -249,6 +251,8 @@ content:
       collapsible: false
       collapsed: false
       allow_duplicate: false
+      revision: false
+      allow_edit: true
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
@@ -281,7 +285,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_state_organization_tax:
-    weight: 7
+    weight: 6
     settings:
       match_operator: CONTAINS
       size: 60
@@ -290,33 +294,26 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  langcode:
-    type: language_select
-    weight: 2
-    region: content
-    settings:
-      include_locked: true
-    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 10
     settings: {  }
     region: content
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 4
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 3
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -340,23 +337,24 @@ content:
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 9
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
+  langcode: true
   path: true
   promote: true
   status: true

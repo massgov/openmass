@@ -20,6 +20,7 @@ dependencies:
     - field.field.node.stacked_layout.field_topic_callout_links
     - field.field.node.stacked_layout.field_use_alt_header
     - node.type.stacked_layout
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - entity_browser
@@ -181,7 +182,7 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 121
+    weight: 13
     settings: {  }
     third_party_settings: {  }
     type: options_select
@@ -204,12 +205,13 @@ content:
     region: content
   field_metatags:
     weight: 6
-    settings: {  }
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
   field_organizations:
-    weight: 120
+    weight: 12
     settings:
       match_operator: CONTAINS
       size: 60
@@ -228,6 +230,7 @@ content:
       selection_mode: selection_append
       preview_image_style: thumbnail
       view_mode: default
+      field_widget_replace: false
     third_party_settings: {  }
     type: entity_browser_file
     region: content
@@ -266,16 +269,9 @@ content:
     third_party_settings: {  }
     type: boolean_checkbox
     region: content
-  langcode:
-    type: language_select
-    weight: 2
-    region: content
-    settings:
-      include_locked: true
-    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 11
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -287,7 +283,7 @@ content:
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -322,17 +318,18 @@ content:
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 10
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
+  langcode: true
   path: true
   promote: true
   status: true
