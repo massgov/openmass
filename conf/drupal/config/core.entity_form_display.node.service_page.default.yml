@@ -9,6 +9,11 @@ dependencies:
     - field.field.node.service_page.field_event_quantity
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
+    - field.field.node.service_page.field_kpi_application_starts
+    - field.field.node.service_page.field_kpi_application_submits
+    - field.field.node.service_page.field_kpi_clicks_to_paid_leave
+    - field.field.node.service_page.field_kpi_pct_task_completion
+    - field.field.node.service_page.field_kpi_time_start_submit
     - field.field.node.service_page.field_link_group
     - field.field.node.service_page.field_list_data_type
     - field.field.node.service_page.field_location_button_label
@@ -205,6 +210,11 @@ third_party_settings:
     group_key_performance_indicators:
       children:
         - field_service_kpi_choice
+        - field_kpi_application_starts
+        - field_kpi_application_submits
+        - field_kpi_clicks_to_paid_leave
+        - field_kpi_time_start_submit
+        - field_kpi_pct_task_completion
       parent_name: group_service_edit_form
       weight: 25
       format_type: tab
@@ -293,6 +303,131 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
+    region: content
+  field_kpi_application_starts:
+    weight: 52
+    settings:
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        eb402bee-6943-4fb1-9ebc-d9ec45fc1a2a:
+          dependee: field_service_kpi_choice
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: application_starts
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: number
+    region: content
+  field_kpi_application_submits:
+    weight: 53
+    settings:
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        adf15154-e5b6-4440-b116-604144e189fd:
+          dependee: field_service_kpi_choice
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: application_submits
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: number
+    region: content
+  field_kpi_clicks_to_paid_leave:
+    weight: 54
+    settings:
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        614f1fa0-18b9-4869-bac0-bb1722af03f4:
+          dependee: field_service_kpi_choice
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: clicks_to_paidleave
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: number
+    region: content
+  field_kpi_pct_task_completion:
+    weight: 56
+    settings:
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        8aad5ad6-9881-4b58-b379-133649c795f0:
+          dependee: field_service_kpi_choice
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: task_completion_rate
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: number
+    region: content
+  field_kpi_time_start_submit:
+    weight: 55
+    settings:
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        f3c74842-e41d-429b-bbe9-84f50c84c915:
+          dependee: field_service_kpi_choice
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: time_between_start_submit
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: service_page
+    type: number
     region: content
   field_link_group:
     type: entity_reference_paragraphs
@@ -533,7 +668,8 @@ content:
   field_service_kpi_choice:
     weight: 51
     settings: {  }
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields: {  }
     type: options_buttons
     region: content
   field_service_lede:
