@@ -1,0 +1,32 @@
+uuid: 7c5812d0-00d9-4360-9cbc-e01810a14c72
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.caspio_embed.field_caspio_admin_title
+    - field.field.paragraph.caspio_embed.field_caspio_data_identifier
+    - paragraphs.paragraphs_type.caspio_embed
+id: paragraph.caspio_embed.default
+targetEntityType: paragraph
+bundle: caspio_embed
+mode: default
+content:
+  field_caspio_admin_title:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_caspio_data_identifier:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
