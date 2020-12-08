@@ -40,20 +40,38 @@
  * @ingroup themeable
  */
 #}
+{{ dump(content) }}
+{# {{ content.field_caspio_data_identifier }} #}
 
-<h3 style="color: orange;">CASPIO OUTPUT</h3>
+{# {% set caspio-id = content.field_caspio_data_identifier|field_value %} #}
 
-{# {{ vardumper(content) }} #}
+{# <script type="text/javascript" src="https://c0hbc136.caspio.com/dp/{{ content.field_caspio_data_identifier | field_value }}/emb"></script> #}
+
+{# <div class="cxkg">
+<a href="https://c0hbc136.caspio.com/dp/{{ content.field_caspio_data_identifier | field_value }}">View data</a>
 
 
-
-{# <script type="text/javascript" src="https://c0hbc136.caspio.com/dp/{{ field_value }}/emb"></script>
-<div class="cxkg">
-  <a href="https://c0hbc136.caspio.com/dp/{{ field_value }}">View data</a>
 </div> #}
 
 
-{{ content }}
+
+{# <script type="text/javascript" src="https://c0hbc136.caspio.com/dp/ad9b8000ca904cde54994a1c98ed/emb"></script>
+<div class="cxkg">
+	<a href="https://c0hbc136.caspio.com/dp/ad9b8000ca904cde54994a1c98ed">View data</a>
+</div>
+
+<script type="text/javascript" src="https://c0hbc136.caspio.com/dp/ad9b8000a2f69eb5f1b844a6a1bb/emb"></script>
+<div class="cxkg">
+	<a href="https://c0hbc136.caspio.com/dp/ad9b8000a2f69eb5f1b844a6a1bb">View data</a>
+</div>
+
+<script type="text/javascript" src="https://c0hbc136.caspio.com/dp/ad9b800013fd69aa4b7446efa939/emb"></script>
+<div class="cxkg">
+	<a href="https://c0hbc136.caspio.com/dp/ad9b800013fd69aa4b7446efa939">View data</a>
+</div> #}
+
+
+
 {# {% include "@atoms/09-media/figure--dataviz.twig" with {
   "figure": {
     "align": content.field_tabl_alignment["#items"][0].value,
