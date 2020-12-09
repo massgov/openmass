@@ -1583,3 +1583,22 @@ function mass_validation_form_node_info_details_edit_form_alter(&$form, FormStat
 function mass_validation_form_node_info_details_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['field_page_template']['widget']['#options']['_none'] = 'Information details';
 }
+
+/**
+ * Validates submission values in the FORM_ID() form.
+ */
+function _mass_validation_form_node_info_details_form_validate(array &$form, FormStateInterface $form_state)
+{
+  // Check Caspio data page id contains only alphanumeric characters.
+  $field_name = 'field_info_details_sections';
+  $sections = $form_state->getValue($field_name);
+
+  if (isset($section[0]) && isset($section[0]['subform'])) {
+    $section_fields = $section[0]['subform'];
+    $caspio_id = $section_fields['field_caspio_data_identifier'][0]['#context']['value'];
+    if (!preg_match('/^[a-z0-9]*$/', $caspio_id)) {
+      $key = $field_name . '][0][subform][field_caspio_data_identifier';
+      $form_state->setErrorByName($key, 'Only letters and numbers are allowed. See help text for this field.');
+    }
+  }
+}
