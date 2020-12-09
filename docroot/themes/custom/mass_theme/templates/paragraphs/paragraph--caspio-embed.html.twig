@@ -40,11 +40,8 @@
  * @ingroup themeable
  */
 #}
-
-<h3 style="color: orange;">OUTPUT TEST</h3>
 {% set dataId = content.field_caspio_data_identifier[0]['#context'].value %}
 {% set dataTitle = content.field_caspio_admin_title[0]['#context'].value %}
-
 <figure class="ma__figure ma__figure--full ma__app-caspio" aria-label="{{ dataTitle }}">
   <script type="text/javascript" src="https://c0hbc136.caspio.com/dp/{{ dataId }}/emb"></script>
   <noscript>This feature requires Javascript to be enabled on your browser. Please enable Javascript and refresh the page.</noscript>
@@ -60,11 +57,10 @@
 
 {# -------------- #}
 
-{# {% if figure.caspio %} #}
+{# MF template
+{% if figure.caspio %} #}
 	{# Render figure.content, which will be the main content of the figure #}
 	{# {% set content %}
-	{% set id = 'caspio-' ~ random(9999) %}
-	<div id="{{ id }}"></div>
   <script type="text/javascript" src="https://c0hbc136.caspio.com/dp/{{ dataId }}/emb"></script>
   <noscript>This feature requires Javascript to be enabled on your browser. Please enable Javascript and refresh the page.</noscript>
 	{% endset %}
@@ -76,39 +72,5 @@
   figure: figure|merge({
     'class': 'ma__app-caspio ',
   })
-} %} #}
-
-{#
-****** TABLEAU SAMPLE ******
-{% include "@atoms/09-media/figure--dataviz.twig" with {
-  "figure": {
-    "align": content.field_tabl_alignment["#items"][0].value,
-    "wrap": content.field_tabl_wrapping["#items"][0].value ? TRUE : FALSE,
-    "size": content.field_tabl_display_size["#items"][0].value,
-    "content": content.field_url,
-    "caption": content.field_tabl_caption["#items"][0] ? content.field_tabl_caption : ''
-  }
 } %}
-
-{% if figure.dataviz %}
-	{% set content %}
-	{% set id = 'dataviz-' ~ random(9999) %}
-	<div id="{{ id }}"></div>
-	<script type="text/javascript">
-		window.addEventListener("DOMContentLoaded", function () {
-new tableau.Viz(document.getElementById("{{ id }}"), "{{ figure.dataviz.url }}");
-});
-	</script>
-	{% endset %}
-	{% set figure = figure|merge({
-    'content': content,
-  }) %}
-{% endif %}
-{% include "@atoms/09-media/figure.twig" with {
-  figure: figure|merge({
-    'align': figure.align|default('left'),
-    'size': figure.size|default('large'),
-    'class': 'ma__dataviz',
-  })
-} %}
- #}
+#}
