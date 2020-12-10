@@ -40,37 +40,13 @@
  * @ingroup themeable
  */
 #}
-{% set dataId = content.field_caspio_data_identifier[0]['#context'].value %}
-{% set dataTitle = content.field_caspio_admin_title[0]['#context'].value %}
-<figure class="ma__figure ma__figure--full ma__app-caspio" aria-label="{{ dataTitle }}">
-  <script type="text/javascript" src="https://c0hbc136.caspio.com/dp/{{ dataId }}/emb"></script>
-  <noscript>This feature requires Javascript to be enabled on your browser. Please enable Javascript and refresh the page.</noscript>
-</figure>
-{#
-{% include "@atoms/09-media/figure--app-caspio.twig" with {
+{% include "@atoms/09-media/figure--caspio.twig" with {
   "figure": {
-    "content": content.field_caspio_data_identifier[0]['#context'].value
-    "title": dataTitle = content.field_caspio_admin_title[0]['#context'].value
+    "caspio": {
+      "dataId": content.field_caspio_data_identifier[0]['#context'].value
+    },
+    "title": {
+      "text": content.field_caspio_admin_title[0]['#context'].value
+    }
   }
 } %}
-#}
-
-{# -------------- #}
-
-{# MF template
-{% if figure.caspio %} #}
-	{# Render figure.content, which will be the main content of the figure #}
-	{# {% set content %}
-  <script type="text/javascript" src="https://c0hbc136.caspio.com/dp/{{ dataId }}/emb"></script>
-  <noscript>This feature requires Javascript to be enabled on your browser. Please enable Javascript and refresh the page.</noscript>
-	{% endset %}
-	{% set figure = figure|merge({
-    'content': content,
-  }) %}
-{% endif %}
-{% include "@atoms/09-media/figure.twig" with {
-  figure: figure|merge({
-    'class': 'ma__app-caspio ',
-  })
-} %}
-#}
