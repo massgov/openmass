@@ -6,7 +6,6 @@ In August 2017, MassIT decided to standardize on JSON API for its web services. 
 
 - [JSONAPI docs pages](https://www.drupal.org/node/2803093).
 - [Video series](https://www.youtube.com/playlist?list=PLZOQ_ZMpYrZsyO-3IstImK1okrpfAjuMZ).
-- The JSON API schema is viewable at /docson.
 
 ## Authentication
 

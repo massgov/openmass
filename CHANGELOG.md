@@ -1,4 +1,27 @@
 
+
+## [0.266.0] - December 8, 2020
+
+### Added
+  - DP-20585: Disallow '/doc/courts-dwnld-*' in robots.txt for courts as DP-20585.
+  
+### Changed
+  - DP-20629: Updated Mayflower version to 10.4.0.
+     - DP-19233: Fix the width of small size and adjust side margins for side by side layout. (MF)
+     - Assets CSS: Cleaned up general template styles and added layout.css. (MF)
+  - DP-20418: Changed "Media bundle is missing file for media entity" error message to report only to logs.
+  
+
+
+## [0.265.0] - December 1, 2020
+
+### Security
+  - DP-20592: Drupal core security update to version 8.9.10.
+  
+### Fixed
+  - DP-19553: Authoring experience improved when adding existing media as download.
+  
+
 ## [0.264.0] - November 24, 2020
 
 ### Added
