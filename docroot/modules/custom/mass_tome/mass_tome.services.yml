@@ -1,0 +1,24 @@
+services:
+  mass_tome.route_path_subscriber:
+    class: Drupal\mass_tome\EventSubscriber\RoutePathSubscriber
+    arguments: [ '@router.route_provider', '@language_manager' ]
+    public: false
+    decorates: tome_static.route_path_subscriber
+    properties:
+      _serviceId: 'tome_static.route_path_subscriber'
+
+  mass_tome.entity_path_subscriber:
+    class: Drupal\mass_tome\EventSubscriber\EntityPathSubscriber
+    arguments: [ '@entity_type.manager', '@language_manager' ]
+    public: false
+    decorates: tome_static.entity_path_subscriber
+    properties:
+      _serviceId: 'tome_static.entity_path_subscriber'
+
+  mass_tome.redirect_path_subscriber:
+    class: Drupal\mass_tome\EventSubscriber\RedirectPathSubscriber
+    arguments: [ '@entity_type.manager', '@language_manager' ]
+    public: false
+    decorates: tome_static.redirect_path_subscriber
+    properties:
+      _serviceId: 'tome_static.redirect_path_subscriber'
