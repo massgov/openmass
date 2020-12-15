@@ -1,5 +1,18 @@
 
 
+## [0.267.0] - December 15, 2020
+
+### Added
+  - DP-15991: Descendant manager added for Promotional pages content type.
+  
+### Changed
+  - DP-20691: Updated Mayflower version to 10.4.1.
+    - DP-20682: Significantly reduced Noto Sans Latin variable font `.woff` file sizes, from ~900k to ~60k. (MF)
+    - DP-20682: Add conditionals to import static fonts and variable fonts `.woff2`, in order to prevent both fonts to be downloaded. (MF)
+    - DP-20681: Add polyfill for includes. (MF)
+  
+
+
 ## [0.266.0] - December 8, 2020
 
 ### Added
