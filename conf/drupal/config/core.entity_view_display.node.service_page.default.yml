@@ -9,11 +9,15 @@ dependencies:
     - field.field.node.service_page.field_event_quantity
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
-    - field.field.node.service_page.field_kpi_application_starts
-    - field.field.node.service_page.field_kpi_application_submits
-    - field.field.node.service_page.field_kpi_clicks_to_paid_leave
-    - field.field.node.service_page.field_kpi_pct_task_completion
-    - field.field.node.service_page.field_kpi_time_start_submit
+    - field.field.node.service_page.field_kpi_clicks_to_pl
+    - field.field.node.service_page.field_kpi_pl_avg_cl_comp_time
+    - field.field.node.service_page.field_kpi_pl_cl_app_starts
+    - field.field.node.service_page.field_kpi_pl_cl_app_subs
+    - field.field.node.service_page.field_kpi_pl_cl_task_ctr
+    - field.field.node.service_page.field_kpi_pl_em_app_review_pct
+    - field.field.node.service_page.field_kpi_pl_em_app_review_time
+    - field.field.node.service_page.field_kpi_pl_em_app_reviews
+    - field.field.node.service_page.field_kpi_sessions_cicks_to_pl
     - field.field.node.service_page.field_link_group
     - field.field.node.service_page.field_list_data_type
     - field.field.node.service_page.field_location_button_label
@@ -123,7 +127,7 @@ content:
     third_party_settings: {  }
     type: list_default
     region: content
-  field_kpi_application_starts:
+  field_kpi_clicks_to_pl:
     weight: 36
     label: above
     settings:
@@ -132,8 +136,8 @@ content:
     third_party_settings: {  }
     type: number_integer
     region: content
-  field_kpi_application_submits:
-    weight: 37
+  field_kpi_pl_avg_cl_comp_time:
+    weight: 41
     label: above
     settings:
       thousand_separator: ''
@@ -141,7 +145,7 @@ content:
     third_party_settings: {  }
     type: number_integer
     region: content
-  field_kpi_clicks_to_paid_leave:
+  field_kpi_pl_cl_app_starts:
     weight: 38
     label: above
     settings:
@@ -150,7 +154,16 @@ content:
     third_party_settings: {  }
     type: number_integer
     region: content
-  field_kpi_pct_task_completion:
+  field_kpi_pl_cl_app_subs:
+    weight: 39
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_kpi_pl_cl_task_ctr:
     weight: 40
     label: above
     settings:
@@ -161,8 +174,37 @@ content:
     third_party_settings: {  }
     type: number_decimal
     region: content
-  field_kpi_time_start_submit:
-    weight: 39
+  field_kpi_pl_em_app_review_pct:
+    weight: 43
+    label: above
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_decimal
+    region: content
+  field_kpi_pl_em_app_review_time:
+    weight: 44
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_kpi_pl_em_app_reviews:
+    weight: 42
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_kpi_sessions_cicks_to_pl:
+    weight: 37
     label: above
     settings:
       thousand_separator: ''

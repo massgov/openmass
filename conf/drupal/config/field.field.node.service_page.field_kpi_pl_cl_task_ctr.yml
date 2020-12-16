@@ -1,0 +1,23 @@
+uuid: 65e173d8-0c52-49d5-a36c-ac4ab38c7448
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_kpi_pl_cl_task_ctr
+    - node.type.service_page
+id: node.service_page.field_kpi_pl_cl_task_ctr
+field_name: field_kpi_pl_cl_task_ctr
+entity_type: node
+bundle: service_page
+label: 'paidleave claimant task completion rate'
+description: 'The number of tasks completed in an average claimant session (includes application starts; application submissions; and parts 1, 2, and 3 submissions.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: !!float 0
+  max: !!float 100
+  prefix: ''
+  suffix: ''
+field_type: decimal
