@@ -9,15 +9,14 @@ dependencies:
     - field.field.node.service_page.field_event_quantity
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
-    - field.field.node.service_page.field_kpi_clicks_to_pl
     - field.field.node.service_page.field_kpi_pl_avg_cl_comp_time
     - field.field.node.service_page.field_kpi_pl_cl_app_starts
     - field.field.node.service_page.field_kpi_pl_cl_app_subs
-    - field.field.node.service_page.field_kpi_pl_cl_task_ctr
-    - field.field.node.service_page.field_kpi_pl_em_app_review_pct
+    - field.field.node.service_page.field_kpi_pl_cl_task_rate
+    - field.field.node.service_page.field_kpi_pl_em_app_review_rate
     - field.field.node.service_page.field_kpi_pl_em_app_review_time
     - field.field.node.service_page.field_kpi_pl_em_app_reviews
-    - field.field.node.service_page.field_kpi_sessions_cicks_to_pl
+    - field.field.node.service_page.field_kpi_sessions_clicks_pl_pct
     - field.field.node.service_page.field_link_group
     - field.field.node.service_page.field_list_data_type
     - field.field.node.service_page.field_location_button_label
@@ -214,14 +213,13 @@ third_party_settings:
     group_key_performance_indicators:
       children:
         - field_service_kpi_choice
-        - field_kpi_clicks_to_pl
-        - field_kpi_sessions_cicks_to_pl
+        - field_kpi_sessions_clicks_pl_pct
         - field_kpi_pl_cl_app_starts
         - field_kpi_pl_cl_app_subs
-        - field_kpi_pl_cl_task_ctr
+        - field_kpi_pl_cl_task_rate
         - field_kpi_pl_avg_cl_comp_time
         - field_kpi_pl_em_app_reviews
-        - field_kpi_pl_em_app_review_pct
+        - field_kpi_pl_em_app_review_rate
         - field_kpi_pl_em_app_review_time
       parent_name: group_service_edit_form
       weight: 25
@@ -313,33 +311,8 @@ content:
     third_party_settings: {  }
     type: options_buttons
     region: content
-  field_kpi_clicks_to_pl:
-    weight: 52
-    settings:
-      placeholder: ''
-    third_party_settings:
-      conditional_fields:
-        913d422e-bcb9-434b-867e-8299491206a1:
-          dependee: field_service_kpi_choice
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: clicks_to_pl
-            effect: show
-            effect_options: {  }
-            selector: ''
-          entity_type: node
-          bundle: service_page
-    type: number
-    region: content
   field_kpi_pl_avg_cl_comp_time:
-    weight: 57
+    weight: 56
     settings:
       placeholder: ''
     third_party_settings:
@@ -364,7 +337,7 @@ content:
     type: number
     region: content
   field_kpi_pl_cl_app_starts:
-    weight: 54
+    weight: 53
     settings:
       placeholder: ''
     third_party_settings:
@@ -389,7 +362,7 @@ content:
     type: number
     region: content
   field_kpi_pl_cl_app_subs:
-    weight: 55
+    weight: 54
     settings:
       placeholder: ''
     third_party_settings:
@@ -413,13 +386,13 @@ content:
           bundle: service_page
     type: number
     region: content
-  field_kpi_pl_cl_task_ctr:
-    weight: 56
+  field_kpi_pl_cl_task_rate:
+    weight: 55
     settings:
       placeholder: ''
     third_party_settings:
       conditional_fields:
-        74c76321-760c-4991-99de-8b5d74513d7e:
+        a7150b0e-cf67-46bb-81ba-57a07069bd52:
           dependee: field_service_kpi_choice
           settings:
             state: visible
@@ -430,7 +403,7 @@ content:
             values: {  }
             value_form:
               -
-                value: pl_cl_task_ctr
+                value: pl_cl_task_rate
             effect: show
             effect_options: {  }
             selector: ''
@@ -438,13 +411,13 @@ content:
           bundle: service_page
     type: number
     region: content
-  field_kpi_pl_em_app_review_pct:
-    weight: 59
+  field_kpi_pl_em_app_review_rate:
+    weight: 58
     settings:
       placeholder: ''
     third_party_settings:
       conditional_fields:
-        1b5b8041-9332-45c9-ac2a-ea00c539e0f2:
+        6ed3dca1-d6cf-47cc-a34c-903d5babfe57:
           dependee: field_service_kpi_choice
           settings:
             state: visible
@@ -455,7 +428,7 @@ content:
             values: {  }
             value_form:
               -
-                value: pl_em_app_review_pct
+                value: pl_em_app_review_rate
             effect: show
             effect_options: {  }
             selector: ''
@@ -464,7 +437,7 @@ content:
     type: number
     region: content
   field_kpi_pl_em_app_review_time:
-    weight: 60
+    weight: 59
     settings:
       placeholder: ''
     third_party_settings:
@@ -489,7 +462,7 @@ content:
     type: number
     region: content
   field_kpi_pl_em_app_reviews:
-    weight: 58
+    weight: 57
     settings:
       placeholder: ''
     third_party_settings:
@@ -513,13 +486,13 @@ content:
           bundle: service_page
     type: number
     region: content
-  field_kpi_sessions_cicks_to_pl:
-    weight: 53
+  field_kpi_sessions_clicks_pl_pct:
+    weight: 52
     settings:
       placeholder: ''
     third_party_settings:
       conditional_fields:
-        32c55994-d724-45b0-9cb5-bc3d6abd1408:
+        e81937cf-554d-4742-a78d-ec2ed01db1ac:
           dependee: field_service_kpi_choice
           settings:
             state: visible
@@ -530,7 +503,7 @@ content:
             values: {  }
             value_form:
               -
-                value: sessions_cicks_to_pl
+                value: sessions_clicks_pl_pct
             effect: show
             effect_options: {  }
             selector: ''
