@@ -1598,24 +1598,28 @@ function mass_validation_form_node_info_details_form_alter(&$form, FormStateInte
 //    [PARAGRAPH LEVEL 1] information details section = section_long_form
 //      [PARAGRAPH FIELD] content = field_section_long_form_content
 //        [PARAGRAPH LEVEL 2] caspio data page =  caspio_embed
-//          [PARAGRAPH FIELD TO BE VALIDATED WITH THIS FUNCTION] Caspio data page identifier = field_caspio_data_identifier
-function _mass_validation_form_node_info_details_form_validate(array &$form, FormStateInterface $form_state)
-{
-  // Get the paragraphs field that contain Caspio ID field.
-  $paragraph_field_name = 'caspio_embed';
-  if ($form_state->hasValue($paragraph_field_name)) {
-    $paragraphs = $form_state->getValue($paragraph_field_name);
-    // Validate each paragraph.
-    foreach ($paragraphs as $key => $paragraph) {
-      // Verify this is a paragraph with fields.
-      if (array_key_exists('subform', $paragraph)) {
-        // Look at each field in the paragraph.
-        $field_name = 'field_caspio_data_identifier';
-        $field_names = $form_state->getValue($field_name);
-        foreach ($field_names as $field_name) {
-          if (!empty($paragraph['subform'][$field_name])) {
-            if (!preg_match('/^[a-z0-9]*$/', $paragraph['subform'][$field_name][0]['value'])) {
-              $form_state->setErrorByName($field_name, t('Only letters and numbers are allowed. See help text for this field.'));
+//          [PARAGRAPH FIELD TO VALIDATE WITH THIS FUNCTION] Caspio data page identifier = field_caspio_data_identifier
+
+// -- KINT OUTPUT --
+// field_info_details_sections][0][subform][field_section_long_form_content][0][subform][field_caspio_data_identifier][0][value
+//   SECTION as $sections:                   [field_info_details_sections][0]
+//   CONTENT PARAGRAPH (section_long_form):  [subform]
+//   PARAGRAPH FIELD as $paragraphs:         [field_section_long_form_content][0]
+//   PARAGRAPH CASPIO EMBED (caspio_embed):  [subform]
+//   PARAGRAPH FIELD as $cadpioId:           [field_caspio_data_identifier][0][value]
+
+function _mass_validation_form_node_info_details_form_validate(array &$form, FormStateInterface $form_state) {
+  $sections = $form_state->getValue('field_info_details_sections');
+  foreach ($sections as $section_key => $section) {
+    if (in_array('subform', $section)) {
+      $paragraphs = $section['subform']['field_section_long_form_content'];
+      foreach ($paragraphs as $paragraph_key => $paragraph) {
+        if (in_array('subform', $paragraph)) {
+          foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
+            if (!empty($caspioId)) {
+              if (!preg_match('/^[a-z0-9]*$/', $caspioId[0]['value'])) {
+                $form_state->setErrorByName('field_info_details_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform][field_caspio_data_identifier', t('Only letters and numbers are allowed. See help text for this field.'));
+              }
             }
           }
         }
