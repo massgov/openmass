@@ -98,18 +98,23 @@ class DescendantManager implements DescendantManagerInterface {
    */
   public function getChildrenTree(int $node_id, $depth = self::MAX_DEPTH): array {
     $leveled_descendants = $this->getChildrenLeveled($node_id, $depth);
-    // What we get above is "descendants by level" but the items are not yet in a "nested parent-child" structure.
+    // What we get above is "descendants by level"
+    // but the items are not yet in a "nested parent-child" structure.
     // We want to go from
     // FROM: descendants by level like this TODO
     // TO: nested parent child like this TODO
-    // so we start iterating the levels from the deepest depth level D, pluck each item from there, and attach it
-    // as a child to the rightful parent at depth level D-1, repeating until we reach the 1st level, which is
+    // so we start iterating the levels from the deepest depth
+    // level D, pluck each item from there, and attach it
+    // as a child to the rightful parent at depth level D-1,
+    // repeating until we reach the 1st level, which is
     // now our desired nested parent child output.
     $d = count($leveled_descendants);
     while ($d >= 1) {
       foreach ($leveled_descendants[$d] as $item_id => &$item) {
-        // This ensures every item has a "children" key (even if with empty value) because existing downstream functions
-        // like `DescendantController::printChildrenDepth()` depend on this key being present in the nested structure.
+        // This ensures every item has a "children" key (even
+        // if with empty value) because existing downstream functions
+        // like `DescendantController::printChildrenDepth()`
+        // depend on this key being present in the nested structure.
         // NOTE: We have $item populated by reference above.
         if (!isset($item['children'])) {
           $item['children'] = [];
@@ -125,7 +130,8 @@ class DescendantManager implements DescendantManagerInterface {
       }
       $d--;
     }
-    // To keep downstream functions from breaking we return legitimate output or an empty array (instead of "null").
+    // To keep downstream functions from breaking we
+    // return legitimate output or an empty array (instead of "null").
     $nested_parent_child_array = !empty($leveled_descendants[1]) ? array_values($leveled_descendants[1]) : [];
     return $nested_parent_child_array;
   }
