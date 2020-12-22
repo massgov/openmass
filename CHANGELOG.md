@@ -1,5 +1,12 @@
 
 
+## [0.268.0] - December 22, 2020
+
+### Fixed
+  - DP-20703: Preload font changed to woff2 format.
+  
+
+
 ## [0.267.0] - December 15, 2020
 
 ### Added
