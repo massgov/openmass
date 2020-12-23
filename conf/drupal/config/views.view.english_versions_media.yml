@@ -1,17 +1,22 @@
-uuid: 4350a368-b6f9-4c85-90f8-1af977882114
+uuid: 1b6d3e84-2fe8-4d1e-a83d-a76960145f62
 langcode: en
 status: true
 dependencies:
+  config:
+    - field.storage.media.field_title
+    - media.type.document
   module:
-    - node
+    - media
+    - taxonomy
     - user
-id: english_versions
-label: 'English Versions (Content)'
+    - views_autocomplete_filters
+id: english_versions_media
+label: 'English Versions (Media)'
 module: views
-description: 'List of English content of the same content type as configured field.'
+description: 'List of English-language media documents for use in Entity Reference fields.'
 tag: ''
-base_table: node_field_data
-base_field: nid
+base_table: media_field_data
+base_field: mid
 display:
   default:
     display_plugin: default
@@ -22,7 +27,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'access content'
+          perm: 'view media'
       cache:
         type: tag
         options: {  }
@@ -77,43 +82,58 @@ display:
           hide_empty: false
           default_field_elements: true
       fields:
-        title:
-          id: title
-          table: node_field_data
-          field: title
-          entity_type: node
-          entity_field: title
-          label: ''
-          alter:
-            alter_text: false
-            make_link: false
-            absolute: false
-            trim: false
-            word_boundary: false
-            ellipsis: false
-            strip_tags: false
-            html: false
-          hide_empty: false
-          empty_zero: false
-          settings:
-            link_to_entity: true
-          plugin_id: field
+        name:
+          id: name
+          table: media_field_data
+          field: name
           relationship: none
           group_type: group
           admin_label: ''
-          exclude: false
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: false
+            ellipsis: false
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
           element_type: ''
           element_class: ''
           element_label_type: ''
           element_label_class: ''
-          element_label_colon: true
+          element_label_colon: false
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
+          hide_empty: false
+          empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
           type: string
+          settings:
+            link_to_entity: true
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -124,13 +144,79 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
+          entity_type: media
+          entity_field: media
+          plugin_id: field
+        field_title:
+          id: field_title
+          table: media__field_title
+          field: field_title
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: string
+          settings:
+            link_to_entity: true
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          plugin_id: field
       filters:
         status:
           value: '1'
-          table: node_field_data
+          table: media_field_data
           field: status
           plugin_id: boolean
-          entity_type: node
+          entity_type: media
           entity_field: status
           id: status
           expose:
@@ -138,16 +224,27 @@ display:
             operator_limit_selection: false
             operator_list: {  }
           group: 1
-        langcode:
-          id: langcode
-          table: node_field_data
-          field: langcode
-          relationship: none
+        bundle:
+          id: bundle
+          table: media_field_data
+          field: bundle
+          value:
+            document: document
+          entity_type: media
+          entity_field: bundle
+          plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
+        name:
+          id: name
+          table: taxonomy_term_field_data
+          field: name
+          relationship: field_language
           group_type: group
           admin_label: ''
-          operator: in
-          value:
-            en: en
+          operator: '='
+          value: English
           group: 1
           exposed: false
           expose:
@@ -164,7 +261,14 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-            reduce: false
+            placeholder: ''
+            autocomplete_filter: 0
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
+            autocomplete_field: ''
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
           is_grouped: false
           group_info:
             label: ''
@@ -177,17 +281,17 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          entity_field: langcode
-          plugin_id: language
+          entity_type: taxonomy_term
+          entity_field: name
+          plugin_id: views_autocomplete_filters_string
       sorts:
-        title:
-          id: title
-          table: node_field_data
-          field: title
-          order: ASC
-          entity_type: node
-          entity_field: title
+        name:
+          id: name
+          table: media_field_data
+          field: name
+          order: DESC
+          entity_type: media
+          entity_field: name
           plugin_id: standard
           relationship: none
           group_type: group
@@ -198,59 +302,27 @@ display:
       header: {  }
       footer: {  }
       empty: {  }
-      relationships: {  }
-      arguments:
-        type:
-          id: type
-          table: node_field_data
-          field: type
+      relationships:
+        field_language:
+          id: field_language
+          table: media__field_language
+          field: field_language
           relationship: none
           group_type: group
-          admin_label: ''
-          default_action: empty
-          exception:
-            value: all
-            title_enable: false
-            title: All
-          title_enable: false
-          title: ''
-          default_argument_type: node
-          default_argument_options: {  }
-          default_argument_skip_url: false
-          summary_options:
-            base_path: ''
-            count: true
-            items_per_page: 25
-            override: false
-          summary:
-            sort_order: asc
-            number_of_records: 0
-            format: default_summary
-          specify_validation: false
-          validate:
-            type: none
-            fail: 'not found'
-          validate_options: {  }
-          glossary: false
-          limit: 0
-          case: none
-          path_case: none
-          transform_dash: false
-          break_phrase: false
-          entity_type: node
-          entity_field: type
-          plugin_id: node_type
+          admin_label: 'field_language: Taxonomy term'
+          required: true
+          plugin_id: standard
+      arguments: {  }
       display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - url
         - url.query_args
-        - 'user.node_grants:view'
         - user.permissions
-      tags: {  }
+      tags:
+        - 'config:field.storage.media.field_title'
   entity_reference_1:
     display_plugin: entity_reference
     id: entity_reference_1
@@ -262,7 +334,8 @@ display:
         type: entity_reference
         options:
           search_fields:
-            title: title
+            name: name
+            field_title: field_title
       row:
         type: entity_reference
         options:
@@ -280,7 +353,6 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - url
-        - 'user.node_grants:view'
         - user.permissions
-      tags: {  }
+      tags:
+        - 'config:field.storage.media.field_title'

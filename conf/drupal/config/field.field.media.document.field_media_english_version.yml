@@ -1,11 +1,10 @@
-uuid: db1f874c-5cae-4b15-b6f4-b5b1d58d8f0c
+uuid: 2ff04409-f7cd-4b56-a446-38b92081448c
 langcode: en
 status: true
 dependencies:
   config:
     - field.storage.media.field_media_english_version
     - media.type.document
-    - media.type.media_video
 id: media.document.field_media_english_version
 field_name: field_media_english_version
 entity_type: media
@@ -17,13 +16,10 @@ translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:
-  handler: 'default:media'
+  handler: views
   handler_settings:
-    target_bundles:
-      document: document
-      media_video: media_video
-    sort:
-      field: _none
-    auto_create: false
-    auto_create_bundle: document
+    view:
+      view_name: english_versions_media
+      display_name: entity_reference_1
+      arguments: {  }
 field_type: entity_reference

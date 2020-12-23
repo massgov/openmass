@@ -1,6 +1,7 @@
 <?php
 
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\NodeInterface;
 use Drupal\mass_translations\Controller\TranslationsController;
 
@@ -55,4 +56,15 @@ function mass_translations_page_attachments(array &$attachments) {
   }
   // Apply updated caching information.
   $cache->applyTo($attachments);
+}
+
+/**
+ * Implements hook_field_widget_multivalue_form_alter().
+ */
+function mass_translations_field_widget_multivalue_form_alter(array &$elements, FormStateInterface $form_state, array $context) {
+  if (isset($elements['#field_name']) && $elements['#field_name'] == 'field_media_english_version') {
+    if (!empty($elements[0]['target_id']['#title'])) {
+      $elements[0]['target_id']['#title'] = '';
+    }
+  }
 }
