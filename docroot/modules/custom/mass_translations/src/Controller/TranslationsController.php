@@ -3,10 +3,9 @@
 namespace Drupal\mass_translations\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Language\Language;
-use Drupal\node\NodeInterface;
-use Drupal\node\NodeStorageInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Link;
 
 /**
@@ -16,36 +15,18 @@ use Drupal\Core\Link;
  */
 class TranslationsController extends ControllerBase {
 
-  protected $nodeStorage;
-
   /**
    * {@inheritdoc}
    */
-  public function __construct(NodeStorageInterface $node_storage) {
-    $this->nodeStorage = $node_storage;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('entity.manager')->getStorage('node')
-    );
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function content(NodeInterface $node) {
+  public function markup(EntityInterface $entity, $storage, $english_field_name) {
     $markup = '';
 
-    $languages = $this->getTranslationLanguages($node);
+    $languages = $this->getTranslationLanguages($entity, $storage, $english_field_name);
 
-    foreach ($languages as $node) {
-      $node_lang = $this->nodeStorage->load($node->id());
-      $markup .= '<h3>' . $node_lang->language()->getName() . '</h3>';
-      $markup .= Link::fromTextAndUrl($node_lang->getTitle(), $node_lang->toUrl())->toString();
+    foreach ($languages as $entity) {
+      $entity_lang = $storage->load($entity->id());
+      $markup .= '<h3>' . $entity_lang->language()->getName() . '</h3>';
+      $markup .= Link::fromTextAndUrl($entity_lang->label(), $entity_lang->toUrl())->toString();
     }
 
     return array(
@@ -57,33 +38,37 @@ class TranslationsController extends ControllerBase {
   /**
    * Gets all node translations based on custom English version field.
    *
-   * @param \Drupal\node\NodeInterface $node
+   * @param \Drupal\Core\Entity\EntityInterface $entity
    *   Node object.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   *   Pass in the storage.
+   * @param string $english_field_name
+   *   Name of field containing English version.
    *
    * @return array
    *   Array of node IDs keyed by language code.
    */
-  public function getTranslationLanguages(NodeInterface $node): array {
+  public function getTranslationLanguages(EntityInterface $entity, EntityStorageInterface $storage, string $english_field_name): array {
     $languages = [];
 
-    $en_node_id = $node->id();
+    $english_id = $entity->id();
 
-    $language = $node->language()->getId();
+    $language = $entity->language()->getId();
     if ($language !== 'en') {
-      foreach ($node->get('field_english_version')->referencedEntities() as $field_english_version) {
-        $en_node_id = $field_english_version->id();
+      foreach ($entity->get($english_field_name)->referencedEntities() as $field_english_version) {
+        $english_id = $field_english_version->id();
       }
     }
 
-    $languages[Language::LANGCODE_DEFAULT] = $this->nodeStorage->load($en_node_id);
+    $languages[Language::LANGCODE_DEFAULT] = $storage->load($english_id);
 
-    $non_english_languages = $this->nodeStorage->getQuery()
-      ->condition('field_english_version', $en_node_id)
+    $non_english_language_ids = $storage->getQuery()
+      ->condition($english_field_name, $english_id)
       ->execute();
 
-    foreach ($non_english_languages as $non_english_language) {
-      $non_english_node = $this->nodeStorage->load($non_english_language);
-      $languages[$non_english_node->language()->getId()] = $this->nodeStorage->load($non_english_language);
+    foreach ($non_english_language_ids as $non_english_language_id) {
+      $non_english_entity = $storage->load($non_english_language_id);
+      $languages[$non_english_entity->language()->getId()] = $storage->load($non_english_language_id);
     }
 
     return $languages;

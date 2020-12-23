@@ -25,12 +25,13 @@ function mass_translations_page_attachments(array &$attachments) {
       continue;
     }
 
-    $translations_controller = new TranslationsController(\Drupal::service('entity.manager')->getStorage('node'));
+    $node_storage = \Drupal::service('entity.manager')->getStorage('node');
+    $translations_controller = new TranslationsController($node_storage);
 
     $entity = $route_match->getParameter($name);
     if ($entity instanceof NodeInterface && $entity->hasLinkTemplate('canonical')) {
       // Current route represents a content entity. Build hreflang links.
-      foreach ($translations_controller->getTranslationLanguages($entity) as $language_id => $translation) {
+      foreach ($translations_controller->getTranslationLanguages($entity, $node_storage, 'field_english_version') as $language_id => $translation) {
         // Skip any translation that cannot be viewed.
         $access = $translation->access('view', NULL, TRUE);
         $cache->addCacheableDependency($access);
