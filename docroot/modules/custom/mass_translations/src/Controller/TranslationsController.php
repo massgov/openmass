@@ -29,10 +29,10 @@ class TranslationsController extends ControllerBase {
       $markup .= Link::fromTextAndUrl($entity_lang->label(), $entity_lang->toUrl())->toString();
     }
 
-    return array(
+    return [
       '#type' => 'markup',
       '#markup' => $markup,
-    );
+    ];
   }
 
   /**

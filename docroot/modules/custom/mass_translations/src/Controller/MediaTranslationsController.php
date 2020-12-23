@@ -7,7 +7,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class TranslationsController.
+ * Class MediaTranslationsController.
  *
  * @package Drupal\mass_translations\Controller
  */

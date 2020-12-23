@@ -7,7 +7,7 @@ use Drupal\node\NodeStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class TranslationsController.
+ * Class NodeTranslationsController.
  *
  * @package Drupal\mass_translations\Controller
  */
