@@ -1,0 +1,58 @@
+<?php
+
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\node\NodeInterface;
+use Drupal\mass_translations\Controller\TranslationsController;
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Adapted from content_translation.module.
+ */
+function mass_translations_page_attachments(array &$attachments) {
+  $cache = CacheableMetadata::createFromRenderArray($attachments);
+  $route_match = \Drupal::routeMatch();
+
+  // If the current route has no parameters, return.
+  if (!($route = $route_match->getRouteObject()) || !($parameters = $route->getOption('parameters'))) {
+    return;
+  }
+
+  // Determine if the current route represents an entity.
+  foreach ($parameters as $name => $options) {
+    if (!isset($options['type']) || strpos($options['type'], 'entity:') !== 0) {
+      continue;
+    }
+
+    $translations_controller = new TranslationsController(\Drupal::service('entity.manager')->getStorage('node'));
+
+    $entity = $route_match->getParameter($name);
+    if ($entity instanceof NodeInterface && $entity->hasLinkTemplate('canonical')) {
+      // Current route represents a content entity. Build hreflang links.
+      foreach ($translations_controller->getTranslationLanguages($entity) as $language_id => $translation) {
+        // Skip any translation that cannot be viewed.
+        $access = $translation->access('view', NULL, TRUE);
+        $cache->addCacheableDependency($access);
+        if (!$access->isAllowed()) {
+          continue;
+        }
+        $url = $translation->toUrl('canonical')
+          ->setOption('language', $translation->language())
+          ->setAbsolute()
+          ->toString();
+        $attachments['#attached']['html_head_link'][] = [
+          [
+            'rel' => 'alternate',
+            'hreflang' => $language_id,
+            'href' => $url,
+          ],
+          TRUE,
+        ];
+      }
+    }
+    // Since entity was found, no need to iterate further.
+    break;
+  }
+  // Apply updated caching information.
+  $cache->applyTo($attachments);
+}

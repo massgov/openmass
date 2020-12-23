@@ -3,6 +3,7 @@
 namespace Drupal\mass_translations\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Language\Language;
 use Drupal\node\NodeInterface;
 use Drupal\node\NodeStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -41,8 +42,8 @@ class TranslationsController extends ControllerBase {
 
     $languages = $this->getTranslationLanguages($node);
 
-    foreach ($languages as $nid) {
-      $node_lang = $this->nodeStorage->load($nid);
+    foreach ($languages as $node) {
+      $node_lang = $this->nodeStorage->load($node->id());
       $markup .= '<h3>' . $node_lang->language()->getName() . '</h3>';
       $markup .= Link::fromTextAndUrl($node_lang->getTitle(), $node_lang->toUrl())->toString();
     }
@@ -66,6 +67,7 @@ class TranslationsController extends ControllerBase {
     $languages = [];
 
     $en_node_id = $node->id();
+
     $language = $node->language()->getId();
     if ($language !== 'en') {
       foreach ($node->get('field_english_version')->referencedEntities() as $field_english_version) {
@@ -73,13 +75,15 @@ class TranslationsController extends ControllerBase {
       }
     }
 
-    $languages['en'] = $en_node_id;
+    $languages[Language::LANGCODE_DEFAULT] = $this->nodeStorage->load($en_node_id);
 
-    $non_english_languages = $this->nodeStorage->getQuery()->condition('field_english_version', $en_node_id)->execute();
+    $non_english_languages = $this->nodeStorage->getQuery()
+      ->condition('field_english_version', $en_node_id)
+      ->execute();
 
     foreach ($non_english_languages as $non_english_language) {
-      $node = $this->nodeStorage->load($non_english_language);
-      $languages[$node->language()->getId()] = $node->id();
+      $non_english_node = $this->nodeStorage->load($non_english_language);
+      $languages[$non_english_node->language()->getId()] = $this->nodeStorage->load($non_english_language);
     }
 
     return $languages;
