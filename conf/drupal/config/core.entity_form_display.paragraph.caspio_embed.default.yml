@@ -1,0 +1,51 @@
+uuid: 7c5812d0-00d9-4360-9cbc-e01810a14c72
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.caspio_embed.field_caspio_admin_title
+    - field.field.paragraph.caspio_embed.field_caspio_data_identifier
+    - paragraphs.paragraphs_type.caspio_embed
+  module:
+    - field_group
+third_party_settings:
+  field_group:
+    group_data_information:
+      children:
+        - field_caspio_data_identifier
+        - field_caspio_admin_title
+      parent_name: ''
+      weight: 20
+      format_type: tab
+      format_settings:
+        label: 'Data page information'
+        formatter: open
+        description: 'Caspio data pages are used to embed simple data lookup applications for small datasets. If you are interested in using this feature, please make a ServiceNow request so we can evaluate whether it is appropriate.'
+        id: ''
+        classes: ''
+        required_fields: false
+      label: 'Data page information'
+id: paragraph.caspio_embed.default
+targetEntityType: paragraph
+bundle: caspio_embed
+mode: default
+content:
+  field_caspio_admin_title:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_caspio_data_identifier:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
