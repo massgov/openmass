@@ -2,11 +2,13 @@
 
 namespace Drupal\mass_content\Plugin\Field\FieldFormatter;
 
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultForbidden;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\link\Plugin\Field\FieldFormatter\LinkFormatter;
 use Drupal\mass_content\Field\FieldType\DynamicLinkItem;
-use Drupal\mayflower\Helper;
 
 /**
  * Plugin implementation of the 'dynamic_link_separate' formatter.
@@ -77,6 +79,21 @@ class DynamicLinkSeparateFormatter extends LinkFormatter {
         '#url' => $url,
         '#extra' => $extra,
       ];
+
+      // Add #access and cacheability metadata to remove links to deleted and unpublished content.
+      if ($url->isRouted() && $url->getRouteName() == 'entity.node.canonical') {
+        if ($entity = \Drupal::entityTypeManager()->getStorage(key($url->getRouteParameters()))->load($url->getRouteParameters()['node'])) {
+          $access = $entity->access('view', NULL, TRUE);
+        }
+        else {
+          $access = AccessResult::forbidden('Cannot load entity');
+        }
+        $metadata = CacheableMetadata::createFromObject($access);
+        $metadata->applyTo($element[$delta]);
+        $element[$delta]['#access'] = $access->isAllowed();
+      }
+
+
 
       if (!empty($item->_attributes)) {
         // Set our RDFa attributes on the <a> element that is being built.
