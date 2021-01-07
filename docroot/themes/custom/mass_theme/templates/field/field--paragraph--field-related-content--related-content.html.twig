@@ -38,8 +38,10 @@
 #}
 <ul class="ma__link-list__items">
     {% for item in items %}
-        <li class="ma__link-list__item">
-            {{ item.content }}
-        </li>
+      {% if item.content|render|striptags|trim %}
+          <li class="ma__link-list__item">
+              {{ item.content }}
+          </li>
+      {% endif %}
     {% endfor %}
 </ul>

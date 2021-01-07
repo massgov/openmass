@@ -25,9 +25,11 @@
 
   {% block linkListDecorativeLink %}
     {% for decorativeLink in items %}
-      <li class="ma__link-list__item">
-        {{ decorativeLink.content }}
-      </li>
+      {% if decorativeLink.content|render|striptags|trim %}
+        <li class="ma__link-list__item">
+          {{ decorativeLink.content }}
+        </li>
+      {% endif %}
     {% endfor %}
   {% endblock %}
 {% endembed %}
