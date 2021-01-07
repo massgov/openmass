@@ -54,19 +54,21 @@
     {% set level = level + 1 %}
 
     {% for item in items %}
-      {% include "@molecules/press-teaser.twig" with {
-        "pressTeaser": {
-          "eyebrow": item.content['#extra']['type'],
-          "title": {
-            "href": item.content['#url'],
-            "text": item.content['#title'],
-            "info": "",
-            "property": "",
-          },
-          "level": level,
-          "date": item.content['#extra']['date'],
-        }
-      } %}
+      {% if item.content|render|striptags|trim %}
+        {% include "@molecules/press-teaser.twig" with {
+          "pressTeaser": {
+            "eyebrow": item.content['#extra']['type'],
+            "title": {
+              "href": item.content['#url'],
+              "text": item.content['#title'],
+              "info": "",
+              "property": "",
+            },
+            "level": level,
+            "date": item.content['#extra']['date'],
+          }
+        } %}
+      {% endif %}
     {% endfor %}
   {% endblock %}
 {% endembed %}
