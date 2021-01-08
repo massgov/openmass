@@ -9,6 +9,14 @@ dependencies:
     - field.field.node.service_page.field_event_quantity
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
+    - field.field.node.service_page.field_kpi_pl_avg_cl_comp_time
+    - field.field.node.service_page.field_kpi_pl_cl_app_starts
+    - field.field.node.service_page.field_kpi_pl_cl_app_subs
+    - field.field.node.service_page.field_kpi_pl_cl_task_rate
+    - field.field.node.service_page.field_kpi_pl_em_app_review_rate
+    - field.field.node.service_page.field_kpi_pl_em_app_review_time
+    - field.field.node.service_page.field_kpi_pl_em_app_reviews
+    - field.field.node.service_page.field_kpi_sessions_clicks_pl_pct
     - field.field.node.service_page.field_link_group
     - field.field.node.service_page.field_list_data_type
     - field.field.node.service_page.field_location_button_label
@@ -23,6 +31,7 @@ dependencies:
     - field.field.node.service_page.field_service_eligibility_info
     - field.field.node.service_page.field_service_file
     - field.field.node.service_page.field_service_key_info_links_6
+    - field.field.node.service_page.field_service_kpi_choice
     - field.field.node.service_page.field_service_lede
     - field.field.node.service_page.field_service_links
     - field.field.node.service_page.field_service_metatags
@@ -116,6 +125,84 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: list_default
+    region: content
+  field_kpi_pl_avg_cl_comp_time:
+    weight: 41
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_kpi_pl_cl_app_starts:
+    weight: 38
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_kpi_pl_cl_app_subs:
+    weight: 39
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_kpi_pl_cl_task_rate:
+    weight: 46
+    label: above
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_decimal
+    region: content
+  field_kpi_pl_em_app_review_rate:
+    weight: 47
+    label: above
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_decimal
+    region: content
+  field_kpi_pl_em_app_review_time:
+    weight: 44
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_kpi_pl_em_app_reviews:
+    weight: 42
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_kpi_sessions_clicks_pl_pct:
+    weight: 45
+    label: above
+    settings:
+      thousand_separator: ''
+      decimal_separator: .
+      scale: 2
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_decimal
     region: content
   field_link_group:
     type: entity_reference_revisions_entity_view
@@ -231,6 +318,13 @@ content:
       target: ''
     third_party_settings: {  }
     type: dynamic_link_separate
+    region: content
+  field_service_kpi_choice:
+    weight: 35
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
     region: content
   field_service_lede:
     weight: 2
