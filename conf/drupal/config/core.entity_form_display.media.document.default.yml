@@ -63,7 +63,7 @@ third_party_settings:
         - field_start_date
         - field_end_date
       parent_name: group_basic
-      weight: 13
+      weight: 14
       format_type: fieldset
       format_settings:
         label: Timeframe
@@ -88,7 +88,6 @@ third_party_settings:
       children:
         - field_alternative_title
         - field_geographic_area
-        - langcode
         - field_media_english_version
         - field_content_type
         - field_subjects
@@ -123,6 +122,7 @@ third_party_settings:
         - field_upload_file
         - field_category
         - field_organizations
+        - langcode
         - field_creator
         - field_publishing_frequency
         - field_geographic_place
@@ -195,7 +195,7 @@ content:
     type: link_default
     region: content
   field_contact_information:
-    weight: 12
+    weight: 13
     settings:
       rows: 1
       placeholder: ''
@@ -203,7 +203,7 @@ content:
     type: string_textarea
     region: content
   field_contact_name:
-    weight: 11
+    weight: 12
     settings:
       match_operator: CONTAINS
       size: 60
@@ -223,7 +223,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_creator:
-    weight: 8
+    weight: 9
     settings:
       match_operator: CONTAINS
       size: 60
@@ -257,7 +257,7 @@ content:
     region: content
   field_document_label:
     type: entity_reference_autocomplete
-    weight: 14
+    weight: 15
     region: content
     settings:
       match_operator: CONTAINS
@@ -274,7 +274,7 @@ content:
     type: string_textfield
     region: content
   field_document_type:
-    weight: 14
+    weight: 16
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -301,7 +301,7 @@ content:
     type: geofield_latlon
     region: content
   field_geographic_place:
-    weight: 10
+    weight: 11
     settings:
       size: 60
       placeholder: ''
@@ -309,18 +309,12 @@ content:
     type: string_textfield
     region: content
   field_internal_notes:
-    weight: 16
+    weight: 18
     settings:
       rows: 1
       placeholder: ''
     third_party_settings: {  }
     type: string_textarea
-    region: content
-  field_language:
-    weight: 9
-    settings: {  }
-    third_party_settings: {  }
-    type: options_select
     region: content
   field_license:
     weight: 45
@@ -401,7 +395,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_publishing_frequency:
-    weight: 9
+    weight: 10
     settings: {  }
     third_party_settings: {  }
     type: options_select
@@ -439,7 +433,7 @@ content:
     type: link_default
     region: content
   field_tags:
-    weight: 15
+    weight: 17
     settings:
       match_operator: CONTAINS
       size: 60
@@ -465,7 +459,7 @@ content:
     region: content
   langcode:
     type: language_select
-    weight: 38
+    weight: 8
     region: content
     settings:
       include_locked: true
@@ -527,6 +521,7 @@ hidden:
   created: true
   field_contributing_organization: true
   field_file_mime: true
+  field_language: true
   field_other_license_url: true
   field_size: true
   name: true
