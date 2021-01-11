@@ -2,7 +2,9 @@
 
 namespace Drupal\mass_translations\Controller;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\node\NodeInterface;
 use Drupal\node\NodeStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -14,12 +16,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class NodeTranslationsController extends TranslationsController {
 
   protected $nodeStorage;
+  protected $englishFieldName;
 
   /**
    * {@inheritdoc}
    */
   public function __construct(NodeStorageInterface $node_storage) {
     $this->nodeStorage = $node_storage;
+    $this->englishFieldName = 'field_english_version';
   }
 
   /**
@@ -35,7 +39,7 @@ class NodeTranslationsController extends TranslationsController {
    * {@inheritdoc}
    */
   public function content(EntityInterface $node) {
-    return parent::markup($node, $this->nodeStorage, 'field_english_version');
+    return parent::markup($node, $this->nodeStorage, $this->englishFieldName);
   }
 
 }

@@ -2,6 +2,8 @@
 
 namespace Drupal\mass_translations\Controller;
 
+use Drupal\Core\Access\AccessResult;
+use Drupal\media\MediaInterface;
 use Drupal\media\MediaStorage;
 use Drupal\Core\Entity\EntityInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -14,12 +16,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class MediaTranslationsController extends TranslationsController {
 
   protected $mediaStorage;
+  protected $englishFieldName;
 
   /**
    * {@inheritdoc}
    */
   public function __construct(MediaStorage $media_storage) {
     $this->mediaStorage = $media_storage;
+    $this->englishFieldName = 'field_media_english_version';
   }
 
   /**
@@ -35,7 +39,7 @@ class MediaTranslationsController extends TranslationsController {
    * {@inheritdoc}
    */
   public function content(EntityInterface $media) {
-    return parent::markup($media, $this->mediaStorage, 'field_media_english_version');
+    return parent::markup($media, $this->mediaStorage, $this->englishFieldName);
   }
 
 }
