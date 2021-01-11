@@ -2,8 +2,6 @@
 
 namespace Drupal\mass_translations\Controller;
 
-use Drupal\Core\Access\AccessResult;
-use Drupal\media\MediaInterface;
 use Drupal\media\MediaStorage;
 use Drupal\Core\Entity\EntityInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
