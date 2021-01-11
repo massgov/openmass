@@ -166,6 +166,11 @@ class Helper {
       $entities = Helper::getReferencedEntitiesFromField($entity, $field);
 
       foreach ($entities as $entity) {
+        // We've abandoned the Drupal render system so no concern about cache metadata. If the reference is inaccessible to anon, the link is removed for all.
+        if (!$entity->access()) {
+          continue;
+        }
+
         if (!empty($options['maxItems']) && ($item_count >= $options['maxItems'])) {
           break;
         }
@@ -191,10 +196,17 @@ class Helper {
       $links = $entity->get($field);
 
       foreach ($links as $link) {
+        if (0) {
+          $a = 'l';
+        }
         if (!empty($options['maxItems']) && ($item_count >= $options['maxItems'])) {
           break;
         }
-        $items[] = Helper::separatedLink($link, $options);
+        $separated = Helper::separatedLink($link, $options);
+        // Avoid inaccessible links.
+        if ($separated['title'] && $separated['href']) {
+          $items[] = $separated;
+        }
         $item_count++;
       }
     }
@@ -210,7 +222,7 @@ class Helper {
    * @param array $options
    *   An array of options.
    *
-   * @return array
+   * @return array|null
    *   Array that contains title, url and type (external, internal).
    */
   public static function separatedLink($link, array $options = []) {
