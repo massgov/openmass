@@ -103,6 +103,8 @@ View `/etc/hosts` for Mac/Linux or `c:\windows\system32\drivers\etc\hosts` in Wi
 
 ### `SQLSTATE[HY000][2002]` Connection refused
 
+This usually happens if you go visit mass.local right after the containers are brought up. MySQL has not started yet. Open `portainer.mass.local`; and go to _Containers > mass_mysql_1 > Logs_ and check for the message: _mysqld: ready for connections._ If you don't see this message, _mysqld_ has not started yet.
+
 ### Xdebug
 
 If you know where a problem is happening in your code, Xdebug is a useful tool that allows you set breakpoints to trace the problem back. See [.env.example](../.env.example) for setup instructions.
