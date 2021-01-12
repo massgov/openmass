@@ -370,6 +370,41 @@ function _mass_validation_form_node_service_page_form_validate(array &$form, For
       $form_state->setError($form, t('You do not have permission to change the Service Page Template'));
     }
   }
+
+  // Check that the KPIs have values if the box is checked.
+  // Map the KPI fields with the Key performance indicators options in the form.
+  $kpi_fields_mapping = [
+    'sessions_clicks_pl_pct' => 'field_kpi_sessions_clicks_pl_pct',
+    'pl_cl_app_starts' => 'field_kpi_pl_cl_app_starts',
+    'pl_cl_app_subs' => 'field_kpi_pl_cl_app_subs',
+    'pl_cl_task_rate' => 'field_kpi_pl_cl_task_rate',
+    'pl_avg_cl_comp_time' => 'field_kpi_pl_avg_cl_comp_time',
+    'pl_em_app_reviews' => 'field_kpi_pl_em_app_reviews',
+    'pl_em_app_review_rate' => 'field_kpi_pl_em_app_review_rate',
+    'pl_em_app_review_time' => 'field_kpi_pl_em_app_review_time',
+  ];
+
+  // Finding the value for the Key performance indicators (KPIs)
+  $kpi_choice = $form_state->getValue('field_service_kpi_choice');
+  // Checking if the KPI are checked.
+  $selected_kpi = [];
+  if (isset($kpi_choice)) {
+    // Loop through the KPI to check for a value.
+    foreach ($kpi_choice as $choice) {
+      $field_name = $kpi_fields_mapping[$choice['value']];
+      $selected_kpi[] = $field_name;
+      $value = $form_state->getValue($field_name);
+      // If the KPI value is empty the error will be shown.
+      if (empty($value[0]['value'])) {
+        $form_state->setErrorByName($field_name, t('A value must be added to the this field.'));
+      }
+    }
+    // Take the unchecked checkboxes and reset the value to NULL.
+    $unchecked = array_diff($kpi_fields_mapping, $selected_kpi);
+    foreach ($unchecked as $unchecked_field_name) {
+      $form_state->setValue([$unchecked_field_name, 0, 'value'], NULL);
+    }
+  }
 }
 
 /**
