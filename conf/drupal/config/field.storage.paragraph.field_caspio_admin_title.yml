@@ -1,19 +1,20 @@
-uuid: 666dcd26-ab23-46dc-8adb-59e7aa90c320
+uuid: 476e4bf4-1058-4c7b-b1a8-a2a7de65356a
 langcode: en
 status: true
 dependencies:
   module:
-    - node
     - paragraphs
-id: paragraph.field_related_content
-field_name: field_related_content
+id: paragraph.field_caspio_admin_title
+field_name: field_caspio_admin_title
 entity_type: paragraph
-type: entity_reference
+type: string
 settings:
-  target_type: node
+  max_length: 300
+  is_ascii: false
+  case_sensitive: false
 module: core
 locked: false
-cardinality: 9
+cardinality: 1
 translatable: true
 indexes: {  }
 persist_with_no_fields: false
