@@ -43,7 +43,7 @@ class FormEmbedWidget extends WidgetBase {
         'formstack_reload' => 'Formstack with file upload (success message on different page)',
       ],
       '#required' => TRUE,
-      '#description' => 'Forms that include file uploads require special handling. For any form that includes a file upload, first, change the embed type here to "Formstack with file upload." Next, publish a service detail page that contains the message users should see if the form is submitted successfully. Finally, in your Formstack form, change your submission message to redirect to an external URL and enter the URL of the service detail page you published.',
+      '#description' => 'Forms that include file uploads require special handling. For any form that includes a file upload, first, change the embed type here to "Formstack with file upload." Next, publish a information detail page that contains the message users should see if the form is submitted successfully. Finally, in your Formstack form, change your submission message to redirect to an external URL and enter the URL of the service detail page you published.',
     ];
     $element['#element_validate'] = [[get_called_class(), 'validate']];
 
