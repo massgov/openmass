@@ -116,9 +116,9 @@ The query in question can be found in different ways. Here are a few approaches 
 
 In the Query toolbar take the old query and new query and compare the time each takes to complete. If the new query is taking significantly longer than the old query _it should not be merged into develop._ For example, if the original query completes in ms and the new query completes in seconds, once multiple content authors have logged in we _will_ see performance issues!
 
-### XDebug
+### Xdebug
 
-Xdebug isn't a profiling tool, but if you know where a problem is happening in your code, you can set breakpoints using XDebug to trace it back.
+Xdebug isn't a profiling tool, but if you know where a problem is happening in your code, you can set breakpoints using XDebug to trace it back. See [.env.example](../.env.example) for setup instructions.
 
 ### Web Profiler
 

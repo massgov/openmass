@@ -27,17 +27,17 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
     ```
     1. **Mac/Linux:** `/etc/hosts`
     1. **Windows:** `c:\windows\system32\drivers\etc\hosts`
-    
+
 ### Ahoy (optional)
 
 1. In order for the Ahoy aliases to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
     ```bash
     sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
     ```
-1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database). 
+1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database).
 1. Run `ahoy comi` to fetch all dependencies.
 
-###### Notes 
+###### Notes
 - It takes a few minutes for the `mysql` container start up.
 - Mass Digital team members: see additional information at [Mass Digital Developers](https://github.com/massgov/massgov-internal-docs/blob/master/development-massgov-team.md).
 
@@ -105,6 +105,9 @@ View `/etc/hosts` for Mac/Linux or `c:\windows\system32\drivers\etc\hosts` in Wi
 
 This usually happens if you go visit mass.local right after the containers are brought up. MySQL has not started yet. Open `portainer.mass.local`; and go to _Containers > mass_mysql_1 > Logs_ and check for the message: _mysqld: ready for connections._ If you don't see this message, _mysqld_ has not started yet.
 
+### Xdebug
+
+If you know where a problem is happening in your code, Xdebug is a useful tool that allows you set breakpoints to trace the problem back. See [.env.example](../.env.example) for setup instructions.
 
 ### Windows troubleshooting
 
