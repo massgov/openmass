@@ -20,6 +20,7 @@ dependencies:
     - field.field.node.org_page.field_feedback_com_link
     - field.field.node.org_page.field_get_updates_links
     - field.field.node.org_page.field_image_credit
+    - field.field.node.org_page.field_info_details_sections
     - field.field.node.org_page.field_intended_audience
     - field.field.node.org_page.field_links_actions_3
     - field.field.node.org_page.field_location_button_label
@@ -225,6 +226,7 @@ third_party_settings:
       label: News
     group_featured:
       children:
+        - field_info_details_sections
         - field_org_featured_message
         - field_org_featured_items
       parent_name: group_node_edit_form
@@ -328,7 +330,7 @@ content:
     third_party_settings: {  }
     region: content
   field_application_login_links:
-    weight: 98
+    weight: 99
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -443,7 +445,7 @@ content:
     type: image_image
     region: content
   field_billing_organization:
-    weight: 102
+    weight: 103
     settings: {  }
     third_party_settings: {  }
     type: dynamic_entity_reference_options_select
@@ -473,7 +475,7 @@ content:
     third_party_settings: {  }
     region: content
   field_career_opportunities:
-    weight: 97
+    weight: 98
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -487,7 +489,7 @@ content:
     type: options_select
     region: content
   field_event_quantity:
-    weight: 101
+    weight: 102
     settings: {  }
     third_party_settings: {  }
     type: options_select
@@ -519,7 +521,7 @@ content:
     type: link_default
     region: content
   field_get_updates_links:
-    weight: 78
+    weight: 84
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -533,6 +535,18 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: string_textfield
+    region: content
+  field_info_details_sections:
+    weight: 104
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+    third_party_settings: {  }
+    type: entity_reference_paragraphs
     region: content
   field_intended_audience:
     weight: 42
@@ -566,12 +580,13 @@ content:
     region: content
   field_metatags:
     weight: 2
-    settings: {  }
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
   field_more_about_agency_link:
-    weight: 94
+    weight: 95
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -579,7 +594,7 @@ content:
     type: link_default
     region: content
   field_more_about_leadership:
-    weight: 95
+    weight: 96
     settings:
       match_operator: CONTAINS
       size: 60
@@ -589,13 +604,13 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_number_of_news_items:
-    weight: 76
+    weight: 82
     settings: {  }
     third_party_settings: {  }
     type: options_select
     region: content
   field_org_directory_page:
-    weight: 96
+    weight: 97
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -604,7 +619,7 @@ content:
     region: content
   field_org_featured_items:
     type: entity_reference_paragraphs
-    weight: 104
+    weight: 106
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -616,7 +631,7 @@ content:
     region: content
   field_org_featured_message:
     type: entity_reference_paragraphs
-    weight: 103
+    weight: 105
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -627,7 +642,7 @@ content:
     third_party_settings: {  }
     region: content
   field_org_featured_news_items:
-    weight: 75
+    weight: 81
     settings:
       match_operator: CONTAINS
       size: 60
@@ -668,7 +683,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_org_sentence_phrasing:
-    weight: 53
+    weight: 54
     settings:
       size: 60
       placeholder: ''
@@ -676,7 +691,7 @@ content:
     type: string_textfield
     region: content
   field_org_show_news_images:
-    weight: 77
+    weight: 83
     settings:
       display_label: true
     third_party_settings: {  }
@@ -693,7 +708,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_parent:
-    weight: 100
+    weight: 101
     settings:
       match_operator: CONTAINS
       size: 60
@@ -731,7 +746,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_public_records_link:
-    weight: 99
+    weight: 100
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -769,7 +784,7 @@ content:
     third_party_settings: {  }
     region: content
   field_ref_orgs:
-    weight: 93
+    weight: 94
     settings:
       match_operator: CONTAINS
       size: 60

@@ -601,6 +601,18 @@ function mass_theme_preprocess_node_org_page(&$variables) {
     // Slugified title.
     $variables['slugified_title'] = _mass_metatag_slugify(trim($page_title));
 
+    foreach ($node->get('field_info_details_sections')->referencedEntities() as $section) {
+      $ref_entities = $section->get('field_section_long_form_content')->referencedEntities();
+      foreach ($ref_entities as $index => $entity) {
+        if ($entity->bundle() == 'tableau_embed') {
+          $variables['tableauEmbeded'] = TRUE;
+        }
+        if ($entity->bundle() == 'info_details_card_group') {
+          $variables['cardGroup'] = TRUE;
+        }
+      }
+    }
+
     // Make stacked section data object available in twig template.
     $sections = [];
 
