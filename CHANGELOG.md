@@ -1,5 +1,15 @@
 
 
+## [0.270.0] - January 19, 2021
+
+### Added
+  - DP-20590: Add Mayflower ordered list style to ckeditor.
+  
+### Changed
+  - DP-20712: Output content type label name instead of machine name in the Content Type column under the pages linking here tab in content edit page.
+  
+
+
 ## [0.269.0] - January 12, 2021
 
 ### Changed
