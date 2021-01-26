@@ -1,5 +1,19 @@
 
 
+## [0.270.0] - January 26, 2021
+
+### Added
+  - DP-20579: Added contact information related fields to the mass_content_api configuration.
+  - DP-20590: Add Mayflower ordered list style to ckeditor.
+  
+### Fixed
+  - DP-20580: Fixed the warning on Basic HTML text format, updated DropzoneJS module, applied the patch to solve multiple webservers issue related to file uploads.
+  
+### Changed
+  - DP-20712: Output content type label name instead of machine name in the Content Type column under the pages linking here tab in content edit page.
+  
+
+
 ## [0.269.0] - January 12, 2021
 
 ### Changed
