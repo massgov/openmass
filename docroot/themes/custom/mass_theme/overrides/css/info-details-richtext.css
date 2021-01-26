@@ -244,3 +244,20 @@
   padding: 1rem 0;
   border-bottom: 1px solid #141414;
 }
+
+/**
+ * Adjust figure skip link target position below the sticky nav under admin toolbar.
+ */
+
+@media (min-width: 610px) {
+
+  .toolbar-fixed .ma__figure div[id^=figure-] {
+    margin-top: -100px;
+    padding-top: 125px;
+  }
+
+  .toolbar-fixed.toolbar-tray-open .ma__figure div[id^=figure-] {
+    margin-top: -270px;
+    padding-top: 255px;
+  }
+}
