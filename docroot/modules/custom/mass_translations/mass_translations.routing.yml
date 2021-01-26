@@ -7,6 +7,7 @@ mass_translations.controller_translations:
     _node_operation_route: TRUE
   requirements:
     _permission: 'view Translations tab'
+    _custom_access: '\Drupal\mass_translations\Controller\NodeTranslationsController::access'
 mass_translations.controller_media_translations:
   path: '/media/{media}/translations'
   defaults:
@@ -19,3 +20,4 @@ mass_translations.controller_media_translations:
         type: entity:media
   requirements:
     _permission: 'view Translations tab'
+    _custom_access: '\Drupal\mass_translations\Controller\MediaTranslationsController::access'

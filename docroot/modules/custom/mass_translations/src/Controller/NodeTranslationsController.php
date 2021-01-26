@@ -2,7 +2,9 @@
 
 namespace Drupal\mass_translations\Controller;
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\node\NodeStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -22,6 +24,15 @@ class NodeTranslationsController extends TranslationsController {
   public function __construct(NodeStorageInterface $node_storage) {
     $this->nodeStorage = $node_storage;
     $this->englishFieldName = 'field_english_version';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function access(EntityInterface $node) {
+    $languages = parent::getTranslationLanguages($node, $this->nodeStorage, $this->englishFieldName);
+
+    return AccessResult::allowedIf(count($languages) > 1);
   }
 
   /**
