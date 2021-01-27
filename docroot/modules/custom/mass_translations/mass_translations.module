@@ -7,6 +7,8 @@
 
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Drupal\mass_translations\Controller\TranslationsController;
 
@@ -73,4 +75,40 @@ function mass_translations_field_widget_multivalue_form_alter(array &$elements, 
       $elements[0]['target_id']['#title'] = '';
     }
   }
+}
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function mass_translations_element_info_alter(array &$info) {
+  if (isset($info['language_select'])) {
+    if (!isset($info['language_select']['#process'])) {
+      $info['language_select']['#process'] = [];
+    }
+    $info['language_select']['#process'] = array_merge($info['language_select']['#process'], [
+      'mass_translations_process_language_select',
+    ]);
+  }
+}
+
+/**
+ * Processes a language select list form element.
+ *
+ * @param array $element
+ *   The form element to process.
+ *
+ * @return array
+ *   The processed form element.
+ */
+function mass_translations_process_language_select($element) {
+  $element['#description'] = t('If the language you need is not here, please file a @servicenow_request.',
+    [
+      '@servicenow_request' => Link::fromTextAndUrl(
+        t('ServiceNow request'),
+        Url::fromUri('https://massgov.service-now.com/sp?id=sc_cat_item&sys_id=0bb8e784dbec0700f132fb37bf9619fe')
+      )->toString(),
+    ]
+  );
+
+  return $element;
 }
