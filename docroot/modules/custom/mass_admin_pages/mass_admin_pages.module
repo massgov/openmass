@@ -232,3 +232,36 @@ function mass_admin_pages_preprocess_page(&$variables) {
     unset($variables['page']['content']['mass_admin_theme_local_actions']);
   }
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Hide the KPI tab and fields on all new service pages.
+ */
+function mass_admin_pages_form_node_service_page_form_alter(&$form, &$form_state, $form_id) {
+  unset($form['field_service_kpi_choice']);
+  foreach (array_keys($form) as $field_name) {
+    if (strpos($field_name, 'field_kpi_') !== FALSE) {
+      unset($form[$field_name]);
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Hide the KPI tab and fields on all service pages except two PFML pages.
+ */
+function mass_admin_pages_form_node_service_page_edit_form_alter(&$form, &$form_state, $form_id) {
+  $pfml_service_family_nids = [414121, 535101];
+  if ($nid = $form_state->getFormObject()->getEntity()->id()) {
+    if (!in_array($nid, $pfml_service_family_nids)) {
+      unset($form['field_service_kpi_choice']);
+      foreach (array_keys($form) as $field_name) {
+        if (strpos($field_name, 'field_kpi_') !== FALSE) {
+          unset($form[$field_name]);
+        }
+      }
+    }
+  }
+}
