@@ -1,5 +1,25 @@
 
 
+## [0.270.0] - January 27, 2021
+
+### Added
+  - DP-20579: Added contact information related fields to the mass_content_api configuration.
+  - DP-20590: Add Mayflower ordered list style to ckeditor.
+  
+### Fixed
+  - DP-20580: Fixed the warning on Basic HTML text format, updated DropzoneJS module, applied the patch to solve multiple webservers issue related to file uploads.
+  
+### Changed
+  - DP-20712: Output content type label name instead of machine name in the Content Type column under the pages linking here tab in content edit page.
+  - DP-21005: Updated Mayflower version to 11.1.1.
+  - DP-20555: Add a skip link to figure component as an accessibility improvement.(MF)
+  - DP-20986: Change Caspio dataId in Patternlab to use the dedicated testing example to avoid breakage.(MF)
+  - DP-20435: Fix filters alignment and move styles into assets.(MF)
+Updated Mayflower version to 11.1.2.
+  - DP-20768: Set fillImage.js to get the page content container width for full size elements with figure component.(MF)
+  
+
+
 ## [0.269.0] - January 12, 2021
 
 ### Changed
