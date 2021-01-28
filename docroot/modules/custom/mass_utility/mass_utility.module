@@ -1126,9 +1126,6 @@ function mass_utility_post_update_events_event_type(&$sandbox = NULL) {
  * Implements hook pathauto_alias_alter()
  */
 function mass_utility_pathauto_alias_alter(&$alias, $context) {
-  // Set language of all aliases to undefined to allow aliases to remain independent of language.
-  $context['language'] = \Drupal\Core\Language\LanguageInterface::LANGCODE_NOT_SPECIFIED;
-
   // Proceed only if we are operating in the context of a node entity.
   if (array_key_exists('data', $context) && array_key_exists('node', $context['data'])) {
     $node_being_aliased = $context['data']['node'];
