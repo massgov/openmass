@@ -113,9 +113,9 @@ class LinkingPageController extends ControllerBase {
             '#type' => 'item',
             '#title' => $child,
           ];
-          $output['linking_nodes'][$k]['type'][] = [
+          $output['linking_nodes'][$k]['type']['entity'][] = [
             '#type' => 'item',
-            '#title' => $child_node->getType(),
+            '#title' => $child_node->type->entity->label(),
           ];
           if (!empty($used_links)) {
             foreach ($used_links as $child_nid => $labels) {
