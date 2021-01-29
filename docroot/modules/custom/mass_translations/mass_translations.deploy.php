@@ -5,16 +5,20 @@
  * Implementations of hook_deploy_NAME() for Mass Translations.
  */
 
+use Drupal\taxonomy\TermInterface;
+
 /**
  * Migrate document language fields.
  */
 function mass_translations_deploy_language_terms(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
+  $english_target_id = 8876;
+
   $query = \Drupal::entityQuery('media')
     ->condition('status', 1)
     ->condition('bundle', 'document')
-    ->condition('field_language.target_id', 8876, "!=");
+    ->condition('field_language.target_id', $english_target_id, "!=");
 
   if (empty($sandbox)) {
     $sandbox['progress'] = 0;
@@ -23,7 +27,7 @@ function mass_translations_deploy_language_terms(&$sandbox) {
     $sandbox['max'] = $count->count()->execute();
   }
 
-  $batch_size = 10;
+  $batch_size = 200;
 
   $mids = $query->condition('mid', $sandbox['current'], '>')
     ->sort('mid')
@@ -38,8 +42,6 @@ function mass_translations_deploy_language_terms(&$sandbox) {
     $sandbox['current'] = $media_item->id();
 
     $langcode_map = [
-      'English' => 'en',
-      'English (United States)' => 'en',
       'Spanish' => 'es',
       'Portuguese' => 'pt-pt',
       'Chinese' => 'zh-hans',
@@ -61,12 +63,18 @@ function mass_translations_deploy_language_terms(&$sandbox) {
       'Portuguese (Brazil)' => 'pt-br',
     ];
 
-    $field_language_value = $media_item->get('field_language')->getName();
+    $term_entity = $media_item->get('field_language')->entity;
+    if ($term_entity instanceof TermInterface) {
+      $field_language_value = trim($term_entity->label());
+    }
 
-    if (in_array($field_language_value, $langcode_map)) {
-      echo $field_language_value;
+    if (in_array($field_language_value, array_keys($langcode_map))) {
       $media_item->set('langcode', $langcode_map[$field_language_value]);
-      $media_item->save();
+
+      // Validate that the media item has a file, then save.
+      if ($media_item->getSource()->getSourceFieldValue($media_item)) {
+        $media_item->save();
+      }
     }
 
     $sandbox['progress']++;

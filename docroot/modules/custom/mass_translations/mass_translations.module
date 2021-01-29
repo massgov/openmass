@@ -109,7 +109,7 @@ function mass_translations_pathauto_alias_alter(&$alias, array &$context) {
  * @return array
  *   The processed form element.
  */
-function mass_translations_process_language_select($element) {
+function mass_translations_process_language_select($element): array {
   $element['#description'] = t('If the language you need is not here, please file a @servicenow_request.',
     [
       '@servicenow_request' => Link::fromTextAndUrl(
