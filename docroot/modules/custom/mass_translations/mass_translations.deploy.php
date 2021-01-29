@@ -65,15 +65,15 @@ function mass_translations_deploy_language_terms(&$sandbox) {
 
     $term_entity = $media_item->get('field_language')->entity;
     if ($term_entity instanceof TermInterface) {
-      $field_language_value = trim($term_entity->label());
-    }
+      $field_language_value = $term_entity->label();
 
-    if (in_array($field_language_value, array_keys($langcode_map))) {
-      $media_item->set('langcode', $langcode_map[$field_language_value]);
+      if (in_array($field_language_value, array_keys($langcode_map))) {
+        $media_item->set('langcode', $langcode_map[$field_language_value]);
 
-      // Validate that the media item has a file, then save.
-      if ($media_item->getSource()->getSourceFieldValue($media_item)) {
-        $media_item->save();
+        // Validate that the media item has a file, then save.
+        if ($media_item->getSource()->getSourceFieldValue($media_item)) {
+          $media_item->save();
+        }
       }
     }
 
