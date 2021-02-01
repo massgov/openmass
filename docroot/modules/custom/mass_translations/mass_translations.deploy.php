@@ -18,7 +18,8 @@ function mass_translations_deploy_language_terms(&$sandbox) {
   $query = \Drupal::entityQuery('media')
     ->condition('status', 1)
     ->condition('bundle', 'document')
-    ->condition('field_language.target_id', $english_target_id, "!=");
+    ->condition('field_language.target_id', $english_target_id, "!=")
+    ->condition('field_upload_file.target_id', '', '!=');
 
   if (empty($sandbox)) {
     $sandbox['progress'] = 0;
@@ -27,7 +28,7 @@ function mass_translations_deploy_language_terms(&$sandbox) {
     $sandbox['max'] = $count->count()->execute();
   }
 
-  $batch_size = 250;
+  $batch_size = 1000;
 
   $mids = $query->condition('mid', $sandbox['current'], '>')
     ->sort('mid')
@@ -40,10 +41,6 @@ function mass_translations_deploy_language_terms(&$sandbox) {
 
   foreach ($media_items as $media_item) {
     $sandbox['current'] = $media_item->id();
-    // Validate that the media item has a file before proceeding.
-    if (!$media_item->getSource()->getSourceFieldValue($media_item)) {
-      continue;
-    }
 
     $langcode_map = [
       'Spanish' => 'es',
