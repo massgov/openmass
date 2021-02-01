@@ -49,21 +49,15 @@ class SanitizationCommands extends DrushCommands {
       return;
     }
     $types = array_keys($this->entityTypeManager->getDefinitions());
-    foreach ($types as $idx => $type) {
+    // This is a bit of a hack, but content moderation needs to go dead last
+    // so it can clean up after all the other stuff has been deleted.
+    $idx = array_search('content_moderation_state', $types);
+    if ($idx !== -1) {
+      unset($types[$idx]);
+      $types[] = 'content_moderation_state';
+    }
 
-      // Deleting menu link content sometimes results in rendering issues with
-      // super-sanitized databases, so excluding it from sanitization.
-      if ($type == 'menu_link_content') {
-        unset($types[$idx]);
-      }
-
-      // This is a bit of a hack, but content moderation needs to go dead last
-      // so it can clean up after all the other stuff has been deleted.
-      if ($type == 'content_moderation_state') {
-        unset($types[$idx]);
-        $types[] = 'content_moderation_state';
-      }
-
+    foreach ($types as $type) {
       if ($sanitizer = $this->getEntitySanitizer($type)) {
         $sanitizer->sanitize();;
       }
