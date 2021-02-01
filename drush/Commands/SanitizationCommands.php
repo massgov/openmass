@@ -65,7 +65,7 @@ class SanitizationCommands extends DrushCommands {
       $types[] = 'content_moderation_state';
     }
 
-    foreach ($types as $idx => $type) {
+    foreach ($types as $type) {
       if ($sanitizer = $this->getEntitySanitizer($type)) {
         $sanitizer->sanitize();
       }
