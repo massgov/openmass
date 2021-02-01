@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.binder.field_binder_appendix
     - field.field.node.binder.field_binder_banner_image
     - field.field.node.binder.field_binder_binder_type
+    - field.field.node.binder.field_binder_data_type
     - field.field.node.binder.field_binder_date_published
     - field.field.node.binder.field_binder_last_updated
     - field.field.node.binder.field_binder_metatags
@@ -17,6 +18,9 @@ dependencies:
     - field.field.node.binder.field_binder_short_desc
     - field.field.node.binder.field_binder_volume
     - field.field.node.binder.field_contact
+    - field.field.node.binder.field_data_flag
+    - field.field.node.binder.field_data_format
+    - field.field.node.binder.field_data_resource_type
     - field.field.node.binder.field_downloads
     - field.field.node.binder.field_intended_audience
     - field.field.node.binder.field_organizations
@@ -24,6 +28,7 @@ dependencies:
     - field.field.node.binder.field_state_organization_tax
     - image.style.thumbnail
     - node.type.binder
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -66,6 +71,10 @@ third_party_settings:
         - field_binder_overview
         - field_reusable_label
         - field_organizations
+        - field_data_flag
+        - field_binder_data_type
+        - field_data_resource_type
+        - field_data_format
         - field_intended_audience
       parent_name: group_binder_node_edit_form
       weight: 1
@@ -83,7 +92,7 @@ third_party_settings:
         - field_binder_appendix
         - field_downloads
       parent_name: group_binder_node_edit_form
-      weight: 7
+      weight: 2
       format_type: tab
       format_settings:
         id: ''
@@ -97,7 +106,7 @@ third_party_settings:
         - field_contact
         - field_binder_related
       parent_name: group_binder_node_edit_form
-      weight: 7
+      weight: 4
       format_type: tab
       format_settings:
         id: ''
@@ -137,6 +146,28 @@ content:
     third_party_settings: {  }
     type: options_select
     region: content
+  field_binder_data_type:
+    weight: 15
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        c723fce5-7805-4f8d-ad19-b30c0edecf2d:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form: {  }
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: binder
+    type: options_buttons
+    region: content
   field_binder_date_published:
     weight: 7
     settings: {  }
@@ -151,7 +182,8 @@ content:
     region: content
   field_binder_metatags:
     weight: 6
-    settings: {  }
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
@@ -236,6 +268,60 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_data_flag:
+    weight: 14
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_data_format:
+    weight: 17
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        6155dce8-6b2f-48b8-bd1d-d622599da9c1:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: binder
+    type: options_buttons
+    region: content
+  field_data_resource_type:
+    weight: 16
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        fd0972ee-9a0b-4427-adec-d5151340889b:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: binder
+    type: options_buttons
+    region: content
   field_downloads:
     weight: 14
     settings:
@@ -249,13 +335,15 @@ content:
       collapsible: false
       collapsed: false
       allow_duplicate: false
+      revision: false
+      allow_edit: true
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
     type: inline_entity_form_complex
     region: content
   field_intended_audience:
-    weight: 14
+    weight: 18
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -292,24 +380,24 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 11
     settings: {  }
     region: content
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 4
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 3
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -333,21 +421,21 @@ content:
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 10
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   path: true
