@@ -27,7 +27,7 @@ function mass_translations_deploy_language_terms(&$sandbox) {
     $sandbox['max'] = $count->count()->execute();
   }
 
-  $batch_size = 200;
+  $batch_size = 250;
 
   $mids = $query->condition('mid', $sandbox['current'], '>')
     ->sort('mid')
@@ -40,6 +40,10 @@ function mass_translations_deploy_language_terms(&$sandbox) {
 
   foreach ($media_items as $media_item) {
     $sandbox['current'] = $media_item->id();
+    // Validate that the media item has a file before proceeding.
+    if (!$media_item->getSource()->getSourceFieldValue($media_item)) {
+      continue;
+    }
 
     $langcode_map = [
       'Spanish' => 'es',
@@ -69,11 +73,7 @@ function mass_translations_deploy_language_terms(&$sandbox) {
 
       if (in_array($field_language_value, array_keys($langcode_map))) {
         $media_item->set('langcode', $langcode_map[$field_language_value]);
-
-        // Validate that the media item has a file, then save.
-        if ($media_item->getSource()->getSourceFieldValue($media_item)) {
-          $media_item->save();
-        }
+        $media_item->save();
       }
     }
 
