@@ -1,69 +1,29 @@
-uuid: 32751ba3-d11f-48ef-a3b2-8e10ecd0afda
+uuid: 19ea0e2d-56ee-477d-8f40-dbabebced152
 langcode: en
 status: true
 dependencies:
   config:
     - field.storage.node.field_binder_data_type
     - node.type.binder
-  module:
-    - dynamic_entity_reference
+    - taxonomy.vocabulary.tx_details_data_type
 id: node.binder.field_binder_data_type
 field_name: field_binder_data_type
 entity_type: node
 bundle: binder
 label: 'Data type'
-description: ''
+description: "Choose the data type that applies to this page.<br/><br/> \r\n<b>Data resource:</b>A Report that is an information summary and analysis of a dataset or a collection of datasets that provide insights into the raw data with a focus on visualizing data in organized charts and tables. <br/> \r\n<b>Dataset:</b> A body of structured information describing some topic(s) of interest. A dataset usually comprises a description of the data and one or multiple data resources, which can be in various formats.<br/> \r\n<b>Data catalog:</b> A collection of datasets that covers one or more topics. For example, an open data portal or a curated dataset listing across multiple topics. "
 required: false
 translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:
-  access_token:
-    handler: 'default:access_token'
-    handler_settings: {  }
-  contact_message:
-    handler: 'default:contact_message'
-    handler_settings: {  }
-  node:
-    handler: 'default:node'
-    handler_settings: {  }
-  content_moderation_state:
-    handler: 'default:content_moderation_state'
-    handler_settings: {  }
-  crop:
-    handler: 'default:crop'
-    handler_settings: {  }
-  menu_link_content:
-    handler: 'default:menu_link_content'
-    handler_settings: {  }
-  entity_embed_fake_entity:
-    handler: 'default:entity_embed_fake_entity'
-    handler_settings: {  }
-  file:
-    handler: 'default:file'
-    handler_settings: {  }
-  flagging:
-    handler: 'default:flagging'
-    handler_settings: {  }
-  media:
-    handler: 'default:media'
-    handler_settings: {  }
-  paragraph:
-    handler: 'default:paragraph'
-    handler_settings: {  }
-  redirect:
-    handler: 'default:redirect'
-    handler_settings: {  }
-  taxonomy_term:
-    handler: 'default:taxonomy_term'
-    handler_settings: {  }
-  path_alias:
-    handler: 'default:path_alias'
-    handler_settings: {  }
-  user:
-    handler: 'default:user'
-    handler_settings: {  }
-  user_ref_access:
-    handler: 'default:user_ref_access'
-    handler_settings: {  }
-field_type: dynamic_entity_reference
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      tx_details_data_type: tx_details_data_type
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference
