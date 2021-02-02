@@ -94,6 +94,7 @@ class SanitizationCommands extends DrushCommands {
       ->condition('collection', 'entity.storage_schema.sql', '!=')
       ->condition('collection', 'system.schema', '!=')
       ->condition('collection', 'post_update', '!=')
+      ->condition('collection', 'deploy_hook', '!=')
       // State will be handled separately.
       ->condition('collection', 'state', '!=')
       ->execute();
