@@ -64,7 +64,7 @@ class UnpublishReminderQueue extends QueueWorkerBase {
         }
       }
 
-      $params['message'] = t("A Promotional page or Alert that you or someone in your organization authored has an unpublish date that will arrive soon. At that time, the content will be unpublished.\nPage: :page_url\nUnpublish date: @unpublish_date\nIf you want to keep the page or alert, please review it, check its performance, and update it if necessary. You can then update the unpublish date.\nIf you no longer need a Promotional page or Alert, you can let it unpublish automatically or you can unpublish it manually now. If you think there could still be traffic to the Promotional page, please make a ServiceNow ticket to redirect that traffic to an appropriate page.\nIf you have any questions, please make a ServiceNow request.\n\nThank you.",
+      $params['message'] = t("A Promotional page or Alert that you or someone in your organization authored has an unpublish date that will arrive soon. At that time, the content will be unpublished.\n\nPage: :page_url\nUnpublish date: @unpublish_date\n\nIf you want to keep the page or alert, please review it, check its performance, and update it if necessary. You can then update the unpublish date.\n\nIf you no longer need a Promotional page or Alert, you can let it unpublish automatically or you can unpublish it manually now. If you think there could still be traffic to the Promotional page, please make a ServiceNow ticket to redirect that traffic to an appropriate page.\n\nIf you have any questions, please make a ServiceNow request.\n\nThank you.",
         [
           '@unpublish_date' => $unpublish_date,
           ':page_url' => $url,
