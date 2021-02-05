@@ -63,7 +63,7 @@ third_party_settings:
         - field_start_date
         - field_end_date
       parent_name: group_basic
-      weight: 14
+      weight: 15
       format_type: fieldset
       format_settings:
         label: Timeframe
@@ -88,7 +88,6 @@ third_party_settings:
       children:
         - field_alternative_title
         - field_geographic_area
-        - field_media_english_version
         - field_content_type
         - field_subjects
         - field_additional_info
@@ -123,6 +122,7 @@ third_party_settings:
         - field_category
         - field_organizations
         - langcode
+        - field_media_english_version
         - field_creator
         - field_publishing_frequency
         - field_geographic_place
@@ -195,7 +195,7 @@ content:
     type: link_default
     region: content
   field_contact_information:
-    weight: 13
+    weight: 14
     settings:
       rows: 1
       placeholder: ''
@@ -203,7 +203,7 @@ content:
     type: string_textarea
     region: content
   field_contact_name:
-    weight: 12
+    weight: 13
     settings:
       match_operator: CONTAINS
       size: 60
@@ -223,7 +223,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_creator:
-    weight: 9
+    weight: 10
     settings:
       match_operator: CONTAINS
       size: 60
@@ -257,7 +257,7 @@ content:
     region: content
   field_document_label:
     type: entity_reference_autocomplete
-    weight: 15
+    weight: 16
     region: content
     settings:
       match_operator: CONTAINS
@@ -274,7 +274,7 @@ content:
     type: string_textfield
     region: content
   field_document_type:
-    weight: 16
+    weight: 17
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -301,7 +301,7 @@ content:
     type: geofield_latlon
     region: content
   field_geographic_place:
-    weight: 11
+    weight: 12
     settings:
       size: 60
       placeholder: ''
@@ -309,7 +309,7 @@ content:
     type: string_textfield
     region: content
   field_internal_notes:
-    weight: 18
+    weight: 19
     settings:
       rows: 1
       placeholder: ''
@@ -339,7 +339,7 @@ content:
     type: link_default
     region: content
   field_media_english_version:
-    weight: 39
+    weight: 9
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -395,7 +395,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_publishing_frequency:
-    weight: 10
+    weight: 11
     settings: {  }
     third_party_settings: {  }
     type: options_select
@@ -433,7 +433,7 @@ content:
     type: link_default
     region: content
   field_tags:
-    weight: 17
+    weight: 18
     settings:
       match_operator: CONTAINS
       size: 60
