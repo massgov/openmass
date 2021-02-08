@@ -16,6 +16,7 @@ dependencies:
     - field.field.node.curated_list.field_list_type
     - field.field.node.curated_list.field_organizations
     - field.field.node.curated_list.field_related_links
+    - field.field.node.curated_list.field_reusable_label
     - field.field.node.curated_list.field_state_organization_tax
     - node.type.curated_list
   module:
@@ -39,7 +40,7 @@ content:
       link: true
     third_party_settings: {  }
   content_moderation_control:
-    weight: -20
+    weight: 0
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -184,6 +185,7 @@ content:
     third_party_settings: {  }
 hidden:
   computed_log_in_links: true
+  field_reusable_label: true
   field_state_organization_tax: true
   page_next: true
   page_previous: true

@@ -1,0 +1,29 @@
+uuid: f3a524c9-d93e-4549-8550-26d65db9d6c3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_reusable_label
+    - node.type.page
+    - taxonomy.vocabulary.label
+id: node.page.field_reusable_label
+field_name: field_reusable_label
+entity_type: node
+bundle: page
+label: Label(s)
+description: 'Optional. Add labels that can be used to group content for lists, searching and analytics. Labels can be used to be used to generate a list of pages with that label or combination of labels. Start typing to choose an existing label or add a new one by entering it directly. <strong>IMPORTANT: Be sure to create <em>specific</em> labels. The label field is shared across the whole site. Your label should be unique and identifiable to prevent overlap with others.</strong> For example, use "DOR directives" or "Masshealth enrollment forms" rather than "Directives" or "Enrollment forms."'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      label: label
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference
