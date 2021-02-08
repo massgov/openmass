@@ -10,15 +10,25 @@ dependencies:
     - field.field.paragraph.iframe.field_iframe_alignment
     - field.field.paragraph.iframe.field_iframe_caption
     - field.field.paragraph.iframe.field_iframe_display_size
+    - field.field.paragraph.iframe.field_iframe_height_config
     - field.field.paragraph.iframe.field_iframe_wrapping
     - field.field.paragraph.iframe.field_media_display
     - field.field.paragraph.iframe.field_url
     - paragraphs.paragraphs_type.iframe
+  module:
+    - options
 id: paragraph.iframe.default
 targetEntityType: paragraph
 bundle: iframe
 mode: default
-content: {  }
+content:
+  field_iframe_height_config:
+    weight: 0
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
 hidden:
   created: true
   field_caption: true
