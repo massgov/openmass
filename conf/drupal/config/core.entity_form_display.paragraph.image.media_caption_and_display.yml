@@ -6,24 +6,23 @@ dependencies:
     - core.entity_form_mode.paragraph.media_caption_and_display
     - field.field.paragraph.image.field_caption
     - field.field.paragraph.image.field_image
+    - field.field.paragraph.image.field_image_administrative_title
+    - field.field.paragraph.image.field_image_alignment
+    - field.field.paragraph.image.field_image_caption
+    - field.field.paragraph.image.field_image_wrapping
     - field.field.paragraph.image.field_media_display
     - image.style.thumbnail
     - paragraphs.paragraphs_type.image
   module:
+    - allowed_formats
     - image
+    - maxlength
+    - text
 id: paragraph.image.media_caption_and_display
 targetEntityType: paragraph
 bundle: image
 mode: media_caption_and_display
 content:
-  field_caption:
-    weight: 2
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_image:
     weight: 1
     settings:
@@ -32,8 +31,44 @@ content:
     third_party_settings: {  }
     type: image_image
     region: content
-  field_media_display:
+  field_image_administrative_title:
+    type: string_textfield
     weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_image_alignment:
+    type: options_buttons
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_image_caption:
+    type: text_textarea
+    weight: 2
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings:
+      allowed_formats:
+        hide_help: '1'
+        hide_guidelines: '1'
+      maxlength:
+        maxlength_js: 500
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: true
+        maxlength_js_truncate_html: true
+  field_image_wrapping:
+    type: options_buttons
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_media_display:
+    weight: 3
     settings: {  }
     third_party_settings: {  }
     type: options_select
@@ -45,5 +80,6 @@ content:
     region: content
 hidden:
   created: true
+  field_caption: true
   status: true
   uid: true

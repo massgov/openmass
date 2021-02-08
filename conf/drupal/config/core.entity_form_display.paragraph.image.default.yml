@@ -5,11 +5,16 @@ dependencies:
   config:
     - field.field.paragraph.image.field_caption
     - field.field.paragraph.image.field_image
+    - field.field.paragraph.image.field_image_administrative_title
+    - field.field.paragraph.image.field_image_alignment
+    - field.field.paragraph.image.field_image_caption
+    - field.field.paragraph.image.field_image_wrapping
     - field.field.paragraph.image.field_media_display
     - image.style.thumbnail
     - paragraphs.paragraphs_type.image
   module:
     - image
+    - text
 id: paragraph.image.default
 targetEntityType: paragraph
 bundle: image
@@ -23,6 +28,28 @@ content:
     third_party_settings: {  }
     type: image_image
     region: content
+  field_image_administrative_title:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_image_alignment:
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_image_caption:
+    weight: 3
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
   paragraphs_type_help__default:
     weight: -100
     settings: {  }
@@ -31,6 +58,7 @@ content:
 hidden:
   created: true
   field_caption: true
+  field_image_wrapping: true
   field_media_display: true
   status: true
   uid: true
