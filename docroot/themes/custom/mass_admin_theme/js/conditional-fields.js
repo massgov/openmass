@@ -153,6 +153,15 @@
           $(this).siblings('.field--name-field-iframe-wrapping').show();
         }
       }).change();
+
+      $('.field--name-field-iframe-height-config', context).change(function () {
+        if ($(this).find('input:checked').val() === '100') {
+          $(this).siblings('.field--name-field-height').hide().find('input').val(0).removeAttr('required');
+        }
+        else {
+          $(this).siblings('.field--name-field-height').show().find('input').val('').attr('required', 'required');
+        }
+      }).change();
     }
   };
 
