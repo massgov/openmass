@@ -36,6 +36,11 @@
  * @ingroup themeable
  */
 #}
+{% if paragraph.field_iframe_height_config.value == '100' %}
+  {% set full_height = true %}
+  {{ attach_library('mass_theme/iframe-resizer') }}
+{% endif %}
+
 {% set caption = {
   '#type':   'processed_text',
   '#text':    paragraph.field_iframe_caption.value,
@@ -50,10 +55,9 @@
     "iframe": {
       "src": paragraph.field_url.uri,
       "title": paragraph.field_iframe_accessibility_title.value,
-      "height": paragraph.field_height.value,
+      "height": full_height ? "auto" : paragraph.field_height.value,
       "position": paragraph.field_iframe_display_size.value,
       "caption": caption
     }
   }
 } %}
-{{ content }}
