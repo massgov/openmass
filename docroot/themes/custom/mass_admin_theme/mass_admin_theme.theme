@@ -10,8 +10,6 @@ use Drupal\Core\Render\Element;
 use Drupal\Core\Site\Settings;
 use Drupal\views\Render\ViewsRenderPipelineMarkup;
 use Drupal\views\Views;
-use Symfony\Component\HttpFoundation\Cookie;
-use \Symfony\Component\HttpFoundation\Response;
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -230,12 +228,8 @@ function _add_description_display_before(&$variables) {
 function mass_admin_theme_preprocess_form_element(&$variables) {
   _add_description_display_before($variables);
 
-  $response = new Response();
-
   // Remove cookie when in the admin theme to ensure that the cookie is reset.
-  $cookie = new Cookie('ah_app_server', '', REQUEST_TIME - 3600, '/');
-  $response->headers->setCookie($cookie);
-  $response->sendHeaders();
+  setrawcookie('ah_app_server', '', REQUEST_TIME - 3600, '/');
 
   if (isset($variables['element']['#id']) &&
     ($variables['element']['#id'] === 'edit-upload')
@@ -247,9 +241,7 @@ function mass_admin_theme_preprocess_form_element(&$variables) {
     // See https://support.acquia.com/hc/en-us/articles/360004147834-Pinning-to-a-web-server-without-using-the-hosts-file#defineacookie
     $server_name = explode('.', gethostname());
     if (count($server_name) > 1) {
-      $cookie = new Cookie('ah_app_server', rawurlencode($server_name[0]), REQUEST_TIME + 86400, '/');
-      $response->headers->setCookie($cookie);
-      $response->sendHeaders();
+      setrawcookie('ah_app_server', rawurlencode($server_name[0]), REQUEST_TIME + 86400, '/');
     }
   }
 }
