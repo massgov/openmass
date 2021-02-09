@@ -1,5 +1,18 @@
 
 
+## [0.272.0] - February 9, 2021
+
+### Changed
+  - DP-19181: Change the unpublish reminder email format by adding blank lines between the paragraphs.
+  - DP-21067: Removed menu link content from database sanitization.
+  - DP-21174: Updated Mayflower version to 11.1.4.
+  - DP-20381: Fix left floated figure components and images to cover list style elements in rich text containers. (MF)
+  
+### Fixed
+  - DP-20580: Address issue where uploading files via the WYSIWYG editor results in an error.
+  
+
+
 ## [0.271.0] - February 2, 2021
 
 ### Changed
