@@ -39,7 +39,20 @@ class MassMetatagCategory extends MetaNameBase {
         if ($binder_ref = current($binder->referencedEntities())) {
           $binder_type = $binder_ref->get('name')->first()->getValue();
           if ($binder_type['value'] !== 'Law Library') {
-            return '';
+            if ($node->get('field_data_flag')) {
+              $tag = [
+                '#tag' => 'meta',
+                '#attributes' => [
+                  'name' => 'category',
+                  'content' => 'data',
+                ],
+              ];
+              return $tag;
+            }
+            else
+            {
+              return '';
+            }
           }
         }
       }

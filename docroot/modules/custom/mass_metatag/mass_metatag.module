@@ -237,15 +237,6 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
           $replacements[$original] = $tag;
           break;
 
-        case 'laws-regulations':
-          $tag = [];
-          if ($data['node']->hasField('field_data_flag') && $data_flag = $data['node']->get('field_data_flag')) {
-            if (!empty($data_flag->getValue())) {
-              $tag = 'data';
-            }
-          }
-          $replacements[$original] = implode(',', $tags);
-          break;
       }
     }
   }
