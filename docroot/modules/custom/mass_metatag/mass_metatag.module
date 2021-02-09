@@ -67,11 +67,6 @@ function mass_metatag_token_info() {
     'description' => t('The Services category metatag.'),
     'type' => 'node',
   ];
-  // $info['tokens']['node']['laws-regulations'] = [
-  //   'name' => t('Binder tag'),
-  //   'description' => t('The Binder category metatag.'),
-  //   'type' => 'node',
-  // ];
 
   return $info;
 }
@@ -242,15 +237,6 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
           $replacements[$original] = $tag;
           break;
 
-        // case 'laws-regulations':
-        //   $tag = 'laws-regulations';
-        //   if ($data['node']->hasField('field_data_flag') && $data_flag = $data['node']->get('field_data_flag')) {
-        //     if (!empty($data_flag->getValue())) {
-        //       $tag = 'data';
-        //     }
-        //   }
-        //   $replacements[$original] = $tag;
-        //   break;
       }
     }
   }
