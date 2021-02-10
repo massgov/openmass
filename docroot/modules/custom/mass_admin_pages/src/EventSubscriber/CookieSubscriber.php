@@ -31,14 +31,14 @@ class CookieSubscriber extends FinishResponseSubscriber implements EventSubscrib
    * {@inheritdoc}
    */
   public static function getSubscribedEvents() {
-    $events[KernelEvents::RESPONSE][] = ['checkForContentEditPage'];
+    $events[KernelEvents::RESPONSE][] = ['checkForNodeEdit'];
     return $events;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function checkForContentEditPage(FilterResponseEvent $event) {
+  public function checkForNodeEdit(FilterResponseEvent $event) {
     $server_name = explode('.', gethostname());
     if (\Drupal::currentUser()->isAuthenticated()) {
       if ($event->getRequest()->attributes->get('_route') == 'entity.node.edit_form') {
