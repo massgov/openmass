@@ -228,9 +228,6 @@ function _add_description_display_before(&$variables) {
 function mass_admin_theme_preprocess_form_element(&$variables) {
   _add_description_display_before($variables);
 
-  // Remove cookie when in the admin theme to ensure that the cookie is reset.
-  setrawcookie('ah_app_server', '', REQUEST_TIME - 3600, '/');
-
   if (isset($variables['element']['#id']) &&
     ($variables['element']['#id'] === 'edit-upload')
   ) {
