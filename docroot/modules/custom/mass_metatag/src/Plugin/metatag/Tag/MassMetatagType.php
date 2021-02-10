@@ -47,22 +47,22 @@ class MassMetatagType extends MetaNameBase {
             $tags = [];
 
             // field_data_resource_type has a value + data type = Data resource.
-              if (!$data_resources->isEmpty() && strpos($type_name, 'resource') !== FALSE) {
-                foreach ($data_resources->referencedEntities() as $k => $resource) {
-                  $tags[$k] = $resource->get('field_dataresource_metatag')->getString();
-                }
-                $outputValue = ', ' . implode(', ', $tags);
+            if (!$data_resources->isEmpty() && strpos($type_name, 'resource') !== FALSE) {
+              foreach ($data_resources->referencedEntities() as $k => $resource) {
+                $tags[$k] = $resource->get('field_dataresource_metatag')->getString();
               }
+              $outputValue = ', ' . implode(', ', $tags);
+            }
 
-              elseif ($data_resources->isEmpty() && strpos($type_name, 'resource') !== FALSE) {
-                // Type = Data resource + 'field_data_resource_type' = unchecked.
-                $outputValue = ', ' . $type_name;
-              }
+            elseif ($data_resources->isEmpty() && strpos($type_name, 'resource') !== FALSE) {
+              // Type = Data resource + 'field_data_resource_type' = unchecked.
+              $outputValue = ', ' . $type_name;
+            }
 
-              elseif (!$items[0]->get('field_details_datatype_metatag')->isEmpty()) {
-                // Anything but 'Data resource'.
-                $outputValue = ', ' . $items[0]->get('field_details_datatype_metatag')->getString();
-              }
+            elseif (!$items[0]->get('field_details_datatype_metatag')->isEmpty()) {
+              // Anything but 'Data resource'.
+              $outputValue = ', ' . $items[0]->get('field_details_datatype_metatag')->getString();
+            }
           }
         }
         // Add the type value to the initial mg_type value, field_binder_binder_type.
