@@ -2,6 +2,11 @@
 
 namespace Drupal\mass_admin_pages\EventSubscriber;
 
+use Drupal\Core\Cache\Context\CacheContextsManager;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\PageCache\RequestPolicyInterface;
+use Drupal\Core\PageCache\ResponsePolicyInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Drupal\Core\EventSubscriber\FinishResponseSubscriber;
 use Symfony\Component\HttpFoundation\Cookie;
@@ -12,6 +17,13 @@ use Symfony\Component\HttpFoundation\Response;
  * Response subscriber to add cookies.
  */
 class CookieSubscriber extends FinishResponseSubscriber implements EventSubscriberInterface {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(LanguageManagerInterface $language_manager, ConfigFactoryInterface $config_factory, RequestPolicyInterface $request_policy, ResponsePolicyInterface $response_policy, CacheContextsManager $cache_contexts_manager, $http_response_debug_cacheability_headers = FALSE) {
+    parent::__construct($language_manager, $config_factory, $request_policy, $response_policy, $cache_contexts_manager, $http_response_debug_cacheability_headers);
+  }
 
   /**
    * {@inheritdoc}
