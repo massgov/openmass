@@ -46,17 +46,19 @@ class MassMetatagType extends MetaNameBase {
             $data_resources = $node->get('field_data_resource_type');
             $tags = [];
 
-            if (!$data_resources->isEmpty() && strpos($type_name, 'resource') !== FALSE) {
             // field_data_resource_type has a value + data type = Data resource
+            if (!$data_resources->isEmpty() && strpos($type_name, 'resource') !== FALSE) {
               foreach ($data_resources->referencedEntities() as $k => $resource) {
                 $tags[$k] = $resource->get('field_dataresource_metatag')->getString();
               }
-                $outputValue = ', ' . implode(', ', $tags);
-            } elseif ($data_resources->isEmpty() && strpos($type_name, 'resource') !== FALSE) {
-              // type = Data resource + 'field_data_resource_type' = unchecked
+              $outputValue = ', ' . implode(', ', $tags);
+            }
+            elseif ($data_resources->isEmpty() && strpos($type_name, 'resource') !== FALSE) {
+              // Type = Data resource + 'field_data_resource_type' = unchecked.
               $outputValue = ', ' . $type_name;
-            } elseif (!$items[0]->get('field_details_datatype_metatag')->isEmpty()) {
-              // Anything but 'Data resource'
+            }
+            elseif (!$items[0]->get('field_details_datatype_metatag')->isEmpty()) {
+              // Anything but 'Data resource'.
               $outputValue = ', ' . $items[0]->get('field_details_datatype_metatag')->getString();
             }
           }

@@ -49,7 +49,8 @@ class MassMetatagCategory extends MetaNameBase {
                 ],
               ];
               return $tag;
-            } else {
+            }
+            else {
               return '';
             }
           }
