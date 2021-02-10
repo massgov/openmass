@@ -235,14 +235,6 @@ function mass_admin_theme_preprocess_form_element(&$variables) {
     ($variables['element']['#id'] === 'edit-upload')
   ) {
     $variables['prefix'] = t('Please note, only one image can be embedded at a time.');
-
-    // Set cookie to stick file uploads to one server. This cookie is intended
-    // to be set on each file upload but expire after a day if not reset.
-    // See https://support.acquia.com/hc/en-us/articles/360004147834-Pinning-to-a-web-server-without-using-the-hosts-file#defineacookie
-    $server_name = explode('.', gethostname());
-    if (count($server_name) > 1) {
-      setrawcookie('ah_app_server', rawurlencode($server_name[0]), REQUEST_TIME + 86400, '/');
-    }
   }
 }
 
