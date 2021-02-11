@@ -1,8 +1,9 @@
-uuid: 677b8674-7df5-4d34-8102-1fbaf98224d6
+uuid: 0d75e7f3-d045-4a6c-ba77-14b8c0c3634a
 langcode: en
 status: true
 dependencies:
   config:
+    - core.entity_form_mode.node.inline_entity
     - field.field.node.external_data_resource.field_data_format
     - field.field.node.external_data_resource.field_data_resource_type
     - field.field.node.external_data_resource.field_details_data_type
@@ -48,10 +49,10 @@ third_party_settings:
         description: ''
         required_fields: true
       label: 'External data resource'
-id: node.external_data_resource.default
+id: node.external_data_resource.inline_entity
 targetEntityType: node
 bundle: external_data_resource
-mode: default
+mode: inline_entity
 content:
   field_data_format:
     weight: 14
