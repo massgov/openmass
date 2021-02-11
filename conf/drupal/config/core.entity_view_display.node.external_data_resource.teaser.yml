@@ -4,7 +4,6 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
-    - field.field.node.external_data_resource.body
     - field.field.node.external_data_resource.field_data_format
     - field.field.node.external_data_resource.field_data_resource_type
     - field.field.node.external_data_resource.field_details_data_type
@@ -13,21 +12,12 @@ dependencies:
     - field.field.node.external_data_resource.field_organizations
     - node.type.external_data_resource
   module:
-    - text
     - user
 id: node.external_data_resource.teaser
 targetEntityType: node
 bundle: external_data_resource
 mode: teaser
 content:
-  body:
-    label: hidden
-    type: text_summary_or_trimmed
-    weight: 101
-    settings:
-      trim_length: 600
-    third_party_settings: {  }
-    region: content
   links:
     weight: 100
     settings: {  }

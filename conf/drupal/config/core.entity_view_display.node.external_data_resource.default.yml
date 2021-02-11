@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.node.external_data_resource.body
     - field.field.node.external_data_resource.field_data_format
     - field.field.node.external_data_resource.field_data_resource_type
     - field.field.node.external_data_resource.field_details_data_type
@@ -14,20 +13,12 @@ dependencies:
   module:
     - link
     - options
-    - text
     - user
 id: node.external_data_resource.default
 targetEntityType: node
 bundle: external_data_resource
 mode: default
 content:
-  body:
-    label: hidden
-    type: text_default
-    weight: 101
-    settings: {  }
-    third_party_settings: {  }
-    region: content
   field_data_format:
     weight: 107
     label: above
@@ -52,11 +43,11 @@ content:
     type: entity_reference_label
     region: content
   field_externaldata_description:
-    weight: 104
+    weight: 108
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    type: basic_string
     region: content
   field_externaldata_url:
     weight: 102
