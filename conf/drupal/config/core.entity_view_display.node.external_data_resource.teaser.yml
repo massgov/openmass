@@ -1,0 +1,42 @@
+uuid: e7690866-0546-4294-babe-999655b4bde5
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.external_data_resource.body
+    - field.field.node.external_data_resource.field_data_format
+    - field.field.node.external_data_resource.field_data_resource_type
+    - field.field.node.external_data_resource.field_details_data_type
+    - field.field.node.external_data_resource.field_externaldata_description
+    - field.field.node.external_data_resource.field_externaldata_url
+    - field.field.node.external_data_resource.field_organizations
+    - node.type.external_data_resource
+  module:
+    - text
+    - user
+id: node.external_data_resource.teaser
+targetEntityType: node
+bundle: external_data_resource
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  field_data_format: true
+  field_data_resource_type: true
+  field_details_data_type: true
+  field_externaldata_description: true
+  field_externaldata_url: true
+  field_organizations: true
