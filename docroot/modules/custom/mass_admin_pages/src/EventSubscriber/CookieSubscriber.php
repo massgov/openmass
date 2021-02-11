@@ -12,7 +12,6 @@ use Drupal\Core\EventSubscriber\FinishResponseSubscriber;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Route;
 
 /**
  * Response subscriber to add cookies.
