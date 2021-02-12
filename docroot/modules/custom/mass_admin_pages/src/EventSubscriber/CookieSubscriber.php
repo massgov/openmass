@@ -31,7 +31,7 @@ class CookieSubscriber extends FinishResponseSubscriber implements EventSubscrib
    */
   protected function setResponseNotCacheable(Response $response, Request $request) {
     parent::setResponseNotCacheable($response, $request);
-    // Set cookie to stick file uploads to one server when on edit pages to
+    // Set cookie to stick file uploads to one server when on admin pages to
     // address issues with uploading files via the WYSIWYG.
     // See https://support.acquia.com/hc/en-us/articles/360004147834-Pinning-to-a-web-server-without-using-the-hosts-file#defineacookie
     if (\Drupal::service('router.admin_context')->isAdminRoute()) {
