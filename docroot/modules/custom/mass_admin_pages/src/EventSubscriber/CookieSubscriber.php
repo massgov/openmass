@@ -12,6 +12,7 @@ use Drupal\Core\EventSubscriber\FinishResponseSubscriber;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 
 /**
  * Response subscriber to add cookies.
@@ -30,18 +31,13 @@ class CookieSubscriber extends FinishResponseSubscriber implements EventSubscrib
    */
   protected function setResponseNotCacheable(Response $response, Request $request) {
     parent::setResponseNotCacheable($response, $request);
-
+    // Set cookie to stick file uploads to one server when on edit pages to
+    // address issues with uploading files via the WYSIWYG.
+    // See https://support.acquia.com/hc/en-us/articles/360004147834-Pinning-to-a-web-server-without-using-the-hosts-file#defineacookie
     if (\Drupal::service('router.admin_context')->isAdminRoute()) {
-      $response->headers->clearCookie('ah_app_server', '/');
-
-      // Set cookie to stick file uploads to one server when on edit pages to
-      // address issues with uploading files via the WYSIWYG.
-      // See https://support.acquia.com/hc/en-us/articles/360004147834-Pinning-to-a-web-server-without-using-the-hosts-file#defineacookie
-      if ($request->attributes->get('_route') == 'entity_browser.browse_files') {
-        $server_name = explode('.', gethostname());
-        $cookie = new Cookie('ah_app_server', rawurlencode($server_name[0]), REQUEST_TIME + 86400, '/');
-        $response->headers->setCookie($cookie);
-      }
+      $server_name = explode('.', gethostname());
+      $cookie = new Cookie('ah_app_server', rawurlencode($server_name[0]), REQUEST_TIME + 86400, '/');
+      $response->headers->setCookie($cookie);
     }
   }
 
