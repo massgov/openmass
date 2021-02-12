@@ -27,6 +27,9 @@ class CookieSubscriber extends FinishResponseSubscriber implements EventSubscrib
     parent::__construct($language_manager, $config_factory, $request_policy, $response_policy, $cache_contexts_manager, $http_response_debug_cacheability_headers);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function onAllResponds(FilterResponseEvent $event) {
     parent::onAllResponds($event);
     // Set cookie to stick file uploads to one server when on admin pages to
