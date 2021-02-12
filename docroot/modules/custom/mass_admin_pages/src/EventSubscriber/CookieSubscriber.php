@@ -10,9 +10,6 @@ use Drupal\Core\PageCache\ResponsePolicyInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Drupal\Core\EventSubscriber\FinishResponseSubscriber;
 use Symfony\Component\HttpFoundation\Cookie;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 
 /**
