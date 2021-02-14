@@ -4,7 +4,8 @@ image:
 tasks:
   - init: >
       composer install &&
-      sudo docker-up &&
+      sudo nohup docker-up &&
+      sleep 5 &&
       docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASS &&
       echo "WEB_HOST=8800-"`echo $GITPOD_WORKSPACE_URL | sed -e 's|^[^/]*//||' -e 's|/.*$||'`> .env &&
       docker-compose up -d
