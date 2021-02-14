@@ -1,0 +1,9 @@
+image:
+  file: .gitpod.Dockerfile
+
+tasks:
+  - init: composer install
+  - name: docker_up
+    command: sudo docker-up
+ports:
+  - port: 8800
