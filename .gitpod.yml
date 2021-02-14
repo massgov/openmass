@@ -5,6 +5,8 @@ tasks:
   - init: composer install
   - name: docker_up
     command: sudo docker-up
+  - name: docker_login
+    command: docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASS
   - name: dc up
     command: docker-compose up -d
 ports:
