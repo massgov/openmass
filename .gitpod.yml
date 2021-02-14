@@ -6,6 +6,7 @@ tasks:
       composer install &&
       sudo docker-up &&
       docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASS &&
+      echo "WEB_HOST=8800-"`echo $GITPOD_WORKSPACE_URL | sed -e 's|^[^/]*//||' -e 's|/.*$||'`> .env &&
       docker-compose up -d
 ports:
   - port: 8800

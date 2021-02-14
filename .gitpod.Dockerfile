@@ -8,3 +8,4 @@ FROM gitpod/workspace-full
 
 # Install ahoy
 # RUN sudo wget -q https://github.com/ahoy-cli/ahoy/releases/download/2.0.0/ahoy-bin-`uname -s`-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
+brew install ahoy

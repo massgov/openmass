@@ -19,7 +19,7 @@ services:
       - MYSQL_DATABASE=circle
       - MYSQL_HOST=mysql
       - MEMCACHED_HOST=memcached
-      - DRUSH_OPTIONS_URI=http://mass.local:${WEB_PORT-80}
+      - DRUSH_OPTIONS_URI=http://${WEB_HOST-mass.local}:${WEB_PORT-80}
       # always use port 80 inside the container.
       # 'drupal' is the hostname thats reachable from the chrome container.
       - DTT_BASE_URL=http://mass.local
@@ -63,7 +63,7 @@ services:
       - traefik
     working_dir: /var/www/mass.local
     labels:
-      - 'traefik.frontend.rule=Host:mass.local'
+      - 'traefik.frontend.rule=Host:${WEB_HOST-mass.local}'
 
   # The following database service uses a `percona-server:5.6.40` image where mysql initialization done by
   # a custom `docker-entrypoint.sh` script. You can find that script and the `Dockerfile` in `.circleci/mysql-rebuild/`.
