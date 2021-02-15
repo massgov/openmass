@@ -72,4 +72,56 @@ class MassFlaggingEntityComparison extends DiffEntityComparison {
     return $revision_summary;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public function checkRevisionforImageSectionChanges(ContentEntityInterface $revision, ContentEntityInterface $previous_revision = NULL) {
+    $elements = [];
+
+    $mapping = [
+      "field_image_administrative_title",
+      "field_image",
+      "field_image_caption",
+      "field_media_display",
+      "field_image",
+      "field_image_wrapping",
+    ];
+
+    if ($previous_revision) {
+      $left_values = $this->summary($previous_revision);
+      $right_values = $this->summary($revision);
+      foreach ($right_values as $key => $value) {
+        if (isset($left_values[$key])) {
+          if ($value['value'] != $left_values[$key]['value']) {
+            $elements[] = $key;
+          }
+          unset($left_values[$key]);
+        }
+        else {
+          $elements[] = $key;
+        }
+      }
+      // Add the remaining left values if not present in the right entity.
+      foreach ($left_values as $key => $value) {
+        if (!isset($right_values[$key])) {
+          $elements[] = $key;
+        }
+      }
+      if (count($elements) > 0) {
+        foreach ($elements as $key => $element) {
+          // We don't need the first part of exploded string.
+          // It only contains the entity id.
+          $el_tmp = explode(":", $element)[1];
+          $el = explode(".", $el_tmp);
+          if ($el[0] == 'paragraph') {
+            if (in_array($el[1], $mapping)) {
+              unset($elements[$key]);
+            }
+          }
+        }
+      }
+      ksm($elements);
+    }
+    return FALSE;
+  }
 }
