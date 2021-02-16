@@ -9,6 +9,7 @@ dependencies:
     - field.field.paragraph.image.field_image_administrative_title
     - field.field.paragraph.image.field_image_alignment
     - field.field.paragraph.image.field_image_caption
+    - field.field.paragraph.image.field_image_display_size
     - field.field.paragraph.image.field_image_wrapping
     - field.field.paragraph.image.field_media_display
     - image.style.thumbnail
@@ -61,18 +62,18 @@ content:
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce: true
         maxlength_js_truncate_html: true
+  field_image_display_size:
+    type: options_select
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_image_wrapping:
     type: options_buttons
     weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_media_display:
-    weight: 3
-    settings: {  }
-    third_party_settings: {  }
-    type: options_select
-    region: content
   paragraphs_type_help__default:
     weight: -100
     settings: {  }
@@ -81,5 +82,6 @@ content:
 hidden:
   created: true
   field_caption: true
+  field_media_display: true
   status: true
   uid: true

@@ -81,6 +81,7 @@ class MassFlaggingEntityComparison extends DiffEntityComparison {
     $mapping = [
       "field_image_administrative_title",
       "field_image",
+      "field_image_alignment",
       "field_image_caption",
       "field_media_display",
       "field_image",
@@ -115,13 +116,17 @@ class MassFlaggingEntityComparison extends DiffEntityComparison {
           $el = explode(".", $el_tmp);
           if ($el[0] == 'paragraph') {
             if (in_array($el[1], $mapping)) {
-              unset($elements[$key]);
+              continue;
+            }
+            else {
+              return FALSE;
             }
           }
         }
+        return TRUE;
       }
-      ksm($elements);
     }
     return FALSE;
   }
+
 }

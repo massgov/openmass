@@ -1,23 +1,23 @@
-uuid: 166daaa6-f967-499d-9237-7668e8324029
+uuid: f5520f8c-0821-4c94-97b4-ce3c002b042c
 langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.paragraph.field_media_display
+    - field.storage.paragraph.field_image_display_size
     - paragraphs.paragraphs_type.image
   module:
     - options
-id: paragraph.image.field_media_display
-field_name: field_media_display
+id: paragraph.image.field_image_display_size
+field_name: field_image_display_size
 entity_type: paragraph
 bundle: image
-label: 'Media size (Deprecated)'
+label: 'Display size'
 description: 'Controls the size of this object on the page, relative to the size of the screen.'
-required: false
+required: true
 translatable: false
 default_value:
   -
-    value: normal
+    value: large
 default_value_callback: ''
 settings: {  }
 field_type: list_string

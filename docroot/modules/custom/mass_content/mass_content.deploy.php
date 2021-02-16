@@ -103,6 +103,7 @@ function mass_content_deploy_image_caption_fields(&$sandbox) {
 
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
+    print_r($node->id() . " ");
 
     foreach ($node->field_info_details_sections as $info_details_section) {
       $info_details_section_paragraph = Paragraph::load($info_details_section->target_id);
@@ -113,6 +114,14 @@ function mass_content_deploy_image_caption_fields(&$sandbox) {
         if (!empty($section_long_form_content_paragraph->field_caption->value)) {
           $section_long_form_content_paragraph->field_image_caption->value = $section_long_form_content_paragraph->field_caption->value;
           $section_long_form_content_paragraph->field_image_caption->format = 'basic_html';
+        }
+
+        // Migrate and map iframe display size values.
+        if ($section_long_form_content_paragraph->field_media_display->value == 'normal') {
+          $section_long_form_content_paragraph->field_image_display_size->value = 'large';
+        }
+        elseif ($section_long_form_content_paragraph->field_media_display->value == 'full') {
+          $section_long_form_content_paragraph->field_image_display_size->value = 'x-large';
         }
 
         $section_long_form_content_paragraph->save();
