@@ -14,6 +14,7 @@ dependencies:
     - field.field.node.form_page.field_reusable_label
     - field.field.node.form_page.field_state_organization_tax
     - node.type.form_page
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -43,9 +44,9 @@ third_party_settings:
         - field_form_you_will
         - field_form_ref_contacts_3
         - field_form_embed
-        - field_reusable_label
         - field_organizations
         - field_intended_audience
+        - field_reusable_label
       parent_name: group_form_page_edit_form
       weight: 20
       format_type: tab
@@ -102,19 +103,20 @@ content:
     type: text_textarea
     region: content
   field_intended_audience:
-    weight: 9
+    weight: 8
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_metatags:
     weight: 8
-    settings: {  }
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
   field_organizations:
-    weight: 8
+    weight: 7
     settings:
       match_operator: CONTAINS
       size: 60
@@ -124,7 +126,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_reusable_label:
-    weight: 7
+    weight: 9
     settings:
       match_operator: CONTAINS
       size: 60
@@ -198,9 +200,9 @@ content:
     third_party_settings: {  }
   url_redirects:
     weight: 50
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   path: true
