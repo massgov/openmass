@@ -11,7 +11,7 @@ class NewRelicCommands extends DrushCommands
   /**
    * @hook option *
    *
-   * @option nr-name New Relic transaction name.
+   * @option nrname New Relic transaction name.
    */
   public function optionsetNrName($options = ['nrname' => self::REQ])
   {
