@@ -7,16 +7,6 @@
 #}
 
 {% block main %}
-
-<style>
-.page-content dt {
-  font-weight: bold;
-}
-.page-content dd {
-  margin: 0.5em 0 1em 0;
-}
-</style>
-
 <section class="ma__page-header">
 	<div class="ma__page-header__content">
 		<h1 class="ma__page-header__title">{{ node.title.value }}</h1>
@@ -24,63 +14,42 @@
 
   <div class="ma__page-header__optional-content">
     <div class="main-content main-content--two">
-      <div class="page-content">
-        <dl>
-          <dt>URL:</dt>
-          <dd>{{ content.field_externaldata_url }}</dd>
-
-          <dt>Description:</dt>
-          <dd>{{ content.field_externaldata_description }}</dd>
-
-          <dt>Data type:</dt>
-          <dd>{{ content.field_details_data_type }}</dd>
-
-          <dt>Data resource type:</dt>
-          <dd>{{ content.field_data_resource_type }}</dd>
-
-          <dt>Format:</dt>
-          {# {% for i in field_data_format %} #}
-{# <dd>{{ content.field_data_format|t|replace({" ": ", "}) }}</dd> #}
-
-{#  #}
-<dd>{{ content.field_data_format }}</dd>
-<dd>{{ content.field_data_format|last }}</dd>
-
-          {# {% endfor %}  #}
-
-
-          {# <dd>{{ content.field_data_format }}</dd> #}
-
-
-          <dt>Organizations:</dt>
-          {# <dd>items: {{ content.field_organizations['#items'] }}</dd> #}
-{# {{ dump(content.field_organizations) }} #}
-
-          {# {% set lastIndex = content.field_organizations|length - 1 %}
-          {{ lastIndex }} #}
-          {# {% set orgs = content.field_organizations %} #}
-          {# {% for i is 0..lastIndex %}
-            <dd>{{ content.field_organizations[i] }}</dd>
-<dd>length: {{ content.field_organizations|last }}</dd>
-          {% endfor %} #}
-        </dl>
-
-{# {% include "../field/field--field-organizations.html.twig" with %} #}
-
+      <div class="page-content external-data-resource">
+        <div class="ma__listing-table">
+          <div class="ma__listing-table__container">
+            <table>
+              <tr>
+                <th scope="row">URL:</th>
+                <td>{{ content.field_externaldata_url }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Description:</th>
+                <td>{{ content.field_externaldata_description }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Data type:</th>
+                <td>{{ content.field_details_data_type }}</td>
+              </tr>
+            {% if "Data resource" in content.field_details_data_type[0]['#title'] %}
+              <tr>
+                <th scope="row">Data resource type:</th>
+                <td>{{ content.field_data_resource_type }}</td>
+              </tr>
+            {% endif %}
+              <tr>
+                <th scope="row">Format:</th>
+                <td>{{ content.field_data_format }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Organizations:</th>
+                <td>{{ content.field_organizations }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
-
-
-{# <p>title:	{{ node.title.value }}</p> #}
-{# <p>url: {{ content.field_externaldata_url }}</p>
-<p>description:	{{ content.field_externaldata_description }}</p>
-<p>data type:	{{ content.field_details_data_type }}</p>
-<p>data resource type:	{{ content.field_data_resource_type }}</p>
-<p>format: {{ content.field_data_format }}</p>
-<p>organizations:
-</p> #}
-
 {% endblock %}
 
