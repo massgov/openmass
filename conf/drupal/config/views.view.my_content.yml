@@ -18,6 +18,7 @@ dependencies:
     - node.type.error_page
     - node.type.event
     - node.type.executive_order
+    - node.type.external_data_resource
     - node.type.fee
     - node.type.form_page
     - node.type.guide_page
@@ -1221,7 +1222,6 @@ display:
             alert: alert
             page: page
             binder: binder
-            campaign_landing: campaign_landing
             contact_information: contact_information
             curated_list: curated_list
             decision: decision
@@ -1231,6 +1231,7 @@ display:
             error_page: error_page
             event: event
             executive_order: executive_order
+            external_data_resource: external_data_resource
             fee: fee
             form_page: form_page
             guide_page: guide_page
@@ -1242,6 +1243,7 @@ display:
             news: news
             org_page: org_page
             person: person
+            campaign_landing: campaign_landing
             regulation: regulation
             action: action
             rules: rules
@@ -1258,6 +1260,8 @@ display:
             description: ''
             use_operator: false
             operator: type_1_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: type_1
             required: false
             remember: true
@@ -1275,9 +1279,9 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
             reduce: true
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
