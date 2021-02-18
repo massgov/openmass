@@ -66,29 +66,29 @@ Below is a summary of how each metatag is used in [search.mass.gov](https://sear
 
 | **Metatag** | **Filter Functionality** | **Example** |
 | :--- | :--- | :--- |
-| mg\_organization | Controls the ability to filter content by organization on search.mass.gov. | ![Example Screenshot of the Organization Filter](../assets/advanced-search-collapsed.png) |
-| category | Controls if content is rendered within a specific tab in the search application. | ![Example Screenshot of the Search Tabs](../assets/advanced-search-collapsed%20%281%29.png) |
-| mg\_date | Powers the advanced search filter that allows users to restrict their search results to a specific date range. | ![Example Screenshot of the Advanced Filters include the Date Range Filter](../assets/advanced-search-expanded.png) |
-| mg\_type | Powers the advanced search filter that allows users to restrict their search results to a specific type of content. | ![Example Screenshot of the Advanced Filters including the Type Filter](../assets/advanced-search-expanded%20%281%29.png) |
+| mg\_organization | Controls the ability to filter content by organization on search.mass.gov. | ![Example Screenshot of the Organization Filter](./assets/advanced-search-collapsed.png) |
+| category | Controls if content is rendered within a specific tab in the search application. | ![Example Screenshot of the Search Tabs](./assets/advanced-search-collapsed%20%281%29.png) |
+| mg\_date | Powers the advanced search filter that allows users to restrict their search results to a specific date range. | ![Example Screenshot of the Advanced Filters include the Date Range Filter](./assets/advanced-search-expanded.png) |
+| mg\_type | Powers the advanced search filter that allows users to restrict their search results to a specific type of content. | ![Example Screenshot of the Advanced Filters including the Type Filter](./assets/advanced-search-expanded%20%281%29.png) |
 
 #### Sort
 
 | **Metatag** | **Sort Functionality** | **Example** |
 | :--- | :--- | :--- |
-| mg\_date | Used when sorting by date on the "news" and "laws-regulations" tabs. | ![Example Screenshot of Sort by Date Functionality](../assets/mg_date.png) |
+| mg\_date | Used when sorting by date on the "news" and "laws-regulations" tabs. | ![Example Screenshot of Sort by Date Functionality](./assets/mg_date.png) |
 
 #### Search Result Teasers
 
 | **Metatag** | **Teaser Functionality** | **Example** |
 | :--- | :--- | :--- |
-| mg\_organization | Rendered for content in the category news and laws-regulations. | ![Example Results Teaser with Organization Details Rendered in Emphasized Text](../assets/mg_organization.png) |
-| mg\_date | Rendered for content categorized as "laws-regulations"  and "news". | ![Example Results Teaser with Date Rendered in Emphasized Text](../assets/mg_organization.png) |
-| mg\_type | Rendered for content categorized as "laws-regulations"  and "news". | ![Example Results Teaser with Type Rendered in the Eyebrow](../assets/mg_organization%20%281%29.png) |
-| mg\_phone\_number | Rendered in teaser for content categorized as "state-organizations" | ![Example Results Teaser with Phone Number Rendered in the Contact Section](../assets/mg_phone_number.png) |
-| mg\_contact\_details | Rendered in teaser for content categorized as "state-organizations" | ![Example Results Teaser with Contact Details Rendered in the Contact Section](../assets/mg_phone_number.png) |
-| mg\_location\_listing\_url | Rendered in teaser for content categorized as "state-organizations" | ![Example Results Teaser with the Location Listing Rendered](../assets/mg_phone_number.png) |
-| mg\_online\_contact\_url | Rendered in teaser for content categorized as "state-organizations" | ![Example Results Teaser with the Online Contacts Rendered](../assets/mg_phone_number%20%281%29.png) |
-| mg\_key\_actions | Rendered in teaser for content categorized as "state-organizations" or "services" | ![Example Results Teaser with Key Actions Rendered](../assets/mg_key_actions.png) |
+| mg\_organization | Rendered for content in the category news and laws-regulations. | ![Example Results Teaser with Organization Details Rendered in Emphasized Text](./assets/mg_organization.png) |
+| mg\_date | Rendered for content categorized as "laws-regulations"  and "news". | ![Example Results Teaser with Date Rendered in Emphasized Text](./assets/mg_organization.png) |
+| mg\_type | Rendered for content categorized as "laws-regulations"  and "news". | ![Example Results Teaser with Type Rendered in the Eyebrow](./assets/mg_organization%20%281%29.png) |
+| mg\_phone\_number | Rendered in teaser for content categorized as "state-organizations" | ![Example Results Teaser with Phone Number Rendered in the Contact Section](./assets/mg_phone_number.png) |
+| mg\_contact\_details | Rendered in teaser for content categorized as "state-organizations" | ![Example Results Teaser with Contact Details Rendered in the Contact Section](./assets/mg_phone_number.png) |
+| mg\_location\_listing\_url | Rendered in teaser for content categorized as "state-organizations" | ![Example Results Teaser with the Location Listing Rendered](./assets/mg_phone_number.png) |
+| mg\_online\_contact\_url | Rendered in teaser for content categorized as "state-organizations" | ![Example Results Teaser with the Online Contacts Rendered](./assets/mg_phone_number%20%281%29.png) |
+| mg\_key\_actions | Rendered in teaser for content categorized as "state-organizations" or "services" | ![Example Results Teaser with Key Actions Rendered](./assets/mg_key_actions.png) |
 
 ## Adding Structured Metatags to your Website
 
@@ -247,8 +247,8 @@ When a user filters content by organization in search.mass.gov, that organizatio
 
 | Organization | Example Display |
 | :--- | :--- |
-| Department of Public Health \(DPH\) | ![](../assets/dph-organization-display.png) |
-| Division of Fisheries and Wildlife \(MassWildlife\) | ![](../assets/dfw-organization-display.png) |
-| Massachusetts Registry of Motor Vehicles \(RMV\) | ![](../assets/rmv-organization-display.png) |
-| Office of the Attorney General Maura Healey \(AGO\) | ![](../assets/ago-organization-display.png) |
+| Department of Public Health \(DPH\) | ![](./assets/dph-organization-display.png) |
+| Division of Fisheries and Wildlife \(MassWildlife\) | ![](./assets/dfw-organization-display.png) |
+| Massachusetts Registry of Motor Vehicles \(RMV\) | ![](./assets/rmv-organization-display.png) |
+| Office of the Attorney General Maura Healey \(AGO\) | ![](./assets/ago-organization-display.png) |
 
