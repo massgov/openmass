@@ -1,11 +1,7 @@
----
-description: >-
-  Guidelines around adding structured metadata to your website for search engine
-  optimization and seamless consumption in the Commonwealth's search application
-  (search.mass.gov).
----
-
 # Search and Structured Data
+Guidelines around adding structured metadata to your website for search engine
+optimization and seamless consumption in the Commonwealth's search application
+(search.mass.gov).
 
 ## Metatag Dictionary
 
