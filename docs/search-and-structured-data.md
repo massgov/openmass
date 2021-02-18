@@ -237,7 +237,7 @@ When a user filters content by organization in search.mass.gov, that organizatio
 
 #### Organization Display Details JSON Schema Standard
 
-`{ "nid": 9876, "name": "Office of Attorney General Maura Healey", "acronym": "(AGO)", "url": "https://www.mass.gov/orgs/office-of-attorney-general-maura-healey", "logoUrl": "https://www.mass.gov/files/styles/thumbnail/public/2017-06/Massachusetts%20AGO%20seal%20orig%20size_1.png?itok=8kS9QRRO", "description": "Attorney General Maura Healey is the chief lawyer and law enforcement officer of the Commonwealth of Massachusetts." }`
+```{ "nid": 9876, "name": "Office of Attorney General Maura Healey", "acronym": "(AGO)", "url": "https://www.mass.gov/orgs/office-of-attorney-general-maura-healey", "logoUrl": "https://www.mass.gov/files/styles/thumbnail/public/2017-06/Massachusetts%20AGO%20seal%20orig%20size_1.png?itok=8kS9QRRO", "description": "Attorney General Maura Healey is the chief lawyer and law enforcement officer of the Commonwealth of Massachusetts." }```
 
 #### Examples of the Organization Display Details in Search.Mass.Gov
 
