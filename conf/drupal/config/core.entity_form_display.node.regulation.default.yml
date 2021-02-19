@@ -23,6 +23,7 @@ dependencies:
     - field.field.node.regulation.field_reusable_label
     - field.field.node.regulation.field_state_organization_tax
     - node.type.regulation
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -49,9 +50,9 @@ third_party_settings:
         - field_regluation_official_ver
         - field_regulation_listing_desc
         - field_regulation_short_descr
-        - field_reusable_label
         - field_organizations
         - field_intended_audience
+        - field_reusable_label
       parent_name: group_regulation_page_edit_form
       weight: 7
       format_type: tab
@@ -110,13 +111,13 @@ bundle: regulation
 mode: default
 content:
   field_intended_audience:
-    weight: 20
+    weight: 19
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 19
+    weight: 18
     settings:
       match_operator: CONTAINS
       size: 60
@@ -172,6 +173,8 @@ content:
       collapsible: false
       collapsed: false
       allow_duplicate: false
+      revision: false
+      allow_edit: true
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
@@ -201,7 +204,8 @@ content:
     region: content
   field_regulation_metatags:
     weight: 2
-    settings: {  }
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
@@ -256,7 +260,7 @@ content:
     type: string_textfield
     region: content
   field_reusable_label:
-    weight: 18
+    weight: 20
     settings:
       match_operator: CONTAINS
       size: 60
@@ -322,9 +326,9 @@ content:
     third_party_settings: {  }
   url_redirects:
     weight: 50
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   path: true
