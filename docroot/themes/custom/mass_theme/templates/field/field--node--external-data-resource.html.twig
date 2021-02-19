@@ -8,10 +8,12 @@
 #}
 {% if items|length > 1 %}
   <ul>
+{% endif %}
   {% for item in items %}
-    <li class="ma__listing-table__data-item">{{ item.content }}</li>
+    {{ (items|length > 1) ? '<li' : '<span' }} {{ 'class="ma__listing-table__data-item">' }}
+      {{ item.content }}
+    {{ (items|length > 1) ? '</li>' : '</span>' }}
   {% endfor %}
-  </ul>
-{% else %}
-  <span class="ma__listing-table__data-item">{{ items[0] }}</span>
+{% if items|length > 1 %}
+	</ul>
 {% endif %}
