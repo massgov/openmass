@@ -45,7 +45,7 @@ class MediaDownloadTest extends ExistingSiteBase {
       $driver->getClient()->followRedirects(FALSE);
     }
 
-    $this->visit($media->toUrl() . '/download');
+    $this->visit($media->toUrl()->toString() . '/download');
 
     $location = $this->getSession()->getResponseHeader('Location');
     // Ensure that the redirect is properly formulated and that it uses the
