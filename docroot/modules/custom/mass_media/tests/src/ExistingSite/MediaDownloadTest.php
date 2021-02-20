@@ -4,6 +4,7 @@ namespace Drupal\Tests\mass_media\ExistingSite;
 
 use Behat\Mink\Driver\GoutteDriver;
 use Drupal\file\Entity\File;
+use Drupal\mass_content_moderation\MassModeration;
 use Drupal\media\Entity\Media;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
@@ -37,6 +38,7 @@ class MediaDownloadTest extends ExistingSiteBase {
         'target_id' => $file->id(),
       ],
       'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
     $driver = $this->getSession()->getDriver();
