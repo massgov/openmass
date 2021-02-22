@@ -26,6 +26,7 @@ dependencies:
     - field.field.node.rules.field_rules_updates
     - field.field.node.rules.field_state_organization_tax
     - node.type.rules
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -50,9 +51,9 @@ third_party_settings:
         - field_rules_courts
         - field_rules_overview
         - field_rules_listing_desc
-        - field_reusable_label
         - field_organizations
         - field_intended_audience
+        - field_reusable_label
       parent_name: group_rules_edit_form
       weight: 0
       format_type: tab
@@ -140,13 +141,13 @@ bundle: rules
 mode: default
 content:
   field_intended_audience:
-    weight: 14
+    weight: 13
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 13
+    weight: 12
     settings:
       match_operator: CONTAINS
       size: 60
@@ -156,7 +157,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_reusable_label:
-    weight: 12
+    weight: 14
     settings:
       match_operator: CONTAINS
       size: 60
@@ -192,6 +193,8 @@ content:
       collapsible: false
       collapsed: false
       allow_duplicate: false
+      revision: false
+      allow_edit: true
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
@@ -221,7 +224,8 @@ content:
     region: content
   field_rules_metatags:
     weight: 3
-    settings: {  }
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
@@ -387,9 +391,9 @@ content:
     third_party_settings: {  }
   url_redirects:
     weight: 50
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   path: true
