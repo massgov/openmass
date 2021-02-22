@@ -11,11 +11,9 @@ dependencies:
     - field.field.node.external_data_resource.field_organizations
     - node.type.external_data_resource
   module:
-    - content_moderation
     - field_group
     - link
     - scheduler
-    - scheduler_content_moderation_integration
 third_party_settings:
   field_group:
     group_externaldata_edit_form:
@@ -120,21 +118,15 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  moderation_state:
-    type: moderation_state_default
-    weight: 8
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 3
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_state:
-    type: scheduler_moderation
-    weight: 5
+    type: options_select
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -163,24 +155,21 @@ content:
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 4
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
-    type: scheduler_moderation
-    weight: 6
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  url_redirects:
-    weight: 7
+    type: options_select
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  moderation_state: true
   path: true
   promote: true
   status: true
   sticky: true
+  url_redirects: true
