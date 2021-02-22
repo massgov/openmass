@@ -105,7 +105,7 @@ class DescendantOverviewController extends ControllerBase {
             }
             $form['bundles'][$entity_type][$bundle]['settings'][$primary_field]['name'][] = [
               '#type' => 'item',
-              '#title' => $node_fields[$primary_field]->label() . ' (' . $primary_field . ')',
+              '#title' => $node_fields[$primary_field]->getLabel() . ' (' . $primary_field . ')',
             ];
             $form['bundles'][$entity_type][$bundle]['settings'][$primary_field]['status'][] = [
               '#type' => 'item',
@@ -117,7 +117,7 @@ class DescendantOverviewController extends ControllerBase {
                   if (array_key_exists($child_field, $search_fields)) {
                     $form['bundles'][$entity_type][$bundle]['settings'][$primary_field]['field'][] = [
                       '#type' => 'item',
-                      '#title' => $search_fields[$child_field]->label() . ' (' . $child_field . ')',
+                      '#title' => $search_fields[$child_field]->getLabel() . ' (' . $child_field . ')',
                     ];
                   }
                 }
