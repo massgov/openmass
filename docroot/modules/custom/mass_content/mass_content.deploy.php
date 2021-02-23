@@ -135,4 +135,3 @@ function mass_content_deploy_image_caption_fields(&$sandbox) {
     return t('All Image caption fields migrated.');
   }
 }
-
