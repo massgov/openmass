@@ -103,7 +103,6 @@ function mass_content_deploy_image_caption_fields(&$sandbox) {
 
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
-    print_r($node->id() . " ");
 
     foreach ($node->field_info_details_sections as $info_details_section) {
       $info_details_section_paragraph = Paragraph::load($info_details_section->target_id);
