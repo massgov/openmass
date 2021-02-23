@@ -16,10 +16,12 @@ dependencies:
     - field.field.node.stacked_layout.field_organizations
     - field.field.node.stacked_layout.field_photo
     - field.field.node.stacked_layout.field_related_content
+    - field.field.node.stacked_layout.field_reusable_label
     - field.field.node.stacked_layout.field_state_organization_tax
     - field.field.node.stacked_layout.field_topic_callout_links
     - field.field.node.stacked_layout.field_use_alt_header
     - node.type.stacked_layout
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - entity_browser
@@ -204,7 +206,8 @@ content:
     region: content
   field_metatags:
     weight: 6
-    settings: {  }
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
@@ -228,6 +231,7 @@ content:
       selection_mode: selection_append
       preview_image_style: thumbnail
       view_mode: default
+      field_widget_replace: false
     third_party_settings: {  }
     type: entity_browser_file
     region: content
@@ -238,6 +242,16 @@ content:
       size: 60
       placeholder: ''
       match_limit: 10
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_reusable_label:
+    weight: 122
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -321,9 +335,9 @@ content:
     third_party_settings: {  }
   url_redirects:
     weight: 50
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   path: true

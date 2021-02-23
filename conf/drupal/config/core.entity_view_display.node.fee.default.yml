@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.fee.field_fee_name
     - field.field.node.fee.field_fee_unit
     - field.field.node.fee.field_organizations
+    - field.field.node.fee.field_reusable_label
     - field.field.node.fee.field_state_organization_tax
     - node.type.fee
   module:
@@ -17,7 +18,7 @@ bundle: fee
 mode: default
 content:
   content_moderation_control:
-    weight: -20
+    weight: 0
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -64,4 +65,5 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  field_reusable_label: true
   field_state_organization_tax: true

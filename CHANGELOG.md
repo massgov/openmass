@@ -1,5 +1,36 @@
 
 
+## [0.272.0] - February 16, 2021
+
+### Changed
+  - DP-19181: Change the unpublish reminder email format by adding blank lines between the paragraphs.
+  - DP-20824: Changed link fields to disallow several content types.
+  - DP-21067: Removed menu link content from database sanitization.
+  - DP-21174: Updated Mayflower version to 11.1.4.
+  - DP-20381: Fix left floated figure components and images to cover list style elements in rich text containers. (MF)
+  
+### Fixed
+  - DP-20580: Address issue where uploading files via the WYSIWYG editor results in an error.
+  - DP-21191: Address pre-deployment issue related to settings cookies in DP-20580.
+  
+### Added
+  - DP-21109: Added label field to the content types, added mg_labels custom metatag.
+  
+
+
+## [0.271.0] - February 2, 2021
+
+### Changed
+  - DP-20660: Changed sanitization delete query to skip deploy hooks.
+  - DP-21074: Updated Mayflower version to 11.1.3.
+  - DP-19859: Fix the Relationship Indicator display at the show all state in IE. (MF)
+  - DP-21059: Make a skip link target to be displayed only when its associated skip link is clicked. (MF)
+  
+### Security
+  - DP-21037: Drupal core update to the latest stable version 8.9.13.
+  
+
+
 ## [0.270.0] - January 27, 2021
 
 ### Added

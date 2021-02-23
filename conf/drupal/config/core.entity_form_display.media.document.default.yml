@@ -127,10 +127,10 @@ third_party_settings:
         - field_contact_name
         - field_contact_information
         - group_timeframe
-        - field_document_label
         - field_document_type
         - field_tags
         - field_internal_notes
+        - field_document_label
       parent_name: group_form
       weight: 12
       format_type: tab
@@ -157,6 +157,8 @@ content:
       placeholder: ''
       key_label: Key
       value_label: Value
+      description_label: Description
+      description_rows: 5
     third_party_settings: {  }
     type: key_value_textfield
     region: content
@@ -253,7 +255,7 @@ content:
     region: content
   field_document_label:
     type: entity_reference_autocomplete
-    weight: 14
+    weight: 17
     region: content
     settings:
       match_operator: CONTAINS
