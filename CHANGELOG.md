@@ -1,5 +1,14 @@
 
 
+## [0.273.0] - February 23, 2021
+
+### Added
+  - DP-13674: Enable New Relic metrics for CLI PHP commands.
+  - DP-20886: Sync logs from Acquia to S3
+  - DP-21259: Added search metadata documentation into openmass public repo.
+  
+
+
 ## [0.272.0] - February 16, 2021
 
 ### Changed
