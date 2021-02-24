@@ -1,21 +1,23 @@
-@font-face {
-  font-family: "Noto Sans";
-  src: url("../../fonts/noto/Latin/NotoSans-Regular.eot?#iefix") format("embedded-opentype"), url("../../fonts/noto/Latin/NotoSans-Regular.woff2") format("woff2"), url("../../fonts/noto/Latin/NotoSans-Regular.woff") format("woff");
-  font-style: normal;
-  font-display: "swap";
-}
-/* The fallback non-variable Noto Sans Italic font */
-@font-face {
-  font-family: "Noto Sans";
-  src: url("../../fonts/noto/Latin/NotoSans-Italic.eot?#iefix") format("embedded-opentype"), url("../../fonts/noto/Latin/NotoSans-Italic.woff2") format("woff2"), url("../../fonts/noto/Latin/NotoSans-Italic.woff") format("woff");
-  font-style: italic;
-  font-display: "swap";
+@supports not (font-variation-settings: normal) {
+  @font-face {
+    font-family: "Noto Sans";
+    src: url("../../fonts/noto/Latin/NotoSans-Regular.eot?#iefix") format("embedded-opentype"), url("../../fonts/noto/Latin/NotoSans-Regular.woff2") format("woff2"), url("../../fonts/noto/Latin/NotoSans-Regular.woff") format("woff");
+    font-style: normal;
+    font-display: "swap";
+  }
+  /* The fallback non-variable Noto Sans Italic font */
+  @font-face {
+    font-family: "Noto Sans";
+    src: url("../../fonts/noto/Latin/NotoSans-Italic.eot?#iefix") format("embedded-opentype"), url("../../fonts/noto/Latin/NotoSans-Italic.woff2") format("woff2"), url("../../fonts/noto/Latin/NotoSans-Italic.woff") format("woff");
+    font-style: italic;
+    font-display: "swap";
+  }
 }
 @supports (font-variation-settings: normal) {
   /* The variable font of Noto Sans */
   @font-face {
     font-family: "Noto Sans VF";
-    src: url("../../fonts/noto/Latin/NotoSans-VF.eot?#iefix") format("embedded-opentype"), url("../../fonts/noto/Latin/NotoSans-VF.woff") format("woff"), url("../../fonts/noto/Latin/NotoSans-VF.ttf") format("truetype"), url("../../fonts/noto/Latin/NotoSans-VF.svg#NotoSans-Regular") format("svg");
+    src: url("../../fonts/noto/Latin/NotoSans-VF.eot?#iefix") format("embedded-opentype"), url("../../fonts/noto/Latin/NotoSans-VF.woff2") format("woff2"), url("../../fonts/noto/Latin/NotoSans-VF.woff") format("woff"), url("../../fonts/noto/Latin/NotoSans-VF.ttf") format("truetype");
     font-weight: 100 900;
     font-style: normal;
     font-display: "swap";
@@ -23,7 +25,7 @@
   /* The variable font of Noto Sans Italic */
   @font-face {
     font-family: "Noto Sans VF";
-    src: url("../../fonts/noto/Latin/NotoSansItalic-VF.eot?#iefix") format("embedded-opentype"), url("../../fonts/noto/Latin/NotoSansItalic-VF.woff") format("woff"), url("../../fonts/noto/Latin/NotoSansItalic-VF.ttf") format("truetype"), url("../../fonts/noto/Latin/NotoSansItalic-VF.svg#NotoSans-Italic") format("svg");
+    src: url("../../fonts/noto/Latin/NotoSansItalic-VF.eot?#iefix") format("embedded-opentype"), url("../../fonts/noto/Latin/NotoSansItalic-VF.woff2") format("woff2"), url("../../fonts/noto/Latin/NotoSansItalic-VF.woff") format("woff"), url("../../fonts/noto/Latin/NotoSansItalic-VF.ttf") format("truetype");
     font-weight: 100 900;
     font-style: italic;
     font-display: "swap";
