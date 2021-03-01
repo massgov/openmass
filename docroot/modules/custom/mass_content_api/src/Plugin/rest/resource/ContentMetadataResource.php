@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_content_api\Plugin\rest\resource;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\mass_content_api\DescendantManagerInterface;
 use Drupal\rest\Plugin\ResourceBase;
@@ -135,6 +136,20 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
         }
       }
 
+      $labels = [];
+      if ($item->hasField('field_reusable_label')) {
+        $l_refs = $item->field_reusable_label->referencedEntities();
+        if (!empty($l_refs)) {
+          foreach ($l_refs as $l_ref) {
+            $label = (object) [
+              'id' => $l_ref->id(),
+              'name' => $l_ref->label(),
+            ];
+            $labels[] = JSON::encode($label);
+          }
+        }
+      }
+
       /*
        * Get any field_kpi_ fields for this entity.
        * See https://jira.mass.gov/browse/DP-16429.
@@ -179,6 +194,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
           'is_intern' => $node_owner->field_user_intern->value == 1,
           'roles' => $roles,
         ],
+        'labels' => $labels,
         'kpis' => $kpis,
       ];
 

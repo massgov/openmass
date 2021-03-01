@@ -38,24 +38,24 @@ mode: default
 content:
   computed_related_to:
     type: entity_reference_label
-    weight: 22
+    weight: 21
     region: content
     label: above
     settings:
       link: true
     third_party_settings: {  }
   content_moderation_control:
-    weight: -20
+    weight: 0
     region: content
     settings: {  }
     third_party_settings: {  }
   extra_node_pager:
-    weight: 19
+    weight: 18
     region: content
     settings: {  }
     third_party_settings: {  }
   extra_org_feedback_form:
-    weight: 23
+    weight: 22
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -93,7 +93,7 @@ content:
     type: text_default
     region: content
   field_decision_listing_desc:
-    weight: 17
+    weight: 16
     label: above
     settings:
       link_to_entity: false
@@ -189,7 +189,7 @@ content:
     type: link
     region: content
   field_intended_audience:
-    weight: 21
+    weight: 20
     label: hidden
     settings: {  }
     third_party_settings: {  }
@@ -197,20 +197,12 @@ content:
     region: content
   field_organizations:
     type: entity_reference_label
-    weight: 20
+    weight: 19
     region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
-  field_reusable_label:
-    weight: 16
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    type: entity_reference_label
-    region: content
   links:
     weight: 1
     region: content
@@ -218,7 +210,7 @@ content:
     third_party_settings: {  }
   referencing_binders:
     type: entity_reference_entity_view
-    weight: 18
+    weight: 17
     region: content
     label: hidden
     settings:
@@ -239,6 +231,7 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  field_reusable_label: true
   field_state_organization_tax: true
   page_next: true
   page_previous: true
