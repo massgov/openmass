@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.decision_tree_branch.field_more_info
     - field.field.node.decision_tree_branch.field_multiple_answers
     - field.field.node.decision_tree_branch.field_organizations
+    - field.field.node.decision_tree_branch.field_reusable_label
     - field.field.node.decision_tree_branch.field_state_organization_tax
     - node.type.decision_tree_branch
   module:
@@ -21,19 +22,19 @@ bundle: decision_tree_branch
 mode: default
 content:
   content_moderation_control:
-    weight: -20
+    weight: 0
     region: content
     settings: {  }
     third_party_settings: {  }
   field_branch_disclaimer:
-    weight: 5
+    weight: 4
     label: above
     settings: {  }
     third_party_settings: {  }
     type: basic_string
     region: content
   field_decision_root_ref:
-    weight: 6
+    weight: 5
     label: above
     settings:
       link: true
@@ -58,7 +59,7 @@ content:
     region: content
   field_multiple_answers:
     type: entity_reference_revisions_entity_view
-    weight: 8
+    weight: 7
     label: above
     settings:
       view_mode: default
@@ -66,7 +67,7 @@ content:
     third_party_settings: {  }
     region: content
   field_organizations:
-    weight: 7
+    weight: 6
     label: above
     settings:
       link: true
@@ -84,4 +85,5 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  field_reusable_label: true
   field_state_organization_tax: true

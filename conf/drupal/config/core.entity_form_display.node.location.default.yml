@@ -26,10 +26,12 @@ dependencies:
     - field.field.node.location.field_ref_contact_info_1
     - field.field.node.location.field_related_locations
     - field.field.node.location.field_restrictions
+    - field.field.node.location.field_reusable_label
     - field.field.node.location.field_services
     - field.field.node.location.field_state_organization_tax
     - image.style.thumbnail
     - node.type.location
+    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -71,6 +73,7 @@ third_party_settings:
         - field_image_credit
         - field_organizations
         - field_intended_audience
+        - field_reusable_label
         - field_bg_wide
       parent_name: group_primary
       weight: 2
@@ -290,7 +293,8 @@ content:
     region: content
   field_location_metatags:
     weight: 4
-    settings: {  }
+    settings:
+      sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
@@ -379,6 +383,16 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: text_textarea
+    region: content
+  field_reusable_label:
+    weight: 12
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
     region: content
   field_services:
     weight: 11
@@ -471,9 +485,9 @@ content:
     third_party_settings: {  }
   url_redirects:
     weight: 50
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   field_bg_wide: true

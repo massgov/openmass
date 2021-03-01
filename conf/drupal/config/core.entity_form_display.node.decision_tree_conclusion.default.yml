@@ -8,8 +8,10 @@ dependencies:
     - field.field.node.decision_tree_conclusion.field_decision_root_ref
     - field.field.node.decision_tree_conclusion.field_description
     - field.field.node.decision_tree_conclusion.field_organizations
+    - field.field.node.decision_tree_conclusion.field_reusable_label
     - field.field.node.decision_tree_conclusion.field_state_organization_tax
     - node.type.decision_tree_conclusion
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -40,6 +42,7 @@ third_party_settings:
         - field_decision_actions
         - field_decision_root_ref
         - field_organizations
+        - field_reusable_label
       parent_name: group_decision_tree_conclusion_e
       weight: 0
       format_type: tab
@@ -100,6 +103,16 @@ content:
       size: 60
       placeholder: ''
       match_limit: 10
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_reusable_label:
+    weight: 7
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
@@ -168,9 +181,9 @@ content:
     third_party_settings: {  }
   url_redirects:
     weight: 50
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   path: true

@@ -227,6 +227,7 @@ function _add_description_display_before(&$variables) {
  */
 function mass_admin_theme_preprocess_form_element(&$variables) {
   _add_description_display_before($variables);
+
   if (isset($variables['element']['#id']) &&
     ($variables['element']['#id'] === 'edit-upload')
   ) {
