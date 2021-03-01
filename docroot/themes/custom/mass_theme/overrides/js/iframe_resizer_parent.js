@@ -39,7 +39,6 @@ function gotResizeMessage(event) {
 
   // Iterate through all iFrames on page.
   var matches = document.querySelectorAll('iframe');
-  console.log(matches);
   for (var i = 0; i < matches.length; i++) {
     // Found the iFrame that sent us a message.
     if (matches[i].contentWindow === event.source) {
