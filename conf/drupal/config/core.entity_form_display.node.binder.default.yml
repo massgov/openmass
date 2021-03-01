@@ -30,10 +30,8 @@ dependencies:
     - node.type.binder
     - workflows.workflow.editorial
   module:
-    - conditional_fields
     - content_moderation
     - datetime
-    - dynamic_entity_reference
     - entity_browser_entity_form
     - field_group
     - image
@@ -305,18 +303,18 @@ content:
     settings: {  }
     third_party_settings:
       conditional_fields:
-        fd0972ee-9a0b-4427-adec-d5151340889b:
-          dependee: field_data_flag
+        ab7b75cc-0db6-4b49-8e66-a44a9d6707c1:
+          dependee: field_binder_data_type
           settings:
             state: visible
-            condition: checked
+            condition: value
             grouping: AND
             values_set: 1
             value: ''
             values: {  }
             value_form:
               -
-                value: data
+                target_id: '77936'
             effect: show
             effect_options: {  }
             selector: ''
