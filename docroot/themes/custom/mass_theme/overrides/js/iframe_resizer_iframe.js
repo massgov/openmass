@@ -18,7 +18,6 @@ function getDimensions() {
 function sendDimensionsToParent() {
   'use strict';
 
-  console.log('dklsmflksmfkldsmf');
 
   window.parent.postMessage(getDimensions, '*');
 }
