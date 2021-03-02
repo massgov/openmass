@@ -7,7 +7,7 @@ use Drupal\node\Entity\Node;
 use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\link\LinkItemInterface;
-use Drupal\text\Plugin\Field\FieldType\TextLongItem;
+use Drupal\text\Plugin\Field\FieldType\TextItemBase;
 
 /**
  * Trait FieldProcessingTrait.
@@ -227,7 +227,7 @@ trait FieldProcessingTrait {
           }
         }
         // Extract local linked content from text areas.
-        elseif ($ref instanceof TextLongItem) {
+        elseif ($ref instanceof TextItemBase) {
           $body = $ref->getValue('value');
           if (isset($body['value'])) {
             $matches = [];
