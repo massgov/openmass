@@ -39,6 +39,7 @@ class MassMetatagType extends MetaNameBase {
       // Get Binder data type, field_binder_data_type.
       if ($node instanceof NodeInterface && $node->bundle() == 'binder') {
         $term_ref_name = 'field_binder_data_type';
+        $outputValue = '';
         if ($node->hasField($term_ref_name) && $data_type = $node->get($term_ref_name)) {
           $items = $data_type->referencedEntities();
           if (!empty($items)) {
