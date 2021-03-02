@@ -81,4 +81,28 @@ class MassMetatagUtilities {
     return $result;
   }
 
+  /**
+   * Gets all Labels for the passed node, including all parent Orgs.
+   *
+   * @param \Drupal\node\Entity\Node $node
+   *   The node to get Labels from.
+   *
+   * @return string[]
+   *   The array of slugified Labels names related to this node.
+   */
+  public function getAllLabelsFromNode(Node $node) {
+    $result = [];
+
+    if (!empty($node)) {
+      if ($node->hasField('field_reusable_label')) {
+        $labels = $node->field_reusable_label->referencedEntities();
+        foreach ($labels as $label) {
+          $result[] = $this->slugify(trim($label->label()));
+        }
+      }
+    }
+
+    return $result;
+  }
+
 }
