@@ -1,0 +1,29 @@
+uuid: 41d79be1-7d96-4c17-b23b-290c76346e12
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_organizations
+    - node.type.external_data_resource
+    - node.type.org_page
+id: node.external_data_resource.field_organizations
+field_name: field_organizations
+entity_type: node
+bundle: external_data_resource
+label: Organization(s)
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference
