@@ -240,7 +240,8 @@ trait FieldProcessingTrait {
                 // Relative urls have no host set, external links need filtered.
                 if (!isset($parsed_match['host']) || str_contains($parsed_match['host'], 'mass.gov')) {
                   // @TODO Probably don't do this.
-                  $url = \Drupal::service('path.validator')->getUrlIfValid($parsed_match['path']);
+                  $validator = $this->getPathValidator();
+                  $url = $validator->getUrlIfValid($parsed_match['path']);
                   // Confirming the local link is a node, not media or other.
                   if ($url && $url->getRouteName() === 'entity.node.canonical') {
                     $params = $url->getRouteParameters();
@@ -260,6 +261,19 @@ trait FieldProcessingTrait {
       }
     }
     return $collected;
+  }
+
+  /**
+   * Gets the path validator service.
+   *
+   * @return \Drupal\Core\Path\PathValidatorInterface
+   *   The Path Validator Service.
+   */
+  protected function getPathValidator() {
+    if (!$this->pathValidator) {
+      $this->pathValidator = \Drupal::service('path.validator');
+    }
+    return $this->pathValidator;
   }
 
 }
