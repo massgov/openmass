@@ -1,0 +1,19 @@
+{#
+/**
+ * @file
+ * Theme override to display organization field items in external data resource.
+ *
+ * @see template_preprocess_field()
+ */
+#}
+{% if items|length > 1 %}
+  <ul>
+{% endif %}
+  {% for item in items %}
+    {{ (items|length > 1) ? '<li' : '<span' }} {{ 'class="ma__listing-table__data-item">' }}
+      {{ item.content }}
+    {{ (items|length > 1) ? '</li>' : '</span>' }}
+  {% endfor %}
+{% if items|length > 1 %}
+	</ul>
+{% endif %}
