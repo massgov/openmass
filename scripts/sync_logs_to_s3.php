@@ -16,8 +16,8 @@ function sync() {
   $includes = [
     'access.log', // Apache
     'error.log', // Apache
-    'drupal-requests',
-    'drupal-watchdog',
+    'drupal-requests.log',
+    'drupal-watchdog.log',
     'php-errors.log',
   ];
   $suffix = implode(' --include ', $includes);
