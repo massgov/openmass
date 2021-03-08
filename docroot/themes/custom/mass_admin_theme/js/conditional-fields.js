@@ -155,11 +155,22 @@
       }).change();
 
       $('.field--name-field-iframe-height-config', context).change(function () {
-        if ($(this).find('input:checked').val() === '100') {
-          $(this).siblings('.field--name-field-height').hide().find('input').val(0).removeAttr('required');
+        var height = $(this).siblings('.field--name-field-height').find('input').val();
+        var heightVal = function () {
+          if (!height || height.length === 0) {
+            return '0';
+          }
+          return height;
+        };
+
+        if ($(this).find('input:checked').length < 1) {
+          $(this).find("input[value='fixed']").attr('checked', 'checked');
+        }
+        else if ($(this).find('input:checked').val() === '100') {
+          $(this).siblings('.field--name-field-height').hide().find('input').val(heightVal).removeAttr('required');
         }
         else {
-          $(this).siblings('.field--name-field-height').show().find('input').val('').attr('required', 'required');
+          $(this).siblings('.field--name-field-height').show().find('input').val(heightVal).attr('required', 'required');
         }
       }).change();
     }
