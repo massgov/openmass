@@ -25,6 +25,10 @@ commands:
     cmd: docker-compose down --remove-orphans && docker-compose pull && docker-compose up -d
     usage: Refresh the database.
 
+  refresh:
+    cmd: scripts/ma-refresh-local -dpo && vendor/bin/drush sql:sanitize -y
+    usage: Refresh the database when using native development environment.
+
   updatedb:
     cmd: ahoy exec scripts/ma-refresh-local --skip-db-prep
     usage: Run after a git pull, so that pending updates are run.

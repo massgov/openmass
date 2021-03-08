@@ -1,0 +1,204 @@
+uuid: 0d75e7f3-d045-4a6c-ba77-14b8c0c3634a
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.node.inline_entity
+    - field.field.node.external_data_resource.field_data_format
+    - field.field.node.external_data_resource.field_data_resource_type
+    - field.field.node.external_data_resource.field_details_data_type
+    - field.field.node.external_data_resource.field_externaldata_description
+    - field.field.node.external_data_resource.field_externaldata_url
+    - field.field.node.external_data_resource.field_organizations
+    - node.type.external_data_resource
+  module:
+    - content_moderation
+    - field_group
+    - link
+    - scheduler
+    - scheduler_content_moderation_integration
+third_party_settings:
+  field_group:
+    group_externaldata_edit_form:
+      children:
+        - group_external_data_resource
+      parent_name: ''
+      weight: 0
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'External data resource edit form'
+    group_external_data_resource:
+      children:
+        - title
+        - field_externaldata_url
+        - field_externaldata_description
+        - field_organizations
+        - field_details_data_type
+        - field_data_resource_type
+        - field_data_format
+      parent_name: group_externaldata_edit_form
+      weight: 0
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: true
+      label: 'External data resource'
+id: node.external_data_resource.inline_entity
+targetEntityType: node
+bundle: external_data_resource
+mode: inline_entity
+content:
+  field_data_format:
+    weight: 14
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_data_resource_type:
+    weight: 13
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        426f433e-cb54-4199-aa9d-1e97961db4f6:
+          dependee: field_details_data_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                target_id: '77936'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: external_data_resource
+        e656fa82-bdff-4d28-b0b4-166ce8c3129e:
+          dependee: field_details_data_type
+          settings:
+            state: required
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                target_id: '77936'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: external_data_resource
+    type: options_buttons
+    region: content
+  field_details_data_type:
+    weight: 12
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_externaldata_description:
+    weight: 10
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: 500
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: false
+        maxlength_js_truncate_html: false
+    type: string_textarea
+    region: content
+  field_externaldata_url:
+    weight: 9
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_organizations:
+    weight: 11
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 8
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  publish_state:
+    type: scheduler_moderation
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  scheduler_settings:
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 8
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 1
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  unpublish_state:
+    type: scheduler_moderation
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  url_redirects:
+    weight: 7
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  path: true
+  promote: true
+  status: true
+  sticky: true

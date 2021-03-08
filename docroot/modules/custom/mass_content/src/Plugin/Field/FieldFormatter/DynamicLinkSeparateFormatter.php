@@ -67,6 +67,11 @@ class DynamicLinkSeparateFormatter extends LinkFormatter {
       if (!$url->isExternal()) {
         $extra['date'] = $item->computed_date;
       }
+      // DP-21120: Do not render advisory date in
+      // curated list related links section.
+      if (isset($extra['date']) && $item->getFieldDefinition()->getName() === 'field_related_links' && $item->getEntity()->bundle() === 'curated_list') {
+        unset($extra['date']);
+      }
 
       $extra['type'] = $item->computed_type;
 
