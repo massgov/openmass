@@ -168,9 +168,11 @@
         }
         else if ($(this).find('input:checked').val() === '100') {
           $(this).siblings('.field--name-field-height').hide().find('input').val(heightVal).removeAttr('required');
+          $(this).siblings('.field--name-field-verify-iframe-100-confirm').show().find('input').attr('required', 'required');
         }
         else {
           $(this).siblings('.field--name-field-height').show().find('input').val(heightVal).attr('required', 'required');
+          $(this).siblings('.field--name-field-verify-iframe-100-confirm').hide().find('input').removeAttr('required');
         }
       }).change();
     }

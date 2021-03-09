@@ -14,12 +14,23 @@ dependencies:
     - field.field.paragraph.iframe.field_iframe_wrapping
     - field.field.paragraph.iframe.field_media_display
     - field.field.paragraph.iframe.field_url
+    - field.field.paragraph.iframe.field_verify_iframe_100_confirm
     - paragraphs.paragraphs_type.iframe
 id: paragraph.iframe.default
 targetEntityType: paragraph
 bundle: iframe
 mode: default
-content: {  }
+content:
+  field_verify_iframe_100_confirm:
+    weight: 0
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
 hidden:
   created: true
   field_caption: true
