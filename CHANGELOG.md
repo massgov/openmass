@@ -1,5 +1,20 @@
 
 
+## [0.274.0] - March 9, 2021
+
+### Fixed
+  - DP-20735: Omit unneeded Acquia logs for sync to S3
+  - DP-20886: Use correct log names during sync to S3
+  - DP-21404: Fixed error messages coming from Mass Metatag.
+  
+### Changed
+  - DP-21093: Update Drush, Devel, and Composer2
+  
+### Added
+  - DP-21274: Added docs for a native development environment.
+  
+
+
 ## [0.273.0] - March 2, 2021
 
 ### Fixed
