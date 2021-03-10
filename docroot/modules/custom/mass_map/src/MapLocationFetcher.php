@@ -248,7 +248,9 @@ class MapLocationFetcher {
         // Get hours from the referenced contact info node.
         if (!$contact_information_entity->field_ref_hours->isEmpty()) {
           $hours_paragraph = $contact_information_entity->field_ref_hours->entity;
-          $hours = $hours_paragraph->field_hours_structured->view('default');
+          if (!is_null($hours_paragraph->field_hours_structured)) {
+            $hours = $hours_paragraph->field_hours_structured->view('default');
+          }
           if ($hours) {
             $hours = \Drupal::service('renderer')->render($hours);
             $hours = str_replace('<p>', '', $hours);
