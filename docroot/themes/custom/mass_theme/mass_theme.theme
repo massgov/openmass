@@ -6025,6 +6025,20 @@ function mass_theme_preprocess_paragraph__icon_links(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Prepare iframe for template.
+ */
+function mass_theme_preprocess__iframe(&$variables) {
+  $variables['iframe_height'] = $variables['paragraph']->get('field_iframe_height')->getValue();
+  if (!$variables['paragraph']->get('field_iframe_height_config')->isEmpty()) {
+    if ($variables['paragraph']->get('field_iframe_height_config')->getValue() == '100') {
+      $variables['iframe_height'] = 'auto';
+    }
+  }
+}
+
+/**
  * Language config for Google translate.
  */
 function mass_theme_googletranslate_options_languages() {

@@ -166,7 +166,8 @@
         if ($(this).find('input:checked').length < 1) {
           $(this).find("input[value='fixed']").attr('checked', 'checked');
         }
-        else if ($(this).find('input:checked').val() === '100') {
+
+        if ($(this).find('input:checked').val() === '100') {
           $(this).siblings('.field--name-field-height').hide().find('input').val(heightVal).removeAttr('required');
           $(this).siblings('.field--name-field-verify-iframe-100-confirm').show().find('input').attr('required', 'required');
         }
