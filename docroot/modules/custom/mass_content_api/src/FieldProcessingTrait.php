@@ -239,7 +239,6 @@ trait FieldProcessingTrait {
                 $parsed_match = parse_url($match);
                 // Relative urls have no host set, external links need filtered.
                 if (!isset($parsed_match['host']) || str_contains($parsed_match['host'], 'mass.gov')) {
-                  // @TODO Probably don't do this.
                   $validator = $this->getPathValidator();
                   $url = $validator->getUrlIfValid($parsed_match['path']);
                   // Confirming the local link is a node, not media or other.
@@ -249,6 +248,17 @@ trait FieldProcessingTrait {
                     $collected[$nid] = [
                       'id' => $nid,
                       'entity' => 'node',
+                      'field_label' => $field_label ?? '',
+                      'field_name' => $field_name ?? '',
+                    ];
+                  }
+                  // Documents particularly are linked to, track those.
+                  elseif ($url && $url->getRouteName() === 'media_entity_download.download') {
+                    $params = $url->getRouteParameters();
+                    $id = $params['media'];
+                    $collected[$nid] = [
+                      'id' => $id,
+                      'entity' => 'media',
                       'field_label' => $field_label ?? '',
                       'field_name' => $field_name ?? '',
                     ];
