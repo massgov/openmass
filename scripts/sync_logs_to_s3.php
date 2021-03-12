@@ -13,12 +13,13 @@ define('SOURCE_DIR', "/var/log/sites/$site.$env/logs/$servername/");
 sync();
 
 function sync() {
+  // Several log types commented out because they are not needed.
   $includes = [
     'access.log', // Apache
-    'error.log', // Apache
-    'drupal-requests',
-    'drupal-watchdog',
-    'php-errors.log',
+    // 'error.log', // Apache
+    // 'drupal-requests.log',
+    'drupal-watchdog.log',
+    // 'php-errors.log',
   ];
   $suffix = implode(' --include ', $includes);
   $cmd = [AWSCLI, '--profile', S3_PROFILE, 's3', 'sync', SOURCE_DIR, S3_PATH, ' --only-show-errors', '--no-progress', '--exclude', '"*"', '--include '];
