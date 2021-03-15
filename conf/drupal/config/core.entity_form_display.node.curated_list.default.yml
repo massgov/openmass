@@ -10,6 +10,8 @@ dependencies:
     - field.field.node.curated_list.field_curatedlist_overview
     - field.field.node.curated_list.field_data_flag
     - field.field.node.curated_list.field_data_format
+    - field.field.node.curated_list.field_data_sub_topic
+    - field.field.node.curated_list.field_data_topic
     - field.field.node.curated_list.field_intended_audience
     - field.field.node.curated_list.field_list_data_type
     - field.field.node.curated_list.field_list_directory_section
@@ -54,6 +56,8 @@ third_party_settings:
         - field_organizations
         - field_data_flag
         - field_list_data_type
+        - field_data_topic
+        - field_data_sub_topic
         - field_data_format
         - field_intended_audience
         - field_reusable_label
@@ -171,7 +175,7 @@ content:
     type: options_buttons
     region: content
   field_data_format:
-    weight: 10
+    weight: 12
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -194,8 +198,20 @@ content:
           bundle: curated_list
     type: options_buttons
     region: content
-  field_intended_audience:
+  field_data_sub_topic:
     weight: 11
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_data_topic:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_intended_audience:
+    weight: 13
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -279,7 +295,7 @@ content:
     type: link_default
     region: content
   field_reusable_label:
-    weight: 12
+    weight: 14
     settings:
       match_operator: CONTAINS
       match_limit: 10
