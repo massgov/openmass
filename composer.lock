@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0a4bc8c6121e112ee57dbcb84ac6ca40",
+    "content-hash": "94fd41924023c81979ea5a5fe39017e1",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4655,33 +4655,30 @@
         },
         {
             "name": "drupal/encrypt",
-            "version": "3.0.0-rc2",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/encrypt.git",
-                "reference": "8.x-3.0-rc2"
+                "reference": "8.x-3.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/encrypt-8.x-3.0-rc2.zip",
-                "reference": "8.x-3.0-rc2",
-                "shasum": "784f41ad69bdff14f180ceeec70512738402e8e8"
+                "url": "https://ftp.drupal.org/files/projects/encrypt-8.x-3.0.zip",
+                "reference": "8.x-3.0",
+                "shasum": "6916583be6d08c9684582358d7b7722fdeea8487"
             },
             "require": {
-                "drupal/core": "~8.0",
+                "drupal/core": "^8 || ^9",
                 "drupal/key": "*"
             },
             "type": "drupal-module",
             "extra": {
-                "branch-alias": {
-                    "dev-3.x": "3.x-dev"
-                },
                 "drupal": {
-                    "version": "8.x-3.0-rc2",
-                    "datestamp": "1553277784",
+                    "version": "8.x-3.0",
+                    "datestamp": "1602354427",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "RC releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 }
             },
@@ -4690,6 +4687,10 @@
                 "GPL-2.0-or-later"
             ],
             "authors": [
+                {
+                    "name": "alexpott",
+                    "homepage": "https://www.drupal.org/user/157725"
+                },
                 {
                     "name": "gisle",
                     "homepage": "https://www.drupal.org/user/409554"
@@ -5969,29 +5970,26 @@
         },
         {
             "name": "drupal/key",
-            "version": "1.10.0",
+            "version": "1.14.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/key.git",
-                "reference": "8.x-1.10"
+                "reference": "8.x-1.14"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/key-8.x-1.10.zip",
-                "reference": "8.x-1.10",
-                "shasum": "4547bf7a95972c8e84dc730936ff94718e2d9ca2"
+                "url": "https://ftp.drupal.org/files/projects/key-8.x-1.14.zip",
+                "reference": "8.x-1.14",
+                "shasum": "097cec8e86b1c164727ca62521a06c36459754f1"
             },
             "require": {
-                "drupal/core": "~8.0"
+                "drupal/core": "^8.7.7 || ^9"
             },
             "type": "drupal-module",
             "extra": {
-                "branch-alias": {
-                    "dev-1.x": "1.x-dev"
-                },
                 "drupal": {
-                    "version": "8.x-1.10",
-                    "datestamp": "1573604580",
+                    "version": "8.x-1.14",
+                    "datestamp": "1591765429",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -6001,9 +5999,6 @@
                     "services": {
                         "drush.services.yml": "^9"
                     }
-                },
-                "patches_applied": {
-                    "Stop adding 'extensions' cache tag on unrelated config objects (https://www.drupal.org/project/key/issues/3080971)": "https://www.drupal.org/files/issues/2019-09-12/no-tag_1.patch"
                 }
             },
             "notification-url": "https://packages.drupal.org/8/downloads",
@@ -7661,31 +7656,28 @@
         },
         {
             "name": "drupal/real_aes",
-            "version": "2.2.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/real_aes.git",
-                "reference": "8.x-2.2"
+                "reference": "8.x-2.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/real_aes-8.x-2.2.zip",
-                "reference": "8.x-2.2",
-                "shasum": "292bb36b322ba1758d3a45ae5dbd34ebe64c9c59"
+                "url": "https://ftp.drupal.org/files/projects/real_aes-8.x-2.3.zip",
+                "reference": "8.x-2.3",
+                "shasum": "03ec509bed00dc36d935901c301edbe4c68eb06d"
             },
             "require": {
                 "defuse/php-encryption": "^2.0",
-                "drupal/core": "~8.0",
+                "drupal/core": "^8 || ^9",
                 "drupal/encrypt": "*"
             },
             "type": "drupal-module",
             "extra": {
-                "branch-alias": {
-                    "dev-2.x": "2.x-dev"
-                },
                 "drupal": {
-                    "version": "8.x-2.2",
-                    "datestamp": "1552499284",
+                    "version": "8.x-2.3",
+                    "datestamp": "1590296952",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -8375,22 +8367,22 @@
         },
         {
             "name": "drupal/tfa",
-            "version": "1.0.0-alpha4",
+            "version": "1.0.0-alpha7",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/tfa.git",
-                "reference": "8.x-1.0-alpha4"
+                "reference": "8.x-1.0-alpha7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/tfa-8.x-1.0-alpha4.zip",
-                "reference": "8.x-1.0-alpha4",
-                "shasum": "785e49e132f5acf95134be1d65e7b22a6632cdc7"
+                "url": "https://ftp.drupal.org/files/projects/tfa-8.x-1.0-alpha7.zip",
+                "reference": "8.x-1.0-alpha7",
+                "shasum": "176d4a0bc8979fb0a82e899dd4be2cbbff76f6b1"
             },
             "require": {
-                "christian-riesen/otp": "2.*",
-                "drupal/core": "~8.0",
-                "drupal/encrypt": "*"
+                "drupal/core": "^8 || ^9",
+                "drupal/encrypt": "~3.0",
+                "php": ">=7.0"
             },
             "require-dev": {
                 "drupal/encrypt": "*",
@@ -8399,30 +8391,23 @@
             },
             "type": "drupal-module",
             "extra": {
-                "branch-alias": {
-                    "dev-1.x": "1.x-dev"
-                },
                 "drupal": {
-                    "version": "8.x-1.0-alpha4",
-                    "datestamp": "1521586980",
+                    "version": "8.x-1.0-alpha7",
+                    "datestamp": "1607880109",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Alpha releases are not covered by Drupal security advisories."
                     }
                 },
-                "patches_applied": {
-                    "Drush sanitize plugin for TFA user data. (https://www.drupal.org/node/2862312)": "https://www.drupal.org/files/issues/2019-01-09/tfa-drush9.patch",
-                    "UID enumeration prevention. (https://www.drupal.org/project/tfa/issues/2957140)": "https://www.drupal.org/files/issues/2018-03-29/tfa-remove_uid_enumeration-2957140_alpha4.patch",
-                    "Description help text displays wrong recovery code syntax (https://www.drupal.org/project/tfa/issues/3074323)": "https://www.drupal.org/files/issues/2019-08-12/description-help-text-displays-wrong-recovery-code-syntax-3074323-4.patch",
-                    "[Bad UX around \"required to setup TFA\" concept and users who have skipped validation too many times](https://www.drupal.org/project/tfa/issues/2937336)": "https://www.drupal.org/files/issues/2019-03-01/2937336-17.patch",
-                    "[Add test coverage for logging in](https://www.drupal.org/node/2944682)": "https://www.drupal.org/files/issues/2019-03-05/2944682-24.patch",
-                    "[Settings form does not properly handle '0' (zero) as a Skip Validation config value](https://www.drupal.org/project/tfa/issues/3127935)": "https://www.drupal.org/files/issues/2020-04-15/3127935-4.patch",
-                    "[Allow for formatted help text on login form](https://www.drupal.org/project/tfa/issues/3128020)": "https://www.drupal.org/files/issues/2020-04-15/3128020-2.patch"
+                "drush": {
+                    "services": {
+                        "drush.services.yml": "^9"
+                    }
                 }
             },
             "notification-url": "https://packages.drupal.org/8/downloads",
             "license": [
-                "GPL-2.0+"
+                "GPL-2.0-or-later"
             ],
             "authors": [
                 {
@@ -8438,6 +8423,10 @@
                     "homepage": "https://www.drupal.org/user/36762"
                 },
                 {
+                    "name": "jcnventura",
+                    "homepage": "https://www.drupal.org/user/122464"
+                },
+                {
                     "name": "nerdstein",
                     "homepage": "https://www.drupal.org/user/1557710"
                 }
@@ -8445,8 +8434,7 @@
             "description": "Pluggable provider of two factor authentication for Drupal",
             "homepage": "https://www.drupal.org/project/tfa",
             "support": {
-                "source": "http://cgit.drupalcode.org/tfa",
-                "error": "Invalid dependency: \"tfa_test_plugins\" is an unknown drupal 8 package name"
+                "source": "https://git.drupalcode.org/project/tfa"
             }
         },
         {
