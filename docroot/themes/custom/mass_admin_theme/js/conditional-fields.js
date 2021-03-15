@@ -179,4 +179,23 @@
     }
   };
 
+  Drupal.behaviors.dataTopicFields = {
+    attach: function (context) {
+      $('.field--name-field-data-topic', context).change(function () {
+        $(this).find('label').each(function () {
+          if ($(this).text().startsWith('-')) {
+            $(this).parent().hide();
+          }
+        });
+
+        if ($(this).find('input:checked').length > 0) {
+          $(this).siblings('.field--name-field-data-sub-topic').show();
+        }
+        else {
+          $(this).siblings('.field--name-field-data-sub-topic').hide();
+        }
+      }).change();
+    }
+  };
+
 })(jQuery, Drupal);
