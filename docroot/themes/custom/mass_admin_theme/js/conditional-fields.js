@@ -181,7 +181,24 @@
 
   Drupal.behaviors.dataTopicFields = {
     attach: function (context) {
+      $('.field--name-field-data-sub-topic', context).find('label').each(function () {
+        $(this).find('.field-content').hide().parent().append('<span class="field-content label-split"></span>');
+      });
+
+      var getSubtopics = function (topic) {
+        if (topic.length > 0) {
+          $('.field--name-field-data-sub-topic').find('label').each(function () {
+            var split = $(this).find('.field-content').first().text().split('>>');
+            if (split[0] === topic) {
+              $(this).parent().find('.label-split').text(split[1]);
+              $(this).parent().show();
+            }
+          });
+        }
+      };
+
       $('.field--name-field-data-topic', context).change(function () {
+        $('.field--name-field-data-sub-topic', context).find('.form-type-checkbox').hide();
         $(this).find('label').each(function () {
           if ($(this).text().startsWith('-')) {
             $(this).parent().hide();
@@ -189,6 +206,8 @@
         });
 
         if ($(this).find('input:checked').length > 0) {
+          console.log($(this).find('input:checked').siblings('label').text());
+          getSubtopics($(this).find('input:checked').siblings('label').text());
           $(this).siblings('.field--name-field-data-sub-topic').show();
         }
         else {
