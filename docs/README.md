@@ -3,11 +3,11 @@ See also: [Documentation for Mass Digital team](https://github.com/massgov/massg
 
 ## Developer basics
 - [Getting Started](https://github.com/massgov/openmass#getting-started)
-  - Clone the repo; set up Docker and ahoy; workflow
 - [Changelog Instructions](changelog_instructions.md)
 - [Composer](composer.md)
 - [Peer Review checklist](peer_review_checklist.md)
 - [Performance](performance.md)
+- [Security](security.md)
 - [Testing](testing.md)
 
 ## API
