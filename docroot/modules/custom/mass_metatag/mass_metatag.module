@@ -201,6 +201,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
           $metatag_utils = \Drupal::service('mass_metatag.utilities');
           $labels = $metatag_utils->getAllLabelsFromNode($data['node']);
           // Remove hyphens from the labels..
+          $label_names = [];
           foreach ($labels as $key => $value) {
             $label_names[$key] = str_replace("-", "", $value);
           }
