@@ -1,0 +1,29 @@
+uuid: 6ba2c952-151d-487b-9b50-a0bb143244af
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_data_topic
+    - node.type.binder
+    - taxonomy.vocabulary.data_topic
+id: node.binder.field_data_topic
+field_name: field_data_topic
+entity_type: node
+bundle: binder
+label: 'Data topic'
+description: 'Choose a data topic that applies to this page. '
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      data_topic: data_topic
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference
