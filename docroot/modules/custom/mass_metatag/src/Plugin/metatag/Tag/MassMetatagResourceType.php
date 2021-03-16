@@ -48,7 +48,7 @@ class MassMetatagResourceType extends MetaNameBase {
             // field_data_resource_type has a value + data type = Data resource.
             if (!$data_resources->isEmpty()) {
 
-              // Values for mg_resource_type[NEW]
+
               foreach ($data_resources->referencedEntities() as $k => $resource) {
                 $types[$k] = $resource->get('field_dataresource_metatag')->getString();
               }
@@ -69,6 +69,8 @@ class MassMetatagResourceType extends MetaNameBase {
         }
       }
     }
+
     return $element;
   }
+
 }
