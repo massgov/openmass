@@ -13,7 +13,7 @@ use Drupal\node\NodeInterface;
  * - 'group' should match the id of the group that defines the Schema.org type.
  *
  * @MetatagTag(
- *   id = "mass_metatag_type",
+ *   id = "mass_metatag_resource_type",
  *   label = @Translation("mg_resource_type"),
  *   description = @Translation("The data resource type of page."),
  *   name = "mg_resource_type",
@@ -58,22 +58,17 @@ class MassMetatagResourceType extends MetaNameBase {
                 $outputValue = "null";
               }
 
-              if (empty($element)) {
-                $element = [
-                // $tag = [
-                  '#tag' => 'meta',
-                  '#attributes' => [
-                    'name' => 'mg_resource_type',
-                    'content' => $outputValue,
-                  ]
-                ];
-                // return $tag;
-              }
+              $element = [
+                '#tag' => 'meta',
+                '#attributes' => [
+                  'name' => 'mg_resource_type',
+                  'content' => $outputValue,
+                ]
+              ];
             }
           }
         }
       }
-    // return $attachments;
     return $element;
   }
 }
