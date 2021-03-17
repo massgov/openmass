@@ -24,12 +24,14 @@ use Drupal\node\NodeInterface;
  *   multiple = FALSE
  * )
  */
-class MassMetatagResourceType extends MetaNameBase {
+class MassMetatagResourceType extends MetaNameBase
+{
 
   /**
    * {@inheritdoc}
    */
-  public function output() {
+  public function output()
+  {
     $element = parent::output();
 
     $node = \Drupal::routeMatch()->getParameter('node');
@@ -47,14 +49,11 @@ class MassMetatagResourceType extends MetaNameBase {
 
             // field_data_resource_type has a value + data type = Data resource.
             if (!$data_resources->isEmpty()) {
-
-
               foreach ($data_resources->referencedEntities() as $k => $resource) {
                 $types[$k] = $resource->get('field_dataresource_metatag')->getString();
               }
               $outputValue = implode(', ', $types);
-            }
-            else {
+            } else {
               $outputValue = "null";
             }
 
@@ -72,5 +71,4 @@ class MassMetatagResourceType extends MetaNameBase {
 
     return $element;
   }
-
 }
