@@ -39,23 +39,22 @@ class MassMetatagType extends MetaNameBase {
       // Get Binder data type, field_binder_data_type.
       if ($node instanceof NodeInterface && $node->bundle() == 'binder') {
         $term_ref_name = 'field_binder_data_type';
-        $outputValue = '';
         if ($node->hasField($term_ref_name) && $data_type = $node->get($term_ref_name)) {
           $items = $data_type->referencedEntities();
           if (!empty($items)) {
             $type_name = $items[0]->get('name')->getString();
-
             if ($type_name === 'Data resource') {
-              $outputValue = 'data-resource';
+              $element['#attributes']['content'] = 'data-resource';
             }
-            else {
-              // Anything but 'Data resource'.
-              $outputValue = $items[0]->get('field_details_datatype_metatag')->getString();
+            else {// Anything but 'Data resource'.
+              $element['#attributes']['content'] = $items[0]->get('field_details_datatype_metatag')->getString();
             }
+          }
+          else {// No option selected.
+            $element = [];
           }
         }
       }
-      $element['#attributes']['content'] = $outputValue;
     }
 
     return $element;
