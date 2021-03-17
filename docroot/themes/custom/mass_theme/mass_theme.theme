@@ -6033,6 +6033,7 @@ function mass_theme_preprocess__iframe(&$variables) {
   $variables['iframe_height'] = $variables['paragraph']->get('field_iframe_height')->getValue();
   if (!$variables['paragraph']->get('field_iframe_height_config')->isEmpty()) {
     if ($variables['paragraph']->get('field_iframe_height_config')->getValue() == '100') {
+      $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
       $variables['iframe_height'] = 'auto';
     }
   }
