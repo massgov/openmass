@@ -1296,3 +1296,10 @@ function mass_utility_path_update(array $path) {
     }
   }
 }
+
+/**
+ * Implements hook_ckeditor_plugin_info_alter().
+ */
+function mass_utility_ckeditor_plugin_info_alter(array &$plugins) {
+  $plugins['mediaentitydownload']['class'] = 'Drupal\mass_utility\Plugin\CKEditorPlugin\MassMediaEntityDownload';
+}
