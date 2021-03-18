@@ -3,12 +3,12 @@
 namespace Drupal\mass_utility\Plugin\CKEditorPlugin;
 
 use Drupal\media_entity_download\Plugin\CKEditorPlugin\MediaEntityDownload;
-use  Drupal\ckeditor\CKEditorPluginButtonsInterface;
+use Drupal\ckeditor\CKEditorPluginButtonsInterface;
 
 /**
  * Overrides the "mediaentitydownload" plugin.
  */
-class MassMediaEntityDownload extends MediaEntityDownload implements CKEditorPluginButtonsInterface{
+class MassMediaEntityDownload extends MediaEntityDownload implements CKEditorPluginButtonsInterface {
 
   /**
    * {@inheritdoc}
