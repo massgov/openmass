@@ -183,29 +183,14 @@ display:
           clear_on_exposed: false
           action_title: Action
           selected_actions:
-            'flag_action:watch_content_flag': 0
-            'flag_action:watch_content_unflag': 0
-            node_unpromote_action: 0
-            node_unpublish_action: 0
-            node_publish_action: 0
-            node_unpublish_by_keyword_action: 0
-            node_assign_owner_action: 0
-            node_promote_action: 0
-            node_save_action: 0
-            node_make_sticky_action: 0
-            node_make_unsticky_action: 0
-            export_view_content_yaml: export_view_content_yaml
-            views_bulk_operations_delete_entity: views_bulk_operations_delete_entity
-            pathauto_update_alias: 0
-            'entity:save_action:node': 0
-            'entity:unpublish_action:node': 0
-            'entity:publish_action:node': 0
-            'entity:delete_action:node': 0
-          preconfiguration:
-            export_view_content_yaml:
-              label_override: ''
-            views_bulk_operations_delete_entity:
-              label_override: ''
+            -
+              action_id: export_view_content_yaml
+              preconfiguration:
+                label_override: ''
+            -
+              action_id: views_bulk_operations_delete_entity
+              preconfiguration:
+                label_override: ''
           plugin_id: views_bulk_operations_bulk_form
         title:
           id: title
