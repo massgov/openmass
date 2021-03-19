@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "2a8f1ffc00a2223484e2ea7aef0be09f",
+    "content-hash": "0ef678965e86762a620fa0af231a72b5",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6354,33 +6354,27 @@
         },
         {
             "name": "drupal/media_entity_download",
-            "version": "2.0.0",
+            "version": "dev-2.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/media_entity_download.git",
-                "reference": "8.x-2.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/media_entity_download-8.x-2.0.zip",
-                "reference": "8.x-2.0",
-                "shasum": "31d7baae5d6e60cf729dab19e2dc748c9d12e2a3"
+                "reference": "7f0fc0ed1c3a69fe568a4da9da5590a6408e4435"
             },
             "require": {
                 "drupal/core": "^8.8 || ^9"
             },
             "type": "drupal-module",
             "extra": {
-                "drupal": {
-                    "version": "8.x-2.0",
-                    "datestamp": "1586899177",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
+                "branch-alias": {
+                    "dev-2.x": "2.x-dev"
                 },
-                "patches_applied": {
-                    "CKeditor Plugin - using a combined patch to avoid conflict (https://www.drupal.org/node/2928318)": "https://www.drupal.org/files/issues/2020-10-28/media_entity_download-ckeditor_plugin-2928318-19.patch"
+                "drupal": {
+                    "version": "8.x-2.0-beta1+4-dev",
+                    "datestamp": "1584204208",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
+                    }
                 }
             },
             "notification-url": "https://packages.drupal.org/8/downloads",
@@ -17229,6 +17223,7 @@
         "drupal/inline_entity_form": 20,
         "drupal/key_value_field": 20,
         "drupal/maxlength": 10,
+        "drupal/media_entity_download": 20,
         "drupal/monolog": 10,
         "drupal/node_edit_protection": 20,
         "drupal/node_title_help_text": 20,
@@ -17251,5 +17246,6 @@
     "platform-dev": [],
     "platform-overrides": {
         "php": "7.3"
-    }
+    },
+    "plugin-api-version": "2.0.0"
 }
