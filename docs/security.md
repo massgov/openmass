@@ -1,6 +1,6 @@
 # Security
 
-Mass.gov is a vital resource and we protect it vigorously. Please familiarize yourself with the following resources:
+Mass.gov is a vital resource and we protect it vigorously. Please familiarize yourself with these resources:
 
 - [Cloudflare](https://www.cloudflare.com/learning/cloud/what-is-cloud-security/). 
   - Our first layer of defense is the Cloudflare Web Application Firewall. Please login to the Cloudflare UI to review configuration. 
