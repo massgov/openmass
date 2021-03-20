@@ -185,30 +185,31 @@ abstract class MetadataTestCase extends ExistingSiteBase {
    * Flatten @graph annotations on a schema.
    *
    * @param array $object
-   *   An object containing schemas and/or @graph annotations.
+   *   An object containing schema data.
    * @param array $schemas
    *   An array of schemas for recursion.
    *
    * @return array
+   *   An array of schemas.
    */
   private function flattenSchemas(array $object, array $schemas = []) {
-    // If the object has @graph annotations, parse them.
+    // If the object has graph annotations, parse them.
     if (isset($object['@graph']) && !empty($object['@graph'])) {
-      // Loop through the @graph annotations.
+      // Loop through the graph annotations.
       foreach ($object['@graph'] as $key => $value) {
         // Create a clone of the object and add the attributes from the current
-        // @graph annotation.
+        // graph annotation.
         $clone = $object + $object['@graph'][$key];
-        // Remove the @graph annotations from the clone.
+        // Remove the graph annotations from the clone.
         unset($clone['@graph']);
-        // Add the clone to the schemas array if it has an @id attribute.
+        // Add the clone to the schemas array if it has an id attribute.
         if (isset($clone['@id'])) {
           $schemas[$clone['@id']] = $clone;
         }
-        // Add the @graph annotation attributes to the clone again in case the
-        // @graph annotation also has @graph annotations.
+        // Add the graph annotation attributes to the clone again in case the
+        // graph annotation also has graph annotations.
         $clone += $object['@graph'][$key];
-        // If there are @graph annotations, run this function recursively to add
+        // If there are graph annotations, run this function recursively to add
         // them to the schemas array.
         if (isset($clone['@graph'])) {
           // Update the schemas array from the recursive method call.
@@ -217,7 +218,7 @@ abstract class MetadataTestCase extends ExistingSiteBase {
       }
     }
     else {
-      // If there are no @graph annotations and the object has an @id attribute,
+      // If there are no graph annotations and the object has an id attribute,
       // add the object as the schema.
       if (isset($object['@id'])) {
         $schemas[$object['@id']] = $object;
