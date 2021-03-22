@@ -1,0 +1,81 @@
+uuid: e2f0bc54-6b52-408d-992b-49acfa2f70f6
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.title_short_desc
+    - field.field.node.decision.field_decision_date
+    - field.field.node.decision.field_decision_docket_number
+    - field.field.node.decision.field_decision_download
+    - field.field.node.decision.field_decision_footnotes
+    - field.field.node.decision.field_decision_listing_desc
+    - field.field.node.decision.field_decision_location
+    - field.field.node.decision.field_decision_metatags
+    - field.field.node.decision.field_decision_overview
+    - field.field.node.decision.field_decision_participants
+    - field.field.node.decision.field_decision_ref_contact
+    - field.field.node.decision.field_decision_ref_organization
+    - field.field.node.decision.field_decision_ref_type
+    - field.field.node.decision.field_decision_related
+    - field.field.node.decision.field_decision_section
+    - field.field.node.decision.field_decision_sources
+    - field.field.node.decision.field_intended_audience
+    - field.field.node.decision.field_organizations
+    - field.field.node.decision.field_reusable_label
+    - field.field.node.decision.field_state_organization_tax
+    - node.type.decision
+  module:
+    - user
+id: node.decision.title_short_desc
+targetEntityType: node
+bundle: decision
+mode: title_short_desc
+content:
+  field_decision_listing_desc:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  referencing_binders_page_flipper:
+    type: entity_reference_label
+    weight: 19
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  extra_node_pager: true
+  extra_org_feedback_form: true
+  field_decision_date: true
+  field_decision_docket_number: true
+  field_decision_download: true
+  field_decision_footnotes: true
+  field_decision_location: true
+  field_decision_metatags: true
+  field_decision_overview: true
+  field_decision_participants: true
+  field_decision_ref_contact: true
+  field_decision_ref_organization: true
+  field_decision_ref_type: true
+  field_decision_related: true
+  field_decision_section: true
+  field_decision_sources: true
+  field_intended_audience: true
+  field_organizations: true
+  field_reusable_label: true
+  field_state_organization_tax: true
+  links: true
+  page_next: true
+  page_previous: true
+  referencing_binders: true
