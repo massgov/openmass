@@ -37,12 +37,6 @@
  */
 #}
 
-{% set caption = {
-  '#type':   'processed_text',
-  '#text':    paragraph.field_iframe_caption.value,
-  '#format':  paragraph.field_iframe_caption.format,
-} %}
-
 {% include "@atoms/09-media/figure--iframe.twig" with {
   "figure": {
     "align": paragraph.field_iframe_alignment.value,
@@ -51,7 +45,7 @@
     "iframe": {
       "src": paragraph.field_url.uri,
       "title": paragraph.field_iframe_accessibility_title.value,
-      "height": full_height ? "auto" : paragraph.field_height.value,
+      "height": iframe_height,
       "position": paragraph.field_iframe_display_size.value,
       "caption": caption
     }
