@@ -46,11 +46,13 @@ class MassMetatagType extends MetaNameBase {
             if ($type_name === 'Data resource') {
               $element['#attributes']['content'] = 'data-resource';
             }
-            else {// Anything but 'Data resource'.
+            else {
+              // Anything but 'Data resource'.
               $element['#attributes']['content'] = $items[0]->get('field_details_datatype_metatag')->getString();
             }
           }
-          else {// No option selected.
+          else {
+            // No option selected.
             $element = [];
           }
         }
