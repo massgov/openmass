@@ -4927,6 +4927,19 @@ function mass_theme_preprocess_paragraph(&$variables) {
 
 /**
  * Implements hook_preprocess_paragraph().
+ */
+function mass_theme_preprocess_paragraph__iframe(&$variables) {
+  if (!$variables['paragraph']->get('field_iframe_height_config')->isEmpty()) {
+    $variables['iframe_height'] = $variables['paragraph']->get('field_iframe_height_config')->getValue()[0]['value'];
+    if ($variables['iframe_height'] == '100') {
+      $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
+      $variables['iframe_height'] = 'auto';
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_paragraph().
  *
  * Process info_details card group/
  */
@@ -6022,23 +6035,6 @@ function mass_theme_preprocess_paragraph__icon_links(&$variables) {
   }
 
   $variables['iconLinks']['items'] = $items;
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- *
- * Prepare iframe for template.
- */
-function mass_theme_preprocess_paragraph__iframe(&$variables) {
-  $variables['caption'] = $variables['paragraph']->get('field_iframe_caption')->view('full');
-
-  $variables['iframe_height'] = $variables['paragraph']->get('field_iframe_height_config')->getValue();
-  if (!$variables['paragraph']->get('field_iframe_height_config')->isEmpty()) {
-    if ($variables['paragraph']->get('field_iframe_height_config')->getValue() == '100') {
-      $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
-      $variables['iframe_height'] = 'auto';
-    }
-  }
 }
 
 /**
