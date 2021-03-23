@@ -3,29 +3,18 @@ send_plugins: {  }
 login_plugins: {  }
 validation_plugin: tfa_totp
 validation_plugin_settings:
-  tfa_totp:
-    time_skew: 30
-    site_name_prefix: 0
-    name_prefix: MASS
-    issuer: MASS.GOV
-  tfa_hotp:
+  ga_login_hotp:
     counter_window: 10
     site_name_prefix: 1
     name_prefix: TFA
     issuer: Drupal
-fallback_plugins:
-  tfa_totp:
-    tfa_recovery_code:
-      enable: 1
-      settings:
-        recovery_codes_amount: 9
-      weight: -2
-  tfa_hotp:
-    tfa_recovery_code:
-      enable: 1
-      settings:
-        recovery_codes_amount: 9
-      weight: -2
+  ga_login_totp:
+    time_skew: 2
+    site_name_prefix: 1
+    name_prefix: MASS
+    issuer: MASS.GOV
+  tfa_recovery_code:
+    recovery_codes_amount: 9
 help_text: "<p>ERROR:<br />\r\nTwo factor authentication is not setup for this account. Please <a href=\"/user/password\">request a password reset</a> which will allow you to setup two factor authentication.</p>\r\n"
 validation_skip: 0
 encryption: real_aes
@@ -50,9 +39,11 @@ required_roles:
   doc_deletion: '0'
   campaign_landing_page_publisher: '0'
   d2d_redirect_manager: '0'
+  external_data_resource_manager: '0'
 allowed_validation_plugins:
-  tfa_totp: tfa_totp
-default_validation_plugin: tfa_totp
+  ga_login_totp: ga_login_totp
+  tfa_recovery_code: tfa_recovery_code
+default_validation_plugin: ga_login_totp
 mail:
   tfa_enabled_configuration:
     subject: 'edit.mass.gov two-factor authentication enabled'
