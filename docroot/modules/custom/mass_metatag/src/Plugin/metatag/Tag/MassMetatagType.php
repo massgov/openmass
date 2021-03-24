@@ -53,8 +53,7 @@ class MassMetatagType extends MetaNameBase {
           }
           else {
             // No option selected.
-            // $element = [];
-            $element['#attributes']['content'] = 'null';
+            $element = [];
           }
         }
       }
