@@ -1,5 +1,23 @@
 
 
+## [0.275.0] - March 23, 2021
+
+### Changed
+  - DP-19363: Updated key, encrypt, tfa, real_aes, and ga_login modules
+  - DP-21454: Added --no-tablespaces option during sql:dump
+  - DP-21534: Updated Mayflower version to 11.2.2.
+  - DP-20435: Fix Callout Links alignment in key actions (promoted results in search.mass.gov). (MF)
+  
+### Fixed
+  - DP-21249: Updated asset_cache_bust module to prevent warnings.
+  - DP-21459: Fixes the missing icon in the document insert wysiwg tool.
+  - DP-21464: Rich Text images set to half-width with no alignment now have a width of 50%.
+  
+### Added
+  - DP-21249: Re-add cache bust querystring param to aggregated CSS and JS.
+  
+
+
 ## [0.274.0] - March 16, 2021
 
 ### Fixed
