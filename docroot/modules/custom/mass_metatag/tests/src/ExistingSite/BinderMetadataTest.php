@@ -28,6 +28,10 @@ class BinderMetadataTest extends MetadataTestCase {
       'title' => 'Test Org Page',
       'moderation_state' => 'published',
     ]);
+    $data_type_term = $this->createTerm(Vocabulary::load('tx_details_data_type'), [
+      'name' => 'TestDataType',
+      'field_details_datatype_metatag' => 'test-data-tag',
+    ]);
     $node = $this->createNode([
       'type' => 'binder',
       'title' => 'Test Binder',
@@ -36,6 +40,7 @@ class BinderMetadataTest extends MetadataTestCase {
       'field_binder_last_updated' => '2012-12-31',
       'field_binder_binder_type' => [$binder_type],
       'field_state_organization_tax' => [$org_term],
+      'field_details_data_type' => [$data_type_term],
       'field_contact' => $this->createContact(),
       'moderation_state' => 'published',
     ]);
@@ -51,7 +56,7 @@ class BinderMetadataTest extends MetadataTestCase {
       'og:description' => 'Test Short Desc',
       'twitter:description' => 'Test Short Desc',
       'mg_date' => '20121231',
-      'mg_type' => 'testtype',
+      // 'mg_type' => 'testtype',
       'mg_organization' => 'testorgpage',
       // @todo: This doesn't seem like the correct value.
       'mg_contact_details' => 'Test Contact - admin',
