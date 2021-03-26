@@ -30,7 +30,7 @@ class BinderMetadataTest extends MetadataTestCase {
     ]);
     $data_type_term = $this->createTerm(Vocabulary::load('tx_details_data_type'), [
       'name' => 'TestDataType',
-      'field_details_datatype_metatag' => 'test-data-tag',
+      'field_details_datatype_metatag' => 'testtype',
     ]);
     $node = $this->createNode([
       'type' => 'binder',
