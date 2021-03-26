@@ -56,7 +56,7 @@ class BinderMetadataTest extends MetadataTestCase {
       'og:description' => 'Test Short Desc',
       'twitter:description' => 'Test Short Desc',
       'mg_date' => '20121231',
-      // 'mg_type' => 'testtype',
+      'mg_type' => 'testtype',
       'mg_organization' => 'testorgpage',
       // @todo: This doesn't seem like the correct value.
       'mg_contact_details' => 'Test Contact - admin',
