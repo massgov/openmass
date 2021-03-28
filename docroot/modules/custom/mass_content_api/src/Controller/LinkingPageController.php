@@ -10,6 +10,7 @@ use Drupal\mass_content_api\FieldProcessingTrait;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\node\Entity\Node;
+use Drupal\Core\Path\PathValidatorInterface;
 
 /**
  * Class ImpactController.
@@ -34,16 +35,26 @@ class LinkingPageController extends ControllerBase {
   protected $requestStack;
 
   /**
+   * Path Validator service.
+   *
+   * @var \Drupal\Core\Path\PathValidatorInterface
+   */
+  protected $pathValidator;
+
+  /**
    * ImpactAnalysisController constructor.
    *
    * @param \Drupal\mass_content_api\DescendantManagerInterface $descendantManager
    *   Descendant manager interface.
    * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack
    *   Request stack that controls the lifecycle of requests.
+   * @param Drupal\Core\Path\PathValidatorInterface $pathValidator
+   *   Path Validator interface.
    */
-  public function __construct(DescendantManagerInterface $descendantManager, RequestStack $requestStack) {
+  public function __construct(DescendantManagerInterface $descendantManager, RequestStack $requestStack, PathValidatorInterface $pathValidator) {
     $this->descendantManager = $descendantManager;
     $this->requestStack = $requestStack;
+    $this->pathValidator = $pathValidator;
   }
 
   /**
@@ -52,7 +63,8 @@ class LinkingPageController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('descendant_manager'),
-      $container->get('request_stack')
+      $container->get('request_stack'),
+      $container->get('path.validator')
     );
   }
 

@@ -7,6 +7,7 @@ use Drupal\node\Entity\Node;
 use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\link\LinkItemInterface;
+use Drupal\text\Plugin\Field\FieldType\TextItemBase;
 
 /**
  * Trait FieldProcessingTrait.
@@ -225,9 +226,64 @@ trait FieldProcessingTrait {
             ];
           }
         }
+        // Extract local linked content from text areas.
+        elseif ($ref instanceof TextItemBase) {
+          $body = $ref->getValue('value');
+          if (isset($body['value'])) {
+            $matches = [];
+            $pattern = '/<a\s[^>]*href=\"([^\"]*)\"[^>]*>(.*)<\/a>/siU';
+            preg_match_all($pattern, $body['value'], $matches);
+            // $matches[1] contains the array of urls in <a> in this textarea.
+            if (isset($matches[1])) {
+              foreach ($matches[1] as $match) {
+                $parsed_match = parse_url($match);
+                // Relative urls have no host set, external links need filtered.
+                if (!isset($parsed_match['host']) || str_contains($parsed_match['host'], 'mass.gov')) {
+                  $validator = $this->getPathValidator();
+                  $url = $validator->getUrlIfValid($parsed_match['path']);
+                  // Confirming the local link is a node, not media or other.
+                  if ($url && $url->getRouteName() === 'entity.node.canonical') {
+                    $params = $url->getRouteParameters();
+                    $nid = $params['node'];
+                    $collected[$nid] = [
+                      'id' => $nid,
+                      'entity' => 'node',
+                      'field_label' => $field_label ?? '',
+                      'field_name' => $field_name ?? '',
+                    ];
+                  }
+                  // Documents particularly are linked to, track those.
+                  elseif ($url && $url->getRouteName() === 'media_entity_download.download') {
+                    $params = $url->getRouteParameters();
+                    $id = $params['media'];
+                    $collected[$nid] = [
+                      'id' => $id,
+                      'entity' => 'media',
+                      'field_label' => $field_label ?? '',
+                      'field_name' => $field_name ?? '',
+                    ];
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
     return $collected;
+  }
+
+  /**
+   * Gets the path validator service.
+   *
+   * @return \Drupal\Core\Path\PathValidatorInterface
+   *   The Path Validator Service.
+   */
+  protected function getPathValidator() {
+    if (!$this->pathValidator) {
+      $this->pathValidator = \Drupal::service('path.validator');
+    }
+    return $this->pathValidator;
   }
 
 }
