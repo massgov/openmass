@@ -110,6 +110,14 @@ function mass_flagging_node_update_insert_send_notifications(Node $node) {
       }
       $is_published_has_new_draft = $previous_revision->get('moderation_state')->getString() == MassModeration::PUBLISHED && $node->get('moderation_state')->getString() == MassModeration::DRAFT;
 
+      // Checks for Image paragraph change.
+      $image_change = \Drupal::service('mass_flagging.entity_comparison')->checkRevisionforImageSectionChanges($current_revision, $previous_revision);
+      // Escape from the function if the change
+      // happened in the image section only.
+      if ($image_change) {
+        return;
+      }
+
       // Gets revision log message.
       $author_message = \Drupal::service('mass_flagging.entity_comparison')->getRevisionDescription($current_revision, $previous_revision);
 
