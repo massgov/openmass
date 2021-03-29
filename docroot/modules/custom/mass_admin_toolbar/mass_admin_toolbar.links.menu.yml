@@ -34,10 +34,16 @@ mass_admin_toolbar.trash:
   route_name: mass_admin_toolbar.trash
   menu_name: mass-dashboard
   weight: 40
-mass_admin_toolbar.reports:
+
+mass_admin_toolbar.reports_menu:
   title: 'Reports'
   route_name: mass_admin_toolbar.reports
-  parent: system.admin_config
-  description: 'Configure functionality for Mass.gov'
-  position: right
-  weight: -100
+  menu_name: mass-dashboard
+  description: 'Reports for Authors'
+  weight: -1
+
+mass_admin_toolbar.orgs_report:
+  title: "Pages that don't have a public organization"
+  description: "These pages should have a related organization i a public state. Because this data is missing, there is no organization shown on the published pages."
+  route_name: view.content_reports.page_orgs
+  parent: mass_admin_toolbar.reports_menu
