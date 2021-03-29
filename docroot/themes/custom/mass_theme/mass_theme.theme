@@ -4930,8 +4930,8 @@ function mass_theme_preprocess_paragraph(&$variables) {
  */
 function mass_theme_preprocess_paragraph__iframe(&$variables) {
   if (!$variables['paragraph']->get('field_iframe_height_config')->isEmpty()) {
-    $variables['iframe_height'] = $variables['paragraph']->get('field_iframe_height_config')->getValue()[0]['value'];
-    if ($variables['iframe_height'] == '100') {
+    $variables['iframe_height'] = $variables['paragraph']->get('field_height')->getValue()[0]['value'];
+    if ($variables['paragraph']->get('field_iframe_height_config')->getValue()[0]['value'] == '100') {
       $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
       $variables['iframe_height'] = 'auto';
     }
