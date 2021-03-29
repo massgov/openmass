@@ -118,7 +118,6 @@ class ReportsController extends ControllerBase {
         continue;
       }
 
-      /** @var $link \Drupal\Core\Menu\MenuLinkInterface */
       $link = $element->link;
       $content[$key]['title'] = $link->getTitle();
       $content[$key]['options'] = $link->getOptions();
