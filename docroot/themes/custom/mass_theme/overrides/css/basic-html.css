@@ -31,16 +31,21 @@ figure figcaption {
 }
 
 @media (min-width: 621px) {
+  :not(figure) > article[data-entity-embed-display-settings="embedded_half_width"],
+  .ma__rich-text figure[role="group"] {
+    width: 50%;
+  }
   .align-right {
     float: right;
     margin-left: .5em;
     margin-bottom: 1em;
-    width: 50%;
+  }
+  article.align-right {
+    margin-left: 50px;
   }
   .align-left {
     float: left;
     margin-right: .5em;
     margin-bottom: 1em;
-    width: 50%;
   }
 }

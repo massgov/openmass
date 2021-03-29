@@ -1,0 +1,29 @@
+uuid: 19ea0e2d-56ee-477d-8f40-dbabebced152
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_binder_data_type
+    - node.type.binder
+    - taxonomy.vocabulary.tx_details_data_type
+id: node.binder.field_binder_data_type
+field_name: field_binder_data_type
+entity_type: node
+bundle: binder
+label: 'Data type'
+description: "Choose the data type that applies to this page.<br/><br/> \r\n<b>Data resource:</b>A Report that is an information summary and analysis of a dataset or a collection of datasets that provide insights into the raw data with a focus on visualizing data in organized charts and tables. <br/> \r\n<b>Dataset:</b> A body of structured information describing some topic(s) of interest. A dataset usually comprises a description of the data and one or multiple data resources, which can be in various formats.<br/> \r\n<b>Data catalog:</b> A collection of datasets that covers one or more topics. For example, an open data portal or a curated dataset listing across multiple topics. "
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      tx_details_data_type: tx_details_data_type
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference
