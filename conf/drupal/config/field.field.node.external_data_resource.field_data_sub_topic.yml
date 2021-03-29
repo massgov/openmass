@@ -5,7 +5,6 @@ dependencies:
   config:
     - field.storage.node.field_data_sub_topic
     - node.type.external_data_resource
-    - taxonomy.vocabulary.data_topic
 id: node.external_data_resource.field_data_sub_topic
 field_name: field_data_sub_topic
 entity_type: node
@@ -17,13 +16,10 @@ translatable: true
 default_value: {  }
 default_value_callback: ''
 settings:
-  handler: 'default:taxonomy_term'
+  handler: views
   handler_settings:
-    target_bundles:
-      data_topic: data_topic
-    sort:
-      field: name
-      direction: asc
-    auto_create: false
-    auto_create_bundle: ''
+    view:
+      view_name: data_topic
+      display_name: entity_reference_1
+      arguments: {  }
 field_type: entity_reference
