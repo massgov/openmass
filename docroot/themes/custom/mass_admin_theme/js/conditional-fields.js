@@ -141,6 +141,21 @@
     }
   };
 
+  Drupal.behaviors.imageParagraphConditional = {
+    attach: function (context) {
+      $('.field--name-field-image-display-size', context).change(function () {
+        if ($(this).find('option:selected').val() === 'x-large') {
+          $(this).siblings('.field--name-field-image-alignment').hide().find('.fieldgroup').removeAttr('required');
+          $(this).siblings('.field--name-field-image-wrapping').hide();
+        }
+        else {
+          $(this).siblings('.field--name-field-image-alignment').show().find('.fieldgroup').attr('required', 'required');
+          $(this).siblings('.field--name-field-image-wrapping').show();
+        }
+      }).change();
+    }
+  };
+
   Drupal.behaviors.iframeConditional = {
     attach: function (context) {
       $('.field--name-field-iframe-display-size', context).change(function () {
