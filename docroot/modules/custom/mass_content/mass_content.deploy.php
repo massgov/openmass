@@ -132,6 +132,65 @@ function mass_content_deploy_image_caption_fields(&$sandbox) {
 
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
-    return t('All Image caption fields migrated.');
+    return t('All Info Details Section image caption fields migrated.');
+  }
+}
+
+/**
+ * Migrate Header Media image fields.
+ */
+function mass_content_deploy_header_media_image_fields(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  $query = \Drupal::entityQuery('node')
+    ->condition('status', 1)
+    ->condition('type', 'info_details')
+    ->condition('field_info_details_header_media.entity:paragraph.field_caption.value', "", "!=");
+
+  if (empty($sandbox)) {
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  $nids = $query->condition('nid', $sandbox['current'], '>')
+    ->sort('nid')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+  $nodes = $node_storage->loadMultiple($nids);
+
+  foreach ($nodes as $node) {
+    $sandbox['current'] = $node->id();
+
+    foreach ($node->field_info_details_header_media as $info_details_header_media) {
+      $info_details_header_media = Paragraph::load($info_details_header_media->target_id);
+      // Migrate image caption values.
+      if (!empty($info_details_header_media ->field_caption->value)) {
+        $info_details_header_media ->field_image_caption->value = $info_details_header_media ->field_caption->value;
+        $info_details_header_media ->field_image_caption->format = 'basic_html';
+      }
+
+      // Migrate and map iframe display size values.
+      if ($info_details_header_media ->field_media_display->value == 'normal') {
+        $info_details_header_media ->field_image_display_size->value = 'large';
+      }
+      elseif ($info_details_header_media ->field_media_display->value == 'full') {
+        $info_details_header_media ->field_image_display_size->value = 'x-large';
+      }
+
+      $info_details_header_media->save();
+    }
+
+    $sandbox['progress']++;
+  }
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('All Header Media image caption fields migrated.');
   }
 }
