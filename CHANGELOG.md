@@ -1,5 +1,80 @@
 
 
+## [0.275.0] - March 23, 2021
+
+### Changed
+  - DP-19363: Updated key, encrypt, tfa, real_aes, and ga_login modules
+  - DP-21454: Added --no-tablespaces option during sql:dump
+  - DP-21534: Updated Mayflower version to 11.2.2.
+  - DP-20435: Fix Callout Links alignment in key actions (promoted results in search.mass.gov). (MF)
+  
+### Fixed
+  - DP-21249: Updated asset_cache_bust module to prevent warnings.
+  - DP-21459: Fixes the missing icon in the document insert wysiwg tool.
+  - DP-21464: Rich Text images set to half-width with no alignment now have a width of 50%.
+  
+### Added
+  - DP-21249: Re-add cache bust querystring param to aggregated CSS and JS.
+  
+
+
+## [0.274.0] - March 16, 2021
+
+### Fixed
+  - DP-20735: Omit unneeded Acquia logs for sync to S3
+  - DP-20886: Use correct log names during sync to S3
+  - DP-21404: Fixed error messages coming from Mass Metatag.
+  
+### Changed
+  - DP-21025: Add more allowed content types for internal links of Related field in Regulation and Advisory.
+  - DP-21093: Update Drush, Devel, and Composer2
+  - DP-21375: Updated Pathauto maximum alias and component lengths to fix non-English blank alias generation issue.
+  - DP-21449: Updated Mayflower version to 11.2.1.
+  - DP-21433: Update footer data to match Mass.gov. (MF)
+  
+### Added
+  - DP-21274: Added docs for a native development environment.
+  
+
+
+## [0.273.0] - March 2, 2021
+
+### Fixed
+  - DP-10401: The "500 server error" fix on the descendant manager overview page.
+  - DP-19699: Allow role changes and other account changes without password change.
+  - DP-21120: Do not render advisory date on curated list related links section.
+  - DP-21124: Adjust z-index for the admin tool bar to prevent the Mass.gov heading bar to overwrap.
+  
+### Added
+  - DP-13674: Enable New Relic metrics for CLI PHP commands.
+  - DP-20886: Sync logs from Acquia to S3
+  - DP-20141: Create a new content type, External data resource for data tab. Create a new role, External data resource mananger, for the content type.
+  - DP-21259: Added search metadata documentation into openmass public repo.
+  
+### Changed
+  - DP-21326: Updated Mayflower version to 11.2.0.
+  - DP-21258: Add BrandBanner molecule in Patternlab and generate the HTML, CSS and JS for Mayflower core documentation. (MF)
+  
+
+
+## [0.272.0] - February 16, 2021
+
+### Changed
+  - DP-19181: Change the unpublish reminder email format by adding blank lines between the paragraphs.
+  - DP-20824: Changed link fields to disallow several content types.
+  - DP-21067: Removed menu link content from database sanitization.
+  - DP-21174: Updated Mayflower version to 11.1.4.
+  - DP-20381: Fix left floated figure components and images to cover list style elements in rich text containers. (MF)
+  
+### Fixed
+  - DP-20580: Address issue where uploading files via the WYSIWYG editor results in an error.
+  - DP-21191: Address pre-deployment issue related to settings cookies in DP-20580.
+  
+### Added
+  - DP-21109: Added label field to the content types, added mg_labels custom metatag.
+  
+
+
 ## [0.271.0] - February 2, 2021
 
 ### Changed

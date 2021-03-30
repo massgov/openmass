@@ -14,6 +14,7 @@ dependencies:
     - field.field.node.campaign_landing.field_meta_description
     - field.field.node.campaign_landing.field_organizations
     - field.field.node.campaign_landing.field_promotional_kpi_choice
+    - field.field.node.campaign_landing.field_reusable_label
     - field.field.node.campaign_landing.field_sections
     - node.type.campaign_landing
   module:
@@ -56,7 +57,7 @@ content:
     third_party_settings: {  }
     region: content
   field_kpi_ctr_button_links:
-    weight: 10
+    weight: 8
     label: above
     settings:
       thousand_separator: ''
@@ -67,7 +68,7 @@ content:
     type: number_decimal
     region: content
   field_kpi_ctr_key_msg:
-    weight: 9
+    weight: 7
     label: above
     settings:
       thousand_separator: ''
@@ -78,7 +79,7 @@ content:
     type: number_decimal
     region: content
   field_kpi_pageviews:
-    weight: 8
+    weight: 6
     label: above
     settings:
       thousand_separator: ''
@@ -87,7 +88,7 @@ content:
     type: number_integer
     region: content
   field_kpi_pct_video_50:
-    weight: 12
+    weight: 10
     label: above
     settings:
       thousand_separator: ''
@@ -98,7 +99,7 @@ content:
     type: number_decimal
     region: content
   field_kpi_pct_video_play:
-    weight: 11
+    weight: 9
     label: above
     settings:
       thousand_separator: ''
@@ -125,7 +126,7 @@ content:
     type: entity_reference_label
     region: content
   field_promotional_kpi_choice:
-    weight: 13
+    weight: 11
     label: above
     settings: {  }
     third_party_settings: {  }
@@ -141,5 +142,6 @@ content:
     third_party_settings: {  }
     region: content
 hidden:
+  field_reusable_label: true
   langcode: true
   links: true

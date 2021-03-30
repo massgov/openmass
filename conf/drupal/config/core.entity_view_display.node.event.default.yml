@@ -33,6 +33,7 @@ dependencies:
     - field.field.node.event.field_event_you_will_need
     - field.field.node.event.field_intended_audience
     - field.field.node.event.field_organizations
+    - field.field.node.event.field_reusable_label
     - field.field.node.event.field_state_organization_tax
     - node.type.event
   module:
@@ -61,7 +62,7 @@ content:
       link: true
     third_party_settings: {  }
   content_moderation_control:
-    weight: -20
+    weight: 0
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -342,5 +343,6 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  field_reusable_label: true
   field_state_organization_tax: true
   langcode: true

@@ -47,6 +47,7 @@ dependencies:
     - field.field.node.org_page.field_ref_orgs
     - field.field.node.org_page.field_related_organization_type
     - field.field.node.org_page.field_response_expectations
+    - field.field.node.org_page.field_reusable_label
     - field.field.node.org_page.field_secondary_person_bio
     - field.field.node.org_page.field_short_name
     - field.field.node.org_page.field_social_links
@@ -90,7 +91,7 @@ content:
       link: false
     third_party_settings: {  }
   content_moderation_control:
-    weight: -20
+    weight: 0
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -203,7 +204,7 @@ content:
     type: image
     region: content
   field_billing_organization:
-    weight: 137
+    weight: 49
     label: above
     settings:
       link: true
@@ -241,7 +242,7 @@ content:
     type: dynamic_link_separate
     region: content
   field_event_quantity:
-    weight: 138
+    weight: 50
     label: above
     settings: {  }
     third_party_settings: {  }
@@ -268,7 +269,7 @@ content:
     type: string
     region: content
   field_intended_audience:
-    weight: 137
+    weight: 48
     label: above
     settings: {  }
     third_party_settings: {  }
@@ -352,7 +353,7 @@ content:
     region: content
   field_org_featured_message:
     type: entity_reference_revisions_entity_view
-    weight: 139
+    weight: 51
     label: above
     settings:
       view_mode: default
@@ -548,6 +549,7 @@ hidden:
   field_parent: true
   field_related_organization_type: true
   field_response_expectations: true
+  field_reusable_label: true
   field_state_organization_tax: true
   field_subtype: true
   field_urgent_warning: true

@@ -17,6 +17,7 @@ dependencies:
     - field.field.node.curated_list.field_list_type
     - field.field.node.curated_list.field_organizations
     - field.field.node.curated_list.field_related_links
+    - field.field.node.curated_list.field_reusable_label
     - field.field.node.curated_list.field_state_organization_tax
     - node.type.curated_list
     - workflows.workflow.editorial
@@ -58,6 +59,7 @@ third_party_settings:
         - field_list_data_type
         - field_data_format
         - field_intended_audience
+        - field_reusable_label
       parent_name: group_curated_list_edit_form
       weight: 8
       format_type: tab
@@ -255,7 +257,7 @@ content:
     region: content
   field_list_directory_section:
     type: entity_reference_paragraphs
-    weight: 4
+    weight: 3
     settings:
       title: 'List section'
       title_plural: 'List sections'
@@ -307,6 +309,16 @@ content:
     third_party_settings: {  }
     type: link_default
     region: content
+  field_reusable_label:
+    weight: 12
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
   field_state_organization_tax:
     weight: 6
     settings:
@@ -338,12 +350,12 @@ content:
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 7
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 3
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }

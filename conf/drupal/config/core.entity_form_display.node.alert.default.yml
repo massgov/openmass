@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.alert.field_alert_severity
     - field.field.node.alert.field_english_version
     - field.field.node.alert.field_organizations
+    - field.field.node.alert.field_reusable_label
     - field.field.node.alert.field_state_organization_tax
     - field.field.node.alert.field_target_organization
     - field.field.node.alert.field_target_page
@@ -44,6 +45,7 @@ third_party_settings:
         - field_target_page
         - field_target_organization
         - field_organizations
+        - field_reusable_label
         - langcode
         - field_english_version
       parent_name: group_alert
@@ -162,6 +164,16 @@ content:
       size: 60
       placeholder: ''
       match_limit: 10
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_reusable_label:
+    weight: 9
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content

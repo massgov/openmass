@@ -14,6 +14,7 @@ dependencies:
     - field.field.node.campaign_landing.field_meta_description
     - field.field.node.campaign_landing.field_organizations
     - field.field.node.campaign_landing.field_promotional_kpi_choice
+    - field.field.node.campaign_landing.field_reusable_label
     - field.field.node.campaign_landing.field_sections
     - node.type.campaign_landing
     - workflows.workflow.campaign_landing_page
@@ -33,6 +34,7 @@ third_party_settings:
         - title
         - field_meta_description
         - field_organizations
+        - field_reusable_label
         - langcode
         - field_english_version
       parent_name: group_campaign_landing_edit_form
@@ -303,6 +305,16 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
+    region: content
+  field_reusable_label:
+    weight: 4
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
     region: content
   field_sections:
     type: paragraphs

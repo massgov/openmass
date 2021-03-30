@@ -26,6 +26,7 @@ dependencies:
     - field.field.node.location.field_ref_contact_info_1
     - field.field.node.location.field_related_locations
     - field.field.node.location.field_restrictions
+    - field.field.node.location.field_reusable_label
     - field.field.node.location.field_services
     - field.field.node.location.field_state_organization_tax
     - node.type.location
@@ -53,24 +54,24 @@ content:
     third_party_settings: {  }
   computed_related_to:
     type: entity_reference_label
-    weight: 25
+    weight: 26
     region: content
     label: above
     settings:
       link: true
     third_party_settings: {  }
   content_moderation_control:
-    weight: -20
+    weight: 0
     region: content
     settings: {  }
     third_party_settings: {  }
   extra_contact_info_static_map:
-    weight: 28
+    weight: 29
     region: content
     settings: {  }
     third_party_settings: {  }
   extra_org_feedback_form:
-    weight: 27
+    weight: 28
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -117,7 +118,7 @@ content:
     type: string
     region: content
   field_intended_audience:
-    weight: 23
+    weight: 24
     label: hidden
     settings: {  }
     third_party_settings: {  }
@@ -169,7 +170,7 @@ content:
     type: entity_reference_entity_view
     region: content
   field_location_icons_park:
-    weight: 26
+    weight: 27
     label: above
     settings:
       link: true
@@ -191,7 +192,7 @@ content:
     type: text_default
     region: content
   field_location_subtitle:
-    weight: 24
+    weight: 25
     label: above
     settings:
       link_to_entity: false
@@ -280,5 +281,6 @@ hidden:
   computed_log_in_links: true
   field_facilities: true
   field_more_information: true
+  field_reusable_label: true
   field_state_organization_tax: true
   langcode: true

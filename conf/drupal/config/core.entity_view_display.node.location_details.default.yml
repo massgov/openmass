@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.location_details.field_location_details_metatags
     - field.field.node.location_details.field_location_details_sections
     - field.field.node.location_details.field_organizations
+    - field.field.node.location_details.field_reusable_label
     - field.field.node.location_details.field_state_organization_tax
     - node.type.location_details
   module:
@@ -31,7 +32,7 @@ content:
       link: true
     third_party_settings: {  }
   content_moderation_control:
-    weight: -20
+    weight: 0
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -103,5 +104,6 @@ content:
     third_party_settings: {  }
 hidden:
   computed_log_in_links: true
+  field_reusable_label: true
   field_state_organization_tax: true
   langcode: true

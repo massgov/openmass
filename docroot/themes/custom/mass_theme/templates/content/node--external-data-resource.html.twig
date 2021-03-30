@@ -1,0 +1,54 @@
+{#
+/**
+ * @file
+ * Theme override to display the External Data Resource content type.
+ * Internal use only for review input data.
+ */
+#}
+
+{% block main %}
+<section class="ma__page-header">
+	<div class="ma__page-header__content">
+		<h1 class="ma__page-header__title">{{ node.title.value }}</h1>
+  </div>
+
+  <div class="ma__page-header__optional-content">
+    <div class="main-content main-content--two">
+      <div class="page-content external-data-resource">
+        <div class="ma__listing-table">
+          <div class="ma__listing-table__container">
+            <table>
+              <tr>
+                <th scope="row">URL:</th>
+                <td>{{ content.field_externaldata_url }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Description:</th>
+                <td>{{ content.field_externaldata_description }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Data type:</th>
+                <td>{{ content.field_details_data_type }}</td>
+              </tr>
+            {% if "Data resource" in content.field_details_data_type[0]['#title'] %}
+              <tr>
+                <th scope="row">Data resource type:</th>
+                <td>{{ content.field_data_resource_type }}</td>
+              </tr>
+            {% endif %}
+              <tr>
+                <th scope="row">Format:</th>
+                <td>{{ content.field_data_format }}</td>
+              </tr>
+              <tr>
+                <th scope="row">Organizations:</th>
+                <td>{{ content.field_organizations }}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

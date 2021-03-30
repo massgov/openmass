@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.page.body
     - field.field.node.page.field_metatags
+    - field.field.node.page.field_reusable_label
     - field.field.node.page.field_state_organization_tax
     - node.type.page
     - workflows.workflow.editorial
@@ -39,11 +40,21 @@ content:
     third_party_settings: {  }
     region: content
   field_metatags:
-    weight: 12
+    weight: 32
     settings:
       sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
+    region: content
+  field_reusable_label:
+    weight: 101
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
     region: content
   field_state_organization_tax:
     weight: 13
@@ -129,7 +140,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 14
+    weight: 50
     region: content
     settings: {  }
     third_party_settings: {  }

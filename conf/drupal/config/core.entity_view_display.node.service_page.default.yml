@@ -25,6 +25,7 @@ dependencies:
     - field.field.node.service_page.field_organizations
     - field.field.node.service_page.field_ref_contact_info
     - field.field.node.service_page.field_related_organization_type
+    - field.field.node.service_page.field_reusable_label
     - field.field.node.service_page.field_service_bg_narrow
     - field.field.node.service_page.field_service_bg_wide
     - field.field.node.service_page.field_service_body
@@ -83,21 +84,21 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_data_flag:
-    weight: 31
+    weight: 32
     label: above
     settings: {  }
     third_party_settings: {  }
     type: list_default
     region: content
   field_data_format:
-    weight: 34
+    weight: 35
     label: above
     settings: {  }
     third_party_settings: {  }
     type: list_default
     region: content
   field_data_resource_type:
-    weight: 33
+    weight: 34
     label: above
     settings:
       link: true
@@ -105,7 +106,7 @@ content:
     type: entity_reference_label
     region: content
   field_event_quantity:
-    weight: 30
+    weight: 31
     label: above
     settings: {  }
     third_party_settings: {  }
@@ -127,24 +128,6 @@ content:
     type: list_default
     region: content
   field_kpi_pl_avg_cl_comp_time:
-    weight: 41
-    label: above
-    settings:
-      thousand_separator: ''
-      prefix_suffix: true
-    third_party_settings: {  }
-    type: number_integer
-    region: content
-  field_kpi_pl_cl_app_starts:
-    weight: 38
-    label: above
-    settings:
-      thousand_separator: ''
-      prefix_suffix: true
-    third_party_settings: {  }
-    type: number_integer
-    region: content
-  field_kpi_pl_cl_app_subs:
     weight: 39
     label: above
     settings:
@@ -153,8 +136,26 @@ content:
     third_party_settings: {  }
     type: number_integer
     region: content
+  field_kpi_pl_cl_app_starts:
+    weight: 37
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_kpi_pl_cl_app_subs:
+    weight: 38
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
   field_kpi_pl_cl_task_rate:
-    weight: 46
+    weight: 43
     label: above
     settings:
       thousand_separator: ''
@@ -165,7 +166,7 @@ content:
     type: number_decimal
     region: content
   field_kpi_pl_em_app_review_rate:
-    weight: 47
+    weight: 44
     label: above
     settings:
       thousand_separator: ''
@@ -176,7 +177,7 @@ content:
     type: number_decimal
     region: content
   field_kpi_pl_em_app_review_time:
-    weight: 44
+    weight: 41
     label: above
     settings:
       thousand_separator: ''
@@ -185,7 +186,7 @@ content:
     type: number_integer
     region: content
   field_kpi_pl_em_app_reviews:
-    weight: 42
+    weight: 40
     label: above
     settings:
       thousand_separator: ''
@@ -194,7 +195,7 @@ content:
     type: number_integer
     region: content
   field_kpi_sessions_clicks_pl_pct:
-    weight: 45
+    weight: 42
     label: above
     settings:
       thousand_separator: ''
@@ -206,7 +207,7 @@ content:
     region: content
   field_link_group:
     type: entity_reference_revisions_entity_view
-    weight: 29
+    weight: 30
     label: above
     settings:
       view_mode: default
@@ -214,7 +215,7 @@ content:
     third_party_settings: {  }
     region: content
   field_list_data_type:
-    weight: 32
+    weight: 33
     label: above
     settings:
       link: true
@@ -238,7 +239,7 @@ content:
     type: string
     region: content
   field_log_in_links:
-    weight: 28
+    weight: 29
     label: above
     settings:
       trim_length: 80
@@ -320,7 +321,7 @@ content:
     type: dynamic_link_separate
     region: content
   field_service_kpi_choice:
-    weight: 35
+    weight: 36
     label: above
     settings: {  }
     third_party_settings: {  }
@@ -449,5 +450,6 @@ content:
     third_party_settings: {  }
 hidden:
   field_related_organization_type: true
+  field_reusable_label: true
   field_state_organization_tax: true
   langcode: true

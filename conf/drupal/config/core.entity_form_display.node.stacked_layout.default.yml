@@ -16,6 +16,7 @@ dependencies:
     - field.field.node.stacked_layout.field_organizations
     - field.field.node.stacked_layout.field_photo
     - field.field.node.stacked_layout.field_related_content
+    - field.field.node.stacked_layout.field_reusable_label
     - field.field.node.stacked_layout.field_state_organization_tax
     - field.field.node.stacked_layout.field_topic_callout_links
     - field.field.node.stacked_layout.field_use_alt_header
@@ -244,6 +245,16 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_reusable_label:
+    weight: 122
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
   field_state_organization_tax:
     weight: 7
     settings:
@@ -323,7 +334,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 10
+    weight: 50
     region: content
     settings: {  }
     third_party_settings: {  }

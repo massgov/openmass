@@ -21,6 +21,7 @@ dependencies:
     - field.field.node.how_to_page.field_intended_audience
     - field.field.node.how_to_page.field_manage_your_account
     - field.field.node.how_to_page.field_organizations
+    - field.field.node.how_to_page.field_reusable_label
     - field.field.node.how_to_page.field_state_organization_tax
     - node.type.how_to_page
     - workflows.workflow.editorial
@@ -61,6 +62,7 @@ third_party_settings:
         - field_how_to_link_1
         - field_organizations
         - field_intended_audience
+        - field_reusable_label
       parent_name: group_how_to_page_edit_form
       weight: 20
       format_type: tab
@@ -207,7 +209,7 @@ content:
     type: link_default
     region: content
   field_how_to_metatags:
-    weight: 5
+    weight: 6
     settings:
       sidebar: true
     third_party_settings: {  }
@@ -315,6 +317,16 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_reusable_label:
+    weight: 3
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
   field_state_organization_tax:
     type: entity_reference_autocomplete
     weight: 6
@@ -379,7 +391,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 9
+    weight: 50
     region: content
     settings: {  }
     third_party_settings: {  }

@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.service_details.field_english_version
     - field.field.node.service_details.field_intended_audience
     - field.field.node.service_details.field_organizations
+    - field.field.node.service_details.field_reusable_label
     - field.field.node.service_details.field_service_detail_contact
     - field.field.node.service_details.field_service_detail_lede
     - field.field.node.service_details.field_service_detail_links_5
@@ -57,6 +58,7 @@ third_party_settings:
         - field_data_format
         - field_data_resource_type
         - field_intended_audience
+        - field_reusable_label
       parent_name: group_node_edit_form
       weight: 20
       format_type: tab
@@ -227,6 +229,16 @@ content:
       size: 60
       placeholder: ''
       match_limit: 10
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_reusable_label:
+    weight: 31
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content

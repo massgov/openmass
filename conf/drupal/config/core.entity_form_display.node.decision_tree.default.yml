@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.decision_tree.field_description
     - field.field.node.decision_tree.field_disclaimer
     - field.field.node.decision_tree.field_organizations
+    - field.field.node.decision_tree.field_reusable_label
     - field.field.node.decision_tree.field_service_ref_services_6
     - field.field.node.decision_tree.field_start_button
     - field.field.node.decision_tree.field_state_organization_tax
@@ -38,6 +39,7 @@ third_party_settings:
         - field_disclaimer
         - field_service_ref_services_6
         - field_organizations
+        - field_reusable_label
       parent_name: group_decision_tree_edit_form
       weight: 1
       format_type: tab
@@ -122,6 +124,16 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_reusable_label:
+    weight: 10
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
   field_service_ref_services_6:
     weight: 8
     settings:
@@ -156,7 +168,7 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 10
+    weight: 11
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -168,7 +180,7 @@ content:
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 7
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -203,12 +215,12 @@ content:
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 8
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 9
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }

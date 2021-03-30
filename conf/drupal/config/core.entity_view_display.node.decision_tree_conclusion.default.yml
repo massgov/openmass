@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.decision_tree_conclusion.field_decision_root_ref
     - field.field.node.decision_tree_conclusion.field_description
     - field.field.node.decision_tree_conclusion.field_organizations
+    - field.field.node.decision_tree_conclusion.field_reusable_label
     - field.field.node.decision_tree_conclusion.field_state_organization_tax
     - node.type.decision_tree_conclusion
   module:
@@ -21,7 +22,7 @@ bundle: decision_tree_conclusion
 mode: default
 content:
   content_moderation_control:
-    weight: -20
+    weight: 0
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -80,5 +81,6 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  field_reusable_label: true
   field_state_organization_tax: true
   langcode: true

@@ -252,3 +252,43 @@ function mass_content_api_update_8013() {
   $schema = Database::getConnection()->schema();
   $schema->dropTable('mass_content_api_descendants');
 }
+
+/**
+ * Re-Queue descendants linking content information.
+ */
+function mass_content_api_update_8112() {
+  // Node Types with new linked content data.
+  $types = [
+    'action',
+    'advisory',
+    'alert',
+    'binder',
+    'curated_list',
+    'decision',
+    'event',
+    'executive_order',
+    'form_page',
+    'how_to_page',
+    'info_details',
+    'location',
+    'news',
+    'org_page',
+    'regulation',
+    'rules',
+    'service_details',
+    'utility_drawer',
+    'location_details',
+    'guide_page',
+  ];
+  $descendant_queue = \Drupal::queue('mass_content_api_descendant_queue');
+  foreach ($types as $type) {
+    $query = \Drupal::entityQuery('node');
+    $query->condition('status', 1)
+      ->condition('type', $type);
+    $results = $query->execute();
+    foreach ($results as $result) {
+      $queue_item = (object) ['id' => $result];
+      $descendant_queue->createItem($queue_item);
+    }
+  }
+}

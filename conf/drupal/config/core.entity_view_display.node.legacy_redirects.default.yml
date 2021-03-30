@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.legacy_redirects.field_legacy_redirects_legacyurl
     - field.field.node.legacy_redirects.field_legacy_redirects_ref_conte
     - field.field.node.legacy_redirects.field_organizations
+    - field.field.node.legacy_redirects.field_reusable_label
     - field.field.node.legacy_redirects.field_state_organization_tax
     - node.type.legacy_redirects
   module:
@@ -28,7 +29,7 @@ content:
     third_party_settings: {  }
     region: content
   content_moderation_control:
-    weight: -20
+    weight: 0
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -82,5 +83,6 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  field_reusable_label: true
   field_state_organization_tax: true
   langcode: true

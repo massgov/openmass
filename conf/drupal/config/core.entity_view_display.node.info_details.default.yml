@@ -43,7 +43,7 @@ mode: default
 content:
   computed_related_to:
     type: entity_reference_label
-    weight: 17
+    weight: 16
     region: content
     label: above
     settings:
@@ -55,12 +55,12 @@ content:
     settings: {  }
     third_party_settings: {  }
   extra_node_pager:
-    weight: 19
+    weight: 18
     region: content
     settings: {  }
     third_party_settings: {  }
   extra_org_feedback_form:
-    weight: 18
+    weight: 17
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -70,7 +70,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_banner_image:
-    weight: 24
+    weight: 23
     label: hidden
     settings:
       image_style: ''
@@ -88,28 +88,20 @@ content:
     type: entity_reference_entity_view
     region: content
   field_data_flag:
-    weight: 21
+    weight: 20
     label: above
     settings: {  }
     third_party_settings: {  }
     type: list_default
     region: content
   field_data_format:
-    weight: 26
+    weight: 25
     label: above
     settings: {  }
     third_party_settings: {  }
     type: list_default
     region: content
   field_data_resource_type:
-    weight: 23
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    type: entity_reference_label
-    region: content
-  field_details_data_type:
     weight: 22
     label: above
     settings:
@@ -117,8 +109,16 @@ content:
     third_party_settings: {  }
     type: entity_reference_label
     region: content
+  field_details_data_type:
+    weight: 21
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
   field_details_enable_fields:
-    weight: 25
+    weight: 24
     label: above
     settings:
       format: default
@@ -151,7 +151,7 @@ content:
     type: string
     region: content
   field_info_detail_overview:
-    weight: 20
+    weight: 19
     label: hidden
     settings: {  }
     third_party_settings: {  }
@@ -213,7 +213,7 @@ content:
     type: metatag_empty_formatter
     region: content
   field_intended_audience:
-    weight: 16
+    weight: 15
     label: hidden
     settings: {  }
     third_party_settings: {  }
@@ -221,20 +221,12 @@ content:
     region: content
   field_organizations:
     type: entity_reference_label
-    weight: 15
+    weight: 14
     region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
-  field_reusable_label:
-    weight: 14
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    type: entity_reference_label
-    region: content
   field_state_organization_tax:
     weight: 12
     label: above
@@ -274,6 +266,7 @@ content:
 hidden:
   computed_log_in_links: true
   field_page_template: true
+  field_reusable_label: true
   field_short_desc: true
   langcode: true
   page_next: true

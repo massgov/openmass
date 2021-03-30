@@ -20,6 +20,7 @@ dependencies:
     - field.field.node.news.field_news_type
     - field.field.node.news.field_news_video
     - field.field.node.news.field_organizations
+    - field.field.node.news.field_reusable_label
     - field.field.node.news.field_state_organization_tax
     - node.type.news
   module:
@@ -45,7 +46,7 @@ content:
       link: true
     third_party_settings: {  }
   content_moderation_control:
-    weight: -20
+    weight: 0
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -211,5 +212,6 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  field_reusable_label: true
   field_state_organization_tax: true
   langcode: true

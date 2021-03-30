@@ -47,6 +47,7 @@ dependencies:
     - field.field.node.org_page.field_ref_orgs
     - field.field.node.org_page.field_related_organization_type
     - field.field.node.org_page.field_response_expectations
+    - field.field.node.org_page.field_reusable_label
     - field.field.node.org_page.field_secondary_person_bio
     - field.field.node.org_page.field_short_name
     - field.field.node.org_page.field_social_links
@@ -103,6 +104,7 @@ third_party_settings:
         - field_banner_image
         - field_image_credit
         - field_organizations
+        - field_reusable_label
       parent_name: group_node_edit_form
       weight: 20
       format_type: tab
@@ -816,6 +818,16 @@ content:
           entity_type: node
           bundle: org_page
     type: string_textarea
+    region: content
+  field_reusable_label:
+    weight: 27
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
     region: content
   field_secondary_person_bio:
     weight: 24
