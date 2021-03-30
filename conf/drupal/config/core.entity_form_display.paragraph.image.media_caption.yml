@@ -6,24 +6,22 @@ dependencies:
     - core.entity_form_mode.paragraph.media_caption
     - field.field.paragraph.image.field_caption
     - field.field.paragraph.image.field_image
+    - field.field.paragraph.image.field_image_administrative_title
+    - field.field.paragraph.image.field_image_alignment
+    - field.field.paragraph.image.field_image_caption
+    - field.field.paragraph.image.field_image_display_size
+    - field.field.paragraph.image.field_image_wrapping
     - field.field.paragraph.image.field_media_display
     - image.style.thumbnail
     - paragraphs.paragraphs_type.image
   module:
     - image
+    - text
 id: paragraph.image.media_caption
 targetEntityType: paragraph
 bundle: image
 mode: media_caption
 content:
-  field_caption:
-    type: string_textfield
-    weight: 1
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   field_image:
     weight: 0
     settings:
@@ -32,6 +30,14 @@ content:
     third_party_settings: {  }
     type: image_image
     region: content
+  field_image_caption:
+    type: text_textarea
+    weight: 1
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
   paragraphs_type_help__default:
     weight: -100
     settings: {  }
@@ -39,6 +45,11 @@ content:
     region: content
 hidden:
   created: true
+  field_caption: true
+  field_image_administrative_title: true
+  field_image_alignment: true
+  field_image_display_size: true
+  field_image_wrapping: true
   field_media_display: true
   status: true
   uid: true

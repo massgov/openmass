@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.binder.field_binder_appendix
     - field.field.node.binder.field_binder_banner_image
     - field.field.node.binder.field_binder_binder_type
+    - field.field.node.binder.field_binder_data_type
     - field.field.node.binder.field_binder_date_published
     - field.field.node.binder.field_binder_last_updated
     - field.field.node.binder.field_binder_metatags
@@ -17,6 +18,9 @@ dependencies:
     - field.field.node.binder.field_binder_short_desc
     - field.field.node.binder.field_binder_volume
     - field.field.node.binder.field_contact
+    - field.field.node.binder.field_data_flag
+    - field.field.node.binder.field_data_format
+    - field.field.node.binder.field_data_resource_type
     - field.field.node.binder.field_downloads
     - field.field.node.binder.field_intended_audience
     - field.field.node.binder.field_organizations
@@ -25,6 +29,7 @@ dependencies:
     - node.type.binder
   module:
     - datetime
+    - dynamic_entity_reference
     - entity_reference_revisions
     - image
     - link
@@ -79,6 +84,14 @@ content:
     region: content
   field_binder_binder_type:
     weight: 2
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_binder_data_type:
+    weight: 27
     label: above
     settings:
       link: true
@@ -179,6 +192,28 @@ content:
       link: false
     third_party_settings: {  }
     type: entity_reference_entity_view
+    region: content
+  field_data_flag:
+    weight: 24
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_data_format:
+    weight: 25
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_data_resource_type:
+    weight: 26
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
     region: content
   field_downloads:
     weight: 15
