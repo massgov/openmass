@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "aa48c2a01cd02997493f31a01690e8c5",
+    "content-hash": "c144bcd82e018755069575fca78a553f",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -8029,6 +8029,57 @@
             "support": {
                 "source": "http://cgit.drupalcode.org/route_iframes",
                 "issues": "https://www.drupal.org/project/issues/route_iframes"
+            }
+        },
+        {
+            "name": "drupal/scheduled_transitions",
+            "version": "dev-2.x",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/scheduled_transitions.git",
+                "reference": "1b3d8c51108ad7dbf87611e1fac14410592d9c2f"
+            },
+            "require": {
+                "drupal/core": "^8.9 || ^9",
+                "drupal/dynamic_entity_reference": "^1.0 || ^2.0",
+                "php": ">=7.3"
+            },
+            "suggest": {
+                "drupal/token": "Shows Token UI on Add Scheduled Transitions form."
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-2.x": "2.x-dev"
+                },
+                "drupal": {
+                    "version": "2.x-dev",
+                    "datestamp": "1610935291",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
+                    }
+                },
+                "drush": {
+                    "services": {
+                        "drush.services.yml": "^9"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "dpi",
+                    "homepage": "https://www.drupal.org/user/81431"
+                }
+            ],
+            "description": "Allows users to schedule a revision to change state.",
+            "homepage": "https://www.drupal.org/project/scheduled_transitions",
+            "support": {
+                "source": "https://git.drupalcode.org/project/scheduled_transitions"
             }
         },
         {
@@ -18540,6 +18591,7 @@
         "drupal/pathologic": 20,
         "drupal/prepopulate": 15,
         "drupal/route_iframes": 20,
+        "drupal/scheduled_transitions": 20,
         "drupal/scheduler_content_moderation_integration": 15,
         "drupal/security_review": 20,
         "drupal/stage_file_proxy": 15,
