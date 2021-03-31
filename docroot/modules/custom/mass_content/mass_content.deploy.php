@@ -262,7 +262,7 @@ function mass_content_deploy_image_section_fields_followup(&$sandbox) {
 /**
  * Migrate followup for Header Media image fields.
  */
-function mass_content_deploy_header_media_image_fields_followup(&$sandbox) {
+function mass_content_deploy_header_media_images_followup(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $query = \Drupal::entityQuery('node')
@@ -301,7 +301,7 @@ function mass_content_deploy_header_media_image_fields_followup(&$sandbox) {
       // Migrate and map iframe display size values.
       if ($info_details_header_media->field_image_display_size->value == '') {
         if ($info_details_header_media->field_media_display->value == 'normal') {
-          $info_details_header_media->field_image_display_size->value = 'large';
+          $info_details_header_media->field_image_display_size->value = 'x-large';
         }
         elseif ($info_details_header_media->field_media_display->value == 'full') {
           $info_details_header_media->field_image_display_size->value = 'x-large';
