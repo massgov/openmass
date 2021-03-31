@@ -170,17 +170,17 @@ function mass_content_deploy_header_media_image_fields(&$sandbox) {
     foreach ($node->field_info_details_header_media as $info_details_header_media) {
       $info_details_header_media = Paragraph::load($info_details_header_media->target_id);
       // Migrate image caption values.
-      if (!empty($info_details_header_media ->field_caption->value)) {
-        $info_details_header_media ->field_image_caption->value = $info_details_header_media ->field_caption->value;
-        $info_details_header_media ->field_image_caption->format = 'basic_html';
+      if (!empty($info_details_header_media->field_caption->value)) {
+        $info_details_header_media->field_image_caption->value = $info_details_header_media->field_caption->value;
+        $info_details_header_media->field_image_caption->format = 'basic_html';
       }
 
       // Migrate and map iframe display size values.
-      if ($info_details_header_media ->field_media_display->value == 'normal') {
-        $info_details_header_media ->field_image_display_size->value = 'large';
+      if ($info_details_header_media->field_media_display->value == 'normal') {
+        $info_details_header_media->field_image_display_size->value = 'large';
       }
-      elseif ($info_details_header_media ->field_media_display->value == 'full') {
-        $info_details_header_media ->field_image_display_size->value = 'x-large';
+      elseif ($info_details_header_media->field_media_display->value == 'full') {
+        $info_details_header_media->field_image_display_size->value = 'x-large';
       }
 
       $info_details_header_media->save();
