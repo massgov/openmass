@@ -196,7 +196,7 @@ function mass_content_deploy_header_media_image_fields(&$sandbox) {
 }
 
 /**
- * Migrate image paragraph caption fields.
+ * Migrate followup for image paragraph caption fields.
  */
 function mass_content_deploy_image_section_fields_followup(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
@@ -260,7 +260,7 @@ function mass_content_deploy_image_section_fields_followup(&$sandbox) {
 }
 
 /**
- * Migrate Header Media image fields.
+ * Migrate followup for Header Media image fields.
  */
 function mass_content_deploy_header_media_image_fields_followup(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
