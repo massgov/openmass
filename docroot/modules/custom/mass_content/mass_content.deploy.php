@@ -232,14 +232,18 @@ function mass_content_deploy_image_section_fields_followup(&$sandbox) {
         $section_long_form_content_paragraph = Paragraph::load($section_long_form_content->target_id);
 
         // Set alignment to 'left' for all.
-        $section_long_form_content_paragraph->field_image_alignment->value = 'left';
+        if ($section_long_form_content_paragraph->field_image_alignment->value == '') {
+          $section_long_form_content_paragraph->field_image_alignment->value = 'left';
+        }
 
         // Migrate and map iframe display size values.
-        if ($section_long_form_content_paragraph->field_media_display->value == 'normal') {
-          $section_long_form_content_paragraph->field_image_display_size->value = 'large';
-        }
-        elseif ($section_long_form_content_paragraph->field_media_display->value == 'full') {
-          $section_long_form_content_paragraph->field_image_display_size->value = 'x-large';
+        if ($section_long_form_content_paragraph->field_image_display_size->value == '') {
+          if ($section_long_form_content_paragraph->field_media_display->value == 'normal') {
+            $section_long_form_content_paragraph->field_image_display_size->value = 'large';
+          }
+          elseif ($section_long_form_content_paragraph->field_media_display->value == 'full') {
+            $section_long_form_content_paragraph->field_image_display_size->value = 'x-large';
+          }
         }
 
         $section_long_form_content_paragraph->save();
@@ -290,14 +294,18 @@ function mass_content_deploy_header_media_image_fields_followup(&$sandbox) {
       $info_details_header_media = Paragraph::load($info_details_header_media->target_id);
 
       // Set alignment to 'left' for all.
-      $info_details_header_media->field_image_alignment->value = 'left';
+      if ($info_details_header_media->field_image_alignment->value == '') {
+        $info_details_header_media->field_image_alignment->value = 'left';
+      }
 
       // Migrate and map iframe display size values.
-      if ($info_details_header_media->field_media_display->value == 'normal') {
-        $info_details_header_media->field_image_display_size->value = 'large';
-      }
-      elseif ($info_details_header_media->field_media_display->value == 'full') {
-        $info_details_header_media->field_image_display_size->value = 'x-large';
+      if ($info_details_header_media->field_image_display_size->value == '') {
+        if ($info_details_header_media->field_media_display->value == 'normal') {
+          $info_details_header_media->field_image_display_size->value = 'large';
+        }
+        elseif ($info_details_header_media->field_media_display->value == 'full') {
+          $info_details_header_media->field_image_display_size->value = 'x-large';
+        }
       }
 
       $info_details_header_media->save();
