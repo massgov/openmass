@@ -23,15 +23,7 @@ class DescendantRelationsFilter extends FilterPluginBase {
   public function query() {
     $nid_alias = $this->query->ensureTable('node_field_data', $this->relationship);
     // Create a sub query of the descendant_relations table to act as a "not
-    // exists()" condition on the main views query. An example of the full query
-    // might look something like this:
-    //    select * from node_field_data as node_field_data
-    //    where not exists (
-    //       select * from descendant_relations as descendant_relations
-    //       where descendant_relations.destination_id=node_field_data.nid
-    //       and descendant_relations.destination_type = "node"
-    //       and descendant_relations.relationship = "links_to"
-    //    );
+    // exists()" condition on the main views query.
     $sub_query = \Drupal::database()->select('descendant_relations', 'descendant_relations')
       ->fields('descendant_relations', [])
       ->where("descendant_relations.destination_id = $nid_alias.nid")
@@ -41,4 +33,5 @@ class DescendantRelationsFilter extends FilterPluginBase {
     $this->query->addWhere($this->options['group'], (new Condition('AND'))
       ->notExists($sub_query));
   }
+
 }
