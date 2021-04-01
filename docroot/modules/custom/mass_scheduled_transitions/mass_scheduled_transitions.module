@@ -1,0 +1,40 @@
+<?php
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\TranslatableInterface;
+
+/**
+ * Implements hook_menu_local_tasks_alter().
+ */
+function mass_scheduled_transitions_menu_local_tasks_alter(&$data, $route_name, &$cacheability) {
+  $a=1;
+}
+
+/**
+ * Load a list of scheduled transitions by host entity.
+ *
+ * A public variant of \Drupal\scheduled_transitions\ScheduledTransitionsEntityHooks::loadByHostEntity
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   Entity.
+ * @param bool $revision_match
+ *   TRUE to match revision too.
+ *
+ * @return \Drupal\scheduled_transitions\Entity\ScheduledTransitionInterface[]
+ *   A list of scheduled transitions for the given entity.
+ */
+function mass_scheduled_transitions_loadByHostEntity(EntityInterface $entity, bool $revision_match = FALSE): array {
+  $transitionStorage = Drupal::entityTypeManager()->getStorage('scheduled_transition');
+  $query = $transitionStorage->getQuery()
+    ->condition('entity.target_id', $entity->id())
+    ->condition('entity.target_type', $entity->getEntityTypeId())
+    ->accessCheck(FALSE);
+  if ($revision_match) {
+    $query->condition('entity_revision_id', $entity->getRevisionId());
+  }
+  if ($entity instanceof TranslatableInterface && !$entity->isDefaultTranslation()) {
+    $query->condition('entity_revision_langcode', $entity->language()->getId());
+  }
+  $ids = $query->execute();
+  return $transitionStorage->loadMultiple($ids);
+}

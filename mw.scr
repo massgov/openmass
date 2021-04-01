@@ -1,0 +1,18 @@
+<?php
+
+foreach (['node', 'media'] as $entityTypeId) {
+  $bundles = \Drupal::service('entity_type.bundle.info')->getBundleInfo($entityTypeId);
+  foreach ($bundles as $key => $bundle) {
+    $rids = ['editor', 'author', 'developer', 'content_team'];
+    $perm_names = [
+      sprintf('view scheduled transitions %s %s', $entityTypeId, $key),
+      sprintf('add scheduled transitions %s %s', $entityTypeId, $key),
+      sprintf('reschedule scheduled transitions %s %s', $entityTypeId, $key),
+    ];
+    foreach ($rids as $rid) {
+      user_role_grant_permissions($rid, $perm_names);
+    }
+  }
+}
+user_role_grant_permissions('content_team', ['View all scheduled transitions']);
+user_role_grant_permissions('developer', ['View all scheduled transitions', 'Administer scheduled transitions']);
