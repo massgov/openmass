@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Url;
 /**
  * @file
  * Contains mass_search_suppression.module.
@@ -20,9 +21,9 @@ function mass_search_suppression_help($route_name, RouteMatchInterface $route_ma
       $output .= '<h3>' . t('Uses') . '</h3>';
       $output .= '<dl>';
       $output .= '<dt>' . t('Adding pages that should suppress the header search') . '</dt>';
-      $output .= '<dd>' . t("You can add any number of pages in the <em>Pages not showing Search Header</em> area in the <a href=':url'>Configuration</a> page. You should add a valid path per line. You can use the path alias (for example \'/some-path-alias\') or also its raw path (for example in the case of a node '/node/%nid%'). You can use patterns also (for example '/some-path-alias/*'). If the &lt;front&gt; page setting was changed you would need to clear the cache to see the changes.", [':url' => \Drupal::url('mass_search_suppression.admin_settings')]) . '</dd>';
+      $output .= '<dd>' . t("You can add any number of pages in the <em>Pages not showing Search Header</em> area in the <a href=':url'>Configuration</a> page. You should add a valid path per line. You can use the path alias (for example \'/some-path-alias\') or also its raw path (for example in the case of a node '/node/%nid%'). You can use patterns also (for example '/some-path-alias/*'). If the &lt;front&gt; page setting was changed you would need to clear the cache to see the changes.", [':url' => Url::fromRoute('mass_search_suppression.admin_settings')->toString()]) . '</dd>';
       $output .= '<dt>' . t('Removing pages from the list') . '</dt>';
-      $output .= '<dd>' . t("You can delete one or all pages from the <em>Pages not showing Search Header</em> area in the <a href=':url'>Configuration</a> page. If the values are empty, then the Search Header will be shown in all pages by default. If the &lt;front&gt; page setting was changed you would need to clear the cache to see the changes.", [':url' => \Drupal::url('mass_search_suppression.admin_settings')]) . '</dd>';
+      $output .= '<dd>' . t("You can delete one or all pages from the <em>Pages not showing Search Header</em> area in the <a href=':url'>Configuration</a> page. If the values are empty, then the Search Header will be shown in all pages by default. If the &lt;front&gt; page setting was changed you would need to clear the cache to see the changes.", [':url' => Url::fromRoute('mass_search_suppression.admin_settings')->toString()]) . '</dd>';
       $output .= '</dl>';
       break;
 

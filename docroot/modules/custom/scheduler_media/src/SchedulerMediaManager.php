@@ -2,6 +2,7 @@
 
 namespace Drupal\scheduler_media;
 
+use Drupal\Core\Link;
 use Drupal\content_moderation\ModerationInformationInterface;
 use Drupal\scheduler\SchedulerEvents;
 use Drupal\media\Entity\MediaType;
@@ -115,7 +116,7 @@ class SchedulerMediaManager {
       // Replace \Drupal::entityQuery with dependency injection?
       $query = \Drupal::entityQuery('media')
         ->exists('publish_on')
-        ->condition('publish_on', REQUEST_TIME, '<=')
+        ->condition('publish_on', \Drupal::time()->getRequestTime(), '<=')
         ->condition('bundle', $scheduler_enabled_types, 'IN')
         ->latestRevision()
         ->sort('publish_on')
@@ -160,7 +161,7 @@ class SchedulerMediaManager {
         // If the current translation does not have a publish on value, or it is
         // later than the date we are processing then move on to the next.
         $publish_on = $media->publish_on->value;
-        if (empty($publish_on) || $publish_on > REQUEST_TIME) {
+        if (empty($publish_on) || $publish_on > \Drupal::time()->getRequestTime()) {
           continue;
         }
 
@@ -199,7 +200,7 @@ class SchedulerMediaManager {
           // @TODO: 't' calls should be avoided in classes.
           // Replace with dependency injection?
           $media->revision_log = t('Node published by Scheduler on @now. Previous creation date was @date.', [
-            '@now' => $this->dateFormatter->format(REQUEST_TIME, 'short'),
+            '@now' => $this->dateFormatter->format(\Drupal::time()->getRequestTime(), 'short'),
             '@date' => $this->dateFormatter->format($old_creation_date, 'short'),
           ]);
         }
@@ -208,11 +209,13 @@ class SchedulerMediaManager {
         $media->publish_on->value = NULL;
 
         // Log the fact that a scheduled publication is about to take place.
-        $view_link = $media->link(t('View node'));
+        // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+        // Please confirm that `$media` is an instance of `\Drupal\Core\Entity\EntityInterface`. Only the method name and not the class name was checked for this replacement, so this may be a false positive.
+        $view_link = $media->toLink(t('View node'))->toString();
         $mediatype_url = Url::fromRoute('entity.media_type.edit_form', ['media_type' => $media->bundle()]);
         // @TODO: \Drupal calls should be avoided in classes.
         // Replace \Drupal::l with dependency injection?
-        $mediatype_link = \Drupal::l($media->bundle() . ' ' . t('settings'), $mediatype_url);
+        $mediatype_link = Link::fromTextAndUrl($media->bundle() . ' ' . t('settings'), $mediatype_url);
         $logger_variables = [
           '@type' => $media->bundle(),
           '%title' => $media->label(),
@@ -288,7 +291,7 @@ class SchedulerMediaManager {
       // Replace \Drupal::entityQuery with dependency injection?
       $query = \Drupal::entityQuery('media')
         ->exists('unpublish_on')
-        ->condition('unpublish_on', REQUEST_TIME, '<=')
+        ->condition('unpublish_on', \Drupal::time()->getRequestTime(), '<=')
         ->condition('bundle', $scheduler_enabled_types, 'IN')
         ->latestRevision()
         ->sort('unpublish_on')
@@ -327,7 +330,7 @@ class SchedulerMediaManager {
         // If the current translation does not have an unpublish on value, or it
         // is later than the date we are processing then move on to the next.
         $unpublish_on = $media->unpublish_on->value;
-        if (empty($unpublish_on) || $unpublish_on > REQUEST_TIME) {
+        if (empty($unpublish_on) || $unpublish_on > \Drupal::time()->getRequestTime()) {
           continue;
         }
 
@@ -336,7 +339,7 @@ class SchedulerMediaManager {
         // by one of the hook functions we provide, and is still being blocked
         // now that the unpublishing time has been reached.
         $publish_on = $media->publish_on->value;
-        if (!empty($publish_on) && $publish_on <= REQUEST_TIME) {
+        if (!empty($publish_on) && $publish_on <= \Drupal::time()->getRequestTime()) {
           continue;
         }
 
@@ -373,7 +376,7 @@ class SchedulerMediaManager {
           // @TODO: 't' calls should be avoided in classes.
           // Replace with dependency injection?
           $media->revision_log = t('Media unpublished by Scheduler on @now. Previous change date was @date.', [
-            '@now' => $this->dateFormatter->format(REQUEST_TIME, 'short'),
+            '@now' => $this->dateFormatter->format(\Drupal::time()->getRequestTime(), 'short'),
             '@date' => $this->dateFormatter->format($old_change_date, 'short'),
           ]);
         }
@@ -382,11 +385,13 @@ class SchedulerMediaManager {
         $media->unpublish_on->value = NULL;
 
         // Log the fact that a scheduled unpublication is about to take place.
-        $view_link = $media->link(t('View media'));
+        // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+        // Please confirm that `$media` is an instance of `\Drupal\Core\Entity\EntityInterface`. Only the method name and not the class name was checked for this replacement, so this may be a false positive.
+        $view_link = $media->toLink(t('View media'))->toString();
         $mediatype_url = Url::fromRoute('entity.media_type.edit_form', ['media_type' => $media->bundle()]);
         // @TODO: \Drupal calls should be avoided in classes.
         // Replace \Drupal::l with dependency injection?
-        $mediatype_link = \Drupal::l($media->bundle() . ' ' . t('settings'), $mediatype_url);
+        $mediatype_link = Link::fromTextAndUrl($media->bundle() . ' ' . t('settings'), $mediatype_url);
         $logger_variables = [
           '@type' => $media_bundle->label(),
           '%title' => $media->label(),
@@ -515,7 +520,7 @@ class SchedulerMediaManager {
     if ($log) {
       // @TODO: \Drupal calls should be avoided in classes.
       // Replace \Drupal::l with dependency injection?
-      $this->logger->notice('Lightweight cron run completed.', ['link' => \Drupal::l(t('settings'), Url::fromRoute('scheduler.cron_form'))]);
+      $this->logger->notice('Lightweight cron run completed.', ['link' => Link::fromTextAndUrl(t('settings'), Url::fromRoute('scheduler.cron_form'))]);
     }
   }
 

@@ -80,7 +80,7 @@ class OrganizationSync extends QueueWorkerBase {
     $node->setNewRevision();
     $node->setRevisionUserId(1);
     $node->setRevisionLogMessage($message);
-    $node->setRevisionCreationTime(REQUEST_TIME);
+    $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
     $node->save();
   }
 

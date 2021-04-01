@@ -193,7 +193,7 @@ class FileSystemReportsController extends ControllerBase {
           $entity_list = array_combine($entity_ids, $entity_types);
           foreach ($entity_list as $entity_id => $entity_type) {
             if (in_array($entity_type, ['node', 'media', 'user'])) {
-              $tmp[] = Link::fromTextAndUrl(ucwords($entity_type) . ' ' . $entity_id, URL::fromUri('entity:' . $entity_type . '/' . $entity_id));
+              $tmp[] = Link::fromTextAndUrl(ucwords($entity_type) . ' ' . $entity_id, Url::fromUri('entity:' . $entity_type . '/' . $entity_id));
             }
             else {
               $tmp[] = $this->t('Used in a @type', ['@type' => $entity_type]);

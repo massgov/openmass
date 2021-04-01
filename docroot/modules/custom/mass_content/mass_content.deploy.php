@@ -32,7 +32,7 @@ function mass_content_deploy_iframe_fields(&$sandbox) {
     ->range(0, $batch_size)
     ->execute();
 
-  $node_storage = \Drupal::entityManager()->getStorage('node');
+  $node_storage = \Drupal::service('entity_type.manager')->getStorage('node');
   $nodes = $node_storage->loadMultiple($nids);
 
   foreach ($nodes as $node) {

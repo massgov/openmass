@@ -196,7 +196,7 @@ function mass_flagging_node_update_insert_add_watcher(EntityInterface $node) {
       $unwatch_flag = get_unwatch_flag_link($watch_flag, $node);
 
       // Notifies user that they are now automatically watching the node.
-      drupal_set_message(t('You are now watching @node_type %node_title. You will be notified of any future changes made to this content. <a href=":help_url" title="Mass Flagging help page">Learn more about this functionality</a>, <a href=":flag_url" title="@flag_title">stop watching this content</a>, or <a href=":watched_content" title="View all watched content">view all content you are currently watching</a>.', [
+      \Drupal::messenger()->addStatus(t('You are now watching @node_type %node_title. You will be notified of any future changes made to this content. <a href=":help_url" title="Mass Flagging help page">Learn more about this functionality</a>, <a href=":flag_url" title="@flag_title">stop watching this content</a>, or <a href=":watched_content" title="View all watched content">view all content you are currently watching</a>.', [
         '@node_type' => node_get_type_label($node),
         '%node_title' => $node->label(),
         ':help_url' => Url::fromRoute('mass_flagging.help')->toString(),

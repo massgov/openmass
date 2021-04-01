@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_alerts\ExistingSite;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\StreamWrapper\PrivateStream;
 use Drupal\file\Entity\File;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
@@ -44,7 +45,7 @@ class AutomatedPurgingTest extends ExistingSiteBase {
    */
   public function testFileCreationPrivateResultsInNoPurge() {
     $dir = PrivateStream::basePath();
-    file_prepare_directory($dir, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS);
+    \Drupal::service('file_system')->prepareDirectory($dir, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
     // Create a "Llama" media item  - private.
     file_put_contents('private://llama-45.txt', 'Test');
     $file = File::create([

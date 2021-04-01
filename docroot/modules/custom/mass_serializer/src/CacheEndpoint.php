@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_serializer;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\views\Views;
 use Drush\Drush;
 use Exception;
@@ -101,8 +102,8 @@ class CacheEndpoint {
   public function cacheSave($api, array $args) {
     $self = Drush::aliasManager()->getSelf();
     try {
-      file_prepare_directory($this->publicDirectory, FILE_CREATE_DIRECTORY);
-      if (!file_prepare_directory($this->publicDirectory)) {
+      \Drupal::service('file_system')->prepareDirectory($this->publicDirectory, FileSystemInterface::CREATE_DIRECTORY);
+      if (!\Drupal::service('file_system')->prepareDirectory($this->publicDirectory)) {
         Drush::logger()->error($this->publicDirectory . 'does not exist or is not writeable.');
         return;
       }
@@ -214,7 +215,7 @@ class CacheEndpoint {
 
     $preview = $view->preview($display, $args);
 
-    $file = file_save_data(strval($preview['#markup']), $filename, FILE_EXISTS_REPLACE);
+    $file = file_save_data(strval($preview['#markup']), $filename, FileSystemInterface::EXISTS_REPLACE);
     Drush::logger()->success('Saving partial ' . $filename);
   }
 
@@ -236,7 +237,7 @@ class CacheEndpoint {
     }
     $result->dataset = $data;
 
-    file_save_data(json_encode($result), $cachename, FILE_EXISTS_REPLACE);
+    file_save_data(json_encode($result), $cachename, FileSystemInterface::EXISTS_REPLACE);
 
     Drush::logger()->success('All pages combined. ' . count($data) . ' rows. ' . $cachename . ' saved.');
   }

@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_superset\Form;
 
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -363,7 +364,7 @@ class TopPrioritiesForm extends FormBase {
   protected function queryData(string $org_nid) {
     // Get the timestamp for 28 days ago to compare our snooze flag to.
     $date = new DrupalDateTime('28 days ago');
-    $date->setTimezone(new \DateTimezone(DATETIME_STORAGE_TIMEZONE));
+    $date->setTimezone(new \DateTimezone(DateTimeItemInterface::STORAGE_TIMEZONE));
     $date_range = $date->getTimestamp();
 
     // Query the db for the 10 highest trafficked pages with lowest scores.
@@ -460,7 +461,7 @@ class TopPrioritiesForm extends FormBase {
 
     // Get the current timestamp to add to the row.
     $current_date = new DrupalDateTime();
-    $current_date->setTimezone(new \DateTimezone(DATETIME_STORAGE_TIMEZONE));
+    $current_date->setTimezone(new \DateTimezone(DateTimeItemInterface::STORAGE_TIMEZONE));
     $row['last_updated'] = $current_date->getTimestamp();
 
     // If the query returned a result we update that row, if not create new row.

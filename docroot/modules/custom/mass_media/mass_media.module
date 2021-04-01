@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\File\FileSystemInterface;
 /**
  * @file
  * Primary module hooks for Mass Media module.
@@ -172,7 +173,7 @@ function mass_media_media_presave(MediaInterface $entity) {
       /** @var \Drupal\Core\File\FileSystem $file_system */
       $file_system = \Drupal::service('file_system');
       $file_scheme = $file_system->uriScheme($file_uri);
-      $file_uri_target = file_uri_target($file_uri);
+      $file_uri_target = \Drupal::service('stream_wrapper_manager')->getTarget($file_uri);
 
       // Checks for unpublished Documents to ensure file is private.
       // Checks for published Documents to ensure file is public.
@@ -187,7 +188,7 @@ function mass_media_media_presave(MediaInterface $entity) {
       // Moves file as needed.
       if (!empty($file_destination)) {
         $dirname = $file_system->dirname($file_destination);
-        if (!file_prepare_directory($dirname, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS)) {
+        if (!\Drupal::service('file_system')->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
           throw new \RuntimeException("Unable to prepare directory for file move '$dirname'");
         }
         if (!file_move($file, $file_destination)) {

@@ -139,17 +139,17 @@ class TFAUnblockManager {
       try {
         $this->userData->set('tfa', $uid, 'tfa_user_settings', $tfa_settings);
         $user_name = User::load($uid)->getUsername();
-        drupal_set_message($this->t('Login unblocked for @account.', ['@account' => $user_name]), 'status');
+        \Drupal::messenger()->addStatus($this->t('Login unblocked for @account.', ['@account' => $user_name]));
       }
       catch (\Exception $e) {
         watchdog_exception('tfa_unblock', $e);
-        drupal_set_message($this->t('Unable to reset user. Error: @error', ['@error' => (string) $e]), 'error');
+        \Drupal::messenger()->addError($this->t('Unable to reset user. Error: @error', ['@error' => (string) $e]));
       }
     }
     else {
       $msg = $this->t('Unable to load tfa settings for user.');
       $this->loggerFactory->get('tfa_unblock')->error($msg);
-      drupal_set_message($msg);
+      \Drupal::messenger()->addStatus($msg);
     }
   }
 
