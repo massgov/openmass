@@ -1,5 +1,22 @@
 
 
+## [0.276.0] - March 30, 2021
+
+### Added
+  - DP-19675: Support WYSIWYG textareas with the "Pages Linking Here" functionality.
+  - DP-20411: Add data fields to binder content type and set up meta data output with the fields.
+  
+### Changed
+  - DP-20722: Modify image section on info page to allow text wrapping.
+  - DP-21583: Updated Mayflower version to 11.3.0.
+  - DP-21549: Add check to see if TOC is actually displayed before initializing. (MF)
+  - DP-20722: Changed figure image atom to work similar to dataviz. (MF)
+  
+### Fixed
+  - DP-21586: Added missing Header Media migration and Backstop testing failures for image captions.
+  
+
+
 ## [0.275.0] - March 23, 2021
 
 ### Changed
