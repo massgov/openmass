@@ -1,13 +1,42 @@
 <?php
 
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\TranslatableInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements entity_base_field_info_alter().
+ */
+function mass_scheduled_transitions_entity_base_field_info_alter($fields, EntityTypeInterface $entity_type) {
+
+  if ($entity_type->id() === 'node') {
+    $fields['moderation_state']
+      ->addConstraint('MassScheduledTransitionsPromoPageUnpublish');
+  }
+  return $fields;
+}
 
 /**
  * Implements hook_menu_local_tasks_alter().
  */
 function mass_scheduled_transitions_menu_local_tasks_alter(&$data, $route_name, &$cacheability) {
   $a=1;
+}
+
+/**
+ * Populate default value for the time so users don't have to complete the time element.
+
+ * Applies to the add_form.
+ *
+ * @param $form
+ * @param $form_state
+ */
+function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (strpos($form_id, 'scheduled_transitions_add_form_form')) {
+    $form['scheduled_transitions']['new_meta']['on']['#default_value'] = new DrupalDateTime("now +1 day");
+  }
 }
 
 /**

@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraint;
  * @Constraint(
  *   id = "MassScheduledTransitionsPromoPageUnpublish",
  *   label = @Translation("Promo Page Unpublish", context = "Validation"),
+ *   type = "entity:node"
  * )
  *
  * @DCG
@@ -18,6 +19,6 @@ use Symfony\Component\Validator\Constraint;
  */
 class PromoPageUnpublishConstraint extends Constraint {
 
-  public $errorMessage = 'An unpublish date within the next 14 months must be provided.';
+  public $errorMessage = 'An unpublish scheduled transition within the next 14 months must be provided for any published Promo page.';
 
 }
