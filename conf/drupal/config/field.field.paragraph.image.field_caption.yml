@@ -5,24 +5,11 @@ dependencies:
   config:
     - field.storage.paragraph.field_caption
     - paragraphs.paragraphs_type.image
-  module:
-    - geocoder_field
-third_party_settings:
-  geocoder_field:
-    method: none
-    field: parent_id
-    dumper: wkt
-    delta_handling: default
-    failure:
-      handling: preserve
-      status_message: false
-      log: false
-    providers: {  }
 id: paragraph.image.field_caption
 field_name: field_caption
 entity_type: paragraph
 bundle: image
-label: Caption
+label: 'Caption (Deprecated)'
 description: ''
 required: false
 translatable: true
