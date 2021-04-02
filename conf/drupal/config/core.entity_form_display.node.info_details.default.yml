@@ -220,7 +220,25 @@ content:
   field_data_topic:
     weight: 15
     settings: {  }
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        110b5e6b-b85b-43ae-8e1a-80cd609c35ee:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: info_details
     type: options_buttons
     region: content
   field_details_data_type:
