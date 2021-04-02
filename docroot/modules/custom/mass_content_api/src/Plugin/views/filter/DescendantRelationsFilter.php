@@ -3,7 +3,6 @@
 namespace Drupal\mass_content_api\Plugin\views\filter;
 
 use Drupal\Core\Database\Query\Condition;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\views\Plugin\views\filter\FilterPluginBase;
 
 /**
