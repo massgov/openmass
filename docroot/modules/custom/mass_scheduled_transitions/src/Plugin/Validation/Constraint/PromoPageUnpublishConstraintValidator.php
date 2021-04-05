@@ -19,8 +19,8 @@ class PromoPageUnpublishConstraintValidator extends ConstraintValidator {
     /** @var \Drupal\node\Entity\Node $entity */
     $entity = $item_list->getEntity();
 
-    // We don't care about drafts.
-    if ($entity->bundle() !== 'campaign_landing' || !$entity->isPublished()) {
+    // We don't care about drafts. Skip new because we auto-create transitions at creation time.
+    if ($entity->bundle() !== 'campaign_landing' || !$entity->isPublished() || $entity->isNew()) {
       return;
     }
 
