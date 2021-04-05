@@ -7,9 +7,9 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 /**
- * Validates the Promo Page Unpublish constraint.
+ * Validates the Alert Unpublish constraint.
  */
-class PromoPageUnpublishConstraintValidator extends ConstraintValidator {
+class AlertUnpublishConstraintValidator extends ConstraintValidator {
 
   /**
    * {@inheritdoc}
@@ -20,7 +20,7 @@ class PromoPageUnpublishConstraintValidator extends ConstraintValidator {
     $entity = $item_list->getEntity();
 
     // We don't care about drafts.
-    if ($entity->bundle() !== 'campaign_landing' || !$entity->isPublished()) {
+    if ($entity->bundle() !== 'alert' || !$entity->isPublished()) {
       return;
     }
 

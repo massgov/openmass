@@ -5,6 +5,10 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\TranslatableInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\NodeInterface;
+use Drupal\scheduled_transitions\Entity\ScheduledTransition;
+use Drupal\workflows\Entity\Workflow;
 
 /**
  * Implements entity_base_field_info_alter().
@@ -13,9 +17,42 @@ function mass_scheduled_transitions_entity_base_field_info_alter($fields, Entity
 
   if ($entity_type->id() === 'node') {
     $fields['moderation_state']
-      ->addConstraint('MassScheduledTransitionsPromoPageUnpublish');
+      ->addConstraint('MassScheduledTransitionsPromoPageUnpublish')
+      ->addConstraint('MassScheduledTransitionsAlertUnpublish');
   }
   return $fields;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for node entities.
+ * 
+ * Automatically create the required scheduled transitions.
+ */
+function mass_scheduled_transitions_node_insert(NodeInterface $node) {
+  if ($node->bundle() == 'alert') {
+    $duration = '14 days';
+    $workflow = 'editorial';
+  }
+  elseif ($node->bundle() == 'campaign_landing') {
+    $duration = '180 days';
+    $workflow = 'campaign_landing_page';
+  }
+  else {
+    // Do nothing
+    return;
+  }
+  /** @var ScheduledTransition $transition */
+  $transition = ScheduledTransition::create([]);
+  $datetime = (new DrupalDateTime("now + $duration"))->getPhpDateTime();
+  $transition->setTransitionDate($datetime)
+    ->setAuthor($node->getOwner())
+    ->setState(Workflow::load($workflow), MassModeration::UNPUBLISHED)
+    ->setEntity($node)
+    // 0 means 'latest'
+    ->setEntityRevisionId(0)
+    ->save();
+  $url_edit = $transition->toUrl('reschedule-form')->toString();
+  \Drupal::messenger()->addStatus("An unpublish transition has been scheduled for $duration days from today. <a href=\"$url_edit\">Reschedule transition</a>.");
 }
 
 /**
