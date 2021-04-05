@@ -52,7 +52,8 @@ function mass_scheduled_transitions_node_insert(NodeInterface $node) {
     ->setEntityRevisionId(0)
     ->save();
   $url_edit = $transition->toUrl('reschedule-form')->toString();
-  \Drupal::messenger()->addStatus("An unpublish transition has been scheduled for $duration days from today. <a href=\"$url_edit\">Reschedule transition</a>.");
+  $replacements = [':url_edit' => $url_edit, '@duration' => $duration];
+  \Drupal::messenger()->addStatus(t("An unpublish transition has been scheduled for @duration days from today. <a href=\":url_edit\">Reschedule transition</a>.", $replacements));
 }
 
 /**
