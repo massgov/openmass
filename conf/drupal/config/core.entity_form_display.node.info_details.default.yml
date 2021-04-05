@@ -27,7 +27,6 @@ dependencies:
     - field.field.node.info_details.field_state_organization_tax
     - image.style.thumbnail
     - node.type.info_details
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -56,6 +55,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Information Details Edit Form'
+      region: content
     group_overview:
       children:
         - title
@@ -84,6 +84,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Overview
+      region: content
     group_content:
       children:
         - field_info_details_sections
@@ -97,6 +98,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Content
+      region: content
     group_info_details_related:
       children:
         - field_contact
@@ -111,6 +113,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Related
+      region: content
     group_header_media:
       children:
         - field_info_details_header_media
@@ -124,6 +127,7 @@ third_party_settings:
         id: header-media
         classes: ''
       label: 'Header Media'
+      region: content
     group_additional_info:
       children:
         - field_footnotes
@@ -138,6 +142,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: 'Additional Info'
+      region: content
 id: node.info_details.default
 targetEntityType: node
 bundle: info_details

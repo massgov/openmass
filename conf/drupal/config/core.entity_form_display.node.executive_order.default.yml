@@ -21,7 +21,6 @@ dependencies:
     - field.field.node.executive_order.field_reusable_label
     - field.field.node.executive_order.field_state_organization_tax
     - node.type.executive_order
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -49,6 +48,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Node Edit Form'
+      region: content
     group_overview:
       children:
         - field_executive_title
@@ -71,6 +71,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Overview
+      region: content
     group_details:
       children:
         - field_executive_order_overview
@@ -86,6 +87,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Details
+      region: content
     group_related:
       children:
         - field_executive_order_contact
@@ -100,6 +102,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Related
+      region: content
 id: node.executive_order.default
 targetEntityType: node
 bundle: executive_order

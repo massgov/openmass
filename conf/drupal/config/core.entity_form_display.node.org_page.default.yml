@@ -60,7 +60,6 @@ dependencies:
     - field.field.node.org_page.field_verification
     - image.style.thumbnail
     - node.type.org_page
-    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -95,6 +94,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Node Edit Form'
+      region: content
     group_banner:
       children:
         - group_organization_name
@@ -115,6 +115,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Title Banner'
+      region: content
     group_actions:
       children:
         - field_links_actions_3
@@ -129,6 +130,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Services Offered'
+      region: content
     group_other:
       children:
         - field_ref_card_view_6
@@ -154,6 +156,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: More
+      region: content
     group_overview:
       children:
         - field_sub_title
@@ -172,6 +175,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Overview
+      region: content
     group_organization_name:
       children:
         - title
@@ -193,6 +197,7 @@ third_party_settings:
         effect: none
         speed: fast
       label: 'Organization name'
+      region: content
     group_map:
       children:
         - field_org_ref_locations
@@ -209,6 +214,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Map
+      region: content
     group_news:
       children:
         - field_org_featured_news_items
@@ -225,6 +231,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: News
+      region: content
     group_featured:
       children:
         - field_org_featured_message
@@ -240,6 +247,7 @@ third_party_settings:
         id: ''
         classes: elected-only
       label: Featured
+      region: content
     group_about_details:
       children:
         - field_short_name
@@ -255,6 +263,7 @@ third_party_settings:
         classes: elected-only
         required_fields: false
       label: 'About / Details'
+      region: content
     group_about_summary:
       children:
         - field_about
@@ -267,6 +276,7 @@ third_party_settings:
         open: true
         required_fields: true
       label: 'About Summary'
+      region: content
     group_boards:
       children:
         - field_boards
@@ -281,6 +291,7 @@ third_party_settings:
         id: boards-tab
         classes: ''
       label: Boards
+      region: content
     group_feedback:
       children:
         - field_constituent_communication
@@ -301,6 +312,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Setup Feedback'
+      region: content
 id: node.org_page.default
 targetEntityType: node
 bundle: org_page

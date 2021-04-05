@@ -43,7 +43,6 @@ dependencies:
     - field.field.media.document.field_title
     - field.field.media.document.field_upload_file
     - media.type.document
-    - workflows.workflow.media_states
   module:
     - content_moderation
     - datetime
@@ -71,6 +70,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Timeframe
+      region: content
     group_form:
       children:
         - group_basic
@@ -83,6 +83,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: Form
+      region: content
     group_advanced:
       children:
         - field_alternative_title
@@ -113,6 +114,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Advanced
+      region: content
     group_basic:
       children:
         - field_title
@@ -141,6 +143,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Basic
+      region: content
 id: media.document.default
 targetEntityType: media
 bundle: document

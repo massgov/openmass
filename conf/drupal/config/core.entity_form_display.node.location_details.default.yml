@@ -12,7 +12,6 @@ dependencies:
     - field.field.node.location_details.field_reusable_label
     - field.field.node.location_details.field_state_organization_tax
     - node.type.location_details
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -37,6 +36,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Location Detail Node Edit'
+      region: content
     group_overview:
       children:
         - title
@@ -54,6 +54,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Overview
+      region: content
     group_sections:
       children:
         - field_location_details_sections
@@ -67,6 +68,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Sections
+      region: content
     group_related:
       children:
         - field_location_details_links_5
@@ -80,6 +82,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Related
+      region: content
 id: node.location_details.default
 targetEntityType: node
 bundle: location_details

@@ -14,7 +14,6 @@ dependencies:
     - field.field.node.alert.field_target_organization
     - field.field.node.alert.field_target_page
     - node.type.alert
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -37,6 +36,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: Alert
+      region: content
     group_severity_and_target_pages:
       children:
         - title
@@ -56,6 +56,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Overview & Alert placement'
+      region: content
     group_alert_headline:
       children:
         - field_alert_severity
@@ -73,6 +74,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Alert content'
+      region: content
 id: node.alert.default
 targetEntityType: node
 bundle: alert

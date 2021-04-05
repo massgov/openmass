@@ -23,7 +23,6 @@ dependencies:
     - field.field.node.news.field_state_organization_tax
     - image.style.thumbnail
     - node.type.news
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -58,6 +57,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Overview
+      region: content
     group_signees:
       children:
         - field_news_signees
@@ -72,6 +72,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Signees
+      region: content
     group_main_content:
       children:
         - field_news_image
@@ -90,6 +91,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Main Content'
+      region: content
     group_contacts:
       children:
         - field_news_media_contac
@@ -103,6 +105,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Contacts
+      region: content
     group_related:
       children:
         - field_news_links
@@ -116,6 +119,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Related
+      region: content
     group_node_edit_form:
       children:
         - group_overview
@@ -131,6 +135,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Node edit form'
+      region: content
 id: node.news.default
 targetEntityType: node
 bundle: news

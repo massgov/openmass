@@ -19,7 +19,6 @@ dependencies:
     - field.field.node.curated_list.field_reusable_label
     - field.field.node.curated_list.field_state_organization_tax
     - node.type.curated_list
-    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -45,6 +44,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Curated list edit form'
+      region: content
     group_overview:
       children:
         - field_list_type
@@ -68,6 +68,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Overview
+      region: content
     group_sections:
       children:
         - field_curatedlist_list_section
@@ -82,6 +83,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Sections
+      region: content
     group_related:
       children:
         - field_contact
@@ -96,6 +98,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Related
+      region: content
 id: node.curated_list.default
 targetEntityType: node
 bundle: curated_list

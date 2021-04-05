@@ -16,7 +16,6 @@ dependencies:
     - field.field.node.campaign_landing.field_reusable_label
     - field.field.node.campaign_landing.field_sections
     - node.type.campaign_landing
-    - workflows.workflow.campaign_landing_page
   module:
     - conditional_fields
     - content_moderation
@@ -45,6 +44,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Overview
+      region: content
     group_campaign_landing_edit_form:
       children:
         - group_overview
@@ -58,6 +58,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Campaign Landing Edit Form'
+      region: content
     group_content:
       children:
         - field_header
@@ -73,6 +74,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Content
+      region: content
     group_kpis:
       children:
         - field_promotional_kpi_choice
@@ -92,6 +94,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Key Performance Indicators'
+      region: content
 id: node.campaign_landing.default
 targetEntityType: node
 bundle: campaign_landing
@@ -118,9 +121,9 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
       features:
-        duplicate: duplicate
-        collapse_edit_all: collapse_edit_all
         add_above: '0'
+        collapse_edit_all: collapse_edit_all
+        duplicate: duplicate
     third_party_settings: {  }
     region: content
   field_kpi_ctr_button_links:
@@ -299,9 +302,9 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
       features:
-        duplicate: duplicate
-        collapse_edit_all: collapse_edit_all
         add_above: add_above
+        collapse_edit_all: collapse_edit_all
+        duplicate: duplicate
     third_party_settings: {  }
     region: content
   moderation_state:

@@ -23,7 +23,6 @@ dependencies:
     - field.field.node.regulation.field_reusable_label
     - field.field.node.regulation.field_state_organization_tax
     - node.type.regulation
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -63,6 +62,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Overview
+      region: content
     group_regulation_page_edit_form:
       children:
         - group_overview
@@ -76,6 +76,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Regulation Page Edit Form'
+      region: content
     group_related:
       children:
         - field_regulation_contact
@@ -90,6 +91,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Related
+      region: content
     group_sections:
       children:
         - field_regulation_section
@@ -105,6 +107,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Content
+      region: content
 id: node.regulation.default
 targetEntityType: node
 bundle: regulation

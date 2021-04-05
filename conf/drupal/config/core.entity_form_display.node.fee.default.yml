@@ -10,7 +10,6 @@ dependencies:
     - field.field.node.fee.field_reusable_label
     - field.field.node.fee.field_state_organization_tax
     - node.type.fee
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -29,6 +28,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Fee edit form'
+      region: content
     group_fee:
       children:
         - title
@@ -47,6 +47,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Fee
+      region: content
 id: node.fee.default
 targetEntityType: node
 bundle: fee

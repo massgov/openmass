@@ -18,7 +18,6 @@ dependencies:
     - field.field.node.service_details.field_service_detail_sections
     - field.field.node.service_details.field_state_organization_tax
     - node.type.service_details
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -44,6 +43,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Node Edit Form'
+      region: content
     group_overview:
       children:
         - title
@@ -67,6 +67,7 @@ third_party_settings:
         id: overview-tab
         classes: ''
       label: Overview
+      region: content
     group_sections:
       children:
         - field_service_detail_sections
@@ -81,6 +82,7 @@ third_party_settings:
         id: sections-tab
         classes: ''
       label: Sections
+      region: content
     group_cross_promotional_content:
       children:
         - field_service_detail_contact
@@ -96,6 +98,7 @@ third_party_settings:
         id: related-tab
         classes: ''
       label: Related
+      region: content
 id: node.service_details.default
 targetEntityType: node
 bundle: service_details

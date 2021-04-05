@@ -31,7 +31,6 @@ dependencies:
     - field.field.node.location.field_state_organization_tax
     - image.style.thumbnail
     - node.type.location
-    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -60,6 +59,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: Primary
+      region: content
     group_header:
       children:
         - title
@@ -86,6 +86,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Header
+      region: content
     group_required_details:
       children:
         - field_overview
@@ -100,6 +101,7 @@ third_party_settings:
         description: 'These details are required to have a location page. If you cannot provide any information for one of the required fields below, please provide constituent-friendly text explaining that.'
         required_fields: true
       label: 'Required Details'
+      region: content
     group_optional_details:
       children:
         - field_location_facilities
@@ -120,6 +122,7 @@ third_party_settings:
         description: 'Not all of these fields will be required for every type of location, but you can make your location more dynamic and interesting by providing appropriate information here.'
         required_fields: true
       label: 'Optional Details'
+      region: content
     group_sidebar:
       children:
         - field_links
@@ -134,6 +137,7 @@ third_party_settings:
         description: 'Provide up to 3 links where a user can perform an action online or download a helpful pdf related to the in-person experience.'
         required_fields: true
       label: Related
+      region: content
 id: node.location.default
 targetEntityType: node
 bundle: location

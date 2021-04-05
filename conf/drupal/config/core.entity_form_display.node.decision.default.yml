@@ -23,7 +23,6 @@ dependencies:
     - field.field.node.decision.field_reusable_label
     - field.field.node.decision.field_state_organization_tax
     - node.type.decision
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -61,6 +60,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Overview
+      region: content
     group_relate:
       children:
         - field_decision_ref_contact
@@ -75,6 +75,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Related
+      region: content
     group_decision_edit_form:
       children:
         - group_decision_overview
@@ -88,6 +89,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Decision Edit Form'
+      region: content
     group_decision_details_tab:
       children:
         - field_decision_participants
@@ -105,6 +107,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Details
+      region: content
 id: node.decision.default
 targetEntityType: node
 bundle: decision

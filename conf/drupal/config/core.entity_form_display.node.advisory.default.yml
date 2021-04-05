@@ -21,7 +21,6 @@ dependencies:
     - field.field.node.advisory.field_reusable_label
     - field.field.node.advisory.field_state_organization_tax
     - node.type.advisory
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -50,6 +49,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Advisory Page Edit Form'
+      region: content
     group_advisory_overview:
       children:
         - title
@@ -73,6 +73,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Overview
+      region: content
     group_advisory_sections:
       children:
         - field_advisory_section
@@ -89,6 +90,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Details
+      region: content
     group_advisory_related:
       children:
         - field_advisory_ref_contact
@@ -103,6 +105,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Related
+      region: content
     group_issuer:
       children:
         - field_advisory_issuer
@@ -116,6 +119,7 @@ third_party_settings:
         classes: ''
         required_fields: false
       label: '  '
+      region: content
 id: node.advisory.default
 targetEntityType: node
 bundle: advisory

@@ -12,7 +12,6 @@ dependencies:
     - field.field.node.legacy_redirects.field_reusable_label
     - field.field.node.legacy_redirects.field_state_organization_tax
     - node.type.legacy_redirects
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -32,6 +31,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Legacy redirect edit form'
+      region: content
     group_legacy_redirect:
       children:
         - field_legacy_redirects_legacyurl
@@ -52,6 +52,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Legacy redirect'
+      region: content
 id: node.legacy_redirects.default
 targetEntityType: node
 bundle: legacy_redirects

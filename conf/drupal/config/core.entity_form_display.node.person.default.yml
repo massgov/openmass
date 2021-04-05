@@ -30,7 +30,6 @@ dependencies:
     - field.field.node.person.field_state_organization_tax
     - image.style.thumbnail
     - node.type.person
-    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -60,6 +59,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: 'Bio Page'
+      region: content
     group_node_edit_form:
       children:
         - group_overview
@@ -73,6 +73,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Node Edit Form'
+      region: content
     group_overview:
       children:
         - title
@@ -98,6 +99,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Overview
+      region: content
     group_contact_information:
       children:
         - field_contact_source
@@ -116,6 +118,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: 'Contact information'
+      region: content
 id: node.person.default
 targetEntityType: node
 bundle: person

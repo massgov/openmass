@@ -26,7 +26,6 @@ dependencies:
     - field.field.node.rules.field_rules_updates
     - field.field.node.rules.field_state_organization_tax
     - node.type.rules
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -64,6 +63,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Overview
+      region: content
     group_rules_details:
       children:
         - field_rules_adopted_date
@@ -83,6 +83,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Details
+      region: content
     group_rules_related:
       children:
         - field_rules_ref_contact
@@ -98,6 +99,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Related
+      region: content
     group_rules_edit_form:
       children:
         - group_rules_overview
@@ -111,6 +113,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Rules of court edit form'
+      region: content
     group_updates:
       children:
         - field_rules_updates
@@ -123,6 +126,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: ''
+      region: content
     group_sections:
       children:
         - field_rules_section
@@ -135,6 +139,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: ''
+      region: content
 id: node.rules.default
 targetEntityType: node
 bundle: rules

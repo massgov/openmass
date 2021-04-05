@@ -11,7 +11,6 @@ dependencies:
     - field.field.node.decision_tree_conclusion.field_reusable_label
     - field.field.node.decision_tree_conclusion.field_state_organization_tax
     - node.type.decision_tree_conclusion
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -33,6 +32,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Decision tree conclusion edit form'
+      region: content
     group_decision_tree_conclusion:
       children:
         - title
@@ -53,6 +53,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: 'Decision tree conclusion'
+      region: content
 id: node.decision_tree_conclusion.default
 targetEntityType: node
 bundle: decision_tree_conclusion
