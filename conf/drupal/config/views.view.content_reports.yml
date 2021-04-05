@@ -4,6 +4,37 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
+    - node.type.action
+    - node.type.advisory
+    - node.type.alert
+    - node.type.binder
+    - node.type.campaign_landing
+    - node.type.contact_information
+    - node.type.curated_list
+    - node.type.decision
+    - node.type.decision_tree
+    - node.type.decision_tree_branch
+    - node.type.decision_tree_conclusion
+    - node.type.event
+    - node.type.executive_order
+    - node.type.external_data_resource
+    - node.type.fee
+    - node.type.form_page
+    - node.type.guide_page
+    - node.type.how_to_page
+    - node.type.info_details
+    - node.type.legacy_redirects
+    - node.type.location
+    - node.type.location_details
+    - node.type.news
+    - node.type.org_page
+    - node.type.person
+    - node.type.regulation
+    - node.type.rules
+    - node.type.service_details
+    - node.type.service_page
+    - node.type.stacked_layout
+    - node.type.topic_page
   module:
     - content_moderation
     - node
@@ -26,7 +57,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'access content'
+          perm: 'use content reports'
       cache:
         type: tag
         options: {  }
@@ -758,6 +789,78 @@ display:
           entity_type: node
           entity_field: title
           plugin_id: views_autocomplete_filters_string
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: in
+          value:
+            advisory: advisory
+            alert: alert
+            binder: binder
+            contact_information: contact_information
+            curated_list: curated_list
+            decision: decision
+            decision_tree: decision_tree
+            decision_tree_branch: decision_tree_branch
+            decision_tree_conclusion: decision_tree_conclusion
+            event: event
+            executive_order: executive_order
+            external_data_resource: external_data_resource
+            fee: fee
+            form_page: form_page
+            guide_page: guide_page
+            how_to_page: how_to_page
+            info_details: info_details
+            legacy_redirects: legacy_redirects
+            location: location
+            location_details: location_details
+            news: news
+            org_page: org_page
+            person: person
+            campaign_landing: campaign_landing
+            regulation: regulation
+            action: action
+            rules: rules
+            service_page: service_page
+            service_details: service_details
+            stacked_layout: stacked_layout
+            topic_page: topic_page
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
       sorts:
         created:
           id: created
