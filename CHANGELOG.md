@@ -1,5 +1,21 @@
 
 
+## [0.277.0] - April 6, 2021
+
+### Changed
+  - DP-20584: Configured backstop to wait 45 seconds for tableau dashboards to load.
+  - DP-21591: Added 4 new test pages to Backstop for automated visual testing of new images styles on info details.
+  
+### Fixed
+  - DP-20992: Fixed advisory content type rendering with Title short desription view mode.
+  - DP-21457: Fixed the htmlspecialchars() PHP warning for iframe paragraph captions.
+  - DP-21589: Added migration to set new, required image wrapping values for image paragraphs that do not have captions.
+  
+### Added
+  - DP-21300: Added Data Topic Taxonomy and Topic and Sub Topic fields for Data Tab.
+  
+
+
 ## [0.276.0] - March 30, 2021
 
 ### Added
