@@ -4,7 +4,6 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
-    - node.type.action
     - node.type.advisory
     - node.type.alert
     - node.type.binder
@@ -13,17 +12,12 @@ dependencies:
     - node.type.curated_list
     - node.type.decision
     - node.type.decision_tree
-    - node.type.decision_tree_branch
-    - node.type.decision_tree_conclusion
     - node.type.event
     - node.type.executive_order
-    - node.type.external_data_resource
-    - node.type.fee
     - node.type.form_page
     - node.type.guide_page
     - node.type.how_to_page
     - node.type.info_details
-    - node.type.legacy_redirects
     - node.type.location
     - node.type.location_details
     - node.type.news
@@ -32,7 +26,6 @@ dependencies:
     - node.type.rules
     - node.type.service_details
     - node.type.service_page
-    - node.type.stacked_layout
     - node.type.topic_page
   module:
     - content_moderation
@@ -81,7 +74,7 @@ display:
       pager:
         type: mini
         options:
-          items_per_page: 10
+          items_per_page: 20
           offset: 0
           id: 0
           total_pages: null
@@ -706,45 +699,52 @@ display:
             curated_list: curated_list
             decision: decision
             decision_tree: decision_tree
-            decision_tree_branch: decision_tree_branch
-            decision_tree_conclusion: decision_tree_conclusion
             event: event
             executive_order: executive_order
-            external_data_resource: external_data_resource
-            fee: fee
             form_page: form_page
             guide_page: guide_page
             how_to_page: how_to_page
             info_details: info_details
-            legacy_redirects: legacy_redirects
             location: location
             location_details: location_details
             news: news
             person: person
             campaign_landing: campaign_landing
             regulation: regulation
-            action: action
             rules: rules
             service_page: service_page
             service_details: service_details
-            stacked_layout: stacked_layout
             topic_page: topic_page
           group: 1
-          exposed: false
+          exposed: true
           expose:
-            operator_id: ''
-            label: ''
+            operator_id: type_op
+            label: 'Content type'
             description: ''
             use_operator: false
-            operator: ''
+            operator: type_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: ''
+            identifier: type
             required: false
             remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -761,6 +761,115 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+        uid:
+          id: uid
+          table: node_field_data
+          field: uid
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: uid_op
+            label: 'Authored by'
+            description: ''
+            use_operator: false
+            operator: uid_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: uid
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          entity_field: uid
+          plugin_id: user_name
+        status:
+          id: status
+          table: node_field_data
+          field: status
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: 'Published status'
+            description: ''
+            use_operator: false
+            operator: status_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: status
+            required: true
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          entity_field: status
+          plugin_id: boolean
       sorts:
         created:
           id: created
