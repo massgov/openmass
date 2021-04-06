@@ -1,3 +1,4 @@
+
 <?php
 
 /**
@@ -5025,7 +5026,7 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
         $links = [];
         foreach ($item->get('field_topic_callout_links') as $link) {
           $link_path = Url::fromUri($link->uri);
-          if (Unicode::strpos($link->uri, 'entity:node/') !== FALSE) {
+          if (mb_strpos($link->uri, 'entity:node/') !== FALSE) {
             $nid = explode('/', $link->uri)[1];
             $linked_node = Node::load($nid);
             // Check that we have a node and that it has an external_url field.
