@@ -28,7 +28,7 @@ function mass_entityreference_form_node_form_alter(&$form, FormStateInterface $f
     $org_item = $org->first()->getValue();
     if (isset($org_item['target_id'])) {
       $org_id = $org_item['target_id'];
-      $org_term = taxonomy_term_load($org_id);
+      $org_term = Drupal\taxonomy\Entity\Term::load($org_id);
 
       // Auto-Populate organization field.
       if (isset($form['field_state_organization_tax'])) {
