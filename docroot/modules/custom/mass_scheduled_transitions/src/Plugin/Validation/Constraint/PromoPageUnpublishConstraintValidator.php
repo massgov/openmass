@@ -24,8 +24,7 @@ class PromoPageUnpublishConstraintValidator extends ConstraintValidator {
       return;
     }
 
-    // Add 14 months to today date.
-    $future = new DrupalDateTime("now +14 months");
+    $future = new DrupalDateTime("now +" . MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION);
     $transitions = mass_scheduled_transitions_loadByHostEntity($entity);
     $fail = TRUE;
     foreach ($transitions as $transition) {

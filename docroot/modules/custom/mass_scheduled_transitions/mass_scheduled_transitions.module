@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -9,6 +10,9 @@ use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\NodeInterface;
 use Drupal\scheduled_transitions\Entity\ScheduledTransition;
 use Drupal\workflows\Entity\Workflow;
+
+define('MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION', '14 months');
+define('MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION', '6 months');
 
 /**
  * Implements entity_base_field_info_alter().
@@ -54,6 +58,38 @@ function mass_scheduled_transitions_node_insert(NodeInterface $node) {
   $url_edit = $transition->toUrl('reschedule-form')->toString();
   $replacements = [':url_edit' => $url_edit, '@duration' => $duration];
   \Drupal::messenger()->addStatus(t("An unpublish transition has been scheduled for @duration days from today. <a href=\":url_edit\">Reschedule transition</a>.", $replacements));
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ *
+ * Deny deletion of scheduled transitions when their host entity requires one.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ * @param $operation
+ *
+ * @return mixed
+ */
+function mass_scheduled_transitions_scheduled_transition_access(EntityInterface $transition, $operation) {
+  $entity = $transition->getEntity();
+  if ($operation != 'delete' || !$entity->isPublished() || !in_array($entity->bundle(), ['alert', 'campaign_landing'])) {
+    return;
+  }
+
+  $duration_string = $entity->bundle() == 'alert' ? MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION : MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION;
+  $duration = (new DrupalDateTime('now +' . $duration_string))->getTimestamp();
+  $transitions = mass_scheduled_transitions_loadByHostEntity($entity);
+  unset($transitions[$transition->id()]);
+  $fail = TRUE;
+  foreach ($transitions as $transition) {
+    if ($transition->getState() == MassModeration::UNPUBLISHED && $transition->getTransitionDate()
+        ->getTimestamp() < $duration) {
+      $fail = FALSE;
+    }
+  }
+  if ($fail) {
+    return AccessResult::forbidden('Alerts or promo page requires an imminent unpublish transition');
+  }
 }
 
 /**
