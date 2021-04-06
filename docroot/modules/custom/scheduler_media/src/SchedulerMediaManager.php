@@ -2,13 +2,14 @@
 
 namespace Drupal\scheduler_media;
 
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Link;
 use Drupal\content_moderation\ModerationInformationInterface;
 use Drupal\scheduler\SchedulerEvents;
 use Drupal\media\Entity\MediaType;
 use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Datetime\DateFormatter;
-use Drupal\Core\Entity\EntityManager;
 use Drupal\Core\Url;
 use Drupal\Core\Extension\ModuleHandler;
 use Drupal\media\Entity\Media;
@@ -46,9 +47,16 @@ class SchedulerMediaManager {
   /**
    * Entity Manager service object.
    *
-   * @var \Drupal\Core\Entity\EntityManager
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
    */
-  protected $entityManager;
+  protected $entityFieldManager;
+
+  /**
+   * Entity Type Manager object from the container.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
 
   /**
    * Moderation information service.
@@ -67,11 +75,12 @@ class SchedulerMediaManager {
   /**
    * Constructs a SchedulerManager object.
    */
-  public function __construct(DateFormatter $dateFormatter, LoggerInterface $logger, ModuleHandler $moduleHandler, EntityManager $entityManager, ConfigFactory $configFactory, ModerationInformationInterface $moderationInformation = NULL) {
+  public function __construct(DateFormatter $dateFormatter, LoggerInterface $logger, ModuleHandler $moduleHandler, EntityFieldManagerInterface $entityFieldManager, EntityTypeManagerInterface $entityTypeManager, $configFactory, ModerationInformationInterface $moderationInformation = NULL) {
     $this->dateFormatter = $dateFormatter;
     $this->logger = $logger;
     $this->moduleHandler = $moduleHandler;
-    $this->entityManager = $entityManager;
+    $this->entityFieldManager = $entityFieldManager;
+    $this->entityTypeManager = $entityTypeManager;
     $this->configFactory = $configFactory;
     $this->moderationInfo = $moderationInformation;
     $this->schedulerModerationEnabled = $this->moduleHandler->moduleExists('scheduler_content_moderation_integration');
@@ -176,7 +185,7 @@ class SchedulerMediaManager {
         // @TODO This will now never be thrown due to the emptpublish_on)
         // check above to cater for translations. Remove this exception?
         if (empty($media->publish_on->value)) {
-          $field_definitions = $this->entityManager->getFieldDefinitions('media', $media->getType());
+          $field_definitions = $this->entityFieldManager->getFieldDefinitions('media', $media->getType());
           $field = (string) $field_definitions['publish_on']->getLabel();
           throw new SchedulerMissingDateException(sprintf("Node %d '%s' will not be published because field '%s' has no value", $media->id(), $media->getTitle(), $field));
         }
@@ -243,7 +252,7 @@ class SchedulerMediaManager {
         }
         else {
           // Use the actions system to publish the node.
-          $this->entityManager->getStorage('action')->load('media_publish_action')->getPlugin()->execute($media);
+          $this->entityTypeManager->getStorage('action')->load('media_publish_action')->getPlugin()->execute($media);
         }
 
         // Invoke the event to tell Rules that Scheduler has published the node.
@@ -354,7 +363,7 @@ class SchedulerMediaManager {
         // @TODO This will now never be thrown due to the empty(unpublish_on)
         // check above to cater for translations. Remove this exception?
         if (empty($unpublish_on)) {
-          $field_definitions = $this->entityManager->getFieldDefinitions('media', $media->getType());
+          $field_definitions = $this->entityFieldManager->getFieldDefinitions('media', $media->getType());
           $field = (string) $field_definitions['unpublish_on']->getLabel();
           throw new SchedulerMissingDateException(sprintf("Media %d '%s' will not be unpublished because field '%s' has no value", $media->id(), $media->getTitle(), $field));
         }
@@ -419,7 +428,7 @@ class SchedulerMediaManager {
         }
         else {
           // Use the actions system to publish the node.
-          $this->entityManager->getStorage('action')->load('media_unpublish_action')->getPlugin()->execute($media);
+          $this->entityTypeManager->getStorage('action')->load('media_unpublish_action')->getPlugin()->execute($media);
         }
 
         // Invoke event to tell Rules that Scheduler has unpublished this node.

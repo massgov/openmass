@@ -998,7 +998,9 @@ function mass_utility_mail_alter(&$message) {
       $message['body'] = [];
       $message['body'][] = t('Hello @recipient-name,', $variables);
       $message['body'][] = t("@sender-name has sent you a message via your contact form at @site-name. You can email @sender-name back at @sender-email", $variables);
-      $build = entity_view($contact_message, 'mail');
+      $view_builder =  \Drupal::entityTypeManager()
+        ->getViewBuilder($contact_message->getEntityTypeId());
+      $build = $view_builder->view($contact_message, 'mail');
       $message['body'][] = \Drupal::service('renderer')->renderPlain($build);
   }
 }

@@ -8,11 +8,11 @@ use Drupal\mass_content_api\DescendantManagerInterface;
 use Drupal\rest\Plugin\ResourceBase;
 use Drupal\rest\ResourceResponse;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\path_alias\AliasManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Drupal\path_alias\AliasManagerInterface;
 
 /**
  * Provides a listing of all content node IDs w/ IDs of parent nodes.
@@ -58,7 +58,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, array $serializer_formats, LoggerInterface $logger, DescendantManagerInterface $descendant_manager, EntityTypeManagerInterface $entity_type_manager, RequestStack $request_stack, AliasManagerInterface $alias_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, array $serializer_formats, LoggerInterface $logger, DescendantManagerInterface $descendant_manager, EntityTypeManagerInterface $entity_type_manager, RequestStack $request_stack,  AliasManagerInterface $alias_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger);
     $this->descendantManager = $descendant_manager;
     $this->entityTypeManager = $entity_type_manager;
@@ -79,7 +79,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
       $container->get('descendant_manager'),
       $container->get('entity_type.manager'),
       $container->get('request_stack'),
-      $container->get('path.alias_manager')
+      $container->get('path_alias.manager')
     );
   }
 

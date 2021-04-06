@@ -1,6 +1,5 @@
 <?php
 
-use Drupal\Core\File\FileSystemInterface;
 /**
  * @file
  * Primary module hooks for Mass Media module.
@@ -209,12 +208,12 @@ function mass_media_media_presave(MediaInterface $entity) {
  * that the source file is deleted immediately.
  */
 function mass_media_file_move(FileInterface $file, FileInterface $source) {
+  /** @var \Drupal\Core\File\FileSystem $file_system */
   $file_system = \Drupal::service('file_system');
 
   // Delete the original if it's not in use elsewhere.
   $delete_source_document = FALSE;
   $file_references = file_get_file_references($file);
-  $file_system = \Drupal::service('file_system');
   foreach ($file_references as $key => $reference) {
     // Checks for Document-related files moving between public/private schemes.
     if (
@@ -229,6 +228,6 @@ function mass_media_file_move(FileInterface $file, FileInterface $source) {
   if ($delete_source_document) {
     // Deletes old file immediately to avoid unwanted temporary file duplicates.
     // Cannot use File::delete() because $file and $source share same ID.
-    file_unmanaged_delete($source->getFileUri());
+    $file_system->delete($source->getFileUri());
   }
 }
