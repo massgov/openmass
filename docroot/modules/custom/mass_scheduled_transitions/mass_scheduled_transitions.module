@@ -15,7 +15,7 @@ define('MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION', '14 months');
 define('MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION', '6 months');
 
 /**
- * Implements entity_base_field_info_alter().
+ * Implements hook_entity_base_field_info_alter().
  */
 function mass_scheduled_transitions_entity_base_field_info_alter($fields, EntityTypeInterface $entity_type) {
 
@@ -26,6 +26,18 @@ function mass_scheduled_transitions_entity_base_field_info_alter($fields, Entity
   }
   return $fields;
 }
+
+/**
+ * Implements hook_entity_type_alter().
+ *
+ * @param iterable $entity_types
+ *
+ * @return void
+ */
+function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
+  $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsAlertSitewide');
+}
+
 
 /**
  * Implements hook_ENTITY_TYPE_insert() for node entities.
@@ -52,8 +64,12 @@ function mass_scheduled_transitions_node_insert(NodeInterface $node) {
     ->setAuthor($node->getOwner())
     ->setState(Workflow::load($workflow), MassModeration::UNPUBLISHED)
     ->setEntity($node)
-    // 0 means 'latest'
+    // 0 means 'latest'.
     ->setEntityRevisionId(0)
+    ->setOptions([
+      [ScheduledTransition::OPTION_RECREATE_NON_DEFAULT_HEAD => TRUE,
+       ScheduledTransition::OPTION_LATEST_REVISION => TRUE],
+    ])
     ->save();
   $url_edit = $transition->toUrl('reschedule-form')->toString();
   $replacements = [':url_edit' => $url_edit, '@duration' => $duration];
