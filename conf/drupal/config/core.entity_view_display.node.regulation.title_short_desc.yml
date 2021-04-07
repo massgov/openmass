@@ -1,0 +1,81 @@
+uuid: d25d5470-0292-4e72-bb2c-a8a48091691e
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.title_short_desc
+    - field.field.node.regulation.field_intended_audience
+    - field.field.node.regulation.field_organizations
+    - field.field.node.regulation.field_regluation_official_ver
+    - field.field.node.regulation.field_regulation_agency_cmr
+    - field.field.node.regulation.field_regulation_cmr_chapter
+    - field.field.node.regulation.field_regulation_contact
+    - field.field.node.regulation.field_regulation_download
+    - field.field.node.regulation.field_regulation_last_updated
+    - field.field.node.regulation.field_regulation_link_org
+    - field.field.node.regulation.field_regulation_listing_desc
+    - field.field.node.regulation.field_regulation_metatags
+    - field.field.node.regulation.field_regulation_ref_state_tax
+    - field.field.node.regulation.field_regulation_reg_authority
+    - field.field.node.regulation.field_regulation_related
+    - field.field.node.regulation.field_regulation_section
+    - field.field.node.regulation.field_regulation_short_descr
+    - field.field.node.regulation.field_regulation_title
+    - field.field.node.regulation.field_reusable_label
+    - field.field.node.regulation.field_state_organization_tax
+    - node.type.regulation
+  module:
+    - user
+id: node.regulation.title_short_desc
+targetEntityType: node
+bundle: regulation
+mode: title_short_desc
+content:
+  field_regulation_listing_desc:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  referencing_binders_page_flipper:
+    type: entity_reference_label
+    weight: 22
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  extra_node_pager: true
+  extra_org_feedback_form: true
+  field_intended_audience: true
+  field_organizations: true
+  field_regluation_official_ver: true
+  field_regulation_agency_cmr: true
+  field_regulation_cmr_chapter: true
+  field_regulation_contact: true
+  field_regulation_download: true
+  field_regulation_last_updated: true
+  field_regulation_link_org: true
+  field_regulation_metatags: true
+  field_regulation_ref_state_tax: true
+  field_regulation_reg_authority: true
+  field_regulation_related: true
+  field_regulation_section: true
+  field_regulation_short_descr: true
+  field_regulation_title: true
+  field_reusable_label: true
+  field_state_organization_tax: true
+  links: true
+  page_next: true
+  page_previous: true
+  referencing_binders: true
