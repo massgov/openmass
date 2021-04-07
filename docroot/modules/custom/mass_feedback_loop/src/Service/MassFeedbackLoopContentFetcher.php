@@ -5,6 +5,7 @@ namespace Drupal\mass_feedback_loop\Service;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Http\ClientFactory;
+use Drupal\Core\Pager\PagerManagerInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\Core\Database\Driver\mysql\Connection;
 use Drupal\Core\Site\Settings;
@@ -99,6 +100,13 @@ class MassFeedbackLoopContentFetcher {
   protected $httpClient;
 
   /**
+   * A Pager Manager from the container.
+   *
+   * @var \Drupal\Core\Pager\PagerManagerInterface
+   */
+  protected $pagerManager;
+
+  /**
    * Custom logger channel for mass_feedback_loop module.
    *
    * @var \Psr\Log\LoggerInterface
@@ -115,7 +123,8 @@ class MassFeedbackLoopContentFetcher {
     ConfigFactoryInterface $config_factory,
     ClientFactory $http_client_factory,
     LoggerInterface $logger,
-    EntityTypeManagerInterface $entity_type_manager
+    EntityTypeManagerInterface $entity_type_manager,
+    PagerManagerInterface $pager_manager
   ) {
     $this->currentUser = $current_user;
     $this->database = $database;
@@ -131,6 +140,7 @@ class MassFeedbackLoopContentFetcher {
     ]);
     $this->logger = $logger;
     $this->entityTypeManager = $entity_type_manager;
+    $this->pagerManager = $pager_manager;
   }
 
   /**
@@ -638,7 +648,7 @@ class MassFeedbackLoopContentFetcher {
    */
   public function buildPager($total, $limit, array $parameters = []) {
     // Initializes pager based on feedback response.
-    pager_default_initialize($total, $limit);
+    $this->pagerManager->createPager($total, $limit);
 
     // Returns pager render array, with parameters if available.
     return [
