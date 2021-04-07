@@ -67,33 +67,34 @@ function mass_superset_schema() {
 }
 
 /**
+ * This function commented out for d9 preparation. db_table_exists is depricated.
+ *
  * Create new database table to hold snooze information for Top Priorties Block.
+function mass_superset_update_8001() {
+  if (!db_table_exists('snooze')) {
+    $spec = [
+      'description' => 'Snooze data for Top Priorities Block',
+      'fields' => [
+        'entity_id' => [
+          'description' => 'The unique ID of the flagged entity, for example the uid, cid, or nid.',
+          'type' => 'varchar_ascii',
+          'length' => ConfigEntityStorage::MAX_ID_LENGTH,
+          'not null' => TRUE,
+        ],
+        'last_updated' => [
+          'description' => 'The UNIX time stamp representing when the flag was last updated.',
+          'type' => 'int',
+          'unsigned' => TRUE,
+          'disp-size' => 11,
+        ],
+      ],
+      'primary key' => ['entity_id'],
+    ];
+    $schema = Database::getConnection()->schema();
+    $schema->createTable('snooze', $spec);
+  }
+}
  */
-// This function commented out for d9 preparation. db_table_exists is depricated.
-//function mass_superset_update_8001() {
-//  if (!db_table_exists('snooze')) {
-//    $spec = [
-//      'description' => 'Snooze data for Top Priorities Block',
-//      'fields' => [
-//        'entity_id' => [
-//          'description' => 'The unique ID of the flagged entity, for example the uid, cid, or nid.',
-//          'type' => 'varchar_ascii',
-//          'length' => ConfigEntityStorage::MAX_ID_LENGTH,
-//          'not null' => TRUE,
-//        ],
-//        'last_updated' => [
-//          'description' => 'The UNIX time stamp representing when the flag was last updated.',
-//          'type' => 'int',
-//          'unsigned' => TRUE,
-//          'disp-size' => 11,
-//        ],
-//      ],
-//      'primary key' => ['entity_id'],
-//    ];
-//    $schema = Database::getConnection()->schema();
-//    $schema->createTable('snooze', $spec);
-//  }
-//}
 
 /**
  * Restart mass_superset queues.

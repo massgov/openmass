@@ -72,7 +72,7 @@ class CacheEndpoint {
   /**
    * Constructs a new CacheEndpoint object.
    *
-   * @param \Drupal\mass_serializer\RenderEndpoint
+   * @param \Drupal\mass_serializer\RenderEndpoint $render_endpoint
    *   Render Endpoint service.
    */
   public function __construct(RenderEndpoint $render_endpoint) {
