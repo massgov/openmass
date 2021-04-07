@@ -58,7 +58,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, array $serializer_formats, LoggerInterface $logger, DescendantManagerInterface $descendant_manager, EntityTypeManagerInterface $entity_type_manager, RequestStack $request_stack,  AliasManagerInterface $alias_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, array $serializer_formats, LoggerInterface $logger, DescendantManagerInterface $descendant_manager, EntityTypeManagerInterface $entity_type_manager, RequestStack $request_stack, AliasManagerInterface $alias_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger);
     $this->descendantManager = $descendant_manager;
     $this->entityTypeManager = $entity_type_manager;
