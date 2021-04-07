@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.binder.field_binder_appendix
     - field.field.node.binder.field_binder_banner_image
     - field.field.node.binder.field_binder_binder_type
+    - field.field.node.binder.field_binder_data_type
     - field.field.node.binder.field_binder_date_published
     - field.field.node.binder.field_binder_last_updated
     - field.field.node.binder.field_binder_metatags
@@ -17,6 +18,10 @@ dependencies:
     - field.field.node.binder.field_binder_short_desc
     - field.field.node.binder.field_binder_volume
     - field.field.node.binder.field_contact
+    - field.field.node.binder.field_data_flag
+    - field.field.node.binder.field_data_format
+    - field.field.node.binder.field_data_resource_type
+    - field.field.node.binder.field_data_topic
     - field.field.node.binder.field_downloads
     - field.field.node.binder.field_intended_audience
     - field.field.node.binder.field_organizations
@@ -66,8 +71,14 @@ third_party_settings:
         - field_binder_serial_number
         - field_binder_overview
         - field_organizations
-        - field_intended_audience
+        - field_data_flag
+        - field_binder_data_type
+        - field_data_resource_type
+        - field_data_format
+        - field_data_topic
+        - field_data_sub_topic
         - field_reusable_label
+        - field_intended_audience
       parent_name: group_binder_node_edit_form
       weight: 1
       format_type: tab
@@ -84,7 +95,7 @@ third_party_settings:
         - field_binder_appendix
         - field_downloads
       parent_name: group_binder_node_edit_form
-      weight: 7
+      weight: 2
       format_type: tab
       format_settings:
         id: ''
@@ -98,7 +109,7 @@ third_party_settings:
         - field_contact
         - field_binder_related
       parent_name: group_binder_node_edit_form
-      weight: 7
+      weight: 4
       format_type: tab
       format_settings:
         id: ''
@@ -137,6 +148,28 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: options_select
+    region: content
+  field_binder_data_type:
+    weight: 14
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        c723fce5-7805-4f8d-ad19-b30c0edecf2d:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form: {  }
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: binder
+    type: options_buttons
     region: content
   field_binder_date_published:
     weight: 7
@@ -238,6 +271,117 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_data_flag:
+    weight: 13
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        3defc5f1-92d3-45f7-8153-8b2aa228816e:
+          dependee: field_binder_binder_type
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form: {  }
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: binder
+        f4e9668e-8bc6-4305-9351-ac66e0962119:
+          dependee: field_binder_binder_type
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                target_id: '59841'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: binder
+    type: options_buttons
+    region: content
+  field_data_format:
+    weight: 16
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        6155dce8-6b2f-48b8-bd1d-d622599da9c1:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: binder
+    type: options_buttons
+    region: content
+  field_data_resource_type:
+    weight: 15
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        ab7b75cc-0db6-4b49-8e66-a44a9d6707c1:
+          dependee: field_binder_data_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                target_id: '77936'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: binder
+    type: options_buttons
+    region: content
+  field_data_topic:
+    weight: 17
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        dcff2e8c-c602-4ba8-95f8-fb0f017c9487:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: binder
+    type: options_buttons
+    region: content
   field_downloads:
     weight: 14
     settings:
@@ -259,7 +403,7 @@ content:
     type: inline_entity_form_complex
     region: content
   field_intended_audience:
-    weight: 13
+    weight: 20
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -275,7 +419,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_reusable_label:
-    weight: 14
+    weight: 19
     settings:
       match_operator: CONTAINS
       size: 60
@@ -296,24 +440,24 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 11
     settings: {  }
     region: content
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 4
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 3
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -337,18 +481,18 @@ content:
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }

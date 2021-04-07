@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.binder.field_binder_appendix
     - field.field.node.binder.field_binder_banner_image
     - field.field.node.binder.field_binder_binder_type
+    - field.field.node.binder.field_binder_data_type
     - field.field.node.binder.field_binder_date_published
     - field.field.node.binder.field_binder_last_updated
     - field.field.node.binder.field_binder_metatags
@@ -18,7 +19,12 @@ dependencies:
     - field.field.node.binder.field_binder_short_desc
     - field.field.node.binder.field_binder_volume
     - field.field.node.binder.field_contact
+    - field.field.node.binder.field_data_flag
+    - field.field.node.binder.field_data_format
+    - field.field.node.binder.field_data_resource_type
+    - field.field.node.binder.field_data_topic
     - field.field.node.binder.field_downloads
+    - field.field.node.binder.field_intended_audience
     - field.field.node.binder.field_organizations
     - field.field.node.binder.field_reusable_label
     - field.field.node.binder.field_state_organization_tax
@@ -38,6 +44,7 @@ content:
     type: basic_string
     region: content
 hidden:
+  computed_log_in_links: true
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
@@ -46,6 +53,7 @@ hidden:
   field_binder_appendix: true
   field_binder_banner_image: true
   field_binder_binder_type: true
+  field_binder_data_type: true
   field_binder_date_published: true
   field_binder_last_updated: true
   field_binder_metatags: true
@@ -56,6 +64,10 @@ hidden:
   field_binder_serial_number: true
   field_binder_volume: true
   field_contact: true
+  field_data_flag: true
+  field_data_format: true
+  field_data_resource_type: true
+  field_data_topic: true
   field_downloads: true
   field_intended_audience: true
   field_organizations: true

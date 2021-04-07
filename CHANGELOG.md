@@ -1,5 +1,56 @@
 
 
+## [0.277.0] - April 6, 2021
+
+### Changed
+  - DP-20584: Configured backstop to wait 45 seconds for tableau dashboards to load.
+  - DP-21591: Added 4 new test pages to Backstop for automated visual testing of new images styles on info details.
+  
+### Fixed
+  - DP-20992: Fixed advisory content type rendering with Title short desription view mode.
+  - DP-21457: Fixed the htmlspecialchars() PHP warning for iframe paragraph captions.
+  - DP-21589: Added migration to set new, required image wrapping values for image paragraphs that do not have captions.
+  
+### Added
+  - DP-21300: Added Data Topic Taxonomy and Topic and Sub Topic fields for Data Tab.
+  
+
+
+## [0.276.0] - March 30, 2021
+
+### Added
+  - DP-19675: Support WYSIWYG textareas with the "Pages Linking Here" functionality.
+  - DP-20411: Add data fields to binder content type and set up meta data output with the fields.
+  
+### Changed
+  - DP-20722: Modify image section on info page to allow text wrapping.
+  - DP-21583: Updated Mayflower version to 11.3.0.
+  - DP-21549: Add check to see if TOC is actually displayed before initializing. (MF)
+  - DP-20722: Changed figure image atom to work similar to dataviz. (MF)
+  
+### Fixed
+  - DP-21586: Added missing Header Media migration and Backstop testing failures for image captions.
+  
+
+
+## [0.275.0] - March 23, 2021
+
+### Changed
+  - DP-19363: Updated key, encrypt, tfa, real_aes, and ga_login modules
+  - DP-21454: Added --no-tablespaces option during sql:dump
+  - DP-21534: Updated Mayflower version to 11.2.2.
+  - DP-20435: Fix Callout Links alignment in key actions (promoted results in search.mass.gov). (MF)
+  
+### Fixed
+  - DP-21249: Updated asset_cache_bust module to prevent warnings.
+  - DP-21459: Fixes the missing icon in the document insert wysiwg tool.
+  - DP-21464: Rich Text images set to half-width with no alignment now have a width of 50%.
+  
+### Added
+  - DP-21249: Re-add cache bust querystring param to aggregated CSS and JS.
+  
+
+
 ## [0.274.0] - March 16, 2021
 
 ### Fixed
