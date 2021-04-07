@@ -8,6 +8,7 @@
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\NodeInterface;
 use Drupal\user\Entity\User;
+use Drupal\taxonomy\Entity\Term;
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
@@ -28,7 +29,7 @@ function mass_entityreference_form_node_form_alter(&$form, FormStateInterface $f
     $org_item = $org->first()->getValue();
     if (isset($org_item['target_id'])) {
       $org_id = $org_item['target_id'];
-      $org_term = Drupal\taxonomy\Entity\Term::load($org_id);
+      $org_term = Term::load($org_id);
 
       // Auto-Populate organization field.
       if (isset($form['field_state_organization_tax'])) {
