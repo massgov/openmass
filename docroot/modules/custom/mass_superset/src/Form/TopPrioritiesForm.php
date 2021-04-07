@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_superset\Form;
 
+use Drupal\Core\Database\Query\Condition;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -383,7 +384,7 @@ class TopPrioritiesForm extends FormBase {
     $query->condition('m.score', 3, '<');
     $query->isNotNull('m.score');
     // If content isn't flagged snooze or the snooze is outdated.
-    $or = db_or();
+    $or = new Condition('OR');
     $or->isNull('s.entity_id');
     $or->condition('s.last_updated', $date_range, '<=');
     $query->condition($or);

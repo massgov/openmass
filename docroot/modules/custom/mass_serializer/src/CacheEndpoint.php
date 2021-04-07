@@ -3,6 +3,8 @@
 namespace Drupal\mass_serializer;
 
 use Drupal\Core\File\FileSystemInterface;
+use Psr\Log\LoggerInterface;
+use Consolidation\SiteAlias\SiteAliasManager;
 use Drupal\views\Views;
 use Drush\Drush;
 use Exception;
@@ -45,6 +47,39 @@ class CacheEndpoint {
    * @var string
    */
   protected $displayNoHeaders = 'rest_export_1';
+
+  /**
+   * The display id of the view with no headers.
+   *
+   * @var \Drupal\mass_serializer\RenderEndpoint
+   */
+  protected $renderEndpoint;
+
+  /**
+   * The display id of the view with no headers.
+   *
+   * @var \Consolidation\SiteAlias\SiteAliasManager
+   */
+  protected $aliasManager;
+
+  /**
+   * The display id of the view with no headers.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected $logger;
+
+  /**
+   * Constructs a new CacheEndpoint object.
+   *
+   * @param \Drupal\mass_serializer\RenderEndpoint
+   *   Render Endpoint service.
+   */
+  public function __construct(RenderEndpoint $render_endpoint) {
+    $this->renderEndpoint = $render_endpoint;
+    $this->aliasManager = Drush::service('site.alias.manager');
+    $this->logger = Drush::service('logger');
+  }
 
   /**
    * Retrieve the file name based on $args.
@@ -100,28 +135,28 @@ class CacheEndpoint {
    *   Arguments to supply to the view.
    */
   public function cacheSave($api, array $args) {
-    $self = Drush::aliasManager()->getSelf();
+    $self = $this->aliasManager->getSelf();
     try {
       \Drupal::service('file_system')->prepareDirectory($this->publicDirectory, FileSystemInterface::CREATE_DIRECTORY);
       if (!\Drupal::service('file_system')->prepareDirectory($this->publicDirectory)) {
-        Drush::logger()->error($this->publicDirectory . 'does not exist or is not writeable.');
+        $this->logger->error($this->publicDirectory . 'does not exist or is not writeable.');
         return;
       }
 
-      Drush::logger()->success('Beginning processing for endpoint (this could take a while)');
+      $this->logger->success('Beginning processing for endpoint (this could take a while)');
 
       $count = $this->countRows($args[0]);
 
       // Message on zero items. Still generate the cache file.
       if (!$count) {
-        Drush::logger()->success('Zero items in feed.');
+        $this->logger->success('Zero items in feed.');
       }
 
       // If the feed is only one page, simply save the file directly to public files.
       if ($this->itemsPerPage >= $count) {
         $filename = $this->cacheName($api, $args, TRUE);
         $this->renderPartial($api, $this->display, $filename, $args, TRUE);
-        Drush::logger()->success('Single page finished. ' . $filename . ' saved.');
+        $this->logger->success('Single page finished. ' . $filename . ' saved.');
         return;
       }
 
@@ -129,7 +164,7 @@ class CacheEndpoint {
       $this->setDbTimeout();
 
       // If the feed has multiple pages create temp files per page.
-      Drush::logger()->success($count . ' items, starting batches of ' . $this->itemsPerPage . '.');
+      $this->logger->success($count . ' items, starting batches of ' . $this->itemsPerPage . '.');
       $filenames = [];
       for ($offset = 0; $offset < $count; $offset += $this->itemsPerPage) {
         $filename = $this->cacheName($api, $args, FALSE, $offset);
@@ -150,7 +185,7 @@ class CacheEndpoint {
       $process->mustRun();
     }
     catch (Exception $e) {
-      Drush::logger()->error('Exception: ' . $e->getMessage());
+      $this->logger->error('Exception: ' . $e->getMessage());
     }
   }
 
@@ -164,7 +199,7 @@ class CacheEndpoint {
         ->execute();
     }
     catch (Exception $e) {
-      Drush::logger()->error($e->getMessage());
+      $this->logger->error($e->getMessage());
     }
   }
 
@@ -208,7 +243,7 @@ class CacheEndpoint {
       throw new Exception('No view returned by this machine name: ' . $api);
     }
 
-    Drush::logger()->success('View with offset: ' . $offset);
+    $this->logger->success('View with offset: ' . $offset);
 
     $view->setItemsPerPage($this->itemsPerPage);
     $view->setOffset($offset);
@@ -216,7 +251,7 @@ class CacheEndpoint {
     $preview = $view->preview($display, $args);
 
     $file = file_save_data(strval($preview['#markup']), $filename, FileSystemInterface::EXISTS_REPLACE);
-    Drush::logger()->success('Saving partial ' . $filename);
+    $this->logger->success('Saving partial ' . $filename);
   }
 
   /**
@@ -238,8 +273,7 @@ class CacheEndpoint {
     $result->dataset = $data;
 
     file_save_data(json_encode($result), $cachename, FileSystemInterface::EXISTS_REPLACE);
-
-    Drush::logger()->success('All pages combined. ' . count($data) . ' rows. ' . $cachename . ' saved.');
+    $this->logger->info('All pages combined. ' . count($data) . ' rows. ' . $cachename . ' saved.');
   }
 
 }

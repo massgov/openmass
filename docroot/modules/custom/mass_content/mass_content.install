@@ -929,9 +929,10 @@ function mass_content_update_8011() {
  * This runs entity updates that did not properly get run after
  * the switch from media_entity to core media.
  */
-function mass_content_update_8012() {
-  Drupal::entityDefinitionUpdateManager()->applyupdates();
-}
+// This function is commented out because the applyupdates method is depricated.
+//function mass_content_update_8012() {
+//  Drupal::entityDefinitionUpdateManager()->applyupdates();
+//}
 
 /**
  * Even more fixes for media entity.
