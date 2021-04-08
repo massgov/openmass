@@ -1,46 +1,12 @@
-/**
- * @file
- * Iframe resizer iframe script.
- * @see https://jacobfilipp.com/iframe-height-autoresize-crossdomain/
- */
-
-function getDimensions() {
-  'use strict';
-
-  var height = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
-
-  return {
-    width: window.innerWidth,
-    height: height
-  };
-}
-
-function sendDimensionsToParent() {
-  'use strict';
-
-
-  window.parent.postMessage(getDimensions, '*');
-}
-
-window.addEventListener('load', function () {
-  'use strict';
-
-  window.parent.postMessage(getDimensions, '*');
-
-  if (window.MutationObserver) {
-    var observer = new MutationObserver(sendDimensionsToParent);
-    var config = {
-      attributes: true,
-      attributeOldValue: false,
-      characterData: true,
-      characterDataOldValue: false,
-      childList: true,
-      subtree: true
-    };
-
-    observer.observe(document.body, config);
+let height;
+const sendPostMessage = () => {
+  if (height !== document.body.offsetHeight) {
+    height = document.body.offsetHeight;
+    window.parent.postMessage({
+      iframeHeight: height
+    }, '*');
+    console.log(height) // check the message is being sent correctly
   }
-  else {
-    window.setInterval(sendDimensionsToParent, 300);
-  }
-});
+}
+window.onload = () => sendPostMessage();
+window.onresize = () => sendPostMessage();
