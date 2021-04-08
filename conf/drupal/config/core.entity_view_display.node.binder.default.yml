@@ -21,6 +21,7 @@ dependencies:
     - field.field.node.binder.field_data_flag
     - field.field.node.binder.field_data_format
     - field.field.node.binder.field_data_resource_type
+    - field.field.node.binder.field_data_topic
     - field.field.node.binder.field_downloads
     - field.field.node.binder.field_intended_audience
     - field.field.node.binder.field_organizations
@@ -29,7 +30,6 @@ dependencies:
     - node.type.binder
   module:
     - datetime
-    - dynamic_entity_reference
     - entity_reference_revisions
     - image
     - link
@@ -209,6 +209,14 @@ content:
     region: content
   field_data_resource_type:
     weight: 26
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_data_topic:
+    weight: 23
     label: above
     settings:
       link: true
