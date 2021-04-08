@@ -7,7 +7,7 @@ window.onmessage = (e) => {
     const iframe = item.querySelector('iframe');
     if (e.data.hasOwnProperty("iframeHeight")) {
       if (e.data.iframeSrc === iframe.src) {
-        iframe.height = `${e.data.iframeHeight}px`;
+        iframe.height = `${e.data.iframeHeight + 30}px`;
       }
     }
   });
