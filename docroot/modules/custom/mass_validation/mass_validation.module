@@ -1636,8 +1636,8 @@ function _mass_validation_form_node_info_details_form_validate(array &$form, For
         if (isset($paragraph['subform']['field_caspio_data_identifier'])) {
           foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
             if (!empty($caspioId)) {
-              if (!preg_match('/^[a-z0-9]*$/', $caspioId['value'])) {
-                $form_state->setErrorByName('field_info_details_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform][field_caspio_data_identifier', t('Only letters and numbers are allowed. See help text for this field.'));
+              if (!preg_match('/^http(s)?:\/\/\w+\.caspio\.(com)(\/.*|$)/', $caspioId['value'])) {
+                $form_state->setErrorByName('field_info_details_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform][field_caspio_data_identifier', t('Only caspio.com URL allowed. See help text for this field.'));
               }
             }
           }
