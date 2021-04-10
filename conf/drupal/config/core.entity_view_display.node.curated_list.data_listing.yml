@@ -1,0 +1,97 @@
+uuid: 1e0be7cb-9f0c-4bfa-9831-63d869d83f3f
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.data_listing
+    - field.field.node.curated_list.field_contact
+    - field.field.node.curated_list.field_curatedlist_lede
+    - field.field.node.curated_list.field_curatedlist_list_section
+    - field.field.node.curated_list.field_curatedlist_metatags
+    - field.field.node.curated_list.field_curatedlist_overview
+    - field.field.node.curated_list.field_data_flag
+    - field.field.node.curated_list.field_data_format
+    - field.field.node.curated_list.field_data_topic
+    - field.field.node.curated_list.field_intended_audience
+    - field.field.node.curated_list.field_list_data_type
+    - field.field.node.curated_list.field_list_directory_section
+    - field.field.node.curated_list.field_list_type
+    - field.field.node.curated_list.field_organizations
+    - field.field.node.curated_list.field_related_links
+    - field.field.node.curated_list.field_reusable_label
+    - field.field.node.curated_list.field_state_organization_tax
+    - node.type.curated_list
+  module:
+    - options
+    - user
+id: node.curated_list.data_listing
+targetEntityType: node
+bundle: curated_list
+mode: data_listing
+content:
+  field_curatedlist_lede:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_data_flag:
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_data_format:
+    weight: 4
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_list_data_type:
+    weight: 3
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_organizations:
+    type: entity_reference_label
+    weight: 0
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  computed_log_in_links: true
+  computed_related_to: true
+  content_moderation_control: true
+  extra_node_pager: true
+  extra_org_feedback_form: true
+  extra_sidebar_contact: true
+  field_contact: true
+  field_curatedlist_list_section: true
+  field_curatedlist_metatags: true
+  field_curatedlist_overview: true
+  field_data_topic: true
+  field_intended_audience: true
+  field_list_directory_section: true
+  field_list_type: true
+  field_related_links: true
+  field_reusable_label: true
+  field_state_organization_tax: true
+  links: true
+  page_next: true
+  page_previous: true
+  referencing_binders: true
+  search_api_excerpt: true

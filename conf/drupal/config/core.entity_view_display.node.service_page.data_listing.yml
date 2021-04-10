@@ -1,0 +1,155 @@
+uuid: 16626624-b0b7-429b-98a1-0c16cf160972
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.data_listing
+    - field.field.node.service_page.field_data_flag
+    - field.field.node.service_page.field_data_format
+    - field.field.node.service_page.field_data_resource_type
+    - field.field.node.service_page.field_data_topic
+    - field.field.node.service_page.field_event_quantity
+    - field.field.node.service_page.field_image_credit
+    - field.field.node.service_page.field_intended_audience
+    - field.field.node.service_page.field_kpi_pl_avg_cl_comp_time
+    - field.field.node.service_page.field_kpi_pl_cl_app_starts
+    - field.field.node.service_page.field_kpi_pl_cl_app_subs
+    - field.field.node.service_page.field_kpi_pl_cl_task_rate
+    - field.field.node.service_page.field_kpi_pl_em_app_review_rate
+    - field.field.node.service_page.field_kpi_pl_em_app_review_time
+    - field.field.node.service_page.field_kpi_pl_em_app_reviews
+    - field.field.node.service_page.field_kpi_sessions_clicks_pl_pct
+    - field.field.node.service_page.field_link_group
+    - field.field.node.service_page.field_list_data_type
+    - field.field.node.service_page.field_location_button_label
+    - field.field.node.service_page.field_location_button_short_desc
+    - field.field.node.service_page.field_log_in_links
+    - field.field.node.service_page.field_organizations
+    - field.field.node.service_page.field_ref_contact_info
+    - field.field.node.service_page.field_related_organization_type
+    - field.field.node.service_page.field_reusable_label
+    - field.field.node.service_page.field_service_bg_narrow
+    - field.field.node.service_page.field_service_bg_wide
+    - field.field.node.service_page.field_service_body
+    - field.field.node.service_page.field_service_eligibility_info
+    - field.field.node.service_page.field_service_file
+    - field.field.node.service_page.field_service_key_info_links_6
+    - field.field.node.service_page.field_service_kpi_choice
+    - field.field.node.service_page.field_service_lede
+    - field.field.node.service_page.field_service_links
+    - field.field.node.service_page.field_service_metatags
+    - field.field.node.service_page.field_service_offered_by
+    - field.field.node.service_page.field_service_ref_actions
+    - field.field.node.service_page.field_service_ref_actions_2
+    - field.field.node.service_page.field_service_ref_guide_page_1
+    - field.field.node.service_page.field_service_ref_locations
+    - field.field.node.service_page.field_service_ref_services_6
+    - field.field.node.service_page.field_service_video
+    - field.field.node.service_page.field_services_social_links
+    - field.field.node.service_page.field_state_organization_tax
+    - field.field.node.service_page.field_template
+    - node.type.service_page
+  module:
+    - options
+    - user
+id: node.service_page.data_listing
+targetEntityType: node
+bundle: service_page
+mode: data_listing
+content:
+  field_data_flag:
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_data_format:
+    weight: 5
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_data_resource_type:
+    weight: 4
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_list_data_type:
+    weight: 3
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_organizations:
+    type: entity_reference_label
+    weight: 0
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_service_lede:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  extra_node_all_actions: true
+  extra_org_feedback_form: true
+  field_data_topic: true
+  field_event_quantity: true
+  field_image_credit: true
+  field_intended_audience: true
+  field_kpi_pl_avg_cl_comp_time: true
+  field_kpi_pl_cl_app_starts: true
+  field_kpi_pl_cl_app_subs: true
+  field_kpi_pl_cl_task_rate: true
+  field_kpi_pl_em_app_review_rate: true
+  field_kpi_pl_em_app_review_time: true
+  field_kpi_pl_em_app_reviews: true
+  field_kpi_sessions_clicks_pl_pct: true
+  field_link_group: true
+  field_location_button_label: true
+  field_location_button_short_desc: true
+  field_log_in_links: true
+  field_ref_contact_info: true
+  field_related_organization_type: true
+  field_reusable_label: true
+  field_service_bg_narrow: true
+  field_service_bg_wide: true
+  field_service_body: true
+  field_service_eligibility_info: true
+  field_service_file: true
+  field_service_key_info_links_6: true
+  field_service_kpi_choice: true
+  field_service_links: true
+  field_service_metatags: true
+  field_service_offered_by: true
+  field_service_ref_actions: true
+  field_service_ref_actions_2: true
+  field_service_ref_guide_page_1: true
+  field_service_ref_locations: true
+  field_service_ref_services_6: true
+  field_service_video: true
+  field_services_social_links: true
+  field_state_organization_tax: true
+  field_template: true
+  links: true
+  search_api_excerpt: true

@@ -1,0 +1,29 @@
+uuid: a333b006-739d-44ab-9862-48a263fa7017
+langcode: en
+status: true
+dependencies:
+  config:
+    - facets.facet.data_topic
+  module:
+    - facets
+    - system
+  theme:
+    - mass_theme
+id: datatopic
+theme: mass_theme
+region: content
+weight: 0
+provider: null
+plugin: 'facet_block:data_topic'
+settings:
+  id: 'facet_block:data_topic'
+  label: 'Filter by Topic'
+  provider: facets
+  label_display: visible
+  block_id: datatopic
+visibility:
+  request_path:
+    id: request_path
+    pages: /data-listing-all
+    negate: false
+    context_mapping: {  }

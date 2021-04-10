@@ -1,8 +1,9 @@
-uuid: 95f548f0-4891-49f2-afab-95b99e5185f9
+uuid: cdb4704c-a110-4390-8fdb-a2b3d1c8f1d8
 langcode: en
 status: true
 dependencies:
   config:
+    - core.entity_view_mode.node.data_listing
     - field.field.node.service_details.field_data_flag
     - field.field.node.service_details.field_data_format
     - field.field.node.service_details.field_data_resource_type
@@ -20,59 +21,29 @@ dependencies:
     - field.field.node.service_details.field_state_organization_tax
     - node.type.service_details
   module:
-    - entity_reference_revisions
-    - mass_content
-    - metatag
     - options
-    - text
     - user
-id: node.service_details.default
+id: node.service_details.data_listing
 targetEntityType: node
 bundle: service_details
-mode: default
+mode: data_listing
 content:
-  computed_related_to:
-    type: entity_reference_label
-    weight: 10
-    region: content
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-  content_moderation_control:
-    weight: 0
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  extra_org_feedback_form:
-    weight: 11
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   field_data_flag:
-    weight: 12
+    type: list_default
+    weight: 2
+    region: content
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
-    region: content
   field_data_format:
-    weight: 15
+    weight: 5
     label: above
     settings: {  }
     third_party_settings: {  }
     type: list_default
     region: content
   field_data_resource_type:
-    weight: 14
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    type: entity_reference_label
-    region: content
-  field_data_topic:
-    weight: 18
+    weight: 4
     label: above
     settings:
       link: true
@@ -80,85 +51,29 @@ content:
     type: entity_reference_label
     region: content
   field_details_data_type:
-    weight: 13
+    weight: 3
     label: above
     settings:
       link: true
     third_party_settings: {  }
     type: entity_reference_label
-    region: content
-  field_intended_audience:
-    weight: 9
-    label: hidden
-    settings: {  }
-    third_party_settings: {  }
-    type: list_default
     region: content
   field_organizations:
     type: entity_reference_label
-    weight: 8
+    weight: 0
     region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
-  field_service_detail_contact:
-    weight: 6
-    label: above
-    settings:
-      view_mode: contact_collapsed
-      link: false
-    third_party_settings: {  }
-    type: entity_reference_entity_view
-    region: content
   field_service_detail_lede:
-    weight: 2
+    weight: 1
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
     type: string
     region: content
-  field_service_detail_links_5:
-    weight: 4
-    label: above
-    settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
-    third_party_settings: {  }
-    type: dynamic_link_separate
-    region: content
-  field_service_detail_metatags:
-    weight: 7
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-    type: metatag_empty_formatter
-    region: content
-  field_service_detail_overview:
-    weight: 5
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-    type: text_default
-    region: content
-  field_service_detail_sections:
-    type: entity_reference_revisions_entity_view
-    weight: 3
-    label: above
-    settings:
-      view_mode: default
-      link: ''
-    third_party_settings: {  }
-    region: content
-  links:
-    weight: 1
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   workbench_moderation_control:
     weight: 0
     region: content
@@ -166,6 +81,17 @@ content:
     third_party_settings: {  }
 hidden:
   computed_log_in_links: true
+  computed_related_to: true
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  field_data_topic: true
+  field_intended_audience: true
   field_reusable_label: true
+  field_service_detail_contact: true
+  field_service_detail_links_5: true
+  field_service_detail_metatags: true
+  field_service_detail_overview: true
+  field_service_detail_sections: true
   field_state_organization_tax: true
+  links: true
   search_api_excerpt: true

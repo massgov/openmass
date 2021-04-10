@@ -1,0 +1,50 @@
+uuid: bdf9653a-38bc-488b-b19b-1e105aef9f37
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_data_topic
+    - search_api.server.drupal_database
+  module:
+    - search_api
+    - node
+id: data_topic
+name: 'Data Topic'
+description: ''
+read_only: false
+field_settings:
+  field_data_topic:
+    label: 'Data topic'
+    datasource_id: 'entity:node'
+    property_path: field_data_topic
+    type: integer
+    dependencies:
+      config:
+        - field.storage.node.field_data_topic
+datasource_settings:
+  'entity:node':
+    bundles:
+      default: false
+      selected:
+        - binder
+        - curated_list
+        - external_data_resource
+        - info_details
+        - service_details
+        - service_page
+    languages:
+      default: true
+      selected: {  }
+processor_settings:
+  add_url: {  }
+  aggregated_field: {  }
+  entity_status: {  }
+  language_with_fallback: {  }
+  rendered_item: {  }
+tracker_settings:
+  default:
+    indexing_order: fifo
+options:
+  index_directly: true
+  cron_limit: 50
+server: drupal_database
