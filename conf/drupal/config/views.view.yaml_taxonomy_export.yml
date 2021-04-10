@@ -161,17 +161,14 @@ display:
           clear_on_exposed: false
           action_title: Action
           selected_actions:
-            export_view_content_yaml: export_view_content_yaml
-            views_bulk_operations_delete_entity: views_bulk_operations_delete_entity
-            pathauto_update_alias: 0
-            'entity:save_action:taxonomy_term': 0
-            'entity:unpublish_action:taxonomy_term': 0
-            'entity:publish_action:taxonomy_term': 0
-          preconfiguration:
-            export_view_content_yaml:
-              label_override: ''
-            views_bulk_operations_delete_entity:
-              label_override: ''
+            -
+              action_id: export_view_content_yaml
+              preconfiguration:
+                label_override: ''
+            -
+              action_id: views_bulk_operations_delete_entity
+              preconfiguration:
+                label_override: ''
           plugin_id: views_bulk_operations_bulk_form
         name:
           id: name
