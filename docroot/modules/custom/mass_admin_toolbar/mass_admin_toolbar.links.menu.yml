@@ -44,6 +44,12 @@ mass_admin_toolbar.reports_menu:
 
 mass_admin_toolbar.orgs_report:
   title: "Pages that don't have a public organization"
-  description: "These pages should have a related organization i a public state. Because this data is missing, there is no organization shown on the published pages."
+  description: "These pages should have a related organization in a public state. Because this data is missing, there is no organization shown on the published pages."
   route_name: view.content_reports.page_orgs
+  parent: mass_admin_toolbar.reports_menu
+
+mass_admin_toolbar.orphan_content_report:
+  title: "Orphaned Content"
+  description: "These pages are not linked to from other pages. If you visit the 'Pages Linking Here' tab for a given page, there will be nothing listed."
+  route_name: view.content_reports_orphaned.page_1
   parent: mass_admin_toolbar.reports_menu
