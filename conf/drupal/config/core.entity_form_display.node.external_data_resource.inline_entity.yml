@@ -6,11 +6,13 @@ dependencies:
     - core.entity_form_mode.node.inline_entity
     - field.field.node.external_data_resource.field_data_format
     - field.field.node.external_data_resource.field_data_resource_type
+    - field.field.node.external_data_resource.field_data_topic
     - field.field.node.external_data_resource.field_details_data_type
     - field.field.node.external_data_resource.field_externaldata_description
     - field.field.node.external_data_resource.field_externaldata_url
     - field.field.node.external_data_resource.field_organizations
     - node.type.external_data_resource
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -40,6 +42,8 @@ third_party_settings:
         - field_details_data_type
         - field_data_resource_type
         - field_data_format
+        - field_data_topic
+        - field_data_sub_topic
       parent_name: group_externaldata_edit_form
       weight: 0
       format_type: tab
@@ -103,6 +107,12 @@ content:
           bundle: external_data_resource
     type: options_buttons
     region: content
+  field_data_topic:
+    type: options_buttons
+    weight: 15
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_details_data_type:
     weight: 12
     settings: {  }
