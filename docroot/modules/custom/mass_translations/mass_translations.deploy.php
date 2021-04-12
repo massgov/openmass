@@ -12,11 +12,11 @@ use Drupal\taxonomy\TermInterface;
  */
 function mass_translations_deploy_language_terms(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+  $_ENV['MASS_MEDIA_PRESAVE_BYPASS'] = TRUE;
 
   $english_target_id = 8876;
 
   $query = \Drupal::entityQuery('media')
-    ->condition('status', 1)
     ->condition('bundle', 'document')
     ->condition('field_language.target_id', $english_target_id, "!=")
     ->condition('field_upload_file.target_id', '', '!=');
