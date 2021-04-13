@@ -18,9 +18,6 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
       'type' => 'org_page',
       'title' => 'Test Org Page',
     ]);
-    $langcodes = \Drupal::languageManager()->getLanguages();
-    unset($langcodes['en']);
-    $langcode = array_rand($langcodes);
     $node = $this->createNode([
       'type' => 'service_details',
       'title' => 'Test Service Details',
@@ -31,9 +28,24 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
       'field_organizations' => [$org_node],
       'moderation_state' => 'published',
     ]);
+
+    return $node;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getTranslation($node): ContentEntityInterface {
+    $org_node = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Test Org Page',
+    ]);
+    $langcodes = \Drupal::languageManager()->getLanguages();
+    unset($langcodes['en']);
+    $langcode = array_rand($langcodes);
     $translation = $this->createNode([
       'type' => 'service_details',
-      'title' => 'Test Service Details',
+      'title' => 'Test Service Details Translation',
       'langcode' => $langcode,
       'field_english_version' => [$node],
       'field_service_detail_lede' => [
@@ -48,36 +60,31 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
   }
 
   /**
-   * Retrieve the href value for translated link.
-   */
-  public function testHasTranslationLink() {
-    $this->loggedInUser = TRUE;
-    $entity = $this->getContent();
-    $this->drupalGet($entity->toUrl());
-    $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Entity page was loadable');
-    $page = $this->getSession()->getPage();
-
-    if ($element = $page->find('css', 'link[hreflang="' . $entity->language()->getId() . '"]')) {
-      return $element->getAttribute('href');
-    }
-    throw new \Exception(sprintf('No translation link was found'));
-  }
-
-  /**
-   * Retrieve the href value for default translated link.
+   * Check for the default link value on translated content.
    */
   public function testHasDefaultTranslationLink() {
     $this->loggedInUser = TRUE;
     $entity = $this->getContent();
+    $translation = $this->getTranslation($entity);
+    $this->drupalGet($translation->toUrl());
+    $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Entity page was loadable');
+    $page = $this->getSession()->getPage();
+    $element = $page->find('css', 'link[hreflang="x-default"]')->getAttribute('href');
+    $this->assertEqual($element, $entity->toUrl()->setOption('language', $entity->language())->setAbsolute()->toString());
+  }
+
+  /**
+   * Check for the translated hreflang value on non-translated content.
+   */
+  public function testHasTranslationLink() {
+    $this->loggedInUser = TRUE;
+    $entity = $this->getContent();
+    $translation = $this->getTranslation($entity);
     $this->drupalGet($entity->toUrl());
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Entity page was loadable');
     $page = $this->getSession()->getPage();
-
-    if ($element = $page->find('css', 'link[hreflang="x-default"]')) {
-      return $element->getAttribute('href');
-    }
-    throw new \Exception(sprintf('No translation link was found'));
+    $element = $page->find('css', 'link[hreflang="' . $translation->language()->getId() . '"]');
+    $this->assertNotEmpty($element, 'No hreflang value found for translation on the English page.');
   }
 
 }
-
