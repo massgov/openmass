@@ -364,7 +364,7 @@ function mass_utility_form_revision_overview_form_alter(&$form, FormStateInterfa
           // Skip adding a contact link for this revision if the user doesn't have the ability to use it.
         }
         $row['revision']['#template'] .= '{{ contact }}';
-        $row['revision']['#context']['contact'] = Link::fromTextAndUrl('Contact this author', $contact_url);
+        $row['revision']['#context']['contact'] = Link::fromTextAndUrl('Contact this author', $contact_url)->toString();
       }
     }
   }

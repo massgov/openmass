@@ -224,7 +224,7 @@ class SchedulerMediaManager {
         $mediatype_url = Url::fromRoute('entity.media_type.edit_form', ['media_type' => $media->bundle()]);
         // @TODO: \Drupal calls should be avoided in classes.
         // Replace \Drupal::l with dependency injection?
-        $mediatype_link = Link::fromTextAndUrl($media->bundle() . ' ' . t('settings'), $mediatype_url);
+        $mediatype_link = Link::fromTextAndUrl($media->bundle() . ' ' . t('settings'), $mediatype_url)->toString();
         $logger_variables = [
           '@type' => $media->bundle(),
           '%title' => $media->label(),
@@ -400,7 +400,7 @@ class SchedulerMediaManager {
         $mediatype_url = Url::fromRoute('entity.media_type.edit_form', ['media_type' => $media->bundle()]);
         // @TODO: \Drupal calls should be avoided in classes.
         // Replace \Drupal::l with dependency injection?
-        $mediatype_link = Link::fromTextAndUrl($media->bundle() . ' ' . t('settings'), $mediatype_url);
+        $mediatype_link = Link::fromTextAndUrl($media->bundle() . ' ' . t('settings'), $mediatype_url)->toString();
         $logger_variables = [
           '@type' => $media_bundle->label(),
           '%title' => $media->label(),
@@ -529,7 +529,7 @@ class SchedulerMediaManager {
     if ($log) {
       // @TODO: \Drupal calls should be avoided in classes.
       // Replace \Drupal::l with dependency injection?
-      $this->logger->notice('Lightweight cron run completed.', ['link' => Link::fromTextAndUrl(t('settings'), Url::fromRoute('scheduler.cron_form'))]);
+      $this->logger->notice('Lightweight cron run completed.', ['link' => Link::fromTextAndUrl(t('settings'), Url::fromRoute('scheduler.cron_form'))->toString()]);
     }
   }
 
