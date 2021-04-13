@@ -1,4 +1,4 @@
-@api @matt
+@api
 Feature: editor Role
   As an editor,
   I want a role to be able to create / edit / delete / publish certain targeted types of content

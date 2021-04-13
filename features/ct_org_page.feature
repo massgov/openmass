@@ -1,4 +1,4 @@
-@api @matt
+@api
 Feature: Organization Landing Page Content type
   As an anonymous user,
   I want to visit an org page in order to learn more information about what

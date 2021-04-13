@@ -105,7 +105,7 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
   if (isset($form['publish_on']['widget'][0]['value']['#description'])) {
     $schedule_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/strategy/schedule-publishing-and-unpublishing');
     $form['publish_on']['widget'][0]['value']['#description'] = new FormattableMarkup('Enter a date. The time part is optional. The default time is 09:00:00. Leave the date blank for no scheduled publishing.' . ' @schedule', [
-      '@schedule' => Link::fromTextAndUrl('Learn how to schedule your content for publishing or unpublishing.', $schedule_url),
+      '@schedule' => Link::fromTextAndUrl('Learn how to schedule your content for publishing or unpublishing.', $schedule_url)->toString(),
     ]);
   }
 
@@ -113,7 +113,7 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
   if (isset($form['access_unpublished_settings'])) {
     $temporary_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/strategy/temporary-unpublished-access');
     $form['access_unpublished_settings']['description'] = [
-      '#markup' => Link::fromTextAndUrl('Need to give someone access to your unpublished work? Learn how.', $temporary_url),
+      '#markup' => Link::fromTextAndUrl('Need to give someone access to your unpublished work? Learn how.', $temporary_url)->toString(),
       '#weight' => -30,
     ];
   }
