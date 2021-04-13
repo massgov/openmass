@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Mass views module file.
+ */
+
+use Drupal\views\ViewExecutable;
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function mass_views_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() == 'content_reports' && $display_id == 'page_orgs') {
+    $nids = [];
+    // Get nids where field_organizations is empty.
+    $query = \Drupal::entityQuery('node')
+      ->notExists('field_organizations');
+    $nids_empty = $query->execute();
+
+    // Get nids where field_organizations status is unpublished.
+    $query = \Drupal::entityQuery('node')
+      ->exists('field_organizations')
+      ->condition('field_organizations.%delta.entity:node.status', '0', '=');
+    $nids_to_check = $query->execute();
+
+    if (!empty($nids_to_check)) {
+
+      // Uses above query to filter out results where one
+      // of the organisations in published.
+      $query = \Drupal::entityQuery('node')
+        ->exists('field_organizations')
+        ->condition('nid', array_values($nids_to_check), 'IN')
+        ->condition('field_organizations.%delta.entity:node.status', '1', '=');
+      $nids = $query->execute();
+    }
+    // Merge the arrays to pass to the contextual filter.
+    $nids_unpublished = array_diff(array_values($nids_to_check), array_values($nids));
+    $nids_empty = array_diff(array_values($nids_empty), $nids_unpublished);
+    $args_to_pass = array_merge($nids_empty, $nids_unpublished);
+
+    $args[0] = implode('+', $args_to_pass);
+
+  }
+}
