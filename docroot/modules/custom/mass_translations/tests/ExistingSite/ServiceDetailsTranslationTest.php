@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\mass_metatag\ExistingSite;
+namespace Drupal\Tests\mass_translations\ExistingSite;
 
 use Drupal\Core\Entity\ContentEntityInterface;
 use weitzman\DrupalTestTraits\ExistingSiteBase;

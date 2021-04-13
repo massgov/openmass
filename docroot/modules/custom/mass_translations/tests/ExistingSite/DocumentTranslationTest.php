@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\mass_metatag\ExistingSite;
+namespace Drupal\Tests\mass_translations\ExistingSite;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\file\Entity\File;
