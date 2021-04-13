@@ -132,17 +132,20 @@ function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_
 /**
  * Load a list of scheduled transitions by host entity.
  *
- * A copy of \Drupal\scheduled_transitions\ScheduledTransitionsEntityHooks::loadByHostEntity sicne that is not public+static
+ * A copy of \Drupal\scheduled_transitions\ScheduledTransitionsEntityHooks::loadByHostEntity since that is not public.
+ * Adds a state condition as well.
  *
  * @param \Drupal\Core\Entity\EntityInterface $entity
  *   Entity.
  * @param bool $revision_match
  *   TRUE to match revision too.
+ * @param string $moderation_state
+ *   Optionally limit results to a single target moderation state.
  *
  * @return \Drupal\scheduled_transitions\Entity\ScheduledTransitionInterface[]
  *   A list of scheduled transitions for the given entity.
  */
-function mass_scheduled_transitions_loadByHostEntity(EntityInterface $entity, bool $revision_match = FALSE): array {
+function mass_scheduled_transitions_loadByHostEntity(EntityInterface $entity, bool $revision_match = FALSE, $moderation_state = ''): array {
   $transitionStorage = Drupal::entityTypeManager()->getStorage('scheduled_transition');
   $query = $transitionStorage->getQuery()
     ->condition('entity.target_id', $entity->id())
@@ -150,6 +153,9 @@ function mass_scheduled_transitions_loadByHostEntity(EntityInterface $entity, bo
     ->accessCheck(FALSE);
   if ($revision_match) {
     $query->condition('entity_revision_id', $entity->getRevisionId());
+  }
+  if ($state) {
+    $query->condition('moderation_state', $moderation_state);
   }
   if ($entity instanceof TranslatableInterface && !$entity->isDefaultTranslation()) {
     $query->condition('entity_revision_langcode', $entity->language()->getId());

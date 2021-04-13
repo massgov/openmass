@@ -2,7 +2,11 @@
 
 namespace Drupal\Tests\mass_unpublish_reminders\ExistingSite;
 
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\mass_content_moderation\MassModeration;
+use Drupal\scheduled_transitions\Entity\ScheduledTransition;
 use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\workflows\Entity\Workflow;
 use DrupalTest\QueueRunnerTrait\QueueRunnerTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\DrupalTestTraits\Mail\MailCollectionAssertTrait;
@@ -86,15 +90,15 @@ class UnpublishRemindersTest extends ExistingSiteBase {
    */
   public function testUnpublishAlertReminders() {
 
-    $this->createNode([
+    $node = $this->createNode([
       'type' => 'alert',
       'title' => 'Test Alert',
       'uid' => $this->author->id(),
       'created' => strtotime('-10 days'),
       'changed' => strtotime('-9 days'),
-      'unpublish_on' => strtotime('+3 days', \Drupal::time()->getRequestTime()),
       'moderation_state' => 'published',
     ]);
+    ScheduledTransition::createFrom(Workflow::load('editorial'), MassModeration::UNPUBLISHED, $node, (new DrupalDateTime('+3 days'))->getPhpDateTime(), $this->author);
     // Look at upcoming transitions and enqueue the emails.
     mass_unpublish_reminders_cron();
     // Send the emails.
@@ -111,15 +115,16 @@ class UnpublishRemindersTest extends ExistingSiteBase {
    */
   public function testUnpublishPromotionalPageReminders() {
 
-    $this->createNode([
+    $node = $this->createNode([
       'type' => 'campaign_landing',
       'title' => 'Test Promotional Page',
       'uid' => $this->author->id(),
       'created' => strtotime('-10 days'),
       'changed' => strtotime('-9 days'),
-      'unpublish_on' => strtotime('+6 days', \Drupal::time()->getRequestTime()),
       'moderation_state' => 'published',
     ]);
+    ScheduledTransition::createFrom(Workflow::load('campaign_landing_page'), MassModeration::UNPUBLISHED, $node, (new DrupalDateTime('+6 days'))->getPhpDateTime(), $this->author);
+
 
     // Look at upcoming transitions and enqueue the emails.
     mass_unpublish_reminders_cron();

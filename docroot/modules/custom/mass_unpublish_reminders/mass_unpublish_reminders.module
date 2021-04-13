@@ -7,6 +7,8 @@
 
 use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\Entity\Node;
 
 /**
  * Implements hook_cron().
@@ -34,35 +36,36 @@ function mass_unpublish_reminders_cron() {
 }
 
 /**
- * Helper function to keep cron code simple.
+ * Helper function to keep cron hook simple.
  */
 function _mass_unpublish_reminders_cron_helper() {
   if (Database::getConnection()
     ->schema()
     ->tableExists('mass_unpublish_reminders')) {
 
+    // Get all published, alerts and campaign landing that changed more than a week ago.
     $start_timestamp = strtotime('today midnight');
     $now = strtotime('now');
     $week_ago = strtotime('-7 days midnight');
     $end_timestamp = strtotime('+8 days midnight') - 1;
-    $query = \Drupal::entityQuery('node')
+    $nid_candidates = \Drupal::entityQuery('node')
       ->condition('status', 1)
       ->condition('type', ['alert', 'campaign_landing'], 'IN')
       ->condition('changed', [
         $week_ago,
         $now,
-      ], 'NOT BETWEEN');
-    $group = $query->andConditionGroup();
-    $group->condition('created', [
-      $week_ago,
-      $now,
-    ], 'NOT BETWEEN');
-    $query->condition($group);
-    $query->condition('unpublish_on', [
-      $start_timestamp,
-      $end_timestamp,
-    ], 'BETWEEN');
-    $nids = $query->execute();
+      ], 'NOT BETWEEN')
+      ->execute();
+    foreach ($nid_candidates as $nid_candidate) {
+      $transitions = mass_scheduled_transitions_loadByHostEntity(Node::load($nid_candidate), FALSE, MassModeration::UNPUBLISHED);
+      foreach ($transitions as $transition) {
+        $timestamp = $transition->getTransitionDate()->getTimestamp();
+        if ($timestamp > $start_timestamp && $timestamp < $end_timestamp) {
+          // A future unpublish exists for this node so add it to the list.
+          $nids[] = $nid_candidate;
+        }
+      }
+    }
 
     if (!empty($nids)) {
       $database = \Drupal::database();
