@@ -2,9 +2,7 @@
 
 namespace Drupal\Tests\mass_metatag\ExistingSite;
 
-use Behat\Mink\Element\DocumentElement;
 use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Language\LanguageManager;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
@@ -82,3 +80,4 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
   }
 
 }
+
