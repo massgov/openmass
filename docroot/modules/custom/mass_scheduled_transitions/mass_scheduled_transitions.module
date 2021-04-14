@@ -154,7 +154,7 @@ function mass_scheduled_transitions_loadByHostEntity(EntityInterface $entity, bo
   if ($revision_match) {
     $query->condition('entity_revision_id', $entity->getRevisionId());
   }
-  if ($state) {
+  if ($moderation_state) {
     $query->condition('moderation_state', $moderation_state);
   }
   if ($entity instanceof TranslatableInterface && !$entity->isDefaultTranslation()) {
