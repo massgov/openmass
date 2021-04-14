@@ -43,13 +43,17 @@ dependencies:
     - workflows.workflow.editorial
   module:
     - content_moderation
+    - csv_serialization
     - mass_content_api
     - mass_superset
     - mass_views
     - node
+    - rest
+    - serialization
     - taxonomy
     - user
     - views_autocomplete_filters
+    - views_data_export
 id: content_reports_orphaned
 label: 'Content Reports Orphaned'
 module: views
@@ -1837,6 +1841,59 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:workflow_list'
+  data_export_1:
+    display_plugin: data_export
+    id: data_export_1
+    display_title: 'Data export'
+    position: 2
+    display_options:
+      display_extenders: {  }
+      path: admin/ma-dash/reports/orphaned-content-csv
+      filename: orphans.csv
+      automatic_download: false
+      redirect_path: ''
+      displays:
+        page_1: page_1
+        default: '0'
+      export_method: batch
+      export_batch_size: 25
+      style:
+        type: data_export
+        options:
+          formats:
+            csv: csv
+          csv_settings:
+            delimiter: ','
+            enclosure: '"'
+            escape_char: \
+            strip_tags: true
+            trim: true
+            encoding: utf8
+            utf8_bom: '0'
+          xls_settings:
+            xls_format: Excel2007
+            metadata:
+              creator: ''
+              last_modified_by: ''
+              title: ''
+              description: ''
+              subject: ''
+              keywords: ''
+              category: ''
+              manager: ''
+              company: ''
+    cache_metadata:
+      max-age: 0
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - request_format
+        - url
         - user
         - 'user.node_grants:view'
         - user.permissions
