@@ -141,11 +141,10 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
         $l_refs = $item->field_reusable_label->referencedEntities();
         if (!empty($l_refs)) {
           foreach ($l_refs as $l_ref) {
-            $label = (object) [
+            $labels[] = [
               'id' => $l_ref->id(),
               'name' => $l_ref->label(),
             ];
-            $labels[] = JSON::encode($label);
           }
         }
       }
