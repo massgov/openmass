@@ -262,11 +262,10 @@ function mass_content_deploy_image_section_fields_followup(&$sandbox) {
 /**
  * Migrate followup for Header Media image fields.
  */
-function mass_content_deploy_header_media_images_followup(&$sandbox, $status = 1) {
+function mass_content_deploy_header_media_images_followup(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $query = \Drupal::entityQuery('node')
-    ->condition('status', $status)
     ->condition('type', 'info_details')
     ->condition('field_info_details_header_media.entity:paragraph.field_image.target_id', "", "!=");
 
@@ -322,5 +321,5 @@ function mass_content_deploy_header_media_images_followup(&$sandbox, $status = 1
  * Migrate unpublished Header Media image wrapping fields.
  */
 function mass_content_deploy_header_media_images_unpublished(&$sandbox) {
-  mass_content_deploy_header_media_images_followup($sandbox, 0);
+  mass_content_deploy_header_media_images_followup($sandbox);
 }
