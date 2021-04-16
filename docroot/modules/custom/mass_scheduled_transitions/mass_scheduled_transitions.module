@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityInterface;
@@ -42,7 +43,7 @@ function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
 /**
  * Implements hook_ENTITY_TYPE_insert() for node entities.
  * 
- * Automatically create the required scheduled transitions.
+ * Automatically create the required scheduled transitions per our business rules.
  */
 function mass_scheduled_transitions_node_insert(NodeInterface $node) {
   if ($node->bundle() == 'alert') {
@@ -73,13 +74,15 @@ function mass_scheduled_transitions_node_insert(NodeInterface $node) {
     ->save();
   $url_edit = $transition->toUrl('reschedule-form')->toString();
   $replacements = [':url_edit' => $url_edit, '@duration' => $duration];
-  \Drupal::messenger()->addStatus(t("An unpublish transition has been scheduled for @duration days from today. <a href=\":url_edit\">Reschedule transition</a>.", $replacements));
+  // Use warning until July 4 then downgrade to status. @todo Remove after July 4.
+  $method = time() > strtotime('7/4/2021') ? 'addStatus' : 'addWarning';
+  \Drupal::messenger()->$method(t("An unpublish transition has been scheduled for @duration days from today. <a href=\":url_edit\">Reschedule transition</a>.", $replacements));
 }
 
 /**
  * Implements hook_ENTITY_TYPE_access().
  *
- * Deny deletion of scheduled transitions when their host entity requires one.
+ * Deny deletion of scheduled transitions when our business rules requires one for the content type.
  *
  * @param \Drupal\Core\Entity\EntityInterface $entity
  * @param $operation
@@ -111,12 +114,13 @@ function mass_scheduled_transitions_scheduled_transition_access(EntityInterface 
 /**
  * Implements hook_menu_local_tasks_alter().
  */
-function mass_scheduled_transitions_menu_local_tasks_alter(&$data, $route_name, &$cacheability) {
-  $a=1;
-}
+//function mass_scheduled_transitions_menu_local_tasks_alter(&$data, $route_name, &$cacheability) {
+//  $a=1;
+//}
 
 /**
- * Populate default value for the time so users don't have to complete the time element.
+ * - Populate default value for the time so users don't have to complete the time element.
+ * - Remove unwanted transitions.
 
  * Applies to the add_form.
  *
@@ -125,8 +129,57 @@ function mass_scheduled_transitions_menu_local_tasks_alter(&$data, $route_name, 
  */
 function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if (strpos($form_id, 'scheduled_transitions_add_form_form')) {
+    // Hide big revisions tableselect
+    $form['scheduled_transitions']['revision']['#access'] = FALSE;
+
+    // Set default time for better UX.
     $form['scheduled_transitions']['new_meta']['on']['#default_value'] = new DrupalDateTime("now +1 day");
+
+    // Only show 2 transitions for less cognitive load.
+    $form['scheduled_transitions']['new_meta']['transition']['#options'] = [
+      'publish' => 'Publish',
+      'unpublish' => 'Unpublish',
+    ];
+
+    // This checkbox is too confusing to show.
+    $form['scheduled_transitions']['to_options']['recreate_non_default_head']['#access'] = FALSE;
   }
+}
+
+/**
+ * Add helpful link to node edit form to ease migration.
+ *
+ * Implements hook_form_node_form_alter().
+ */
+function mass_scheduled_transitions_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  /** @var \Drupal\node\NodeInterface $node */
+  $node = $form_state->getFormObject()->getEntity();
+
+  $url = $node->toUrl('canonical')->toString() . '/scheduled-transitions';
+  $replacements = [':url' => $url];
+  $form['mass_scheduled_transitions'] = [
+    '#type' => 'details',
+    '#title' => t('Scheduling'),
+    '#group' => 'advanced',
+    '#open' => FALSE,
+    '#access' => time() < strtotime('7/4/2021'), // @todo Remove after July 4.
+    '#markup' => t('Scheduled publishing has moved to a new <em>Scheduled Transitions</em> tab, just before Analytics. <a href=":url">Go there</a>.', $replacements)
+  ];
+}
+
+
+/**
+ * Make ST modal shorter, since it no longer shows a revision table.
+ * 
+ * @param $local_actions
+ */
+function mass_scheduled_transitions_menu_local_actions_alter(&$local_actions) {
+  $options = Json::encode([
+    'width' => 900,
+    'height' => 300,
+  ]);
+  $local_actions["scheduled_transitions.actions:media.add_scheduled_transition"]["options"]["attributes"]["data-dialog-options"] = $options;
+  $local_actions["scheduled_transitions.actions:node.add_scheduled_transition"]["options"]["attributes"]["data-dialog-options"] = $options;
 }
 
 /**
