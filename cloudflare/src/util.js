@@ -76,10 +76,6 @@ export function isEditUrl(url) {
 
 
 const staticExtensions = [
-  'woff',
-  'woff2',
-  'ttf',
-  'eot',
   'gif',
   'png',
   'jpg',
@@ -93,6 +89,18 @@ const staticRegexp = new RegExp(`\.(${staticExtensions.join('|')})\$`)
 
 export function isStaticUrl(url) {
   return url.pathname.startsWith('/files') || url.pathname.match(staticRegexp)
+}
+
+const fontExtensions = [
+  'woff',
+  'woff2',
+  'ttf',
+  'eot',
+];
+const fontRegexp = new RegExp(`\.(${fontExtensions.join('|')})\$`)
+
+export function isFontUrl(url) {
+  return url.pathname.startsWith('/files') || url.pathname.match(fontRegexp)
 }
 
 export function isAlertsUrl(url) {
