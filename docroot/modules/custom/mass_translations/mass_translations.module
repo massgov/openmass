@@ -69,6 +69,8 @@ function mass_translations_page_attachments(array &$attachments) {
 
 /**
  * Implements hook_field_widget_multivalue_form_alter().
+ *
+ * Hides 'Use existing media' text.
  */
 function mass_translations_field_widget_multivalue_form_alter(array &$elements, FormStateInterface $form_state, array $context) {
   if (isset($elements['#field_name']) && $elements['#field_name'] == 'field_media_english_version') {
