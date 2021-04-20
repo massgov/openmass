@@ -163,7 +163,13 @@ function mass_media_media_access(EntityInterface $entity, $operation, AccountInt
  * - Unpublished Documents will have a private uploaded file.
  */
 function mass_media_media_presave(MediaInterface $entity) {
-  if ($entity->bundle() == 'document') {
+  // We need a way to bypass file handling when bulk updating both
+  // published and unpublished media entities, since sometimes there is a
+  // mismatch between environments that would result in failures when trying
+  // to move files that no longer exist.
+  $bypass_presave = isset($_ENV['MASS_MEDIA_PRESAVE_BYPASS']) ? (bool) $_ENV['MASS_MEDIA_PRESAVE_BYPASS'] : FALSE;
+
+  if ($entity->bundle() == 'document' && !$bypass_presave) {
     // Loads file.
     /** @var \Drupal\file\Entity\File $file */
     $file = File::load($entity->field_upload_file->target_id);
