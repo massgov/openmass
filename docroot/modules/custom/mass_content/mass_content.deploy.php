@@ -318,8 +318,8 @@ function mass_content_deploy_header_media_images_followup(&$sandbox) {
 }
 
 /**
- * Migrate unpublished Header Media image wrapping fields.
+ * Migrate both published and unpublished Header Media image wrapping fields.
  */
-function mass_content_deploy_header_media_images_unpublished(&$sandbox) {
+function mass_content_deploy_header_media_images_all(&$sandbox) {
   mass_content_deploy_header_media_images_followup($sandbox);
 }
