@@ -16,7 +16,6 @@ dependencies:
     - field.field.node.decision_tree.field_state_organization_tax
     - image.style.thumbnail
     - node.type.decision_tree
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -51,6 +50,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Decision tree'
+      region: content
     group_decision_tree_edit_form:
       children:
         - group_main
@@ -62,6 +62,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Decision Tree edit form'
+      region: content
 id: node.decision_tree.default
 targetEntityType: node
 bundle: decision_tree

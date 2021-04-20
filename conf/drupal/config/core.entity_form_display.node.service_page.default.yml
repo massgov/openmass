@@ -49,7 +49,6 @@ dependencies:
     - field.field.node.service_page.field_template
     - image.style.thumbnail
     - node.type.service_page
-    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -80,6 +79,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Service Edit Form'
+      region: content
     group_banner:
       children:
         - title
@@ -108,6 +108,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Banner
+      region: content
     group_overview:
       children:
         - field_service_body
@@ -128,6 +129,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Overview
+      region: content
     group_tasks_key_info:
       children:
         - group_what_would_you_like_to_do_
@@ -143,6 +145,7 @@ third_party_settings:
         description: 'This is where you add items to the “What would you like to do?” section.'
         required_fields: true
       label: 'Tasks and key info'
+      region: content
     group_map:
       children:
         - field_service_ref_locations
@@ -159,6 +162,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Map
+      region: content
     group_additional_info:
       children:
         - field_event_quantity
@@ -174,6 +178,7 @@ third_party_settings:
         description: 'Optional. Add other resources that are less critical but may be helpful to users of this service.'
         required_fields: true
       label: 'Additional info'
+      region: content
     group_what_would_you_like_to_do_:
       children:
         - field_service_ref_actions_2
@@ -188,6 +193,7 @@ third_party_settings:
         id: what-would-you-like-to-do
         classes: ''
       label: 'What would you like to do?'
+      region: content
     group_what_you_need_to_know:
       children:
         - field_service_key_info_links_6
@@ -201,6 +207,7 @@ third_party_settings:
         id: what-you-need-to-know
         classes: ''
       label: 'What you need to know'
+      region: content
     group_additional_resources:
       children:
         - field_service_links
@@ -215,6 +222,7 @@ third_party_settings:
         id: additional-resources
         classes: ''
       label: 'Additional resources'
+      region: content
     group_key_performance_indicators:
       children:
         - field_service_kpi_choice
@@ -237,6 +245,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Service Family Key Indicators'
+      region: content
 id: node.service_page.default
 targetEntityType: node
 bundle: service_page

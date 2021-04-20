@@ -47,6 +47,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Curated list edit form'
+      region: content
     group_overview:
       children:
         - field_list_type
@@ -60,20 +61,19 @@ third_party_settings:
         - field_list_data_type
         - field_data_format
         - field_data_topic
-        - field_data_sub_topic
         - field_intended_audience
         - field_reusable_label
       parent_name: group_curated_list_edit_form
       weight: 8
       format_type: tab
       format_settings:
-        label: Overview
         formatter: open
         description: ''
         required_fields: true
         id: ''
         classes: ''
       label: Overview
+      region: content
     group_sections:
       children:
         - field_curatedlist_list_section
@@ -82,12 +82,13 @@ third_party_settings:
       weight: 9
       format_type: tab
       format_settings:
+        description: ''
+        formatter: closed
+        required_fields: true
         id: ''
         classes: ''
-        formatter: open
-        description: ''
-        required_fields: true
       label: Sections
+      region: content
     group_related:
       children:
         - field_contact
@@ -96,12 +97,13 @@ third_party_settings:
       weight: 10
       format_type: tab
       format_settings:
+        description: ''
+        formatter: closed
+        required_fields: true
         id: ''
         classes: ''
-        formatter: open
-        description: ''
-        required_fields: true
       label: Related
+      region: content
 id: node.curated_list.default
 targetEntityType: node
 bundle: curated_list
