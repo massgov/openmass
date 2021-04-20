@@ -6,6 +6,8 @@ dependencies:
     - field.storage.media.field_language
     - media.type.document
     - taxonomy.vocabulary.language
+  content:
+    - 'taxonomy_term:language:962a0522-8090-453d-9880-654463772f0b'
 id: media.document.field_language
 field_name: field_language
 entity_type: media
@@ -14,7 +16,9 @@ label: Language
 description: ''
 required: false
 translatable: false
-default_value: {  }
+default_value:
+  -
+    target_uuid: 962a0522-8090-453d-9880-654463772f0b
 default_value_callback: ''
 settings:
   handler: mass_select_filter
@@ -23,6 +27,6 @@ settings:
       language: language
     sort:
       field: _none
-    auto_create: false
+    auto_create: 0
     auto_create_bundle: ''
 field_type: entity_reference

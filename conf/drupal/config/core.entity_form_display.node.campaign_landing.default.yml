@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.campaign_landing.field_campaign_landing_metatags
+    - field.field.node.campaign_landing.field_english_version
     - field.field.node.campaign_landing.field_header
     - field.field.node.campaign_landing.field_kpi_ctr_button_links
     - field.field.node.campaign_landing.field_kpi_ctr_key_msg
@@ -34,6 +35,8 @@ third_party_settings:
         - field_meta_description
         - field_organizations
         - field_reusable_label
+        - langcode
+        - field_english_version
       parent_name: group_campaign_landing_edit_form
       weight: 6
       format_type: tab
@@ -103,6 +106,34 @@ content:
       sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
+    region: content
+  field_english_version:
+    weight: 5
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        094c1513-cd9a-4fb3-b54e-2a1b7d0606a5:
+          dependee: langcode
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: en
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: campaign_landing
+    type: entity_reference_autocomplete
     region: content
   field_header:
     type: paragraphs
@@ -304,6 +335,13 @@ content:
         add_above: add_above
     third_party_settings: {  }
     region: content
+  langcode:
+    type: language_select
+    weight: 4
+    region: content
+    settings:
+      include_locked: false
+    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 9

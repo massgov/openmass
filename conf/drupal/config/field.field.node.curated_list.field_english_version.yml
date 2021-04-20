@@ -1,0 +1,26 @@
+uuid: 7e2df3bd-f828-4978-a8d2-533d060e0a63
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_english_version
+    - node.type.curated_list
+id: node.curated_list.field_english_version
+field_name: field_english_version
+entity_type: node
+bundle: curated_list
+label: 'English version'
+description: 'Choose the English version of this page. A link to the English version will appear on the "Translations" tab.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: views
+  handler_settings:
+    view:
+      view_name: english_versions
+      display_name: entity_reference_1
+      arguments:
+        - curated_list
+field_type: entity_reference

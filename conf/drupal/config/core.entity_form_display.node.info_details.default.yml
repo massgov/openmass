@@ -11,6 +11,7 @@ dependencies:
     - field.field.node.info_details.field_data_topic
     - field.field.node.info_details.field_details_data_type
     - field.field.node.info_details.field_details_enable_fields
+    - field.field.node.info_details.field_english_version
     - field.field.node.info_details.field_footnotes
     - field.field.node.info_details.field_image_credit
     - field.field.node.info_details.field_info_detail_overview
@@ -69,6 +70,8 @@ third_party_settings:
         - field_info_details_last_updated
         - field_page_template
         - field_organizations
+        - langcode
+        - field_english_version
         - field_data_flag
         - field_details_data_type
         - field_data_resource_type
@@ -272,6 +275,34 @@ content:
     third_party_settings: {  }
     type: boolean_checkbox
     region: content
+  field_english_version:
+    weight: 13
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        02672ac6-949c-49a0-aa62-d386fcf45dd1:
+          dependee: langcode
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: English
+            value_form:
+              -
+                value: en
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: info_details
+    type: entity_reference_autocomplete
+    region: content
   field_footnotes:
     weight: 2
     settings:
@@ -402,6 +433,13 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  langcode:
+    type: language_select
+    weight: 12
+    region: content
+    settings:
+      include_locked: false
+    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 10
