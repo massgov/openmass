@@ -21,7 +21,6 @@ dependencies:
     - field.field.node.stacked_layout.field_topic_callout_links
     - field.field.node.stacked_layout.field_use_alt_header
     - node.type.stacked_layout
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - entity_browser
@@ -49,6 +48,7 @@ third_party_settings:
         direction: horizontal
         id: ''
         classes: ''
+      region: content
     group_primary_content:
       children:
         - field_use_alt_header
@@ -67,6 +67,7 @@ third_party_settings:
         required_fields: true
         id: ''
         classes: ''
+      region: content
     group_bands:
       children:
         - field_bands
@@ -80,6 +81,7 @@ third_party_settings:
         classes: ''
         id: ''
         required_fields: true
+      region: content
     group_extended_header:
       children:
         - field_action_header
@@ -96,6 +98,7 @@ third_party_settings:
         classes: ''
         id: ''
         required_fields: true
+      region: content
     group_meta_info:
       children: {  }
       parent_name: group_node_edit_form
@@ -108,6 +111,7 @@ third_party_settings:
         description: ''
         required_fields: false
       label: 'Meta Info'
+      region: content
     group_org_landing_page:
       children:
         - field_topic_callout_links
@@ -121,6 +125,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: 'Org Landing Page'
+      region: content
 id: node.stacked_layout.default
 targetEntityType: node
 bundle: stacked_layout
