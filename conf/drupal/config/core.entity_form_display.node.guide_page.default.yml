@@ -15,7 +15,6 @@ dependencies:
     - field.field.node.guide_page.field_state_organization_tax
     - image.style.large
     - node.type.guide_page
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -39,6 +38,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Node Edit Form'
+      region: content
     group_overview:
       children:
         - title
@@ -58,6 +58,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Overview
+      region: content
     group_sections:
       children:
         - field_guide_page_sections
@@ -71,6 +72,7 @@ third_party_settings:
         description: "<p>Guides offer a high level overview of a process or service. They are made up of sections that provide detailed context about each phase or stage. Section titles automatically appear at the top of the guide to give direct access to each section.</p>\n\n<p>A guide section can have different layouts. It can be one column, with room for contact information on the side, or it can be 3 columns of text, each with its own heading.</p>\n\n<p>Guide sections also allow different kinds callouts. These callouts can highlight the estimated time a stage takes, draw attention to an important number/stat, or provide an alert about an important deadline or requirement.</p>\n\n<p>In general, a guide should have at least 3 sections but not more than 8.</p>"
         required_fields: true
       label: Sections
+      region: content
     group_related:
       children:
         - field_guide_page_related_guides
@@ -84,6 +86,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Related
+      region: content
 id: node.guide_page.default
 targetEntityType: node
 bundle: guide_page
@@ -182,7 +185,7 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 10
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -194,7 +197,7 @@ content:
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -229,7 +232,7 @@ content:
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -240,6 +243,7 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
+  langcode: true
   path: true
   promote: true
   status: true

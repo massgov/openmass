@@ -11,6 +11,7 @@ dependencies:
     - field.field.node.info_details.field_data_topic
     - field.field.node.info_details.field_details_data_type
     - field.field.node.info_details.field_details_enable_fields
+    - field.field.node.info_details.field_english_version
     - field.field.node.info_details.field_footnotes
     - field.field.node.info_details.field_image_credit
     - field.field.node.info_details.field_info_detail_overview
@@ -134,6 +135,14 @@ content:
       format_custom_true: ''
     third_party_settings: {  }
     type: boolean
+    region: content
+  field_english_version:
+    weight: 27
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
     region: content
   field_footnotes:
     weight: 8
@@ -268,5 +277,6 @@ hidden:
   field_page_template: true
   field_reusable_label: true
   field_short_desc: true
+  langcode: true
   page_next: true
   page_previous: true
