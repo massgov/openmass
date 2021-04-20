@@ -15,6 +15,7 @@ dependencies:
     - field.field.node.contact_information.field_reusable_label
     - field.field.node.contact_information.field_state_organization_tax
     - node.type.contact_information
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -36,6 +37,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Address
+      region: content
     group_phone_fax_online_email:
       children:
         - field_ref_phone_number
@@ -51,6 +53,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Phone / Online Link / Email / Fax'
+      region: content
     group_hours_of_operation:
       children:
         - field_ref_hours
@@ -63,6 +66,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: 'Hours of operation'
+      region: content
     group_contact_titles:
       children:
         - field_display_title
@@ -78,6 +82,7 @@ third_party_settings:
         id: tab-contact-titles
         classes: ''
       label: 'Contact titles'
+      region: content
     group_contact_information_edit_f:
       children:
         - group_contact
@@ -91,6 +96,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Contact information edit form'
+      region: content
     group_contact:
       children:
         - group_contact_titles
@@ -107,6 +113,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Contact
+      region: content
 id: node.contact_information.default
 targetEntityType: node
 bundle: contact_information
@@ -207,7 +214,7 @@ content:
     third_party_settings: {  }
     region: content
   field_reusable_label:
-    weight: 11
+    weight: 6
     settings:
       match_operator: CONTAINS
       size: 60
@@ -217,7 +224,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_state_organization_tax:
-    weight: 10
+    weight: 5
     settings:
       match_operator: CONTAINS
       size: 60
@@ -228,24 +235,24 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 10
     settings: {  }
     region: content
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 7
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 5
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -269,23 +276,24 @@ content:
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 8
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 9
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
+  langcode: true
   path: true
   promote: true
   status: true

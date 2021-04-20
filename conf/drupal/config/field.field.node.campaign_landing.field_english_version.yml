@@ -1,0 +1,26 @@
+uuid: 38f3d9d5-4b4d-40cc-8a04-0163372a6e68
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_english_version
+    - node.type.campaign_landing
+id: node.campaign_landing.field_english_version
+field_name: field_english_version
+entity_type: node
+bundle: campaign_landing
+label: 'English version'
+description: 'Choose the English version of this page. A link to the English version will appear on the "Translations" tab.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: views
+  handler_settings:
+    view:
+      view_name: english_versions
+      display_name: entity_reference_1
+      arguments:
+        - campaign_landing
+field_type: entity_reference

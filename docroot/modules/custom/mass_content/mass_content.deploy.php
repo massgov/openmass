@@ -266,7 +266,6 @@ function mass_content_deploy_header_media_images_followup(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $query = \Drupal::entityQuery('node')
-    ->condition('status', 1)
     ->condition('type', 'info_details')
     ->condition('field_info_details_header_media.entity:paragraph.field_image.target_id', "", "!=");
 
@@ -316,4 +315,11 @@ function mass_content_deploy_header_media_images_followup(&$sandbox) {
   if ($sandbox['#finished'] >= 1) {
     return t('All Header Media image caption fields migrated.');
   }
+}
+
+/**
+ * Migrate both published and unpublished Header Media image wrapping fields.
+ */
+function mass_content_deploy_header_media_images_all(&$sandbox) {
+  mass_content_deploy_header_media_images_followup($sandbox);
 }
