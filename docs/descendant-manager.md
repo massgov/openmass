@@ -132,3 +132,22 @@ function mass_content_api_deploy_queue_nodes_for_save() {
   drush_print('Queued ' . count($nids) . ' nodes for re-indexing to Descendants table.');
 }
 ```
+### Descendant Manager queue
+
+To see how many items still need to be processed by descendant manager run:
+
+```
+drush queue:list
+```
+To process all items in the queue run:
+
+```
+drush queue:run mass_content_api_descendant_queue 
+```
+
+There are options to limit the number of items handled at once:  --items-limit=500 or --time-limit=30
+
+If there is a large number of items to process, consider batching them with a command like this:
+```
+watch -n 45 ahoy drush queue:run mass_content_api_descendant_queue --time-limit=30
+```
