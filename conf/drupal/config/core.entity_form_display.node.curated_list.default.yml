@@ -20,6 +20,7 @@ dependencies:
     - field.field.node.curated_list.field_reusable_label
     - field.field.node.curated_list.field_state_organization_tax
     - node.type.curated_list
+    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -57,14 +58,12 @@ third_party_settings:
         - field_list_data_type
         - field_data_format
         - field_data_topic
-        - field_data_sub_topic
         - field_intended_audience
         - field_reusable_label
       parent_name: group_curated_list_edit_form
       weight: 8
       format_type: tab
       format_settings:
-        label: Overview
         formatter: open
         description: ''
         required_fields: true
@@ -80,11 +79,11 @@ third_party_settings:
       weight: 9
       format_type: tab
       format_settings:
+        description: ''
+        formatter: closed
+        required_fields: true
         id: ''
         classes: ''
-        formatter: open
-        description: ''
-        required_fields: true
       label: Sections
       region: content
     group_related:
@@ -95,11 +94,11 @@ third_party_settings:
       weight: 10
       format_type: tab
       format_settings:
+        description: ''
+        formatter: closed
+        required_fields: true
         id: ''
         classes: ''
-        formatter: open
-        description: ''
-        required_fields: true
       label: Related
       region: content
 id: node.curated_list.default

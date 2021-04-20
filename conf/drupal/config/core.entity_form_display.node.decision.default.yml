@@ -23,6 +23,7 @@ dependencies:
     - field.field.node.decision.field_reusable_label
     - field.field.node.decision.field_state_organization_tax
     - node.type.decision
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -69,11 +70,11 @@ third_party_settings:
       weight: 3
       format_type: tab
       format_settings:
+        description: ''
+        formatter: closed
+        required_fields: true
         id: ''
         classes: ''
-        formatter: open
-        description: ''
-        required_fields: true
       label: Related
       region: content
     group_decision_edit_form:
@@ -101,11 +102,11 @@ third_party_settings:
       weight: 2
       format_type: tab
       format_settings:
+        description: ''
+        formatter: closed
+        required_fields: true
         id: ''
         classes: ''
-        formatter: open
-        description: ''
-        required_fields: true
       label: Details
       region: content
 id: node.decision.default

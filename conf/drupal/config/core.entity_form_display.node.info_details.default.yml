@@ -28,6 +28,7 @@ dependencies:
     - field.field.node.info_details.field_state_organization_tax
     - image.style.thumbnail
     - node.type.info_details
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -94,11 +95,11 @@ third_party_settings:
       weight: 9
       format_type: tab
       format_settings:
+        description: ''
+        formatter: closed
+        required_fields: true
         id: ''
         classes: ''
-        formatter: open
-        description: ''
-        required_fields: true
       label: Content
       region: content
     group_info_details_related:
@@ -123,7 +124,6 @@ third_party_settings:
       weight: 6
       format_type: fieldset
       format_settings:
-        label: 'Header Media'
         description: 'Only one item is allowed. To change from one type (iframe, image, video) to another, first click the remove button to the right.'
         required_fields: true
         id: header-media
