@@ -29,7 +29,6 @@ dependencies:
     - field.field.node.binder.field_state_organization_tax
     - image.style.thumbnail
     - node.type.binder
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -58,6 +57,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Node Edit Form'
+      region: content
     group_binder_overview:
       children:
         - title
@@ -89,6 +89,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Overview
+      region: content
     group_content:
       children:
         - field_binder_pages
@@ -104,6 +105,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Content
+      region: content
     group_binder_related:
       children:
         - field_contact
@@ -118,6 +120,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Related
+      region: content
 id: node.binder.default
 targetEntityType: node
 bundle: binder

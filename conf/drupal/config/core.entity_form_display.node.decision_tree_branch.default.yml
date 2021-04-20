@@ -12,7 +12,6 @@ dependencies:
     - field.field.node.decision_tree_branch.field_reusable_label
     - field.field.node.decision_tree_branch.field_state_organization_tax
     - node.type.decision_tree_branch
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -33,6 +32,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Decision tree branch edit form'
+      region: content
     group_decision_tree_branch:
       children:
         - title
@@ -54,6 +54,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: 'Decision tree branch'
+      region: content
 id: node.decision_tree_branch.default
 targetEntityType: node
 bundle: decision_tree_branch
