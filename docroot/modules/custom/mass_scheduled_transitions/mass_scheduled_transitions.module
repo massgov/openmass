@@ -83,9 +83,7 @@ function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $n
     ->setEntity($node)
     // 0 means 'latest'.
     ->setEntityRevisionId(0)
-    ->setOptions([
-      MASS_SCHEDULED_TRANSITIONS_OPTIONS,
-    ])
+    ->setOptions([MASS_SCHEDULED_TRANSITIONS_OPTIONS])
     ->save();
   $url_edit = $transition->toUrl('reschedule-form')->toString();
   $replacements = [':url_edit' => $url_edit, '@duration' => $duration];
@@ -107,11 +105,11 @@ function mass_scheduled_transitions_scheduled_transition_access(EntityInterface 
 
   $duration_string = $entity->bundle() == 'alert' ? MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION : MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION;
   $duration = (new DrupalDateTime('now +' . $duration_string))->getTimestamp();
-  $transitions = mass_scheduled_transitions_load_by_host_entity($entity);
+  $transitions = mass_scheduled_transitions_load_by_host_entity($entity, FALSE, MassModeration::UNPUBLISHED);
   unset($transitions[$transition->id()]);
   $fail = TRUE;
   foreach ($transitions as $transition) {
-    if ($transition->getState() == MassModeration::UNPUBLISHED && $transition->getTransitionDate()->getTimestamp() < $duration) {
+    if ($transition->getTransitionDate()->getTimestamp() < $duration) {
       $fail = FALSE;
     }
   }
