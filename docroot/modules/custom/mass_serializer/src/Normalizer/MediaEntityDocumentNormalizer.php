@@ -140,8 +140,8 @@ class MediaEntityDocumentNormalizer extends ContentEntityNormalizer {
     $attributes['accessLevel'] = empty($attributes['accessLevel'])
       ? 'public'
       : (is_array($attributes['accessLevel'])
-      ? Unicode::strtolower(current($attributes['accessLevel']))
-      : Unicode::strtolower($attributes['accessLevel']));
+      ? mb_strtolower(current($attributes['accessLevel']))
+      : mb_strtolower($attributes['accessLevel']));
 
     // Contact Point.
     $contact_term = $attributes['field_contact_name'];
@@ -453,7 +453,7 @@ class MediaEntityDocumentNormalizer extends ContentEntityNormalizer {
     }
 
     // Try without 'ly' ... or the two last characters.
-    $frequency_mod = Unicode::substr($frequency, 0, -2);
+    $frequency_mod = mb_substr($frequency, 0, -2);
     if (array_key_exists($frequency_mod, $accrualPeriodicity)) {
       return $accrualPeriodicity[$frequency_mod];
     }

@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_more_lists\Service;
 
+use Drupal\Core\Pager\PagerManagerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\mayflower\Helper;
@@ -23,16 +24,26 @@ class MassMoreListsListBuilder {
   protected $pageLimit;
 
   /**
+   * Integer value used for pager limits.
+   *
+   * @var \Drupal\Core\Pager\PagerManagerInterface
+   */
+  protected $pagerManager;
+
+  /**
    * Constructs a new MassMoreListsListBuilder object.
    *
    * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation
    *   Translation service.
+   * @param \Drupal\Core\Pager\PagerManagerInterface $pager_manager
+   *   Pager Manager from the container.
    * @param int $page_limit
    *   Page limit for paged list results.
    */
-  public function __construct(TranslationInterface $string_translation, $page_limit) {
+  public function __construct(TranslationInterface $string_translation, PagerManagerInterface $pager_manager, $page_limit) {
     $this->stringTranslation = $string_translation;
     $this->pageLimit = $page_limit;
+    $this->pagerManager = $pager_manager;
   }
 
   /**
@@ -148,7 +159,7 @@ class MassMoreListsListBuilder {
     $num_download_links = count($form_downloads['downloadLinks']);
 
     // Creates pager, which also returns current page value.
-    $page = pager_default_initialize($num_download_links, $this->pageLimit);
+    $page = $this->pagerManager->createPager($num_download_links, $this->pageLimit);
     // Calculates pager offset.
     // @see https://api.drupal.org/api/drupal/core%21includes%21pager.inc/function/pager_default_initialize/8.5.x
     $offset = $this->pageLimit * $page;

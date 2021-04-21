@@ -90,7 +90,7 @@ class DecisionTreeAdminForm extends FormBase {
     ]);
     $branch_link = Link::fromTextAndUrl('Create new decision tree branch', $branch_url)->toRenderable();
     $form['create_branch'] = [
-      '#markup' => '<div>' . drupal_render($branch_link) . '</div>',
+      '#markup' => '<div>' . \Drupal::service('renderer')->render($branch_link) . '</div>',
     ];
 
     // Conclusion link.
@@ -101,7 +101,7 @@ class DecisionTreeAdminForm extends FormBase {
     ]);
     $conclusion_link = Link::fromTextAndUrl('Create new decision tree conclusion', $conclusion_url)->toRenderable();
     $form['create_conclusion'] = [
-      '#markup' => '<div>' . drupal_render($conclusion_link) . '</div>',
+      '#markup' => '<div>' . \Drupal::service('renderer')->render($conclusion_link) . '</div>',
     ];
 
     $form['table-row'] = [
@@ -198,7 +198,7 @@ class DecisionTreeAdminForm extends FormBase {
       // Title, type, and edit column data.
       $form['table-row'][$info['index']]['title'] = [
         '#markup' => '<a href="' . $child_node->toUrl()->toString() . '" class="decision-tree-form-title" id="' . $nid . '">' . $text . ' ' . $child_node->label() . '</a>',
-        '#prefix' => !empty($indentation) ? drupal_render($indentation) : '',
+        '#prefix' => !empty($indentation) ? \Drupal::service('renderer')->render($indentation) : '',
       ];
 
       $form['table-row'][$info['index']]['type'] = [
@@ -311,7 +311,7 @@ class DecisionTreeAdminForm extends FormBase {
         }
         $node->setNewRevision();
         $node->setRevisionUserId(\Drupal::currentUser()->id());
-        $node->setRevisionCreationTime(REQUEST_TIME);
+        $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
         $node->save();
       }
     }

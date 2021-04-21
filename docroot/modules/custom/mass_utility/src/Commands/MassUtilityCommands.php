@@ -134,7 +134,7 @@ class MassUtilityCommands extends DrushCommands {
     // Iterate on all the IDs passed to the command.
     $media_entity_ids = StringUtils::csvToArray($media_entity_ids);
     foreach ($media_entity_ids as $media_entity_id) {
-      $entity = entity_load('media', $media_entity_id);
+      $entity = \Drupal::service('entity_type.manager')->getStorage('media')->load($media_entity_id);
       $isMediaEntity = ($entity instanceof EntityInterface && $entity->getEntityTypeId() === 'media') ? TRUE : FALSE;
       // Act only on media entities.
       if ($isMediaEntity) {
@@ -142,7 +142,7 @@ class MassUtilityCommands extends DrushCommands {
         if (is_numeric($fid)) {
           // Ensure that the file is not used elsewhere, that it only references
           // one media entity, the expected one.
-          $file = file_load($fid);
+          $file = \Drupal::service('entity_type.manager')->getStorage('file')->load($fid);
           $fileUsage = \Drupal::service('file.usage')->listUsage($file);
           // NOTE: In the final check below we use "==" and not "==="
           // because the media id sometimes gets picked as a string array key

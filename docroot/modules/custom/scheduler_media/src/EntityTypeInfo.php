@@ -433,12 +433,12 @@ class EntityTypeInfo implements ContainerInjectionInterface {
       foreach ($fields as $field => $enabled) {
         $actual_widget_id = $content[$field]['type'];
         if ($enabled && $actual_widget_id != $correct_widget_id) {
-          drupal_set_message(t('The widget for field %field is incorrectly set to %wrong. This should be changed to %correct by an admin user via Field UI <a href="@link">content type form display</a> :not_available', [
+          \Drupal::messenger()->addWarning(t('The widget for field %field is incorrectly set to %wrong. This should be changed to %correct by an admin user via Field UI <a href="@link">content type form display</a> :not_available', [
             '%field' => (string) $form[$field]['widget']['#title'],
             '%correct' => (string) $pluginDefinitions[$correct_widget_id]['label'],
             '%wrong' => (string) $pluginDefinitions[$actual_widget_id]['label'],
             ':not_available' => $this->moduleHandler->moduleExists('field_ui') ? '' : ('(' . t('not available') . ')'),
-          ]), 'warning', FALSE);
+          ]), FALSE);
         }
       }
     }

@@ -70,7 +70,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('suppression_urls', $form_state->getValue('suppression_urls'))
       ->save();
 
-    drupal_set_message($this->t("The configuration options have been saved. If the &lt;front&gt; page setting was changed you would need to clear the cache to see the changes."));
+    $this->messenger()->addStatus($this->t("The configuration options have been saved. If the &lt;front&gt; page setting was changed you would need to clear the cache to see the changes."));
   }
 
 }

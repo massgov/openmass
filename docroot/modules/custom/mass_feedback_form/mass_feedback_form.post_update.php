@@ -38,7 +38,7 @@ function mass_feedback_form_post_update_constituent_communication(&$sandbox) {
     $entity->set('field_constituent_communication', 'none');
     $entity->setNewRevision();
     $entity->setRevisionUserId(1);
-    $entity->setRevisionCreationTime(REQUEST_TIME);
+    $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
     $entity->setRevisionLogMessage('Programmatic update to set a default for Constituent communication options for each instance.');
     $entity->save();
 
