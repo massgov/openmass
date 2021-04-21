@@ -57,7 +57,7 @@ function _mass_unpublish_reminders_cron_helper() {
       ], 'NOT BETWEEN')
       ->execute();
     foreach ($nid_candidates as $nid_candidate) {
-      $transitions = mass_scheduled_transitions_loadByHostEntity(Node::load($nid_candidate), FALSE, MassModeration::UNPUBLISHED);
+      $transitions = mass_scheduled_transitions_load_by_host_entity(Node::load($nid_candidate), FALSE, MassModeration::UNPUBLISHED);
       foreach ($transitions as $transition) {
         $timestamp = $transition->getTransitionDate()->getTimestamp();
         if ($timestamp > $start_timestamp && $timestamp < $end_timestamp) {

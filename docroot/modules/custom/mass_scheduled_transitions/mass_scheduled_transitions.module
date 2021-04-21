@@ -1,10 +1,14 @@
 <?php
 
+/**
+ * @file
+ * Customize St module.
+ */
+
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\TranslatableInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\mass_content_moderation\MassModeration;
@@ -12,31 +16,18 @@ use Drupal\node\NodeInterface;
 use Drupal\scheduled_transitions\Entity\ScheduledTransition;
 use Drupal\workflows\Entity\Workflow;
 
-define('MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION', '14 months');
-define('MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION', '6 months');
+const MASS_SCHEDULED_TRANSITIONS_OPTIONS = [
+  ScheduledTransition::OPTION_RECREATE_NON_DEFAULT_HEAD => TRUE,
+  ScheduledTransition::OPTION_LATEST_REVISION => TRUE
+];
 define('MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_DEFAULT_DURATION', '180 days');
 define('MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION', '14 days');
-
-/**
- * Implements hook_entity_base_field_info_alter().
- */
-function mass_scheduled_transitions_entity_base_field_info_alter($fields, EntityTypeInterface $entity_type) {
-
-  if ($entity_type->id() === 'node') {
-// @todo Remove, as we now auto-create transitions to prevent policy fails.
-//    $fields['moderation_state']
-//      ->addConstraint('MassScheduledTransitionsPromoPageUnpublish')
-//      ->addConstraint('MassScheduledTransitionsAlertUnpublish');
-  }
-  return $fields;
-}
 
 /**
  * Implements hook_entity_type_alter().
  *
  * @param iterable $entity_types
- *
- * @return void
+ *   A list of types.
  */
 function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
   $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsAlertSitewide');
@@ -65,7 +56,7 @@ function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $n
     return;
   }
 
-  if (mass_scheduled_transitions_loadByHostEntity($node, FALSE, MassModeration::UNPUBLISHED)) {
+  if (mass_scheduled_transitions_load_by_host_entity($node, FALSE, MassModeration::UNPUBLISHED)) {
     // We don't care about you since you already have an unpublish transition.
     return;
   }
@@ -83,7 +74,7 @@ function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $n
     return;
   }
 
-  /** @var ScheduledTransition $transition */
+  /** @var \Drupal\scheduled_transitions\Entity\ScheduledTransition $transition */
   $transition = ScheduledTransition::create([]);
   $datetime = (new DrupalDateTime("now + $duration"))->getPhpDateTime();
   $transition->setTransitionDate($datetime)
@@ -93,8 +84,7 @@ function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $n
     // 0 means 'latest'.
     ->setEntityRevisionId(0)
     ->setOptions([
-      [ScheduledTransition::OPTION_RECREATE_NON_DEFAULT_HEAD => TRUE,
-       ScheduledTransition::OPTION_LATEST_REVISION => TRUE],
+      MASS_SCHEDULED_TRANSITIONS_OPTIONS,
     ])
     ->save();
   $url_edit = $transition->toUrl('reschedule-form')->toString();
@@ -108,11 +98,6 @@ function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $n
  * Implements hook_ENTITY_TYPE_access().
  *
  * Deny deletion of scheduled transitions when our business rules requires one for the content type.
- *
- * @param \Drupal\Core\Entity\EntityInterface $entity
- * @param $operation
- *
- * @return mixed
  */
 function mass_scheduled_transitions_scheduled_transition_access(EntityInterface $transition, $operation) {
   $entity = $transition->getEntity();
@@ -122,12 +107,11 @@ function mass_scheduled_transitions_scheduled_transition_access(EntityInterface 
 
   $duration_string = $entity->bundle() == 'alert' ? MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION : MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION;
   $duration = (new DrupalDateTime('now +' . $duration_string))->getTimestamp();
-  $transitions = mass_scheduled_transitions_loadByHostEntity($entity);
+  $transitions = mass_scheduled_transitions_load_by_host_entity($entity);
   unset($transitions[$transition->id()]);
   $fail = TRUE;
   foreach ($transitions as $transition) {
-    if ($transition->getState() == MassModeration::UNPUBLISHED && $transition->getTransitionDate()
-        ->getTimestamp() < $duration) {
+    if ($transition->getState() == MassModeration::UNPUBLISHED && $transition->getTransitionDate()->getTimestamp() < $duration) {
       $fail = FALSE;
     }
   }
@@ -137,17 +121,15 @@ function mass_scheduled_transitions_scheduled_transition_access(EntityInterface 
 }
 
 /**
+ * Implements hook_form_alter().
+ *
  * - Populate default value for the time so users don't have to complete the time element.
  * - Remove unwanted transitions.
-
- * Applies to the add_form.
- *
- * @param $form
- * @param $form_state
+ * - Applies to the add_form.
  */
 function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if (strpos($form_id, 'scheduled_transitions_add_form_form')) {
-    // Hide big revisions tableselect
+    // Hide big revisions tableselect.
     $form['scheduled_transitions']['revision']['#access'] = FALSE;
 
     // Set default time for better UX.
@@ -186,16 +168,16 @@ function mass_scheduled_transitions_form_node_form_alter(&$form, FormStateInterf
     '#title' => t('Scheduling'),
     '#group' => 'advanced',
     '#open' => FALSE,
-    '#access' => time() < strtotime('7/4/2021'), // @todo Remove after July 4.
+    // @todo Remove anytime after July 4.
+    '#access' => time() < strtotime('7/4/2021'),
     '#markup' => $markup,
   ];
 }
 
-
 /**
- * Make ST modal shorter, since it no longer shows a revision table.
+ * Implements hook_menu_local_actions_alter().
  *
- * @param $local_actions
+ * Make ST modal shorter, since it no longer shows a revision table.
  */
 function mass_scheduled_transitions_menu_local_actions_alter(&$local_actions) {
   $options = Json::encode([
@@ -222,7 +204,7 @@ function mass_scheduled_transitions_menu_local_actions_alter(&$local_actions) {
  * @return \Drupal\scheduled_transitions\Entity\ScheduledTransitionInterface[]
  *   A list of scheduled transitions for the given entity.
  */
-function mass_scheduled_transitions_loadByHostEntity(EntityInterface $entity, bool $revision_match = FALSE, $moderation_state = ''): array {
+function mass_scheduled_transitions_load_by_host_entity(EntityInterface $entity, bool $revision_match = FALSE, $moderation_state = ''): array {
   $transitionStorage = Drupal::entityTypeManager()->getStorage('scheduled_transition');
   $query = $transitionStorage->getQuery()
     ->condition('entity.target_id', $entity->id())

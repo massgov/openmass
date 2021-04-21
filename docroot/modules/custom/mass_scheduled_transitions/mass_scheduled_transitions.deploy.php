@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Deploy.
+ */
+
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\scheduled_transitions\Entity\ScheduledTransition;
@@ -19,8 +24,11 @@ function mass_scheduled_transitions_deploy_scheduled_transitions_nodes(&$sandbox
   return mass_scheduled_transitions_do_migration($sandbox, 'node');
 }
 
+/**
+ * Migrate a content type.
+ */
 function mass_scheduled_transitions_do_migration(&$sandbox, $entity_type) {
-  $now = (new \Drupal\Core\Datetime\DrupalDateTime())->getTimeStamp();
+  $now = (new DrupalDateTime())->getTimeStamp();
   $query = \Drupal::entityQuery($entity_type)
     ->condition('status', 1);
   $group = $query->orConditionGroup();
@@ -36,7 +44,6 @@ function mass_scheduled_transitions_do_migration(&$sandbox, $entity_type) {
   }
 
   $batch_size = 50;
-
   $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
   $idKey = $entity_type == 'node' ? 'nid' : 'mid';
   $eids = $query->condition($idKey, $sandbox['current'], '>')
@@ -44,10 +51,8 @@ function mass_scheduled_transitions_do_migration(&$sandbox, $entity_type) {
     ->range(0, $batch_size)
     ->execute();
 
-  
   /** @var \Drupal\Core\Entity\ContentEntityInterface[] $entities */
   $entities = $storage->loadMultiple($eids);
-
   foreach ($entities as $entity) {
     $sandbox['current'] = $entity->id();
     // Default to documents.
@@ -59,19 +64,13 @@ function mass_scheduled_transitions_do_migration(&$sandbox, $entity_type) {
     if ($entity->unpublish_on->getString() > $now) {
       $transition = ScheduledTransition::createFrom(Workflow::load($workflow), MassModeration::UNPUBLISHED, $entity, (new DrupalDateTime('@' . $entity->unpublish_on->getString()))->getPhpDateTime(), $entity->getOwner());
       $transition->setEntityRevisionId(0)
-        ->setOptions([
-          [ScheduledTransition::OPTION_RECREATE_NON_DEFAULT_HEAD => TRUE,
-            ScheduledTransition::OPTION_LATEST_REVISION => TRUE],
-        ]);
+        ->setOptions([MASS_SCHEDULED_TRANSITIONS_OPTIONS]);
       $transition->save();
     }
     if ($entity->publish_on->getString() > $now) {
       $transition = ScheduledTransition::createFrom(Workflow::load($workflow), MassModeration::PUBLISHED, $entity, (new DrupalDateTime('@' . $entity->publish_on->getString()))->getPhpDateTime(), $entity->getOwner());
       $transition->setEntityRevisionId(0)
-        ->setOptions([
-          [ScheduledTransition::OPTION_RECREATE_NON_DEFAULT_HEAD => TRUE,
-            ScheduledTransition::OPTION_LATEST_REVISION => TRUE],
-        ]);
+        ->setOptions([MASS_SCHEDULED_TRANSITIONS_OPTIONS]);
       $transition->save();
     }
     $sandbox['progress']++;

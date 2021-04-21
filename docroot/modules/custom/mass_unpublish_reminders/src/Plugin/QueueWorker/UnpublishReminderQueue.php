@@ -58,7 +58,7 @@ class UnpublishReminderQueue extends QueueWorkerBase {
       }
       $url = Url::fromRoute('entity.node.canonical', ['node' => $nid])->setAbsolute()->toString();
 
-      $transitions = mass_scheduled_transitions_loadByHostEntity($node, FALSE, MassModeration::UNPUBLISHED);
+      $transitions = mass_scheduled_transitions_load_by_host_entity($node, FALSE, MassModeration::UNPUBLISHED);
       // Just pick the first one since multiple unpublishes is super rare.
       $transition = array_shift($transitions);
       $unpublish_date = $transition->getTransitionDate()->format('F d, Y h:i a');

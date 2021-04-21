@@ -16,4 +16,5 @@ use Symfony\Component\Validator\Constraint;
  */
 class AlertSitewideConstraint extends Constraint {
   public $errorMessage = 'You must have permission to create/edit sitewide alerts in order to modify this scheduled transition.';
+
 }
