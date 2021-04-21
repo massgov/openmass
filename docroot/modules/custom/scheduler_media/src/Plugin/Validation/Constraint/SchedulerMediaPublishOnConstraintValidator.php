@@ -20,7 +20,7 @@ class SchedulerMediaPublishOnConstraintValidator extends ConstraintValidator {
       ->load($entity->getEntity()->bundle())
       ->getThirdPartySetting('scheduler_media', 'publish_past_date', $default_publish_past_date);
 
-    if ($media_publish_on && $scheduler_publish_past_date == 'error' && $media_publish_on < REQUEST_TIME) {
+    if ($media_publish_on && $scheduler_publish_past_date == 'error' && $media_publish_on < \Drupal::time()->getRequestTime()) {
       $this->context->buildViolation($constraint->messagePublishOnDateNotInFuture)
         ->atPath('publish_on')
         ->addViolation();

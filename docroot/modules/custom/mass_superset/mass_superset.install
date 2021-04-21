@@ -66,9 +66,11 @@ function mass_superset_schema() {
   return $spec;
 }
 
+// @codingStandardsIgnoreStart
 /**
+ * This function commented out for d9 preparation. db_table_exists is depricated.
+ *
  * Create new database table to hold snooze information for Top Priorties Block.
- */
 function mass_superset_update_8001() {
   if (!db_table_exists('snooze')) {
     $spec = [
@@ -93,6 +95,8 @@ function mass_superset_update_8001() {
     $schema->createTable('snooze', $spec);
   }
 }
+ */
+// @codingStandardsIgnoreEnd
 
 /**
  * Restart mass_superset queues.

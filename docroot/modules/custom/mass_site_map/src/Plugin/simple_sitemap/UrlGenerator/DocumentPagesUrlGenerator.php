@@ -47,7 +47,7 @@ class DocumentPagesUrlGenerator extends UrlGeneratorBase {
           $media_url_object = Url::fromUserInput($media_url . '/download', ['absolute' => TRUE]);
           $data = [
             'url' => $media_url_object,
-            'lastmod' => date_iso8601($entity->getChangedTime()),
+            'lastmod' => date('c', $entity->getChangedTime()),
             'priority' => 0.5,
             'changefreq' => 'daily',
           ];

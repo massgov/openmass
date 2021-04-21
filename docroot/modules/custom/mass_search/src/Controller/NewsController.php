@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_search\Controller;
 
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\Core\Cache\CacheableJsonResponse;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
@@ -37,7 +38,7 @@ class NewsController extends ControllerBase {
 
     // Calculate the time cutoff for the query.
     $date_cutoff_raw = new DrupalDateTime('-2 days', $utc_timezone);
-    $date_cutoff = $date_cutoff_raw->format(DATETIME_DATETIME_STORAGE_FORMAT);
+    $date_cutoff = $date_cutoff_raw->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
 
     // Get all published News nodes from within the last 48 hours.
     $node_query = $node_storage->getQuery();
@@ -89,7 +90,7 @@ class NewsController extends ControllerBase {
         'title' => $entity->getTitle(),
         'url' => $url->getGeneratedUrl(),
         'type' => $entity->get('field_news_type')->getString(),
-        'datePublished' => $published_local->format(DATETIME_DATETIME_STORAGE_FORMAT) . 'Z',
+        'datePublished' => $published_local->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT) . 'Z',
         'signees' => $signees,
       ];
     }

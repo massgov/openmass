@@ -2,6 +2,8 @@
 
 namespace Drupal\mass_superset\Form;
 
+use Drupal\Core\Database\Query\Condition;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -363,7 +365,7 @@ class TopPrioritiesForm extends FormBase {
   protected function queryData(string $org_nid) {
     // Get the timestamp for 28 days ago to compare our snooze flag to.
     $date = new DrupalDateTime('28 days ago');
-    $date->setTimezone(new \DateTimezone(DATETIME_STORAGE_TIMEZONE));
+    $date->setTimezone(new \DateTimezone(DateTimeItemInterface::STORAGE_TIMEZONE));
     $date_range = $date->getTimestamp();
 
     // Query the db for the 10 highest trafficked pages with lowest scores.
@@ -382,7 +384,7 @@ class TopPrioritiesForm extends FormBase {
     $query->condition('m.score', 3, '<');
     $query->isNotNull('m.score');
     // If content isn't flagged snooze or the snooze is outdated.
-    $or = db_or();
+    $or = new Condition('OR');
     $or->isNull('s.entity_id');
     $or->condition('s.last_updated', $date_range, '<=');
     $query->condition($or);
@@ -460,7 +462,7 @@ class TopPrioritiesForm extends FormBase {
 
     // Get the current timestamp to add to the row.
     $current_date = new DrupalDateTime();
-    $current_date->setTimezone(new \DateTimezone(DATETIME_STORAGE_TIMEZONE));
+    $current_date->setTimezone(new \DateTimezone(DateTimeItemInterface::STORAGE_TIMEZONE));
     $row['last_updated'] = $current_date->getTimestamp();
 
     // If the query returned a result we update that row, if not create new row.
