@@ -202,6 +202,30 @@ content:
           bundle: curated_list
     type: options_buttons
     region: content
+  field_data_topic:
+    weight: 11
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        79efe201-9cd8-44f0-a14f-1ed6e45a9d22:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: curated_list
+    type: options_buttons
+    region: content
   field_english_version:
     weight: 9
     settings:
@@ -230,32 +254,6 @@ content:
           bundle: curated_list
     type: entity_reference_autocomplete
     region: content
-  field_data_topic:
-    weight: 11
-    settings: {  }
-    third_party_settings:
-      conditional_fields:
-        79efe201-9cd8-44f0-a14f-1ed6e45a9d22:
-          dependee: field_data_flag
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: data
-            effect: show
-            effect_options: {  }
-            selector: ''
-          entity_type: node
-          bundle: curated_list
-    type: options_buttons
-    region: content
-  field_intended_audience:
-    weight: 13
   field_intended_audience:
     weight: 13
     settings: {  }
