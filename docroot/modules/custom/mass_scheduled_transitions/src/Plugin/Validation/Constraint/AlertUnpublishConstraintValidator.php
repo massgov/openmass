@@ -37,7 +37,6 @@ class AlertUnpublishConstraintValidator extends ConstraintValidator {
     }
     if ($fail) {
       $this->context->buildViolation($constraint->errorMessage)
-        // @DCG The path depends on entity type. It can be title, name, etc.
         ->atPath('moderation_state')
         ->addViolation();
     }

@@ -98,7 +98,7 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       'changed' => strtotime('-9 days'),
       'moderation_state' => 'published',
     ]);
-    ScheduledTransition::createFrom(Workflow::load('editorial'), MassModeration::UNPUBLISHED, $node, (new DrupalDateTime('+3 days'))->getPhpDateTime(), $this->author)->save();
+    // ScheduledTransition::createFrom(Workflow::load('editorial'), MassModeration::UNPUBLISHED, $node, (new DrupalDateTime('+3 days'))->getPhpDateTime(), $this->author)->save();
 
     // Look at upcoming transitions and enqueue the emails.
     mass_unpublish_reminders_cron();

@@ -14,6 +14,8 @@ use Drupal\workflows\Entity\Workflow;
 
 define('MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION', '14 months');
 define('MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION', '6 months');
+define('MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_DEFAULT_DURATION', '180 days');
+define('MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION', '14 days');
 
 /**
  * Implements hook_entity_base_field_info_alter().
@@ -21,9 +23,10 @@ define('MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION', '6 months');
 function mass_scheduled_transitions_entity_base_field_info_alter($fields, EntityTypeInterface $entity_type) {
 
   if ($entity_type->id() === 'node') {
-    $fields['moderation_state']
-      ->addConstraint('MassScheduledTransitionsPromoPageUnpublish')
-      ->addConstraint('MassScheduledTransitionsAlertUnpublish');
+// @todo Remove, as we now auto-create transitions to prevent policy fails.
+//    $fields['moderation_state']
+//      ->addConstraint('MassScheduledTransitionsPromoPageUnpublish')
+//      ->addConstraint('MassScheduledTransitionsAlertUnpublish');
   }
   return $fields;
 }
@@ -39,25 +42,47 @@ function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
   $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsAlertSitewide');
 }
 
-
 /**
  * Implements hook_ENTITY_TYPE_insert() for node entities.
- * 
- * Automatically create the required scheduled transitions per our business rules.
  */
 function mass_scheduled_transitions_node_insert(NodeInterface $node) {
+  mass_scheduled_transitions_enforce_mandatory_unpublish($node);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for node entities.
+ */
+function mass_scheduled_transitions_node_update(NodeInterface $node) {
+  mass_scheduled_transitions_enforce_mandatory_unpublish($node);
+}
+
+/**
+ * Automatically create the required scheduled transitions per our business rules.
+ */
+function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $node) {
+  if (!$node->isPublished()) {
+    // We don't care about you.
+    return;
+  }
+
+  if (mass_scheduled_transitions_loadByHostEntity($node, FALSE, MassModeration::UNPUBLISHED)) {
+    // We don't care about you since you already have an unpublish transition.
+    return;
+  }
+
   if ($node->bundle() == 'alert') {
-    $duration = '14 days';
+    $duration = MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION;
     $workflow = 'editorial';
   }
   elseif ($node->bundle() == 'campaign_landing') {
-    $duration = '180 days';
+    $duration = MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_DEFAULT_DURATION;
     $workflow = 'campaign_landing_page';
   }
   else {
-    // Do nothing
+    // We don't care about you.
     return;
   }
+
   /** @var ScheduledTransition $transition */
   $transition = ScheduledTransition::create([]);
   $datetime = (new DrupalDateTime("now + $duration"))->getPhpDateTime();
@@ -155,22 +180,28 @@ function mass_scheduled_transitions_form_node_form_alter(&$form, FormStateInterf
   /** @var \Drupal\node\NodeInterface $node */
   $node = $form_state->getFormObject()->getEntity();
 
-  $url = $node->toUrl('canonical')->toString() . '/scheduled-transitions';
-  $replacements = [':url' => $url];
+  if ($node->isNew()) {
+    $markup = t('Scheduled publishing has moved to a new <em>Scheduled Transitions</em> tab, just before Analytics. It will become visible after you save this content.');
+  }
+  else {
+    $url = $node->toUrl('canonical')->toString() . '/scheduled-transitions';
+    $replacements = [':url' => $url];
+    $markup = t('Scheduled publishing has moved to a new <em>Scheduled Transitions</em> tab, just before Analytics. <a href=":url">Go there</a>.', $replacements);
+  }
   $form['mass_scheduled_transitions'] = [
     '#type' => 'details',
     '#title' => t('Scheduling'),
     '#group' => 'advanced',
     '#open' => FALSE,
     '#access' => time() < strtotime('7/4/2021'), // @todo Remove after July 4.
-    '#markup' => t('Scheduled publishing has moved to a new <em>Scheduled Transitions</em> tab, just before Analytics. <a href=":url">Go there</a>.', $replacements)
+    '#markup' => $markup,
   ];
 }
 
 
 /**
  * Make ST modal shorter, since it no longer shows a revision table.
- * 
+ *
  * @param $local_actions
  */
 function mass_scheduled_transitions_menu_local_actions_alter(&$local_actions) {
