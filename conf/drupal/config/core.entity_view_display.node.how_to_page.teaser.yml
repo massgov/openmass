@@ -4,6 +4,9 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
+    - field.field.node.how_to_page.field_customize_header_text
+    - field.field.node.how_to_page.field_downloads_header
+    - field.field.node.how_to_page.field_fees_header
     - field.field.node.how_to_page.field_how_to_contacts_3
     - field.field.node.how_to_page.field_how_to_fee_description
     - field.field.node.how_to_page.field_how_to_files
@@ -20,9 +23,13 @@ dependencies:
     - field.field.node.how_to_page.field_how_to_what_you_need
     - field.field.node.how_to_page.field_intended_audience
     - field.field.node.how_to_page.field_manage_your_account
+    - field.field.node.how_to_page.field_manage_your_account_header
+    - field.field.node.how_to_page.field_more_info_header
+    - field.field.node.how_to_page.field_next_steps_header
     - field.field.node.how_to_page.field_organizations
     - field.field.node.how_to_page.field_reusable_label
     - field.field.node.how_to_page.field_state_organization_tax
+    - field.field.node.how_to_page.field_what_you_need_header
     - node.type.how_to_page
   module:
     - user
@@ -33,9 +40,9 @@ mode: teaser
 content:
   extra_node_pager:
     weight: 100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
   links:
     weight: 1
     region: content
@@ -51,6 +58,9 @@ hidden:
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
+  field_customize_header_text: true
+  field_downloads_header: true
+  field_fees_header: true
   field_how_to_contacts_3: true
   field_how_to_fee_description: true
   field_how_to_files: true
@@ -67,9 +77,13 @@ hidden:
   field_how_to_what_you_need: true
   field_intended_audience: true
   field_manage_your_account: true
+  field_manage_your_account_header: true
+  field_more_info_header: true
+  field_next_steps_header: true
   field_organizations: true
   field_reusable_label: true
   field_state_organization_tax: true
+  field_what_you_need_header: true
   langcode: true
   page_next: true
   page_previous: true
