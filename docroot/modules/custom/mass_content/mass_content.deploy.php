@@ -329,6 +329,7 @@ function mass_content_deploy_header_media_images_all(&$sandbox) {
  */
 function mass_content_deploy_how_to_headers(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+  $_ENV['MASS_MEDIA_PRESAVE_BYPASS'] = TRUE;
 
   $query = \Drupal::entityQuery('node');
   $query->condition('type', 'how_to_page');
