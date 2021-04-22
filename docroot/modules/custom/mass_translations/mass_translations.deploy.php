@@ -28,7 +28,7 @@ function mass_translations_deploy_language_terms(&$sandbox) {
     $sandbox['max'] = $count->count()->execute();
   }
 
-  $batch_size = 1000;
+  $batch_size = 100;
 
   $mids = $query->condition('mid', $sandbox['current'], '>')
     ->sort('mid')
