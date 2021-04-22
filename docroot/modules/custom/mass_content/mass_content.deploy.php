@@ -5,6 +5,7 @@
  * Implementations of hook_deploy_NAME() for Mass Content.
  */
 
+use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 
 /**
@@ -322,4 +323,54 @@ function mass_content_deploy_header_media_images_followup(&$sandbox) {
  */
 function mass_content_deploy_header_media_images_all(&$sandbox) {
   mass_content_deploy_header_media_images_followup($sandbox);
+}
+
+/**
+ * Set default text for how-to page flexible headers.
+ */
+function mass_content_deploy_how_to_headers(&$sandbox) {
+  $query = \Drupal::entityQuery('node');
+  $query->condition('type', 'how_to_page');
+  if (empty($sandbox)) {
+    // Get a list of all nodes of type how_to_page.
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  $nids = $query->condition('nid', $sandbox['current'], '>')
+    ->sort('nid')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $nodes = Node::loadMultiple($nids);
+
+  foreach ($nodes as $node) {
+    $sandbox['current'] = $node->id();
+    // Set the Customize header text field to unchecked.
+    $node->set('field_customize_header_text', 0);
+    // Set the default header field values for existing content.
+    $node->set('field_downloads_header', 'Downloads');
+    $node->set('field_fees_header', 'Fees');
+    $node->set('field_manage_your_account_header', 'Manage Your Account');
+    $node->set('field_more_info_header', 'More info');
+    $node->set('field_next_steps_header', 'Next steps');
+    $node->set('field_what_you_need_header', 'What you need');
+
+    // Save the node.
+    $node->setNewRevision();
+    $node->setRevisionUserId(1);
+    $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+    $node->setRevisionLogMessage('Programmatic update to set flexible header defaults for existing how-to pages.');
+    $node->save();
+    $sandbox['progress']++;
+  }
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('All How-to nodes have default values for flexible header fields.');
+  }
 }
