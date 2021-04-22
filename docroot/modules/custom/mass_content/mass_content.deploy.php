@@ -5,7 +5,6 @@
  * Implementations of hook_deploy_NAME() for Mass Content.
  */
 
-use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 
 /**
@@ -329,6 +328,8 @@ function mass_content_deploy_header_media_images_all(&$sandbox) {
  * Set default text for how-to page flexible headers.
  */
 function mass_content_deploy_how_to_headers(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
   $query = \Drupal::entityQuery('node');
   $query->condition('type', 'how_to_page');
   if (empty($sandbox)) {
@@ -346,7 +347,8 @@ function mass_content_deploy_how_to_headers(&$sandbox) {
     ->range(0, $batch_size)
     ->execute();
 
-  $nodes = Node::loadMultiple($nids);
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+  $nodes = $node_storage->loadMultiple($nids);
 
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
