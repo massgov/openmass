@@ -79,7 +79,7 @@
               {% embed "@organisms/by-author/rich-text.twig" with {
                 "richText": {
                   "compHeading": {
-                    "title": "What you need",
+                    "title": node.field_what_you_need_header.value ?: "What you need",
                     "id": "what-you-need",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
@@ -116,7 +116,7 @@
               {% embed "@organisms/by-author/steps-ordered.twig" with {
                 "stepsOrdered": {
                   "compHeading": {
-                    "title": "Next steps",
+                    "title": node.field_next_steps_header.value ?: "Next steps",
                     "id": "next-steps",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
@@ -133,7 +133,7 @@
               {% embed "@organisms/by-author/rich-text.twig" with {
                 "richText": {
                   "compHeading": {
-                    "title": "More info",
+                    "title": node.field_more_info_header.value ?: "More info",
                     "id": "more-info",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
@@ -150,7 +150,7 @@
               {% embed "@organisms/by-author/descriptive-links-wrapper.twig" with {
                 "descriptiveLinks": {
                   "compHeading": {
-                    "title": "Manage your account",
+                    "title": node.field_manage_your_account_header.value ?: "Manage your account",
                     "id": "manage-your-account",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
@@ -168,7 +168,7 @@
               {%  embed "@organisms/by-author/form-downloads.twig" with {
                 "formDownloads": {
                   "compHeading": {
-                    "title": "Downloads",
+                    "title": node.field_downloads_header.value ?: "Downloads",
                     "id": "downloads",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
