@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;
 use Drupal\node\NodeInterface;
+use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -41,7 +42,7 @@ class OrgFieldQueueWorker extends QueueWorkerBase implements ContainerFactoryPlu
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
-      $container->get('entity.manager')->getStorage('node')
+      $container->get('entity_type.manager')->getStorage('node')
     );
   }
 
@@ -63,7 +64,7 @@ class OrgFieldQueueWorker extends QueueWorkerBase implements ContainerFactoryPlu
         $org_item = $org->first()->getValue();
         if (isset($org_item['target_id'])) {
           $org_id = $org_item['target_id'];
-          $org_term = taxonomy_term_load($org_id);
+          $org_term = Term::load($org_id);
 
           // Auto-Populate organization field.
           $time = $node->getChangedTime();

@@ -724,7 +724,7 @@ function mass_theme_preprocess_node_org_page(&$variables) {
                   'emptyText' => t('No upcoming events scheduled'),
                   'pastMore' => [
                     "text" => t('See past events'),
-                    "href" => \Drupal::service('path.alias_manager')->getAliasByPath('/node/' . $node->id()) . '/events/past',
+                    "href" => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()) . '/events/past',
                     "chevron" => TRUE,
                   ],
                 ],
@@ -749,7 +749,7 @@ function mass_theme_preprocess_node_org_page(&$variables) {
         'locationDetailsLink' => [
           'display' => TRUE,
           'nid' => $node->id(),
-          'path' => \Drupal::service('path.alias_manager')->getAliasByPath('/node/' . $node->id()),
+          'path' => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()),
         ],
       ];
 
@@ -3079,7 +3079,7 @@ function mass_theme_preprocess_node_event(&$variables) {
         'emptyText' => t('No upcoming events scheduled'),
         'pastMore' => [
           'text' => t('See past related events'),
-          'href' => \Drupal::service('path.alias_manager')->getAliasByPath('/node/' . $node->id()) . '/events/past',
+          'href' => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()) . '/events/past',
           'chevron' => TRUE,
         ],
       ];
@@ -3214,7 +3214,7 @@ function mass_theme_preprocess_node_service_page(&$variables) {
       'locationDetailsLink' => [
         'display' => TRUE,
         'nid' => $node->id(),
-        'path' => \Drupal::service('path.alias_manager')->getAliasByPath('/node/' . $node->id()),
+        'path' => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()),
       ],
     ];
 
@@ -3270,7 +3270,7 @@ function mass_theme_preprocess_node_service_page(&$variables) {
         'emptyText' => t('No upcoming events scheduled'),
         'pastMore' => [
           "text" => t('See past events'),
-          "href" => \Drupal::service('path.alias_manager')->getAliasByPath('/node/' . $node->id()) . '/events/past',
+          "href" => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()) . '/events/past',
           "chevron" => TRUE,
         ],
       ];
@@ -4060,7 +4060,7 @@ function mass_theme_preprocess_node_section_landing(&$variables) {
           $link_path = $external_link['uri'];
         }
         else {
-          $link_path = \Drupal::service('path.alias_manager')->getAliasByPath('/node/' . $link->get('nid')->value);
+          $link_path = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $link->get('nid')->value);
         }
         $links[] = ['text' => $link->getTitle(), 'href' => $link_path];
       }
@@ -4078,7 +4078,7 @@ function mass_theme_preprocess_node_section_landing(&$variables) {
         'small' => 'true',
       ],
       'title' => [
-        'href' => \Drupal::service('path.alias_manager')->getAliasByPath('/node/' . $row->_entity->get('nid')->value),
+        'href' => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $row->_entity->get('nid')->value),
         'text' => $row->_entity->getTitle(),
       ],
       'description' => $row->_entity->get('field_lede')->value,
@@ -4601,7 +4601,7 @@ function mass_theme_preprocess_field(&$variables, $hook) {
       // Check if referenced nodes are external urls.
       if ($element[$delta]['#url']->isRouted()) {
         $nid = $element[$delta]['#url']->getRouteParameters()['node'];
-        $node = \Drupal::entityManager()->getStorage('node')->load($nid);
+        $node = \Drupal::service('entity_type.manager')->getStorage('node')->load($nid);
         if (!is_null($node) && $node->hasField('field_external_url') && !empty($node->get('field_external_url')->uri)) {
           $url = $node->get('field_external_url')->uri;
         }
@@ -4983,7 +4983,7 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
       /** @var Drupal\node\Entity\Node $item */
       // Default icon for content without icons but using the Topic card.
       $item->{'icon'} = 'marker';
-      $item->{'node_path'} = \Drupal::service('path.alias_manager')->getAliasByPath('/node/' . $item->get('nid')->value);
+      $item->{'node_path'} = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $item->get('nid')->value);
       $item->{'image_thumbnail_url'} = $item->hasField('field_photo') ? Helper::getFieldImageUrl($item, 'thumbnail_130x160', 'field_photo') : '';
 
       // For Stacked Layout, if label or acronym is Guide then the label
@@ -5005,7 +5005,7 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
         $links = [];
         foreach ($item->get('field_common_content')->referencedEntities() as $link) {
           // Get aliased path.
-          $link_path = \Drupal::service('path.alias_manager')->getAliasByPath('/node/' . $link->get('nid')->value);
+          $link_path = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $link->get('nid')->value);
           if ($link && $link->hasField('field_external_url')) {
             $external_link = $link->get('field_external_url')->uri;
             // Check the external url field value is not empty.
@@ -5024,7 +5024,7 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
         $links = [];
         foreach ($item->get('field_topic_callout_links') as $link) {
           $link_path = Url::fromUri($link->uri);
-          if (Unicode::strpos($link->uri, 'entity:node/') !== FALSE) {
+          if (mb_strpos($link->uri, 'entity:node/') !== FALSE) {
             $nid = explode('/', $link->uri)[1];
             $linked_node = Node::load($nid);
             // Check that we have a node and that it has an external_url field.
@@ -6282,6 +6282,7 @@ function mass_theme_preprocess_media(array &$variables) {
  *   - media: An individual media for display.
  */
 function mass_theme_preprocess_media_document(array &$variables) {
+  /** @var \Drupal\media\Entity\Media $media */
   $media = $variables['elements']['#media'];
   $variables = array_merge($variables, Molecules::prepareDownloadLink($media));
   if ($variables['elements']['#view_mode'] == 'full') {
@@ -6299,16 +6300,16 @@ function mass_theme_preprocess_media_document(array &$variables) {
     }
 
     $creator = $media->field_creator->entity;
-    $language = $media->field_language->entity;
+    $language = $media->language();
 
     $display_fields = [
       'field_creator' => [
         'label' => 'Author:',
         'text' => $creator ? Html::escape($creator->label()) : '',
       ],
-      'field_language' => [
+      'langcode' => [
         'label' => 'Language:',
-        'text' => $language ? $language->label() : '',
+        'text' => $language ? $language->getName() : '',
       ],
     ];
     if (isset($media->field_organizations)) {

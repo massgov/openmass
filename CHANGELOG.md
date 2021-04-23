@@ -1,5 +1,19 @@
 
 
+## [0.279.0] - April 20, 2021
+
+### Changed
+  - DP-19362: D9 upgrade packages - authoring/fields.
+  
+### Added
+  - DP-20281: Added language fields and Translations tab for several content types and Documents.
+  
+### Fixed
+  - DP-21662: Adjust format of how labels come over from metadata API
+  - DP-21704: Migrate unpublished header media image fields to use image wrapping field defaults.
+  
+
+
 ## [0.278.0] - April 13, 2021
 
 ### Added

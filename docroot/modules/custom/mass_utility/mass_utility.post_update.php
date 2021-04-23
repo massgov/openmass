@@ -47,7 +47,7 @@ function mass_utility_post_update_location_text_fields() {
     'field_services',
   ];
   foreach ($field_names as $field_name) {
-    $from_instances = \Drupal::entityManager()
+    $from_instances = \Drupal::service('entity_type.manager')
       ->getStorage('field_config')
       ->loadByProperties([
         'entity_type' => 'node',
@@ -56,7 +56,7 @@ function mass_utility_post_update_location_text_fields() {
         'deleted' => 1,
       ]);
     foreach ($from_instances as $deleted_instance) {
-      $mapping = \Drupal::entityManager()->getStorage('node')->getTableMapping();
+      $mapping = \Drupal::service('entity_type.manager')->getStorage('node')->getTableMapping();
 
       // Gather data about the destination (node__field_X).
       $to_instance = FieldConfig::load('node.location.' . $field_name);
@@ -76,22 +76,30 @@ function mass_utility_post_update_location_text_fields() {
       $revision_copy_columns = array_diff($mapping->getAllColumns($to_revision_table), [$format_column, 'deleted']);
 
       // Copy base table data (field_deleted_data_X -> node__field_X)
-      $base_table_select = db_select($deleted_base_table, 's')
+      // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+      // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
+      $base_table_select = \Drupal::database()->select($deleted_base_table, 's')
         ->fields('s', $base_columns);
       $base_table_select->addExpression("'basic_html'", $format_column);
       $base_table_select->addExpression('0', 'deleted');
-      db_insert($to_base_table)
+      // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+      // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
+      \Drupal::database()->insert($to_base_table)
         ->from($base_table_select)
         ->execute();
 
       // Copy revision table data
       // (field_deleted_revision_X -> node_revision__field_X)
-      $revision_table_select = db_select($deleted_revision_table, 's')
+      // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+      // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
+      $revision_table_select = \Drupal::database()->select($deleted_revision_table, 's')
         ->fields('s', $revision_copy_columns);
       // Default text format to basic_html.
       $revision_table_select->addExpression("'basic_html'", $format_column);
       $revision_table_select->addExpression('0', 'deleted');
-      db_insert($to_revision_table)
+      // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+      // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
+      \Drupal::database()->insert($to_revision_table)
         ->from($revision_table_select)
         ->execute();
     }
@@ -466,7 +474,7 @@ function mass_utility_post_update_archived_to_unpublished(&$sandbox) {
   $result = $query->execute();
 
   foreach ($result as $key => $nid) {
-    $entity = entity_load('node', $nid);
+    $entity = \Drupal::service('entity_type.manager')->getStorage('node')->load($nid);
     $entity->get('moderation_state')->target_id = 'unpublished';
     $entity->save();
   }
@@ -552,7 +560,7 @@ function mass_utility_post_update_fix_incorrect_media_timestamps(&$sandbox) {
       'created' => 1511357094,
       'changed' => 1511357094,
     ])
-    ->condition('created', REQUEST_TIME + 3600, '>')
+    ->condition('created', \Drupal::time()->getRequestTime() + 3600, '>')
     ->execute();
   \Drupal::logger('mass_utility')
     ->notice("Fixed timestamps of $num_updated_1 media_field_revision records. See DP-8800 for details.");
@@ -562,7 +570,7 @@ function mass_utility_post_update_fix_incorrect_media_timestamps(&$sandbox) {
       'created' => 1511357094,
       'changed' => 1511357094,
     ])
-    ->condition('created', REQUEST_TIME + 3600, '>')
+    ->condition('created', \Drupal::time()->getRequestTime() + 3600, '>')
     ->execute();
   \Drupal::logger('mass_utility')
     ->notice("Fixed timestamps of $num_updated_2 media_field_revision records. See DP-8800 for details.");
@@ -887,13 +895,13 @@ function mass_utility_post_update_intended_audience_draft_status() {
     $node = Node::load($nid);
     if (!empty($node) && $node != NULL && $node->hasField('field_intended_audience')) {
 
-      $revision_ids = \Drupal::entityManager()->getStorage('node')->revisionIds($node);
+      $revision_ids = \Drupal::service('entity_type.manager')->getStorage('node')->revisionIds($node);
 
       // Grab last revision.
       $last_revision_id = end($revision_ids);
 
       // Check that intended audience field is filled out on this revision.
-      $last_node = \Drupal::entityManager()->getStorage('node')->loadRevision($last_revision_id);
+      $last_node = \Drupal::service('entity_type.manager')->getStorage('node')->loadRevision($last_revision_id);
 
       if ($last_node->hasField('field_intended_audience') && !$last_node->get('field_intended_audience')->isEmpty()) {
 
@@ -902,8 +910,8 @@ function mass_utility_post_update_intended_audience_draft_status() {
         $new_revision_id = end($revision_ids);
         $original_revision_id = $revision_ids[$revision_count - 4];
 
-        $new_revision = \Drupal::entityManager()->getStorage('node')->loadRevision($new_revision_id);
-        $original_revision = \Drupal::entityManager()->getStorage('node')->loadRevision($original_revision_id);
+        $new_revision = \Drupal::service('entity_type.manager')->getStorage('node')->loadRevision($new_revision_id);
+        $original_revision = \Drupal::service('entity_type.manager')->getStorage('node')->loadRevision($original_revision_id);
 
         $new_revision_changed = $new_revision->changed->value;
         $original_revision_changed = $original_revision->changed->value;
@@ -932,9 +940,9 @@ function mass_utility_post_update_intended_audience_draft_status() {
           $node->save();
 
           // Grab hopefully the draft.
-          $revision_ids = \Drupal::entityManager()->getStorage('node')->revisionIds($node);
+          $revision_ids = \Drupal::service('entity_type.manager')->getStorage('node')->revisionIds($node);
           $draft_revision_id = $revision_ids[$revision_count - 3];
-          $draft_revision = \Drupal::entityManager()->getStorage('node')->loadRevision($draft_revision_id);
+          $draft_revision = \Drupal::service('entity_type.manager')->getStorage('node')->loadRevision($draft_revision_id);
           $draft_revision_state = $draft_revision->get('moderation_state')->getString();
 
           if ($draft_revision_state != 'published') {
@@ -952,7 +960,7 @@ function mass_utility_post_update_intended_audience_draft_status() {
             $new_revision_id = prev($revision_ids);
 
             // Save a node revision and set it as default.
-            $node = \Drupal::entityManager()->getStorage('node')->loadRevision($new_revision_id);
+            $node = \Drupal::service('entity_type.manager')->getStorage('node')->loadRevision($new_revision_id);
             // If this was using content moderation we'd use this line.
             // $node->setSyncing(TRUE);.
             // With workbench we use.
@@ -1959,5 +1967,7 @@ function mass_utility_post_update_document_moderation_drafts(&$sandbox) {
 function mass_utility_post_update_tfa_real_aes(array &$sandbox) {
   // DBTNG does not support expressions in delete queries.
   $sql = "DELETE FROM users_data WHERE LEFT(name, 4) = 'tfa_'";
-  db_query($sql);
+  // TODO: Drupal Rector Notice: Please delete the following comment after you've made any necessary changes.
+  // You will need to use `\Drupal\core\Database\Database::getConnection()` if you do not yet have access to the container here.
+  \Drupal::database()->query($sql);
 }

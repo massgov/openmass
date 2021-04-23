@@ -105,7 +105,7 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
   if (isset($form['publish_on']['widget'][0]['value']['#description'])) {
     $schedule_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/strategy/schedule-publishing-and-unpublishing');
     $form['publish_on']['widget'][0]['value']['#description'] = new FormattableMarkup('Enter a date. The time part is optional. The default time is 09:00:00. Leave the date blank for no scheduled publishing.' . ' @schedule', [
-      '@schedule' => \Drupal::l('Learn how to schedule your content for publishing or unpublishing.', $schedule_url),
+      '@schedule' => Link::fromTextAndUrl('Learn how to schedule your content for publishing or unpublishing.', $schedule_url)->toString(),
     ]);
   }
 
@@ -113,7 +113,7 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
   if (isset($form['access_unpublished_settings'])) {
     $temporary_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/strategy/temporary-unpublished-access');
     $form['access_unpublished_settings']['description'] = [
-      '#markup' => \Drupal::l('Need to give someone access to your unpublished work? Learn how.', $temporary_url),
+      '#markup' => Link::fromTextAndUrl('Need to give someone access to your unpublished work? Learn how.', $temporary_url)->toString(),
       '#weight' => -30,
     ];
   }
@@ -364,7 +364,7 @@ function mass_utility_form_revision_overview_form_alter(&$form, FormStateInterfa
           // Skip adding a contact link for this revision if the user doesn't have the ability to use it.
         }
         $row['revision']['#template'] .= '{{ contact }}';
-        $row['revision']['#context']['contact'] = \Drupal::l('Contact this author', $contact_url);
+        $row['revision']['#context']['contact'] = Link::fromTextAndUrl('Contact this author', $contact_url)->toString();
       }
     }
   }
@@ -894,7 +894,7 @@ function mass_utility_remove_login_validation(array &$form, FormStateInterface $
   if (isset($errors['name'])) {
     $error = $errors['name'];
     // Rebuild translated error message for displaying link.
-    drupal_set_message($error);
+    \Drupal::messenger()->addStatus($error);
   }
 }
 
@@ -998,7 +998,9 @@ function mass_utility_mail_alter(&$message) {
       $message['body'] = [];
       $message['body'][] = t('Hello @recipient-name,', $variables);
       $message['body'][] = t("@sender-name has sent you a message via your contact form at @site-name. You can email @sender-name back at @sender-email", $variables);
-      $build = entity_view($contact_message, 'mail');
+      $view_builder = \Drupal::entityTypeManager()
+        ->getViewBuilder($contact_message->getEntityTypeId());
+      $build = $view_builder->view($contact_message, 'mail');
       $message['body'][] = \Drupal::service('renderer')->renderPlain($build);
   }
 }
