@@ -140,14 +140,14 @@ function _mass_docs_auto_populate_user_fields(array &$form) {
  * Implements hook_entity_type_update().
  */
 function mass_docs_media_update(EntityInterface $entity) {
-  drupal_set_message('Your changes have been successfully made.', 'status', TRUE);
+  \Drupal::messenger()->addStatus('Your changes have been successfully made.', TRUE);
 }
 
 /**
  * Implements hook_entity_type_insert().
  */
 function mass_docs_media_insert(EntityInterface $entity) {
-  drupal_set_message('Your changes have been successfully made.', 'status', TRUE);
+  \Drupal::messenger()->addStatus('Your changes have been successfully made.', TRUE);
 }
 
 /**

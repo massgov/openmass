@@ -162,7 +162,7 @@ function mayflower_preprocess_html(&$variables) {
   // NOTE: Drupal stores timestamps in UTC and renders them in whatever timezone setting the site or user has set.
   // No rendering is involved when Drupal returns jsonapi data, which we use to fetch alerts, so the alerts timestamps are always in UTC.
   // Therefore we expose the site's configured timezone to JS layer so alerts timestamp can be adjusted from UTC to desired offset.
-  $dateTimeZoneMassGov = new DateTimeZone(drupal_get_user_timezone());
+  $dateTimeZoneMassGov = new DateTimeZone(date_default_timezone_get());
   $dateTimeMassGov = new DateTime("now", $dateTimeZoneMassGov);
   $offsetInSeconds = $dateTimeMassGov->getOffset();
   $prefix = ($offsetInSeconds < 0) ? '-' : '+';
