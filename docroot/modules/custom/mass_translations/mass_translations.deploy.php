@@ -18,7 +18,7 @@ function mass_translations_deploy_language_terms(&$sandbox) {
 
   $query = \Drupal::entityQuery('media')
     ->condition('bundle', 'document')
-    ->condition('field_language.target_id', $english_target_id, "!=")
+    ->condition('field_language.target_id', $english_target_id, '!=')
     ->condition('field_upload_file.target_id', '', '!=');
 
   if (empty($sandbox)) {
