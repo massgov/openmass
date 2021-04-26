@@ -41,7 +41,7 @@ class LinkTitlesQueueWorker extends QueueWorkerBase implements ContainerFactoryP
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
-      $container->get('entity.manager')->getStorage('node')
+      $container->get('entity_type.manager')->getStorage('node')
     );
   }
 

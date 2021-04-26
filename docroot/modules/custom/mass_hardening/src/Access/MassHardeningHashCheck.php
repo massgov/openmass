@@ -74,7 +74,7 @@ class MassHardeningHashCheck implements AccessInterface {
 
     // At the point where we actually test the hash, prevent any caching.
     $access->setCacheMaxAge(0);
-    if (!Crypt::hashEquals($hash, user_pass_rehash($user, $timestamp))) {
+    if (!hash_equals($hash, user_pass_rehash($user, $timestamp))) {
       // Invalid hash, so deny access.
       return $access->andIf(AccessResult::forbidden($message));
     }

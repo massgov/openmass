@@ -3,6 +3,7 @@
 namespace Drupal\mass_feedback_loop\Plugin\EntityReferenceSelection;
 
 use Drupal\Core\Entity\EntityManagerInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Plugin\EntityReferenceSelection\DefaultSelection;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountInterface;
@@ -41,8 +42,8 @@ class MassFeedbackLoopSelection extends DefaultSelection {
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityManagerInterface $entity_manager, ModuleHandlerInterface $module_handler, AccountInterface $current_user, MassFeedbackLoopContentFetcher $content_fetcher) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_manager, $module_handler, $current_user);
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, ModuleHandlerInterface $module_handler, AccountInterface $current_user, MassFeedbackLoopContentFetcher $content_fetcher) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $entity_type_manager, $module_handler, $current_user);
 
     $this->contentFetcher = $content_fetcher;
   }
@@ -55,7 +56,7 @@ class MassFeedbackLoopSelection extends DefaultSelection {
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity.manager'),
+      $container->get('entity_type.manager'),
       $container->get('module_handler'),
       $container->get('current_user'),
       $container->get('mass_feedback_loop.content_fetcher')

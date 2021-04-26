@@ -78,7 +78,7 @@ function hook_scheduler_media_allow_publishing(MediaInterface $media) {
     // If publication is denied then inform the user why. This message will be
     // displayed during media edit and save.
     if (!$allowed) {
-      drupal_set_message(t('The content will only be published after approval by the CEO.'), 'status', FALSE);
+      \Drupal::messenger()->addStatus(t('The content will only be published after approval by the CEO.'), FALSE);
     }
   }
 
@@ -111,7 +111,7 @@ function hook_scheduler_media_allow_unpublishing(MediaInterface $media) {
     // If unpublication is denied then inform the user why. This message will be
     // displayed during media edit and save.
     if (!$allowed) {
-      drupal_set_message(t('The competition will only be unpublished after all prizes have been claimed by the winners.'));
+      \Drupal::messenger()->addStatus(t('The competition will only be unpublished after all prizes have been claimed by the winners.'));
     }
   }
 

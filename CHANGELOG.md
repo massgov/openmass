@@ -1,5 +1,34 @@
 
 
+## [0.279.0] - April 20, 2021
+
+### Changed
+  - DP-19362: D9 upgrade packages - authoring/fields.
+  
+### Added
+  - DP-20281: Added language fields and Translations tab for several content types and Documents.
+  
+### Fixed
+  - DP-21662: Adjust format of how labels come over from metadata API
+  - DP-21704: Migrate unpublished header media image fields to use image wrapping field defaults.
+  
+
+
+## [0.278.0] - April 13, 2021
+
+### Added
+  - DP-10272: Added view that shows pages that don't have a published org page in the "Organization(s)" field.
+  - DP-21621: Added content inventory view of service page.
+  
+### Changed
+  - DP-19365: Updated the address, draggableviews, flag, metatag, paragraphs, pathauto, views_bulk_operations, token, and entity_reference_revisions modules to latest releases.
+  - DP-21332: Modify Caspio embed functionality to have flexible hostname.
+  
+### Removed
+  - DP-19465: Uninstalled migrate modules and removed related, disabled custom modules.
+  
+
+
 ## [0.277.0] - April 6, 2021
 
 ### Changed

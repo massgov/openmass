@@ -42,7 +42,7 @@ class SchedulerMediaUnpublishOnConstraintValidator extends ConstraintValidator {
     // Check that the unpublish-on date is in the future. Unlike the publish-on
     // field, there is no option to use a past date, as this is not relevant for
     // unpublshing. The date must ALWAYS be in the future if it is entered.
-    if ($media_unpublish_on && $media_unpublish_on < REQUEST_TIME) {
+    if ($media_unpublish_on && $media_unpublish_on < \Drupal::time()->getRequestTime()) {
       $this->context->buildViolation($constraint->messageUnpublishOnDateNotInFuture)
         ->atPath('unpublish_on')
         ->addViolation();

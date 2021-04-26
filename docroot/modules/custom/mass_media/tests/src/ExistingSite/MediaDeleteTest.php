@@ -32,7 +32,9 @@ class MediaDeleteTest extends ExistingSiteBase {
     $file->save();
     // Nothing copied the file so we do so.
     $src = 'core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-23.txt';
-    file_unmanaged_copy($src, $destination, TRUE);
+    /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+    $file_system = \Drupal::service('file_system');
+    $file_system->copy($src, $destination, TRUE);
 
     // Create a "Llama" media item.
     $media = $this->createMedia([
@@ -57,7 +59,7 @@ class MediaDeleteTest extends ExistingSiteBase {
     $this->markEntityForCleanup($file2);
     // Nothing copied the file so we do so.
     $src = 'core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-42.txt';
-    file_unmanaged_copy($src, $destination, TRUE);
+    $file_system->copy($src, $destination, TRUE);
 
     // Update the "Llama" media item.
     $media->field_upload_file->target_id = $file2->id();

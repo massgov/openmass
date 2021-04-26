@@ -1,0 +1,125 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_translations.module.
+ */
+
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
+use Drupal\mass_translations\Controller\TranslationsController;
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Adapted from content_translation.module.
+ */
+function mass_translations_page_attachments(array &$attachments) {
+  $cache = CacheableMetadata::createFromRenderArray($attachments);
+  $route_match = \Drupal::routeMatch();
+
+  // If the current route has no parameters, return.
+  if (!($route = $route_match->getRouteObject()) || !($parameters = $route->getOption('parameters'))) {
+    return;
+  }
+
+  // Determine if the current route represents an entity.
+  foreach ($parameters as $name => $options) {
+    if (!isset($options['type']) || strpos($options['type'], 'entity:') !== 0) {
+      continue;
+    }
+
+    $node_storage = \Drupal::service('entity.manager')->getStorage('node');
+    $translations_controller = new TranslationsController($node_storage);
+
+    $entity = $route_match->getParameter($name);
+    if ($entity instanceof NodeInterface && $entity->hasLinkTemplate('canonical')) {
+      // Current route represents a content entity. Build hreflang links.
+      foreach ($translations_controller->getTranslationLanguages($entity, $node_storage, 'field_english_version') as $language_id => $translation) {
+        // Skip any translation that cannot be viewed.
+        $access = $translation->access('view', NULL, TRUE);
+        $cache->addCacheableDependency($access);
+        if (!$access->isAllowed()) {
+          continue;
+        }
+        $url = $translation->toUrl('canonical')
+          ->setOption('language', $translation->language())
+          ->setAbsolute()
+          ->toString();
+        $attachments['#attached']['html_head_link'][] = [
+          [
+            'rel' => 'alternate',
+            'hreflang' => $language_id,
+            'href' => $url,
+          ],
+          TRUE,
+        ];
+      }
+    }
+    // Since entity was found, no need to iterate further.
+    break;
+  }
+  // Apply updated caching information.
+  $cache->applyTo($attachments);
+}
+
+/**
+ * Implements hook_field_widget_multivalue_form_alter().
+ *
+ * Hides 'Use existing media' text.
+ */
+function mass_translations_field_widget_multivalue_form_alter(array &$elements, FormStateInterface $form_state, array $context) {
+  if (isset($elements['#field_name']) && $elements['#field_name'] == 'field_media_english_version') {
+    if (!empty($elements[0]['target_id']['#title'])) {
+      $elements[0]['target_id']['#title'] = '';
+    }
+  }
+}
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function mass_translations_element_info_alter(array &$info) {
+  if (isset($info['language_select'])) {
+    if (!isset($info['language_select']['#process'])) {
+      $info['language_select']['#process'] = [];
+    }
+    $info['language_select']['#process'] = array_merge($info['language_select']['#process'], [
+      'mass_translations_process_language_select',
+    ]);
+  }
+}
+
+/**
+ * Implements hook_pathauto_alias_alter().
+ */
+function mass_translations_pathauto_alias_alter(&$alias, array &$context) {
+  // Set language of all aliases to undefined to allow aliases to remain independent of language.
+  $context['language'] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
+}
+
+/**
+ * Processes a language select list form element.
+ *
+ * @param array $element
+ *   The form element to process.
+ *
+ * @return array
+ *   The processed form element.
+ */
+function mass_translations_process_language_select(array $element): array {
+  $element['#description'] = t('If the language you need is not here, please file a @servicenow_request.',
+    [
+      '@servicenow_request' => Link::fromTextAndUrl(
+        t('ServiceNow request'),
+        Url::fromUri('https://massgov.service-now.com/sp?id=sc_cat_item&sys_id=0bb8e784dbec0700f132fb37bf9619fe')
+      )->toString(),
+    ]
+  );
+
+  return $element;
+}

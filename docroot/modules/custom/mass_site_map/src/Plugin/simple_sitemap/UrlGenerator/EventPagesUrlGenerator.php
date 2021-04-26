@@ -34,7 +34,7 @@ class EventPagesUrlGenerator extends UrlGeneratorBase {
 
     return [
       'url' => $url_object,
-      'lastmod' => method_exists($entity, 'getChangedTime') ? date_iso8601($entity->getChangedTime()) : NULL,
+      'lastmod' => method_exists($entity, 'getChangedTime') ? date('c', $entity->getChangedTime()) : NULL,
       'priority' => 0.5,
       'changefreq' => 'daily',
     ];
