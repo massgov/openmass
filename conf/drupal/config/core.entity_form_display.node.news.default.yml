@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.news.field_english_version
     - field.field.node.news.field_image_credit
     - field.field.node.news.field_intended_audience
     - field.field.node.news.field_news_body
@@ -23,7 +24,6 @@ dependencies:
     - field.field.node.news.field_state_organization_tax
     - image.style.thumbnail
     - node.type.news
-    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -46,6 +46,8 @@ third_party_settings:
         - field_news_lede
         - field_news_summary
         - field_organizations
+        - langcode
+        - field_english_version
         - field_intended_audience
         - field_reusable_label
       parent_name: group_node_edit_form
@@ -58,6 +60,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Overview
+      region: content
     group_signees:
       children:
         - field_news_signees
@@ -72,6 +75,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Signees
+      region: content
     group_main_content:
       children:
         - field_news_image
@@ -90,6 +94,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Main Content'
+      region: content
     group_contacts:
       children:
         - field_news_media_contac
@@ -103,6 +108,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Contacts
+      region: content
     group_related:
       children:
         - field_news_links
@@ -116,6 +122,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: Related
+      region: content
     group_node_edit_form:
       children:
         - group_overview
@@ -131,11 +138,40 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Node edit form'
+      region: content
 id: node.news.default
 targetEntityType: node
 bundle: news
 mode: default
 content:
+  field_english_version:
+    weight: 9
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        1dcbfbdf-f6f6-4055-9002-e6dd4986a8b9:
+          dependee: langcode
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: en
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: news
+    type: entity_reference_autocomplete
+    region: content
   field_image_credit:
     weight: 35
     settings:
@@ -145,7 +181,7 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 8
+    weight: 10
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -321,6 +357,13 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  langcode:
+    type: language_select
+    weight: 8
+    region: content
+    settings:
+      include_locked: false
+    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 100

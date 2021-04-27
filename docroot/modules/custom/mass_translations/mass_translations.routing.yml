@@ -1,0 +1,21 @@
+mass_translations.controller_translations:
+  path: '/node/{node}/translations'
+  defaults:
+    _controller: '\Drupal\mass_translations\Controller\NodeTranslationsController::content'
+    _title: 'Translations'
+  options:
+    _node_operation_route: TRUE
+  requirements:
+    _custom_access: '\Drupal\mass_translations\Controller\NodeTranslationsController::access'
+mass_translations.controller_media_translations:
+  path: '/media/{media}/translations'
+  defaults:
+    _controller: '\Drupal\mass_translations\Controller\MediaTranslationsController::content'
+    _title: 'Translations'
+  options:
+    _admin_route: TRUE
+    parameters:
+      media:
+        type: entity:media
+  requirements:
+    _custom_access: '\Drupal\mass_translations\Controller\MediaTranslationsController::access'

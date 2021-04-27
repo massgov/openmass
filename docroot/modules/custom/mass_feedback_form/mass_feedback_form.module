@@ -49,7 +49,7 @@ function mass_feedback_form_theme() {
  */
 function mass_feedback_form_node_update(EntityInterface $node) {
   $notification = \Drupal::state()->get('mass_feedback_form.notification', '');
-  drupal_set_message(Markup::create($notification));
+  \Drupal::messenger()->addStatus(Markup::create($notification));
 }
 
 /**
@@ -57,7 +57,7 @@ function mass_feedback_form_node_update(EntityInterface $node) {
  */
 function mass_feedback_form_node_insert(EntityInterface $node) {
   $notification = \Drupal::state()->get('mass_feedback_form.notification', '');
-  drupal_set_message(Markup::create($notification));
+  \Drupal::messenger()->addStatus(Markup::create($notification));
 }
 
 /**

@@ -8,11 +8,11 @@ use Drupal\mass_content_api\DescendantManagerInterface;
 use Drupal\rest\Plugin\ResourceBase;
 use Drupal\rest\ResourceResponse;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\path_alias\AliasManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Drupal\Core\Path\AliasManagerInterface;
 
 /**
  * Provides a listing of all content node IDs w/ IDs of parent nodes.
@@ -79,7 +79,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
       $container->get('descendant_manager'),
       $container->get('entity_type.manager'),
       $container->get('request_stack'),
-      $container->get('path.alias_manager')
+      $container->get('path_alias.manager')
     );
   }
 
@@ -141,11 +141,10 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
         $l_refs = $item->field_reusable_label->referencedEntities();
         if (!empty($l_refs)) {
           foreach ($l_refs as $l_ref) {
-            $label = (object) [
+            $labels[] = [
               'id' => $l_ref->id(),
               'name' => $l_ref->label(),
             ];
-            $labels[] = JSON::encode($label);
           }
         }
       }

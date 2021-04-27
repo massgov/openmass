@@ -60,7 +60,7 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 16
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -79,18 +79,18 @@ content:
     region: content
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 30
+    weight: 13
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 12
     region: content
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 20
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -121,20 +121,21 @@ content:
     region: content
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 30
+    weight: 14
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 11
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 15
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
+  langcode: true
   status: true

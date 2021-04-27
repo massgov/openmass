@@ -25,7 +25,7 @@ mode: default
 content:
   body:
     type: text_textarea_with_summary
-    weight: 31
+    weight: 11
     settings:
       rows: 9
       summary_rows: 3
@@ -35,7 +35,7 @@ content:
     region: content
   created:
     type: datetime_timestamp
-    weight: 10
+    weight: 2
     settings: {  }
     third_party_settings: {  }
     region: content
@@ -57,7 +57,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_state_organization_tax:
-    weight: 33
+    weight: 13
     settings:
       match_operator: CONTAINS
       size: 60
@@ -68,13 +68,13 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 15
     settings: {  }
     region: content
     third_party_settings: {  }
   path:
     type: path
-    weight: 30
+    weight: 6
     settings: {  }
     third_party_settings: {  }
     region: content
@@ -82,23 +82,23 @@ content:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 15
+    weight: 3
     third_party_settings: {  }
     region: content
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 30
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 20
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -106,12 +106,12 @@ content:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 16
+    weight: 4
     third_party_settings: {  }
     region: content
   title:
     type: string_textfield
-    weight: -5
+    weight: 0
     settings:
       size: 60
       placeholder: ''
@@ -119,7 +119,7 @@ content:
     region: content
   uid:
     type: entity_reference_autocomplete
-    weight: 5
+    weight: 1
     settings:
       match_operator: CONTAINS
       size: 60
@@ -129,13 +129,13 @@ content:
     region: content
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 30
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -145,4 +145,5 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  langcode: true
   status: true

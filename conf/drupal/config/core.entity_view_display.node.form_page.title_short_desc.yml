@@ -4,11 +4,13 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.title_short_desc
+    - field.field.node.form_page.field_english_version
     - field.field.node.form_page.field_form_embed
     - field.field.node.form_page.field_form_lede
     - field.field.node.form_page.field_form_listing_desc
     - field.field.node.form_page.field_form_ref_contacts_3
     - field.field.node.form_page.field_form_you_will
+    - field.field.node.form_page.field_intended_audience
     - field.field.node.form_page.field_metatags
     - field.field.node.form_page.field_organizations
     - field.field.node.form_page.field_reusable_label
@@ -21,6 +23,11 @@ targetEntityType: node
 bundle: form_page
 mode: title_short_desc
 content:
+  extra_node_pager:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
   field_form_lede:
     weight: 0
     label: hidden
@@ -30,9 +37,11 @@ content:
     type: string
     region: content
 hidden:
+  computed_log_in_links: true
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
+  field_english_version: true
   field_form_embed: true
   field_form_listing_desc: true
   field_form_ref_contacts_3: true
@@ -42,5 +51,9 @@ hidden:
   field_organizations: true
   field_reusable_label: true
   field_state_organization_tax: true
+  langcode: true
   links: true
+  page_next: true
+  page_previous: true
+  referencing_binders: true
   workbench_moderation_control: true

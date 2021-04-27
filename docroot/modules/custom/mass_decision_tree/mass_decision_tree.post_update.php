@@ -67,7 +67,7 @@ function mass_decision_tree_post_update_answers(&$sandbox) {
       $node->field_answers = NULL;
       $node->setNewRevision();
       $node->setRevisionUserId(1);
-      $node->setRevisionCreationTime(REQUEST_TIME);
+      $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
       $node->setRevisionLogMessage('Programmatic update to move content from field_answers to field_multiple_answers.');
       $node->save();
 
