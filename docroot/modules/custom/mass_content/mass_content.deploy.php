@@ -348,6 +348,8 @@ function mass_content_deploy_how_to_headers(&$sandbox) {
     ->range(0, $batch_size)
     ->execute();
 
+  $memory_cache = \Drupal::service('entity.memory_cache');
+
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
   $nodes = $node_storage->loadMultiple($nids);
 
@@ -371,6 +373,8 @@ function mass_content_deploy_how_to_headers(&$sandbox) {
     $node->save();
     $sandbox['progress']++;
   }
+
+  $memory_cache->deleteAll();
 
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
