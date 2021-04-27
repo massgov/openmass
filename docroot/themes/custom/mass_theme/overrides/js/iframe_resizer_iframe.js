@@ -1,3 +1,11 @@
+/* Instructions 
+**
+** Mass.gov CDN: https://mass.gov/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js
+** Add this script into the iframe source code before the closing body tag:
+** <script type="text/javascript" src="https://mass.gov/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js"></script>
+** This code monitors the iframe page for changes in dimensions. When change is detected, it sends send the latest dimensions to the parent page using postMessage
+*/
+
 /*
 
 MIT License
@@ -22,10 +30,6 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
-
-// Add this script into the page that will appear <b>inside an iFrame</b>
-// This code monitors the page for changes in size. When change is detected, it sends send the latest size to the parent page using postMessage
 
 
 // determine height of content on this page
