@@ -18,7 +18,7 @@ function mass_translations_deploy_language_terms(&$sandbox) {
 
   $query = \Drupal::entityQuery('media')
     ->condition('bundle', 'document')
-    ->condition('field_language.target_id', $english_target_id, "!=")
+    ->condition('field_language.target_id', $english_target_id, '!=')
     ->condition('field_upload_file.target_id', '', '!=');
 
   if (empty($sandbox)) {
@@ -28,12 +28,14 @@ function mass_translations_deploy_language_terms(&$sandbox) {
     $sandbox['max'] = $count->count()->execute();
   }
 
-  $batch_size = 50;
+  $batch_size = 100;
 
   $mids = $query->condition('mid', $sandbox['current'], '>')
     ->sort('mid')
     ->range(0, $batch_size)
     ->execute();
+
+  $memory_cache = \Drupal::service('entity.memory_cache');
 
   $media_storage = \Drupal::entityTypeManager()->getStorage('media');
 
@@ -76,6 +78,8 @@ function mass_translations_deploy_language_terms(&$sandbox) {
 
     $sandbox['progress']++;
   }
+
+  $memory_cache->deleteAll();
 
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {

@@ -11,7 +11,9 @@ dependencies:
     - field.field.node.external_data_resource.field_externaldata_url
     - field.field.node.external_data_resource.field_organizations
     - node.type.external_data_resource
+    - workflows.workflow.editorial
   module:
+    - content_moderation
     - field_group
     - link
     - scheduler
@@ -39,7 +41,6 @@ third_party_settings:
         - field_data_resource_type
         - field_data_format
         - field_data_topic
-        - field_data_sub_topic
       parent_name: group_externaldata_edit_form
       weight: 0
       format_type: tab
@@ -136,15 +137,21 @@ content:
     settings:
       include_locked: true
     third_party_settings: {  }
+  moderation_state:
+    type: moderation_state_default
+    weight: 7
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 2
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_state:
     type: options_select
-    weight: 4
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -173,19 +180,18 @@ content:
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 3
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
     type: options_select
-    weight: 5
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
-  moderation_state: true
   path: true
   promote: true
   status: true
