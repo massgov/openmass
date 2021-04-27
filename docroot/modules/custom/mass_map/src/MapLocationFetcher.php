@@ -25,7 +25,7 @@ class MapLocationFetcher {
    *   An array of location data to populate locationListing data structure.
    */
   public function getLocations(array $nids) {
-    $node_storage = \Drupal::entityManager()->getStorage('node');
+    $node_storage = \Drupal::service('entity_type.manager')->getStorage('node');
     $nodes = $node_storage->loadMultiple($nids);
 
     // Create the locationListing parent data structure contents.
@@ -230,6 +230,7 @@ class MapLocationFetcher {
         'href' => 'https://www.google.com/maps/place/' . $locations['imagePromos']['items'][$key]['location']['text'],
         'type' => "external",
         'info' => '',
+        'labelContext' => t('to @location', ['@location' => $node->getTitle()]),
       ];
 
       if (!$node->field_ref_contact_info_1->isEmpty()) {
