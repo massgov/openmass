@@ -80,6 +80,18 @@ AddType application/octet-stream .rte
   # Cache all files for 2 weeks after access (A).
   ExpiresDefault A1209600
 
+  # Declare font content-types
+  AddType application/vnd.ms-fontobject .eot
+  AddType font/ttf .ttf
+  AddType font/woff .woff
+  AddType font/woff2 .woff2
+
+  # Cache font files for 1 year after access (A).
+  ExpiresByType application/vnd.ms-fontobject A31536000
+  ExpiresByType font/ttf A31536000
+  ExpiresByType font/woff A31536000
+  ExpiresByType font/woff2 A31536000
+
   <FilesMatch \.php$>
     # Do not allow PHP scripts to be cached unless they explicitly send cache
     # headers themselves. Otherwise all scripts would have to overwrite the
