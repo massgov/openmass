@@ -72,49 +72,28 @@
  *
  */
 #}
+<article{{ attributes }}>
 
-{# Set our twig block regions at the top so we can test their existence #}
-{% set _preContent = block('preContent')|trim %}
-{% set _sidebar = block('sidebar')|trim %}
-{% set _postContent = block('postContent')|trim %}
-{% set _schemaContent = block('schemaContent')|trim %}
+  {{ title_prefix }}
+  {% if not page %}
+    <h2{{ title_attributes }}>
+      <a href="{{ url }}" rel="bookmark">{{ label }}</a>
+    </h2>
+  {% endif %}
+  {{ title_suffix }}
 
-{# Set top heading level for the page. #}
-{% set level = 1 %}
-
-{# Produce the .pre-content div if either the twig block or the theme region is present #}
-{% if _preContent is not empty or pre_content %}
-  <div class="pre-content">
-    {{ pre_content }}
-    {{ _preContent|raw }}
-  </div>
-{% endif %}
-
-{% block main %}
-  <div class="main-content{{ _sidebar is not empty ? ' main-content--two': ' main-content--full'}}">
-    <div class="page-content">
-      {% block pageContent %}
-	      {{ content }}
-      {% endblock %}
-    </div>
-    {% if _sidebar is not empty %}
-      <div class="sidebar">
-        {% block sidebar %}
-          {{ _sidebar|raw }}
-        {% endblock %}
+  {% if display_submitted %}
+    <footer>
+      {{ author_picture }}
+      <div{{ author_attributes }}>
+        {% trans %}Submitted by {{ author_name }} on {{ date }}{% endtrans %}
+        {{ metadata }}
       </div>
-    {% endif %}
-  </div>
-{% endblock %}
+    </footer>
+  {% endif %}
 
-{# Produce the .post-content div if either the twig block or the theme region is present #}
-{% if _postContent is not empty or post_content %}
-  <div class="post-content">
-    {{ _postContent|raw }}
-    {{ post_content }}
+  <div{{ content_attributes }}>
+    {{ content }}
   </div>
-{% endif %}
 
-{% if _schemaContent is not empty %}
-  {{ _schemaContent|raw }}
-{% endif %}
+</article>
