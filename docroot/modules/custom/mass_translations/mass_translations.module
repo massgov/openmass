@@ -99,7 +99,7 @@ function mass_translations_element_info_alter(array &$info) {
  */
 function mass_translations_pathauto_alias_alter(&$alias, array &$context) {
   // Set language of all aliases to undefined to allow aliases to remain independent of language.
-  $context['language'] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
+  $context['language'] = 'en';
 }
 
 /**
