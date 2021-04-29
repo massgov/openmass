@@ -1,5 +1,27 @@
 
 
+## [0.280.0] - April 27, 2021
+
+### Changed
+  - DP-19203: Fixes code deprications in custom modules in prep for Drupal 9.
+  - DP-21595: Help text fix on Guide content type.
+  - DP-21623: Upgraded quick_node_clone module with the latest patch.
+  - DP-21682: Update the info_details config to add additional fields to descendant manager 'pages linking here' section.
+  - DP-6360: Changed directions links in location listings pages to not all have same link label/title.
+  
+### Fixed
+  - DP-21727: Re-exported translation config not captured during translation deployment
+  - DP-21733: Exposed the Moderation State field in the External Data Resource node form so nodes can be published.
+  - DP-21745: Addressed memory issues with Media translations migration.
+  
+### Security
+  - DP-21744: Updated Drupal to 8.9.14 to eliminate security issue.
+  
+### Added
+  - DP-21746: Added Hindi and Nepali languages.
+  
+
+
 ## [0.279.0] - April 20, 2021
 
 ### Changed
