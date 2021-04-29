@@ -32,24 +32,26 @@ SOFTWARE.
 // event.data - the object that the iframe sent us
 // event.origin - the URL from which the message came
 // event.source - a reference to the 'window' object that sent the message
-function gotResizeMessage(event)
-{
-	var matches = document.querySelectorAll('iframe'); // iterate through all iFrames on page
-	for (i=0; i<matches.length; i++)
-	{
-		if( matches[i].contentWindow == event.source ) // found the iFrame that sent us a message
-		{
-			//matches[i].width = Number( event.data.width )	 <--- we do not do anything with the page width for now
-			matches[i].height = Number( event.data.height )
+function gotResizeMessage(event) {
+  'use strict';
+  var matches = document.querySelectorAll('iframe'); // iterate through all iFrames on page
+  var i = 0;
+  for (; i < matches.length; i++) {
+    // found the iFrame that sent us a message
+    if (matches[i].contentWindow === event.source) {
+      // matches[i].width = Number( event.data.width )	 <--- we do not do anything with the page width for now
+      matches[i].height = Number(event.data.height);
 
-			return 1;
-		}
-	}
+      return 1;
+    }
+  }
 }
 
-document.addEventListener("DOMContentLoaded", function(){
-  console.log('loaded parent JS')
+document.addEventListener('DOMContentLoaded', function () {
+  'use strict';
+  // eslint-disable-next-line no-console
+  console.log('loaded parent JS');
 
-	window.addEventListener("message", gotResizeMessage, false)
+  window.addEventListener('message', gotResizeMessage, false);
 
-}); //on DOM ready
+}); // on DOM ready
