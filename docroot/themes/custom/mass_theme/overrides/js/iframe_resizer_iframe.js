@@ -35,6 +35,7 @@ SOFTWARE.
 // determine height of content on this page
 function getMyHeight() {
   'use strict';
+
   // https://stackoverflow.com/a/11864824
   return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
 }
@@ -43,6 +44,7 @@ function getMyHeight() {
 // send the latest page dimensions to the parent page on which this iframe is embedded
 function sendDimensionsToParent(iframeDimensions_Old) {
   'use strict';
+
   var iframeDimensions_New = {
     width: window.innerWidth, // supported from IE9 onwards
     height: getMyHeight()
@@ -50,10 +52,8 @@ function sendDimensionsToParent(iframeDimensions_Old) {
 
   // if old width is not equal new width, or old height is not equal new height, then...
   if ((iframeDimensions_New.width !== iframeDimensions_Old.width) || (iframeDimensions_New.height !== iframeDimensions_Old.height)) {
-
     window.parent.postMessage(iframeDimensions_New, '*');
     iframeDimensions_Old = iframeDimensions_New;
-
   }
 
 }
@@ -62,6 +62,7 @@ function sendDimensionsToParent(iframeDimensions_Old) {
 // on load - send the page dimensions. (we do this on load because then all images have loaded...)
 window.addEventListener('load', function () {
   'use strict';
+
   // For debugging purposes
   // eslint-disable-next-line no-console
   console.log('loaded iframe JS: ' + document.URL);
@@ -77,7 +78,7 @@ window.addEventListener('load', function () {
   if (window.MutationObserver) {
     // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
 
-    var observer = new MutationObserver(sendDimensionsToParent(iframeDimensions_Old));
+    var observer = new MutationObserver(sendDimensionsToParent);
     var config = {
       attributes: true,
       attributeOldValue: false,
