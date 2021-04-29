@@ -1,5 +1,56 @@
 
 
+## [0.280.0] - April 27, 2021
+
+### Changed
+  - DP-19203: Fixes code deprications in custom modules in prep for Drupal 9.
+  - DP-21595: Help text fix on Guide content type.
+  - DP-21623: Upgraded quick_node_clone module with the latest patch.
+  - DP-21682: Update the info_details config to add additional fields to descendant manager 'pages linking here' section.
+  - DP-6360: Changed directions links in location listings pages to not all have same link label/title.
+  
+### Fixed
+  - DP-21727: Re-exported translation config not captured during translation deployment
+  - DP-21733: Exposed the Moderation State field in the External Data Resource node form so nodes can be published.
+  - DP-21745: Addressed memory issues with Media translations migration.
+  
+### Security
+  - DP-21744: Updated Drupal to 8.9.14 to eliminate security issue.
+  
+### Added
+  - DP-21746: Added Hindi and Nepali languages.
+  
+
+
+## [0.279.0] - April 20, 2021
+
+### Changed
+  - DP-19362: D9 upgrade packages - authoring/fields.
+  
+### Added
+  - DP-20281: Added language fields and Translations tab for several content types and Documents.
+  
+### Fixed
+  - DP-21662: Adjust format of how labels come over from metadata API
+  - DP-21704: Migrate unpublished header media image fields to use image wrapping field defaults.
+  
+
+
+## [0.278.0] - April 13, 2021
+
+### Added
+  - DP-10272: Added view that shows pages that don't have a published org page in the "Organization(s)" field.
+  - DP-21621: Added content inventory view of service page.
+  
+### Changed
+  - DP-19365: Updated the address, draggableviews, flag, metatag, paragraphs, pathauto, views_bulk_operations, token, and entity_reference_revisions modules to latest releases.
+  - DP-21332: Modify Caspio embed functionality to have flexible hostname.
+  
+### Removed
+  - DP-19465: Uninstalled migrate modules and removed related, disabled custom modules.
+  
+
+
 ## [0.277.0] - April 6, 2021
 
 ### Changed

@@ -7,6 +7,7 @@ use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\SelectInterface;
+use Drupal\Core\Pager\PagerParametersInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -25,19 +26,28 @@ class LegacyRedirectsController extends ControllerBase {
   private $database;
 
   /**
+   * The Pager param service.
+   *
+   * @var \Drupal\Core\Pager\PagerParametersInterface
+   */
+  private $pagerParams;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('database')
+      $container->get('database'),
+      $container->get('pager.parameters')
     );
   }
 
   /**
    * Constructor.
    */
-  public function __construct(Connection $database) {
+  public function __construct(Connection $database, PagerParametersInterface $pager_params) {
     $this->database = $database;
+    $this->pagerParams = $pager_params;
   }
 
   /**
@@ -96,10 +106,10 @@ class LegacyRedirectsController extends ControllerBase {
     $response = new CacheableJsonResponse([
       'results' => $results,
       'pager' => [
-        'current_page' => pager_find_page(),
+        'current_page' => $this->pagerParams->findPage(),
         'items_per_page' => self::LIMIT,
         'total_items' => $count,
-      ]
+      ],
     ]);
     $response->getCacheableMetadata()->addCacheableDependency($metadata);
     return $response;

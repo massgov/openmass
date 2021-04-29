@@ -175,25 +175,57 @@ abstract class MetadataTestCase extends ExistingSiteBase {
     $return = [];
     /** @var \Behat\Mink\Element\NodeElement $script */
     foreach ($page->findAll('css', 'script[type="application/ld+json"]') as $script) {
-      $obj = $this->flattenSchema(json_decode($script->getText(), TRUE));
-      if (isset($obj['@id'])) {
-        $return[$obj['@id']] = $obj;
-      }
+      // Retrieve schemas from the script objects.
+      $return += $this->flattenSchemas(json_decode($script->getText(), TRUE));
     }
     return $return;
   }
 
   /**
    * Flatten @graph annotations on a schema.
+   *
+   * @param array $object
+   *   An object containing schema data.
+   * @param array $schemas
+   *   An array of schemas for recursion.
+   *
+   * @return array
+   *   An array of schemas.
    */
-  private function flattenSchema(array $object) {
-    if (isset($object['@graph']) && isset($object['@graph'][0])) {
-      $clone = $object + $object['@graph'][0];
-      unset($clone['@graph']);
-      $clone += $object['@graph'][0];
-      return $this->flattenSchema($clone);
+  private function flattenSchemas(array $object, array $schemas = []) {
+    // If the object has graph annotations, parse them.
+    if (isset($object['@graph']) && !empty($object['@graph'])) {
+      // Loop through the graph annotations.
+      foreach ($object['@graph'] as $key => $value) {
+        // Create a clone of the object and add the attributes from the current
+        // graph annotation.
+        $clone = $object + $object['@graph'][$key];
+        // Remove the graph annotations from the clone.
+        unset($clone['@graph']);
+        // Add the clone to the schemas array if it has an id attribute.
+        if (isset($clone['@id'])) {
+          $schemas[$clone['@id']] = $clone;
+        }
+        // Add the graph annotation attributes to the clone again in case the
+        // graph annotation also has graph annotations.
+        $clone += $object['@graph'][$key];
+        // If there are graph annotations, run this function recursively to add
+        // them to the schemas array.
+        if (isset($clone['@graph'])) {
+          // Update the schemas array from the recursive method call.
+          $schemas = $this->flattenSchemas($clone, $schemas);
+        }
+      }
     }
-    return $object;
+    else {
+      // If there are no graph annotations and the object has an id attribute,
+      // add the object as the schema.
+      if (isset($object['@id'])) {
+        $schemas[$object['@id']] = $object;
+      }
+    }
+    // Return an array of schemas.
+    return $schemas;
   }
 
   // @codingStandardsIgnoreStart

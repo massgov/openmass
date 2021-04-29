@@ -11,6 +11,7 @@ dependencies:
     - field.field.node.curated_list.field_data_flag
     - field.field.node.curated_list.field_data_format
     - field.field.node.curated_list.field_data_topic
+    - field.field.node.curated_list.field_english_version
     - field.field.node.curated_list.field_intended_audience
     - field.field.node.curated_list.field_list_data_type
     - field.field.node.curated_list.field_list_directory_section
@@ -46,6 +47,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Curated list edit form'
+      region: content
     group_overview:
       children:
         - field_list_type
@@ -53,24 +55,25 @@ third_party_settings:
         - field_curatedlist_lede
         - field_curatedlist_overview
         - field_organizations
+        - langcode
+        - field_english_version
         - field_data_flag
         - field_list_data_type
         - field_data_format
         - field_data_topic
-        - field_data_sub_topic
         - field_intended_audience
         - field_reusable_label
       parent_name: group_curated_list_edit_form
       weight: 8
       format_type: tab
       format_settings:
-        label: Overview
         formatter: open
         description: ''
         required_fields: true
         id: ''
         classes: ''
       label: Overview
+      region: content
     group_sections:
       children:
         - field_curatedlist_list_section
@@ -79,12 +82,13 @@ third_party_settings:
       weight: 9
       format_type: tab
       format_settings:
+        description: ''
+        formatter: closed
+        required_fields: true
         id: ''
         classes: ''
-        formatter: open
-        description: ''
-        required_fields: true
       label: Sections
+      region: content
     group_related:
       children:
         - field_contact
@@ -93,12 +97,13 @@ third_party_settings:
       weight: 10
       format_type: tab
       format_settings:
+        description: ''
+        formatter: closed
+        required_fields: true
         id: ''
         classes: ''
-        formatter: open
-        description: ''
-        required_fields: true
       label: Related
+      region: content
 id: node.curated_list.default
 targetEntityType: node
 bundle: curated_list
@@ -124,7 +129,7 @@ content:
     region: content
   field_curatedlist_list_section:
     type: entity_reference_paragraphs
-    weight: 2
+    weight: 3
     settings:
       title: 'List section'
       title_plural: 'List sections'
@@ -168,13 +173,13 @@ content:
     type: text_textarea
     region: content
   field_data_flag:
-    weight: 8
+    weight: 10
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_data_format:
-    weight: 10
+    weight: 12
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -221,6 +226,34 @@ content:
           bundle: curated_list
     type: options_buttons
     region: content
+  field_english_version:
+    weight: 9
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        bf06cb39-b8a0-484d-91e7-e5634db3a237:
+          dependee: langcode
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: en
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: curated_list
+    type: entity_reference_autocomplete
+    region: content
   field_intended_audience:
     weight: 13
     settings: {  }
@@ -228,7 +261,7 @@ content:
     type: options_buttons
     region: content
   field_list_data_type:
-    weight: 9
+    weight: 11
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -316,7 +349,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_state_organization_tax:
-    weight: 7
+    weight: 6
     settings:
       match_operator: CONTAINS
       size: 60
@@ -325,6 +358,13 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  langcode:
+    type: language_select
+    weight: 8
+    region: content
+    settings:
+      include_locked: false
+    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 11
@@ -333,7 +373,7 @@ content:
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -368,7 +408,7 @@ content:
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 6
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }

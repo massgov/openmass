@@ -77,7 +77,7 @@ class LocationMetadataTest extends MetadataTestCase {
         '@id' => $url . '#location',
         'name' => 'Test Location',
         'description' => 'Test Overview',
-        'disambiguatingDescription' => 'Test More Info',
+        'disambiguatingDescription' => '<p>Test More Info</p>',
         'amenityFeature' => 'Test Services',
         'address' => [
           [
