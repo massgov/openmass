@@ -81,7 +81,7 @@
                 "richText": {
                   "compHeading": {
                     "title": field_customize_header_text ? node.field_what_you_need_header.value : "What you need",
-                    "id": "what-you-need",
+                    "id": field_customize_header_text ? stickyNav['anchorIDs'][node.field_what_you_need_header.value] : "what-you-need",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
                   }
@@ -118,7 +118,7 @@
                 "stepsOrdered": {
                   "compHeading": {
                     "title": field_customize_header_text ? node.field_next_steps_header.value : "Next steps",
-                    "id": "next-steps",
+                    "id": field_customize_header_text ? stickyNav['anchorIDs'][node.field_next_steps_header.value] : "next-steps",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
                   }
@@ -135,7 +135,7 @@
                 "richText": {
                   "compHeading": {
                     "title": field_customize_header_text ? node.field_more_info_header.value : "More info",
-                    "id": "more-info",
+                    "id": field_customize_header_text ? stickyNav['anchorIDs'][node.field_more_info_header.value] : "more-info",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
                   }
@@ -152,7 +152,7 @@
                 "descriptiveLinks": {
                   "compHeading": {
                     "title": field_customize_header_text ? node.field_manage_your_account_header.value : "Manage your account",
-                    "id": "manage-your-account",
+                    "id": field_customize_header_text ? stickyNav['anchorIDs'][node.field_manage_your_account_header.value] : "manage-your-account",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
                   }
@@ -170,7 +170,7 @@
                 "formDownloads": {
                   "compHeading": {
                     "title": field_customize_header_text ? node.field_downloads_header.value : "Downloads",
-                    "id": "downloads",
+                    "id": field_customize_header_text ? stickyNav['anchorIDs'][node.field_downloads_header.value] : "downloads",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
                   }

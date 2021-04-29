@@ -219,7 +219,6 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   $page_title = $node->getTitle();
 
   // Get the value of field_customize_header_text or set to FALSE by default.
-  $test = $node->field_customize_header_text->value;
   $field_customize_header_text = intval($node->field_customize_header_text->value) == 1 ? TRUE : FALSE;
 
   // Set static details properties.
