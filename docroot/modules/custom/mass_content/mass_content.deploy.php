@@ -329,10 +329,10 @@ function mass_content_deploy_header_media_images_all(&$sandbox) {
  */
 function mass_content_deploy_how_to_headers(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
-  $_ENV['MASS_MEDIA_PRESAVE_BYPASS'] = TRUE;
 
   $query = \Drupal::entityQuery('node');
   $query->condition('type', 'how_to_page');
+
   if (empty($sandbox)) {
     // Get a list of all nodes of type how_to_page.
     $sandbox['progress'] = 0;
@@ -351,6 +351,7 @@ function mass_content_deploy_how_to_headers(&$sandbox) {
   $memory_cache = \Drupal::service('entity.memory_cache');
 
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+
   $nodes = $node_storage->loadMultiple($nids);
 
   foreach ($nodes as $node) {
@@ -366,10 +367,6 @@ function mass_content_deploy_how_to_headers(&$sandbox) {
     $node->set('field_what_you_need_header', 'What you need');
 
     // Save the node.
-    $node->setNewRevision();
-    $node->setRevisionUserId(1);
-    $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
-    $node->setRevisionLogMessage('Programmatic update to set flexible header defaults for existing how-to pages.');
     $node->save();
     $sandbox['progress']++;
   }
