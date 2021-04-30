@@ -367,6 +367,10 @@ function mass_content_deploy_how_to_headers(&$sandbox) {
     $node->set('field_what_you_need_header', 'What you need');
 
     // Save the node.
+    $node->setNewRevision();
+    $node->setRevisionUserId(1);
+    $node->setRevisionCreationTime($node->changed->value);
+    $node->setRevisionLogMessage('Programmatic update to set flexible header defaults for existing how-to pages.');
     $node->save();
     $sandbox['progress']++;
   }
