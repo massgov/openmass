@@ -148,7 +148,7 @@ To see how many items still need to be processed by descendant manager, run:
 ```
 drush queue:list
 ```
-To process all items in the queue run:
+To process all items in the queue, run:
 
 ```
 drush queue:run mass_content_api_descendant_queue 
