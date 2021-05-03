@@ -143,7 +143,7 @@ function mass_content_api_deploy_queue_nodes_for_save() {
 ```
 ### Descendant Manager queue
 
-To see how many items still need to be processed by descendant manager run:
+To see how many items still need to be processed by descendant manager, run:
 
 ```
 drush queue:list
