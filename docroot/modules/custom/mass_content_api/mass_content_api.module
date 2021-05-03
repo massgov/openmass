@@ -67,7 +67,7 @@ function mass_content_api_crud(EntityInterface $node) {
     $descendant_manager->index($node);
   }
   else {
-    // Non decision tree nodes still need to get processed in queue.
+    // Non decision tree nodes still need to be processed in queue.
     $queue = \Drupal::queue('mass_content_api_descendant_queue');
     $queue->createItem((object) ['id' => $node->id()]);
   }
