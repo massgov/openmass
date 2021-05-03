@@ -168,9 +168,12 @@ function mass_scheduled_transitions_form_media_form_alter(&$form, FormStateInter
  * Alters both the media and node forms.
  *
  * @param \Drupal\Core\Form\FormStateInterface $form_state
- * @param $form
+ *   The form's state.
+ * @param array $form
+ *   The form array.
  *
- * @return mixed
+ * @return array
+ *   An altered form array.
  */
 function mass_scheduled_transitions_do_form_alter(FormStateInterface $form_state, $form) {
   $entity = $form_state->getFormObject()->getEntity();
