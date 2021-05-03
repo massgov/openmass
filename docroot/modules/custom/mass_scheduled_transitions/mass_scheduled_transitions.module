@@ -172,10 +172,10 @@ function mass_scheduled_transitions_form_media_form_alter(&$form, FormStateInter
  * @param array $form
  *   The form array.
  *
- * @return array
+ * @return Iterable
  *   An altered form array.
  */
-function mass_scheduled_transitions_do_form_alter(FormStateInterface $form_state, $form) {
+function mass_scheduled_transitions_do_form_alter(FormStateInterface $form_state, Iterable $form) {
   $entity = $form_state->getFormObject()->getEntity();
 
   if ($entity->isNew()) {
