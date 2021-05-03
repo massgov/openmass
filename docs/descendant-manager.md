@@ -10,7 +10,7 @@ Specific use cases:
 The service may or may not be directly connected to the page where we want to show the login link. It may be a grandparent. We may want to follow links upward and not strictly parent child relationships.  
 - Populate “Pages linking here” in Drupal.
 - Populate web metrics database with parent child relationships so we can measure traffic to children (which represents all ancestors no matter what the depth).
-In this case only the parent and child relationships are used, not linking.
+In this case, only the parent and child relationships are used, not linking.
 
 
 These relationships are grouped into three types:
