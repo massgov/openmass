@@ -6,7 +6,7 @@ The Descendant Manager indexes content using pre-defined field traversal paths i
 files to determine relationships. 
 
 Specific use cases:
-- Determine the service that the page is in so that we can show the right “log in” links in header that will be defined on that service page.
+- Determine the service that the page is in so that we can show the correct “login” links in the header, which we define on that service page.
 The service may or may not be directly connected to the page where we want to show the login link. It may be a grandparent. We may want to follow links upward and not strictly parent child relationships.  
 - Populate “Pages linking here” in Drupal.
 - Populate web metrics database with parent child relationships so we can measure traffic to children (which represents all ancestors no matter what the depth).
