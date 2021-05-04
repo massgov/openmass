@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- * Theme override to display a Service Details node in the Data Listing view mode.
+ * Theme override to display a Service Details node in the Listing view mode.
  *
  * Available variables:
  * - node: The node entity with limited access to object properties and methods.
@@ -71,28 +71,42 @@
  *
  */
 #}
-<article{{ attributes }}>
+{% set organizations = [] %}
+{% if content.field_organizations['#items'] %}
+  {% for item in content.field_organizations['#items'] %}
+    {% set organization = item.entity.title.value %}
+    {% set organizations = organizations|merge([organization]) %}
+  {% endfor %}
+{% endif %}
+{% set formats = [] %}
+{% if content.field_data_format['#items'] %}
+  {% for item in content.field_data_format['#items'] %}
+    {% set format = item.value %}
+    {% set formats = formats|merge([format]) %}
+  {% endfor %}
+{% endif %}
 
-  {{ title_prefix }}
-  {% if not page %}
-    <h2{{ title_attributes }}>
-      <a href="{{ url }}" rel="bookmark">{{ label }}</a>
-    </h2>
-  {% endif %}
-  {{ title_suffix }}
-
-  {% if display_submitted %}
-    <footer>
-      {{ author_picture }}
-      <div{{ author_attributes }}>
-        {% trans %}Submitted by {{ author_name }} on {{ date }}{% endtrans %}
-        {{ metadata }}
-      </div>
-    </footer>
-  {% endif %}
-
-  <div{{ content_attributes }}>
-    {{ content }}
-  </div>
-
-</article>
+{% include "@molecules/general-teaser.twig" with {
+  "generalTeaser" : {
+    "eyebrow": {
+      "label": content.field_details_data_type['#items'].0.entity.name.value
+    },
+    "title" : {
+      "href": url,
+      "text": label,
+      "info": "",
+      "property": ""
+    },
+    "level": "",
+    "emphasizedText": organizations,
+    "tags": formats,
+    "contents": [{
+      "path": "@atoms/11-text/paragraph.twig",
+      "data": {
+        "paragraph" : {
+          "text": node.field_service_detail_lede.value
+        }
+      }
+    }]
+  }
+} %}
