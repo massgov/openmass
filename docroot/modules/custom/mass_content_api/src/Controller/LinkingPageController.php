@@ -77,7 +77,7 @@ class LinkingPageController extends ControllerBase {
     $output = [];
     $output['linking_nodes'] = [
       '#type' => 'table',
-      '#caption' => $this->t('The list below shows pages that include a link to this page. However, it DOES NOT include pages that link to this one through inline links in a rich text editor — it only includes links added through structured fields. @help_text', ['@help_text' => $help_text]),
+      '#caption' => $this->t('The list below shows pages that include a link to this page in structured and rich text fields. @help_text', ['@help_text' => $help_text]),
       '#header' => [
         $this->t('Title'),
         $this->t('ID'),
