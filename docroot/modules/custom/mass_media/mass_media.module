@@ -14,6 +14,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\media\MediaInterface;
 use Drupal\file\FileInterface;
+use Drupal\Core\File\FileSystemInterface;
 
 /**
  * Immediately delete any old file entity on this media entity.
@@ -163,7 +164,13 @@ function mass_media_media_access(EntityInterface $entity, $operation, AccountInt
  * - Unpublished Documents will have a private uploaded file.
  */
 function mass_media_media_presave(MediaInterface $entity) {
-  if ($entity->bundle() == 'document') {
+  // We need a way to bypass file handling when bulk updating both
+  // published and unpublished media entities, since sometimes there is a
+  // mismatch between environments that would result in failures when trying
+  // to move files that no longer exist.
+  $bypass_presave = isset($_ENV['MASS_MEDIA_PRESAVE_BYPASS']) ? (bool) $_ENV['MASS_MEDIA_PRESAVE_BYPASS'] : FALSE;
+
+  if ($entity->bundle() == 'document' && !$bypass_presave) {
     // Loads file.
     /** @var \Drupal\file\Entity\File $file */
     $file = File::load($entity->field_upload_file->target_id);
@@ -172,7 +179,7 @@ function mass_media_media_presave(MediaInterface $entity) {
       /** @var \Drupal\Core\File\FileSystem $file_system */
       $file_system = \Drupal::service('file_system');
       $file_scheme = $file_system->uriScheme($file_uri);
-      $file_uri_target = file_uri_target($file_uri);
+      $file_uri_target = \Drupal::service('stream_wrapper_manager')->getTarget($file_uri);
 
       // Checks for unpublished Documents to ensure file is private.
       // Checks for published Documents to ensure file is public.
@@ -187,7 +194,7 @@ function mass_media_media_presave(MediaInterface $entity) {
       // Moves file as needed.
       if (!empty($file_destination)) {
         $dirname = $file_system->dirname($file_destination);
-        if (!file_prepare_directory($dirname, FILE_CREATE_DIRECTORY | FILE_MODIFY_PERMISSIONS)) {
+        if (!\Drupal::service('file_system')->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
           throw new \RuntimeException("Unable to prepare directory for file move '$dirname'");
         }
         if (!file_move($file, $file_destination)) {
@@ -208,12 +215,12 @@ function mass_media_media_presave(MediaInterface $entity) {
  * that the source file is deleted immediately.
  */
 function mass_media_file_move(FileInterface $file, FileInterface $source) {
+  /** @var \Drupal\Core\File\FileSystem $file_system */
   $file_system = \Drupal::service('file_system');
 
   // Delete the original if it's not in use elsewhere.
   $delete_source_document = FALSE;
   $file_references = file_get_file_references($file);
-  $file_system = \Drupal::service('file_system');
   foreach ($file_references as $key => $reference) {
     // Checks for Document-related files moving between public/private schemes.
     if (
@@ -228,6 +235,6 @@ function mass_media_file_move(FileInterface $file, FileInterface $source) {
   if ($delete_source_document) {
     // Deletes old file immediately to avoid unwanted temporary file duplicates.
     // Cannot use File::delete() because $file and $source share same ID.
-    file_unmanaged_delete($source->getFileUri());
+    $file_system->delete($source->getFileUri());
   }
 }

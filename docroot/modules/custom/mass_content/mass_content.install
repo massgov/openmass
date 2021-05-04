@@ -18,7 +18,7 @@ use Drupal\node\Entity\Node;
  */
 function mass_content_update_8001(&$sandbox) {
 
-  $node_storage = \Drupal::entityManager()->getStorage('node');
+  $node_storage = \Drupal::service('entity_type.manager')->getStorage('node');
 
   // Get all actions that have contact content.
   $query = \Drupal::entityQuery('node')
@@ -168,7 +168,7 @@ function mass_content_update_8001(&$sandbox) {
     'bundle' => 'action',
     'field_name' => 'field_action_contacts',
   ];
-  $field = \Drupal::entityManager()->getStorage('field_config')->loadByProperties($properties);
+  $field = \Drupal::service('entity_type.manager')->getStorage('field_config')->loadByProperties($properties);
   $field = reset($field);
   $field->delete();
 
@@ -179,7 +179,7 @@ function mass_content_update_8001(&$sandbox) {
  */
 function mass_content_update_8002(&$sandbox) {
 
-  $node_storage = \Drupal::entityManager()->getStorage('node');
+  $node_storage = \Drupal::service('entity_type.manager')->getStorage('node');
 
   // Get all actions that have details.
   $query = \Drupal::entityQuery('node')
@@ -212,7 +212,7 @@ function mass_content_update_8002(&$sandbox) {
  */
 function mass_content_update_8003(&$sandbox) {
 
-  $node_storage = \Drupal::entityManager()->getStorage('node');
+  $node_storage = \Drupal::service('entity_type.manager')->getStorage('node');
 
   // Update action paths.
   $query = \Drupal::entityQuery('node')
@@ -243,7 +243,7 @@ function mass_content_update_8003(&$sandbox) {
  */
 function mass_content_update_8004(&$sandbox) {
 
-  $node_storage = \Drupal::entityManager()->getStorage('node');
+  $node_storage = \Drupal::service('entity_type.manager')->getStorage('node');
 
   // Create subtopics paths.
   $query = \Drupal::entityQuery('node')
@@ -263,7 +263,7 @@ function mass_content_update_8004(&$sandbox) {
  */
 function mass_content_update_8005(&$sandbox) {
 
-  $node_storage = \Drupal::entityManager()->getStorage('node');
+  $node_storage = \Drupal::service('entity_type.manager')->getStorage('node');
 
   // Unpublish all subtopics.
   $query = \Drupal::entityQuery('node')
@@ -281,10 +281,10 @@ function mass_content_update_8005(&$sandbox) {
  * Remove 1up/2up stacked bands.
  */
 function mass_content_update_8006(&$sandbox) {
-  $content_type = \Drupal::entityManager()->getStorage('node_type')->load('1up_stacked_band');
+  $content_type = \Drupal::service('entity_type.manager')->getStorage('node_type')->load('1up_stacked_band');
   $content_type->delete();
 
-  $content_type = \Drupal::entityManager()->getStorage('node_type')->load('2up_stacked_band');
+  $content_type = \Drupal::service('entity_type.manager')->getStorage('node_type')->load('2up_stacked_band');
   $content_type->delete();
 }
 
@@ -909,15 +909,19 @@ function mass_content_update_8011() {
   }
 }
 
+// @codingStandardsIgnoreStart
 /**
+ *  This function is commented out because the applyupdates method is depricated.
+ *
  * More fixes for media entity.
  *
  * This runs entity updates that did not properly get run after
  * the switch from media_entity to core media.
- */
 function mass_content_update_8012() {
   Drupal::entityDefinitionUpdateManager()->applyupdates();
 }
+ */
+// @codingStandardsIgnoreEnd
 
 /**
  * Even more fixes for media entity.

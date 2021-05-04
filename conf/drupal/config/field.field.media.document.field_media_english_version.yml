@@ -1,0 +1,25 @@
+uuid: 2ff04409-f7cd-4b56-a446-38b92081448c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_media_english_version
+    - media.type.document
+id: media.document.field_media_english_version
+field_name: field_media_english_version
+entity_type: media
+bundle: document
+label: 'English version'
+description: 'Choose the English language version of this document. A link to the English version will appear on the "Translations" tab.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: views
+  handler_settings:
+    view:
+      view_name: english_versions_media
+      display_name: entity_reference_1
+      arguments: {  }
+field_type: entity_reference

@@ -120,7 +120,7 @@ function mass_views_field_views_data_alter(array &$data, FieldStorageConfigInter
 
     // Provide a reverse relationship.
     $args['@entity'] = $entity_type->getLabel();
-    $args['@label'] = $target_entity_type->getLowercaseLabel();
+    $args['@label'] = $target_entity_type->getSingularLabel();
     $pseudo_field_name = 'linked_by__' . $entity_type_id . '__' . $field_name;
     $data[$target_base_table][$pseudo_field_name]['relationship'] = [
       'title' => t('@entity linking to node using @field_name', $args),

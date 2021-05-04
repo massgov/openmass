@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.link_and_description
+    - field.field.node.rules.field_intended_audience
     - field.field.node.rules.field_organizations
     - field.field.node.rules.field_reusable_label
     - field.field.node.rules.field_rules_adopted_date
@@ -47,6 +48,7 @@ content:
     type: string
     region: content
 hidden:
+  computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
   field_intended_audience: true
@@ -70,6 +72,7 @@ hidden:
   field_rules_type: true
   field_rules_updates: true
   field_state_organization_tax: true
+  langcode: true
   links: true
   page_next: true
   page_previous: true

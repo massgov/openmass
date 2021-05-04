@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.campaign_landing.field_campaign_landing_metatags
+    - field.field.node.campaign_landing.field_english_version
     - field.field.node.campaign_landing.field_header
     - field.field.node.campaign_landing.field_kpi_ctr_button_links
     - field.field.node.campaign_landing.field_kpi_ctr_key_msg
@@ -34,17 +35,19 @@ third_party_settings:
         - field_meta_description
         - field_organizations
         - field_reusable_label
+        - langcode
+        - field_english_version
       parent_name: group_campaign_landing_edit_form
       weight: 6
       format_type: tab
       format_settings:
-        label: Overview
         formatter: open
         description: "A promotional page is a simple, engaging, and visually appealing landing page that supports a marketing or awareness campaign by the state government by conveying a focused message, over a finite time period. <a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/promotional-page\" target=\"_blank\">Learn about authoring Promotional pages.</a>\r\n<br><br>Editors can get permissions to publish Promotional pages after attending an office hours session to receive training.  <a href=\"https://massgovdigital.gitbook.io/knowledge-base/digital-service-resources-1/get-help-from-the-mass.gov-team/ma-digital-service-office-hours\">Sign up here</a>."
         required_fields: true
         id: ''
         classes: ''
       label: Overview
+      region: content
     group_campaign_landing_edit_form:
       children:
         - group_overview
@@ -58,6 +61,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Campaign Landing Edit Form'
+      region: content
     group_content:
       children:
         - field_header
@@ -66,13 +70,13 @@ third_party_settings:
       weight: 7
       format_type: tab
       format_settings:
-        label: Content
-        formatter: open
         description: "Choose the Header that you want to appear at the top of your page and add up to 9 sections. The Header consists of a title and text that is either over an image or solid color (Key message), or a video.<br><br>\r\nWe recommend you keep the page as short and simple as possible with a single call to action. <a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/promotional-page/content-tab\" target=\"_blank\">Learn about adding content to Promotional pages.</a>"
+        formatter: closed
         required_fields: true
         id: ''
         classes: ''
       label: Content
+      region: content
     group_kpis:
       children:
         - field_promotional_kpi_choice
@@ -85,13 +89,13 @@ third_party_settings:
       weight: 9
       format_type: tab
       format_settings:
-        label: 'Key Performance Indicators'
         formatter: closed
         description: 'KPIs allow you to define what counts as success for this page. <a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/promotional-page/key-performance-indicators" target="_blank">Learn about choosing Key Performance Indicators.</a>'
         required_fields: true
         id: ''
         classes: ''
       label: 'Key Performance Indicators'
+      region: content
 id: node.campaign_landing.default
 targetEntityType: node
 bundle: campaign_landing
@@ -103,6 +107,34 @@ content:
       sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
+    region: content
+  field_english_version:
+    weight: 5
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        094c1513-cd9a-4fb3-b54e-2a1b7d0606a5:
+          dependee: langcode
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: en
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: campaign_landing
+    type: entity_reference_autocomplete
     region: content
   field_header:
     type: paragraphs
@@ -118,9 +150,9 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
       features:
-        duplicate: duplicate
-        collapse_edit_all: collapse_edit_all
         add_above: '0'
+        collapse_edit_all: collapse_edit_all
+        duplicate: duplicate
     third_party_settings: {  }
     region: content
   field_kpi_ctr_button_links:
@@ -299,11 +331,18 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
       features:
-        duplicate: duplicate
-        collapse_edit_all: collapse_edit_all
         add_above: add_above
+        collapse_edit_all: collapse_edit_all
+        duplicate: duplicate
     third_party_settings: {  }
     region: content
+  langcode:
+    type: language_select
+    weight: 4
+    region: content
+    settings:
+      include_locked: false
+    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 9

@@ -21,7 +21,6 @@ dependencies:
     - field.field.node.topic_page.field_topic_type
     - image.style.thumbnail
     - node.type.topic_page
-    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -46,6 +45,7 @@ third_party_settings:
         classes: ''
         direction: horizontal
       label: 'Topic Page Edit Form'
+      region: content
     group_overview:
       children:
         - title
@@ -70,6 +70,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: Overview
+      region: content
     group_content_cards:
       children:
         - field_topic_display_links
@@ -84,6 +85,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: 'Content cards'
+      region: content
     group_related_list:
       children:
         - field_topic_ref_related_topics
@@ -97,6 +99,7 @@ third_party_settings:
         description: ''
         required_fields: true
       label: 'Related list'
+      region: content
 id: node.topic_page.default
 targetEntityType: node
 bundle: topic_page
@@ -309,7 +312,7 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 10
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -321,7 +324,7 @@ content:
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -356,7 +359,7 @@ content:
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 30
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -367,6 +370,7 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
+  langcode: true
   path: true
   promote: true
   status: true

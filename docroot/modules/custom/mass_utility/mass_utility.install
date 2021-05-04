@@ -5,6 +5,7 @@
  * Utility methods and helpers.
  */
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\media\Entity\Media;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
@@ -35,7 +36,7 @@ function mass_utility_install() {
       'bundle' => 'action',
       'field_name' => 'field_contact_group',
     ];
-    $field_to_delete = \Drupal::entityManager()->getStorage('field_config')->loadByProperties($properties);
+    $field_to_delete = \Drupal::service('entity_type.manager')->getStorage('field_config')->loadByProperties($properties);
     foreach ($field_to_delete as $field) {
       $field->delete();
     }
@@ -201,7 +202,7 @@ function mass_utility_update_8004(&$sandbox) {
  * Delete the agency content type.
  */
 function mass_utility_update_8005(&$sandbox) {
-  $content_type = \Drupal::entityManager()->getStorage('node_type')->load('agency');
+  $content_type = \Drupal::service('entity_type.manager')->getStorage('node_type')->load('agency');
   $content_type->delete();
 }
 
@@ -270,7 +271,7 @@ function mass_utility_update_8007(&$sandbox) {
   ];
 
   foreach ($properties as $property) {
-    $field_to_delete = \Drupal::entityManager()->getStorage('field_config')->loadByProperties($property);
+    $field_to_delete = \Drupal::service('entity_type.manager')->getStorage('field_config')->loadByProperties($property);
     foreach ($field_to_delete as $field) {
       $field->delete();
     }
@@ -292,7 +293,7 @@ function mass_utility_update_8008(&$sandbox) {
     'bundle' => 'service_page',
     'field_name' => 'field_service_ref_details_6',
   ];
-  $fields = \Drupal::entityManager()->getStorage('field_config')->loadByProperties($properties);
+  $fields = \Drupal::service('entity_type.manager')->getStorage('field_config')->loadByProperties($properties);
   foreach ($fields as $field) {
     $field->delete();
   }
@@ -313,7 +314,7 @@ function mass_utility_update_8009(&$sandbox) {
     'bundle' => 'topic_page',
     'field_name' => 'field_topic_ref_content_cards',
   ];
-  $fields = \Drupal::entityManager()->getStorage('field_config')->loadByProperties($properties);
+  $fields = \Drupal::service('entity_type.manager')->getStorage('field_config')->loadByProperties($properties);
   foreach ($fields as $field) {
     $field->delete();
   }
@@ -332,7 +333,7 @@ function mass_utility_update_8010(&$sandbox) {
  * Delete press release content type.
  */
 function mass_utility_update_8011(&$sandbox) {
-  $content_type = \Drupal::entityManager()->getStorage('node_type')->load('press_release');
+  $content_type = \Drupal::service('entity_type.manager')->getStorage('node_type')->load('press_release');
   $content_type->delete();
 }
 
@@ -346,7 +347,7 @@ function mass_utility_update_8012(&$sandbox) {
     'bundle' => 'adjustment_type',
     'field_name' => 'field_adjustment_type_related',
   ];
-  $fields = \Drupal::entityManager()->getStorage('field_config')->loadByProperties($properties);
+  $fields = \Drupal::service('entity_type.manager')->getStorage('field_config')->loadByProperties($properties);
   foreach ($fields as $field) {
     $field->delete();
   }
@@ -461,7 +462,7 @@ function mass_utility_update_8015() {
 
   foreach ($field_names as $field_name => $uuids) {
     /** @var \Drupal\field\Entity\FieldConfig[] $instances */
-    $instances = \Drupal::entityManager()
+    $instances = \Drupal::service('entity_type.manager')
       ->getStorage('field_config')
       ->loadByProperties([
         'entity_type' => 'node',
@@ -472,7 +473,7 @@ function mass_utility_update_8015() {
       $instance->delete();
     }
 
-    $storages = \Drupal::entityManager()
+    $storages = \Drupal::service('entity_type.manager')
       ->getStorage('field_storage_config')
       ->loadByProperties([
         'entity_type' => 'node',
@@ -628,7 +629,7 @@ function mass_utility_update_8024() {
 function mass_utility_update_8025() {
   // Add an icon for File Browser.
   $data = file_get_contents(drupal_get_path('theme', 'mass_admin_theme') . '/icons/embed_image.png');
-  $file = file_save_data($data, 'public://file_browser_icon.png', FILE_EXISTS_REPLACE);
+  $file = file_save_data($data, 'public://file_browser_icon.png', FileSystemInterface::EXISTS_REPLACE);
   $configuration = \Drupal::configFactory()->get('embed.button.file_browser');
   $uuid = $configuration->get('icon_uuid');
 

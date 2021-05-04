@@ -1395,7 +1395,7 @@ function mass_validation_node_presave($node) {
     $acronym = $node->get('field_title_sub_text')->value;
     // Add parenthesis and remove any previously existing ones.
     // Also assure the use of capital letters.
-    $acronym = Unicode::strtoupper(strtr($acronym, ['(' => '', ')' => '']));
+    $acronym = mb_strtoupper(strtr($acronym, ['(' => '', ')' => '']));
     $node->get('field_title_sub_text')->setValue('(' . trim($acronym) . ')');
   }
 }
