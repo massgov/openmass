@@ -4025,6 +4025,36 @@ function mass_theme_preprocess_node(&$variables) {
   if (function_exists($view_mode_function)) {
     $view_mode_function($variables);
   }
+
+  // Set data_listing_icon for Data Listing nodes.
+  $icon_map = [
+    'Data resource' => 'report',
+    'Dataset' => 'data',
+    'Data catalog' => 'catalog',
+  ];
+  // This field determines if it's a data listing.
+  if ($node->hasField('field_data_flag') && !$node->get('field_data_flag')->isEmpty()) {
+    // The value of the flag is 'data'.
+    if ($node->field_data_flag->value == 'data') {
+      $tid = '';
+      // The data type is stored in several different fields. Find the one used
+      // by the current node and store the target_id.
+      if ($node->hasField('field_details_data_type') && !$node->get('field_details_data_type')->isEmpty()) {
+        $tid = $node->field_details_data_type->target_id;
+      }
+      elseif ($node->hasField('field_binder_data_type') && !$node->get('field_binder_data_type')->isEmpty()) {
+        $tid = $node->field_binder_data_type->target_id;
+      }
+      elseif ($node->hasField('field_list_data_type') && !$node->get('field_list_data_type')->isEmpty()) {
+        $tid = $node->field_list_data_type->target_id;
+      }
+      if ($tid) {
+        // Load the data type term and store the correct id for the component.
+        $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($tid);
+        $variables['data_listing_icon'] = $icon_map[$term->label()];
+      }
+    }
+  }
 }
 
 /**

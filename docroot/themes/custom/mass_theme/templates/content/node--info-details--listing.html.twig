@@ -88,7 +88,8 @@
 {% include "@molecules/general-teaser.twig" with {
   "generalTeaser" : {
     "eyebrow": {
-      "label": content.field_details_data_type['#items'].0.entity.name.value
+      "icon": data_listing_icon ?: '',
+      "label": content.field_details_data_type['#items'].0.entity.name.value ?: ''
     },
     "title" : {
       "href": url,
@@ -103,7 +104,7 @@
       "path": "@atoms/11-text/paragraph.twig",
       "data": {
         "paragraph" : {
-          "text": node.field_short_desc.value
+          "text": node.field_short_desc.value ?: ''
         }
       }
     }]
