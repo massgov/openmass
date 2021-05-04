@@ -3,7 +3,7 @@ Every Tuesday night, a small but mighty [engineering team](https://github.com/ma
 
 The principal roles involved are:
 - *Release Manager*. An engineer who owns the release process, and performs the shell commands and CI approvals that are needed to execute the release.
-- *Quality Approver*. This person is in charge of testing the release branch as a whole, and certifying it as ready for production. This is a semi-technical role, usually performed by our Product Owner.
+- *Quality Approver*. This person is in charge of testing the release branch as a whole and certifying that it is ready for production. This is a semi-technical role, usually performed by our Product Owner.
 
 ## Tuesday, 1pm
 A [scheduled trigger in our CircleCI config](https://github.com/massgov/openmass/blob/350566451f7158fb0099a56e875595eaa3d21ad5/.circleci/config.yml#L605-L614) automatically creates a [release branch](https://github.com/massgov/openmass/pull/700) from our mainline `develop` branch. We could have left this step for release managers to do manually, but this automation provides a vital non-technical functional - organizational discipline. Release managers are empowered and expected to reject all feature additions that want to merge after 1pm. Last minute merges are a threat to the stability of the site. We still have a fury of merges on Tuesday morning, but at least the afternoon is allocated to polishing the release branch before deployment to Production.
