@@ -2,7 +2,7 @@
 **
 ** Mass.gov CDN: https://www.mass.gov/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js
 ** Add this script into the iframe source code before the closing body tag:
-** <script type="text/javascript" src="https://mass.gov/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js"></script>
+** <script type="text/javascript" src="https://www.mass.gov/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js"></script>
 ** This code monitors the iframe page for changes in dimensions. When change is detected, it sends send the latest dimensions to the parent page using postMessage
 */
 
