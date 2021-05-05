@@ -20,6 +20,7 @@ dependencies:
     - field.field.node.service_details.field_service_detail_sections
     - field.field.node.service_details.field_state_organization_tax
     - node.type.service_details
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -52,21 +53,18 @@ third_party_settings:
         - field_service_detail_lede
         - field_service_detail_overview
         - field_organizations
-        - langcode
         - field_english_version
         - field_data_flag
-        - field_details_data_type
-        - field_data_resource_type
         - field_data_format
+        - field_details_data_type
         - field_data_topic
-        - field_data_sub_topic
+        - field_data_resource_type
         - field_intended_audience
         - field_reusable_label
       parent_name: group_node_edit_form
       weight: 20
       format_type: tab
       format_settings:
-        label: Overview
         formatter: open
         description: 'Service Detail pages offer information about the service they’re linked to. A Service Detail page should be linked to a Service page – make sure that you have a Service page in mind before you start. Keep the title as short as possible and use plain language. <a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/services-and-info/service-detail" target="_blank">Learn about authoring Service Detail pages.</a>'
         required_fields: true
@@ -81,7 +79,6 @@ third_party_settings:
       weight: 21
       format_type: tab
       format_settings:
-        label: Sections
         formatter: closed
         description: 'A Service Detail page is made up of one or more sections. Sections can contain text (with a header and, optionally, additional resources for that section), or a section can be a video. We recommend limiting a Service Detail page to no more than 8 sections.'
         required_fields: true
@@ -97,7 +94,6 @@ third_party_settings:
       weight: 22
       format_type: tab
       format_settings:
-        label: Related
         formatter: closed
         description: 'Use this area to add related content.'
         required_fields: true
@@ -112,7 +108,7 @@ mode: default
 content:
   created:
     type: datetime_timestamp
-    weight: 3
+    weight: 2
     settings: {  }
     third_party_settings: {  }
     region: content
@@ -304,7 +300,7 @@ content:
     type: link_default
     region: content
   field_service_detail_metatags:
-    weight: 7
+    weight: 6
     settings:
       sidebar: true
     third_party_settings: {  }
@@ -331,7 +327,7 @@ content:
     third_party_settings: {  }
     region: content
   field_state_organization_tax:
-    weight: 8
+    weight: 7
     settings:
       match_operator: CONTAINS
       size: 60
@@ -342,31 +338,31 @@ content:
     region: content
   langcode:
     type: language_select
-    weight: 26
+    weight: 12
     region: content
     settings:
       include_locked: false
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 11
+    weight: 10
     settings: {  }
     region: content
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 9
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   scheduler_settings:
-    weight: 4
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -380,7 +376,7 @@ content:
     region: content
   uid:
     type: entity_reference_autocomplete
-    weight: 2
+    weight: 1
     settings:
       match_operator: CONTAINS
       size: 60
@@ -390,18 +386,18 @@ content:
     region: content
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 6
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 10
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 11
     region: content
     settings: {  }
     third_party_settings: {  }
