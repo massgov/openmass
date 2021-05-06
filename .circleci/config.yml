@@ -989,22 +989,23 @@ workflows:
     jobs:
       - build
       - populate:
-          name: populate --sanitize
+          name: massgov.populate --sanitize
           requires: [build]
           sanitizeOption: --sanitize
-          instance: comass/mysql-sanitized:latest
+          instance: massgov/mysql-sanitized:latest
       - populate:
-          name: populate --super-sanitize
+          name: massgov.populate --super-sanitize
           requires: [build]
           sanitizeOption: --super-sanitize
-          instance: comass/mysql-sanitized:super
+          instance: massgov/mysql-sanitized:super
     triggers:
       - schedule:
-          cron: "32 21 * * *"
+          cron: "42 15 * * *"
           filters:
             branches:
               only:
                 - develop
+                - move-from-comass
 
   # Usually triggered by drush ma:backstop.
   backstop_ad_hoc:
