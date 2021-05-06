@@ -1,3 +1,4 @@
+
 {#
 /**
  * @file
@@ -35,17 +36,19 @@
 {%
   set classes = [
     dom_id ? 'js-view-dom-id-' ~ dom_id,
+    'main-content',
+    'main-content--two main-content--reversed'
   ]
 %}
 <div{{ attributes.addClass(classes) }}>
   {{ title_prefix }}
-  {{ title }}
+  <h1>{{ title }}</h1>
   {{ title_suffix }}
 
   {% if header %}
-    <header>
+    <h2 class="ma__results-heading__title">
       {{ header }}
-    </header>
+    </h2>
   {% endif %}
 
   {{ exposed }}
@@ -60,12 +63,6 @@
 
   {{ attachment_after }}
   {{ more }}
-
-  {% if footer %}
-    <footer>
-      {{ footer }}
-    </footer>
-  {% endif %}
 
   {{ feed_icons }}
 </div>
