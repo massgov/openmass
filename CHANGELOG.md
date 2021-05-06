@@ -1,5 +1,20 @@
 
 
+## [0.281.0] - May 4, 2021
+
+### Changed
+  - DP-20709: Set caching expiration to 1 year for the font files.
+  - DP-21703: Updated the help text on the page and document Pages Linking Here tabs.
+  - DP-21712: Documentation update for descendant manager.
+  
+### Removed
+  - DP-21730: Uninstalled the libraries, clamav, config_log, and restui contrib modules.
+  
+### Fixed
+  - DP-21745: Fixes issue that allowed for the creation of duplicate aliases.
+  
+
+
 ## [0.280.0] - April 27, 2021
 
 ### Changed
