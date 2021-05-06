@@ -37,7 +37,8 @@
   set classes = [
     dom_id ? 'js-view-dom-id-' ~ dom_id,
     'main-content',
-    'main-content--two main-content--reversed'
+    'main-content--two main-content--reversed',
+    'data-listing-wrapper'
   ]
 %}
 <div{{ attributes.addClass(classes) }}>
@@ -45,27 +46,29 @@
   <h1>{{ title }}</h1>
   {{ title_suffix }}
 
-  {% if header %}
-    <h2 class="ma__results-heading__title">
-      {{ header }}
-    </h2>
-  {% endif %}
-
   <aside class="sidebar">
     {{ exposed }}
   </aside>
 
-  {{ attachment_before }}
+  <section class="page-content">
+    {% if header %}
+      <h2 class="ma__results-heading__title">
+        {{ header }}
+      </h2>
+    {% endif %}
+    {{ attachment_before }}
 
-  {% if rows -%}
-    {{ rows }}
-  {% elseif empty -%}
-    {{ empty }}
-  {% endif %}
-  {{ pager }}
+    {% if rows -%}
+      {{ rows }}
+    {% elseif empty -%}
+      {{ empty }}
+    {% endif %}
+    {{ pager }}
+  
+    {{ attachment_after }}
+    {{ more }}
+    </section>
 
-  {{ attachment_after }}
-  {{ more }}
 
   {{ feed_icons }}
 </div>
