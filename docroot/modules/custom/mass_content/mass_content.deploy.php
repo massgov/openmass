@@ -367,8 +367,6 @@ function mass_content_deploy_how_to_headers(&$sandbox) {
     $node->set('field_what_you_need_header', 'What you need');
 
     // Save the node.
-    // Don't create a new revision.
-    $node->setNewRevision(FALSE);
     // Save without updating the last modified date. This requires a core patch
     // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
     $node->setSyncing(TRUE);
