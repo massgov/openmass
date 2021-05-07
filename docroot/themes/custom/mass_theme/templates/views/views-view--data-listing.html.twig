@@ -33,6 +33,9 @@
  * @ingroup themeable
  */
 #}
+
+{{ attach_library('mass_theme/views-view--data-listing') }}
+
 {%
   set classes = [
     dom_id ? 'js-view-dom-id-' ~ dom_id,
@@ -69,7 +72,7 @@
   
     {{ attachment_after }}
     {{ more }}
-    </section>
+  </section>
 
 
   {{ feed_icons }}
