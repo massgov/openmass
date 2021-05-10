@@ -147,6 +147,19 @@ function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_
 }
 
 /**
+ * Remove from_revision column.
+ *
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_scheduled_transitions_form_node_campaign_landing_scheduled_transitions_entity_form_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  unset($form['table']['#header']['from_state']);
+  unset($form['table']['#header']['from_revision']);
+  foreach ($form['table']['#rows'] as $key => $row) {
+    unset($form['table']['#rows'][$key]['from_revision']);
+  }
+}
+
+/**
  * Add helpful link to node edit form to ease migration.
  *
  * Implements hook_form_node_form_alter().
@@ -179,7 +192,7 @@ function mass_scheduled_transitions_do_form_alter(FormStateInterface $form_state
   $entity = $form_state->getFormObject()->getEntity();
 
   if ($entity->isNew()) {
-    $markup = t('Scheduled publishing has moved to a new <em>Scheduled Transitions</em> tab, just before Analytics. It will become visible after you save this content.');
+    $markup = t('Scheduled publishing has moved to a new <em>Scheduled Transitions</em> tab, near the Edit tab. It will become visible after you save this content.');
   }
   else {
     $url = $entity->toUrl('canonical')->toString() . '/scheduled-transitions';
