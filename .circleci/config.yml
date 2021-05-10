@@ -45,7 +45,7 @@ executors:
     parameters:
       instance:
         type: string
-        default: comass/mysql-sanitized:latest
+        default: massgov/mysql-sanitized:latest
     working_directory: /var/www/code
     # https://circleci.com/docs/2.0/configuration-reference/#resource_class
     resource_class: xlarge
@@ -234,7 +234,7 @@ jobs:
     parameters:
       instance:
         type: string
-        default: comass/mysql-sanitized:latest
+        default: massgov/mysql-sanitized:latest
       command:
         type: enum
         enum: ['phpunit', 'behat']
@@ -968,12 +968,12 @@ workflows:
       - test:
           name: test-phpunit-super
           command: phpunit
-          instance: comass/mysql-sanitized:super
+          instance: massgov/mysql-sanitized:super
           requires: [build]
       - test:
           name: test-super-behat
           command: behat
-          instance: comass/mysql-sanitized:super
+          instance: massgov/mysql-sanitized:super
           requires: [build]
     triggers:
       - schedule:
@@ -989,18 +989,18 @@ workflows:
     jobs:
       - build
       - populate:
-          name: populate --sanitize
+          name: massgov.populate --sanitize
           requires: [build]
           sanitizeOption: --sanitize
-          instance: comass/mysql-sanitized:latest
+          instance: massgov/mysql-sanitized:latest
       - populate:
-          name: populate --super-sanitize
+          name: massgov.populate --super-sanitize
           requires: [build]
           sanitizeOption: --super-sanitize
-          instance: comass/mysql-sanitized:super
+          instance: massgov/mysql-sanitized:super
     triggers:
       - schedule:
-          cron: "32 21 * * *"
+          cron: "42 15 * * *"
           filters:
             branches:
               only:
