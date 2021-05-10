@@ -24,6 +24,10 @@
 {{ attach_library('classy/messages') }}
 {% block messages %}
 {% for type, messages in message_list %}
+  {# Override 'type' for the "Unrecognized username or password" message to 'error.' #}
+  {% if 'Unrecognized username' in messages|first|striptags %}
+    {% set type = 'error' %}
+  {% endif %}
   {%
     set classes = [
       'messages',
