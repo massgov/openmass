@@ -159,7 +159,7 @@ class MassMoreListsListBuilder {
     $num_download_links = count($form_downloads['downloadLinks']);
 
     // Creates pager, which also returns current page value.
-    $page = $this->pagerManager->createPager($num_download_links, $this->pageLimit);
+    $page = $this->pagerManager->createPager($num_download_links, $this->pageLimit)->getCurrentPage();
     // Calculates pager offset.
     // @see https://api.drupal.org/api/drupal/core%21includes%21pager.inc/function/pager_default_initialize/8.5.x
     $offset = $this->pageLimit * $page;
