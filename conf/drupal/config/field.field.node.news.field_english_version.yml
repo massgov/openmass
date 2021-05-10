@@ -1,0 +1,26 @@
+uuid: 21e52e44-5c52-430f-aae1-bc54ea1e200a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_english_version
+    - node.type.news
+id: node.news.field_english_version
+field_name: field_english_version
+entity_type: node
+bundle: news
+label: 'English version'
+description: 'Choose the English version of this page. A link to the English version will appear on the "Translations" tab.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: views
+  handler_settings:
+    view:
+      view_name: english_versions
+      display_name: entity_reference_1
+      arguments:
+        - news
+field_type: entity_reference

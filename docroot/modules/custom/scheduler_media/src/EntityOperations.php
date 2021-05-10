@@ -175,14 +175,14 @@ class EntityOperations implements ContainerInjectionInterface {
         if (rand(1, 100) <= $publishing_percent) {
           // Randomly assign publish_on value in the range starting with the
           // created date and up to the selected time range in the future.
-          $entity->set('publish_on', rand($entity->created->value + 1, REQUEST_TIME + $time_range));
+          $entity->set('publish_on', rand($entity->created->value + 1, \Drupal::time()->getRequestTime() + $time_range));
         }
       }
       if ($unpublishing_percent && in_array($entity->getType(), $unpublishing_enabled_types)) {
         if (rand(1, 100) <= $unpublishing_percent) {
           // Randomly assign an unpublish_on value in the range from the later of
           // created datpublish_on date up to the time range in the future.
-          $entity->set('unpublish_on', rand(max($entity->created->value, $entity->publish_on->value), REQUEST_TIME + $time_range));
+          $entity->set('unpublish_on', rand(max($entity->created->value, $entity->publish_on->value), \Drupal::time()->getRequestTime() + $time_range));
         }
       }
     }
@@ -190,7 +190,7 @@ class EntityOperations implements ContainerInjectionInterface {
     if ($this->schedulerMediaManager->isDefaultSetting($media_entity, 'publish_enable') && !empty($entity->publish_on->value)) {
       $publication_allowed = $this->schedulerMediaManager->isAllowed($entity, 'publish');
       if ($this->schedulerMediaManager->isAllowed($entity, 'publish') && $this->isPublishImmediately($entity)
-          && $entity->publish_on->value <= REQUEST_TIME) {
+          && $entity->publish_on->value <= \Drupal::time()->getRequestTime()) {
 
         $event = new SchedulerMediaEvent($entity);
         $this->eventDispatcher->dispatch(SchedulerEvents::PRE_PUBLISH_IMMEDIATELY, $event);
@@ -211,9 +211,9 @@ class EntityOperations implements ContainerInjectionInterface {
         $entity->setPublished(FALSE);
 
         if ($publication_allowed) {
-          drupal_set_message(t('This post is unpublished and will be published @publish_time.', [
+          \Drupal::messenger()->addStatus(t('This post is unpublished and will be published @publish_time.', [
             '@publish_time' => $this->dateFormatter->format($entity->publish_on->value, 'long'),
-          ]), 'status', FALSE);
+          ]), FALSE);
         }
       }
     }

@@ -3,8 +3,17 @@
 ### Purpose
 
 The Descendant Manager indexes content using pre-defined field traversal paths in node type .yml
-files to determine relationships. These relationships are grouped into three
-types:
+files to determine relationships. 
+
+Specific use cases:
+- Determine the service that the page is in so that we can show the correct “login” links in the header, which we define on that service page.
+The service may or may not be directly connected to the page where we want to show the login link. It may be a grandparent. We may want to follow links upward and not strictly parent child relationships.  
+- Populate “Pages linking here” in Drupal.
+- Populate web metrics database with parent child relationships so that we can measure traffic to children (which represents all ancestors no matter what the depth).
+In this case, only the parent and child relationships are used, not linking.
+
+
+These relationships are grouped into three types:
 
 - Parents
 - Children
@@ -93,7 +102,7 @@ the level indicated by the asterisk you will need to specify each link or entity
 individually.**
 
 Further examples and usage of field traversal paths can be found in most node type `.yml`
-files.
+files. (conf/drupal/config/node.type.[content type].yml)
 
 ### Adding and updating content types
 
@@ -131,4 +140,23 @@ function mass_content_api_deploy_queue_nodes_for_save() {
   }
   drush_print('Queued ' . count($nids) . ' nodes for re-indexing to Descendants table.');
 }
+```
+### Descendant Manager queue
+
+To see how many items still need to be processed by descendant manager, run:
+
+```
+drush queue:list
+```
+To process all items in the queue, run:
+
+```
+drush queue:run mass_content_api_descendant_queue 
+```
+
+There are options to limit the number of items handled at once:  --items-limit=500 or --time-limit=30
+
+If there is a large number of items to process, consider batching them with a command like this:
+```
+watch -n 45 ahoy drush queue:run mass_content_api_descendant_queue --time-limit=30
 ```
