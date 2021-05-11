@@ -6,6 +6,8 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Language\LanguageDefault;
+use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Link;
 
 /**
@@ -20,13 +22,15 @@ class TranslationsController extends ControllerBase {
    */
   public function markup(EntityInterface $entity, $storage, $english_field_name) {
     $markup = '';
-
+    $language_manager = new LanguageManager(new LanguageDefault([]));
     $languages = $this->getTranslationLanguages($entity, $storage, $english_field_name);
 
     foreach ($languages as $entity) {
       $entity_lang = $storage->load($entity->id());
       $markup .= '<h3>' . $entity_lang->language()->getName() . '</h3>';
-      $markup .= Link::fromTextAndUrl($entity_lang->label(), $entity_lang->toUrl())->toString();
+      $markup .= Link::fromTextAndUrl($entity_lang->label(), $entity_lang->toUrl('canonical', [
+        'language' => $language_manager->getLanguage('en'),
+      ]))->toString();
     }
 
     return [
