@@ -894,7 +894,7 @@ function mass_utility_remove_login_validation(array &$form, FormStateInterface $
   if (isset($errors['name'])) {
     $error = $errors['name'];
     // Rebuild translated error message for displaying link.
-    \Drupal::messenger()->addStatus($error);
+    \Drupal::messenger()->addError($error);
   }
 }
 
