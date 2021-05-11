@@ -121,6 +121,15 @@ function mass_scheduled_transitions_scheduled_transition_access(EntityInterface 
 }
 
 /**
+ * Move link to Admin => Reports.
+ *
+ * Implements hook_menu_links_discovered_alter().
+ */
+function mass_scheduled_transitions_menu_links_discovered_alter($links) {
+  $links['entity.scheduled_transition.collection']['parent'] = 'system.admin_reports';
+}
+
+/**
  * Implements hook_form_alter().
  *
  * - Populate default value for the time so users don't have to complete the time element.
@@ -128,7 +137,10 @@ function mass_scheduled_transitions_scheduled_transition_access(EntityInterface 
  * - Applies to the add_form.
  */
 function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if (strpos($form_id, 'scheduled_transitions_add_form_form')) {
+  if (strpos($form_id, '_scheduled_transitions_entity_form_form')) {
+    mass_scheduled_transitions_entity_form_do_alter($form, $form_state, $form_id);
+  }
+  elseif (strpos($form_id, 'scheduled_transitions_add_form_form')) {
     // Hide big revisions tableselect.
     $form['scheduled_transitions']['revision']['#access'] = FALSE;
 
@@ -148,10 +160,8 @@ function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_
 
 /**
  * Remove from_revision column.
- *
- * Implements hook_form_FORM_ID_alter().
  */
-function mass_scheduled_transitions_form_node_campaign_landing_scheduled_transitions_entity_form_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+function mass_scheduled_transitions_entity_form_do_alter(&$form, FormStateInterface $form_state, $form_id) {
   unset($form['table']['#header']['from_state']);
   unset($form['table']['#header']['from_revision']);
   foreach ($form['table']['#rows'] as $key => $row) {
