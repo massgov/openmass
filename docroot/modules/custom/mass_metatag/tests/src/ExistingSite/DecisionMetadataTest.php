@@ -104,7 +104,7 @@ class DecisionMetadataTest extends MetadataTestCase {
         '@type' => 'AboutPage',
         '@id' => $url . '#decision',
         'about' => 'TestOverview',
-        'releasedEvent' => '<time datetime="2012-12-31T12:00:00Z">Mon, 12/31/2012 - 12:00</time>',
+        'releasedEvent' => 'Mon, 12/31/2012 - 12:00',
         'significantLink' => [
           file_create_url('public://test.txt'),
         ],
