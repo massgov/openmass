@@ -21,6 +21,7 @@ dependencies:
     - field.field.node.advisory.field_reusable_label
     - field.field.node.advisory.field_state_organization_tax
     - node.type.advisory
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - datetime
@@ -84,7 +85,6 @@ third_party_settings:
       weight: 13
       format_type: tab
       format_settings:
-        label: Details
         formatter: closed
         description: ''
         required_fields: true
@@ -114,7 +114,6 @@ third_party_settings:
       weight: 11
       format_type: fieldset
       format_settings:
-        label: '  '
         description: ''
         id: ''
         classes: ''
@@ -319,7 +318,7 @@ content:
     third_party_settings:
       maxlength:
         maxlength_js: 70
-        maxlength_js_label: 'Make sure your page title is specific and unique. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <strong>Current title length: @count characters.</strong>'
+        maxlength_js_label: 'Make sure your page title is specific, unique, and in plain language. Use words that someone would use to search for this content. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <strong>Current title length: @count characters.</strong>'
         maxlength_js_enforce_attribute: false
   uid:
     type: entity_reference_autocomplete

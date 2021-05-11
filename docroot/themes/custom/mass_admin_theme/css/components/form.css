@@ -402,7 +402,20 @@ div.js-form-item .ief-entity-table tr.ief-row-entity td {
 }
 
 .field--name-title .counter.warning.error strong,
-.field--name-field-regulation-cmr-chapter .counter.warning.error strong,
+.field--name-field-regulation-title .counter.warning.error strong,
 .field--name-field-executive-title .counter.warning.error strong {
   color: red;
+}
+
+.field--name-title .form-type-textfield .counter,
+.field--name-field-regulation-title .form-type-textfield .counter,
+.field--name-field-executive-title .form-type-textfield .counter {
+  order: 5;
+}
+
+.field--name-title .form-type-textfield,
+.field--name-field-regulation-title .form-type-textfield,
+.field--name-field-executive-title .form-type-textfield {
+  display: flex;
+  flex-direction: column;
 }
