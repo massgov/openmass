@@ -84,7 +84,7 @@ function mass_content_post_update_contact(&$sandbox) {
     // Save the node.
     $node->setNewRevision();
     $node->setRevisionUserId(1);
-    $node->setRevisionCreationTime(REQUEST_TIME);
+    $node->setRevisionCreationTime(\Drupal::time()->getRequestTime());
     $node->setRevisionLogMessage('Programmatic update to move phone and email data into a new field structure.');
     $node->save();
     $sandbox['progress']++;
@@ -127,7 +127,7 @@ function mass_content_post_update_curated_list_type(&$sandbox) {
     $entity->set('field_list_type', 'links');
     $entity->setNewRevision();
     $entity->setRevisionUserId(1);
-    $entity->setRevisionCreationTime(REQUEST_TIME);
+    $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
     $entity->setRevisionLogMessage('Programmatic update to set a default curated list type for each instance.');
     $entity->save();
 
@@ -166,7 +166,7 @@ function mass_content_post_update_location_icons(&$sandbox) {
         'name' => $new_term['name'],
         'vid' => 'location_icon_park',
       ];
-      $existing_term = \Drupal::entityManager()
+      $existing_term = \Drupal::service('entity_type.manager')
         ->getStorage('taxonomy_term')
         ->loadByProperties($new_term_properties);
       $existing_term = reset($existing_term);
@@ -182,7 +182,7 @@ function mass_content_post_update_location_icons(&$sandbox) {
 
     $new_terms_names = array_column($new_terms, 'name');
     // Get all actions that have contact content.
-    $node_storage = \Drupal::entityManager()->getStorage('node');
+    $node_storage = \Drupal::service('entity_type.manager')->getStorage('node');
     $query = \Drupal::entityQuery('node')
       ->condition('type', 'location')
       ->exists('field_location_icons');
@@ -224,7 +224,7 @@ function mass_content_post_update_location_icons(&$sandbox) {
           'name' => $term_name,
           'vid' => 'location_icon_park',
         ];
-        $new_term = \Drupal::entityManager()
+        $new_term = \Drupal::service('entity_type.manager')
           ->getStorage('taxonomy_term')
           ->loadByProperties($new_term_properties);
         $new_term = reset($new_term);
@@ -251,7 +251,7 @@ function mass_content_post_update_location_icons(&$sandbox) {
           'name' => $new_term['name'],
           'vid' => 'location_icon',
         ];
-        $old_terms = \Drupal::entityManager()
+        $old_terms = \Drupal::service('entity_type.manager')
           ->getStorage('taxonomy_term')
           ->loadByProperties($old_term_properties);
         $old_term = reset($old_terms);

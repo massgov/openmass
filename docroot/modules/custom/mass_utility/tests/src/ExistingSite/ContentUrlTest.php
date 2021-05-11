@@ -54,7 +54,7 @@ class ContentUrlTest extends ExistingSiteBase {
 
       $langcode = $node->language()->getId();
       $source = '/' . $node->toUrl()->getInternalPath();
-      $path_alias = \Drupal::service('path.alias_manager')->getAliasByPath($source, $langcode);
+      $path_alias = \Drupal::service('path_alias.manager')->getAliasByPath($source, $langcode);
 
       if (!empty($path_pattern_substring)) {
         $this->assertContains($path_pattern_substring, $path_alias);
@@ -113,7 +113,7 @@ class ContentUrlTest extends ExistingSiteBase {
 
       $langcode = $node->language()->getId();
       $source = '/' . $node->toUrl()->getInternalPath();
-      $path_alias = \Drupal::service('path.alias_manager')->getAliasByPath($source, $langcode);
+      $path_alias = \Drupal::service('path_alias.manager')->getAliasByPath($source, $langcode);
 
       // For patterns like "/how-to/some-how-to-page-title".
       if (!empty($path_pattern_substring)) {

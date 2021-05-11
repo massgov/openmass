@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_media\Plugin\Action;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Action\ActionBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\media\MediaInterface;
@@ -30,7 +31,7 @@ class MediaModerationStateRestricted extends ActionBase {
       // Path to save files to.
       $directory = "documents" . "/" . date("Y") . "/" . date("m") . "/" . date("d") . "/";
 
-      file_move($file, 'private://' . $directory, FILE_EXISTS_REPLACE);
+      file_move($file, 'private://' . $directory, FileSystemInterface::EXISTS_REPLACE);
     }
   }
 

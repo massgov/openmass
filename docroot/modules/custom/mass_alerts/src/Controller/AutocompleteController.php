@@ -22,7 +22,7 @@ class AutocompleteController extends ControllerBase {
     // Get the typed string from the URL, if it exists.
     if ($input = $request->query->get('q')) {
       $typed_string = Tags::explode($input);
-      $typed_string = Unicode::strtolower(array_pop($typed_string));
+      $typed_string = mb_strtolower(array_pop($typed_string));
 
       // Look up users by partial email address match.
       $query = \Drupal::service('entity.query')->get('user');
@@ -32,7 +32,7 @@ class AutocompleteController extends ControllerBase {
         ->execute();
 
       foreach ($uids as $uid) {
-        $user = user_load($uid);
+        $user = \Drupal::service('entity_type.manager')->getStorage('user')->load($uid);
         $results[] = [
           'value' => $user->getEmail(),
           'label' => $user->getEmail(),

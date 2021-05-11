@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_content;
 
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\node\NodeInterface;
@@ -72,7 +73,7 @@ class EventManager {
     $now = new \DateTime('now', new \DateTimezone('America/New_York'));
     $now->setTimezone(new \DateTimezone('UTC'));
 
-    $query->condition('field_event_date.end_value', $now->format(DATETIME_DATETIME_STORAGE_FORMAT), '<=');
+    $query->condition('field_event_date.end_value', $now->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '<=');
     return $query;
   }
 
@@ -84,7 +85,7 @@ class EventManager {
     $now = new \DateTime('now', new \DateTimezone('America/New_York'));
     $now->setTimezone(new \DateTimezone('UTC'));
 
-    $query->condition('field_event_date.end_value', $now->format(DATETIME_DATETIME_STORAGE_FORMAT), '>');
+    $query->condition('field_event_date.end_value', $now->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>');
     return $query;
   }
 
