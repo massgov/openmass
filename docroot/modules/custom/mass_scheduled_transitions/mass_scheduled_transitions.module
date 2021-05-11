@@ -125,7 +125,7 @@ function mass_scheduled_transitions_scheduled_transition_access(EntityInterface 
  *
  * Implements hook_menu_links_discovered_alter().
  */
-function mass_scheduled_transitions_menu_links_discovered_alter($links) {
+function mass_scheduled_transitions_menu_links_discovered_alter(&$links) {
   $links['entity.scheduled_transition.collection']['parent'] = 'system.admin_reports';
 }
 
