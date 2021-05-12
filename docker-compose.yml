@@ -74,8 +74,8 @@ services:
     # Use the heavily sanitized version of the database by default.
     # If needed, access can be given to the less heavily sanitized db, "latest"
     # That version includes revisions, unpublished content, and other information we keep private
-    image: comass/mysql-sanitized:super
-    # image: comass/mysql-sanitized:latest
+    image: massgov/mysql-sanitized:super
+    # image: massgov/mysql-sanitized:latest
     environment:
       MYSQL_USER: circle
       MYSQL_PASSWORD: circle

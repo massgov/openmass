@@ -98,8 +98,7 @@ class EventMetadataTest extends MetadataTestCase {
           'price' => '1 per person',
           'priceCurrency' => 'USD',
         ],
-        'startDate' => '<time datetime="2012-12-31T00:00:00Z">2012-12-31T00:00:00-0500</time>
- - <time datetime="2013-01-01T00:00:00Z">2013-01-01T00:00:00-0500</time>',
+        'startDate' => "2012-12-31T00:00:00-0500\n - 2013-01-01T00:00:00-0500",
         'potentialAction' => [
           [
             'name' => 'Take Action!',
