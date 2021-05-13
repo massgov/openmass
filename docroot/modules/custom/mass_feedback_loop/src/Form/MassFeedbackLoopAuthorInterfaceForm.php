@@ -83,10 +83,21 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     $feedback_api_params = [];
 
     $params = $query->all();
+    dpm($params);
     foreach ($params as $key => $param) {
       if (in_array($key, ['org_id', 'node_id', 'author_id', 'watch_content'])) {
         if (($key == 'watch_content') || !empty($param)) {
           $feedback_api_params[$key] = $param;
+          //if (is_array($param)) {
+          //  foreach ($param as $p) {
+          //    if (strpos($p, ',') !== FALSE) {
+          //      $feedback_api_params[$key] += explode(',' )
+          //    }
+          //  }
+          //}
+          if (is_array($param) && strpos($param[0], ',') !== FALSE) {
+            $feedback_api_params[$key] = explode(',', $param[0]);
+          }
         }
       }
       else {
@@ -125,6 +136,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
         'placeholder' => "Start typing Organizations to filter by ...",
         'class' => ['use-selectize-autocomplete']
       ],
+      // TODO split on comma, load array.
       '#default_value' => isset($feedback_api_params['org_id']) ? $feedback_api_params['org_id'] : NULL,
     ];
 
@@ -134,6 +146,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#multiple' => TRUE,
       '#title' => $this->t('Author'),
       '#options' => $this->getAuthorUsernames(),
+      // TODO split on comma, load array.
       '#default_value' => isset($feedback_api_params['author_id']) ? $feedback_api_params['author_id'] : NULL,
       '#attributes' => [
         'placeholder' => "Start typing Author usernames ...",
@@ -177,6 +190,23 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#default_value' => isset($feedback_api_params['date_to']) ? $feedback_api_params['date_to'] : NULL,
     ];
 
+    // Fetches labels.
+    $labels = $this->getLabelTids();
+    $label_select_list = ['' => $this->t('- Select a label -')] + $labels;
+    // Builds "Filter by label" input.
+    $form['filter_by_label'] = [
+      '#type' => 'select',
+      '#multiple' => TRUE,
+      '#title' => $this->t('Filter by page label'),
+      '#options' => $label_select_list,
+      '#attributes' => [
+        'placeholder' => "Start typing labels to filter by ...",
+        'class' => ['use-selectize-autocomplete']
+      ],
+      // Updates form input with default value, if available.
+      '#default_value' => isset($feedback_api_params['tag_id']) ? $feedback_api_params['tag_id'] : NULL,
+    ];
+
     // Fetches tags.
     $tags = $this->contentFetcher->fetchAllTags();
     // Builds list of tags.
@@ -184,7 +214,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     // Builds "Filter by tag" input.
     $form['filter_by_tag'] = [
       '#type' => 'select',
-      '#title' => $this->t('Filter by tag'),
+      '#title' => $this->t('Filter by feedback tag'),
       '#options' => $tag_select_list,
       // Updates form input with default value, if available.
       '#default_value' => isset($feedback_api_params['tag_id']) ? $feedback_api_params['tag_id'] : NULL,
@@ -347,6 +377,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       $filter_by_org_param = $form_state->getValue('filter_by_org');
       if (!empty($filter_by_org_param)) {
         $feedback_api_params['org_id'] = [implode(",", array_keys($filter_by_org_param))];
+        dpm($feedback_api_params['org_id']);
       }
 
       $filter_by_author_param = $form_state->getValue('filter_by_author');
@@ -403,6 +434,35 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       $url = Url::fromRoute('mass_feedback_loop.mass_feedback_loop_author_interface_form', [], ['query' => $feedback_api_params]);
       $form_state->setRedirectUrl($url);
     }
+  }
+
+  /**
+   * Gets all label IDs that are used on nodes.
+   *
+   * @return array
+   *   The non-QA label IDs.
+   */
+  protected function getLabelTids() {
+    $response_array = [];
+    // Only select labels that are assigned to nodes to decrease the number of
+    // labels processed by selectize.
+    $query = $this->database->select('node', 'n')
+      ->fields('ttd', ['tid'])
+      ->condition('ttd.vid', 'label')
+      ->condition('ttd.name', '%_QA%', 'NOT LIKE');
+    $query->join('taxonomy_index', 'ti', 'n.nid = ti.nid');
+    $query->join('taxonomy_term_field_data', 'ttd', 'ti.tid = ttd.tid');
+    $tids = $query->distinct()->execute()->fetchCol();
+
+    /** @var \Drupal\taxonomy\Entity\Term[] $entities */
+    $entities = $this->entityTypeManager->getStorage('taxonomy_term')
+      ->loadMultiple($tids);
+    foreach ($entities as $key => $entity) {
+      $response_array[$key] = $entity->getName();
+    }
+    asort($response_array);
+
+    return $response_array;
   }
 
   /**
