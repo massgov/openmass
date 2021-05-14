@@ -84,7 +84,13 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
 
     $params = $query->all();
     foreach ($params as $key => $param) {
-      if (in_array($key, ['org_id', 'node_id', 'label_id', 'author_id', 'watch_content'])) {
+      if (in_array($key, [
+        'org_id',
+        'node_id',
+        'label_id',
+        'author_id',
+        'watch_content'
+      ])) {
         if (($key == 'watch_content') || !empty($param)) {
           $feedback_api_params[$key] = $param;
           if (is_array($param) && strpos($param[0], ',') !== FALSE) {

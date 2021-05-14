@@ -130,7 +130,6 @@ class MassFeedbackLoopContentFetcher {
     $this->currentUser = $current_user;
     $this->database = $database;
     $this->settings = $settings->get('mass_feedback_loop')['external_api_config'];
-    //var_dump($this->settings);
     $this->config = $config_factory->get('mass_feedback_loop.external_api_config');
     $this->httpClient = $http_client_factory->fromOptions([
       'headers' => [
