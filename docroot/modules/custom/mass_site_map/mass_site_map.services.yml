@@ -2,7 +2,7 @@ services:
   mass_site_map.sitemap_generator:
     class: Drupal\mass_site_map\MassSiteMapGenerator
     public: true
-    decorates: simple_sitemap.sitemap_generator
+    decorates: simple_sitemap.generator
     decoration_priority: 1
     arguments:
       - '@simple_sitemap.entity_helper'
