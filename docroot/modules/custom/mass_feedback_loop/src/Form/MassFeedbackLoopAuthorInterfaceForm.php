@@ -83,18 +83,10 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     $feedback_api_params = [];
 
     $params = $query->all();
-    dpm($params);
     foreach ($params as $key => $param) {
-      if (in_array($key, ['org_id', 'node_id', 'author_id', 'watch_content'])) {
+      if (in_array($key, ['org_id', 'node_id', 'label_id', 'author_id', 'watch_content'])) {
         if (($key == 'watch_content') || !empty($param)) {
           $feedback_api_params[$key] = $param;
-          //if (is_array($param)) {
-          //  foreach ($param as $p) {
-          //    if (strpos($p, ',') !== FALSE) {
-          //      $feedback_api_params[$key] += explode(',' )
-          //    }
-          //  }
-          //}
           if (is_array($param) && strpos($param[0], ',') !== FALSE) {
             $feedback_api_params[$key] = explode(',', $param[0]);
           }
@@ -204,7 +196,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
         'class' => ['use-selectize-autocomplete']
       ],
       // Updates form input with default value, if available.
-      '#default_value' => isset($feedback_api_params['tag_id']) ? $feedback_api_params['tag_id'] : NULL,
+      '#default_value' => isset($feedback_api_params['label_id']) ? $feedback_api_params['label_id'] : NULL,
     ];
 
     // Fetches tags.
@@ -377,7 +369,11 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       $filter_by_org_param = $form_state->getValue('filter_by_org');
       if (!empty($filter_by_org_param)) {
         $feedback_api_params['org_id'] = [implode(",", array_keys($filter_by_org_param))];
-        dpm($feedback_api_params['org_id']);
+      }
+
+      $filter_by_label_id = $form_state->getValue('filter_by_label');
+      if (!empty($filter_by_label_id)) {
+        $feedback_api_params['label_id'] = [implode(",", array_keys($filter_by_label_id))];
       }
 
       $filter_by_author_param = $form_state->getValue('filter_by_author');
