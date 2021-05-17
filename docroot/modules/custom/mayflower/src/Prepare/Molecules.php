@@ -1429,9 +1429,19 @@ class Molecules {
       ];
     }, $navLinksText);
 
+    // Build an array of anchor IDs for the twig template.
+    $anchorIDs = [];
+    foreach ($anchorLinks as $value) {
+      // Skip headers that are not flexible.
+      if (is_string($value['text'])) {
+        $anchorIDs[$value['text']] = $value['href'];
+      }
+    }
+
     return [
       'titleContext' => $titleContext,
       'anchorLinks' => $anchorLinks,
+      'anchorIDs' => $anchorIDs,
     ];
   }
 
