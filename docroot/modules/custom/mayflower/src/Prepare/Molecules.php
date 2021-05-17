@@ -1052,7 +1052,7 @@ class Molecules {
     }
 
     // mapProp.
-    $actionMap['map']['zoom'] = 15;
+    $actionMap['map']['zoom'] = FALSE;
 
     if (empty($data)) {
       return [];
