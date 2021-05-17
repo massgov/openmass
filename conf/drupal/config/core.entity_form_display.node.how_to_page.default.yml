@@ -4,6 +4,9 @@ status: true
 dependencies:
   config:
     - core.entity_form_mode.node.inline_entity
+    - field.field.node.how_to_page.field_customize_header_text
+    - field.field.node.how_to_page.field_downloads_header
+    - field.field.node.how_to_page.field_fees_header
     - field.field.node.how_to_page.field_how_to_contacts_3
     - field.field.node.how_to_page.field_how_to_fee_description
     - field.field.node.how_to_page.field_how_to_files
@@ -20,10 +23,15 @@ dependencies:
     - field.field.node.how_to_page.field_how_to_what_you_need
     - field.field.node.how_to_page.field_intended_audience
     - field.field.node.how_to_page.field_manage_your_account
+    - field.field.node.how_to_page.field_manage_your_account_header
+    - field.field.node.how_to_page.field_more_info_header
+    - field.field.node.how_to_page.field_next_steps_header
     - field.field.node.how_to_page.field_organizations
     - field.field.node.how_to_page.field_reusable_label
     - field.field.node.how_to_page.field_state_organization_tax
+    - field.field.node.how_to_page.field_what_you_need_header
     - node.type.how_to_page
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - entity_browser_entity_form
@@ -61,6 +69,7 @@ third_party_settings:
         - field_how_to_lede
         - field_how_to_time
         - field_how_to_link_1
+        - field_customize_header_text
         - field_organizations
         - field_intended_audience
         - field_reusable_label
@@ -77,9 +86,11 @@ third_party_settings:
       region: content
     group_details:
       children:
+        - field_what_you_need_header
         - field_how_to_what_you_need
         - group_fees
         - field_how_to_methods_5
+        - field_next_steps_header
         - field_how_to_next_steps
       parent_name: group_how_to_page_edit_form
       weight: 21
@@ -94,8 +105,11 @@ third_party_settings:
       region: content
     group_additional_info:
       children:
+        - field_more_info_header
         - field_how_to_more_info
+        - field_manage_your_account_header
         - field_manage_your_account
+        - field_downloads_header
         - field_how_to_files
         - field_how_to_links_5
       parent_name: group_how_to_page_edit_form
@@ -125,10 +139,11 @@ third_party_settings:
       region: content
     group_fees:
       children:
+        - field_fees_header
         - field_how_to_fee_description
         - field_how_to_ref_fees
       parent_name: group_details
-      weight: 37
+      weight: 56
       format_type: fieldset
       format_settings:
         id: ''
@@ -142,6 +157,63 @@ targetEntityType: node
 bundle: how_to_page
 mode: default
 content:
+  field_customize_header_text:
+    weight: 1
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_downloads_header:
+    weight: 57
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        c5c8b0bd-c56c-45f9-aa91-250101ddd327:
+          dependee: field_customize_header_text
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: how_to_page
+    type: string_textfield
+    region: content
+  field_fees_header:
+    weight: 57
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        62147cec-fc1a-4baa-97a2-c5e754ed9271:
+          dependee: field_customize_header_text
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: how_to_page
+    type: string_textfield
+    region: content
   field_how_to_contacts_3:
     weight: 4
     settings:
@@ -153,7 +225,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_how_to_fee_description:
-    weight: 50
+    weight: 58
     settings:
       rows: 5
       placeholder: ''
@@ -161,7 +233,7 @@ content:
     type: text_textarea
     region: content
   field_how_to_files:
-    weight: 6
+    weight: 58
     settings:
       form_mode: default
       label_singular: ''
@@ -202,7 +274,7 @@ content:
     type: link_default
     region: content
   field_how_to_links_5:
-    weight: 7
+    weight: 59
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -223,7 +295,7 @@ content:
     region: content
   field_how_to_methods_5:
     type: entity_reference_paragraphs
-    weight: 39
+    weight: 57
     settings:
       title: Method
       title_plural: Methods
@@ -234,7 +306,7 @@ content:
     third_party_settings: {  }
     region: content
   field_how_to_more_info:
-    weight: 4
+    weight: 54
     settings:
       rows: 5
       placeholder: ''
@@ -243,7 +315,7 @@ content:
     region: content
   field_how_to_next_steps:
     type: entity_reference_paragraphs
-    weight: 40
+    weight: 59
     settings:
       title: 'Next step'
       title_plural: 'Next steps'
@@ -254,7 +326,7 @@ content:
     third_party_settings: {  }
     region: content
   field_how_to_ref_fees:
-    weight: 51
+    weight: 59
     settings:
       form_mode: inline_entity
       override_labels: true
@@ -288,7 +360,7 @@ content:
     type: string_textfield
     region: content
   field_how_to_what_you_need:
-    weight: 36
+    weight: 55
     settings:
       rows: 5
       placeholder: ''
@@ -296,14 +368,14 @@ content:
     type: text_textarea
     region: content
   field_intended_audience:
-    weight: 2
+    weight: 3
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_manage_your_account:
     type: entity_reference_paragraphs
-    weight: 5
+    weight: 56
     settings:
       title: 'Manage account link'
       title_plural: 'Manage account links'
@@ -313,8 +385,83 @@ content:
       default_paragraph_type: _none
     third_party_settings: {  }
     region: content
+  field_manage_your_account_header:
+    weight: 55
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        ff61101e-20f7-4f92-a1a8-88301da1f838:
+          dependee: field_customize_header_text
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: how_to_page
+    type: string_textfield
+    region: content
+  field_more_info_header:
+    weight: 53
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        6563cb97-b49f-42db-8a1e-75109a1f20fd:
+          dependee: field_customize_header_text
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: how_to_page
+    type: string_textfield
+    region: content
+  field_next_steps_header:
+    weight: 58
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        4ef8a262-33ca-4923-93a9-d6a46c484a6d:
+          dependee: field_customize_header_text
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: how_to_page
+    type: string_textfield
+    region: content
   field_organizations:
-    weight: 1
+    weight: 2
     settings:
       match_operator: CONTAINS
       size: 60
@@ -324,7 +471,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_reusable_label:
-    weight: 3
+    weight: 4
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -343,6 +490,31 @@ content:
       placeholder: ''
       match_limit: 10
     third_party_settings: {  }
+  field_what_you_need_header:
+    weight: 54
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        45dae059-1b05-41e6-8455-2d76f4304517:
+          dependee: field_customize_header_text
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: how_to_page
+    type: string_textfield
+    region: content
   moderation_state:
     type: moderation_state_default
     weight: 10
