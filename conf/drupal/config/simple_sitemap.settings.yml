@@ -3,7 +3,6 @@ cron_generate: true
 cron_generate_interval: 3
 remove_duplicates: false
 skip_untranslated: true
-batch_process_limit: 1500
 base_url: 'https://www.mass.gov'
 custom_links_include_images: false
 excluded_languages: {  }
@@ -11,3 +10,5 @@ enabled_entity_types:
   - node
 _core:
   default_config_hash: vFARRSP9-YgEArfDNYmRSg0cNFOgZPxqziffIalgLbU
+default_variant: default
+entities_per_queue_item: 50
