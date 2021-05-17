@@ -1198,7 +1198,7 @@ class Organisms {
     $paragraph = isset($options['aside']['paragraph']) ? $options['aside']['paragraph'] : [];
 
     return array_merge($heading, [
-      'googleMap' => $googleMap,
+      'leafletMap' => $googleMap,
       'button' => $link,
       'paragraph' => $paragraph,
     ]);
