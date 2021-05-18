@@ -91,3 +91,13 @@ function mass_content_api_deploy_queue_info_details_nodes_for_save() {
   }
   print('Queued ' . count($nids) . ' nodes for re-indexing to Descendants table.');
 }
+
+/**
+ * Run the entity_usage recreate drush command.
+ *
+ * Create all entity usage statistics.
+ */
+function mass_content_api_deploy_run_entity_usage_command() {
+  $command = \Drupal::service('entity_usage.commands');
+  $command->recreate();
+}
