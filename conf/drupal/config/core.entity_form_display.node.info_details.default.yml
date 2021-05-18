@@ -37,6 +37,7 @@ dependencies:
     - image
     - link
     - mass_validation
+    - maxlength
     - metatag
     - paragraphs
     - scheduler
@@ -71,13 +72,13 @@ third_party_settings:
         - field_info_details_last_updated
         - field_page_template
         - field_organizations
-        - langcode
-        - field_english_version
         - field_data_flag
         - field_details_data_type
         - field_data_resource_type
         - field_data_format
         - field_data_topic
+        - langcode
+        - field_english_version
         - field_intended_audience
         - field_reusable_label
       parent_name: group_information_details_edit_f
@@ -281,7 +282,7 @@ content:
     type: boolean_checkbox
     region: content
   field_english_version:
-    weight: 13
+    weight: 17
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -389,7 +390,7 @@ content:
     type: metatag_firehose
     region: content
   field_intended_audience:
-    weight: 17
+    weight: 18
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -412,7 +413,7 @@ content:
     region: content
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 18
+    weight: 19
     region: content
     settings:
       match_operator: CONTAINS
@@ -440,7 +441,7 @@ content:
     region: content
   langcode:
     type: language_select
-    weight: 12
+    weight: 16
     region: content
     settings:
       include_locked: false
@@ -475,7 +476,11 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      maxlength:
+        maxlength_js: 70
+        maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
+        maxlength_js_enforce_attribute: false
   uid:
     type: entity_reference_autocomplete
     weight: 3

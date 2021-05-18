@@ -116,16 +116,21 @@ function mass_map_preprocess_node(&$variables) {
     $address = $node->field_ref_address->entity;
     $massMap = \Drupal::service('mass_map');
     $variables['static_map_link'] = $massMap->getMapLinkUrl($address->field_address_address);;
-
-    // These are the sizes of map image that are being used for each width of screen.
-    // Go to the following twig were its being used mass_theme/templates/content/node--contact-information--map.html.twig.
-    foreach (['900x700', '800x450', '600x450'] as $size) {
-      $static_map_url = $massMap->getStaticMapUrl($address->field_address_address, [
-        'size' => $size,
-        'zoom' => 15,
-      ]);
-      $variables['static_map_' . $size] = $static_map_url;
-    }
+    $variables['lat'] = $address->field_geofield->lat;
+    $variables['lon'] = $address->field_geofield->lon;
+    $street_address = Helper::formatAddress($address->field_address_address);
+    $variables['street_address'] = $street_address;
+    $variables['google_directions'] = 'https://www.google.com/maps/place/' . urlencode($street_address);
+    $variables['display_title'] = $node->field_display_title->value;
+    $phone = $node->field_ref_phone_number->entity;
+    $fax = $node->field_ref_fax_number->entity;
+    $links = $node->field_ref_links->entity;
+    $contacts = [
+      'phone' => $phone && $phone->field_phone ? $phone->field_phone->value : NULL,
+      'fax' => $fax && $fax->field_fax ? $fax->field_fax->value : NULL,
+      'email' => $links && $links->field_email ? $links->field_email->value : NULL,
+    ];
+    $variables += $contacts;
   }
 }
 
