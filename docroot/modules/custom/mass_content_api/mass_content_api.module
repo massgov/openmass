@@ -62,12 +62,12 @@ function mass_content_api_crud(EntityInterface $node) {
     'decision_tree_conclusion',
   ];
   if (in_array($node->bundle(), $types)) {
-    /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
+    /* @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
     $descendant_manager = \Drupal::getContainer()->get('descendant_manager');
     $descendant_manager->index($node);
   }
   else {
-    // Non decision tree nodes still need to get processed in queue.
+    // Non decision tree nodes still need to be processed in queue.
     $queue = \Drupal::queue('mass_content_api_descendant_queue');
     $queue->createItem((object) ['id' => $node->id()]);
   }
