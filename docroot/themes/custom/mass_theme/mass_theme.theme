@@ -3228,7 +3228,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
         'text' => Helper::fieldFullView($node, 'field_location_button_short_desc'),
       ],
     ];
-
     $variables['mappedLocations'] = Organisms::prepareMappedLocations($node->field_service_ref_locations->referencedEntities(), $mappedLocations_options, $cache_tags);
   }
 
