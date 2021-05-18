@@ -218,6 +218,9 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   // Get the page title for title context.
   $page_title = $node->getTitle();
 
+  // Get the value of field_customize_header_text or set to FALSE by default.
+  $field_customize_header_text = intval($node->field_customize_header_text->value) == 1 ? TRUE : FALSE;
+
   // Set static details properties.
   $titleContext = t(' of @title', ['@title' => $page_title]);
   $variables['details'] = [
@@ -282,7 +285,7 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_how_to_what_you_need')) {
 
     // Set up section title for heading, sticky nav.
-    $what_you_need_title = t('What you need');
+    $what_you_need_title = ($field_customize_header_text && !$node->field_what_you_need_header->isEmpty()) ? $node->field_what_you_need_header->value : t('What you need');
 
     // Set up corresponding sticky nav entry for what you need.
     $stickyNav[] = $what_you_need_title;
@@ -292,7 +295,7 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   // Build methods tabular data if field is populated.
   if (Helper::isFieldPopulated($node, 'field_how_to_ref_fees') || Helper::isFieldPopulated($node, 'field_how_to_fee_description')) {
     // Set up section title for heading, sticky nav.
-    $fees_title = t('Fees');
+    $fees_title = ($field_customize_header_text && !$node->field_fees_header->isEmpty()) ? $node->field_fees_header->value : t('Fees');
     $titleContext = t(' for @title', ['@title' => $page_title]);
 
     // Set up options for how to ___.
@@ -341,7 +344,7 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   // To check if the field for the next steps is populated for the sticky nav to display.
   if (Helper::isFieldPopulated($node, 'field_how_to_next_steps')) {
     // Set up title for section and sticky nav.
-    $next_steps_title = t('Next steps');
+    $next_steps_title = ($field_customize_header_text && !$node->field_next_steps_header->isEmpty()) ? $node->field_next_steps_header->value : t('Next steps');
 
     // Set up corresponding sticky nav entry for next steps.
     $stickyNav[] = $next_steps_title;
@@ -352,7 +355,7 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_how_to_more_info')) {
 
     // Set up title for more info section and sticky nav.
-    $more_info_title = t('More info');
+    $more_info_title = ($field_customize_header_text && !$node->field_more_info_header->isEmpty()) ? $node->field_more_info_header->value : t('More info');
 
     // Set up corresponding sticky nav entry for More Info.
     $stickyNav[] = $more_info_title;
@@ -363,7 +366,7 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_manage_your_account')) {
 
     // Set up title for manage your account section and sticky nav.
-    $manage_account_title = t('Manage your account');
+    $manage_account_title = ($field_customize_header_text && !$node->field_manage_your_account_header->isEmpty()) ? $node->field_manage_your_account_header->value : t('Manage your account');
 
     // Set up corresponding sticky nav entry for Manage your account.
     $stickyNav[] = $manage_account_title;
@@ -374,7 +377,7 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   // To check if the field for the downloads is populated for the sticky nav to display.
   if (Helper::isFieldPopulated($node, 'field_how_to_files')) {
     // Set up title for downloads section and sticky nav.
-    $downloads_title = t('Downloads');
+    $downloads_title = ($field_customize_header_text && !$node->field_downloads_header->isEmpty()) ? $node->field_downloads_header->value : t('Downloads');
 
     // Set up corresponding sticky nav entry for Downloads.
     $stickyNav[] = $downloads_title;
@@ -3225,7 +3228,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
         'text' => Helper::fieldFullView($node, 'field_location_button_short_desc'),
       ],
     ];
-
     $variables['mappedLocations'] = Organisms::prepareMappedLocations($node->field_service_ref_locations->referencedEntities(), $mappedLocations_options, $cache_tags);
   }
 
