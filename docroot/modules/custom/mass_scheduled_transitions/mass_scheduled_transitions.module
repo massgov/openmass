@@ -100,6 +100,7 @@ function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $n
  * Deny deletion of scheduled transitions when our business rules requires one for the content type.
  */
 function mass_scheduled_transitions_scheduled_transition_access(EntityInterface $transition, $operation) {
+  return AccessResult::allowed();
   $entity = $transition->getEntity();
   if ($operation != 'delete' || !$entity->isPublished() || !in_array($entity->bundle(), ['alert', 'campaign_landing'])) {
     return;
@@ -121,12 +122,12 @@ function mass_scheduled_transitions_scheduled_transition_access(EntityInterface 
 }
 
 /**
- * Move link to Admin => Reports.
+ * Move link to Admin => Reports, and use customized View.
  *
  * Implements hook_menu_links_discovered_alter().
  */
 function mass_scheduled_transitions_menu_links_discovered_alter(&$links) {
-  $links['entity.scheduled_transition.collection']['parent'] = 'system.admin_reports';
+  $links['entity.scheduled_transition.collection']['enabled'] = FALSE;
 }
 
 /**

@@ -6,7 +6,6 @@ dependencies:
     - system.menu.admin
     - taxonomy.vocabulary.label
   module:
-    - content_moderation
     - dynamic_entity_reference
     - mass_views
     - node
@@ -18,7 +17,7 @@ _core:
 id: scheduled_transitions
 label: 'Scheduled Transitions'
 module: views
-description: ''
+description: 'Overview of all scheduled transitions.'
 tag: ''
 base_table: scheduled_transition
 base_field: id
@@ -201,69 +200,6 @@ display:
           entity_type: scheduled_transition
           entity_field: entity
           plugin_id: field
-        moderation_state_1:
-          id: moderation_state_1
-          table: node_field_data
-          field: moderation_state
-          relationship: node__entity
-          group_type: group
-          admin_label: ''
-          label: 'Current state'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: content_moderation_state
-          settings: {  }
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          entity_type: node
-          plugin_id: moderation_state_field
         moderation_state:
           id: moderation_state
           table: scheduled_transition
@@ -732,6 +668,61 @@ display:
           entity_type: node
           entity_field: uid
           plugin_id: user_name
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          relationship: node__entity
+          group_type: group
+          admin_label: ''
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: type_op
+            label: 'Content type'
+            description: ''
+            use_operator: false
+            operator: type_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: type
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
       sorts: {  }
       title: 'Scheduled Transitions'
       header: {  }
