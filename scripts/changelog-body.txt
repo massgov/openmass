@@ -1,22 +1,29 @@
 
 
-## [0.280.0] - April 27, 2021
+## [0.282.0] - May 11, 2021
 
-### Changed
-  - DP-19203: Fixes code deprications in custom modules in prep for Drupal 9.
-  - DP-21595: Help text fix on Guide content type.
-  - DP-21623: Upgraded quick_node_clone module with the latest patch.
-  - DP-21682: Update the info_details config to add additional fields to descendant manager 'pages linking here' section.
-  - DP-6360: Changed directions links in location listings pages to not all have same link label/title.
-  
 ### Fixed
-  - DP-21727: Re-exported translation config not captured during translation deployment
-  - DP-21733: Exposed the Moderation State field in the External Data Resource node form so nodes can be published.
-  - DP-21745: Addressed memory issues with Media translations migration.
-  
-### Security
-  - DP-21744: Updated Drupal to 8.9.14 to eliminate security issue.
+  - DP-19072: Fixed serialization issues with metatag output.
+  - DP-21034: Fixed log in error message appearing with wrong styles.
+  - DP-21188: Wrap long file names that have no breaking character in "all documents" view.
+  - DP-21692: Fixed empty support status message rendering upon saving content in Drupal.
+  - DP-21728: Upgrading some contrib modules do d9 compatible versions.
   
 ### Added
-  - DP-21746: Added Hindi and Nepali languages.
+  - DP-20892: Host iframe responsive height JS at docroot/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js.
+  
+### Changed
+  - DP-21622: Updated auto_entitylabel module.
+  - DP-21624: Patched the field_tokens module for D9 compatibility.
+  - DP-21677: Use 'massgov' Docker org instead of comass
+  - DP-21691: Replace h2 with div keeping its aria-labelledby for the main nav.
+  - DP-21729: Updated view_mode_page, views_autocomplete_filters, views_custom_cache_tag, and views_data_export modules.
+  - DP-21786: Uninstalling config_log module.
+  - DP-21792: Changed the field order on the node form, keeping language out of the "data" fields.
+  - DP-21990: Updated Mayflower version to 11.4.2.
+  - DP-21686: Change info details page content data from object to array for flexibility, cleanup unused data and render video in preContent-media variant page (MF)
+  - DP-21770: Align text and icon for the directions link. (MF)
+  
+### Removed
+  - DP-21691: Removed deplicated mobile version header + navigation components for the horizontal nav.
   

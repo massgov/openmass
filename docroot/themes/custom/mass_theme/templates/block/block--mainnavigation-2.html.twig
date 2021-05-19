@@ -31,7 +31,10 @@
  * http://www.w3.org/TR/WCAG-TECHS/H42.html for more information.
  */
 #}
-{# Mix for Home page - horizontal main nav for desktop + hamburger menu for mobile  #}
+{# Mix main navigations for Home page - horizontal main nav for desktop + hamburger menu for mobile
+Desktop horizontal main nav is added by themes/custom/mass_theme/templates/block/block--mainnavigation-2.html.twig
+in the following block to this.
+#}
 {% set ariaLabel = heading_id ?? 'main-navigation-heading' %}
 <nav class="ma__header__hamburger__nav" aria-labelledby="{{ ariaLabel }}" id="main-navigation" role="navigation">
   <div class="ma__header__hamburger-wrapper">
@@ -63,7 +66,7 @@
       {% set title_attributes = title_attributes.addClass('visually-hidden') %}
     {% endif %}
     {{ title_prefix }}
-    <h2{{ title_attributes.setAttribute('id', ariaLabel) }}>{{ configuration.label }}</h2>
+    <div{{ title_attributes.setAttribute('id', ariaLabel) }}>{{ configuration.label }}</div>
     {{ title_suffix }}
 
     <div class="ma__header__hamburger__nav-container" aria-hidden="true">
