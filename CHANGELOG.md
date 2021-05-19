@@ -1,5 +1,32 @@
 
 
+## [0.283.0] - May 18, 2021
+
+### Changed
+  - DP-20949: Removes the Basic Google Maps implementation, not the location listing page.
+  - DP-21731: Updated Pathologic, Prepopulate, Sub-pathauto, and Twig Field Value modules.
+  - DP-21783: Content and Document administrative views have proper language settings.
+  - DP-21793: Added character countdown and warning when page titles exceed 70 characters.
+  - DP-22026: Exported Rabbit Hole module configuration.
+  - DP-22060: Updated Mayflower version to 11.5.0.
+  - DP-21554: Added MapLeaflet molecule and variants. (MF)
+  - DP-21554: Switch out interactive and static google maps with leaflet maps in LocationBanners and MappedLocations, on location pages and orgs and services pages. (MF)
+  - DP-21816: Remove h2 from utility nav panel title. (MF)
+  - DP-21763: Extended the GeneralTeaser component to render tags, icon in eyebrow, and upperRight content. (MF)
+  - DP-21883: Added a query string with a version to -VF.woff2 fonts for caching. (MF)
+  
+### Added
+  - DP-21634: Added flexible header functionality to the how-to content type.
+  - DP-21949: Add missing pages to Drupal Backstop.
+  
+### Removed
+  - DP-21785: Removing libraries, clamav, and restui from composer, previously removed from drupal config.
+  
+### Fixed
+  - DP-22061: Fix missing hours on location listing pages.
+  
+
+
 ## [0.282.0] - May 11, 2021
 
 ### Fixed
