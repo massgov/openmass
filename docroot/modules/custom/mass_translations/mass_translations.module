@@ -127,3 +127,14 @@ function mass_translations_process_language_select(array $element): array {
 
   return $element;
 }
+
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function mass_translations_node_presave(Drupal\Core\Entity\EntityInterface $entity) {
+  if ($entity->hasField('field_english_version') && $entity->get('langcode')->value == 'en') {
+    // If the Language is English, there isn't a seperate English version.
+    $entity->set('field_english_version', '');
+  }
+}
