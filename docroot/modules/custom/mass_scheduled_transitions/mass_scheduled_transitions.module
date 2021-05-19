@@ -34,7 +34,7 @@ define('MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION', '14 days');
 function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
   $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsAlertSitewide');
   // Enable after https://www.drupal.org/project/scheduled_transitions/issues/3084849 is resolved.
-  // $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsScheduledTransitionsReschedule');
+  // $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsScheduledTransitionsReschedule');.
 }
 
 /**

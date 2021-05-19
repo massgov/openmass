@@ -25,4 +25,5 @@ class ScheduledTransitionsRescheduleConstraintValidator extends ConstraintValida
         ->addViolation();
     }
   }
+
 }
