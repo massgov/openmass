@@ -14,6 +14,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Drupal\mass_translations\Controller\TranslationsController;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Implements hook_page_attachments().
@@ -128,11 +129,10 @@ function mass_translations_process_language_select(array $element): array {
   return $element;
 }
 
-
 /**
  * Implements hook_ENTITY_TYPE_presave().
  */
-function mass_translations_node_presave(Drupal\Core\Entity\EntityInterface $entity) {
+function mass_translations_node_presave(EntityInterface $entity) {
   if ($entity->hasField('field_english_version') && $entity->get('langcode')->value == 'en') {
     // If the Language is English, there isn't a seperate English version.
     $entity->set('field_english_version', '');
