@@ -33,6 +33,8 @@ define('MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION', '14 days');
  */
 function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
   $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsAlertSitewide');
+  // Enable after https://www.drupal.org/project/scheduled_transitions/issues/3084849 is resolved.
+  // $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsScheduledTransitionsReschedule');
 }
 
 /**
@@ -127,7 +129,10 @@ function mass_scheduled_transitions_scheduled_transition_access(EntityInterface 
  * Implements hook_menu_links_discovered_alter().
  */
 function mass_scheduled_transitions_menu_links_discovered_alter(&$links) {
+  // Disable the menu link that ships with ST.
   $links['entity.scheduled_transition.collection']['enabled'] = FALSE;
+  // Add description to View's menu link.
+  $links['view.scheduled_transitions.page_1']['description'] = t('Overview of all scheduled transitions.');
 }
 
 /**
