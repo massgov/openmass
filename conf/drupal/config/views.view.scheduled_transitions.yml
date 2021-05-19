@@ -3,7 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
-    - system.menu.admin
+    - system.menu.mass-dashboard
     - taxonomy.vocabulary.label
   module:
     - dynamic_entity_reference
@@ -781,17 +781,18 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: admin/reports/scheduled-transitions
+      path: admin/ma-dash/scheduled-transitions
       enabled: true
       menu:
         type: normal
         title: 'Scheduled Transitions'
         description: ''
         expanded: false
-        parent: system.admin_reports
+        parent: mass_admin_toolbar.reports_menu
         weight: 6
         context: '0'
-        menu_name: admin
+        menu_name: mass-dashboard
+      display_comment: 'Overview of all scheduled transitions.'
     cache_metadata:
       max-age: -1
       contexts:
