@@ -15,6 +15,7 @@
     filters.style.display = exp ? 'block' : 'none';
     button.innerHTML = exp ? 'Hide Filters' : 'Show Filters';
     button.setAttribute('aria-expanded', expanded)
+    button.className = exp ? 'expanded' : ''
   }
   toggleButton();
   button.onclick = () => {

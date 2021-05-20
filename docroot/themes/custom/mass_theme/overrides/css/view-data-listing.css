@@ -28,8 +28,28 @@
   display: flex;
   background-color: #e8eef4;
   border: 1px solid #8aaac7;
-  border-width: 1px 0;
+  border-width: 1px;
   width: 100%;
+  margin-bottom: 1.2rem;
+  justify-content: space-between;
+  padding: .25rem 1rem;
+}
+
+#filter-toggle:after {
+  border-right: 4px solid;
+  border-bottom: 4px solid;
+  content: "";
+  display: inline-block;
+  height: 10px;
+  width: 10px;
+  margin-top: 3px;
+  transform: rotate(45deg);
+  transition: transform .2s;
+}
+
+#filter-toggle.expanded:after {
+  transform: rotate(-135deg);
+  margin-top: 3px;
 }
 /* only display on mobile */
 @media (min-width: 781px) {
