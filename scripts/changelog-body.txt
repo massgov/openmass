@@ -1,29 +1,27 @@
 
 
-## [0.282.0] - May 11, 2021
+## [0.283.0] - May 18, 2021
 
-### Fixed
-  - DP-19072: Fixed serialization issues with metatag output.
-  - DP-21034: Fixed log in error message appearing with wrong styles.
-  - DP-21188: Wrap long file names that have no breaking character in "all documents" view.
-  - DP-21692: Fixed empty support status message rendering upon saving content in Drupal.
-  - DP-21728: Upgrading some contrib modules do d9 compatible versions.
+### Changed
+  - DP-20949: Removes the Basic Google Maps implementation, not the location listing page.
+  - DP-21731: Updated Pathologic, Prepopulate, Sub-pathauto, and Twig Field Value modules.
+  - DP-21783: Content and Document administrative views have proper language settings.
+  - DP-21793: Added character countdown and warning when page titles exceed 70 characters.
+  - DP-22026: Exported Rabbit Hole module configuration.
+  - DP-22060: Updated Mayflower version to 11.5.0.
+  - DP-21554: Added MapLeaflet molecule and variants. (MF)
+  - DP-21554: Switch out interactive and static google maps with leaflet maps in LocationBanners and MappedLocations, on location pages and orgs and services pages. (MF)
+  - DP-21816: Remove h2 from utility nav panel title. (MF)
+  - DP-21763: Extended the GeneralTeaser component to render tags, icon in eyebrow, and upperRight content. (MF)
+  - DP-21883: Added a query string with a version to -VF.woff2 fonts for caching. (MF)
   
 ### Added
-  - DP-20892: Host iframe responsive height JS at docroot/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js.
-  
-### Changed
-  - DP-21622: Updated auto_entitylabel module.
-  - DP-21624: Patched the field_tokens module for D9 compatibility.
-  - DP-21677: Use 'massgov' Docker org instead of comass
-  - DP-21691: Replace h2 with div keeping its aria-labelledby for the main nav.
-  - DP-21729: Updated view_mode_page, views_autocomplete_filters, views_custom_cache_tag, and views_data_export modules.
-  - DP-21786: Uninstalling config_log module.
-  - DP-21792: Changed the field order on the node form, keeping language out of the "data" fields.
-  - DP-21990: Updated Mayflower version to 11.4.2.
-  - DP-21686: Change info details page content data from object to array for flexibility, cleanup unused data and render video in preContent-media variant page (MF)
-  - DP-21770: Align text and icon for the directions link. (MF)
+  - DP-21634: Added flexible header functionality to the how-to content type.
+  - DP-21949: Add missing pages to Drupal Backstop.
   
 ### Removed
-  - DP-21691: Removed deplicated mobile version header + navigation components for the horizontal nav.
+  - DP-21785: Removing libraries, clamav, and restui from composer, previously removed from drupal config.
+  
+### Fixed
+  - DP-22061: Fix missing hours on location listing pages.
   
