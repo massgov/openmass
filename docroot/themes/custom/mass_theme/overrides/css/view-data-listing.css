@@ -28,7 +28,6 @@
   display: flex;
   background-color: #e8eef4;
   border: 1px solid #8aaac7;
-  border-width: 1px;
   width: 100%;
   margin-bottom: 1.2rem;
   justify-content: space-between;
@@ -49,11 +48,27 @@
 
 #filter-toggle.expanded:after {
   transform: rotate(-135deg);
-  margin-top: 3px;
+  margin-top: 6px;
 }
 /* only display on mobile */
 @media (min-width: 781px) {
   #filter-toggle {
     display: none;
   }
+
+  #filters {
+    background: rgb(232, 238, 244);
+    border: 1px solid #8aaac7;
+    padding: 10px;
+    margin: -1px 0 0;
+  }
+}
+
+#filters {
+  display: block;
+}
+
+.ma__general-teaser {
+  margin-top: 20px;
+  padding-top: 15px;
 }

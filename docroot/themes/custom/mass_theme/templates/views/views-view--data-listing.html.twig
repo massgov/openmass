@@ -49,10 +49,12 @@
   <h1>{{ title }}</h1>
   {{ title_suffix }}
 
-  <button id="filter-toggle" aria-controls="filters"></button>
 
-  <aside class="sidebar" id="filters">
-    {{ exposed }}
+  <aside class="sidebar">
+    <button id="filter-toggle" aria-controls="filters"></button>
+    <div id="filters">
+      {{ exposed }}
+    </div>
   </aside>
 
   <section class="page-content">
