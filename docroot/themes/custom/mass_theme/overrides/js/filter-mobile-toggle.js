@@ -7,7 +7,7 @@
 
 (function () {
   'use strict';
-
+  // set initial filter state to collapsed
   let expanded = false;
   const button = document.getElementById('filter-toggle');
   const filters = document.getElementById('filters')
@@ -18,7 +18,6 @@
   }
   toggleButton();
   button.onclick = () => {
-    console.log('button clicked');
     expanded = !expanded;
     toggleButton(expanded);
   };
