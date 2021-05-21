@@ -5814,7 +5814,7 @@ function mass_theme_preprocess_form_element_label(&$variables) {
   // Add a class to the form element label for a views exposed filter title
   // field.
   if ($variables['element']['#id'] === 'edit-title') {
-    $variables['attributes']['class'][] = 'placeholder_class_title_field_label';
+    $variables['attributes']['class'][] = 'ma__sidebar-heading ma__legend';
   }
 }
 
@@ -5825,7 +5825,7 @@ function mass_theme_preprocess_fieldset(&$variables) {
   // Add a class to the form fieldset legend span for a views exposed filter
   // field_data_topic_target_id_1 field.
   if ($variables['element']['#id'] === 'edit-field-data-topic-target-id-1') {
-    $variables['legend_span']['attributes']->addClass('placeholder_class_fieldset_legend');
+    $variables['legend_span']['attributes']->addClass('ma__sidebar-heading ma__label');
   }
 }
 
