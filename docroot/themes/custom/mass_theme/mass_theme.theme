@@ -5823,8 +5823,8 @@ function mass_theme_preprocess_form_element_label(&$variables) {
  */
 function mass_theme_preprocess_fieldset(&$variables) {
   // Add a class to the form fieldset legend span for a views exposed filter
-  // field_data_topic_target_id_1 field.
-  if ($variables['element']['#id'] === 'edit-field-data-topic-target-id-1') {
+  // topicid field.
+  if ($variables['element']['#id'] === 'edit-topicid') {
     $variables['legend_span']['attributes']->addClass('ma__sidebar-heading ma__label');
   }
 }
