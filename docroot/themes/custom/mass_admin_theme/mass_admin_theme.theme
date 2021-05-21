@@ -354,6 +354,7 @@ function mass_admin_theme_preprocess_input__submit(array &$variables) {
   // replaced by "Select Entities" button.
   if (!is_string($attr_value) && $attr_value->getUntranslatedString() == 'Add @type_singular') {
     if (!empty($attr_value->getArguments()['@type_singular']) &&
+      !is_string($attr_value->getArguments()['@type_singular']) &&
       strpos($attr_value->getArguments()['@type_singular']->getUntranslatedString(), "media") !== FALSE) {
       $needles = [
         "field-service-detail-sections",
