@@ -4034,27 +4034,27 @@ function mass_theme_preprocess_node(&$variables) {
     'Dataset' => 'data',
     'Data catalog' => 'catalog',
   ];
-  // This field determines if it's a data listing.
-  if ($node->hasField('field_data_flag') && !$node->get('field_data_flag')->isEmpty()) {
+  // The field_data_flag field determines if it's a data listing. All External
+  // Data Resource nodes are data listings.
+  if ($node->getType() === 'external_data_resource' ||
+    ($node->hasField('field_data_flag') && $node->field_data_flag->value === 'data')) {
     // The value of the flag is 'data'.
-    if ($node->field_data_flag->value == 'data') {
-      $tid = '';
-      // The data type is stored in several different fields. Find the one used
-      // by the current node and store the target_id.
-      if ($node->hasField('field_details_data_type') && !$node->get('field_details_data_type')->isEmpty()) {
-        $tid = $node->field_details_data_type->target_id;
-      }
-      elseif ($node->hasField('field_binder_data_type') && !$node->get('field_binder_data_type')->isEmpty()) {
-        $tid = $node->field_binder_data_type->target_id;
-      }
-      elseif ($node->hasField('field_list_data_type') && !$node->get('field_list_data_type')->isEmpty()) {
-        $tid = $node->field_list_data_type->target_id;
-      }
-      if ($tid) {
-        // Load the data type term and store the correct id for the component.
-        $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($tid);
-        $variables['data_listing_icon'] = $icon_map[$term->label()];
-      }
+    $tid = '';
+    // The data type is stored in several different fields. Find the one used
+    // by the current node and store the target_id.
+    if ($node->hasField('field_details_data_type') && !$node->get('field_details_data_type')->isEmpty()) {
+      $tid = $node->field_details_data_type->target_id;
+    }
+    elseif ($node->hasField('field_binder_data_type') && !$node->get('field_binder_data_type')->isEmpty()) {
+      $tid = $node->field_binder_data_type->target_id;
+    }
+    elseif ($node->hasField('field_list_data_type') && !$node->get('field_list_data_type')->isEmpty()) {
+      $tid = $node->field_list_data_type->target_id;
+    }
+    if ($tid) {
+      // Load the data type term and store the correct id for the component.
+      $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($tid);
+      $variables['data_listing_icon'] = $icon_map[$term->label()];
     }
   }
 }
@@ -5790,11 +5790,42 @@ function mass_theme_preprocess_views_view(&$variables) {
     $variables['row_count'] = count($variables['rows'][0]['#rows']);
   }
 
+  // Add a class to the submit button.
+  if (isset($variables['exposed']['actions']['submit'])) {
+    $variables['exposed']['actions']['submit']['#attributes']['class'][] = 'placeholder_class_submit_button';
+  }
+  // Add a class to the reset button.
+  if (isset($variables['exposed']['actions']['reset'])) {
+    $variables['exposed']['actions']['reset']['#attributes']['class'][] = 'placeholder_class_reset_button';
+  }
+
   // Optionally, run node-type-specific preprocess functions, like
   // foo_preprocess_views_view_page() or foo_preprocess_views_view_block().
   $function = __FUNCTION__ . '_' . $variables['id'] . '_' . $variables['display_id'];
   if (function_exists($function)) {
     $function($variables);
+  }
+}
+
+/**
+ * Implements template_preprocess_form_element_label().
+ */
+function mass_theme_preprocess_form_element_label(&$variables) {
+  // Add a class to the form element label for a views exposed filter title
+  // field.
+  if ($variables['element']['#id'] === 'edit-title') {
+    $variables['attributes']['class'][] = 'placeholder_class_title_field_label';
+  }
+}
+
+/**
+ * Implements template_preprocess_fieldset().
+ */
+function mass_theme_preprocess_fieldset(&$variables) {
+  // Add a class to the form fieldset legend span for a views exposed filter
+  // field_data_topic_target_id_1 field.
+  if ($variables['element']['#id'] === 'edit-field-data-topic-target-id-1') {
+    $variables['legend_span']['attributes']->addClass('placeholder_class_fieldset_legend');
   }
 }
 
