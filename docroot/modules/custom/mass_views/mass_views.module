@@ -58,9 +58,9 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
     if ($topic = $args[0]) {
       // Prepare the topic name for term lookup.
       $topic = strtolower(str_replace('-', ' ', $topic));
-      if (isset($form['field_data_topic_target_id_1'])) {
+      if (isset($form['topicid'])) {
         // Store the field options for searching.
-        $old_field_options = $form['field_data_topic_target_id_1']['#options'];
+        $old_field_options = $form['topicid']['#options'];
         // Initialize a new array of options.
         $new_field_options = [];
         // Find the option key that matches the topic argument.
@@ -79,7 +79,7 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
           }
           // Replace the field options with only the sub topics of the topic
           // provided by the argument.
-          $form['field_data_topic_target_id_1']['#options'] = $new_field_options;
+          $form['topicid']['#options'] = $new_field_options;
         }
         else {
           // If the topic argument is not found in the field options, or it's a
@@ -92,14 +92,14 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
 
   if (($view['view']->id() == 'data_listing_all') && ($view['view']->current_display == 'page_all')) {
     // Remove sub topics from the data topic filter.
-    if (isset($form['field_data_topic_target_id_1'])) {
+    if (isset($form['topicid'])) {
       // Loop through the field options.
-      foreach ($form['field_data_topic_target_id_1']['#options'] as $key => $value) {
+      foreach ($form['topicid']['#options'] as $key => $value) {
         // If the option starts with a hyphen, it's a sub topic except for the
         // All option.
         if (strpos($value, '-') === 0 and $key !== 'All') {
           // Remove the sub topic from the field options.
-          unset($form['field_data_topic_target_id_1']['#options'][$key]);
+          unset($form['topicid']['#options'][$key]);
         }
       }
     }
