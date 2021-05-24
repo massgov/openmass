@@ -5,11 +5,11 @@ commands:
     cmd: bash -c "$@"
   up:
     # See https://laravel-guide.readthedocs.io/en/latest/valet/
-    cmd: valet up
+    cmd: valet start "$@"
   down:
-    cmd: valet down
+    cmd: valet stop "$@"
   stop:
-    cmd: valet down
+    cmd: valet stop "$@"
   pull:
     cmd: scripts/ma-refresh-local -dpo && vendor/bin/drush sql:sanitize -y
   updatedb:
