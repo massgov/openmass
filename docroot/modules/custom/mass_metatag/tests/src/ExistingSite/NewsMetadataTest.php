@@ -33,7 +33,7 @@ class NewsMetadataTest extends MetadataTestCase {
       'field_news_date' => '2012-12-31T05:00:00',
       'field_state_organization_tax' => $org_term,
       'field_news_body' => 'TestDescription',
-      'field_form_lede' => 'TestDescription',
+      'field_news_lede' => 'TestDescription',
       'field_news_signees' => $signees_paragraph,
       'field_organizations' => [$org_node],
       'moderation_state' => 'published',
