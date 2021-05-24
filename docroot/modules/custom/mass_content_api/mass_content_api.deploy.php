@@ -99,5 +99,5 @@ function mass_content_api_deploy_queue_info_details_nodes_for_save() {
  */
 function mass_content_api_deploy_run_entity_usage_command() {
   $command = \Drupal::service('entity_usage.commands');
-  $command->recreate();
+  $command->recreate(['use-queue' => TRUE]);
 }
