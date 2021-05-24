@@ -78,8 +78,14 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
             next($old_field_options);
           }
           // Replace the field options with only the sub topics of the topic
-          // provided by the argument.
-          $form['topicid']['#options'] = $new_field_options;
+          // provided by the argument, if there are sub topics. Otherwise,
+          // remove the filter.
+          if (!empty($new_field_options)) {
+            $form['topicid']['#options'] = $new_field_options;
+          }
+          else {
+            unset($form['topicid']);
+          }
         }
         else {
           // If the topic argument is not found in the field options, or it's a
