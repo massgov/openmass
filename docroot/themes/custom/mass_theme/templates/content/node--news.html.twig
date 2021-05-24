@@ -98,7 +98,9 @@
       {% endif %}
       {% if pageContent.personalMessage %}
         {% set personalMessage = pageContent.personalMessage %}
-        {% set imagePromos = personalMessage.imagePromos|merge({'level': level })%}
+        {% set imagePromos = personalMessage.imagePromos|merge({
+            'level': level,
+            'ariaHidden': true }) %}
         {% include "@organisms/by-author/personal-message.twig" %}
       {% endif %}
     </div>
