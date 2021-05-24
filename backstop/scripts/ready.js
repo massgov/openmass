@@ -172,6 +172,30 @@ module.exports = async function(page, scenario, vp) {
     // in local environments.
     await page.waitForFunction('jQuery.active == 0');
 
+    if (scenario.label === 'InfoDetails1') {
+      await page.waitForSelector('.cbFormErrorMarker', {visible: true})
+    }
+
+    if (scenario.showAlerts) {
+      // Wait for a selector to become visible.
+      await page.waitForSelector('span.ma__emergency-alert__time-stamp', {visible: true})
+      await page.evaluate(async function() {
+        document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function(e) {
+          // Force the content to be always same.
+          e.innerText = 'May. 24th, 2021, 5:00 pm';
+        });
+      })
+      // Wait for a second for animation to finish.
+      await page.waitForTimeout(1000);
+    }
+
+    // If feedbackForm is set to true backstop will
+    // wait for these elements to appear on the page.
+    if (scenario.feedbackForm) {
+      await page.waitForSelector('.ma__fixed-feedback-button a#feedback', {visible: true})
+      await page.waitForSelector('.ma__mass-feedback-form__form--submit-wrapper input.submitButton', {visible: true})
+    }
+
     // Wait for all visible fonts to complete loading.
     await page.evaluate(async function() {
       await document.fonts.ready;
