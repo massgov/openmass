@@ -1,9 +1,10 @@
 /**
- * Ready script, fires after pages have loaded, but before screenshots are captured.
+ * Ready script, fires after pages have loaded, but before screenshots are
+ * captured.
  *
- * This script is used to hide or modify highly dynamic elements that may cause trouble
- * during visual regression testing.  If you are constantly seeing trivial failures for
- * an element, you can probably deal with it here.
+ * This script is used to hide or modify highly dynamic elements that may cause
+ * trouble during visual regression testing.  If you are constantly seeing
+ * trivial failures for an element, you can probably deal with it here.
  */
 module.exports = async function(page, scenario, vp) {
     await page.addStyleTag({
@@ -189,12 +190,17 @@ module.exports = async function(page, scenario, vp) {
       await page.waitForTimeout(1000);
     }
 
-    // If feedbackForm is set to true backstop will
-    // wait for these elements to appear on the page.
-    if (scenario.feedbackForm) {
-      await page.waitForSelector('.ma__fixed-feedback-button a#feedback', {visible: true})
-      await page.waitForSelector('.ma__mass-feedback-form__form--submit-wrapper input.submitButton', {visible: true})
+    switch (scenario.label) {
+      case "InfoDetailsImageWrapLeft":
+      case "InfoDetailsImageWrapRight":
+      case "InfoDetailsImageNoWrapLeft":
+      case "InfoDetailsImageNoWrapRight":
+        await page.waitForFunction("document.readyState === 'complete'");
+        await page.waitForSelector('form.ma__mass-feedback-form__form', {visible: true});
+        await page.waitForTimeout(2000);
+        break;
     }
+
 
     // Wait for all visible fonts to complete loading.
     await page.evaluate(async function() {
