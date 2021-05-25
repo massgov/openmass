@@ -204,9 +204,13 @@ module.exports = async function(page, scenario, vp) {
         break;
 
       case "ServiceGroupedLinks":
+      case "Service1":
+      case "Service2":
+      case "Service3":
+      case "Service4":
         await page.waitForFunction("document.readyState === 'complete'");
         await page.waitForFunction("document.querySelector('.js-leaflet-map')._leaflet_id > 0");
-        await page.waitForTimeout(5000);
+        await page.waitForTimeout(2000);
         break;
     }
 
