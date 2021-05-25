@@ -116,6 +116,9 @@ module.exports = async function(page, scenario, vp) {
         '  left: 0;\n' +
         '  right: 0;\n' +
         '  bottom: 0;\n' +
+        '}' +
+        'button:focus-visible, [type="button"]:focus-visible {' +
+          'outline: none;\n' +
         '}'
     });
 
@@ -201,8 +204,9 @@ module.exports = async function(page, scenario, vp) {
         break;
 
       case "ServiceGroupedLinks":
+        await page.waitForFunction("document.readyState === 'complete'");
         await page.waitForFunction("document.querySelector('.js-leaflet-map')._leaflet_id > 0");
-        await page.waitForTimeout(3000);
+        await page.waitForTimeout(5000);
         break;
     }
 
