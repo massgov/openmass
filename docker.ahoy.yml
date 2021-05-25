@@ -23,32 +23,17 @@ commands:
     cmd: ahoy exec composer install -o "$@"
   yarn:
     cmd: ahoy exec yarn "$@"
-
-
   drush:
     cmd: ahoy exec vendor/bin/drush "$@"
-    usage: Run Drush in the container
-
   uli:
     cmd: open $(ahoy drush uli | tr -d '\r')
-    usage: Run uli in the container and then open local browser.
-
   test:
     cmd: ahoy exec scripts/ma-test "$@"
-    usage: Run all tests in the container.
-
   tail:
     cmd: docker-compose logs -f drupal
-    usage: Tail the Apache + PHP logs.
-
   blackfire:
     cmd: ahoy exec blackfire "$@"
-    usage: "Profile CLI requests. Usages: blackfire curl http://mass.local OR blackfire run --samples=10 drush st"
-
   backstop:
-    usage: Run BackstopJS visual regression tests.
     cmd: docker-compose run backstop "$@"
-
   nightcrawler:
-    usage: Run NightcrawlerJS fatal error tests.
     cmd: ahoy exec node_modules/.bin/nightcrawler --config=.circleci/nightcrawler/nightcrawler $@
