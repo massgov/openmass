@@ -199,6 +199,10 @@ module.exports = async function(page, scenario, vp) {
         await page.waitForSelector('form.ma__mass-feedback-form__form', {visible: true});
         await page.waitForTimeout(2000);
         break;
+
+      case "ServiceGroupedLinks":
+        await page.waitForFunction("document.querySelector('.js-leaflet-map')._leaflet_id > 0");
+        break;
     }
 
 
