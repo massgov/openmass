@@ -202,6 +202,7 @@ module.exports = async function(page, scenario, vp) {
 
       case "ServiceGroupedLinks":
         await page.waitForFunction("document.querySelector('.js-leaflet-map')._leaflet_id > 0");
+        await page.waitForTimeout(3000);
         break;
     }
 
