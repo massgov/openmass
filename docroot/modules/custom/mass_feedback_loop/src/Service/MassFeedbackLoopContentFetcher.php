@@ -50,6 +50,7 @@ class MassFeedbackLoopContentFetcher {
       'feedback_endpoint' => 'feedback/',
       'tags_endpoint' => 'tags/',
       'tag_lookup_endpoint' => 'tag_lookup/',
+      'label_lookup_endpoint' => 'labels/',
     ],
     'api_headers' => [
       'content_type_header' => 'application/json',
