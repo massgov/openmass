@@ -1,3 +1,4 @@
+
 {#
 /**
  * @file
@@ -32,40 +33,53 @@
  * @ingroup themeable
  */
 #}
+
+{{ attach_library('mass_theme/views-view--data-listing') }}
+
 {%
   set classes = [
     dom_id ? 'js-view-dom-id-' ~ dom_id,
+    'main-content',
+    'main-content--two main-content--reversed',
+    'data-listing-wrapper'
   ]
 %}
 <div{{ attributes.addClass(classes) }}>
-  {{ title_prefix }}
-  {{ title }}
-  {{ title_suffix }}
+  <div class="ma__breadcrumb--views">{{ header.area }}</div>
+  <h1>{{ title }}</h1>
 
-  {% if header %}
-    <header>
-      {{ header }}
-    </header>
-  {% endif %}
 
-  {{ exposed }}
-  {{ attachment_before }}
+  <aside class="sidebar">
+    <button id="filter-toggle" aria-controls="filters"></button>
+    <div id="filters">
+      {{ exposed }}
+    </div>
+    <div id="filters--desktop">
+      {{ exposed }}
+    </div>
+  </aside>
 
-  {% if rows -%}
-    {{ rows }}
-  {% elseif empty -%}
-    {{ empty }}
-  {% endif %}
-  {{ pager }}
+  <section class="page-content">
+    {% if header %}
+    <div class="ma__results-heading__container">
+      <h2 class="ma__results-heading__title">
+        {{ header }}
+      </h2>
+    </div>
+    {% endif %}
+    {{ attachment_before }}
 
-  {{ attachment_after }}
-  {{ more }}
+    {% if rows -%}
+      {{ rows }}
+    {% elseif empty -%}
+      {{ empty }}
+    {% endif %}
+    {{ pager }}
+  
+    {{ attachment_after }}
+    {{ more }}
+  </section>
 
-  {% if footer %}
-    <footer>
-      {{ footer }}
-    </footer>
-  {% endif %}
 
   {{ feed_icons }}
 </div>
