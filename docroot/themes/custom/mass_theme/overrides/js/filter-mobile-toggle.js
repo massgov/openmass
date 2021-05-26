@@ -12,7 +12,7 @@
   const button = document.getElementById('filter-toggle');
   const filters = document.getElementById('filters')
   const toggleButton = (exp) => {
-    filters.className = exp ? 'show' : 'hide';
+    filters.style.display = exp ? 'block' : 'none';
     button.innerHTML = exp ? 'Hide Filters' : 'Show Filters';
     button.setAttribute('aria-expanded', expanded)
     button.className = exp ? 'expanded' : ''
