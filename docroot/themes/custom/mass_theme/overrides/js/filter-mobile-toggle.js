@@ -11,14 +11,14 @@
   let expanded = false;
   const button = document.getElementById('filter-toggle');
   const filters = document.getElementById('filters')
-  const toggleButton = (exp) => {
+  function toggleButton(exp) {
     filters.className = exp ? 'show' : 'hide';
     button.innerHTML = exp ? 'Hide Filters' : 'Show Filters';
     button.setAttribute('aria-expanded', expanded)
     button.className = exp ? 'expanded' : ''
   }
   toggleButton();
-  button.onclick = () => {
+  button.onclick = function () {
     expanded = !expanded;
     toggleButton(expanded);
   };
