@@ -4494,15 +4494,6 @@ function mass_theme_preprocess_page(&$variables) {
     $allowed_regions = ['post_content'];
     mass_theme_add_regions_to_node($allowed_regions, $variables);
   }
-
-  // Add a main_class for the Data Listing views pages.
-  $data_listing_view_ids = [
-    'data_listing_all',
-    'data_listing_topic',
-  ];
-  if (isset($variables['page']['content']['system_main']['#view_id']) && in_array($variables['page']['content']['system_main']['#view_id'], $data_listing_view_ids)) {
-    $variables['main_class'] = 'data-listing-placeholder';
-  }
 }
 
 /**
