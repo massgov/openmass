@@ -5792,11 +5792,11 @@ function mass_theme_preprocess_views_view(&$variables) {
 
   // Add a class to the submit button.
   if (isset($variables['exposed']['actions']['submit'])) {
-    $variables['exposed']['actions']['submit']['#attributes']['class'][] = 'placeholder_class_submit_button';
+    $variables['exposed']['actions']['submit']['#attributes']['class'][] = 'ma__button ma__button-submit';
   }
   // Add a class to the reset button.
   if (isset($variables['exposed']['actions']['reset'])) {
-    $variables['exposed']['actions']['reset']['#attributes']['class'][] = 'placeholder_class_reset_button';
+    $variables['exposed']['actions']['reset']['#attributes']['class'][] = 'ma__button ma__button--quaternary ma__button-reset';
   }
 
   // Optionally, run node-type-specific preprocess functions, like
@@ -5814,7 +5814,7 @@ function mass_theme_preprocess_form_element_label(&$variables) {
   // Add a class to the form element label for a views exposed filter title
   // field.
   if ($variables['element']['#id'] === 'edit-title') {
-    $variables['attributes']['class'][] = 'placeholder_class_title_field_label';
+    $variables['attributes']['class'][] = 'ma__sidebar-heading ma__legend';
   }
 }
 
@@ -5825,7 +5825,7 @@ function mass_theme_preprocess_fieldset(&$variables) {
   // Add a class to the form fieldset legend span for a views exposed filter
   // topicid field.
   if ($variables['element']['#id'] === 'edit-topicid') {
-    $variables['legend_span']['attributes']->addClass('placeholder_class_fieldset_legend');
+    $variables['legend_span']['attributes']->addClass('ma__sidebar-heading ma__label');
   }
 }
 
