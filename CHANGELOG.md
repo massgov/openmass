@@ -1,5 +1,23 @@
 
 
+## [0.284.0] - May 25, 2021
+
+### Changed
+  - DP-21790: Add labels to feedback manager, fix multiselect.
+  - DP-21983: Makes sure the english version translation field is empty if the content is already english.
+  - DP-22002: Metatag changes for 3 content types.
+  - DP-22130: Updated Mayflower version to 11.5.1.
+  - DP-21660: Fix bullets and list numbers overwrapped with left floated elements in IE11. (MF)
+  - DP-22079: Fixed location listing pagination error, and fixed auto complete. (MF)
+  
+### Fixed
+  - DP-22021: Fixed error when adding an existing Fee to a How-to page.
+  
+### Security
+  - DP-22023: Updated drupal ctools from version 3.4.0 to 3.6.0.
+  
+
+
 ## [0.283.0] - May 18, 2021
 
 ### Changed
