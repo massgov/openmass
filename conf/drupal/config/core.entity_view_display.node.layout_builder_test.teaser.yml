@@ -1,0 +1,35 @@
+uuid: cbbe18f0-225b-4dc7-a321-e47070703a11
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.layout_builder_test.body
+    - field.field.node.layout_builder_test.field_info_details_sections
+    - field.field.node.layout_builder_test.layout_builder__layout
+    - node.type.layout_builder_test
+  module:
+    - text
+    - user
+id: node.layout_builder_test.teaser
+targetEntityType: node
+bundle: layout_builder_test
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  field_info_details_sections: true
+  langcode: true
+  layout_builder__layout: true
