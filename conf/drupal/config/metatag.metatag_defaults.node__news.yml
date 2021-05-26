@@ -5,6 +5,8 @@ dependencies: {  }
 id: node__news
 label: 'Content: News'
 tags:
+  twitter_cards_type: summary
+  twitter_cards_description: '[node:field_news_lede]'
   mass_metatag_organization: '[node:mass_organizations]'
   mass_metatag_external_organization: '[node:mass_external_organizations]'
   mass_metatag_date: '[node:field_news_date:date:metadatadate]'
@@ -24,8 +26,6 @@ tags:
   schema_news_article_author: 'a:2:{s:5:"@type";s:12:"Organization";s:4:"name";s:53:"[node:field_news_signees:entity:field_state_org_name]";}'
   schema_news_article_content_location: '[node:field_news_location]'
   schema_news_article_id: '[node:url]#news'
-  description: '[node:field_news_body]'
+  description: '[node:field_news_lede]'
+  og_description: '[node:field_news_lede]'
   og_type: article
-  og_description: '[node:field_news_summary]'
-  twitter_cards_description: '[node:field_news_body]'
-  twitter_cards_type: summary
