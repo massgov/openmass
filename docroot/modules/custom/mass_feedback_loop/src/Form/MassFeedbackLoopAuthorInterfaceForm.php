@@ -126,10 +126,17 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#markup' => $this->t('<em><a href="https://massgovdigital.gitbook.io/knowledge-base/content-improvement-tools/feedback-manager/using-the-feedback-manager">Learn how to use the Feedback Manager.</a></em>'),
     ];
 
+    $searchHelpText = $this->t(
+      'A comma-separated list of words and/or phrases to filter feedback items.'
+    );
     $form['search'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Search'),
+      '#title' => $this->t('Search feedback for specific text'),
+      '#attributes' => [
+        'placeholder' => 'term1, term that is a phrase, term3',
+      ],
       '#default_value' => isset($feedback_api_params['search']) ? $feedback_api_params['search'] : NULL,
+      '#description' => $searchHelpText,
     ];
 
     $form['filter_by_org'] = [
