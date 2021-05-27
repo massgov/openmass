@@ -127,7 +127,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     ];
 
     $searchHelpText = $this->t(
-      'A comma-separated list of words and/or phrases to filter feedback items.'
+      'A comma-separated list of words or phrases to filter feedback.'
     );
     $form['search'] = [
       '#type' => 'textfield',
