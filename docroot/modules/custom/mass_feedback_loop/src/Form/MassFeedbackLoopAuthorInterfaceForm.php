@@ -126,18 +126,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#markup' => $this->t('<em><a href="https://massgovdigital.gitbook.io/knowledge-base/content-improvement-tools/feedback-manager/using-the-feedback-manager">Learn how to use the Feedback Manager.</a></em>'),
     ];
 
-    $searchHelpText = $this->t(
-      'Enter a comma-separated list of words or phrases.'
-    );
-    $form['search'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Search feedback for specific text'),
-      '#attributes' => [
-        'placeholder' => 'term1, term that is a phrase, term3',
-      ],
-      '#default_value' => isset($feedback_api_params['search']) ? $feedback_api_params['search'] : NULL,
-      '#description' => $searchHelpText,
-    ];
+  
 
     $form['filter_by_org'] = [
       '#type' => 'select',
@@ -231,6 +220,19 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#options' => $tag_select_list,
       // Updates form input with default value, if available.
       '#default_value' => isset($feedback_api_params['tag_id']) ? $feedback_api_params['tag_id'] : NULL,
+    ];
+
+    $searchHelpText = $this->t(
+      'Enter a comma-separated list of words or phrases.'
+    );
+    $form['search'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Search feedback for specific text'),
+      '#attributes' => [
+        'placeholder' => 'term1, term that is a phrase, term3',
+      ],
+      '#default_value' => isset($feedback_api_params['search']) ? $feedback_api_params['search'] : NULL,
+      '#description' => $searchHelpText,
     ];
 
     // Builds "Sort by" input.
