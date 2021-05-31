@@ -117,7 +117,7 @@ class MassTermNameAsIdWithDepthWithParent extends TermNameAsId {
             return FALSE;
           }
 
-          // if the term parent validation is enabled, validate the specified
+          // If the term parent validation is enabled, validate the specified
           // argument is a parent term.
           if ($this->options['term_parent']) {
             $parent_argument = $this->view->args[$this->options['term_parent_value']];

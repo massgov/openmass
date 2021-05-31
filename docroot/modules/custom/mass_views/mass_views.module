@@ -68,7 +68,7 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
       $remaining_args_count = count($args);
       // Prepare the collection or topic names for term lookup.
       $collection = str_replace('-', ' ', $last_arg);
-      $collection = $remaining_args_count == 0  ? $collection : '-' . $collection;
+      $collection = $remaining_args_count == 0 ? $collection : '-' . $collection;
       if (isset($form['topicid'])) {
         // Store the field options for searching.
         $original_field_options = $form['topicid']['#options'];
@@ -104,15 +104,6 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
           // remove the filter.
           if (!empty($collection_field_options)) {
             $form['topicid']['#options'] = $collection_field_options;
-            // Alter the topic filter based on collection or topic argument.
-            if ($remaining_args_count === 0) {
-              // @todo: These changes don't seem to apply. Figure out where we
-              // can alter these values based on arguments.
-//              $form['topicid']['#type'] = 'radios';
-//              $form['topicid']['#theme'] = 'bef_radios';
-//              unset($form['topicid']['#multiple']);
-//              $form['topicid']['#title'] = 'Filter by Topic';
-            }
           }
           else {
             unset($form['topicid']);
