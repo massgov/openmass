@@ -1,5 +1,12 @@
 
 
+## [0.285.0] - June 1, 2021
+
+### Added
+  - DP-21768: Adapt ahoy commands so they also work for native dev env
+  
+
+
 ## [0.284.0] - May 25, 2021
 
 ### Changed
