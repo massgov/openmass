@@ -188,5 +188,5 @@ if (PHP_SAPI === 'cli') {
 
 // Increase memory limit when on CircleCi to prevent running out of memory when running phpunit tests.
 if (getenv('DOCKER_ENV') === 'ci') {
-  ini_set('memory_limit', '1024M');
+  ini_set('memory_limit', '2048M');
 }
