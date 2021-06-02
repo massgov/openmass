@@ -34,8 +34,7 @@
  */
 #}
 {% set heading_id = attributes.id ~ '-menu'|clean_id %}
-<nav class="ma__footer-links" role="navigation" aria-label="Footer navigation">
-
+<ul{{ attributes.addClass('ma__footer-links__items') }}{{ attributes.setAttribute('aria-label', configuration.label) }}>
   {# Label. If not displayed, we still provide it for screen readers. #}
   {% if not configuration.label_display %}
     {% set title_attributes = title_attributes.addClass('visually-hidden') %}
@@ -47,4 +46,4 @@
   {% block content %}
     {{ content }}
   {% endblock %}
-</nav>
+</ul>
