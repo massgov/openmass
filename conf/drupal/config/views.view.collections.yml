@@ -5,8 +5,10 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - taxonomy.vocabulary.collections
+    - views.view.collections_terms
   module:
     - better_exposed_filters
+    - entityreference_filter
     - node
     - taxonomy
     - user
@@ -63,7 +65,7 @@ display:
               secondary_label: 'Advanced options'
               secondary_open: false
             filter:
-              field_collections_target_id_1:
+              field_collections_target_id_entityreference_filter:
                 plugin_id: bef
                 advanced:
                   rewrite:
@@ -73,11 +75,27 @@ display:
                 select_all_none: false
                 select_all_none_nested: false
                 display_inline: 0
+                options_show_only_used: false
+                options_show_only_used_filtered: false
               title:
                 plugin_id: default
                 advanced:
                   collapsible: false
                   is_secondary: false
+                options_show_only_used: false
+                options_show_only_used_filtered: false
+              field_collections_target_id_entityreference_filter_1:
+                plugin_id: bef
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+                select_all_none: false
+                select_all_none_nested: false
+                display_inline: 0
+                options_show_only_used: false
+                options_show_only_used_filtered: false
       pager:
         type: full
         options:
@@ -218,26 +236,84 @@ display:
           hierarchy: true
           error_message: true
           plugin_id: taxonomy_index_tid
-        field_collections_target_id_1:
-          id: field_collections_target_id_1
+        field_collections_target_id_entityreference_filter:
+          id: field_collections_target_id_entityreference_filter
           table: node__field_collections
-          field: field_collections_target_id
+          field: field_collections_target_id_entityreference_filter
           relationship: none
           group_type: group
           admin_label: ''
           operator: or
-          value: {  }
+          value: null
           group: 1
           exposed: true
           expose:
-            operator_id: field_collections_target_id_1_op
+            operator_id: field_collections_target_id_entityreference_filter_op
             label: 'Filter by Topic'
             description: ''
             use_operator: false
-            operator: field_collections_target_id_1_op
+            operator: field_collections_target_id_entityreference_filter_op
             operator_limit_selection: false
             operator_list: {  }
             identifier: topicid
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          type: select
+          reference_display: 'collections_terms:entity_reference_term_id'
+          reference_arguments: '#1'
+          hide_empty_filter: true
+          plugin_id: entityreference_filter_view_result
+        field_collections_target_id_entityreference_filter_1:
+          id: field_collections_target_id_entityreference_filter_1
+          table: node__field_collections
+          field: field_collections_target_id_entityreference_filter
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: or
+          value: null
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_collections_target_id_entityreference_filter_1_op
+            label: 'Filter by Sub Topic'
+            description: ''
+            use_operator: false
+            operator: field_collections_target_id_entityreference_filter_1_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: subtopicid
             required: false
             remember: false
             multiple: true
@@ -272,11 +348,10 @@ display:
             group_items: {  }
           reduce_duplicates: false
           type: select
-          limit: true
-          vid: collections
-          hierarchy: true
-          error_message: true
-          plugin_id: taxonomy_index_tid
+          reference_display: 'collections_terms:entity_reference_term_id'
+          reference_arguments: '[topicid]'
+          hide_empty_filter: true
+          plugin_id: entityreference_filter_view_result
         title:
           id: title
           table: node_field_data
@@ -429,52 +504,6 @@ display:
           require_value: false
           reduce_duplicates: false
           plugin_id: taxonomy_index_tid
-        tid_1:
-          id: tid_1
-          table: taxonomy_index
-          field: tid
-          relationship: none
-          group_type: group
-          admin_label: 'Content: Has taxonomy term ID (Topic)'
-          default_action: ignore
-          exception:
-            value: all
-            title_enable: true
-            title: All
-          title_enable: true
-          title: '{{ arguments.tid }}: {{ arguments.tid_1 }}'
-          default_argument_type: fixed
-          default_argument_options:
-            argument: ''
-          default_argument_skip_url: false
-          summary_options:
-            base_path: ''
-            count: true
-            items_per_page: 25
-            override: false
-          summary:
-            sort_order: asc
-            number_of_records: 0
-            format: default_summary
-          specify_validation: true
-          validate:
-            type: mass_taxonomy_term_name_into_id_depth_parent
-            fail: 'not found'
-          validate_options:
-            bundles:
-              collections: collections
-            access: '1'
-            operation: view
-            transform: '1'
-            term_depth: '1'
-            term_depth_value: '2'
-            term_parent: '1'
-            term_parent_value: '1'
-          break_phrase: false
-          add_table: true
-          require_value: false
-          reduce_duplicates: false
-          plugin_id: taxonomy_index_tid
       display_extenders: {  }
       title: Collection
       filter_groups:
@@ -491,7 +520,8 @@ display:
         - user
         - 'user.node_grants:view'
         - user.permissions
-      tags: {  }
+      tags:
+        - taxonomy_term_list
   collection_page:
     display_plugin: page
     id: collection_page
@@ -499,7 +529,7 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: collections/%collection/%topic
+      path: collections/%collection
     cache_metadata:
       max-age: -1
       contexts:
@@ -510,4 +540,5 @@ display:
         - user
         - 'user.node_grants:view'
         - user.permissions
-      tags: {  }
+      tags:
+        - taxonomy_term_list
