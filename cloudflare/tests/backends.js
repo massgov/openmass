@@ -1,29 +1,6 @@
 
 import {setupMocks, dummyResponse} from './mocks';
-import {legacy, www, edit} from "../src/backends";
-
-
-describe('Legacy backend', function() {
-  beforeEach(() => setupMocks(global));
-
-  test('Should route all requests to the Legacy backend, overriding the host', async function() {
-    const handler = legacy()
-    var request = new Request('https://www.mass.gov/foo');
-    await handler(request)
-
-    expect(fetch.mock.calls.length).toBe(1);
-    expect(fetch.mock.calls[0][0]).toBe(request);
-    expect(fetch.mock.calls[0][1]).toEqual({
-      cf: {resolveOverride: 'legacy.mass.gov', cacheTtl: 86400},
-    });
-  });
-
-  test('Should return the response given by the backend', function() {
-    expect.assertions(1);
-    const request = new Request('https://www.mass.gov/anf');
-    return expect(legacy()(request)).resolves.toEqual(dummyResponse());
-  });
-});
+import {www, edit} from "../src/backends";
 
 describe('Edit backend', function() {
   beforeEach(() => setupMocks(global));
