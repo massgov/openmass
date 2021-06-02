@@ -8,6 +8,7 @@
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Datetime\Entity\DateFormat;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\TranslatableInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -33,8 +34,6 @@ define('MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION', '14 days');
  */
 function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
   $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsAlertSitewide');
-  // Enable after https://www.drupal.org/project/scheduled_transitions/issues/3084849 is resolved.
-  // $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsScheduledTransitionsReschedule');.
 }
 
 /**
@@ -91,8 +90,8 @@ function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $n
     ->save();
   $url_edit = $transition->toUrl('reschedule-form')->toString();
   $replacements = [':url_edit' => $url_edit, '@duration' => $duration];
-  // Use warning until July 4 then downgrade to status. @todo Remove after July 4.
-  $method = time() > strtotime('7/4/2021') ? 'addStatus' : 'addWarning';
+  // Use warning until Sep 4 then downgrade to status. @todo Remove after Sep 4.
+  $method = time() > strtotime('9/4/2021') ? 'addStatus' : 'addWarning';
   \Drupal::messenger()->$method(t("An unpublish transition has been scheduled for @duration days from today. <a href=\":url_edit\">Reschedule transition</a>.", $replacements));
 }
 
@@ -165,6 +164,27 @@ function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_
 }
 
 /**
+ * Enforce that date field must be in future and must not be in far future for alerts and promo pages.
+ *
+ * Add server-side validation once https://www.drupal.org/project/scheduled_transitions/issues/3084849 is resolved.
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ */
+function mass_scheduled_transitions_form_scheduled_transition_reschedule_form_alter(&$form, FormStateInterface $form_state) {
+  /** @var ScheduledTransition $scheduled_transition */
+  $scheduled_transition = $form_state->getFormObject()->getEntity();
+  $host_entity = $scheduled_transition->getEntity();
+  $html_date_format = DateFormat::load('html_date')->getPattern();
+  if (in_array($host_entity->bundle(), ['alert', 'campaign_landing'])) {
+    $duration = $host_entity->bundle() == 'alert' ? MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION : MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION;
+    $max_time = (new DrupalDateTime("now +" . $duration))->format($html_date_format);
+    $form['date']['#attributes']['max'] = $max_time;
+  }
+  $form['date']['#attributes']['min'] = (new DrupalDateTime())->format($html_date_format);;
+}
+
+/**
  * Remove from_revision column.
  */
 function mass_scheduled_transitions_entity_form_do_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -220,8 +240,8 @@ function mass_scheduled_transitions_do_form_alter(FormStateInterface $form_state
     '#title' => t('Scheduling'),
     '#group' => 'advanced',
     '#open' => FALSE,
-    // @todo Remove anytime after July 4.
-    '#access' => time() < strtotime('7/4/2021'),
+    // @todo Remove anytime after Sep 4.
+    '#access' => time() < strtotime('9/4/2021'),
     '#markup' => $markup,
     '#weight' => 39,
   ];
