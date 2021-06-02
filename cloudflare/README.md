@@ -10,7 +10,6 @@ Page rules are sets of configuration that will be applied to certain requests. I
 
 The Worker, or Service Worker, is javascript that lives at the edge and is invoked for every request. In our configuration, we use workers to handle:
 
-* Routing legacy requests to the legacy backend.
 * Adding a "CDN-Token" header to incoming requests, which will be verified at the origin to prevent direct origin access.
 * Stripping of cookies on www.mass.gov
 * Overriding of browser and edge cache TTLs based on the request.
@@ -70,7 +69,6 @@ Replace `TARGET` with the name of the target you want to deploy to, which will b
 
 ## Smoke testing
 * There is good testing in place for the workers; manual testing isn't needed there typically.
-* Test that legacy redirects are working: check https://wwwcf.digital.mass.gov/anf and make sure it sends you to the correct Org page (https://www.mass.gov/orgs/executive-office-for-administration-and-finance).
 * Open any page on the test URL. Reload it. Then open the dev tools Network tab and confirm the CF Cache Status is "HIT"
 * Confirm that for files, we show only the /download alias in the browser (not the direct file system URL): `curl -I https://wwwcf.digital.mass.gov/media/1/download` and confirm you see 1) a 200, not a 301, response, and 2) `content-disposition: inline; filename="test.rtf"` in the response.
 
