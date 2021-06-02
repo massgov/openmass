@@ -126,8 +126,6 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#markup' => $this->t('<em><a href="https://massgovdigital.gitbook.io/knowledge-base/content-improvement-tools/feedback-manager/using-the-feedback-manager">Learn how to use the Feedback Manager.</a></em>'),
     ];
 
-  
-
     $form['filter_by_org'] = [
       '#type' => 'select',
       '#multiple' => TRUE,
