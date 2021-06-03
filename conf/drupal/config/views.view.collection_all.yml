@@ -1,11 +1,11 @@
-uuid: 15406199-a373-4fbf-9d2d-53bd5319ed9e
+uuid: a52de964-3df6-4276-9c5d-a4c6d73d8b6d
 langcode: en
 status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - taxonomy.vocabulary.collections
-    - views.view.collections_terms
+    - views.view.taxonomy_term_children
   module:
     - better_exposed_filters
     - entityreference_filter
@@ -13,8 +13,8 @@ dependencies:
     - taxonomy
     - user
     - views_autocomplete_filters
-id: collections
-label: Collections
+id: collection_all
+label: 'Collection All'
 module: views
 description: ''
 tag: ''
@@ -290,66 +290,8 @@ display:
             group_items: {  }
           reduce_duplicates: false
           type: select
-          reference_display: 'collections_terms:entity_reference_term_id'
+          reference_display: 'taxonomy_term_children:entity_reference'
           reference_arguments: '#1'
-          hide_empty_filter: true
-          plugin_id: entityreference_filter_view_result
-        field_collections_target_id_entityreference_filter_1:
-          id: field_collections_target_id_entityreference_filter_1
-          table: node__field_collections
-          field: field_collections_target_id_entityreference_filter
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: or
-          value: null
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_collections_target_id_entityreference_filter_1_op
-            label: 'Filter by Sub Topic'
-            description: ''
-            use_operator: false
-            operator: field_collections_target_id_entityreference_filter_1_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: subtopicid
-            required: false
-            remember: false
-            multiple: true
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          type: select
-          reference_display: 'collections_terms:entity_reference_term_id'
-          reference_arguments: '[topicid]'
           hide_empty_filter: true
           plugin_id: entityreference_filter_view_result
         title:
@@ -522,9 +464,9 @@ display:
         - user.permissions
       tags:
         - taxonomy_term_list
-  collection_page:
+  page_all:
     display_plugin: page
-    id: collection_page
+    id: page_all
     display_title: Page
     position: 1
     display_options:

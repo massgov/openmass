@@ -66,4 +66,23 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
       }
     }
   }
+
+  // Add the correct collection to the breadcrumb path for Collection Topic
+  // pages. The provided token will use the term ID instead of the term name
+  // with hyphens, thus providing a broken breadcrumb link.
+  if (($view['view']->id() == 'collection_topic') && ($view['view']->current_display == 'page_topic')) {
+    // If the breadcrumb is available, update it.
+    if (isset($view['view']->header['area'])) {
+      // Get the views page arguments.
+      $args = $view['view']->args;
+      // Replace the placeholder token with the correct argument.
+      $breadcrumb_markup = str_replace(
+        '{{ raw_arguments.tid }}',
+        $args[0],
+        $view['view']->header['area']->options['content']['value']
+      );
+      // Update the value in the view.
+      $view['view']->header['area']->options['content']['value'] = $breadcrumb_markup;
+    }
+  }
 }
