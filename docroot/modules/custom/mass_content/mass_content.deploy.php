@@ -401,26 +401,6 @@ function mass_content_deploy_eotss_service_catalog_terms() {
       'weight' => 0,
     ],
     [
-      'name' => 'Awesome App',
-      'parent' => 'Desktop Software',
-      'weight' => 0,
-    ],
-    [
-      'name' => 'Cool App',
-      'parent' => 'Desktop Software',
-      'weight' => 1,
-    ],
-    [
-      'name' => 'Better App',
-      'parent' => 'Desktop Software',
-      'weight' => 2,
-    ],
-    [
-      'name' => 'Rad App',
-      'parent' => 'Desktop Software',
-      'weight' => 3,
-    ],
-    [
       'name' => 'Email, Calendar & Collaboration',
       'parent' => 'EOTSS Service Catalog',
       'weight' => 1,
