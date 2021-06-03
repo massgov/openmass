@@ -101,7 +101,6 @@ function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $n
  * Deny deletion of scheduled transitions when our business rules requires one for the content type.
  */
 function mass_scheduled_transitions_scheduled_transition_access(EntityInterface $transition, $operation) {
-  return AccessResult::allowed();
   $entity = $transition->getEntity();
   if ($operation != 'delete' || !$entity->isPublished() || !in_array($entity->bundle(), ['alert', 'campaign_landing'])) {
     return;
@@ -167,6 +166,8 @@ function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_
  * Enforce that date field must be in future and must not be in far future for alerts and promo pages.
  *
  * Add server-side validation once https://www.drupal.org/project/scheduled_transitions/issues/3084849 is resolved.
+ * 
+ * Implements hook_form_FORM_ID_alter().
  *
  * @param $form
  * @param \Drupal\Core\Form\FormStateInterface $form_state
