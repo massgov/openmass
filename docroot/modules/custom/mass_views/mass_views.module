@@ -52,50 +52,6 @@ function mass_views_views_pre_view(ViewExecutable $view, $display_id, array &$ar
 function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $view = $form_state->getStorage('view');
 
-  if (($view['view']->id() == 'data_listing_topic') && ($view['view']->current_display == 'page_topic')) {
-    // Get the topic from the view arguments.
-    $args = $view['view']->args;
-    if ($topic = $args[0]) {
-      // Prepare the topic name for term lookup.
-      $topic = strtolower(str_replace('-', ' ', $topic));
-      if (isset($form['topicid'])) {
-        // Store the field options for searching.
-        $old_field_options = $form['topicid']['#options'];
-        // Initialize a new array of options.
-        $new_field_options = [];
-        // Find the option key that matches the topic argument.
-        if ($topic_key = array_search(strtolower($topic), array_map('strtolower', $old_field_options))) {
-          // Loop through the original options until the topic argument key is
-          // found.
-          while (key($old_field_options) !== $topic_key) {
-            next($old_field_options);
-          }
-          // Advance in the array to the next option, the first sub topic.
-          next($old_field_options);
-          // Loop through the sub topics and build a new options array.
-          while (strpos(current($old_field_options), '-') === 0) {
-            $new_field_options[key($old_field_options)] = substr(current($old_field_options), 1);
-            next($old_field_options);
-          }
-          // Replace the field options with only the sub topics of the topic
-          // provided by the argument, if there are sub topics. Otherwise,
-          // remove the filter.
-          if (!empty($new_field_options)) {
-            $form['topicid']['#options'] = $new_field_options;
-          }
-          else {
-            unset($form['topicid']);
-          }
-        }
-        else {
-          // If the topic argument is not found in the field options, or it's a
-          // sub topic, return a 404 error.
-          throw new NotFoundHttpException();
-        }
-      }
-    }
-  }
-
   if (($view['view']->id() == 'data_listing_all') && ($view['view']->current_display == 'page_all')) {
     // Remove sub topics from the data topic filter.
     if (isset($form['topicid'])) {

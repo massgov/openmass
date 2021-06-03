@@ -5,8 +5,10 @@ dependencies:
   config:
     - core.entity_view_mode.node.listing
     - taxonomy.vocabulary.data_topic
+    - views.view.taxonomy_term_children
   module:
     - better_exposed_filters
+    - entityreference_filter
     - node
     - taxonomy
     - user
@@ -78,6 +80,16 @@ display:
                 advanced:
                   collapsible: false
                   is_secondary: false
+              field_data_topic_target_id_entityreference_filter:
+                plugin_id: bef
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+                select_all_none: false
+                select_all_none_nested: false
+                display_inline: 0
       pager:
         type: full
         options:
@@ -218,23 +230,23 @@ display:
           hierarchy: false
           error_message: true
           plugin_id: taxonomy_index_tid
-        field_data_topic_target_id_1:
-          id: field_data_topic_target_id_1
+        field_data_topic_target_id_entityreference_filter:
+          id: field_data_topic_target_id_entityreference_filter
           table: node__field_data_topic
-          field: field_data_topic_target_id
+          field: field_data_topic_target_id_entityreference_filter
           relationship: none
           group_type: group
           admin_label: ''
           operator: or
-          value: {  }
+          value: null
           group: 1
           exposed: true
           expose:
-            operator_id: field_data_topic_target_id_1_op
+            operator_id: field_data_topic_target_id_entityreference_filter_op
             label: 'Filter by Sub Topic'
             description: ''
             use_operator: false
-            operator: field_data_topic_target_id_1_op
+            operator: field_data_topic_target_id_entityreference_filter_op
             operator_limit_selection: false
             operator_list: {  }
             identifier: topicid
@@ -272,18 +284,10 @@ display:
             group_items: {  }
           reduce_duplicates: false
           type: select
-          limit: true
-          vid: data_topic
-          hierarchy: true
-          error_message: true
-          parent: 0
-          level_labels: ''
-          force_deepest: false
-          save_lineage: false
-          hierarchy_depth: 0
-          required_depth: 0
-          none_label: '- Please select -'
-          plugin_id: taxonomy_index_tid
+          reference_display: 'taxonomy_term_children:entity_reference'
+          reference_arguments: '#1'
+          hide_empty_filter: true
+          plugin_id: entityreference_filter_view_result
         title:
           id: title
           table: node_field_data
@@ -446,6 +450,10 @@ display:
           plugin_id: taxonomy_index_tid
       display_extenders: {  }
       title: 'Topic Data Listing'
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
     cache_metadata:
       max-age: -1
       contexts:
@@ -456,7 +464,8 @@ display:
         - user
         - 'user.node_grants:view'
         - user.permissions
-      tags: {  }
+      tags:
+        - taxonomy_term_list
   page_topic:
     display_plugin: page
     id: page_topic
@@ -477,4 +486,5 @@ display:
         - user
         - 'user.node_grants:view'
         - user.permissions
-      tags: {  }
+      tags:
+        - taxonomy_term_list
