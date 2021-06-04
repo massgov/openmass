@@ -8,7 +8,7 @@ Our test suite is run automatically on all PRs via our continuous integration pr
 
 In addition, [BackstopJS](https://github.com/massgov/openmass/blob/develop/backstop/README.md) (visual regression testing) and [Nightcrawler](https://github.com/massgov/openmass/blob/develop/.circleci/nightcrawler/README.md) (5xx error testing) are run a nightly on the CD environment on the latest version of develop (see more below).
 
-Any PR that is created in the Mass repository can and should be tested locally before being being pushed up to GitHub.
+Any PR that is created in the Mass repository can be tested locally before being being pushed up to GitHub. Branches without an associated PR will fail the Danger step at CircleCI.
 
 ## Tests run on every PR
 

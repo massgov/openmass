@@ -29,7 +29,7 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
     1. **Windows:** `c:\windows\system32\drivers\etc\hosts`
 
 ### Native (optional)
-If the Docker section above is unappealing, its easy to run mass.gov natively on any OS. You need to provide your own PHP, web server and DB server (and optional memcache). On OSX, [these install instructions](https://getgrav.org/blog/macos-bigsur-apache-multiple-php-versions) are good (stop at the section called _PHP Switcher Script_). To populate or refresh the DB, you can use `ahoy refresh` which runs `scripts/ma-refresh-local -dpo && drush sql:sanitize`. The other ahoy commands are not needed when on native hosting. Point your web server at the /docroot directory.
+If the Docker section above is unappealing, its easy to run mass.gov natively on any OS. You need to provide your own PHP, web server and DB server (and optional memcache). On OSX, [these install instructions](https://getgrav.org/blog/macos-bigsur-apache-multiple-php-versions) are good (stop at the section called _PHP Switcher Script_), along with this [mysql section](https://getgrav.org/blog/macos-bigsur-apache-mysql-vhost-apc). Point your web server at the /docroot directory.
 
 ### Ahoy (optional)
 
@@ -37,6 +37,7 @@ If the Docker section above is unappealing, its easy to run mass.gov natively on
     ```bash
     sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
     ```
+1. The Ahoy aliases also work for native development environments. Set an environment variable: `MASS_DEV_ENV=native`   
 1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database).
 1. Run `ahoy comi` to fetch all dependencies.
 

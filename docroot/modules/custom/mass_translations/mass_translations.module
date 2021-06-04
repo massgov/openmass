@@ -7,11 +7,14 @@
 
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Language\LanguageDefault;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Drupal\mass_translations\Controller\TranslationsController;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Implements hook_page_attachments().
@@ -46,8 +49,10 @@ function mass_translations_page_attachments(array &$attachments) {
         if (!$access->isAllowed()) {
           continue;
         }
+
+        $language_manager = new LanguageManager(new LanguageDefault([]));
         $url = $translation->toUrl('canonical')
-          ->setOption('language', $translation->language())
+          ->setOption('language', $language_manager->getLanguage('en'))
           ->setAbsolute()
           ->toString();
         $attachments['#attached']['html_head_link'][] = [
@@ -99,7 +104,7 @@ function mass_translations_element_info_alter(array &$info) {
  */
 function mass_translations_pathauto_alias_alter(&$alias, array &$context) {
   // Set language of all aliases to undefined to allow aliases to remain independent of language.
-  $context['language'] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
+  $context['language'] = 'en';
 }
 
 /**
@@ -122,4 +127,14 @@ function mass_translations_process_language_select(array $element): array {
   );
 
   return $element;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function mass_translations_node_presave(EntityInterface $entity) {
+  if ($entity->hasField('field_english_version') && $entity->get('langcode')->value == 'en') {
+    // If the Language is English, there isn't a seperate English version.
+    $entity->set('field_english_version', '');
+  }
 }

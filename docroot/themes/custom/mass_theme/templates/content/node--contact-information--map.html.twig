@@ -71,30 +71,38 @@
  *
  */
 #}
-{% include "@molecules/google-map.twig" with {
-  "googleMap": {
-    "static": true,
+{% include "@molecules/map-leaflet.twig" with {
+  "leafletMap": {
+    "isStatic": true,
+    "hideAttribution": true,
     "link": {
-      "href": static_map_link,
-      "text": 'Get Directions'|t,
-      "info": node.label
+      "href": google_directions,
+      "text": "Get Directions",
+      "info": "Information",
     },
-    "picture": {
-      "defaultImage": static_map_600x450,
-      "srcSets": [
-        {
-          "url": static_map_900x700,
-          "width": "1050"
+    "map": {
+      "center": {
+        "lat": lat,
+        "lng": lon
+      },
+      "zoom": "13"
+    },
+    "markers": [
+      {
+        "position": {
+          "lat": lat,
+          "lng": lon
         },
-        {
-          "url": static_map_800x450,
-          "width": "620"
-        },
-        {
-          "url": static_map_600x450,
-          "width": "480"
+        "label": "A",
+        "infoWindow": {
+          "name": display_title,
+          "phone": phone,
+          "fax": fax,
+          "email": email,
+          "address": street_address,
+          "directions": google_directions
         }
-      ]
-    }
+      },
+    ]
   }
 } %}

@@ -35,8 +35,11 @@
     <css-placeholder token="{{ placeholder_token|raw }}">
     <js-placeholder token="{{ placeholder_token|raw }}">
     {% include directory ~ "/templates/includes/page-meta.html.twig" %}
-    <link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSans-VF.woff2') }}" as="font" crossorigin />
-    <link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSansItalic-VF.woff2') }}" as="font"  crossorigin />
+{# Update the version '?version=1' when changes occurs to the font files for caching. #}
+<link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSans-VF.woff2?version=1') }}" as="font" crossorigin/>
+
+<link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSansItalic-VF.woff2?version=1') }}" as="font" crossorigin/>
+
   </head>
   <body{{ attributes.addClass(body_classes) }}>
     <svg-sprite-placeholder>
