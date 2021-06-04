@@ -372,6 +372,19 @@ display:
           entity_field: title
           plugin_id: standard
       header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: false
+          tokenize: false
+          content:
+            value: '<div class="ma__breadcrumb--views"></div>'
+            format: full_html
+          plugin_id: text
         result:
           id: result
           table: views
@@ -394,8 +407,8 @@ display:
           empty: true
           tokenize: false
           content:
-            value: 'There are no results to display.'
-            format: basic_html
+            value: '<div class="ma__no-results"><h3>No results found</h3><p>Here are a few tips:</p><ul><li>Try clearing filters</li><li>Try moving up a level using the breadcrumb</li></ul></div>'
+            format: full_html
           plugin_id: text
       relationships: {  }
       arguments:
