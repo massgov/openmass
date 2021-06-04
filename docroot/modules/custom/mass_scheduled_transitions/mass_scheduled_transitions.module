@@ -81,7 +81,7 @@ function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $n
   $transition = ScheduledTransition::create([]);
   $datetime = (new DrupalDateTime("now + $duration"))->getPhpDateTime();
   $transition->setTransitionDate($datetime)
-    ->setAuthor($node->getOwner())
+    ->setAuthor(Drupal::currentUser())
     ->setState(Workflow::load($workflow), MassModeration::UNPUBLISHED)
     ->setEntity($node)
     // 0 means 'latest'.
