@@ -45,7 +45,11 @@
   ]
 %}
 <div{{ attributes.addClass(classes) }}>
-  <div class="ma__breadcrumb--views">{{ header.area }}</div>
+  <div class="ma__breadcrumb--views">
+    {% if header.area %}
+      {{ header.area }}
+    {% endif %}
+  </div>
   <h1>{{ title }}</h1>
 
 
@@ -60,10 +64,10 @@
   </aside>
 
   <section class="page-content">
-    {% if header %}
+    {% if header.result %}
     <div class="ma__results-heading__container">
       <h2 class="ma__results-heading__title">
-        {{ header }}
+        {{ header.result }}
       </h2>
     </div>
     {% endif %}
@@ -75,7 +79,7 @@
       {{ empty }}
     {% endif %}
     {{ pager }}
-  
+
     {{ attachment_after }}
     {{ more }}
   </section>
