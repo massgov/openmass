@@ -189,7 +189,7 @@ module.exports = async function(page, scenario, vp) {
           e.innerText = 'May. 24th, 2021, 5:00 pm';
         });
       })
-      await page.waitForTimeout(1000);
+      await page.waitFor(1000);
     }
 
     switch (scenario.label) {
@@ -198,9 +198,9 @@ module.exports = async function(page, scenario, vp) {
       case "InfoDetailsImageNoWrapLeft":
       case "InfoDetailsImageNoWrapRight":
         await page.waitForFunction("document.readyState === 'complete'");
-        await page.waitForSelector('form.ma__mass-feedback-form__form', {visible: true});
-        await page.waitForSelector(".ma__figure--x-large img", {visible: true});
-        await page.waitForTimeout(3000);
+        await page.waitForSelector('form.ma__mass-feedback-form__form', {visible: true, timeout: 0});
+        await page.waitForSelector(".ma__figure--x-large img", {visible: true, timeout: 0});
+        await page.waitFor(3000);
         break;
 
       case "ServiceGroupedLinks":
