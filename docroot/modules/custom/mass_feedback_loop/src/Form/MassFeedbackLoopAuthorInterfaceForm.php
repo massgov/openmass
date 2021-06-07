@@ -84,9 +84,19 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
 
     $params = $query->all();
     foreach ($params as $key => $param) {
-      if (in_array($key, ['org_id', 'node_id', 'author_id', 'watch_content'])) {
+      if (in_array($key, [
+        'org_id',
+        'node_id',
+        'label_id',
+        'author_id',
+        'watch_content',
+        'search'
+      ])) {
         if (($key == 'watch_content') || !empty($param)) {
           $feedback_api_params[$key] = $param;
+          if (is_array($param) && strpos($param[0], ',') !== FALSE) {
+            $feedback_api_params[$key] = explode(',', $param[0]);
+          }
         }
       }
       else {
@@ -123,8 +133,9 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#options' => $this->getOrgNids(),
       '#attributes' => [
         'placeholder' => "Start typing Organizations to filter by ...",
-        'class' => ['use-selectize-autocomplete']
+        'class' => ['use-selectize-autocomplete'],
       ],
+      // TODO split on comma, load array.
       '#default_value' => isset($feedback_api_params['org_id']) ? $feedback_api_params['org_id'] : NULL,
     ];
 
@@ -134,6 +145,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#multiple' => TRUE,
       '#title' => $this->t('Author'),
       '#options' => $this->getAuthorUsernames(),
+      // TODO split on comma, load array.
       '#default_value' => isset($feedback_api_params['author_id']) ? $feedback_api_params['author_id'] : NULL,
       '#attributes' => [
         'placeholder' => "Start typing Author usernames ...",
@@ -141,8 +153,9 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       ],
     ];
 
-    // The API expects node_id as an array, but drupal form's entity_autocomplete wants just
-    // node entity object, loaded via single integer nid.
+    // The API expects node_id as an array,
+    // but drupal form's entity_autocomplete wants just node entity object,
+    // loaded via single integer nid.
     if (isset($feedback_api_params['node_id']) && is_numeric($feedback_api_params['node_id'][0])) {
       $node_id_param = $feedback_api_params['node_id'][0];
     }
@@ -177,6 +190,23 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#default_value' => isset($feedback_api_params['date_to']) ? $feedback_api_params['date_to'] : NULL,
     ];
 
+    // Fetches labels.
+    $labels = $this->getLabelTids();
+    $label_select_list = ['' => $this->t('- Select a label -')] + $labels;
+    // Builds "Filter by label" input.
+    $form['filter_by_label'] = [
+      '#type' => 'select',
+      '#multiple' => TRUE,
+      '#title' => $this->t('Filter by page label'),
+      '#options' => $label_select_list,
+      '#attributes' => [
+        'placeholder' => "Start typing labels to filter by ...",
+        'class' => ['use-selectize-autocomplete']
+      ],
+      // Updates form input with default value, if available.
+      '#default_value' => isset($feedback_api_params['label_id']) ? $feedback_api_params['label_id'] : NULL,
+    ];
+
     // Fetches tags.
     $tags = $this->contentFetcher->fetchAllTags();
     // Builds list of tags.
@@ -184,10 +214,23 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     // Builds "Filter by tag" input.
     $form['filter_by_tag'] = [
       '#type' => 'select',
-      '#title' => $this->t('Filter by tag'),
+      '#title' => $this->t('Filter by feedback tag'),
       '#options' => $tag_select_list,
       // Updates form input with default value, if available.
       '#default_value' => isset($feedback_api_params['tag_id']) ? $feedback_api_params['tag_id'] : NULL,
+    ];
+
+    $searchHelpText = $this->t(
+      'Enter a comma-separated list of words or phrases.'
+    );
+    $form['search'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Search feedback for specific text'),
+      '#attributes' => [
+        'placeholder' => 'term1, term that is a phrase, term3',
+      ],
+      '#default_value' => isset($feedback_api_params['search']) ? $feedback_api_params['search'] : NULL,
+      '#description' => $searchHelpText,
     ];
 
     // Builds "Sort by" input.
@@ -290,15 +333,15 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       $csv_download_url = Url::fromRoute('mass_feedback_loop.mass_feedback_csv_download', [], ['query' => $feedback_api_csv_download_params]);
       $csv_download_uri = $csv_download_url->toString();
       $form['csv_export'] = [
-              '#type' => 'markup',
-              '#markup' => "
-        <div class='csv-export-wrapper'>
-            <a href='$csv_download_uri'>
-                <span class='feed-icon'></span> Download CSV Export
-            </a>
-        </div>
-      "
+        '#type' => 'markup',
+        // @codingStandardsIgnoreStart
+        '#markup' => "<div class='csv-export-wrapper'>
+          <a href='$csv_download_uri'>
+            <span class='feed-icon'></span> Download CSV Export
+          </a>
+        </div>",
       ];
+      // @codingStandardsIgnoreEnd
     }
 
     // Attaches necessary JS library to run single-page app.
@@ -344,9 +387,19 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     else {
       $feedback_api_params = [];
 
+      $filter_search_param = $form_state->getValue('search');
+      if (!empty($filter_search_param)) {
+        $feedback_api_params['search'] = $filter_search_param;
+      }
+
       $filter_by_org_param = $form_state->getValue('filter_by_org');
       if (!empty($filter_by_org_param)) {
         $feedback_api_params['org_id'] = [implode(",", array_keys($filter_by_org_param))];
+      }
+
+      $filter_by_label_id = $form_state->getValue('filter_by_label');
+      if (!empty($filter_by_label_id)) {
+        $feedback_api_params['label_id'] = [implode(",", array_keys($filter_by_label_id))];
       }
 
       $filter_by_author_param = $form_state->getValue('filter_by_author');
@@ -403,6 +456,35 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       $url = Url::fromRoute('mass_feedback_loop.mass_feedback_loop_author_interface_form', [], ['query' => $feedback_api_params]);
       $form_state->setRedirectUrl($url);
     }
+  }
+
+  /**
+   * Gets all label IDs that are used on nodes.
+   *
+   * @return array
+   *   The non-QA label IDs.
+   */
+  protected function getLabelTids() {
+    $response_array = [];
+    // Only select labels that are assigned to nodes to decrease the number of
+    // labels processed by selectize.
+    $query = $this->database->select('node', 'n')
+      ->fields('ttd', ['tid'])
+      ->condition('ttd.vid', 'label')
+      ->condition('ttd.name', '%_QA%', 'NOT LIKE');
+    $query->join('taxonomy_index', 'ti', 'n.nid = ti.nid');
+    $query->join('taxonomy_term_field_data', 'ttd', 'ti.tid = ttd.tid');
+    $tids = $query->distinct()->execute()->fetchCol();
+
+    /** @var \Drupal\taxonomy\Entity\Term[] $entities */
+    $entities = $this->entityTypeManager->getStorage('taxonomy_term')
+      ->loadMultiple($tids);
+    foreach ($entities as $key => $entity) {
+      $response_array[$key] = $entity->getName();
+    }
+    asort($response_array);
+
+    return $response_array;
   }
 
   /**
