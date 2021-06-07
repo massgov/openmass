@@ -6,6 +6,7 @@
  */
 
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\taxonomy\Entity\Term;
 
 /**
  * Migrate iframe paragraph fields.
@@ -380,5 +381,65 @@ function mass_content_deploy_how_to_headers(&$sandbox) {
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
     return t('All How-to nodes have default values for flexible header fields.');
+  }
+}
+
+/**
+ * Create EOTSS Service Catalog, Collection terms.
+ */
+function mass_content_deploy_eotss_service_catalog_terms() {
+  $vocabulary = 'collections';
+  $terms = [
+    [
+      'name' => 'EOTSS Service Catalog',
+      'parent' => '',
+      'weight' => 0,
+    ],
+    [
+      'name' => 'Desktop Software',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 0,
+    ],
+    [
+      'name' => 'Email, Calendar & Collaboration',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 1,
+    ],
+    [
+      'name' => 'HR and Provisioning',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 2,
+    ],
+    [
+      'name' => 'Secure Applications and Access',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 3,
+    ],
+    [
+      'name' => 'Standard Service Offerings',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 4,
+    ],
+    [
+      'name' => 'Support Services',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 5,
+    ],
+    [
+      'name' => 'Telephone & Mobile Devices',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 6,
+    ],
+  ];
+  $term_ids = [];
+  foreach ($terms as $data) {
+    $term = Term::create([
+      'parent' => !empty($data['parent']) ? $term_ids[$data['parent']] : [],
+      'name' => $data['name'],
+      'vid' => $vocabulary,
+    ]);
+    $term->save();
+    // Save the term id keyed by name.
+    $term_ids[$data['name']] = $term->id();
   }
 }
