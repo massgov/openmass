@@ -182,14 +182,13 @@ module.exports = async function(page, scenario, vp) {
 
     if (scenario.showAlerts) {
       // Wait for a selector to become visible.
-      await page.waitForSelector('span.ma__emergency-alert__time-stamp', {visible: true})
-      await page.evaluate(async function() {
-        document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function(e) {
+      await page.waitForSelector('span.ma__emergency-alert__time-stamp', {visible: true, timeout: 0})
+      await page.evaluate(async function () {
+        document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
           // Force the content to be always same.
           e.innerText = 'May. 24th, 2021, 5:00 pm';
         });
       })
-      // Wait for a second for animation to finish.
       await page.waitForTimeout(1000);
     }
 
@@ -200,7 +199,8 @@ module.exports = async function(page, scenario, vp) {
       case "InfoDetailsImageNoWrapRight":
         await page.waitForFunction("document.readyState === 'complete'");
         await page.waitForSelector('form.ma__mass-feedback-form__form', {visible: true});
-        await page.waitForTimeout(2000);
+        await page.waitForSelector(".ma__figure--x-large img", {visible: true});
+        await page.waitForTimeout(3000);
         break;
 
       case "ServiceGroupedLinks":
@@ -208,7 +208,9 @@ module.exports = async function(page, scenario, vp) {
       case "Service2":
         await page.waitForFunction("document.readyState === 'complete'");
         await page.waitForFunction("document.querySelector('.js-leaflet-map')._leaflet_id > 0");
-        await page.waitForTimeout(10000);
+        await page.evaluate(async function () {
+          await typeof window.L === Object;
+        })
         break;
     }
 
