@@ -379,7 +379,7 @@ jobs:
       list:
         type: string
         default: all
-      config:
+      configPath:
         type: string
         default: "backstop.js"
     working_directory: /home/circleci/code
@@ -391,8 +391,8 @@ jobs:
       - setup_remote_docker
       - run: docker-compose up --no-start backstop
       - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
-      - run: docker-compose run backstop reference --target=<< parameters.reference >> --list=<< parameters.list >> --config=<< parameters.config >>
-      - run: docker-compose run backstop test --target=<< parameters.target >> --list=<< parameters.list >> --config=<< parameters.config >>
+      - run: docker-compose run backstop reference --target=<< parameters.reference >> --list=<< parameters.list >> --configPath=<< parameters.config >>
+      - run: docker-compose run backstop test --target=<< parameters.target >> --list=<< parameters.list >> --configPath=<< parameters.config >>
       - run:
           command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
           when: always
@@ -679,7 +679,7 @@ workflows:
           target: test
           reference: prod
           list: post-release
-          config: "backstop.post-release.js"
+          configPath: "backstop.post-release.js"
           filters:
             branches:
               only: /^release\/.*$/
