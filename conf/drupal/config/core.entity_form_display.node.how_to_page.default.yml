@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - core.entity_form_mode.node.inline_entity
+    - field.field.node.how_to_page.field_collections
     - field.field.node.how_to_page.field_customize_header_text
     - field.field.node.how_to_page.field_downloads_header
     - field.field.node.how_to_page.field_fees_header
@@ -44,6 +45,7 @@ dependencies:
     - paragraphs
     - scheduler
     - scheduler_content_moderation_integration
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -73,6 +75,7 @@ third_party_settings:
         - field_organizations
         - field_intended_audience
         - field_reusable_label
+        - field_collections
       parent_name: group_how_to_page_edit_form
       weight: 20
       format_type: tab
@@ -127,7 +130,7 @@ third_party_settings:
       children:
         - field_how_to_contacts_3
       parent_name: group_how_to_page_edit_form
-      weight: 23
+      weight: 24
       format_type: tab
       format_settings:
         id: ''
@@ -143,7 +146,7 @@ third_party_settings:
         - field_how_to_fee_description
         - field_how_to_ref_fees
       parent_name: group_details
-      weight: 56
+      weight: 57
       format_type: fieldset
       format_settings:
         id: ''
@@ -157,6 +160,17 @@ targetEntityType: node
 bundle: how_to_page
 mode: default
 content:
+  field_collections:
+    weight: 5
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings: {  }
+    type: term_reference_tree
+    region: content
   field_customize_header_text:
     weight: 1
     settings:
@@ -165,7 +179,7 @@ content:
     type: boolean_checkbox
     region: content
   field_downloads_header:
-    weight: 57
+    weight: 58
     settings:
       size: 60
       placeholder: ''
@@ -233,7 +247,7 @@ content:
     type: text_textarea
     region: content
   field_how_to_files:
-    weight: 58
+    weight: 59
     settings:
       form_mode: default
       label_singular: ''
@@ -274,7 +288,7 @@ content:
     type: link_default
     region: content
   field_how_to_links_5:
-    weight: 59
+    weight: 60
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -295,7 +309,7 @@ content:
     region: content
   field_how_to_methods_5:
     type: entity_reference_paragraphs
-    weight: 57
+    weight: 58
     settings:
       title: Method
       title_plural: Methods
@@ -315,7 +329,7 @@ content:
     region: content
   field_how_to_next_steps:
     type: entity_reference_paragraphs
-    weight: 59
+    weight: 60
     settings:
       title: 'Next step'
       title_plural: 'Next steps'
@@ -326,7 +340,7 @@ content:
     third_party_settings: {  }
     region: content
   field_how_to_ref_fees:
-    weight: 59
+    weight: 60
     settings:
       form_mode: inline_entity
       override_labels: true
@@ -360,7 +374,7 @@ content:
     type: string_textfield
     region: content
   field_how_to_what_you_need:
-    weight: 55
+    weight: 56
     settings:
       rows: 5
       placeholder: ''
@@ -375,7 +389,7 @@ content:
     region: content
   field_manage_your_account:
     type: entity_reference_paragraphs
-    weight: 56
+    weight: 57
     settings:
       title: 'Manage account link'
       title_plural: 'Manage account links'
@@ -436,7 +450,7 @@ content:
     type: string_textfield
     region: content
   field_next_steps_header:
-    weight: 58
+    weight: 59
     settings:
       size: 60
       placeholder: ''
@@ -482,7 +496,7 @@ content:
     region: content
   field_state_organization_tax:
     type: entity_reference_autocomplete
-    weight: 6
+    weight: 7
     region: content
     settings:
       match_operator: CONTAINS
@@ -529,7 +543,7 @@ content:
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 7
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -562,18 +576,18 @@ content:
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 4
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 8
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 11
     region: content
     settings: {  }
     third_party_settings: {  }

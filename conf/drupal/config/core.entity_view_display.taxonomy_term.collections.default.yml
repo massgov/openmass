@@ -1,0 +1,36 @@
+uuid: 26c9c45a-4a54-42ae-90be-4417762c188d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.collections.field_landing_page
+    - taxonomy.vocabulary.collections
+  module:
+    - link
+    - text
+id: taxonomy_term.collections.default
+targetEntityType: taxonomy_term
+bundle: collections
+mode: default
+content:
+  description:
+    label: hidden
+    type: text_default
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_landing_page:
+    weight: 1
+    label: hidden
+    settings:
+      trim_length: null
+      url_only: false
+      url_plain: false
+      rel: '0'
+      target: '0'
+    third_party_settings: {  }
+    type: link
+    region: content
+hidden:
+  langcode: true
