@@ -163,6 +163,16 @@ function mass_validation_form_node_form_alter(&$form, FormStateInterface $form_s
       }
     }
   }
+
+  // If the field_collections field exists, verify the user has permission to
+  // use it.
+  if (isset($form['field_collections'])) {
+    $user = \Drupal::currentUser();
+    if (!$user->hasPermission('set collection tags')) {
+      // If the user does not have permission, hide the field.
+      $form['field_collections']['#attributes']['class'][] = 'js-hide';
+    }
+  }
 }
 
 /**
