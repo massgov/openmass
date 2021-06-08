@@ -22,7 +22,6 @@
   - DP-22231: Updated Mayflower version to 11.7.0.
   - DP-21782: Add labelContext to assets/js/templates/locationListingRow.html.(MF)
   - DP-7874: Correct semantics of footer navigation. (MF)
-Updated Mayflower version to 11.7.0.
   - DP-21782: DP-22191: Add extra data attributes to HeaderAlert. (MF)
   
 ### Security
