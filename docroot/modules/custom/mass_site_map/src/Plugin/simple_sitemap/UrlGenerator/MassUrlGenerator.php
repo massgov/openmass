@@ -18,6 +18,8 @@ use Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator\EntityUrlGenerator;
 class MassUrlGenerator extends EntityUrlGenerator {
 
   /**
+   * Override of the parent function, but mostly the same.
+   *
    * @inheritdoc
    */
   protected function processDataSet($data_set) {
