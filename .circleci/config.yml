@@ -678,8 +678,6 @@ workflows:
           requires: [deploy-test-refresh-db]
           target: test
           reference: prod
-          list: post-release
-          viewport: desktop
           filters:
             branches:
               only: /^release\/.*$/
@@ -952,6 +950,8 @@ workflows:
           name: backstop-prod-maint
           requires: [deploy-tag-prod-acquia-maint]
           target: prod
+          list: post-release
+          viewport: desktop
           reference: test
           filters:
             branches:
@@ -963,6 +963,8 @@ workflows:
           requires: [deploy-tag-prod-acquia-no-maint]
           target: prod
           reference: test
+          list: post-release
+          viewport: desktop
           filters:
             branches:
               ignore: /.*/
