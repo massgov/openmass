@@ -337,7 +337,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
       // Enqueue purging of notable URLs. Don't use tags to avoid over-purging.
       // Empty path is the homepage
-      $paths = ['', 'orgs/office-of-the-governor'];
+      $paths = ['', 'orgs/office-of-the-governor', '/media/1268726'];
       foreach ($domains_web as $domain) {
         foreach ($paths as $path) {
           $expressions[] = 'url ' . 'https://' . $domain . '/' . $path . ',';

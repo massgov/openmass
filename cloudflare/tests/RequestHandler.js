@@ -10,23 +10,12 @@ describe('RequestHandler', function() {
   beforeEach(function() {
     handler = new RequestHandler('TEST_TOKEN');
     handler.www = jest.fn(() => Promise.resolve(dummyResponse()))
-    handler.legacy = jest.fn(() => Promise.resolve(dummyResponse()))
     handler.edit = jest.fn(() => Promise.resolve(dummyResponse()))
   })
-
-  it('Should route requests to the Legacy backend', async function() {
-    var request = new Request('https://www.mass.gov/anf');
-
-    await handler.handle(request);
-    expect(handler.legacy.mock.calls.length).toEqual(1)
-    expect(handler.edit.mock.calls.length).toEqual(0)
-    expect(handler.www.mock.calls.length).toEqual(0)
-  });
 
   it('Should route requests to the edit backend', async function() {
     var request = new Request('https://edit.mass.gov/admin/structure');
     await handler.handle(request)
-    expect(handler.legacy.mock.calls.length).toEqual(0);
     expect(handler.edit.mock.calls.length).toEqual(1);
     expect(handler.www.mock.calls.length).toEqual(0);
   });
@@ -34,7 +23,6 @@ describe('RequestHandler', function() {
   it('Should route requests to the www backend', async function() {
     var request = new Request('https://www.mass.gov/admin/structure');
     await handler.handle(request);
-    expect(handler.legacy.mock.calls.length).toEqual(0);
     expect(handler.edit.mock.calls.length).toEqual(0);
     expect(handler.www.mock.calls.length).toEqual(1);
   });
