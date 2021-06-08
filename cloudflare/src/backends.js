@@ -7,23 +7,6 @@ const contentDisposition = require('content-disposition');
 const RESPECT_ORIGIN = -1;
 
 /**
- * Handler for requests to the legacy backend.
- *
- * This handler just proxies things to our legacy origin.
- *
- * @return {function(*=): Promise<Response>}
- */
-export function legacy() {
-  // This is where the work happens.
-  return async function(request) {
-    // @todo: This is where we would do legacy redirect lookups.
-    return fetch(request, {
-      cf: { resolveOverride: 'legacy.mass.gov',  cacheTtl: 86400}
-    });
-  };
-}
-
-/**
  * Handler for requests to the editor Drupal backend (edit).
  *
  * This handler adds the CDN token header to the backend request.

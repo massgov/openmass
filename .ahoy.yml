@@ -1,74 +1,69 @@
 ahoyapi: v2
 commands:
   exec:
-      # These env variables come from https://github.com/wodby/docker4drupal/issues/273
-      cmd: docker-compose exec -e COLUMNS=$(tput cols) -e LINES=$(tput lines) -e TERM=$TERM drupal "$@"
-      usage: Run a command in the container
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml exec "$@"
+    usage: Run a command
 
   bash:
-    cmd: ahoy exec bash
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml bash "$@"
     usage: Open a shell inside the container.
 
   up:
-    cmd: docker-compose up -d "$@"
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml up "$@"
     usage: Start the containers.
 
   down:
-    cmd: docker-compose down --remove-orphans "$@"
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml down "$@"
     usage: Stop and delete the containers.
 
   stop:
-    cmd: docker-compose stop "$@"
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml stop "$@"
     usage: Stop the containers.
 
   pull:
-    cmd: docker-compose down --remove-orphans && docker-compose pull && docker-compose up -d
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml pull "$@"
     usage: Refresh the database.
 
-  refresh:
-    cmd: scripts/ma-refresh-local -dpo && vendor/bin/drush sql:sanitize -y
-    usage: Refresh the database when using native development environment.
-
   updatedb:
-    cmd: ahoy exec scripts/ma-refresh-local --skip-db-prep
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml updatedb "$@"
     usage: Run after a git pull, so that pending updates are run.
 
   prune:
-    cmd: docker system prune "$@"
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml prune "$@"
     usage: Prune unused images, etc. to gain back disk space.
 
   comi:
-    cmd: ahoy exec composer install -o "$@"
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml comi "$@"
     usage: Run 'composer install' in the container.
 
   yarn:
-    cmd: ahoy exec yarn "$@"
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml yarn "$@"
     usage: Run 'yarn install' in the container.
 
   drush:
-    cmd: ahoy exec vendor/bin/drush "$@"
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml drush "$@"
     usage: Run Drush in the container
 
   uli:
-    cmd: open $(ahoy drush uli "$@" | tr -d '\r')
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml uli "$@"
     usage: Run uli in the container and then open local browser.
 
   test:
-    cmd: ahoy exec scripts/ma-test "$@"
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml test "$@"
     usage: Run all tests in the container.
 
   tail:
-    cmd: docker-compose logs -f drupal
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml tail "$@"
     usage: Tail the Apache + PHP logs.
 
   blackfire:
-    cmd: ahoy exec blackfire "$@"
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml blackfire "$@"
     usage: "Profile CLI requests. Usages: blackfire curl http://mass.local OR blackfire run --samples=10 drush st"
 
   backstop:
     usage: Run BackstopJS visual regression tests.
-    cmd: docker-compose run backstop "$@"
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml backstop "$@"
 
   nightcrawler:
     usage: Run NightcrawlerJS fatal error tests.
-    cmd: ahoy exec node_modules/.bin/nightcrawler --config=.circleci/nightcrawler/nightcrawler $@
+    cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml nightcrawler $@

@@ -229,8 +229,7 @@ class MapLocationFetcher {
         'text' => "Directions",
         'href' => 'https://www.google.com/maps/place/' . $locations['imagePromos']['items'][$key]['location']['text'],
         'type' => "external",
-        'info' => '',
-        'labelContext' => t('to @location', ['@location' => $node->getTitle()]),
+        'info' => ''
       ];
 
       if (!$node->field_ref_contact_info_1->isEmpty()) {
