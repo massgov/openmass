@@ -172,9 +172,9 @@ function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_
  * @param array $form
  *   The usual $form.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
- *   The usual $form_state
+ *   The usual $form_state.
  */
-function mass_scheduled_transitions_form_scheduled_transition_reschedule_form_alter(&$form, FormStateInterface $form_state) {
+function mass_scheduled_transitions_form_scheduled_transition_reschedule_form_alter(array &$form, FormStateInterface $form_state) {
   /** @var Drupal\scheduled_transitions\Entity\ScheduledTransition $scheduled_transition */
   $scheduled_transition = $form_state->getFormObject()->getEntity();
   $host_entity = $scheduled_transition->getEntity();
