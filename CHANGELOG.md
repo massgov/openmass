@@ -19,7 +19,7 @@
   - DP-22099: Changed post-release backstop job to use shorter list of pages.
   - DP-22191: Modify alert pattern to incude additional data
   - DP-7874: Restructure the footer navigation to correct semantics of its markup (a11y).
-  - DP-22231: Updated Mayflower version to 11.6.0.
+  - DP-22231: Updated Mayflower version to 11.7.0.
   - DP-21782: Add labelContext to assets/js/templates/locationListingRow.html.(MF)
   - DP-7874: Correct semantics of footer navigation. (MF)
 Updated Mayflower version to 11.7.0.
