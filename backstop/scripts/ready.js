@@ -1,9 +1,10 @@
 /**
- * Ready script, fires after pages have loaded, but before screenshots are captured.
+ * Ready script, fires after pages have loaded, but before screenshots are
+ * captured.
  *
- * This script is used to hide or modify highly dynamic elements that may cause trouble
- * during visual regression testing.  If you are constantly seeing trivial failures for
- * an element, you can probably deal with it here.
+ * This script is used to hide or modify highly dynamic elements that may cause
+ * trouble during visual regression testing.  If you are constantly seeing
+ * trivial failures for an element, you can probably deal with it here.
  */
 module.exports = async function(page, scenario, vp) {
     await page.addStyleTag({
@@ -115,6 +116,9 @@ module.exports = async function(page, scenario, vp) {
         '  left: 0;\n' +
         '  right: 0;\n' +
         '  bottom: 0;\n' +
+        '}' +
+        'button:focus-visible, [type="button"]:focus-visible {' +
+          'outline: none;\n' +
         '}'
     });
 
@@ -171,6 +175,45 @@ module.exports = async function(page, scenario, vp) {
     // time to finish rendering. This can take a while, especially
     // in local environments.
     await page.waitForFunction('jQuery.active == 0');
+
+    if (scenario.label === 'InfoDetails1') {
+      await page.waitForSelector('.cbFormErrorMarker', {visible: true})
+    }
+
+    if (scenario.showAlerts) {
+      // Wait for a selector to become visible.
+      await page.waitForSelector('span.ma__emergency-alert__time-stamp', {visible: true, timeout: 0})
+      await page.evaluate(async function () {
+        document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
+          // Force the content to be always same.
+          e.innerText = 'May. 24th, 2021, 5:00 pm';
+        });
+      })
+      await page.waitFor(1000);
+    }
+
+    switch (scenario.label) {
+      case "InfoDetailsImageWrapLeft":
+      case "InfoDetailsImageWrapRight":
+      case "InfoDetailsImageNoWrapLeft":
+      case "InfoDetailsImageNoWrapRight":
+        await page.waitForFunction("document.readyState === 'complete'");
+        await page.waitForSelector('form.ma__mass-feedback-form__form', {visible: true, timeout: 0});
+        await page.waitForSelector(".ma__figure--x-large img", {visible: true, timeout: 0});
+        await page.waitFor(3000);
+        break;
+
+      case "ServiceGroupedLinks":
+      case "Service1":
+      case "Service2":
+        await page.waitForFunction("document.readyState === 'complete'");
+        await page.waitForFunction("document.querySelector('.js-leaflet-map')._leaflet_id > 0");
+        await page.evaluate(async function () {
+          await typeof window.L === Object;
+        })
+        break;
+    }
+
 
     // Wait for all visible fonts to complete loading.
     await page.evaluate(async function() {
