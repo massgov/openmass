@@ -166,14 +166,16 @@ function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_
  * Enforce that date field must be in future and must not be in far future for alerts and promo pages.
  *
  * Add server-side validation once https://www.drupal.org/project/scheduled_transitions/issues/3084849 is resolved.
- * 
+ *
  * Implements hook_form_FORM_ID_alter().
  *
- * @param $form
+ * @param array $form
+ *   The usual $form.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The usual $form_state
  */
 function mass_scheduled_transitions_form_scheduled_transition_reschedule_form_alter(&$form, FormStateInterface $form_state) {
-  /** @var ScheduledTransition $scheduled_transition */
+  /** @var Drupal\scheduled_transitions\Entity\ScheduledTransition $scheduled_transition */
   $scheduled_transition = $form_state->getFormObject()->getEntity();
   $host_entity = $scheduled_transition->getEntity();
   $html_date_format = DateFormat::load('html_date')->getPattern();
