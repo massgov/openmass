@@ -1,5 +1,35 @@
 
 
+## [0.285.0] - June 8, 2021
+
+### Removed
+  - DP-17765: Update Cloudflare configuration to stop sending legacy prefixes to legacy server.
+  - DP-21782: Revert PR
+  
+### Added
+  - DP-21043: Created Data Listing All and Data Listing Topic views pages.
+  - DP-21657: Add a search field to the feedback manager so that CMS users can search feedback for specific words/phrases.
+  - DP-21768: Adapt ahoy commands so they also work for native dev env
+  - DP-22132: Added a reusable Collections architecture, starting with EOTSS Service Catalog and How-to pages.
+  
+### Fixed
+  - DP-21903: Fixed false positives in Drupal Backstop.
+  
+### Changed
+  - DP-22099: Changed post-release backstop job to use shorter list of pages.
+  - DP-22191: Modify alert pattern to incude additional data
+  - DP-7874: Restructure the footer navigation to correct semantics of its markup (a11y).
+  - DP-22231: Updated Mayflower version to 11.6.0.
+  - DP-21782: Add labelContext to assets/js/templates/locationListingRow.html.(MF)
+  - DP-7874: Correct semantics of footer navigation. (MF)
+Updated Mayflower version to 11.7.0.
+  - DP-21782: DP-22191: Add extra data attributes to HeaderAlert. (MF)
+  
+### Security
+  - DP-22152: Drupal core security update to version 8.9.16.
+  
+
+
 ## [0.284.0] - May 25, 2021
 
 ### Changed
