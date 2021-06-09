@@ -61,25 +61,13 @@ class MassFeedbackCsvDownloadController extends ControllerBase {
   public function download() {
     $query = \Drupal::request()->query;
     $params = $query->all();
-    foreach ($params as $key => $param) {
-      if (in_array($key, ['org_id', 'node_id', 'author_id'])) {
-        if (!empty($param)) {
-          $feedback_api_params[$key] = explode(",", $param);
-        }
-      }
-      else {
-        if (!empty($param)) {
-          $feedback_api_params[$key] = $param;
-        }
-      }
-    }
+    $feedback_api_params = $this->contentFetcher->formatQueryParams($params);
 
     // We ensure that the file_type parameter is set to csv.
     $feedback_api_params['file_type'] = 'csv';
 
     try {
       $fileContent = $this->contentFetcher->fetchFeedback($feedback_api_params);
-
       // The API fetch and our wrapper around it at this point returns a CSV file guzzle stream
       // or an array with no records in it, so we check on that and generate a response accordingly.
       if (is_array($fileContent) && isset($fileContent['total']) && $fileContent['total'] == 0) {

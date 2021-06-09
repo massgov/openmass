@@ -344,6 +344,46 @@ class MassFeedbackLoopContentFetcher {
   }
 
   /**
+   * Helper function to format URL query parameters for the feeedback API.
+   *
+   * @param array $params
+   *   Array of URL query parameters to format.
+   *
+   * @return array
+   *   The processed query parameters.
+   */
+  public function formatQueryParams(array $params) {
+    $feedback_api_params = [];
+    foreach ($params as $key => $param) {
+      if (in_array($key, [
+        'org_id',
+        'node_id',
+        'label_id',
+        'author_id',
+        'watch_content',
+        'search'
+      ])) {
+        if (($key == 'watch_content') || !empty($param)) {
+          $feedback_api_params[$key] = $param;
+          if (is_array($param) && strpos($param[0], ',') !== FALSE) {
+            $feedback_api_params[$key] = explode(',', $param[0]);
+          }
+          elseif (!is_array($param) && strpos($param, ',') !== FALSE) {
+            $feedback_api_params[$key] = explode(',', $param);
+          }
+        }
+      }
+      else {
+        if (!empty($param)) {
+          $feedback_api_params[$key] = $param;
+        }
+      }
+    }
+
+    return $feedback_api_params;
+  }
+
+  /**
    * Helper function to build feedback table.
    *
    * @param array $results
