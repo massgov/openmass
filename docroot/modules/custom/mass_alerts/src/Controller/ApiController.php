@@ -40,7 +40,7 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
   }
 
   /**
-   *
+   * Returns the sitewide alerts rendered.
    */
   public function handleSiteRequest(Request $request) {
 
@@ -132,7 +132,7 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
   }
 
   /**
-   *
+   * Returns the specific page alerts rendered.
    */
   public function handlePageRequest($nid, Request $request) {
 
