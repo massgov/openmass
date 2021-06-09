@@ -5,6 +5,7 @@
 (function ($, Drupal, drupalSettings) {
   'use strict';
   Drupal.behaviors.massAlertBlocks = {
+
     /**
      * Drupal behavior.
      *
@@ -16,8 +17,8 @@
     attach: function (context, settings) {
 
       $('.mass-alerts-block', context).each(function () {
-        var $this = $(this),
-        path = $this.data('alerts-path');
+        var $this = $(this);
+        var path = $this.data('alerts-path');
         if (path) {
           $.ajax({
             type: 'GET',
@@ -25,10 +26,9 @@
             cache: true,
             success: function (content) {
               $this.html(content);
-              //Attach Events
               $(document).trigger('ma:AjaxPattern:Render', [{'el': $this}]);
             }
-          })
+          });
         }
       });
     }
