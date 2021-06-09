@@ -140,7 +140,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
       'field_alert' => Paragraph::create([
         'type' => 'emergency_alert',
         'field_emergency_alert_message' => 'test',
-      ])
+      ]),
     ]);
     $session = $this->getSession();
     $session->visit('/node/add/alert');

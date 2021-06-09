@@ -21,6 +21,8 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
    *
    * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
    *   The date formatter service.
+   * @param \Drupal\Core\Render\Renderer $renderer
+   *   The renderer service.
    */
   public function __construct(DateFormatterInterface $date_formatter, Renderer $renderer) {
     $this->dateFormatter = $date_formatter;
@@ -38,31 +40,32 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
   }
 
   /**
-   * 
+   *
    */
   public function handleSiteRequest(Request $request) {
 
     $results = [];
     $nodeStorage = $this->entityTypeManager()->getStorage('node');
 
-    //Load sitewide 
+    // Load sitewide.
     $query = $nodeStorage->getQuery();
     $query->condition('field_alert_display.value', 'site_wide');
     $query->condition('type', 'alert');
     $query->condition('status', 1);
 
     $sitewide = $query->execute();
-    $sitewide = reset($sitewide); //Last item
+    // Last item.
+    $sitewide = reset($sitewide);
 
     if (!empty($sitewide)) {
       $node = $nodeStorage->load($sitewide);
       $changed_date = $node->getChangedTime();
       $id = $node->uuid() . '__' . $changed_date;
-      $prefix =  null;
+      $prefix = NULL;
       $severity = $node->get('field_alert_severity')->getString();
 
       if ($severity == 'informational_notice') {
-        $prefix =  $this->t('Informational Alert');
+        $prefix = $this->t('Informational Alert');
       }
 
       $emergencyAlerts = [
@@ -70,10 +73,10 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
         'buttonAlert' => [
           'hideText' => $this->t('Hide'),
           'showText' => $this->t('Show'),
-          'text' => $this->t('Alerts')
+          'text' => $this->t('Alerts'),
         ],
         'emergencyHeader' => [
-          'title' => $node->label() ,
+          'title' => $node->label(),
         ],
       ];
 
@@ -103,7 +106,7 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
           'text' => 'Read more',
           'type' => $link_type,
         ];
-       
+
         $alerts[$unix_timestamp] = [
           'id' => $item_id,
           'link' => $link,
@@ -129,12 +132,12 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
   }
 
   /**
-   * 
+   *
    */
   public function handlePageRequest($nid, Request $request) {
 
     $results = [
-      'headerAlerts' => []
+      'headerAlerts' => [],
     ];
 
     $nodeStorage = $this->entityTypeManager()->getStorage('node');
@@ -145,7 +148,7 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
       $organizations = $currentPage->get('field_organizations')->getValue();
       $org_ids = [];
 
-      foreach($organizations as $org) {
+      foreach ($organizations as $org) {
         $org_ids[] = $org['target_id'];
       }
 
@@ -180,16 +183,17 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
           if ($uri) {
             $url = Url::fromUri($uri)->toString();
           }
-        } else {
+        }
+        else {
           $url = $node->toUrl()->toString();
           $url .= '#' . $item->id();
         }
 
-        $prefix =  null;
+        $prefix = NULL;
         $severity = $node->get('field_alert_severity')->getString();
 
         if ($severity == 'informational_notice') {
-          $prefix =  'Notice';
+          $prefix = 'Notice';
         }
 
         $alert = [
@@ -223,14 +227,3 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
   }
 
 }
-
-
-
-
-
-
-
-
-
-
-

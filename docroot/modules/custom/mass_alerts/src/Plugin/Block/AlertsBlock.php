@@ -90,7 +90,8 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
 
     if ($config['alerts_block_type'] == 'sitewide') {
       $path = Url::fromRoute('mass_alerts.site_alerts')->toString();
-    } else {
+    }
+    else {
       $node = $this->routeMatch->getParameter('node');
       if ($node instanceof NodeInterface) {
         $nid = $node->id();
@@ -102,12 +103,9 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
       '#theme' => 'mass_alerts_block',
       '#path' => $path,
       '#cache' => [
-        'contexts' => ['url']
-      ]
+        'contexts' => ['url'],
+      ],
     ];
   }
 
 }
-
-
-

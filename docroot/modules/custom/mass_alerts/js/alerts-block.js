@@ -15,7 +15,7 @@
      */
     attach: function (context, settings) {
 
-      $('.mass-alerts-block', context).each(function(){
+      $('.mass-alerts-block', context).each(function () {
         let $this = $(this),
         path = $this.data('alerts-path');
         if (path) {
@@ -23,7 +23,7 @@
             type: 'GET',
             url: path,
             cache: true,
-            success: function(content) {
+            success: function (content) {
               $this.html(content);
               //Attach Events
               $(document).trigger('ma:AjaxPattern:Render', [{'el': $this}]);

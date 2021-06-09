@@ -6,7 +6,6 @@ use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Component\Utility\Tags;
-use Drupal\Component\Utility\Unicode;
 
 /**
  * Defines a route controller for entity autocomplete form elements.

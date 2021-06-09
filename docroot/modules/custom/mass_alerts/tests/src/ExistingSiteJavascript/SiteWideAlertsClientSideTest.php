@@ -24,7 +24,6 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
    */
   public function testSiteWideAlertDisplay() {
     // $this->markTestSkipped('Fails when DB already has a sitewide alert showing.');.
-
     $nids = \Drupal::entityQuery('node')
       ->condition('type', 'alert')
       ->condition('status', 1)
@@ -70,7 +69,6 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
     // These lines are left here as examples of how to debug requests.
     // file_put_contents('public://screenshot.png', $this->getSession()->getScreenshot());
     // file_put_contents('public://' . drupal_basename($this->getSession()->getCurrentUrl()) . '.html', $this->getCurrentPageContent());
-
     $jsWebAssert->statusCodeEquals(200);
     $jsWebAssert->pageTextContains($node->getTitle());
 
