@@ -16,7 +16,7 @@
     attach: function (context, settings) {
 
       $('.mass-alerts-block', context).each(function () {
-        let $this = $(this),
+        var $this = $(this),
         path = $this.data('alerts-path');
         if (path) {
           $.ajax({
