@@ -22,3 +22,19 @@ mass_alerts.user_autocomplete:
     _format: json
   requirements:
     _permission: 'access email address list for alerts config page'
+
+
+mass_alerts.site_alerts:
+  path: '/jsonapi/site-alerts'
+  defaults:
+    _controller: 'Drupal\mass_alerts\Controller\ApiController::handleSiteRequest'
+  requirements:
+    _permission: 'access content'
+
+
+mass_alerts.page_alerts:
+  path: '/jsonapi/page-alerts/{nid}'
+  defaults:
+    _controller: 'Drupal\mass_alerts\Controller\ApiController::handlePageRequest'
+  requirements:
+    _permission: 'access content'

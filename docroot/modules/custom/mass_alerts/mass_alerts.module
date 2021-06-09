@@ -225,3 +225,23 @@ function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
     }
   }
 }
+
+
+/**
+ * Implements hook_theme().
+ */
+function mass_alerts_theme() {
+  return [
+    'mass_alerts_block' => [
+      'variables' => ['path' => NULL],
+    ],
+    'mass_alerts_sitewide' => [
+      'variables' => [ 'emergencyAlerts' => NULL],
+    ],
+    'mass_alerts_page' => [
+      'variables' => [ 'headerAlerts' => NULL],
+    ],
+  ];
+}
+
+
