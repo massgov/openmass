@@ -376,6 +376,12 @@ jobs:
         type: string
       target:
         type: string
+      list:
+        type: string
+        default: all
+      viewport:
+        type: string
+        default: all
     working_directory: /home/circleci/code
     docker:
       # Need to use docker image for these steps.
@@ -385,8 +391,8 @@ jobs:
       - setup_remote_docker
       - run: docker-compose up --no-start backstop
       - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
-      - run: docker-compose run backstop reference --target=<< parameters.reference >> --list=all
-      - run: docker-compose run backstop test --target=<< parameters.target >> --list=all
+      - run: docker-compose run backstop reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+      - run: docker-compose run backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
       - run:
           command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
           when: always
@@ -944,6 +950,8 @@ workflows:
           name: backstop-prod-maint
           requires: [deploy-tag-prod-acquia-maint]
           target: prod
+          list: post-release
+          viewport: desktop
           reference: test
           filters:
             branches:
@@ -955,6 +963,8 @@ workflows:
           requires: [deploy-tag-prod-acquia-no-maint]
           target: prod
           reference: test
+          list: post-release
+          viewport: desktop
           filters:
             branches:
               ignore: /.*/
