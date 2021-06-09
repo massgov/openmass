@@ -26,7 +26,7 @@
             cache: true,
             success: function (content) {
               $this.html(content);
-              $(document).trigger('ma:AjaxPattern:Render', [{'el': $this}]);
+              $(document).trigger('ma:AjaxPattern:Render', [{el: $this}]);
             }
           });
         }
