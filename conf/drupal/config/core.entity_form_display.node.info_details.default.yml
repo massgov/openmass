@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.info_details.field_banner_image
+    - field.field.node.info_details.field_collections
     - field.field.node.info_details.field_contact
     - field.field.node.info_details.field_data_flag
     - field.field.node.info_details.field_data_format
@@ -42,6 +43,7 @@ dependencies:
     - paragraphs
     - scheduler
     - scheduler_content_moderation_integration
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -81,6 +83,7 @@ third_party_settings:
         - field_english_version
         - field_intended_audience
         - field_reusable_label
+        - field_collections
       parent_name: group_information_details_edit_f
       weight: 7
       format_type: tab
@@ -96,7 +99,7 @@ third_party_settings:
       children:
         - field_info_details_sections
       parent_name: group_information_details_edit_f
-      weight: 9
+      weight: 8
       format_type: tab
       format_settings:
         description: ''
@@ -161,6 +164,17 @@ content:
       preview_image_style: thumbnail
     third_party_settings: {  }
     type: image_image
+    region: content
+  field_collections:
+    weight: 20
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings: {  }
+    type: term_reference_tree
     region: content
   field_contact:
     weight: 27
@@ -310,7 +324,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_footnotes:
-    weight: 2
+    weight: 6
     settings:
       rows: 5
       placeholder: ''
@@ -318,7 +332,7 @@ content:
     type: text_textarea
     region: content
   field_image_credit:
-    weight: 3
+    weight: 7
     settings:
       size: 60
       placeholder: ''
@@ -383,7 +397,7 @@ content:
     third_party_settings: {  }
     region: content
   field_infodetails_metatags:
-    weight: 5
+    weight: 6
     settings:
       sidebar: true
     third_party_settings: {  }
@@ -430,7 +444,7 @@ content:
     type: string_textarea
     region: content
   field_state_organization_tax:
-    weight: 6
+    weight: 7
     settings:
       match_operator: CONTAINS
       size: 60
@@ -460,7 +474,7 @@ content:
     third_party_settings: {  }
   publish_state:
     type: scheduler_moderation
-    weight: 7
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -499,7 +513,7 @@ content:
     third_party_settings: {  }
   unpublish_state:
     type: scheduler_moderation
-    weight: 8
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
