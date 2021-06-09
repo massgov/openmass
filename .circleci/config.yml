@@ -8,7 +8,7 @@ references:
     working_directory: /var/www/code
     docker:
       # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:1.0.17-ci
+      - image: massgov/drupal-container:php74-beta2-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           AWS_REGION: us-east-1
@@ -50,7 +50,7 @@ executors:
     # https://circleci.com/docs/2.0/configuration-reference/#resource_class
     resource_class: xlarge
     docker:
-      - image: massgov/drupal-container:1.0.17-ci
+      - image: massgov/drupal-container:php74-beta2-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           DOCKER_ENV: ci
@@ -271,7 +271,7 @@ jobs:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-           run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
+             run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
