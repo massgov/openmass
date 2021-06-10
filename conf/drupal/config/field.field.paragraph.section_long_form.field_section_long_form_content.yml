@@ -6,6 +6,7 @@ dependencies:
     - field.storage.paragraph.field_section_long_form_content
     - paragraphs.paragraphs_type.callout_link
     - paragraphs.paragraphs_type.caspio_embed
+    - paragraphs.paragraphs_type.csv_table
     - paragraphs.paragraphs_type.iframe
     - paragraphs.paragraphs_type.image
     - paragraphs.paragraphs_type.info_details_card_group
@@ -42,6 +43,7 @@ settings:
       video: video
       caspio_embed: caspio_embed
       tableau_embed: tableau_embed
+      csv_table: csv_table
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 0
@@ -54,6 +56,9 @@ settings:
         enabled: false
       3_up_text:
         weight: 3
+        enabled: false
+      about:
+        weight: 30
         enabled: false
       action_address:
         weight: 4
@@ -94,6 +99,9 @@ settings:
       advisory_section:
         weight: 16
         enabled: false
+      board_member:
+        weight: 46
+        enabled: false
       callout_alert:
         weight: 17
         enabled: false
@@ -103,6 +111,15 @@ settings:
       callout_link:
         enabled: true
         weight: 19
+      campaign_features:
+        weight: 51
+        enabled: false
+      card:
+        weight: 55
+        enabled: false
+      caspio_embed:
+        enabled: true
+        weight: 110
       completion_time:
         weight: 20
         enabled: false
@@ -117,6 +134,12 @@ settings:
         enabled: false
       content_card_group:
         weight: 24
+        enabled: false
+      csv_table:
+        enabled: true
+        weight: 116
+      custom_html:
+        weight: 59
         enabled: false
       decision_participants:
         weight: 25
@@ -133,23 +156,38 @@ settings:
       event_minutes_section:
         weight: 29
         enabled: false
-      about:
-        weight: 30
-        enabled: false
       external_organization:
         weight: 31
         enabled: false
       fax_number:
         weight: 32
         enabled: false
+      featured_content_2up_item:
+        weight: 67
+        enabled: false
+      featured_content_single_item:
+        weight: 70
+        enabled: false
+      featured_item:
+        weight: 71
+        enabled: false
+      featured_item_mosaic:
+        weight: 74
+        enabled: false
+      featured_message:
+        weight: 81
+        enabled: false
       file_download:
         weight: 33
         enabled: false
-      full_bleed:
-        weight: 34
-        enabled: false
       file_download_single:
         weight: 35
+        enabled: false
+      footnotes:
+        weight: 78
+        enabled: false
+      full_bleed:
+        weight: 34
         enabled: false
       guide_section:
         weight: 36
@@ -178,11 +216,29 @@ settings:
       image:
         enabled: true
         weight: 44
+      image_credit:
+        weight: 91
+        enabled: false
+      info_details_card_group:
+        enabled: true
+        weight: 94
       issuer:
         weight: 45
         enabled: false
-      board_member:
-        weight: 46
+      key_message:
+        weight: 95
+        enabled: false
+      key_message_section:
+        weight: 96
+        enabled: false
+      link_group:
+        weight: 98
+        enabled: false
+      link_group_document:
+        weight: 99
+        enabled: false
+      link_group_link:
+        weight: 100
         enabled: false
       links:
         weight: 47
@@ -190,17 +246,26 @@ settings:
       links_downloads:
         weight: 48
         enabled: false
+      list_board_members:
+        weight: 101
+        enabled: false
       list_dynamic:
         weight: 49
+        enabled: false
+      list_item_contact:
+        weight: 102
         enabled: false
       list_item_document:
         weight: 50
         enabled: false
-      campaign_features:
-        weight: 51
-        enabled: false
       list_item_link:
         weight: 52
+        enabled: false
+      list_item_person:
+        weight: 103
+        enabled: false
+      list_manual_directory:
+        weight: 104
         enabled: false
       list_static:
         weight: 53
@@ -208,8 +273,8 @@ settings:
       location_information:
         weight: 54
         enabled: false
-      card:
-        weight: 55
+      manage_account_link:
+        weight: 105
         enabled: false
       map:
         weight: 56
@@ -220,20 +285,23 @@ settings:
       media_contact:
         weight: 58
         enabled: false
-      custom_html:
-        weight: 59
-        enabled: false
       method:
         weight: 60
         enabled: false
       more_info:
         weight: 61
         enabled: false
+      multiple_answers:
+        weight: 107
+        enabled: false
       next_step:
         weight: 62
         enabled: false
       online_email:
         weight: 63
+        enabled: false
+      organization_grid:
+        weight: 106
         enabled: false
       page:
         weight: 64
@@ -244,29 +312,17 @@ settings:
       phone_number:
         weight: 66
         enabled: false
-      featured_content_2up_item:
-        weight: 67
-        enabled: false
       pull_quote:
         enabled: true
         weight: 68
       quick_action:
         weight: 69
         enabled: false
-      featured_content_single_item:
-        weight: 70
-        enabled: false
-      featured_item:
-        weight: 71
-        enabled: false
       recommended_activity:
         weight: 72
         enabled: false
       regulation_section:
         weight: 73
-        enabled: false
-      featured_item_mosaic:
-        weight: 74
         enabled: false
       related_content:
         weight: 75
@@ -277,23 +333,23 @@ settings:
       rich_text:
         enabled: true
         weight: 77
-      footnotes:
-        weight: 78
-        enabled: false
       rules_section:
         weight: 79
         enabled: false
       rules_updates:
         weight: 80
         enabled: false
-      featured_message:
-        weight: 81
-        enabled: false
       search_band:
         weight: 82
         enabled: false
+      search_banner:
+        weight: 108
+        enabled: false
       section:
         weight: 83
+        enabled: false
+      section_board_members:
+        weight: 109
         enabled: false
       section_heading_text:
         weight: 84
@@ -316,69 +372,18 @@ settings:
       stat:
         enabled: true
         weight: 90
-      image_credit:
-        weight: 91
-        enabled: false
       state_organization:
         weight: 92
         enabled: false
       subhead:
         weight: 93
         enabled: false
-      info_details_card_group:
-        enabled: true
-        weight: 94
-      key_message:
-        weight: 95
-        enabled: false
-      key_message_section:
-        weight: 96
-        enabled: false
-      video:
-        enabled: true
-        weight: 97
-      link_group:
-        weight: 98
-        enabled: false
-      link_group_document:
-        weight: 99
-        enabled: false
-      link_group_link:
-        weight: 100
-        enabled: false
-      list_board_members:
-        weight: 101
-        enabled: false
-      list_item_contact:
-        weight: 102
-        enabled: false
-      list_item_person:
-        weight: 103
-        enabled: false
-      list_manual_directory:
-        weight: 104
-        enabled: false
-      manage_account_link:
-        weight: 105
-        enabled: false
-      organization_grid:
-        weight: 106
-        enabled: false
-      multiple_answers:
-        weight: 107
-        enabled: false
-      search_banner:
-        weight: 108
-        enabled: false
-      section_board_members:
-        weight: 109
-        enabled: false
-      caspio_embed:
-        enabled: true
-        weight: 110
       tableau_embed:
         enabled: true
         weight: 111
+      video:
+        enabled: true
+        weight: 97
       video_with_header:
         weight: 112
         enabled: false

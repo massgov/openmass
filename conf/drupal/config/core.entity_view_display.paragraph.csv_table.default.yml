@@ -1,0 +1,24 @@
+uuid: a513828a-9eb7-4f66-bfc0-059e92279e0b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.csv_table.field_csv_file
+    - paragraphs.paragraphs_type.csv_table
+  module:
+    - csv_field
+id: paragraph.csv_table.default
+targetEntityType: paragraph
+bundle: csv_table
+mode: default
+content:
+  field_csv_file:
+    weight: 0
+    label: hidden
+    settings:
+      use_description_as_link_text: true
+      display_as_datatable: true
+    third_party_settings: {  }
+    type: csv_file_table
+    region: content
+hidden: {  }
