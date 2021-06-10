@@ -66,10 +66,12 @@ class AutomatedPurgingTest extends ExistingSiteBase {
         'alias' => '/foo-foo',
       ],
     ]);
-    $this->assertCount(1, $this->getInvalidations('url', 'http://mass.local/foo-foo'));
+    $url = $node->toUrl('canonical', ['absolute' => TRUE])->toString();
+    $this->assertCount(1, $this->getInvalidations('url', $url));
     $node->path->alias = '/foo-bar';
     $node->save();
-    $this->assertCount(1, $this->getInvalidations('url', 'http://mass.local/foo-bar'));
+    $url = $node->toUrl('canonical', ['absolute' => TRUE])->toString();
+    $this->assertCount(1, $this->getInvalidations('url', $url));
   }
 
   /**
