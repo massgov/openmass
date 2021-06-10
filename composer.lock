@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "073866deec928118d3061bc10d454034",
+    "content-hash": "5b18962a662434ef967741760daa19ed",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2445,29 +2445,29 @@
         },
         {
             "name": "drupal/access_unpublished",
-            "version": "1.0.0",
+            "version": "dev-1.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/access_unpublished.git",
-                "reference": "8.x-1.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/access_unpublished-8.x-1.0.zip",
-                "reference": "8.x-1.0",
-                "shasum": "dfb825f90ac03cf8cf2c049e06dce2ac0cc5b6dd"
+                "reference": "3171e240b35d8aecdf7c1e93cb5c4e41329ff1d5"
             },
             "require": {
                 "drupal/core": "^8.7.7 || ^9"
             },
+            "require-dev": {
+                "drupal/graphql": "4.x-dev"
+            },
             "type": "drupal-module",
             "extra": {
+                "branch-alias": {
+                    "dev-1.x": "1.x-dev"
+                },
                 "drupal": {
-                    "version": "8.x-1.0",
-                    "datestamp": "1590413019",
+                    "version": "8.x-1.1+4-dev",
+                    "datestamp": "1622108171",
                     "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -8249,6 +8249,57 @@
             "support": {
                 "source": "http://cgit.drupalcode.org/route_iframes",
                 "issues": "https://www.drupal.org/project/issues/route_iframes"
+            }
+        },
+        {
+            "name": "drupal/scheduled_transitions",
+            "version": "dev-2.x",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/scheduled_transitions.git",
+                "reference": "1b3d8c51108ad7dbf87611e1fac14410592d9c2f"
+            },
+            "require": {
+                "drupal/core": "^8.9 || ^9",
+                "drupal/dynamic_entity_reference": "^1.0 || ^2.0",
+                "php": ">=7.3"
+            },
+            "suggest": {
+                "drupal/token": "Shows Token UI on Add Scheduled Transitions form."
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-2.x": "2.x-dev"
+                },
+                "drupal": {
+                    "version": "2.x-dev",
+                    "datestamp": "1610935291",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
+                    }
+                },
+                "drush": {
+                    "services": {
+                        "drush.services.yml": "^9"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "dpi",
+                    "homepage": "https://www.drupal.org/user/81431"
+                }
+            ],
+            "description": "Allows users to schedule a revision to change state.",
+            "homepage": "https://www.drupal.org/project/scheduled_transitions",
+            "support": {
+                "source": "https://git.drupalcode.org/project/scheduled_transitions"
             }
         },
         {
@@ -18889,6 +18940,7 @@
     "aliases": [],
     "minimum-stability": "dev",
     "stability-flags": {
+        "drupal/access_unpublished": 20,
         "drupal/better_exposed_filters": 10,
         "drupal/cloudflare": 15,
         "drupal/conditional_fields": 15,
@@ -18905,6 +18957,7 @@
         "drupal/office_hours": 15,
         "drupal/path_redirect_import": 10,
         "drupal/route_iframes": 20,
+        "drupal/scheduled_transitions": 20,
         "drupal/scheduler_content_moderation_integration": 15,
         "drupal/security_review": 20,
         "drupal/stage_file_proxy": 15,
