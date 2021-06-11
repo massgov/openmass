@@ -93,6 +93,17 @@ function mass_theme_theme_suggestions_image_style_alter(array &$suggestions, arr
 }
 
 /**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
+  $view = $variables['view'];
+  // Allow all data listing views pages to use the same template file.
+  if (strpos($view->id(), 'data_listing') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
+    $suggestions[] = 'views_view__data_listing';
+  }
+}
+
+/**
  * Implements hook_preprocess_HOOK().
  *
  * Break out url pieces for callout button paragraphs.
@@ -218,6 +229,9 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   // Get the page title for title context.
   $page_title = $node->getTitle();
 
+  // Get the value of field_customize_header_text or set to FALSE by default.
+  $field_customize_header_text = intval($node->field_customize_header_text->value) == 1 ? TRUE : FALSE;
+
   // Set static details properties.
   $titleContext = t(' of @title', ['@title' => $page_title]);
   $variables['details'] = [
@@ -282,7 +296,7 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_how_to_what_you_need')) {
 
     // Set up section title for heading, sticky nav.
-    $what_you_need_title = t('What you need');
+    $what_you_need_title = ($field_customize_header_text && !$node->field_what_you_need_header->isEmpty()) ? $node->field_what_you_need_header->value : t('What you need');
 
     // Set up corresponding sticky nav entry for what you need.
     $stickyNav[] = $what_you_need_title;
@@ -292,7 +306,7 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   // Build methods tabular data if field is populated.
   if (Helper::isFieldPopulated($node, 'field_how_to_ref_fees') || Helper::isFieldPopulated($node, 'field_how_to_fee_description')) {
     // Set up section title for heading, sticky nav.
-    $fees_title = t('Fees');
+    $fees_title = ($field_customize_header_text && !$node->field_fees_header->isEmpty()) ? $node->field_fees_header->value : t('Fees');
     $titleContext = t(' for @title', ['@title' => $page_title]);
 
     // Set up options for how to ___.
@@ -341,7 +355,7 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   // To check if the field for the next steps is populated for the sticky nav to display.
   if (Helper::isFieldPopulated($node, 'field_how_to_next_steps')) {
     // Set up title for section and sticky nav.
-    $next_steps_title = t('Next steps');
+    $next_steps_title = ($field_customize_header_text && !$node->field_next_steps_header->isEmpty()) ? $node->field_next_steps_header->value : t('Next steps');
 
     // Set up corresponding sticky nav entry for next steps.
     $stickyNav[] = $next_steps_title;
@@ -352,7 +366,7 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_how_to_more_info')) {
 
     // Set up title for more info section and sticky nav.
-    $more_info_title = t('More info');
+    $more_info_title = ($field_customize_header_text && !$node->field_more_info_header->isEmpty()) ? $node->field_more_info_header->value : t('More info');
 
     // Set up corresponding sticky nav entry for More Info.
     $stickyNav[] = $more_info_title;
@@ -363,7 +377,7 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_manage_your_account')) {
 
     // Set up title for manage your account section and sticky nav.
-    $manage_account_title = t('Manage your account');
+    $manage_account_title = ($field_customize_header_text && !$node->field_manage_your_account_header->isEmpty()) ? $node->field_manage_your_account_header->value : t('Manage your account');
 
     // Set up corresponding sticky nav entry for Manage your account.
     $stickyNav[] = $manage_account_title;
@@ -374,7 +388,7 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
   // To check if the field for the downloads is populated for the sticky nav to display.
   if (Helper::isFieldPopulated($node, 'field_how_to_files')) {
     // Set up title for downloads section and sticky nav.
-    $downloads_title = t('Downloads');
+    $downloads_title = ($field_customize_header_text && !$node->field_downloads_header->isEmpty()) ? $node->field_downloads_header->value : t('Downloads');
 
     // Set up corresponding sticky nav entry for Downloads.
     $stickyNav[] = $downloads_title;
@@ -3225,7 +3239,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
         'text' => Helper::fieldFullView($node, 'field_location_button_short_desc'),
       ],
     ];
-
     $variables['mappedLocations'] = Organisms::prepareMappedLocations($node->field_service_ref_locations->referencedEntities(), $mappedLocations_options, $cache_tags);
   }
 
@@ -4013,6 +4026,36 @@ function mass_theme_preprocess_node(&$variables) {
   $view_mode_function = __FUNCTION__ . '_' . $node->getType() . '_' . $view_mode;
   if (function_exists($view_mode_function)) {
     $view_mode_function($variables);
+  }
+
+  // Set data_listing_icon for Data Listing nodes.
+  $icon_map = [
+    'Data resource' => 'report',
+    'Dataset' => 'data',
+    'Data catalog' => 'catalog',
+  ];
+  // The field_data_flag field determines if it's a data listing. All External
+  // Data Resource nodes are data listings.
+  if ($node->getType() === 'external_data_resource' ||
+    ($node->hasField('field_data_flag') && $node->field_data_flag->value === 'data')) {
+    // The value of the flag is 'data'.
+    $tid = '';
+    // The data type is stored in several different fields. Find the one used
+    // by the current node and store the target_id.
+    if ($node->hasField('field_details_data_type') && !$node->get('field_details_data_type')->isEmpty()) {
+      $tid = $node->field_details_data_type->target_id;
+    }
+    elseif ($node->hasField('field_binder_data_type') && !$node->get('field_binder_data_type')->isEmpty()) {
+      $tid = $node->field_binder_data_type->target_id;
+    }
+    elseif ($node->hasField('field_list_data_type') && !$node->get('field_list_data_type')->isEmpty()) {
+      $tid = $node->field_list_data_type->target_id;
+    }
+    if ($tid) {
+      // Load the data type term and store the correct id for the component.
+      $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($tid);
+      $variables['data_listing_icon'] = $icon_map[$term->label()];
+    }
   }
 }
 
@@ -5738,11 +5781,42 @@ function mass_theme_preprocess_views_view(&$variables) {
     $variables['row_count'] = count($variables['rows'][0]['#rows']);
   }
 
+  // Add a class to the submit button.
+  if (isset($variables['exposed']['actions']['submit'])) {
+    $variables['exposed']['actions']['submit']['#attributes']['class'][] = 'ma__button ma__button-submit';
+  }
+  // Add a class to the reset button.
+  if (isset($variables['exposed']['actions']['reset'])) {
+    $variables['exposed']['actions']['reset']['#attributes']['class'][] = 'ma__button ma__button--quaternary ma__button-reset';
+  }
+
   // Optionally, run node-type-specific preprocess functions, like
   // foo_preprocess_views_view_page() or foo_preprocess_views_view_block().
   $function = __FUNCTION__ . '_' . $variables['id'] . '_' . $variables['display_id'];
   if (function_exists($function)) {
     $function($variables);
+  }
+}
+
+/**
+ * Implements template_preprocess_form_element_label().
+ */
+function mass_theme_preprocess_form_element_label(&$variables) {
+  // Add a class to the form element label for a views exposed filter title
+  // field.
+  if ($variables['element']['#id'] === 'edit-title') {
+    $variables['attributes']['class'][] = 'ma__sidebar-heading ma__legend';
+  }
+}
+
+/**
+ * Implements template_preprocess_fieldset().
+ */
+function mass_theme_preprocess_fieldset(&$variables) {
+  // Add a class to the form fieldset legend span for a views exposed filter
+  // topicid field.
+  if ($variables['element']['#id'] === 'edit-topicid') {
+    $variables['legend_span']['attributes']->addClass('ma__sidebar-heading ma__label');
   }
 }
 

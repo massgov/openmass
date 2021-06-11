@@ -13,7 +13,7 @@
         "process-timeout": 9600,
         "sort-packages": true,
         "platform": {
-          "php": "7.3"
+          "php": "7.4"
         },
         "discard-changes": true
     },
@@ -95,7 +95,7 @@
         "d3/d3": "3.5.*",
         "desandro/imagesloaded": "^4.1",
         "desandro/masonry": "^4.1",
-        "drupal/access_unpublished": "^1.0",
+        "drupal/access_unpublished": "1.x-dev",
         "drupal/acquia_connector": "^2",
         "drupal/acquia_purge": "^1",
         "drupal/address": "^1.9",
@@ -104,6 +104,7 @@
         "drupal/asset_cache_bust": "^1.0",
         "drupal/auto_entitylabel": "3.0-beta3",
         "drupal/autologout": "^1",
+        "drupal/better_exposed_filters": "^5.0@beta",
         "drupal/cache_metrics": "^2",
         "drupal/cloudflare": "^1.0@alpha",
         "drupal/components": "^2.4",
@@ -126,6 +127,7 @@
         "drupal/entity": "1.0.0-rc3",
         "drupal/entity_browser": "^2",
         "drupal/entity_reference_revisions": "^1.7",
+        "drupal/entityreference_filter": "^1.4",
         "drupal/field_group": "^3.1",
         "drupal/field_tokens": "^1.0@beta",
         "drupal/file_browser": "^1",
@@ -159,8 +161,8 @@
         "drupal/password_policy": "^3",
         "drupal/path_redirect_import": "^1.0@beta",
         "drupal/pathauto": "^1",
-        "drupal/pathologic": "1.x-dev#4f9f3fdcf1e0b224c4d8650e383a769f40abf9bf",
-        "drupal/prepopulate": "^2.0@alpha",
+        "drupal/pathologic": "^1",
+        "drupal/prepopulate": "^2.0",
         "drupal/private_files_download_permission": "^3",
         "drupal/purge": "^3",
         "drupal/purge_queues": "^1",
@@ -169,6 +171,7 @@
         "drupal/real_aes": "^2",
         "drupal/redirect": "^1",
         "drupal/route_iframes": "1.x-dev",
+        "drupal/scheduled_transitions": "2.x-dev",
         "drupal/scheduler": "^1.0",
         "drupal/scheduler_content_moderation_integration": "^1.0@alpha",
         "drupal/schema_metatag": "^1",
@@ -177,8 +180,9 @@
         "drupal/simple_sitemap": "^2.12",
         "drupal/stage_file_proxy": "^1.0@alpha",
         "drupal/subpathauto": "^1",
+        "drupal/term_reference_tree": "^1.0",
         "drupal/tfa": "^1.0.0-alpha7",
-        "drupal/twig_field_value": "^1",
+        "drupal/twig_field_value": "^2",
         "drupal/twig_tweak": "^1",
         "drupal/upgrade_rector": "^1",
         "drupal/upgrade_status": "^3",
@@ -189,13 +193,14 @@
         "drupal/views_bulk_operations": "^3.4",
         "drupal/views_custom_cache_tag": "^1.0",
         "drupal/views_data_export": "^1.0",
+        "drupal/views_taxonomy_term_name_into_id": "^1.0@alpha",
         "drush/drush": "^10.4",
         "enyo/dropzone": "5.7.2",
         "geocoder-php/open-cage-provider": "^4.4",
-        "massgov/mayflower-artifacts": "11.4.2",
+        "massgov/mayflower-artifacts": "11.7.0",
         "mikeyp/google_tag": "dev-8.x-1.x#3caa4f0b7f008576936ab7501d483bfcf58a4764",
         "phlak/semver": "^2.0",
-        "phpunit/phpunit": "^6",
+        "phpunit/phpunit": "^7",
         "symfony/dom-crawler": "^3.4",
         "typhonius/acquia-php-sdk-v2": "~1.1",
         "vlucas/phpdotenv": "^2.4"
@@ -262,7 +267,8 @@
                 "Remove type hint which allows usage in combination with workbench_moderation": "patches/jsonapi-2.3.0-no-type-hint.patch",
                 "Fix batch error on Cloudflare (https://www.drupal.org/node/2879023)": "https://www.drupal.org/files/issues/2019-06-06/2879023-26.patch",
                 "Notice: Undefined index: #type in drupal_process_states() (https://www.drupal.org/project/drupal/issues/2700667)": "https://www.drupal.org/files/issues/2019-12-05/2700667-89.patch",
-                "IMPORTANT: Make content moderation views use indexes": "patches/content-moderation-add-views-filter-indices.patch"
+                "IMPORTANT: Make content moderation views use indexes": "patches/content-moderation-add-views-filter-indices.patch",
+                "Allow the ChangedItem to skip updating": "https://www.drupal.org/files/issues/2021-05-07/drupal-skip_update-2329253-76.patch"
             },
             "drupal/tfa": {
                 "UID enumeration prevention. (https://www.drupal.org/project/tfa/issues/2957140)": "https://www.drupal.org/files/issues/2021-03-15/tfa-remove_uid_enumeration-2957140-5.patch",
@@ -299,11 +305,14 @@
             "drupal/memcache": {
                 "Split large (> 1mb) items (https://www.drupal.org/node/435694)": "https://www.drupal.org/files/issues/2019-02-26/435694-118-d8-memcache-large-items.patch"
             },
+            "drupal/maxlength": {
+                "Don't enforce maxlength stop, allow negative count down": "https://www.drupal.org/files/issues/2020-12-07/2916687-allow-negative-count-13.patch"
+            },
             "drupal/metatag": {
                 "Process tokens for arrays (https://www.drupal.org/project/metatag/issues/3162986#comment-14075815)": "https://www.drupal.org/files/issues/2021-04-28/metatag-3162986-13_0.patch"
             },
             "drupal/pathologic": {
-                "Dynamic routes like image styles break under pathologic (https://www.drupal.org/project/pathologic/issues/2718473)": "https://www.drupal.org/files/issues/2018-11-14/2718473-dynamic-image-style-lookup-19.patch",
+                "Dynamic routes like image styles break under pathologic (https://www.drupal.org/project/pathologic/issues/2718473)": "https://www.drupal.org/files/issues/2020-01-29/2718473-dynamic-image-style-lookup-20.patch",
                 "Convert href to the aliased url if possible (https://www.drupal.org/project/pathologic/issues/2692641#comment-13317616)": "https://www.drupal.org/files/issues/2019-10-20/2692641-15.diff"
             },
             "drupal/password_policy": {

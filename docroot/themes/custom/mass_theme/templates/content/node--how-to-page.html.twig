@@ -6,6 +6,7 @@
  */
  #}
 {% extends 'node.html.twig' %}
+{% set field_customize_header_text = (node.field_customize_header_text.value == 1) ? true : false %}
 
 {# Set top heading level for the page. #}
 {% set level = 1 %}
@@ -79,8 +80,8 @@
               {% embed "@organisms/by-author/rich-text.twig" with {
                 "richText": {
                   "compHeading": {
-                    "title": "What you need",
-                    "id": "what-you-need",
+                    "title": (field_customize_header_text and node.field_what_you_need_header is not empty) ? node.field_what_you_need_header.value : "What you need",
+                    "id": (field_customize_header_text and node.field_what_you_need_header is not empty) ? stickyNav['anchorIDs'][node.field_what_you_need_header.value] : "what-you-need",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
                   }
@@ -116,8 +117,8 @@
               {% embed "@organisms/by-author/steps-ordered.twig" with {
                 "stepsOrdered": {
                   "compHeading": {
-                    "title": "Next steps",
-                    "id": "next-steps",
+                    "title": (field_customize_header_text and node.field_next_steps_header is not empty) ? node.field_next_steps_header.value : "Next steps",
+                    "id": (field_customize_header_text and node.field_next_steps_header is not empty) ? stickyNav['anchorIDs'][node.field_next_steps_header.value] : "next-steps",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
                   }
@@ -133,8 +134,8 @@
               {% embed "@organisms/by-author/rich-text.twig" with {
                 "richText": {
                   "compHeading": {
-                    "title": "More info",
-                    "id": "more-info",
+                    "title": (field_customize_header_text and node.field_more_info_header is not empty) ? node.field_more_info_header.value : "More info",
+                    "id": (field_customize_header_text and node.field_more_info_header is not empty) ? stickyNav['anchorIDs'][node.field_more_info_header.value] : "more-info",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
                   }
@@ -150,8 +151,8 @@
               {% embed "@organisms/by-author/descriptive-links-wrapper.twig" with {
                 "descriptiveLinks": {
                   "compHeading": {
-                    "title": "Manage your account",
-                    "id": "manage-your-account",
+                    "title": (field_customize_header_text and node.field_manage_your_account_header is not empty) ? node.field_manage_your_account_header.value : "Manage your account",
+                    "id": (field_customize_header_text and node.field_manage_your_account_header is not empty) ? stickyNav['anchorIDs'][node.field_manage_your_account_header.value] : "manage-your-account",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
                   }
@@ -168,8 +169,8 @@
               {%  embed "@organisms/by-author/form-downloads.twig" with {
                 "formDownloads": {
                   "compHeading": {
-                    "title": "Downloads",
-                    "id": "downloads",
+                    "title": (field_customize_header_text and node.field_downloads_header is not empty) ? node.field_downloads_header.value : "Downloads",
+                    "id": (field_customize_header_text and node.field_downloads_header is not empty) ? stickyNav['anchorIDs'][node.field_downloads_header.value] : "downloads",
                     "level": level,
                     "titleContext": "for " ~ node.title.value
                   }

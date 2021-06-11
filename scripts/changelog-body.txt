@@ -1,29 +1,30 @@
 
 
-## [0.282.0] - May 11, 2021
+## [0.285.0] - June 8, 2021
 
-### Fixed
-  - DP-19072: Fixed serialization issues with metatag output.
-  - DP-21034: Fixed log in error message appearing with wrong styles.
-  - DP-21188: Wrap long file names that have no breaking character in "all documents" view.
-  - DP-21692: Fixed empty support status message rendering upon saving content in Drupal.
-  - DP-21728: Upgrading some contrib modules do d9 compatible versions.
+### Removed
+  - DP-17765: Update Cloudflare configuration to stop sending legacy prefixes to legacy server.
+  - DP-21782: Revert PR
   
 ### Added
-  - DP-20892: Host iframe responsive height JS at docroot/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js.
+  - DP-21043: Created Data Listing All and Data Listing Topic views pages.
+  - DP-21657: Add a search field to the feedback manager so that CMS users can search feedback for specific words/phrases.
+  - DP-21768: Adapt ahoy commands so they also work for native dev env
+  - DP-22132: Added a reusable Collections architecture, starting with EOTSS Service Catalog and How-to pages.
+  
+### Fixed
+  - DP-21903: Fixed false positives in Drupal Backstop.
   
 ### Changed
-  - DP-21622: Updated auto_entitylabel module.
-  - DP-21624: Patched the field_tokens module for D9 compatibility.
-  - DP-21677: Use 'massgov' Docker org instead of comass
-  - DP-21691: Replace h2 with div keeping its aria-labelledby for the main nav.
-  - DP-21729: Updated view_mode_page, views_autocomplete_filters, views_custom_cache_tag, and views_data_export modules.
-  - DP-21786: Uninstalling config_log module.
-  - DP-21792: Changed the field order on the node form, keeping language out of the "data" fields.
-  - DP-21990: Updated Mayflower version to 11.4.2.
-  - DP-21686: Change info details page content data from object to array for flexibility, cleanup unused data and render video in preContent-media variant page (MF)
-  - DP-21770: Align text and icon for the directions link. (MF)
+  - DP-22099: Changed post-release backstop job to use shorter list of pages.
+  - DP-22191: Modify alert pattern to incude additional data
+  - DP-7874: Restructure the footer navigation to correct semantics of its markup (a11y).
+  - DP-22231: Updated Mayflower version to 11.6.0.
+  - DP-21782: Add labelContext to assets/js/templates/locationListingRow.html.(MF)
+  - DP-7874: Correct semantics of footer navigation. (MF)
+Updated Mayflower version to 11.7.0.
+  - DP-21782: DP-22191: Add extra data attributes to HeaderAlert. (MF)
   
-### Removed
-  - DP-21691: Removed deplicated mobile version header + navigation components for the horizontal nav.
+### Security
+  - DP-22152: Drupal core security update to version 8.9.16.
   

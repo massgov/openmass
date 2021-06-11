@@ -3,6 +3,10 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.how_to_page.field_collections
+    - field.field.node.how_to_page.field_customize_header_text
+    - field.field.node.how_to_page.field_downloads_header
+    - field.field.node.how_to_page.field_fees_header
     - field.field.node.how_to_page.field_how_to_contacts_3
     - field.field.node.how_to_page.field_how_to_fee_description
     - field.field.node.how_to_page.field_how_to_files
@@ -19,9 +23,13 @@ dependencies:
     - field.field.node.how_to_page.field_how_to_what_you_need
     - field.field.node.how_to_page.field_intended_audience
     - field.field.node.how_to_page.field_manage_your_account
+    - field.field.node.how_to_page.field_manage_your_account_header
+    - field.field.node.how_to_page.field_more_info_header
+    - field.field.node.how_to_page.field_next_steps_header
     - field.field.node.how_to_page.field_organizations
     - field.field.node.how_to_page.field_reusable_label
     - field.field.node.how_to_page.field_state_organization_tax
+    - field.field.node.how_to_page.field_what_you_need_header
     - node.type.how_to_page
   module:
     - entity_reference_revisions
@@ -37,7 +45,7 @@ mode: default
 content:
   computed_related_to:
     type: entity_reference_label
-    weight: 18
+    weight: 23
     region: content
     label: above
     settings:
@@ -49,17 +57,33 @@ content:
     settings: {  }
     third_party_settings: {  }
   extra_node_pager:
-    weight: 22
+    weight: 28
     region: content
     settings: {  }
     third_party_settings: {  }
   extra_org_feedback_form:
-    weight: 19
+    weight: 24
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_downloads_header:
+    weight: 10
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_fees_header:
+    weight: 17
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
   field_how_to_contacts_3:
-    weight: 9
+    weight: 12
     label: above
     settings:
       link: true
@@ -67,14 +91,14 @@ content:
     type: entity_reference_label
     region: content
   field_how_to_fee_description:
-    weight: 14
+    weight: 19
     label: above
     settings: {  }
     third_party_settings: {  }
     type: text_default
     region: content
   field_how_to_files:
-    weight: 8
+    weight: 11
     label: above
     settings:
       view_mode: media_download_link
@@ -103,7 +127,7 @@ content:
     type: link
     region: content
   field_how_to_links_5:
-    weight: 10
+    weight: 13
     label: above
     settings:
       trim_length: 80
@@ -115,7 +139,7 @@ content:
     type: link
     region: content
   field_how_to_metatags:
-    weight: 15
+    weight: 20
     label: above
     settings: {  }
     third_party_settings: {  }
@@ -123,7 +147,7 @@ content:
     region: content
   field_how_to_methods_5:
     type: entity_reference_revisions_entity_view
-    weight: 12
+    weight: 16
     label: above
     settings:
       view_mode: default
@@ -131,7 +155,7 @@ content:
     third_party_settings: {  }
     region: content
   field_how_to_more_info:
-    weight: 7
+    weight: 9
     label: above
     settings: {  }
     third_party_settings: {  }
@@ -139,7 +163,7 @@ content:
     region: content
   field_how_to_next_steps:
     type: entity_reference_revisions_entity_view
-    weight: 11
+    weight: 15
     label: above
     settings:
       view_mode: default
@@ -147,7 +171,7 @@ content:
     third_party_settings: {  }
     region: content
   field_how_to_ref_fees:
-    weight: 13
+    weight: 18
     label: above
     settings:
       link: true
@@ -171,14 +195,14 @@ content:
     type: string
     region: content
   field_how_to_what_you_need:
-    weight: 6
+    weight: 7
     label: above
     settings: {  }
     third_party_settings: {  }
     type: text_default
     region: content
   field_intended_audience:
-    weight: 17
+    weight: 22
     label: hidden
     settings: {  }
     third_party_settings: {  }
@@ -186,21 +210,53 @@ content:
     region: content
   field_manage_your_account:
     type: entity_reference_revisions_entity_view
-    weight: 20
+    weight: 26
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
     region: content
+  field_manage_your_account_header:
+    weight: 25
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_more_info_header:
+    weight: 8
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_next_steps_header:
+    weight: 14
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
   field_organizations:
     type: entity_reference_label
-    weight: 16
+    weight: 21
     region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
+  field_what_you_need_header:
+    weight: 6
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
   links:
     weight: 1
     region: content
@@ -208,7 +264,7 @@ content:
     third_party_settings: {  }
   referencing_binders:
     type: entity_reference_entity_view
-    weight: 21
+    weight: 27
     region: content
     label: hidden
     settings:
@@ -222,6 +278,8 @@ content:
     third_party_settings: {  }
 hidden:
   computed_log_in_links: true
+  field_collections: true
+  field_customize_header_text: true
   field_reusable_label: true
   field_state_organization_tax: true
   langcode: true

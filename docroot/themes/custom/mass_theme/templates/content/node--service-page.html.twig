@@ -236,7 +236,6 @@
     {% set compHeading = mappedLocations.compHeading|merge({'level': level}) %}
     {% set mappedLocations = mappedLocations|merge({'compHeading': compHeading}) %}
     {% include "@organisms/by-author/mapped-locations.twig" %}
-    {{ attach_library('mass_map/google-map-api') }}
   {% endif %}
   {% if eventListing %}
     {% set compHeading = eventListing.compHeading|merge({'level': level}) %}

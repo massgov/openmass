@@ -1,5 +1,79 @@
 
 
+## [0.285.0] - June 8, 2021
+
+### Removed
+  - DP-17765: Update Cloudflare configuration to stop sending legacy prefixes to legacy server.
+  - DP-21782: Revert PR
+  
+### Added
+  - DP-21043: Created Data Listing All and Data Listing Topic views pages.
+  - DP-21657: Add a search field to the feedback manager so that CMS users can search feedback for specific words/phrases.
+  - DP-21768: Adapt ahoy commands so they also work for native dev env
+  - DP-22132: Added a reusable Collections architecture, starting with EOTSS Service Catalog and How-to pages.
+  
+### Fixed
+  - DP-21903: Fixed false positives in Drupal Backstop.
+  
+### Changed
+  - DP-22099: Changed post-release backstop job to use shorter list of pages.
+  - DP-22191: Modify alert pattern to incude additional data
+  - DP-7874: Restructure the footer navigation to correct semantics of its markup (a11y).
+  - DP-22231: Updated Mayflower version to 11.7.0.
+  - DP-21782: Add labelContext to assets/js/templates/locationListingRow.html.(MF)
+  - DP-7874: Correct semantics of footer navigation. (MF)
+  - DP-21782: DP-22191: Add extra data attributes to HeaderAlert. (MF)
+  
+### Security
+  - DP-22152: Drupal core security update to version 8.9.16.
+  
+
+
+## [0.284.0] - May 25, 2021
+
+### Changed
+  - DP-21790: Add labels to feedback manager, fix multiselect.
+  - DP-21983: Makes sure the english version translation field is empty if the content is already english.
+  - DP-22002: Metatag changes for 3 content types.
+  - DP-22130: Updated Mayflower version to 11.5.1.
+  - DP-21660: Fix bullets and list numbers overwrapped with left floated elements in IE11. (MF)
+  - DP-22079: Fixed location listing pagination error, and fixed auto complete. (MF)
+  
+### Fixed
+  - DP-22021: Fixed error when adding an existing Fee to a How-to page.
+  
+### Security
+  - DP-22023: Updated drupal ctools from version 3.4.0 to 3.6.0.
+  
+
+
+## [0.283.0] - May 18, 2021
+
+### Changed
+  - DP-20949: Removes the Basic Google Maps implementation, not the location listing page.
+  - DP-21731: Updated Pathologic, Prepopulate, Sub-pathauto, and Twig Field Value modules.
+  - DP-21783: Content and Document administrative views have proper language settings.
+  - DP-21793: Added character countdown and warning when page titles exceed 70 characters.
+  - DP-22026: Exported Rabbit Hole module configuration.
+  - DP-22060: Updated Mayflower version to 11.5.0.
+  - DP-21554: Added MapLeaflet molecule and variants. (MF)
+  - DP-21554: Switch out interactive and static google maps with leaflet maps in LocationBanners and MappedLocations, on location pages and orgs and services pages. (MF)
+  - DP-21816: Remove h2 from utility nav panel title. (MF)
+  - DP-21763: Extended the GeneralTeaser component to render tags, icon in eyebrow, and upperRight content. (MF)
+  - DP-21883: Added a query string with a version to -VF.woff2 fonts for caching. (MF)
+  
+### Added
+  - DP-21634: Added flexible header functionality to the how-to content type.
+  - DP-21949: Add missing pages to Drupal Backstop.
+  
+### Removed
+  - DP-21785: Removing libraries, clamav, and restui from composer, previously removed from drupal config.
+  
+### Fixed
+  - DP-22061: Fix missing hours on location listing pages.
+  
+
+
 ## [0.282.0] - May 11, 2021
 
 ### Fixed
