@@ -5,6 +5,7 @@ namespace Drupal\mass_unpublish_reminders\Plugin\QueueWorker;
 use Drupal\Core\Queue\QueueWorkerBase;
 use Drupal\Core\Queue\RequeueException;
 use Drupal\Core\Queue\SuspendQueueException;
+use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Url;
 
@@ -57,12 +58,10 @@ class UnpublishReminderQueue extends QueueWorkerBase {
       }
       $url = Url::fromRoute('entity.node.canonical', ['node' => $nid])->setAbsolute()->toString();
 
-      if ($node->hasField('unpublish_on')) {
-        if (!empty($node->unpublish_on->value)) {
-          $unpublish_timestamp = $node->unpublish_on->value;
-          $unpublish_date = \Drupal::service('date.formatter')->format($unpublish_timestamp, 'custom', 'F d, Y h:i a');
-        }
-      }
+      $transitions = mass_scheduled_transitions_load_by_host_entity($node, FALSE, MassModeration::UNPUBLISHED);
+      // Just pick the first one since multiple unpublishes is super rare.
+      $transition = array_shift($transitions);
+      $unpublish_date = $transition->getTransitionDate()->format('F d, Y h:i a');
 
       $params['message'] = t("A Promotional page or Alert that you or someone in your organization authored has an unpublish date that will arrive soon. At that time, the content will be unpublished.\n\nPage: :page_url\nUnpublish date: @unpublish_date\n\nIf you want to keep the page or alert, please review it, check its performance, and update it if necessary. You can then update the unpublish date.\n\nIf you no longer need a Promotional page or Alert, you can let it unpublish automatically or you can unpublish it manually now. If you think there could still be traffic to the Promotional page, please make a ServiceNow ticket to redirect that traffic to an appropriate page.\n\nIf you have any questions, please make a ServiceNow request.\n\nThank you.",
         [

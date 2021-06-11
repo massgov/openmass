@@ -11,9 +11,12 @@ switch (file) {
   case 'all':
     pages = require('./all');
     break;
+  case 'post-release':
+    pages = require('./post-release');
+    break;
   default:
     throw new Error('has occurred with' + file + '.');
-};
+}
 
 // Determine the environment we're targeting.
 const opts = process.argv.filter(arg => arg.match(/^--target=/))
