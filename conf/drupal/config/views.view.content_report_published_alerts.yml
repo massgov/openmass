@@ -12,6 +12,7 @@ dependencies:
     - mass_views
     - node
     - options
+    - scheduled_transitions
     - taxonomy
     - user
     - views_autocomplete_filters
@@ -86,13 +87,12 @@ display:
           columns:
             title: title
             field_alert_display: field_alert_display
-            title_1: title_1
+            field_organizations: field_organizations
             field_alert_severity: field_alert_severity
             delta: delta
-            changed: changed
+            transition_on: transition_on
             langcode: langcode
             operations: operations
-            field_organizations: field_organizations
           info:
             title:
               sortable: true
@@ -108,9 +108,7 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            title_1:
-              sortable: false
-              default_sort_order: asc
+            field_organizations:
               align: ''
               separator: ''
               empty_column: false
@@ -129,9 +127,9 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            changed:
+            transition_on:
               sortable: true
-              default_sort_order: desc
+              default_sort_order: asc
               align: ''
               separator: ''
               empty_column: false
@@ -148,12 +146,7 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            field_organizations:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-          default: changed
+          default: transition_on
           empty_table: false
       row:
         type: fields
@@ -449,14 +442,14 @@ display:
           prefix: ''
           suffix: ''
           plugin_id: numeric
-        changed:
-          id: changed
-          table: node_field_data
-          field: changed
-          relationship: none
+        transition_on:
+          id: transition_on
+          table: scheduled_transition
+          field: transition_on
+          relationship: reverse__scheduled_transition__entity
           group_type: group
           admin_label: ''
-          label: 'Last revised'
+          label: 'Unpublish date'
           exclude: false
           alter:
             alter_text: false
@@ -513,8 +506,8 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: changed
+          entity_type: scheduled_transition
+          entity_field: transition_on
           plugin_id: field
         langcode:
           id: langcode
@@ -660,6 +653,54 @@ display:
             operator_limit_selection: false
             operator_list: {  }
           group: 1
+        moderation_state:
+          id: moderation_state
+          table: scheduled_transition
+          field: moderation_state
+          relationship: reverse__scheduled_transition__entity
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: Unpublished
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            placeholder: ''
+            autocomplete_filter: 0
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
+            autocomplete_field: ''
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: scheduled_transition
+          entity_field: moderation_state
+          plugin_id: views_autocomplete_filters_string
         node_org_filter:
           id: node_org_filter
           table: node_field_data
@@ -1084,6 +1125,16 @@ display:
           group_type: group
           admin_label: 'field_organizations: Content'
           required: false
+          plugin_id: standard
+        reverse__scheduled_transition__entity:
+          id: reverse__scheduled_transition__entity
+          table: node_field_data
+          field: reverse__scheduled_transition__entity
+          relationship: none
+          group_type: group
+          admin_label: 'Reverse reference to Entity base field on scheduled transition'
+          required: false
+          entity_type: node
           plugin_id: standard
       arguments: {  }
       display_extenders: {  }
