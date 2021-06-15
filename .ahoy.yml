@@ -67,3 +67,7 @@ commands:
   nightcrawler:
     usage: Run NightcrawlerJS fatal error tests.
     cmd: ahoy -f ${MASS_DEV_ENV:=docker}.ahoy.yml nightcrawler $@
+
+  xdebug:
+    usage: Pass "on" or "off" to enable or disable Xdebug
+    cmd: ahoy exec scripts/xdebug "$@"
