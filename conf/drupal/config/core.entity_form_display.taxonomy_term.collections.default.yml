@@ -3,7 +3,9 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_landing_page
+    - field.field.taxonomy_term.collections.field_url_name
     - taxonomy.vocabulary.collections
   module:
     - link
@@ -16,23 +18,39 @@ mode: default
 content:
   description:
     type: text_textarea
-    weight: 2
+    weight: 4
     region: content
     settings:
       placeholder: ''
       rows: 5
     third_party_settings: {  }
+  field_all_collection_breadcrumb:
+    weight: 3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
   field_landing_page:
-    weight: 1
+    weight: 2
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
     type: link_default
     region: content
+  field_url_name:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
   langcode:
     type: language_select
-    weight: 3
+    weight: 5
     region: content
     settings:
       include_locked: true
@@ -47,7 +65,7 @@ content:
     third_party_settings: {  }
   path:
     type: path
-    weight: 4
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -55,7 +73,7 @@ content:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 5
+    weight: 7
     region: content
     third_party_settings: {  }
 hidden: {  }

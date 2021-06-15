@@ -249,7 +249,7 @@ display:
           exposed: true
           expose:
             operator_id: field_collections_target_id_entityreference_filter_op
-            label: 'Filter by Topic'
+            label: 'Filter by Sub Topic'
             description: ''
             use_operator: false
             operator: field_collections_target_id_entityreference_filter_op
@@ -382,7 +382,7 @@ display:
           empty: true
           tokenize: true
           content:
-            value: "<div class=\"ma__breadcrumb--views\"><ol><li><a href=\"/collections/{{ raw_arguments.tid }}\">{{ arguments.tid }}</a></li></ol></div>\r\n"
+            value: "<div class=\"ma__breadcrumb--views\"><ol><li><a href=\"/collections/{{ collection.field_url_name }}\">{{ collection.field_all_collection_breadcrumb }}</a></li></ol></div>\r\n"
             format: full_html
           plugin_id: text
         result:
@@ -442,14 +442,13 @@ display:
             format: default_summary
           specify_validation: true
           validate:
-            type: mass_taxonomy_term_name_into_id_depth_parent
+            type: mass_taxonomy_term_url_name_into_id_depth_parent
             fail: 'not found'
           validate_options:
             bundles:
               collections: collections
             access: '1'
             operation: view
-            transform: '1'
             term_depth: '1'
             term_depth_value: '1'
             term_parent: 0
@@ -488,14 +487,13 @@ display:
             format: default_summary
           specify_validation: true
           validate:
-            type: mass_taxonomy_term_name_into_id_depth_parent
+            type: mass_taxonomy_term_url_name_into_id_depth_parent
             fail: 'not found'
           validate_options:
             bundles:
               collections: collections
             access: '1'
             operation: view
-            transform: '1'
             term_depth: '1'
             term_depth_value: '2'
             term_parent: '1'
