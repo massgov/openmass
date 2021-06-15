@@ -71,7 +71,9 @@
  */
 #}
 {# Determine how the node should display based on the existence of data listing data. #}
-{% if content.field_data_flag is defined and content.field_data_flag.value == 'data' %}
+{% if content.field_data_flag is defined
+  and content.field_data_flag['#items'] is not empty
+  and content.field_data_flag['#items'].0.value == 'data' %}
   {% set organizations = [] %}
   {% if content.field_organizations['#items'] %}
     {% for item in content.field_organizations['#items'] %}
