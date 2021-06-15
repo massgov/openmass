@@ -8,7 +8,7 @@ references:
     working_directory: /var/www/code
     docker:
       # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:1.0.17-ci
+      - image: massgov/drupal-container:1.0.19-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           AWS_REGION: us-east-1
@@ -50,7 +50,7 @@ executors:
     # https://circleci.com/docs/2.0/configuration-reference/#resource_class
     resource_class: xlarge
     docker:
-      - image: massgov/drupal-container:1.0.17-ci
+      - image: massgov/drupal-container:1.0.19-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           DOCKER_ENV: ci
@@ -678,8 +678,6 @@ workflows:
           requires: [deploy-test-refresh-db]
           target: test
           reference: prod
-          list: post-release
-          viewport: desktop
           filters:
             branches:
               only: /^release\/.*$/
@@ -952,6 +950,8 @@ workflows:
           name: backstop-prod-maint
           requires: [deploy-tag-prod-acquia-maint]
           target: prod
+          list: post-release
+          viewport: desktop
           reference: test
           filters:
             branches:
@@ -963,6 +963,8 @@ workflows:
           requires: [deploy-tag-prod-acquia-no-maint]
           target: prod
           reference: test
+          list: post-release
+          viewport: desktop
           filters:
             branches:
               ignore: /.*/
