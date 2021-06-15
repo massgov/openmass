@@ -70,43 +70,80 @@
  *   in different view modes.
  */
 #}
-{% set organizations = [] %}
-{% if content.field_organizations['#items'] %}
-  {% for item in content.field_organizations['#items'] %}
-    {% set organization = item.entity.title.value %}
-    {% set organizations = organizations|merge([organization]) %}
-  {% endfor %}
-{% endif %}
-{% set formats = [] %}
-{% if content.field_data_format['#items'] %}
-  {% for item in content.field_data_format['#items'] %}
-    {% set format = item.value %}
-    {% set formats = formats|merge([format]) %}
-  {% endfor %}
-{% endif %}
+{# Determine how the node should display based on the existence of data listing data. #}
+{% if content.field_data_flag is defined and content.field_data_flag.value == 'data' %}
+  {% set organizations = [] %}
+  {% if content.field_organizations['#items'] %}
+    {% for item in content.field_organizations['#items'] %}
+      {% set organization = item.entity.title.value %}
+      {% set organizations = organizations|merge([organization]) %}
+    {% endfor %}
+  {% endif %}
+  {% set formats = [] %}
+  {% if content.field_data_format['#items'] %}
+    {% for item in content.field_data_format['#items'] %}
+      {% set format = item.value %}
+      {% set formats = formats|merge([format]) %}
+    {% endfor %}
+  {% endif %}
 
-{% include "@molecules/general-teaser.twig" with {
-  "generalTeaser" : {
-    "eyebrow": {
-      "icon": data_listing_icon ?: '',
-      "label": content.field_details_data_type['#items'].0.entity.name.value ?: ''
-    },
-    "title" : {
-      "href": url,
-      "text": label,
-      "info": "",
-      "property": ""
-    },
-    "level": "",
-    "emphasizedText": organizations,
-    "tags": formats,
-    "contents": [{
-      "path": "@atoms/11-text/paragraph.twig",
-      "data": {
-        "paragraph" : {
-          "text": node.field_short_desc.value ?: ''
+  {% include "@molecules/general-teaser.twig" with {
+    "generalTeaser" : {
+      "eyebrow": {
+        "icon": data_listing_icon ?: '',
+        "label": content.field_details_data_type['#items'].0.entity.name.value ?: ''
+      },
+      "title" : {
+        "href": url,
+        "text": label,
+        "info": "",
+        "property": ""
+      },
+      "level": "",
+      "emphasizedText": organizations,
+      "tags": formats,
+      "contents": [{
+        "path": "@atoms/11-text/paragraph.twig",
+        "data": {
+          "paragraph" : {
+            "text": node.field_short_desc.value ?: ''
+          }
         }
-      }
-    }]
-  }
-} %}
+      }]
+    }
+  } %}
+{% else %}
+  {% include "@molecules/general-teaser.twig" with {
+    "generalTeaser" : {
+      "title" : {
+        "href": url,
+        "text": label,
+        "info": "",
+        "property": ""
+      },
+      "level": "",
+      "emphasizedText": "",
+      "tags": "",
+      "contents": [{
+        "path": "@atoms/11-text/paragraph.twig",
+        "data": {
+          "paragraph" : {
+            "text": node.field_short_desc.value ?: ""
+          }
+        }
+      },{
+        "path": "@atoms/decorative-link.twig",
+        "data": {
+          "decorativeLink": {
+            "href": url,
+            "text": "Order Now"|t,
+            "context": "",
+            "button": false,
+            "info": "",
+            "labelContext": ""
+          }
+        }
+      }]
+    }
+  } %}
+{% endif %}
