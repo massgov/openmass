@@ -50,7 +50,13 @@
       {{ header.area }}
     {% endif %}
   </div>
-  <h1>{{ title }}</h1>
+  {#
+  Using the raw filter allows special characters to render properly.
+  It allows markup to render. This should be safe in this case because
+  administrators and content administrators are the only users that
+  can edit Collection term names.
+  #}
+  <h1>{{ title|raw }}</h1>
 
 
   <aside class="sidebar">
