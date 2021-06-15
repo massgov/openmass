@@ -9,6 +9,7 @@ use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Render\Renderer;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
 
 /**
@@ -122,7 +123,9 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
     $build = [
       '#theme' => 'mass_alerts_sitewide',
       '#emergencyAlerts' => $results['emergencyAlerts'],
-      '#cache' => ['max-age' => 0],
+      '#cache' => [
+        'max-age' => 60
+      ],
     ];
 
     $output = $this->renderer->renderRoot($build);
@@ -217,7 +220,12 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
     $build = [
       '#theme' => 'mass_alerts_page',
       '#headerAlerts' => $results['headerAlerts'],
-      '#cache' => ['max-age' => 0],
+      '#cache' => [
+        'max-age' => Cache::PERMANENT,
+        'tags' => [
+          'node:' . $nid
+        ]
+      ],
     ];
 
     $output = $this->renderer->renderRoot($build);
