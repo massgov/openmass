@@ -34,14 +34,13 @@ SOFTWARE.
 // event.source - a reference to the 'window' object that sent the message
 function gotResizeMessage(event) {
   'use strict';
-  var matches = document.querySelectorAll('iframe'); // iterate through all iFrames on page
+  var matches = document.querySelectorAll('.js-ma-responsive-iframe iframe'); // iterate through all iFrames on page
   var i = 0;
   for (; i < matches.length; i++) {
     // found the iFrame that sent us a message
     if (matches[i].contentWindow === event.source) {
       // matches[i].width = Number( event.data.width )	 <--- we do not do anything with the page width for now
       matches[i].height = Number(event.data.height);
-
       return 1;
     }
   }
@@ -54,4 +53,18 @@ document.addEventListener('DOMContentLoaded', function () {
 
   window.addEventListener('message', gotResizeMessage, false);
 
+  if (window.MutationObserver) {
+
+    // Crea una instancia de observer
+    var observer = new MutationObserver(function (mutations) {
+      var matches = document.querySelectorAll('.js-ma-responsive-iframe iframe');
+      var i = 0;
+      for (; i < matches.length; i++) {
+        matches[i].contentWindow.postMessage('update', '*');
+      }
+    });
+
+    var config = {attributes: true};
+    observer.observe(document.body, config);
+  }
 }); // on DOM ready
