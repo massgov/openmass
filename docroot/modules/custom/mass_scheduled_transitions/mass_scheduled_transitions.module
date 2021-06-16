@@ -36,6 +36,14 @@ function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
   $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsAlertSitewide');
 }
 
+function mass_scheduled_transitions_entity_base_field_info_alter(&$fields, \Drupal\Core\Entity\EntityTypeInterface $entity_type) {
+  // Temporarily neuter validation until scheduler module is uninstalled.
+  if ($entity_type->id() == 'node' && module_exists('scheduler')) {
+    $fields['publish_on']->setConstraints([]);
+    $fields['unpublish_on']->setConstraints([]);
+  }
+}
+
 /**
  * Implements hook_ENTITY_TYPE_insert() for node entities.
  */
