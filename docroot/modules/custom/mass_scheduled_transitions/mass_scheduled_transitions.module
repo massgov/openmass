@@ -38,7 +38,7 @@ function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
 
 function mass_scheduled_transitions_entity_base_field_info_alter(&$fields, \Drupal\Core\Entity\EntityTypeInterface $entity_type) {
   // Temporarily neuter validation until scheduler module is uninstalled.
-  if ($entity_type->id() == 'node' && module_exists('scheduler')) {
+  if ($entity_type->id() == 'node' && Drupal::moduleHandler()->moduleExists('scheduler')) {
     $fields['publish_on']->setConstraints([]);
     $fields['unpublish_on']->setConstraints([]);
   }
