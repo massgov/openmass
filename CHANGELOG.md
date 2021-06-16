@@ -1,4 +1,6 @@
+## [0.286.1] - June 16, 2021
 
+  - Temporarily neuter publish_on/unpublish_on validation until scheduler module is uninstalled.
 
 ## [0.286.0] - June 15, 2021
 
