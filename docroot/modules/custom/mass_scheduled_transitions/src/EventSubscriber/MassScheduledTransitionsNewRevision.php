@@ -6,7 +6,7 @@ use Drupal\scheduled_transitions\Event\ScheduledTransitionsNewRevisionEvent;
 use Drupal\scheduled_transitions\EventSubscriber\ScheduledTransitionsNewRevision;
 
 /**
- * MassScheduledTransitionsNewRevision
+ * MassScheduledTransitionsNewRevision.
  *
  * @package Drupal\mass_scheduled_transitions\EventSubscriber
  */
