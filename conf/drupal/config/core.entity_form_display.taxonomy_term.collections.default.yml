@@ -8,24 +8,32 @@ dependencies:
     - field.field.taxonomy_term.collections.field_url_name
     - taxonomy.vocabulary.collections
   module:
+    - field_group
     - link
-    - path
-    - text
+third_party_settings:
+  field_group:
+    group_collection_settings:
+      children:
+        - field_landing_page
+        - field_all_collection_breadcrumb
+      parent_name: ''
+      weight: 2
+      format_type: tab
+      region: content
+      format_settings:
+        id: ''
+        classes: ''
+        description: 'These settings only need to be defined for the top level collection term. They don''t need to be set for topics or sub topics.'
+        required_fields: true
+        formatter: closed
+      label: 'Collection Settings'
 id: taxonomy_term.collections.default
 targetEntityType: taxonomy_term
 bundle: collections
 mode: default
 content:
-  description:
-    type: text_textarea
-    weight: 4
-    region: content
-    settings:
-      placeholder: ''
-      rows: 5
-    third_party_settings: {  }
   field_all_collection_breadcrumb:
-    weight: 3
+    weight: 4
     settings:
       size: 60
       placeholder: ''
@@ -33,7 +41,7 @@ content:
     type: string_textfield
     region: content
   field_landing_page:
-    weight: 2
+    weight: 3
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -63,17 +71,13 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  path:
-    type: path
-    weight: 6
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   status:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 7
+    weight: 6
     region: content
     third_party_settings: {  }
-hidden: {  }
+hidden:
+  description: true
+  path: true

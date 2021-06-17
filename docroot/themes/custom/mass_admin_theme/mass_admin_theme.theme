@@ -208,7 +208,8 @@ function mass_admin_theme_preprocess_menu_local_action(&$variables) {
 }
 
 /**
- * Helper function to set description_display for node and media add/edit pages.
+ * Helper function to set description_display for node, media and term add/edit
+ * pages.
  */
 function _add_description_display_before(&$variables) {
   // Check for current path to match node and media add/edit pages.
@@ -217,7 +218,7 @@ function _add_description_display_before(&$variables) {
 
   // Set description display so it will take effect in the template,
   // leaving the description placement as-is on other pages.
-  if (preg_match('/((node|media)\/\d+\/edit)|((node|media)\/add)/', $result)) {
+  if (preg_match('/((node|media|term)\/\d+\/edit)|((node|media)\/add)|(taxonomy\/manage\/[0-9A-Za-z\-]+\/add)/', $result)) {
     $variables['description_display'] = 'before';
   }
 }
