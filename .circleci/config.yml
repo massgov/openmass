@@ -8,7 +8,7 @@ references:
     working_directory: /var/www/code
     docker:
       # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:1.0.17-ci
+      - image: massgov/drupal-container:1.0.19-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           AWS_REGION: us-east-1
@@ -50,7 +50,7 @@ executors:
     # https://circleci.com/docs/2.0/configuration-reference/#resource_class
     resource_class: xlarge
     docker:
-      - image: massgov/drupal-container:1.0.17-ci
+      - image: massgov/drupal-container:1.0.19-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
           DOCKER_ENV: ci
@@ -912,7 +912,6 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - deploy-tag-stage-acquia
             - hold_for_prod_maint
           target: prod
           gitRef: tags/$CIRCLE_TAG
@@ -936,7 +935,6 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - deploy-tag-stage-acquia
             - hold_for_prod_no_maint
           target: prod
           gitRef: tags/$CIRCLE_TAG

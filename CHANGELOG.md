@@ -1,5 +1,24 @@
 
 
+## [0.286.0] - June 15, 2021
+
+### Changed
+  - DP-19428: Neuter scheduler module in favor of scheduled transitions module.
+  - DP-21655: Upgrade to PHP 7.4 for local dev and CI
+  - DP-21690: Added help text and changed batch size of service content inventory views.
+  - DP-22008: Upgrade sitemap and twig tweak modules.
+  - DP-22253: Adds ahoy command to toggle xdebug on and off.
+  
+### Added
+  - DP-21943: Created a view to show documents with no binary files attached to it.
+  - DP-21986: Added a content report page for published alerts.
+  - DP-22225: Allow Feedback Manager CSV exports with new labels and search fields.
+  
+### Fixed
+  - DP-22248: Fixed post release backstop job issue.
+  
+
+
 ## [0.285.0] - June 8, 2021
 
 ### Removed
