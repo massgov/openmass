@@ -5,19 +5,16 @@
  */
 import {
   replaceErrorPages,
-  isLegacyUrl,
   isEditUrl,
 } from './util';
 
 import {
-  legacy,
   www,
   edit
 } from "./backends";
 
 export default class RequestHandler {
   constructor(token) {
-    this.legacy = legacy();
     this.edit = edit(token);
     this.www = www(token);
   }
@@ -27,10 +24,7 @@ export default class RequestHandler {
     let response;
 
     try {
-      if(isLegacyUrl(url)) {
-        response = await this.legacy(request);
-      }
-      else if(url.pathname.match(/^\/libraries\/?$/)) {
+      if(url.pathname.match(/^\/libraries\/?$/)) {
           response = new Response('', {
               status: 301,
               headers: {

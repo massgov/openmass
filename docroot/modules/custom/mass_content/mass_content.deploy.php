@@ -6,6 +6,7 @@
  */
 
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\taxonomy\Entity\Term;
 
 /**
  * Migrate iframe paragraph fields.
@@ -322,4 +323,123 @@ function mass_content_deploy_header_media_images_followup(&$sandbox) {
  */
 function mass_content_deploy_header_media_images_all(&$sandbox) {
   mass_content_deploy_header_media_images_followup($sandbox);
+}
+
+/**
+ * Set default text for how-to page flexible headers.
+ */
+function mass_content_deploy_how_to_headers(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  $query = \Drupal::entityQuery('node');
+  $query->condition('type', 'how_to_page');
+
+  if (empty($sandbox)) {
+    // Get a list of all nodes of type how_to_page.
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  $nids = $query->condition('nid', $sandbox['current'], '>')
+    ->sort('nid')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $memory_cache = \Drupal::service('entity.memory_cache');
+
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+
+  $nodes = $node_storage->loadMultiple($nids);
+
+  foreach ($nodes as $node) {
+    $sandbox['current'] = $node->id();
+    // Set the Customize header text field to unchecked.
+    $node->set('field_customize_header_text', 0);
+    // Set the default header field values for existing content.
+    $node->set('field_downloads_header', 'Downloads');
+    $node->set('field_fees_header', 'Fees');
+    $node->set('field_manage_your_account_header', 'Manage Your Account');
+    $node->set('field_more_info_header', 'More info');
+    $node->set('field_next_steps_header', 'Next steps');
+    $node->set('field_what_you_need_header', 'What you need');
+
+    // Save the node.
+    // Save without updating the last modified date. This requires a core patch
+    // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
+    $node->setSyncing(TRUE);
+    $node->save();
+
+    $sandbox['progress']++;
+  }
+
+  $memory_cache->deleteAll();
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('All How-to nodes have default values for flexible header fields.');
+  }
+}
+
+/**
+ * Create EOTSS Service Catalog, Collection terms.
+ */
+function mass_content_deploy_eotss_service_catalog_terms() {
+  $vocabulary = 'collections';
+  $terms = [
+    [
+      'name' => 'EOTSS Service Catalog',
+      'parent' => '',
+      'weight' => 0,
+    ],
+    [
+      'name' => 'Desktop Software',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 0,
+    ],
+    [
+      'name' => 'Email, Calendar & Collaboration',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 1,
+    ],
+    [
+      'name' => 'HR and Provisioning',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 2,
+    ],
+    [
+      'name' => 'Secure Applications and Access',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 3,
+    ],
+    [
+      'name' => 'Standard Service Offerings',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 4,
+    ],
+    [
+      'name' => 'Support Services',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 5,
+    ],
+    [
+      'name' => 'Telephone & Mobile Devices',
+      'parent' => 'EOTSS Service Catalog',
+      'weight' => 6,
+    ],
+  ];
+  $term_ids = [];
+  foreach ($terms as $data) {
+    $term = Term::create([
+      'parent' => !empty($data['parent']) ? $term_ids[$data['parent']] : [],
+      'name' => $data['name'],
+      'vid' => $vocabulary,
+    ]);
+    $term->save();
+    // Save the term id keyed by name.
+    $term_ids[$data['name']] = $term->id();
+  }
 }

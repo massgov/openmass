@@ -50,6 +50,7 @@ class MassFeedbackLoopContentFetcher {
       'feedback_endpoint' => 'feedback/',
       'tags_endpoint' => 'tags/',
       'tag_lookup_endpoint' => 'tag_lookup/',
+      'label_lookup_endpoint' => 'labels/',
     ],
     'api_headers' => [
       'content_type_header' => 'application/json',
@@ -340,6 +341,46 @@ class MassFeedbackLoopContentFetcher {
     // Throws error in case of httpClient request failure.
     $this->logger->error($e->getRequest()->getMethod() . ' ' . $e->getRequest()->getUri() . ':<br/>' . $e->getResponse()->getBody());
     throw new NotFoundHttpException();
+  }
+
+  /**
+   * Helper function to format URL query parameters for the feeedback API.
+   *
+   * @param array $params
+   *   Array of URL query parameters to format.
+   *
+   * @return array
+   *   The processed query parameters.
+   */
+  public function formatQueryParams(array $params) {
+    $feedback_api_params = [];
+    foreach ($params as $key => $param) {
+      if (in_array($key, [
+        'org_id',
+        'node_id',
+        'label_id',
+        'author_id',
+        'watch_content',
+        'search'
+      ])) {
+        if (($key == 'watch_content') || !empty($param)) {
+          $feedback_api_params[$key] = $param;
+          if (is_array($param) && strpos($param[0], ',') !== FALSE) {
+            $feedback_api_params[$key] = explode(',', $param[0]);
+          }
+          elseif (!is_array($param) && strpos($param, ',') !== FALSE) {
+            $feedback_api_params[$key] = explode(',', $param);
+          }
+        }
+      }
+      else {
+        if (!empty($param)) {
+          $feedback_api_params[$key] = $param;
+        }
+      }
+    }
+
+    return $feedback_api_params;
   }
 
   /**

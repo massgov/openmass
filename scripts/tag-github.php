@@ -27,7 +27,7 @@ if(strpos($branch, "release") !== false){
   $version->incrementMinor();
 }
 // If the commit message has the word "hotfix" in it the tag will increment as patch.
-elseif (strpos($branch, "hotfix") !==false){
+elseif (strpos($branch, "hotfix") !== false){
   $version->incrementPatch();
 }
 // If none of those words are found the tag will be unable to increment correctly.
