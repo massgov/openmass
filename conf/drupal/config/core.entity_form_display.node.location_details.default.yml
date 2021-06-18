@@ -12,6 +12,7 @@ dependencies:
     - field.field.node.location_details.field_reusable_label
     - field.field.node.location_details.field_state_organization_tax
     - node.type.location_details
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -20,8 +21,6 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
-    - scheduler
-    - scheduler_content_moderation_integration
 third_party_settings:
   field_group:
     group_location_detail_node_edit:
@@ -172,17 +171,17 @@ content:
     region: content
     third_party_settings: {  }
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 3
-    region: content
+    weight: 35
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
-    type: scheduler_moderation
-    weight: 5
-    region: content
+    weight: 33
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   scheduler_settings:
     weight: 2
     region: content
@@ -211,17 +210,17 @@ content:
       match_limit: 10
     third_party_settings: {  }
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 4
-    region: content
+    weight: 36
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 6
-    region: content
+    weight: 34
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 10
     region: content

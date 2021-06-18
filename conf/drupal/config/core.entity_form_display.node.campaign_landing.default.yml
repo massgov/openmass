@@ -26,8 +26,6 @@ dependencies:
     - metatag
     - paragraphs
     - path
-    - scheduler
-    - scheduler_content_moderation_integration
 third_party_settings:
   field_group:
     group_overview:
@@ -358,17 +356,17 @@ content:
     settings: {  }
     third_party_settings: {  }
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 3
-    region: content
+    weight: 53
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
-    type: scheduler_moderation
-    weight: 7
-    region: content
+    weight: 51
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   scheduler_settings:
     weight: 20
     region: content
@@ -387,17 +385,17 @@ content:
         maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
         maxlength_js_enforce_attribute: false
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 5
-    region: content
+    weight: 54
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 8
-    region: content
+    weight: 52
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 50
     region: content
