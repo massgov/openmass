@@ -5,6 +5,7 @@
  * Custom module providing custom styling for the admin_toolbar.
  */
 
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Drupal\Core\Menu\MenuTreeParameters;
 
@@ -213,10 +214,29 @@ function mass_admin_toolbar_toolbar_prerender_tray(array $element) {
 }
 
 /**
+ * Implements hook_preprocess_HOOK() for block admin page templates.
+ */
+function mass_admin_toolbar_preprocess_mass_reports_block_content(&$variables) {
+  if (!empty($variables['content'])) {
+    $variables['#attached']['library'][] = 'mass_admin_toolbar/mass_reports';
+    foreach ($variables['content'] as $key => $item) {
+      $variables['content'][$key]['url'] = $item['url']->toString();
+      $variables['content'][$key]['description'] = Markup::create($item['description']);
+    }
+  }
+}
+
+
+/**
  * Implements hook_theme().
  */
 function mass_admin_toolbar_theme() {
   return [
+    'mass_reports_block_content' => [
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
     'mass_admin_toolbar_message_tabs' => [
       'variables' => [
         'messages' => NULL,
