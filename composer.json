@@ -159,7 +159,7 @@
         "drupal/key": "^1.10",
         "drupal/key_value_field": "1.x-dev",
         "drupal/linkit": "^6",
-        "drupal/mandrill": "^1",
+        "drupal/mandrill": "1.x-dev",
         "drupal/maxlength": "^1.0@RC",
         "drupal/media_entity_download": "2.x-dev",
         "drupal/memcache": "^2",
@@ -183,7 +183,7 @@
         "drupal/rabbit_hole": "^1",
         "drupal/real_aes": "^2",
         "drupal/redirect": "^1",
-        "drupal/route_iframes": "1.x-dev",
+        "drupal/route_iframes": "^2.0",
         "drupal/scheduled_transitions": "2.x-dev",
         "drupal/scheduler": "^1.0",
         "drupal/scheduler_content_moderation_integration": "^1.0@alpha",
@@ -324,6 +324,9 @@
             "drupal/maxlength": {
                 "Don't enforce maxlength stop, allow negative count down": "https://www.drupal.org/files/issues/2020-12-07/2916687-allow-negative-count-13.patch"
             },
+            "drupal/mandrill": {
+                "Compatibility with Drupal 9 (https://www.drupal.org/project/mandrill/issues/3137614)": "https://www.drupal.org/files/issues/2020-12-22/3137614-11_0.patch"
+            },
             "drupal/metatag": {
                 "Process tokens for arrays (https://www.drupal.org/project/metatag/issues/3162986#comment-14075815)": "https://www.drupal.org/files/issues/2021-04-28/metatag-3162986-13_0.patch"
             },
@@ -342,10 +345,6 @@
             },
             "drupal/office_hours": {
                 "Fix timezone for the office hours module": "patches/fix-timezone-for-office-hours.patch"
-            },
-            "drupal/route_iframes": {
-                "Default route allows access bypass (https://www.drupal.org/node/2980844)": "https://www.drupal.org/files/issues/2018-06-21/2980844-fix_access_bypass-4.patch",
-                "Fix type hint for \\Drupal\\route_iframes\\Controller\\RouteIframeController::__construct (https://www.drupal.org/project/route_iframes/issues/3080406)": "https://www.drupal.org/files/issues/2019-09-10/etm-hint.patch"
             },
             "drupal/views_bulk_operations": {
                 "Remove the select/deselect all results within VBO": "patches/DP-11179-hide-select-all-results-from-views.patch"
