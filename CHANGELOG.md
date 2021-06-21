@@ -1,5 +1,71 @@
 
 
+## [0.286.0] - June 15, 2021
+
+### Changed
+  - DP-19428: Neuter scheduler module in favor of scheduled transitions module.
+  - DP-21655: Upgrade to PHP 7.4 for local dev and CI
+  - DP-21690: Added help text and changed batch size of service content inventory views.
+  - DP-22008: Upgrade sitemap and twig tweak modules.
+  - DP-22253: Adds ahoy command to toggle xdebug on and off.
+  
+### Added
+  - DP-21943: Created a view to show documents with no binary files attached to it.
+  - DP-21986: Added a content report page for published alerts.
+  - DP-22225: Allow Feedback Manager CSV exports with new labels and search fields.
+  
+### Fixed
+  - DP-22248: Fixed post release backstop job issue.
+  
+
+
+## [0.285.0] - June 8, 2021
+
+### Removed
+  - DP-17765: Update Cloudflare configuration to stop sending legacy prefixes to legacy server.
+  - DP-21782: Revert PR
+  
+### Added
+  - DP-21043: Created Data Listing All and Data Listing Topic views pages.
+  - DP-21657: Add a search field to the feedback manager so that CMS users can search feedback for specific words/phrases.
+  - DP-21768: Adapt ahoy commands so they also work for native dev env
+  - DP-22132: Added a reusable Collections architecture, starting with EOTSS Service Catalog and How-to pages.
+  
+### Fixed
+  - DP-21903: Fixed false positives in Drupal Backstop.
+  
+### Changed
+  - DP-22099: Changed post-release backstop job to use shorter list of pages.
+  - DP-22191: Modify alert pattern to incude additional data
+  - DP-7874: Restructure the footer navigation to correct semantics of its markup (a11y).
+  - DP-22231: Updated Mayflower version to 11.7.0.
+  - DP-21782: Add labelContext to assets/js/templates/locationListingRow.html.(MF)
+  - DP-7874: Correct semantics of footer navigation. (MF)
+  - DP-21782: DP-22191: Add extra data attributes to HeaderAlert. (MF)
+  
+### Security
+  - DP-22152: Drupal core security update to version 8.9.16.
+  
+
+
+## [0.284.0] - May 25, 2021
+
+### Changed
+  - DP-21790: Add labels to feedback manager, fix multiselect.
+  - DP-21983: Makes sure the english version translation field is empty if the content is already english.
+  - DP-22002: Metatag changes for 3 content types.
+  - DP-22130: Updated Mayflower version to 11.5.1.
+  - DP-21660: Fix bullets and list numbers overwrapped with left floated elements in IE11. (MF)
+  - DP-22079: Fixed location listing pagination error, and fixed auto complete. (MF)
+  
+### Fixed
+  - DP-22021: Fixed error when adding an existing Fee to a How-to page.
+  
+### Security
+  - DP-22023: Updated drupal ctools from version 3.4.0 to 3.6.0.
+  
+
+
 ## [0.283.0] - May 18, 2021
 
 ### Changed

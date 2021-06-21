@@ -103,6 +103,7 @@
             var serializedAlertParagraph = {
               id: id,
               message: item.attributes.field_emergency_alert_message,
+              title: currentAlertItem.attributes.title,
               timeStamp: timeStamp
             };
             // Start with empty alert link for serialized alert data.
@@ -241,7 +242,9 @@
               // We use it to show an alert again, if a user had previously dismissed it, but if the alert now has new updated content.
               var serializedAlertItem = {
                 id: alertData.id,
+                title: alertData.title,
                 text: alertData.message,
+                timeStamp: alertData.timeStamp,
                 href: alertData.link.href,
                 info: ''
               };
