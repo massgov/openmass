@@ -6,6 +6,8 @@
  */
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\views\ViewExecutable;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -52,7 +54,7 @@ function mass_views_views_pre_view(ViewExecutable $view, $display_id, array &$ar
 function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $view = $form_state->getStorage('view');
 
-  if (($view['view']->id() == 'data_listing_all') && ($view['view']->current_display == 'page_all')) {
+  if ($view['view']->id() == 'data_listing_all' && $view['view']->getDisplay()->getPluginId() == 'page') {
     // Remove sub topics from the data topic filter.
     if (isset($form['topicid'])) {
       // Loop through the field options.
@@ -63,6 +65,93 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
           // Remove the sub topic from the field options.
           unset($form['topicid']['#options'][$key]);
         }
+      }
+    }
+  }
+
+  // Only affect collection views.
+  $collection_view_ids = [
+    'collection_all',
+    'collection_topic',
+  ];
+  if (in_array($view['view']->id(), $collection_view_ids)
+    && $view['view']->getDisplay()->getPluginId() == 'page') {
+    // Get the args.
+    $args = $view['view']->args;
+    // We can assume the first argument is the collection because the view
+    // validation has already and we know this is true for both collection
+    // views. We have to convert it to a term.
+    $collection_url_name = $args[0];
+    $terms = \Drupal::entityTypeManager()
+      ->getStorage('taxonomy_term')
+      ->loadByProperties([
+        'field_url_name' => $collection_url_name,
+        'vid' => 'collections',
+      ]);
+    foreach ($terms as $term) {
+      // If the term has a Landing Page field value, let's use that for the
+      // first breadcrumb link.
+      if ($term->hasField('field_landing_page') && !$term->field_landing_page->isEmpty()) {
+        // Retrieve the field value.
+        $field_landing_page = $term->get('field_landing_page')->getValue();
+        // Create a link from the field value and convert it to a markup string.
+        $landing_page_link = Link::fromTextAndUrl(
+          $field_landing_page[0]['title'],
+          Url::fromUri($field_landing_page[0]['uri'])
+        )->toString();
+        // Add the li tags.
+        $landing_page_li = "<li>$landing_page_link</li>";
+        // Set the default search and replace strings for the str_replace().
+        $search_string = '<ol>';
+        $replace_string = $search_string . $landing_page_li;
+        // If there is no ordered list, change the search and replace strings.
+        if (strpos($view['view']->header['area']->options['content']['value'], '<ol>') === FALSE) {
+          $search_string = '</div>';
+          $replace_string = '<ol>' . $landing_page_li . '</ol>' . $search_string;
+        }
+        // Add the Landing Page link to the breadcrumb markup string.
+        $breadcrumb_markup = str_replace(
+          $search_string,
+          $replace_string,
+          $view['view']->header['area']->options['content']['value']
+        );
+        // Update the value in the view.
+        $view['view']->header['area']->options['content']['value'] = $breadcrumb_markup;
+      }
+    }
+
+    // Add the correct collection to the breadcrumb path for Collection Topic
+    // pages. The provided token will use the term ID instead of the term name
+    // with hyphens, thus providing a broken breadcrumb link.
+    if ($view['view']->id() == 'collection_topic') {
+      // If the breadcrumb is available, update it.
+      if (isset($view['view']->header['area'])) {
+        // Replace the placeholder token with the correct argument.
+        $breadcrumb_markup = str_replace(
+          '{{ collection.field_url_name }}',
+          $args[0],
+          $view['view']->header['area']->options['content']['value']
+        );
+        if ($term->hasField('field_all_collection_breadcrumb')
+          && !$term->field_all_collection_breadcrumb->isEmpty()) {
+          $field_all_collection_breadcrumb = $term
+            ->get('field_all_collection_breadcrumb')
+            ->getValue();
+          $breadcrumb_markup = str_replace(
+            '{{ collection.field_all_collection_breadcrumb }}',
+            $field_all_collection_breadcrumb[0]['value'],
+            $breadcrumb_markup
+          );
+        }
+        else {
+          $breadcrumb_markup = str_replace(
+            '{{ collection.field_all_collection_breadcrumb }}',
+            $term->label(),
+            $breadcrumb_markup
+          );
+        }
+        // Update the value in the view.
+        $view['view']->header['area']->options['content']['value'] = $breadcrumb_markup;
       }
     }
   }
