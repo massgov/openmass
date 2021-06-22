@@ -27,7 +27,6 @@ dependencies:
     - node.type.rules
     - node.type.service_details
     - node.type.service_page
-    - workflows.workflow.campaign_landing_page
   module:
     - better_exposed_filters
     - content_moderation
@@ -5216,10 +5215,10 @@ display:
           entity_type: node
           entity_field: uid
           plugin_id: field
-        moderation_state:
-          id: moderation_state
+        status:
+          id: status
           table: node_field_data
-          field: moderation_state
+          field: status
           relationship: none
           group_type: group
           admin_label: ''
@@ -5265,8 +5264,11 @@ display:
           empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
-          type: content_moderation_state
-          settings: {  }
+          type: boolean
+          settings:
+            format: custom
+            format_custom_true: Published
+            format_custom_false: Unpublished
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -5278,7 +5280,8 @@ display:
           separator: ', '
           field_api_classes: false
           entity_type: node
-          plugin_id: moderation_state_field
+          entity_field: status
+          plugin_id: field
         changed:
           id: changed
           table: node_field_data
@@ -5578,61 +5581,6 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
-        moderation_state:
-          id: moderation_state
-          table: node_field_data
-          field: moderation_state
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: in
-          value:
-            campaign_landing_page-published: campaign_landing_page-published
-          group: 1
-          exposed: true
-          expose:
-            operator_id: moderation_state_op
-            label: 'Publication status'
-            description: ''
-            use_operator: false
-            operator: moderation_state_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: moderation_state
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: node
-          plugin_id: moderation_state_filter
         uid:
           id: uid
           table: node_field_data
@@ -5861,7 +5809,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          operator: shorterthan
+          operator: longerthan
           value: '71'
           group: 2
           exposed: true
@@ -5978,6 +5926,60 @@ display:
           entity_type: node
           entity_field: title
           plugin_id: views_autocomplete_filters_string
+        status:
+          id: status
+          table: node_field_data
+          field: status
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: Published
+            description: ''
+            use_operator: false
+            operator: status_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: status
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          entity_field: status
+          plugin_id: boolean
       filter_groups:
         operator: AND
         groups:
@@ -5992,8 +5994,7 @@ display:
         - url.query_args
         - 'user.node_grants:view'
         - user.permissions
-      tags:
-        - 'config:workflow_list'
+      tags: {  }
   page_orgs:
     display_plugin: page
     id: page_orgs
