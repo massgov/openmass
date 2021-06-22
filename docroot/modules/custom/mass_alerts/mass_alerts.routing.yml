@@ -25,16 +25,18 @@ mass_alerts.user_autocomplete:
 
 
 mass_alerts.site_alerts:
-  path: '/jsonapi/site-alerts'
+  path: '/alerts/sitewide'
   defaults:
-    _controller: 'Drupal\mass_alerts\Controller\ApiController::handleSiteRequest'
+    _controller: 'Drupal\mass_alerts\Controller\AlertsController::handleSiteRequest'
   requirements:
     _permission: 'access content'
 
 
 mass_alerts.page_alerts:
-  path: '/jsonapi/page-alerts/{nid}'
+  path: '/alerts/page/{nid}'
   defaults:
-    _controller: 'Drupal\mass_alerts\Controller\ApiController::handlePageRequest'
+    _controller: 'Drupal\mass_alerts\Controller\AlertsController::handlePageRequest'
   requirements:
     _permission: 'access content'
+
+

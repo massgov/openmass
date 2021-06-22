@@ -30,7 +30,7 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
   protected $routeMatch;
 
   /**
-   * CompanyBlock constructor.
+   * AlertsBlock constructor.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, CurrentRouteMatch $route_match) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
@@ -87,6 +87,7 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
   public function build() {
 
     $config = $this->getConfiguration();
+    $path = FALSE;
 
     if ($config['alerts_block_type'] == 'sitewide') {
       $path = Url::fromRoute('mass_alerts.site_alerts')->toString();

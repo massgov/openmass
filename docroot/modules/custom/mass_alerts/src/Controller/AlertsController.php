@@ -15,7 +15,7 @@ use Drupal\Core\Url;
 /**
  * Defines a route controller for entity query.
  */
-class ApiController extends ControllerBase implements ContainerInjectionInterface {
+class AlertsController extends ControllerBase implements ContainerInjectionInterface {
 
   /**
    * Constructs a ApiController object.
@@ -161,7 +161,10 @@ class ApiController extends ControllerBase implements ContainerInjectionInterfac
 
       $orContition = $query->orConditionGroup();
       $orContition->condition('field_target_page.target_id', $nid);
-      $orContition->condition('field_target_organization.target_id', $org_ids, 'IN');
+
+      if (!empty($org_ids)) {
+        $orContition->condition('field_target_organization.target_id', $org_ids, 'IN');
+      }
 
       $query->condition($orContition);
 
