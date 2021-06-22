@@ -61,7 +61,7 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
     $jsWebAssert = $this->assertSession();
 
-    $jsWebAssert->drupalGet('/alerts/sitewide');
+    $this->drupalGet('/alerts/sitewide');
     $jsWebAssert->statusCodeEquals(200);
     $jsWebAssert->pageTextContains($node->getTitle());
 
