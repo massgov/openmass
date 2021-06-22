@@ -30,6 +30,7 @@ dependencies:
     - field.field.node.person.field_state_organization_tax
     - image.style.thumbnail
     - node.type.person
+    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -38,8 +39,6 @@ dependencies:
     - link
     - metatag
     - paragraphs
-    - scheduler
-    - scheduler_content_moderation_integration
     - text
 third_party_settings:
   field_group:
@@ -463,17 +462,17 @@ content:
     region: content
     third_party_settings: {  }
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 2
-    region: content
+    weight: 60
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
-    type: scheduler_moderation
-    weight: 6
-    region: content
+    weight: 58
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   scheduler_settings:
     weight: 1
     region: content
@@ -498,17 +497,17 @@ content:
     third_party_settings: {  }
     region: content
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 3
-    region: content
+    weight: 61
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 7
-    region: content
+    weight: 59
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 50
     region: content

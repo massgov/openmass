@@ -912,7 +912,6 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - deploy-tag-stage-acquia
             - hold_for_prod_maint
           target: prod
           gitRef: tags/$CIRCLE_TAG
@@ -936,7 +935,6 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - deploy-tag-stage-acquia
             - hold_for_prod_no_maint
           target: prod
           gitRef: tags/$CIRCLE_TAG

@@ -1,11 +1,23 @@
-container_id: GTM-MPHNMQ
-path_toggle: all_except_listed
-path_list: "admin*\nbatch*\nnode/add*\nnode/*/*\nuser/*/*"
-role_toggle: all_except_listed
-role_list:
-  - null
-status_toggle: false
-status_list: "403\n404"
-compact_tag: true
+uri: 'public:/'
+compact_snippet: true
+include_file: true
+rebuild_snippets: true
+flush_snippets: false
+debug_output: false
+_default_container:
+  container_id: ''
+  path_toggle: 'exclude listed'
+  path_list: "/admin*\n/batch*\n/node/add*\n/node/*/edit\n/node/*/delete\n/user/*/edit*\n/user/*/cancel*"
+  role_toggle: 'exclude listed'
+  role_list: {  }
+  status_toggle: 'exclude listed'
+  status_list: "403\n404"
+  data_layer: dataLayer
+  include_classes: false
+  whitelist_classes: "google\nnonGooglePixels\nnonGoogleScripts\nnonGoogleIframes"
+  blacklist_classes: "customScripts\ncustomPixels"
+  include_environment: false
+  environment_id: ''
+  environment_token: ''
 _core:
-  default_config_hash: jDM0cFYzTXKgM_I2Hbh2KcwgmmVmhymYEA9AUumduiA
+  default_config_hash: 65d5DfK5p2hQDpBskbvCIj2hSEqw_Odm2e_d46BH1Lk
