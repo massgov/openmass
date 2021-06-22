@@ -83,28 +83,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     $feedback_api_params = [];
 
     $params = $query->all();
-    foreach ($params as $key => $param) {
-      if (in_array($key, [
-        'org_id',
-        'node_id',
-        'label_id',
-        'author_id',
-        'watch_content',
-        'search'
-      ])) {
-        if (($key == 'watch_content') || !empty($param)) {
-          $feedback_api_params[$key] = $param;
-          if (is_array($param) && strpos($param[0], ',') !== FALSE) {
-            $feedback_api_params[$key] = explode(',', $param[0]);
-          }
-        }
-      }
-      else {
-        if (!empty($param)) {
-          $feedback_api_params[$key] = $param;
-        }
-      }
-    }
+    $feedback_api_params = $this->contentFetcher->formatQueryParams($params);
 
     // Begins form construction.
     $form = [
@@ -229,7 +208,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#attributes' => [
         'placeholder' => 'term1, term that is a phrase, term3',
       ],
-      '#default_value' => isset($feedback_api_params['search']) ? $feedback_api_params['search'] : NULL,
+      '#default_value' => $this->defSearch($feedback_api_params),
       '#description' => $searchHelpText,
     ];
 
@@ -525,6 +504,34 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
     ksort($author_usernames);
     unset($author_usernames["0"]);
     return $author_usernames;
+  }
+
+  /**
+   * Helper function to transform feedback_api_params back to default_value's.
+   *
+   * @param array $feedback_api_params
+   *   The URL query params to transform.
+   *
+   * @return string|null
+   *   If 'search' params are present the string version|NULL
+   */
+  protected function defSearch(array $feedback_api_params) {
+    if (
+      array_key_exists('search', $feedback_api_params) &&
+      is_array($feedback_api_params['search'])
+    ) {
+      $defSearch = implode(',', $feedback_api_params['search']);
+    }
+    elseif (
+      array_key_exists('search', $feedback_api_params) &&
+      !is_array($feedback_api_params['search'])) {
+      $defSearch = $feedback_api_params['search'];
+    }
+    else {
+      $defSearch = NULL;
+    }
+
+    return $defSearch;
   }
 
 }

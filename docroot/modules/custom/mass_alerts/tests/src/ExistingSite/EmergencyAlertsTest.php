@@ -166,8 +166,6 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
     $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
     $page->fillField('edit-field-organizations-0-target-id', $this->orgNode->getTitle());
-    $page->fillField('edit-unpublish-on-0-value-date', '2037-07-01');
-    $page->fillField('edit-unpublish-on-0-value-time', '00:00:00');
     $page->selectFieldOption('moderation_state[0][state]', 'published');
     $page->pressButton('Save');
     $this->assertContains($page_title, $page->getText());
@@ -188,8 +186,6 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
     $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
     $page->fillField('edit-field-organizations-0-target-id', $this->orgNode->getTitle());
-    $page->fillField('edit-unpublish-on-0-value-date', '2037-07-01');
-    $page->fillField('edit-unpublish-on-0-value-time', '00:00:00');
     $page->selectFieldOption('moderation_state[0][state]', 'published');
     $page->pressButton('Save');
     $this->assertContains($page_title, $page->getText());
@@ -210,8 +206,6 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
     $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
     $page->fillField('edit-field-organizations-0-target-id', $this->orgNode->getTitle());
-    $page->fillField('edit-unpublish-on-0-value-date', '2037-07-01');
-    $page->fillField('edit-unpublish-on-0-value-time', '00:00:00');
     $page->selectFieldOption('moderation_state[0][state]', 'published');
     $page->pressButton('Save');
     $this->assertContains($page_title, $page->getText());

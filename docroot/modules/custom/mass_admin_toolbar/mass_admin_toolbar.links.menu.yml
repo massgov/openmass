@@ -50,12 +50,24 @@ mass_admin_toolbar.orgs_report:
 
 mass_admin_toolbar.services_standard:
   title: "Services with standard link grouping"
-  description: "This report can be helpful to understand the services within the site and what fields they use. This contains only services that use standard link grouping."
+  description: "This report can be helpful to understand the services within the site and what fields they use. This contains only services that use standard link grouping. The report generates slowly and should be run during non-business hours."
   route_name: view.content_reports.page_services_standard
   parent: mass_admin_toolbar.reports_menu
 
 mass_admin_toolbar.services_custom:
   title: "Services with custom link grouping"
-  description: "This report can be helpful to understand the services within the site and what fields they use. This contains only services that use custom link grouping."
+  description: "This report can be helpful to understand the services within the site and what fields they use. This contains only services that use custom link grouping. The report generates slowly and should be run during non-business hours."
   route_name: view.content_reports.page_services_custom
+  parent: mass_admin_toolbar.reports_menu
+
+mass_admin_toolbar.document_reports:
+  title: "Documents with no binary file"
+  description: "This report shows document items that don't have a file attached."
+  route_name: view.documents_report.page_docs
+  parent: mass_admin_toolbar.reports_menu
+
+mass_admin_toolbar.published_alerts:
+  title: "Published alerts"
+  description: "This report can be helpful to see more details about alerts that are published."
+  route_name: view.content_report_published_alerts.page_alerts
   parent: mass_admin_toolbar.reports_menu
