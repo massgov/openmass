@@ -1,5 +1,27 @@
 
 
+## [0.287.0] - June 22, 2021
+
+### Fixed
+  - DP-19428: Fix 2 buglets related to Hotfix process (github tag creation and Circle automation)
+  - DP-22066: Fixes options in the English Version field autocomplete picker.
+  - DP-22082: Upgrades the Google Tag Manager module.
+  - DP-22160: Fixed external organizatioon image rendering issue on News content type.
+  
+### Changed
+  - DP-21996: Uninstall Scheduler modules.
+  - DP-22083: Mandrill and Route IFrame modules update.
+  - DP-22280: Show user who created the schedule transition in revision history.
+  - DP-22301: Changed the google sitemap setting to 3000 per page.
+  
+### Added
+  - DP-22180: Added pages for filtering and discovering Collections content.
+  
+### Security
+  - DP-22313: Updated drupal ctools from version 3.6.0 to 3.7.0.
+  
+
+
 ## [0.286.0] - June 15, 2021
 
 ### Changed
