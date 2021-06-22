@@ -75,7 +75,6 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $this->assertEquals($related->toUrl()->toString(), $alert['attributes']['field_alert_related_links_5'][0]['uri'], 'Related link field contains links that point to the aliased entity.');
   }
 
-
   /**
    * Check that the Alerts Endpoint output contains the cocrrect data.
    */
