@@ -3443,6 +3443,7 @@ function mass_theme_preprocess_node_news_full(&$variables) {
           $org_refs = Helper::getReferencedEntitiesFromField($signee_entity, $org_data['link']);
           if ($org_page = reset($org_refs)) {
             $promo_options = [
+              'ariaHidden' => TRUE,
               'title' => Helper::fieldValue($org_page, 'title'),
               'alt' => Helper::fieldValue($org_page, 'title'),
             ];
