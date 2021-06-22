@@ -98,7 +98,14 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         $timestamp = $this->dateFormatter->format($unix_timestamp, 'custom', 'M. jS, Y, h:i a');
 
         $uri = $item->get('field_emergency_alert_link')->getString();
-        $url = Url::fromUri($uri)->toString();
+
+        //For Test this could be empty
+        if ($uri) {
+          $url = Url::fromUri($uri)->toString();
+        } else {
+          $url = '#';
+        }
+
         $link_type = $item->get('field_emergency_alert_link_type')->getString();
 
         $link = [
