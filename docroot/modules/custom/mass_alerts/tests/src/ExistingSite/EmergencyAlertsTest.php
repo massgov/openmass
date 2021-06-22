@@ -115,8 +115,9 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     ]);
 
     $session = $this->getSession();
-    $session->drupalGet('/alerts/sitewide');
-    $session->pageTextContains($alert_message_text);
+    $session->visit('/alerts/sitewide');
+    $page = $session->getPage();
+    $this->assertContains($alert_message_text, $page->getText());
   }
 
   /**
