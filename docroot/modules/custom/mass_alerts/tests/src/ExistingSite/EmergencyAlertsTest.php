@@ -75,6 +75,51 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $this->assertEquals($related->toUrl()->toString(), $alert['attributes']['field_alert_related_links_5'][0]['uri'], 'Related link field contains links that point to the aliased entity.');
   }
 
+
+  /**
+   * Check that the Alerts Endpoint output contains the cocrrect data.
+   */
+  public function testEmergencyAlertAppearsInEndpoint() {
+    $nids = \Drupal::entityQuery('node')
+      ->condition('type', 'alert')
+      ->condition('status', 1)
+      ->condition('field_alert_display', 'site_wide')
+      ->execute();
+    $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
+    foreach ($nodes as $node) {
+      $node->moderation_state = MassModeration::UNPUBLISHED;
+      $node->save();
+    }
+
+    $related = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'EmergencyAlertsClientSideTest Service Page',
+    ]);
+    $alert_message_text = $this->randomMachineName();
+    $node = $this->createNode([
+      'type' => 'alert',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'field_alert_display' => 'site_wide',
+      // 'State 911 Department (6416)'.
+      'field_alert_ref_contact' => ['target_id' => 6416],
+      'field_alert_severity' => 'emergency_alert',
+      'field_alert' => Paragraph::create([
+        'type' => 'emergency_alert',
+        'field_emergency_alert_message' => $alert_message_text,
+      ]),
+      'field_alert_related_links_5' => [
+        'uri' => 'entity:node/' . $related->id(),
+        'title' => $related->getTitle(),
+      ],
+    ]);
+
+    $session = $this->getSession();
+    $session->drupalGet('/alerts/sitewide');
+    $session->pageTextContains($alert_message_text);
+  }
+
   /**
    * Filter a JSONAPI response to a single node.
    */
