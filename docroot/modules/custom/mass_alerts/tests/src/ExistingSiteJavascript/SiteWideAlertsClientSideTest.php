@@ -64,7 +64,7 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
     // Make sure homepage shows the alert.
     $this->drupalGet('');
     $locator = '.ma__emergency-alerts h2';
-    $jsWebAssert->waitForElementVisible('css', $locator, self::DURATION);
+    $jsWebAssert->waitForElement('css', $locator, self::DURATION);
 
     // These lines are left here as examples of how to debug requests.
     // file_put_contents('public://screenshot.png', $this->getSession()->getScreenshot());
@@ -74,7 +74,7 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
     // Visit an arbitrary page and make sure the alert appears.
     $this->drupalGet('/orgs/office-of-the-governor');
-    $jsWebAssert->waitForElementVisible('css', $locator, self::DURATION);
+    $jsWebAssert->waitForElement('css', $locator, self::DURATION);
     $jsWebAssert->statusCodeEquals(200);
     $jsWebAssert->pageTextContains($node->getTitle());
 
