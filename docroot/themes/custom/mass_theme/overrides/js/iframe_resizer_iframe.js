@@ -43,7 +43,7 @@ var indicator = document.createElement('div');
 function sendDimensionsToParent() {
   'use strict';
 
-  if(indicator.nextSibling) {
+  if (indicator.nextSibling) {
     document.body.removeChild(indicator);
     document.body.append(indicator);
   }
