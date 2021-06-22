@@ -43,6 +43,11 @@ var indicator = document.createElement('div');
 function sendDimensionsToParent() {
   'use strict';
 
+  if(indicator.nextSibling) {
+    document.body.removeChild(indicator);
+    document.body.append(indicator);
+  }
+
   var iframeDimensions_New = {
     width: window.innerWidth, // supported from IE9 onwards
     height: indicator.getBoundingClientRect().top
