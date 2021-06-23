@@ -99,10 +99,11 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
         $uri = $item->get('field_emergency_alert_link')->getString();
 
-        //For Test this could be empty
+        // For Test this could be empty.
         if ($uri) {
           $url = Url::fromUri($uri)->toString();
-        } else {
+        } 
+        else {
           $url = '#';
         }
 
