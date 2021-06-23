@@ -38,8 +38,7 @@ function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
 }
 
 /**
- * @param $fields
- * @param \Drupal\Core\Entity\EntityTypeInterface $entity_type
+ * Implements hook__entity_base_field_info_alter().
  */
 function mass_scheduled_transitions_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
   // Temporarily neuter validation until scheduler module is uninstalled.
