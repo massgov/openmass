@@ -61,6 +61,9 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
     $jsWebAssert = $this->assertSession();
 
+    $this->drupalGet('/alerts/sitewide');
+    $jsWebAssert->pageTextContains($node->getTitle());
+
     // Make sure homepage shows the alert.
     $this->drupalGet('');
     $locator = '.ma__emergency-alerts';
