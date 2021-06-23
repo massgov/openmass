@@ -3,7 +3,8 @@
 namespace Drupal\mass_alerts\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Symfony\Component\HttpFoundation\Response;
+use Drupal\Core\Cache\CacheableResponse;
+use Drupal\Core\Cache\CacheableMetadata;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -101,7 +102,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
         // For Test this could be empty.
         if ($uri) {
-          $url = Url::fromUri($uri)->toString();
+          $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
         }
         else {
           $url = '#';
@@ -137,8 +138,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     ];
 
     $output = $this->renderer->renderRoot($build);
-    $response = new Response();
-    $response->setContent($output);
+    $response = new CacheableResponse($output);
+    $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($build));
     return $response;
   }
 
@@ -195,11 +196,11 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         if ($link_type == '1') {
           $uri = $item->get('field_emergency_alert_link')->getString();
           if ($uri) {
-            $url = Url::fromUri($uri)->toString();
+            $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
           }
         }
         else {
-          $url = $node->toUrl()->toString();
+          $url = $node->toUrl()->toString(TRUE)->getGeneratedUrl();
           $url .= '#' . $item->id();
         }
 
@@ -239,9 +240,11 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       ],
     ];
 
+
+
     $output = $this->renderer->renderRoot($build);
-    $response = new Response();
-    $response->setContent($output);
+    $response = new CacheableResponse($output);
+    $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($build));
     return $response;
   }
 
