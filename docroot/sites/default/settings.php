@@ -181,6 +181,10 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
     include $app_root . '/' . $site_path . '/settings.local.php';
   }
+
+  if (getenv('DOCKER_ENV') !== 'ci' && file_exists($app_root . '/' . $site_path . '/services.local.yml')) {
+    $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.local.yml';
+  }
 }
 if (PHP_SAPI === 'cli') {
   ini_set('memory_limit', '512M');
