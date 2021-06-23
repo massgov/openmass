@@ -240,8 +240,6 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       ],
     ];
 
-
-
     $output = $this->renderer->renderRoot($build);
     $response = new CacheableResponse($output);
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($build));
