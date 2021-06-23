@@ -17,8 +17,6 @@ dependencies:
     - content_moderation
     - field_group
     - link
-    - scheduler
-    - scheduler_content_moderation_integration
 third_party_settings:
   field_group:
     group_externaldata_edit_form:
@@ -165,17 +163,17 @@ content:
     settings: {  }
     third_party_settings: {  }
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 3
-    region: content
+    weight: 28
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
-    type: scheduler_moderation
-    weight: 5
-    region: content
+    weight: 26
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   scheduler_settings:
     weight: 2
     region: content
@@ -200,17 +198,17 @@ content:
       placeholder: ''
     third_party_settings: {  }
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 4
-    region: content
+    weight: 29
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 6
-    region: content
+    weight: 27
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 7
     region: content

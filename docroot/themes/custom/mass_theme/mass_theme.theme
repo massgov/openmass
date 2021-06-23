@@ -97,8 +97,14 @@ function mass_theme_theme_suggestions_image_style_alter(array &$suggestions, arr
  */
 function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
   $view = $variables['view'];
+
   // Allow all data listing views pages to use the same template file.
   if (strpos($view->id(), 'data_listing') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
+    $suggestions[] = 'views_view__data_listing';
+  }
+
+  // Allow all collection views pages to use the same template file.
+  if (strpos($view->id(), 'collection') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
     $suggestions[] = 'views_view__data_listing';
   }
 }
@@ -3592,7 +3598,7 @@ function mass_theme_preprocess_node_news_full(&$variables) {
       'link' => ['field_state_org_ref_org'],
       'title' => ['field_external_org_name'],
       'lede' => ['field_state_org_description', 'field_external_org_description'],
-      'image' => ['field_state_org_photo_url'],
+      'image' => ['field_state_org_photo_url', 'field_external_org_photo'],
     ];
 
     $signee_ref = Helper::getReferencedEntitiesFromField($node, $field['signees']);
