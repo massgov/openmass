@@ -133,7 +133,10 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       '#theme' => 'mass_alerts_sitewide',
       '#emergencyAlerts' => $results['emergencyAlerts'],
       '#cache' => [
-        'max-age' => 60
+        'max-age' => 60,
+        'tags' => [
+          'node_list:alert'
+        ]
       ],
     ];
 
@@ -235,7 +238,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       '#cache' => [
         'max-age' => Cache::PERMANENT,
         'tags' => [
-          'node:' . $nid
+          'node:' . $nid,
+          'node_list:alert'
         ]
       ],
     ];
