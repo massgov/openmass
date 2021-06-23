@@ -102,7 +102,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         // For Test this could be empty.
         if ($uri) {
           $url = Url::fromUri($uri)->toString();
-        } 
+        }
         else {
           $url = '#';
         }
