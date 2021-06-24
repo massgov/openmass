@@ -11,5 +11,3 @@ Feature: Alert Content type
   Scenario: Verify Alert JSON API
     When I go to "/jsonapi/node/alert"
     Then the response status code should be 200
-    And the "node_list" cache tag should not be used
-    And the "handy_cache_tags:node:alert" cache tag should be used
