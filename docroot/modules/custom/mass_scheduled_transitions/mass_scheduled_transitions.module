@@ -16,7 +16,7 @@ use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\NodeInterface;
 use Drupal\scheduled_transitions\Entity\ScheduledTransition;
 use Drupal\workflows\Entity\Workflow;
-use \Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 
 const MASS_SCHEDULED_TRANSITIONS_OPTIONS = [
   ScheduledTransition::OPTION_RECREATE_NON_DEFAULT_HEAD => TRUE,
@@ -39,7 +39,6 @@ function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
 
 /**
  * Implements hook_entity_base_field_info_alter().
- *
  */
 function mass_scheduled_transitions_entity_base_field_info_alter(&$fields, $entity_type) {
   // Temporarily neuter validation until scheduler module is uninstalled.
