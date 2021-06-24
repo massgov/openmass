@@ -251,7 +251,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
     $output = $this->renderer->renderRoot($build);
     $response = new CacheableResponse($output);
-    foreach($nodes as $node) {
+    foreach ($nodes as $node) {
       $response->addCacheableDependency($node);
     }
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($build));
