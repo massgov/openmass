@@ -6210,18 +6210,6 @@ function mass_theme_form_views_exposed_form_alter(&$form, FormStateInterface $fo
       $form['actions']['submit']['#attributes'] = ['data-theming-id' => 'filter-submit'];
     }
   }
-
-  if ($form['#id'] == 'views-exposed-form-locations-demo-page') {
-
-    $form['title']['#prefix'] = '<div class="ma__location-filters__row"><div class="ma__location-filters__by-location">';
-    $form['title']['#suffix'] = '</div></div>';
-
-    $form['icons']['#prefix'] = '<div class="ma__location-filters__by-tags">';
-    $form['icons']['#suffix'] = '</div>';
-
-    $form['actions']['submit']['#prefix'] = '<div class="ma__location-filters__buttons">';
-    $form['actions']['submit']['#suffix'] = '</div>';
-  }
 }
 
 /**

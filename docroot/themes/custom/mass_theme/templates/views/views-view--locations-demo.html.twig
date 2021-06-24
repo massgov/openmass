@@ -38,6 +38,26 @@
     <section class="ma__location-listing js-location-listing">
       <div class="ma__location-listing__filters">
         <div class="ma__location-filters">
+          <form class="js-location-filters">
+            <div class="ma__location-filters__row">
+              <div class="ma__location-filters__by-location js-filter-by-location">
+                <label for="filter-by-location" class="ma__label ma__label--optional ">Search by city or zip code</label>
+                  <input class="ma__input pac-target-input" name="filter-by-location" id="filter-by-location" type="text" placeholder="City, town, or ZIP code" data-type="text" autocomplete="off">
+              </div>
+            </div>
+            <div class="ma__location-filters__by-tags  js-filter-by-tags">
+              <div class="ma__location-filters__tag">
+                <span class="ma__input-checkbox">
+                  <input type="checkbox" value="wheelchair" id="wheelchair">
+                    <svg aria-hidden="true" focusable="false"><use xlink:href="#dd3c616df2dd2f426e977cb02d1ec486"></use></svg>
+                  <label for="wheelchair"><span>Wheelchair accessible</span></label>
+                </span>
+              </div>
+            </div>
+            <div class="ma__location-filters__buttons">
+              <button class="ma_button ma__location-filters__submit" type="submit">Submit</button>
+            </div>
+          </form>
           {{ exposed }}
         </div>
       </div>
@@ -54,7 +74,11 @@
               {{ rows }}
               {{ empty }}
             </section>
-            {{ pager }}
+            <div class="attachment">
+              <div class="views-summary"> 
+                {{ pager }}
+              </div>
+            </div>
           </div>
         </div>
       </div>
