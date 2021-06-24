@@ -135,13 +135,18 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       '#cache' => [
         'max-age' => 60,
         'tags' => [
-          'node_list:alert'
+          'handy_cache_tags:node:alert'
         ]
       ],
     ];
 
     $output = $this->renderer->renderRoot($build);
     $response = new CacheableResponse($output);
+
+    if ($node) {
+      $response->addCacheableDependency($node);
+    }
+
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($build));
     return $response;
   }
@@ -158,6 +163,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     $nodeStorage = $this->entityTypeManager()->getStorage('node');
 
     $currentPage = $nodeStorage->load($nid);
+    $nodes = [];
 
     if ($currentPage) {
       $organizations = $currentPage->get('field_organizations')->getValue();
@@ -238,14 +244,16 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       '#cache' => [
         'max-age' => Cache::PERMANENT,
         'tags' => [
-          'node:' . $nid,
-          'node_list:alert'
+          'handy_cache_tags:node:alert'
         ]
       ],
     ];
 
     $output = $this->renderer->renderRoot($build);
     $response = new CacheableResponse($output);
+    foreach($nodes as $node) {
+      $response->addCacheableDependency($node);
+    }
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($build));
     return $response;
   }
