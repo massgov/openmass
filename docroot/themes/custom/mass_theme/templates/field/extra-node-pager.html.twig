@@ -6,44 +6,51 @@
 
 <div class="referencing-binders" data-id="{{ parent.entity.nid.value }}">
 {% if next %}
+{% set srLabel = "Next page, " ~ next['title'] %}
   {% set next_button = {
     "arrowButton": {
       "href": next['url'],
       "info": "",
-      "direction": "right"
+      "direction": "right",
+      "hide": TRUE
     },
     "label": "Next",
     "title": "",
     "link": {
       "href": next['url'],
       "text": next['title'],
-      "info": ""
+      "info": "",
+      "srLabel": srLabel
     }
   } %}
 {% endif %}
 {% if previous %}
+  {% set srLabel = "Previous page, " ~ next['title'] %}
   {% set prev_button = {
     "arrowButton": {
       "href": previous['url'],
       "info": "",
-      "direction": "left"
+      "direction": "left",
+      "hide": TRUE
     },
     "label": "Previous",
     "title": "",
     "link": {
       "href": previous['url'],
       "text": previous['title'],
-      "info": ""
+      "info": "",
+      "srLabel": srLabel
     }
   } %}
 {% endif %}
+{% set ariaLabel = "This page is part of " ~ parent.entity.title.value ~ " category." %}
 {% include "@organisms/by-author/page-flipper.twig" with {
   "pageFlipper": {
     "context": {
       "label": "This is part of:",
       "link": {
         "href": path('entity.node.canonical', {'node' : parent.entity.nid.value}),
-        "info": "",
+        "srLabel": ariaLabel,
         "text": parent.entity.title.value,
       }
     },
