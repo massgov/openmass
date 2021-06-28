@@ -16,6 +16,7 @@ use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\NodeInterface;
 use Drupal\scheduled_transitions\Entity\ScheduledTransition;
 use Drupal\workflows\Entity\Workflow;
+use Drupal\Core\Entity\EntityTypeInterface;
 
 const MASS_SCHEDULED_TRANSITIONS_OPTIONS = [
   ScheduledTransition::OPTION_RECREATE_NON_DEFAULT_HEAD => TRUE,
@@ -34,6 +35,17 @@ define('MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION', '14 days');
  */
 function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
   $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsAlertSitewide');
+}
+
+/**
+ * Implements hook__entity_base_field_info_alter().
+ */
+function mass_scheduled_transitions_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
+  // Temporarily neuter validation until scheduler module is uninstalled.
+  if ($entity_type->id() == 'node' && Drupal::moduleHandler()->moduleExists('scheduler')) {
+    $fields['publish_on']->setConstraints([]);
+    $fields['unpublish_on']->setConstraints([]);
+  }
 }
 
 /**
