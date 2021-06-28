@@ -118,6 +118,12 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $session->visit('/alerts/sitewide');
     $page = $session->getPage();
     $this->assertContains($alert_message_text, $page->getText());
+
+    $headers = $session->getResponseHeaders();
+    $this->assertContains('max-age=60', $headers['Cache-Control'][0]);
+    $this->assertNotContains('stale-if-error', $headers['Cache-Control'][0]);
+    $this->assertNotContains('stale-while-revalidate', $headers['Cache-Control'][0]);
+
   }
 
   /**

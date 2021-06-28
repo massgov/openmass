@@ -133,7 +133,6 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       '#theme' => 'mass_alerts_sitewide',
       '#emergencyAlerts' => $results['emergencyAlerts'],
       '#cache' => [
-        'max-age' => 60,
         'tags' => [
           'handy_cache_tags:node:alert'
         ]
@@ -148,6 +147,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     }
 
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($build));
+    $response->setMaxAge(60);
     return $response;
   }
 
