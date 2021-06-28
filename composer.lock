@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc17736c44b09551ce3a9ea792ae7ad7",
+    "content-hash": "364042eefdd31ec292a63167cb85a6fc",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3078,7 +3078,7 @@
             "extra": {
                 "drupal": {
                     "version": "8.x-5.0-beta1",
-                    "datestamp": "1594141892",
+                    "datestamp": "1624553088",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Beta releases are not covered by Drupal security advisories."
@@ -6776,28 +6776,31 @@
         },
         {
             "name": "drupal/mandrill",
-            "version": "dev-1.x",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/mandrill.git",
-                "reference": "d85b40572c21b0f970b228718f4c7bcdab473823"
+                "reference": "8.x-1.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/mandrill-8.x-1.2.zip",
+                "reference": "8.x-1.2",
+                "shasum": "59d20d40061590f6220c9e54174641796b72ad2d"
             },
             "require": {
-                "drupal/core": "~8.0",
+                "drupal/core": "^8 || ^9",
                 "drupal/mailsystem": "*",
                 "mandrill/mandrill": "1.0.55"
             },
             "type": "drupal-module",
             "extra": {
-                "branch-alias": {
-                    "dev-1.x": "1.x-dev"
-                },
                 "drupal": {
-                    "version": "8.x-1.1+4-dev",
-                    "datestamp": "1603147971",
+                    "version": "8.x-1.2",
+                    "datestamp": "1624489386",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Dev releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 }
             },
@@ -6815,16 +6818,12 @@
                     "homepage": "https://www.drupal.org/user/1682976"
                 },
                 {
-                    "name": "julia.leah.ford",
-                    "homepage": "https://www.drupal.org/user/3590443"
-                },
-                {
                     "name": "levelos",
                     "homepage": "https://www.drupal.org/user/54135"
                 },
                 {
-                    "name": "samuel.mortenson",
-                    "homepage": "https://www.drupal.org/user/2582268"
+                    "name": "mariacha1",
+                    "homepage": "https://www.drupal.org/user/2210776"
                 },
                 {
                     "name": "tauno",
@@ -7421,29 +7420,29 @@
         },
         {
             "name": "drupal/office_hours",
-            "version": "1.0.0-alpha2",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/office_hours.git",
-                "reference": "8.x-1.0-alpha2"
+                "reference": "8.x-1.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/office_hours-8.x-1.0-alpha2.zip",
-                "reference": "8.x-1.0-alpha2",
-                "shasum": "bb9f1e64721ac9cf0d7b1865e07e89a2ab714113"
+                "url": "https://ftp.drupal.org/files/projects/office_hours-8.x-1.5.zip",
+                "reference": "8.x-1.5",
+                "shasum": "745079dfca40222a034da0475e516c0aa1317c67"
             },
             "require": {
-                "drupal/core": "^8"
+                "drupal/core": "^8 || ^9"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.0-alpha2",
-                    "datestamp": "1507136344",
+                    "version": "8.x-1.5",
+                    "datestamp": "1623916796",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Alpha releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 }
             },
@@ -9413,6 +9412,59 @@
             "homepage": "https://www.drupal.org/project/view_mode_page",
             "support": {
                 "source": "https://git.drupalcode.org/project/view_mode_page"
+            }
+        },
+        {
+            "name": "drupal/views_aggregator",
+            "version": "1.0.0-beta2",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/views_aggregator.git",
+                "reference": "8.x-1.0-beta2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/views_aggregator-8.x-1.0-beta2.zip",
+                "reference": "8.x-1.0-beta2",
+                "shasum": "45bce7a21ff203c84e50c3727948bc2d76e1be59"
+            },
+            "require": {
+                "drupal/core": "^8.7.7 || ^9"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.0-beta2",
+                    "datestamp": "1606085848",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Beta releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "JordiK",
+                    "homepage": "https://www.drupal.org/user/3472907"
+                },
+                {
+                    "name": "RdeBoer",
+                    "homepage": "https://www.drupal.org/user/404007"
+                },
+                {
+                    "name": "TR",
+                    "homepage": "https://www.drupal.org/user/202830"
+                }
+            ],
+            "description": "A Views plugin that operates on the results <em>after</em> the database query has run, thus offering aggregation functions not otherwise possible.",
+            "homepage": "https://www.drupal.org/project/views_aggregator",
+            "support": {
+                "source": "https://git.drupalcode.org/project/views_aggregator",
+                "issues": "https://www.drupal.org/project/issues/views_aggregator"
             }
         },
         {
@@ -14623,7 +14675,6 @@
                     "type": "github"
                 }
             ],
-            "abandoned": true,
             "time": "2020-11-30T07:30:19+00:00"
         },
         {
@@ -18982,17 +19033,16 @@
         "drupal/focal_point": 10,
         "drupal/inline_entity_form": 20,
         "drupal/key_value_field": 20,
-        "drupal/mandrill": 20,
         "drupal/maxlength": 5,
         "drupal/media_entity_download": 20,
         "drupal/monolog": 10,
         "drupal/node_title_help_text": 20,
-        "drupal/office_hours": 15,
         "drupal/path_redirect_import": 10,
         "drupal/scheduled_transitions": 20,
         "drupal/scheduler_content_moderation_integration": 15,
         "drupal/security_review": 20,
         "drupal/stage_file_proxy": 15,
+        "drupal/views_aggregator": 10,
         "drupal/views_taxonomy_term_name_into_id": 15,
         "furf/jquery-ui-touch-punch": 20,
         "behat/mink-selenium2-driver": 20,

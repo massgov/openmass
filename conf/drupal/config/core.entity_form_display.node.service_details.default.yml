@@ -29,6 +29,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -168,7 +169,12 @@ content:
     region: content
   field_data_topic:
     weight: 29
-    settings: {  }
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
     third_party_settings:
       conditional_fields:
         bfac096b-cac5-4e9b-84bb-4f9edc2a863c:
@@ -188,7 +194,7 @@ content:
             selector: ''
           entity_type: node
           bundle: service_details
-    type: options_buttons
+    type: term_reference_tree
     region: content
   field_details_data_type:
     weight: 28
