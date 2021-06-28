@@ -6,34 +6,52 @@ This is the codebase for the Drupal 8 web site `www.mass.gov`. The site's theme,
 
 See the [Table of Contents](/docs/README.md) for additional documentation related to this repository.
 
-## Getting Started
+## Getting Started - Mac
 
 1. Clone the repo: `git clone git@github.com:massgov/openmass.git`
 
 1. Move into the project directory: `cd openmass`
-
-1. Create a `.env` file at the root level of the project by copying the example file shipped with the `mass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
+1. Create a `.env` file at the root level of the project by copying the example file shipped with the `openmass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
     ```
     $ cp .env.example .env
     ```
-
-### Docker (optional)
-
-1. Install Docker for [Mac](https://docs.docker.com/docker-for-mac/install/) or [Windows](https://docs.docker.com/docker-for-windows/install/). If using Linux, skip this step.
-
-1. Edit your `hosts` file and add the following line:
+1. If using Docker, install [Docker Desktop](https://docs.docker.com/docker-for-mac/install/).
+1. Edit your `/etc/hosts` file and add the following line:
     ```
     127.0.0.1 mass.local portainer.mass.local mailhog.mass.local
     ```
-    1. **Mac/Linux:** `/etc/hosts`
-    1. **Windows:** `c:\windows\system32\drivers\etc\hosts`
+
+## Getting Started - Windows Subsystem for Linux (aka WSL2)
+The recommended way to run Docker on Windows is via WSL2.
+
+1. Edit your `c:\windows\system32\drivers\etc\hosts` file and add the following line:
+    ```
+    127.0.0.1 mass.local portainer.mass.local mailhog.mass.local
+    ```
+1. Install WSL2. Until WSL2 is released and then supported by IT, you need to follow the Manual install at https://docs.microsoft.com/en-us/windows/wsl/install-win10. Install _Ubuntu_ in the last step. Also install Windows Terminal as suggested.
+1. Install [Docker Desktop](https://docs.docker.com/docker-for-windows/install/) if you havent already.
+1. Go to Docker Desktop settings > Resources > WSL integration > enable integration for your distro (now Docker commands will be available from within your WSL2 distro).
+    1. Double-check in PowerShell: `wsl -l -v` should show three distros, and your Ubuntu should be the default. All three should be WSL version 2.
+    1. Check that docker is working inside Ubuntu: `docker ps`
+1. Install [Visual Studio Code from](https://code.visualstudio.com/) Microsoft. This will be your text and code editor. Also install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
+1. Clone the Openmass repo into the Ubuntu filesystem. You can do this either way:
+    1. In VS Code, run the command (n.b. CTRL+SHIFT+p opens the command picker) _Clone Repository into Container Volume_ (pick openmass from the list of your Github repos). 
+    1. Open a CLI in Ubuntu (i.e. use Windows Terminal and select Ubuntu as your shell). Connect to openmass by running the VS Code command _Attach to Running Container_ and pick the `drupal` container.
+1. You should see a green `Connected massgoc/drupalcontainer` in lower left. This means that Remote Container extension is connected and working.
+    1. You may now browse the codebase, and make changes. The codebase you are editing canonically lives in the Ubuntu filesystem (e.g. /home/), not in the Windows filesystem (/mnt/c), because you'll get vastly superior performance on the Ubuntu filesystem.
+    1. Try to use Linux programs. For example, use [gh](https://cli.github.com/), [lazygit](https://github.com/jesseduffield/lazygit) or VS Code for Git operations instead of Tower or GitKraken. WSL GUI applications are [in Preview now, and will be in the Windows 11](https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps).
+    1. For CLI work, you can use the Terminal inside VS Code. That drops you right into the `drupal` container. Or you can use a shell on Ubuntu.
+1. Create a `.env` file at the root level of the project by copying the example file shipped with the `openmass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
+    ```
+    $ cp .env.example .env
+    ```
 
 ### Native (optional)
 If the Docker section above is unappealing, its easy to run mass.gov natively on any OS. You need to provide your own PHP, web server and DB server (and optional memcache). On OSX, [these install instructions](https://getgrav.org/blog/macos-bigsur-apache-multiple-php-versions) are good (stop at the section called _PHP Switcher Script_), along with this [mysql section](https://getgrav.org/blog/macos-bigsur-apache-mysql-vhost-apc). Point your web server at the /docroot directory.
 
 ### Ahoy (optional)
 
-1. In order for the Ahoy aliases to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
+1. In order for the Ahoy aliases to work, install [Ahoy](https://github.com/ahoy-cli/ahoy). If using WSL2, install into the Ubuntu OS:
     ```bash
     sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
     ```
@@ -47,7 +65,6 @@ If the Docker section above is unappealing, its easy to run mass.gov natively on
 
 ## Pull Requests
 Anyone is welcome and encouraged to submit a pull request for this project. Members of the public should fork the project and submit a PR. Your PR will automatically build and get limited testing. Once that is green, a mass.gov team member will code review your PR. Once satisfied, the team member will [copy your branch into the openmass repo](scripts/git-push-fork-to-upstream-branch) so the full test suite may run. Once that is green, your PR is is eligible to be merged.
-
 
 ## Workflow
 
