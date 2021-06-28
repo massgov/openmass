@@ -74,7 +74,6 @@ class SpecificPageAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
     $assert_session->waitForElement('css', '.ma__header-alert__message');
     $assert_session->pageTextContains($alert_message);
 
-
     $assert_session->visit('/alerts/page/' . $org_node->id());
     $headers = $assert_session->getResponseHeaders();
 
