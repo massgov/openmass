@@ -12,8 +12,6 @@ dependencies:
     - content_moderation
     - link
     - path
-    - scheduler
-    - scheduler_content_moderation_integration
     - text
 id: node.utility_drawer.default
 targetEntityType: node
@@ -78,17 +76,17 @@ content:
     third_party_settings: {  }
     region: content
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 13
-    region: content
+    weight: 28
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
-    type: scheduler_moderation
-    weight: 12
-    region: content
+    weight: 26
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   scheduler_settings:
     weight: 10
     region: content
@@ -120,17 +118,17 @@ content:
     third_party_settings: {  }
     region: content
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 14
-    region: content
+    weight: 29
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 11
-    region: content
+    weight: 27
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 15
     region: content
