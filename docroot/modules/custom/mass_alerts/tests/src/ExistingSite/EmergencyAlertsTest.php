@@ -128,7 +128,6 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
   }
 
-
   /**
    * Check that the Alerts Endpoint for specific page output contains the correct data.
    */
@@ -167,7 +166,6 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $this->assertContains('handy_cache_tags:node:alert', $headers['X-Drupal-Cache-Tags'][0]);
     $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
   }
-
 
   /**
    * Filter a JSONAPI response to a single node.
