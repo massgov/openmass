@@ -40,7 +40,7 @@ class SpecificPageAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
-    $this->createNode([
+    $node = $this->createNode([
       'type' => 'alert',
       'title' => $this->randomMachineName(),
       'field_alert_display' => 'specific_target_pages',
@@ -73,6 +73,14 @@ class SpecificPageAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
     $assert_session->pageTextContains($event_node->getTitle());
     $assert_session->waitForElement('css', '.ma__header-alert__message');
     $assert_session->pageTextContains($alert_message);
+
+
+    $assert_session->visit('/alerts/page/' . $org_node->id());
+    $headers = $assert_session->getResponseHeaders();
+
+    $this->assertContains('handy_cache_tags:node:alert', $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
+
   }
 
 }
