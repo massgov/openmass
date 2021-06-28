@@ -76,7 +76,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
   }
 
   /**
-   * Check that the Alerts Endpoint output contains the cocrrect data.
+   * Check that the Alerts Endpoint output contains the correct data.
    */
   public function testEmergencyAlertAppearsInEndpoint() {
     $nids = \Drupal::entityQuery('node')
@@ -127,6 +127,47 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $this->assertContains('handy_cache_tags:node:alert', $headers['X-Drupal-Cache-Tags'][0]);
     $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
   }
+
+
+  /**
+   * Check that the Alerts Endpoint for specific page output contains the correct data.
+   */
+  public function testEmergencyAlertPageAppearsInEndpoint() {
+
+    $alert_message_text = $this->randomMachineName();
+    $org_node = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'alert',
+      'title' => $this->randomMachineName(),
+      'field_alert_display' => 'specific_target_pages',
+      'moderation_state' => MassModeration::PUBLISHED,
+      'status' => 1,
+      'field_alert' => Paragraph::create([
+        'type' => 'emergency_alert',
+        'field_emergency_alert_message' => $alert_message_text,
+      ]),
+      'field_target_page' => [
+        ['target_id' => $org_node->id()],
+      ],
+    ]);
+
+    $session = $this->getSession();
+    $session->visit('/alerts/page/' . $org_node->id());
+    $page = $session->getPage();
+    $this->assertContains($alert_message_text, $page->getText());
+
+    $headers = $session->getResponseHeaders();
+
+    $this->assertContains('handy_cache_tags:node:alert', $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
+  }
+
 
   /**
    * Filter a JSONAPI response to a single node.
