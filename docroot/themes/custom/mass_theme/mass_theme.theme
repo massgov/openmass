@@ -1329,7 +1329,6 @@ function mass_theme_preprocess_node_location(&$variables) {
     }
   }
 
-
   if ($variables['elements']['#view_mode'] == 'teaser') {
 
     $contacts = [];
@@ -1358,7 +1357,6 @@ function mass_theme_preprocess_node_location(&$variables) {
       }
     }
 
-
     $variables['imagePromo'] = [
       'location' => [
         'text' => isset($contacts['field_address']) ? $contacts['field_address'] : '',
@@ -1372,7 +1370,6 @@ function mass_theme_preprocess_node_location(&$variables) {
         'directions' => isset($contacts['field_address']) ? 'https://maps.google.com/?q=' . urlencode($contacts['field_address']) : '',
       ],
     ];
-
 
     // Location subtitle.
     $variables['imagePromo']['title'] = [
@@ -5140,6 +5137,19 @@ function mass_theme_preprocess_paragraph(&$variables) {
 
 /**
  * Implements hook_preprocess_paragraph().
+ */
+function mass_theme_preprocess_paragraph__iframe(&$variables) {
+  if (!$variables['paragraph']->get('field_iframe_height_config')->isEmpty()) {
+    $variables['iframe_height'] = $variables['paragraph']->get('field_height')->getValue()[0]['value'];
+    if ($variables['paragraph']->get('field_iframe_height_config')->getValue()[0]['value'] == '100') {
+      $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
+      $variables['iframe_height'] = 'auto';
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_paragraph().
  *
  * Process info_details card group/
  */
@@ -6001,10 +6011,9 @@ function mass_theme_preprocess_views_view_locations_demo_page(&$variables) {
     }
   }
 
-  $variables['helper'] = \Drupal::request()->query->get('helper')?: '';
-  $icons = \Drupal::request()->query->get('icons')?: 'All';
-  $variables['icons'] = ($icons == 'All')? false : true;
-
+  $variables['helper'] = \Drupal::request()->query->get('helper')? : '';
+  $icons = \Drupal::request()->query->get('icons')? : 'All';
+  $variables['icons'] = ($icons == 'All')? FALSE : TRUE;
 
   if (!empty($view_result)) {
 

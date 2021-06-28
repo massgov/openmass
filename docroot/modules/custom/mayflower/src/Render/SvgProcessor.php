@@ -69,14 +69,15 @@ class SvgProcessor implements AttachmentsResponseProcessorInterface {
       $response->setContent($content);
       $response->setAttachments($attached);
       return $this->inner->processAttachments($response);
-    } else if($response instanceof ViewAjaxResponse) {
+    } 
+    elseif ($response instanceof ViewAjaxResponse) {
       $commands = &$response->getCommands();
       $attached = $response->getAttachments();
 
-      foreach($commands as &$command) {
-        if($command['command'] == 'insert') {
+      foreach ($commands as &$command) {
+        if ($command['command'] == 'insert') {
           preg_match_all("<svg-placeholder path=\"(.*\.svg)\">", $command['data'], $matches);
-          
+
           if (!empty($matches[1])) {
             foreach (array_unique(array_filter($matches[1])) as $path) {
               $replacement = '';
