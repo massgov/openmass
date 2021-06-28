@@ -5978,6 +5978,11 @@ function mass_theme_preprocess_views_view(&$variables) {
   }
 }
 
+/**
+ * Implements template_preprocess_views_view().
+ *
+ * @see mass_theme_theme_suggestions_alter()
+ */
 function mass_theme_preprocess_views_view_locations_demo_page(&$variables) {
   $view = $variables['view'];
   $view_result = $view->result;
@@ -6011,9 +6016,9 @@ function mass_theme_preprocess_views_view_locations_demo_page(&$variables) {
     }
   }
 
-  $variables['helper'] = \Drupal::request()->query->get('helper')? : '';
-  $icons = \Drupal::request()->query->get('icons')? : 'All';
-  $variables['icons'] = ($icons == 'All')? FALSE : TRUE;
+  $variables['helper'] = \Drupal::request()->query->get('helper') ?: '';
+  $icons = \Drupal::request()->query->get('icons') ?: 'All';
+  $variables['icons'] = ($icons == 'All') ? FALSE : TRUE;
 
   if (!empty($view_result)) {
 

@@ -69,7 +69,7 @@ class SvgProcessor implements AttachmentsResponseProcessorInterface {
       $response->setContent($content);
       $response->setAttachments($attached);
       return $this->inner->processAttachments($response);
-    } 
+    }
     elseif ($response instanceof ViewAjaxResponse) {
       $commands = &$response->getCommands();
       $attached = $response->getAttachments();
@@ -93,7 +93,8 @@ class SvgProcessor implements AttachmentsResponseProcessorInterface {
       }
 
       return $this->inner->processAttachments($response);
-    } else {
+    }
+    else {
       throw new \InvalidArgumentException('\Drupal\Core\Render\HtmlResponse instance expected.');
     }
   }
