@@ -30,8 +30,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
-    - scheduler
-    - scheduler_content_moderation_integration
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -205,7 +204,12 @@ content:
     region: content
   field_data_topic:
     weight: 9
-    settings: {  }
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
     third_party_settings:
       conditional_fields:
         79efe201-9cd8-44f0-a14f-1ed6e45a9d22:
@@ -225,7 +229,7 @@ content:
             selector: ''
           entity_type: node
           bundle: curated_list
-    type: options_buttons
+    type: term_reference_tree
     region: content
   field_english_version:
     weight: 13
@@ -373,17 +377,17 @@ content:
     region: content
     third_party_settings: {  }
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 4
-    region: content
+    weight: 106
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
-    type: scheduler_moderation
-    weight: 8
-    region: content
+    weight: 104
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   scheduler_settings:
     weight: 4
     region: content
@@ -412,17 +416,17 @@ content:
     region: content
     third_party_settings: {  }
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 5
-    region: content
+    weight: 107
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 9
-    region: content
+    weight: 105
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 10
     region: content
