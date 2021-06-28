@@ -32,56 +32,97 @@
  * @ingroup themeable
  */
 #}
+{{ attach_library('mass_map/google-map-api') }}
+{{ attach_library('mass_theme/views-view--locations') }}
+{%
+  set classes = [
+    dom_id ? 'js-view-dom-id-' ~ dom_id,
+  ]
+%}
 
-<div class="main-content main-content--full">
-  <div class="page-content">
-    <section class="ma__location-listing js-location-listing">
-      <div class="ma__location-listing__filters">
-        <div class="ma__location-filters">
-          <form class="js-location-filters">
-            <div class="ma__location-filters__row">
-              <div class="ma__location-filters__by-location js-filter-by-location">
-                <label for="filter-by-location" class="ma__label ma__label--optional ">Search by city or zip code</label>
-                  <input class="ma__input pac-target-input" name="filter-by-location" id="filter-by-location" type="text" placeholder="City, town, or ZIP code" data-type="text" autocomplete="off">
+{# Set default google maps api place autocomplete result bounds, defaults to Mass. #}
+{% set swLat = 40.727093 %}
+{% set swLng = -73.9786 %}
+{% set neLat = 43.004778 %}
+{% set neLng = -69.845299 %}
+
+<div{{ attributes.addClass(classes) }}>
+  {% if pageHeader %}
+    {% block preContent %}
+      {% include "@organisms/by-template/page-header.twig" %}
+    {% endblock %}
+  {% endif %}
+  <div class="main-content main-content--full">
+    <div class="page-content">
+      <section class="ma__location-listing js-location-listing leaflet">
+        <div class="ma__location-listing__filters">
+          <div class="ma__location-filters">
+            <form class="js-location-filters leaflet">
+              <div class="ma__location-filters__row">
+                <div class="ma__location-filters__by-location js-filter-by-location" data-ma-place-bounds-sw-lat="{{ swLat }}" data-ma-place-bounds-sw-lng="{{ swLng }}" data-ma-place-bounds-ne-lat="{{ neLat }}" data-ma-place-bounds-ne-lng="{{ neLng }}">
+                  <label for="filter-by-location" class="ma__label ma__label--optional ">Search by city or zip code</label>
+                  <input class="ma__input pac-target-input" name="filter-by-location" id="filter-by-location" type="text" placeholder="City, town, or ZIP code" 
+                      data-type="text" autocomplete="off" value="{{ helper }}">
+                </div>
               </div>
-            </div>
-            <div class="ma__location-filters__by-tags  js-filter-by-tags">
-              <div class="ma__location-filters__tag">
-                <span class="ma__input-checkbox">
-                  <input type="checkbox" value="wheelchair" id="wheelchair">
-                    <svg aria-hidden="true" focusable="false"><use xlink:href="#dd3c616df2dd2f426e977cb02d1ec486"></use></svg>
-                  <label for="wheelchair"><span>Wheelchair accessible</span></label>
-                </span>
+              <div class="ma__location-filters__by-tags  js-filter-by-tags">
+                <div class="ma__location-filters__tag">
+                  <span class="ma__input-checkbox">
+                    <input type="checkbox" value="wheelchair" id="wheelchair" {% if icons %}checked{% endif %}>
+                      <svg aria-hidden="true" focusable="false"><use xlink:href="#dd3c616df2dd2f426e977cb02d1ec486"></use></svg>
+                    <label for="wheelchair"><span>Wheelchair accessible</span></label>
+                  </span>
+                </div>
               </div>
-            </div>
-            <div class="ma__location-filters__buttons">
-              <button class="ma_button ma__location-filters__submit" type="submit">Submit</button>
-            </div>
-          </form>
-          {{ exposed }}
-        </div>
-      </div>
-      <div class="ma__location-listing__columns">
-        <div class="ma__location-listing__container">
-          <div class="ma__location-listing__map">
-            <div class="ma__location-listing__sticky js-location-listing-map">
-              {% set leafletMap = leafletMap %}
-              {% include "@molecules/map-leaflet.twig" %}
-            </div>
-          </div>
-          <div class="ma__location-listing__results js-location-listing-results">
-            <section class="ma__image-promos js-image-promos">
-              {{ rows }}
-              {{ empty }}
-            </section>
-            <div class="attachment">
-              <div class="views-summary"> 
-                {{ pager }}
+              <div class="ma__location-filters__buttons">
+                <button class="ma_button ma__location-filters__submit" type="submit">Submit</button>
               </div>
+            </form>
+            <div class="hidden">
+              {{ exposed }}
             </div>
           </div>
         </div>
-      </div>
-    </section>
+        <div class="ma__location-listing__columns">
+          <div class="ma__location-listing__container">
+            <div class="ma__location-listing__map">
+              <div class="ma__location-listing__sticky js-location-listing-map">
+                <script type="text/javascript">var ma = ma || {};ma.leafletMapData = [];</script>
+                {% set leafletMap = leafletMap %}
+                {% include "@molecules/map-leaflet.twig" %}
+              </div>
+            </div>
+            <div class="ma__location-listing__results js-location-listing-results">
+              <div class="ma__results-heading js-results-heading">
+                <div class="ma__results-heading__container">
+                  <h2 class="ma__results-heading__title">{{ header }}</h2>
+                  <div class="ma__results-heading__tags">
+                    {% if helper %}
+                      <button type="button" class="ma__results-heading__tag js-results-heading-tag" data-ma-filter-type="location">{{ helper }}</button>
+                    {% endif %}
+                    {% if icons %}
+                      <button type="button" class="ma__results-heading__tag js-results-heading-tag" data-ma-filter-type="tag">{{ 'Wheelchair accessible'|t }}</button>
+                    {% endif %}
+                    {% if icons or helper %}
+                      <button type="button" class="ma__results-heading__clear js-results-heading-clear">Clear all</button>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+
+              <section class="ma__image-promos js-image-promos">
+                {{ rows }}
+                {{ empty }}
+              </section>
+              <div class="attachment">
+                <div class="views-summary"> 
+                  {{ pager }}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
   </div>
 </div>

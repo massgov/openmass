@@ -5,6 +5,7 @@ namespace Drupal\mayflower\Render;
 use Drupal\Core\Render\AttachmentsInterface;
 use Drupal\Core\Render\AttachmentsResponseProcessorInterface;
 use Drupal\Core\Render\HtmlResponse;
+use Drupal\views\Ajax\ViewAjaxResponse;
 
 /**
  * Response attachments processor to dump SVGs to a single block on the page.
@@ -42,33 +43,58 @@ class SvgProcessor implements AttachmentsResponseProcessorInterface {
    * {@inheritdoc}
    */
   public function processAttachments(AttachmentsInterface $response) {
-    if (!$response instanceof HtmlResponse) {
-      throw new \InvalidArgumentException('\Drupal\Core\Render\HtmlResponse instance expected.');
-    }
-    $content = $response->getContent();
-    $attached = $response->getAttachments();
-    $inlined = [];
-    if (isset($attached['svg'])) {
+    if ($response instanceof HtmlResponse) {
+      $content = $response->getContent();
+      $attached = $response->getAttachments();
+      $inlined = [];
 
-      foreach (array_unique(array_filter($attached['svg'])) as $path) {
-        // Use an empty replacement to avoid <svg-placeholder> showing up
-        // when the icon path is valid.
-        $replacement = '';
-        if ($svgNode = $this->getSvg($path)) {
-          $hash = md5($path);
-          $svgNode->setAttribute('id', $hash);
-          $replacement = $this->getEmbed($hash);
-          $inlined[] = $this->getSource($hash, $svgNode);
+      if (isset($attached['svg'])) {
+
+        foreach (array_unique(array_filter($attached['svg'])) as $path) {
+          // Use an empty replacement to avoid <svg-placeholder> showing up
+          // when the icon path is valid.
+          $replacement = '';
+          if ($svgNode = $this->getSvg($path)) {
+            $hash = md5($path);
+            $svgNode->setAttribute('id', $hash);
+            $replacement = $this->getEmbed($hash);
+            $inlined[] = $this->getSource($hash, $svgNode);
+          }
+          $content = str_replace(sprintf('<svg-placeholder path="%s">', $path), $replacement, $content);
         }
-        $content = str_replace(sprintf('<svg-placeholder path="%s">', $path), $replacement, $content);
+
+        unset($attached['svg']);
+      }
+      $content = str_replace('<svg-sprite-placeholder>', $this->wrapInlinedSvgs($inlined), $content);
+      $response->setContent($content);
+      $response->setAttachments($attached);
+      return $this->inner->processAttachments($response);
+    } else if($response instanceof ViewAjaxResponse) {
+      $commands = &$response->getCommands();
+      $attached = $response->getAttachments();
+
+      foreach($commands as &$command) {
+        if($command['command'] == 'insert') {
+          preg_match_all("<svg-placeholder path=\"(.*\.svg)\">", $command['data'], $matches);
+          
+          if (!empty($matches[1])) {
+            foreach (array_unique(array_filter($matches[1])) as $path) {
+              $replacement = '';
+              if ($svgNode = $this->getSvg($path)) {
+                $hash = md5($path);
+                $svgNode->setAttribute('id', $hash);
+                $replacement = $this->getEmbed($hash);
+              }
+              $command['data'] = str_replace(sprintf('<svg-placeholder path="%s">', $path), $replacement, $command['data']);
+            }
+          }
+        }
       }
 
-      unset($attached['svg']);
+      return $this->inner->processAttachments($response);
+    } else {
+      throw new \InvalidArgumentException('\Drupal\Core\Render\HtmlResponse instance expected.');
     }
-    $content = str_replace('<svg-sprite-placeholder>', $this->wrapInlinedSvgs($inlined), $content);
-    $response->setContent($content);
-    $response->setAttachments($attached);
-    return $this->inner->processAttachments($response);
   }
 
   /**

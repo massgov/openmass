@@ -5972,6 +5972,40 @@ function mass_theme_preprocess_views_view_locations_demo_page(&$variables) {
   $view = $variables['view'];
   $view_result = $view->result;
 
+  if ($nid = $view->args[0]) {
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+
+    if ($node) {
+      $node_title = $node->label();
+      // Set appropriate page title.
+      if ($node->getType() == "location") {
+        $page_title = $this->t('Other locations related to @title', ['@title' => $node_title]);
+      }
+      else {
+        $page_title = $node_title . ' Locations';
+      }
+
+      $variables['pageHeader'] = [
+        'title' => $page_title,
+        'divider' => FALSE,
+        'headerTags' => [
+          'label' => 'More about:',
+          'taxonomyTerms' => [
+            [
+              'href' => $node->toUrl(),
+              'text' => $node_title,
+            ],
+          ],
+        ],
+      ];
+    }
+  }
+
+  $variables['helper'] = \Drupal::request()->query->get('helper')?: '';
+  $icons = \Drupal::request()->query->get('icons')?: 'All';
+  $variables['icons'] = ($icons == 'All')? false : true;
+
+
   if (!empty($view_result)) {
 
     // Array for mapping Contact entities to corresponding Location entities.
@@ -5988,7 +6022,6 @@ function mass_theme_preprocess_views_view_locations_demo_page(&$variables) {
     }
     // Batch load contact entities all at once.
     $contact_entities = Node::loadMultiple($contact_ids);
-
     $variables['leafletMap'] = Molecules::prepareGoogleMapFromContacts($contact_entities, $contact_location_map);
   }
 }
@@ -6209,6 +6242,14 @@ function mass_theme_form_views_exposed_form_alter(&$form, FormStateInterface $fo
     else {
       $form['actions']['submit']['#attributes'] = ['data-theming-id' => 'filter-submit'];
     }
+  }
+
+  if ($form['#id'] == 'views-exposed-form-locations-demo-page') {
+    $form['helper'] = [
+      '#type' => 'textfield',
+      '#title' => 'Helper',
+      '#size' => 60,
+    ];
   }
 }
 

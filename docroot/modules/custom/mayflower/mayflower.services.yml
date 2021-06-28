@@ -12,3 +12,8 @@ services:
     class: Drupal\mayflower\Render\SvgProcessor
     decorates: html_response.attachments_processor
     arguments: ['@html_response.attachments_processor.mayflower_inline_svg.inner']
+  ajax_response.attachments_processor.mayflower_inline_svg:
+    public: false
+    class: Drupal\mayflower\Render\SvgProcessor
+    decorates: ajax_response.attachments_processor
+    arguments: ['@ajax_response.attachments_processor.mayflower_inline_svg.inner']
