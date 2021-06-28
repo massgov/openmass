@@ -16,6 +16,7 @@ dependencies:
     - content_moderation
     - field_group
     - link
+    - term_reference_tree
 third_party_settings:
   field_group:
     group_externaldata_edit_form:
@@ -88,9 +89,14 @@ content:
     region: content
   field_data_topic:
     weight: 15
-    settings: {  }
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
     third_party_settings: {  }
-    type: options_buttons
+    type: term_reference_tree
     region: content
   field_details_data_type:
     weight: 12
