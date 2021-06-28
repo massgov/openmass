@@ -32,7 +32,8 @@ The recommended way to run Docker on Windows is via WSL2.
 1. Install [Docker Desktop](https://docs.docker.com/docker-for-windows/install/) if you havent already.
 1. Go to Docker Desktop settings > Resources > WSL integration > enable integration for your distro (now Docker commands will be available from within your WSL2 distro).
     1. Double-check in PowerShell: `wsl -l -v` should show three distros, and your Ubuntu should be the default. All three should be WSL version 2.
-    1. Check that docker is working inside Ubuntu: `docker ps`
+    1. Check that docker is working inside Ubuntu: `docker-compose ps`. 
+    1. Inside Ubuntu, run `docker-compose up -d` to start the openmass containers. Verify that your development site works at http://mass.local.
 1. Install [Visual Studio Code from](https://code.visualstudio.com/) Microsoft. This will be your text and code editor. Also install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
 1. Clone the Openmass repo into the Ubuntu filesystem. You can do this either way:
     1. In VS Code, run the command (n.b. CTRL+SHIFT+p opens the command picker) _Clone Repository into Container Volume_ (pick openmass from the list of your Github repos). 
@@ -40,7 +41,7 @@ The recommended way to run Docker on Windows is via WSL2.
 1. You should see a green `Connected massgoc/drupalcontainer` in lower left. This means that Remote Container extension is connected and working.
     1. You may now browse the codebase, and make changes. The codebase you are editing canonically lives in the Ubuntu filesystem (e.g. /home/), not in the Windows filesystem (/mnt/c), because you'll get vastly superior performance on the Ubuntu filesystem.
     1. Try to use Linux programs. For example, use [gh](https://cli.github.com/), [lazygit](https://github.com/jesseduffield/lazygit) or VS Code for Git operations instead of Tower or GitKraken. WSL GUI applications are [in Preview now, and will be in the Windows 11](https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps).
-    1. For CLI work, you can use the Terminal inside VS Code. That drops you right into the `drupal` container. Or you can use a shell on Ubuntu.
+    1. For CLI work, you can use the Terminal inside VS Code. That drops you right into the `drupal` container. Or you can use a shell on Ubuntu. Ahoy commands (see below) will only work in the Ubuntu shell.
 1. Create a `.env` file at the root level of the project by copying the example file shipped with the `openmass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
     ```
     $ cp .env.example .env
