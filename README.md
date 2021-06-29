@@ -54,11 +54,12 @@ If the Docker section above is unappealing, its easy to run mass.gov natively on
 
 ### Ahoy (optional)
 
-1. In order for the Ahoy aliases to work, install [Ahoy](https://github.com/ahoy-cli/ahoy). If using WSL2, install into the Ubuntu OS:
-    ```bash
+1. In order for the Ahoy aliases to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
+   1. If using WSL2, install into the Ubuntu OS.
+   1. The Ahoy aliases also work for native development environments. Set an environment variable: `MASS_DEV_ENV=native` 
+   ```bash
     sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
     ```
-1. The Ahoy aliases also work for native development environments. Set an environment variable: `MASS_DEV_ENV=native`   
 1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database).
 1. Run `ahoy comi` to fetch all dependencies.
 
@@ -132,12 +133,3 @@ This usually happens if you go visit mass.local right after the containers are b
 ### Xdebug
 
 If you know where a problem is happening in your code, Xdebug is a useful tool that allows you set breakpoints to trace the problem back. See [.env.example](../.env.example) for setup instructions.
-
-### Windows troubleshooting
-
-- All host machine command line steps should be done from an elevated (admin) prompt.
-- Make sure that you have run `git config --local core.symlinks true` to enable symlinks when
-  you check out the repository.
-- If the symlinks from the theme to the Pattern Lab assets are not working after running composer,
-  delete the non-working symlinks and `git checkout` again.
-- You will find it helpful to copy `docroot/.gitattributes` to the root of the project. [@todo - add this to the automation]
