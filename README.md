@@ -15,11 +15,18 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
     ```
     $ cp .env.example .env
     ```
-1. If using Docker, install [Docker Desktop](https://docs.docker.com/docker-for-mac/install/).
+1. If using Docker (n.b. see Native alternative below), install [Docker Desktop](https://docs.docker.com/docker-for-mac/install/).
 1. Edit your `/etc/hosts` file and add the following line:
     ```
     127.0.0.1 mass.local portainer.mass.local mailhog.mass.local
     ```
+1. In order for the Ahoy aliases to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
+   ```bash
+    sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
+    ```
+1. Run `docker login`   
+1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database).
+1. Run `ahoy comi` to fetch all dependencies.   
 
 ## Getting Started - Windows Subsystem for Linux (aka WSL2)
 The recommended way to run Docker on Windows is via WSL2.
@@ -37,8 +44,13 @@ The recommended way to run Docker on Windows is via WSL2.
    ```bash
    git clone https://github.com/massgov/openmass.git
    cd openmass
-   # Start the openmass containers. Once you have installed Ahoy (see below), you can alternatively run: ahoy up.
-   docker-compose up -d
+   docker login
+   # Install Ahoy
+   sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
+   # Install PHP dependencies
+   ahoy comi
+   # Start the openmass containers
+   ahoy up
    ```
 1. Verify that your development site responds by opening any Windows browser and navigating to http://mass.local. It is expected that the CSS is broken. We'll fix that soon.
 1. Install [Visual Studio Code from](https://code.visualstudio.com/) Microsoft. This will be your code editor. Also install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
@@ -59,18 +71,10 @@ The recommended way to run Docker on Windows is via WSL2.
    1. Install these VS Code extensions into the Remote as needed: PHP Intelephense, PHP Debug, SQLTools (and MySQL plugin), `Open in Github, BitBucket, Gitlab`.   
 
 ### Native (optional)
-If the Docker section above is unappealing, its easy to run mass.gov natively on any OS. You need to provide your own PHP, web server and DB server (and optional memcache). On OSX, [these install instructions](https://getgrav.org/blog/macos-bigsur-apache-multiple-php-versions) are good (stop at the section called _PHP Switcher Script_), along with this [mysql section](https://getgrav.org/blog/macos-bigsur-apache-mysql-vhost-apc). Point your web server at the /docroot directory.
+If the Docker section above is unappealing, its easy to run mass.gov natively on any OS. 
 
-### Ahoy (optional)
-
-1. In order for the Ahoy aliases to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
-   1. If using WSL2, install into the Ubuntu OS.
-   1. The Ahoy aliases also work for native development environments. Set an environment variable: `MASS_DEV_ENV=native` 
-   ```bash
-    sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
-    ```
-1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database).
-1. Run `ahoy comi` to fetch all dependencies.
+1. You need to provide your own PHP, web server and DB server (and optional memcache). On OSX, [these install instructions](https://getgrav.org/blog/macos-bigsur-apache-multiple-php-versions) are good (stop at the section called _PHP Switcher Script_), along with this [mysql section](https://getgrav.org/blog/macos-bigsur-apache-mysql-vhost-apc). Point your web server at the /docroot directory.
+1. The Ahoy aliases also work for native development environments. Set an environment variable: `MASS_DEV_ENV=native`
 
 ###### Notes
 - It takes a few minutes for the `mysql` container start up.
