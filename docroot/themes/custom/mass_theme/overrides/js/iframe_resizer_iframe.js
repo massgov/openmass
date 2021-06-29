@@ -1,8 +1,8 @@
 /* Instructions
 **
-** Mass.gov CDN: https://mass.gov/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js
+** Mass.gov CDN: https://www.mass.gov/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js
 ** Add this script into the iframe source code before the closing body tag:
-** <script type="text/javascript" src="https://mass.gov/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js"></script>
+** <script type="text/javascript" src="https://www.mass.gov/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js"></script>
 ** This code monitors the iframe page for changes in dimensions. When change is detected, it sends send the latest dimensions to the parent page using postMessage
 */
 
@@ -31,23 +31,26 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+var iframeDimensions_Old = {
+  width: 0,
+  height: 0
+};
 
-// determine height of content on this page
-function getMyHeight() {
-  'use strict';
-
-  // https://stackoverflow.com/a/11864824
-  return Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
-}
+var indicator = document.createElement('div');
 
 
 // send the latest page dimensions to the parent page on which this iframe is embedded
-function sendDimensionsToParent(iframeDimensions_Old) {
+function sendDimensionsToParent() {
   'use strict';
+
+  if (indicator.nextSibling) {
+    document.body.removeChild(indicator);
+    document.body.append(indicator);
+  }
 
   var iframeDimensions_New = {
     width: window.innerWidth, // supported from IE9 onwards
-    height: getMyHeight()
+    height: indicator.getBoundingClientRect().top
   };
 
   // if old width is not equal new width, or old height is not equal new height, then...
@@ -58,27 +61,34 @@ function sendDimensionsToParent(iframeDimensions_Old) {
 
 }
 
+window.addEventListener('message', function (event) {
+  'use strict';
+
+  if (event.data === 'update') {
+    sendDimensionsToParent();
+  }
+}, false);
 
 // on load - send the page dimensions. (we do this on load because then all images have loaded...)
 window.addEventListener('load', function () {
   'use strict';
 
+  document.body.append(indicator);
+
   // For debugging purposes
   // eslint-disable-next-line no-console
   console.log('loaded iframe JS: ' + document.URL);
+  sendDimensionsToParent();
 
-  var iframeDimensions_Old = {
-    width: window.innerWidth, // supported from IE9 onwards
-    height: getMyHeight()
-  };
-
-  window.parent.postMessage(iframeDimensions_Old, '*'); // send our dimensions once, initially - so the iFrame is initialized to the correct size
 
   // if mutationobserver is supported by this browser
   if (window.MutationObserver) {
     // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
 
-    var observer = new MutationObserver(sendDimensionsToParent);
+    var observer = new MutationObserver(function (mutations) {
+      sendDimensionsToParent();
+    });
+
     var config = {
       attributes: true,
       attributeOldValue: false,
