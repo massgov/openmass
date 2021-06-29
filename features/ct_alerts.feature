@@ -7,7 +7,3 @@ Feature: Alert Content type
   Scenario: Verify Alert Landing Page can render
     When I go to "alerts"
     Then the response status code should be 200
-
-  Scenario: Verify Alert JSON API
-    When I go to "/jsonapi/node/alert"
-    Then the response status code should be 200
