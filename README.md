@@ -56,7 +56,7 @@ The recommended way to run Docker on Windows is via WSL2.
 1. Misc Tips
    1. Try to use Linux programs. For example, use [gh](https://cli.github.com/), [lazygit](https://github.com/jesseduffield/lazygit) or VS Code for Git operations instead of Tower or GitKraken. WSL GUI applications are [in Preview now, and will be in the Windows 11](https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps).
    1. For CLI work, you can use the Terminal inside VS Code. That drops you right into the `drupal` container. Or you can use a shell on Ubuntu. Ahoy commands (see below) will only work in the Ubuntu shell.
-   1. Install these VS Code extensions into the Remote as needed: PHP Intelephense, PHP Debug, SQLTools (and MySQL plugin), Open in Github, BitBucket, Gitlab.   
+   1. Install these VS Code extensions into the Remote as needed: PHP Intelephense, PHP Debug, SQLTools (and MySQL plugin), `Open in Github, BitBucket, Gitlab`.   
 
 ### Native (optional)
 If the Docker section above is unappealing, its easy to run mass.gov natively on any OS. You need to provide your own PHP, web server and DB server (and optional memcache). On OSX, [these install instructions](https://getgrav.org/blog/macos-bigsur-apache-multiple-php-versions) are good (stop at the section called _PHP Switcher Script_), along with this [mysql section](https://getgrav.org/blog/macos-bigsur-apache-mysql-vhost-apc). Point your web server at the /docroot directory.
