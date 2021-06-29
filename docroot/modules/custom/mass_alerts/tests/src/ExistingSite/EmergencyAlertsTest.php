@@ -92,7 +92,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
 
     $related = $this->createNode([
       'type' => 'service_page',
-      'title' => 'EmergencyAlertsClientSideTest Service Page',
+      'title' => 'EmergencyAlertsTest Service Page',
     ]);
     $alert_message_text = $this->randomMachineName();
     $node = $this->createNode([
