@@ -21,6 +21,7 @@ dependencies:
     - field.field.node.topic_page.field_topic_type
     - image.style.thumbnail
     - node.type.topic_page
+    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -29,8 +30,6 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
-    - scheduler
-    - scheduler_content_moderation_integration
 third_party_settings:
   field_group:
     group_topic_page_edit_form:
@@ -318,17 +317,17 @@ content:
     region: content
     third_party_settings: {  }
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 3
-    region: content
+    weight: 53
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
-    type: scheduler_moderation
-    weight: 7
-    region: content
+    weight: 51
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   scheduler_settings:
     weight: 1
     region: content
@@ -357,17 +356,17 @@ content:
     third_party_settings: {  }
     region: content
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 4
-    region: content
+    weight: 54
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 8
-    region: content
+    weight: 52
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 50
     region: content
