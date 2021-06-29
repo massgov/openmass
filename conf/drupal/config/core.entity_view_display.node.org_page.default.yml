@@ -37,6 +37,7 @@ dependencies:
     - field.field.node.org_page.field_org_ref_locations
     - field.field.node.org_page.field_org_sentence_phrasing
     - field.field.node.org_page.field_org_show_news_images
+    - field.field.node.org_page.field_organization_sections
     - field.field.node.org_page.field_organizations
     - field.field.node.org_page.field_parent
     - field.field.node.org_page.field_person_bio
@@ -404,6 +405,15 @@ content:
       format_custom_true: ''
     third_party_settings: {  }
     type: boolean
+    region: content
+  field_organization_sections:
+    type: entity_reference_revisions_entity_view
+    weight: 137
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
     region: content
   field_organizations:
     weight: 31
