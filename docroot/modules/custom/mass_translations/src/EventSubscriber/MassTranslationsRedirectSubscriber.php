@@ -14,8 +14,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * Redirects users when browser langcode doesn't match node langcode.
  *
  * If a translation exists for the current node, the user is redirected
- * permanently to the node that matches the browser language. This can be
- * disabled by disabling the Browser language detection method.
+ * permanently to the node that matches the browser language.
  */
 class MassTranslationsRedirectSubscriber implements EventSubscriberInterface {
 
