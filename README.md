@@ -24,30 +24,39 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 ## Getting Started - Windows Subsystem for Linux (aka WSL2)
 The recommended way to run Docker on Windows is via WSL2.
 
-1. Edit your `c:\windows\system32\drivers\etc\hosts` file and add the following line:
+1. In Notepad, edit `c:\windows\system32\drivers\etc\hosts` file and add the following line:
     ```
     127.0.0.1 mass.local portainer.mass.local mailhog.mass.local
     ```
 1. Install WSL2. Until WSL2 is released and then supported by IT, you need to follow the Manual install at https://docs.microsoft.com/en-us/windows/wsl/install-win10. Install _Ubuntu_ in the last step. Also install Windows Terminal as suggested.
 1. Install [Docker Desktop](https://docs.docker.com/docker-for-windows/install/) if you havent already.
 1. Go to Docker Desktop settings > Resources > WSL integration > enable integration for your distro (now Docker commands will be available from within your WSL2 distro).
-    1. Double-check in PowerShell: `wsl -l -v` should show three distros, and your Ubuntu should be the default. All three should be WSL version 2.
-    1. Check that docker is working inside Ubuntu: `docker-compose ps`. 
-    1. Inside Ubuntu, run `docker-compose up -d` to start the openmass containers. Verify that your development site works at http://mass.local.
-1. Install [Visual Studio Code from](https://code.visualstudio.com/) Microsoft. This will be your text and code editor. Also install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
-1. Clone the Openmass repo into the Ubuntu filesystem. You can do this either way:
-    1. In VS Code, run the command (n.b. CTRL+SHIFT+p opens the command picker) _Clone Repository into Container Volume_ (pick openmass from the list of your Github repos). 
-    1. Open a CLI in Ubuntu (i.e. use Windows Terminal and select Ubuntu as your shell). Connect to openmass by running the VS Code command _Attach to Running Container_ and pick the `drupal` container.
-1. You should see a green `Connected massgoc/drupalcontainer` in lower left. This means that Remote Container extension is connected and working.
-    1. You may now browse the codebase, and make changes. The codebase you are editing canonically lives in the Ubuntu filesystem (e.g. /home/), not in the Windows filesystem (/mnt/c), because you'll get vastly superior performance on the Ubuntu filesystem.
-    1. Try to use Linux programs. For example, use [gh](https://cli.github.com/), [lazygit](https://github.com/jesseduffield/lazygit) or VS Code for Git operations instead of Tower or GitKraken. WSL GUI applications are [in Preview now, and will be in the Windows 11](https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps).
-    1. For CLI work, you can use the Terminal inside VS Code. That drops you right into the `drupal` container. Or you can use a shell on Ubuntu. Ahoy commands (see below) will only work in the Ubuntu shell.
-   1. Install these VS Code extensions into the Remote as needed: PHP Intelephense, PHP Debug, SQLTools (and MySQL plugin), Open in Github, BitBucket, Gitlab. 
-1. Create a `.env` file at the root level of the project by copying the example file shipped with the `openmass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
+    1. Double-check in PowerShell: `wsl -l -v` should show three distros, and your Ubuntu should be the default )has asterisk). All three should be WSL version 2.
+    1. Double check in Ubuntu CLI (i.e. open Windows Terminal with Ubuntu shell instead of Powershell) that Docker is working inside Ubuntu: `docker-compose ps`.
+1. In Ubuntu CLI: 
+   ```bash
+   git clone https://github.com/massgov/openmass.git
+   cd openmass
+   # Start the openmass containers. Once you have installed Ahoy (see below), you can alternatively run: ahoy up.
+   docker-compose up -d
+   ```
+1. Verify that your development site responds by opening any Windows browser and navigating to http://mass.local. It is expected that the CSS is broken. We'll fix that soon.
+1. Install [Visual Studio Code from](https://code.visualstudio.com/) Microsoft. This will be your code editor. Also install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
+1. In VS Code, run the command _Attach to Running Container_ and pick the `drupal` container.   
+1. You should see a green `Connected massgoc/drupalcontainer` in lower left. This means that Remote Container extension is connected and working. You may now browse the codebase, and make changes. The codebase you are editing canonically lives in the Ubuntu filesystem (e.g. /home/), not in the Windows filesystem (/mnt/c), because you'll get vastly superior performance on the Ubuntu filesystem.
+1. Create a `.env` file at the root level of the project by copying the example file shipped with the `openmass` repo. Review and edit your .env file. Restart Docker for changes to take effect. Note that the `.env` file is ignored in `.gitignore` and will not be tracked or pushed to Github.
     ```
     $ cp .env.example .env
     ```
-
+1. In VS Code *Terminal*, run each of the lines below. This fixes the broken CSS we noted earlier.
+   ```
+   mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
+   chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+   ```
+1. Misc Tips
+   1. Try to use Linux programs. For example, use [gh](https://cli.github.com/), [lazygit](https://github.com/jesseduffield/lazygit) or VS Code for Git operations instead of Tower or GitKraken. WSL GUI applications are [in Preview now, and will be in the Windows 11](https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps).
+   1. For CLI work, you can use the Terminal inside VS Code. That drops you right into the `drupal` container. Or you can use a shell on Ubuntu. Ahoy commands (see below) will only work in the Ubuntu shell.
+   1. Install these VS Code extensions into the Remote as needed: PHP Intelephense, PHP Debug, SQLTools (and MySQL plugin), Open in Github, BitBucket, Gitlab.   
 
 ### Native (optional)
 If the Docker section above is unappealing, its easy to run mass.gov natively on any OS. You need to provide your own PHP, web server and DB server (and optional memcache). On OSX, [these install instructions](https://getgrav.org/blog/macos-bigsur-apache-multiple-php-versions) are good (stop at the section called _PHP Switcher Script_), along with this [mysql section](https://getgrav.org/blog/macos-bigsur-apache-mysql-vhost-apc). Point your web server at the /docroot directory.
