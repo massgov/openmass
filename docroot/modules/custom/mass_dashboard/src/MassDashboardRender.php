@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\mass_admin_toolbar;
+namespace Drupal\mass_dashboard;
 
 use Drupal\Core\Security\TrustedCallbackInterface;
 use Drupal\Core\Menu\MenuTreeParameters;
@@ -8,7 +8,7 @@ use Drupal\Core\Menu\MenuTreeParameters;
 /**
  * Class to for our pre_render callbacks Because Drupal 9 wants us to do better.
  */
-class MassAdminToolbarRender implements TrustedCallbackInterface {
+class MassDashboardRender implements TrustedCallbackInterface {
 
   /**
    * Trusted Callback function.
@@ -18,7 +18,7 @@ class MassAdminToolbarRender implements TrustedCallbackInterface {
    */
   public static function trustedCallbacks() {
     return [
-      'massAdminToolbarToolbarPrerenderTray',
+      'massDashboardToolbarPrerenderTray',
     ];
   }
 
@@ -37,7 +37,7 @@ class MassAdminToolbarRender implements TrustedCallbackInterface {
    * @see toolbar_prerender_toolbar_administration_tray()
    * @see drupal_render()
    */
-  public static function massAdminToolbarToolbarPrerenderTray(array $element) {
+  public static function massDashboardToolbarPrerenderTray(array $element) {
     $menu_tree = \Drupal::service('toolbar.menu_tree');
 
     $parameters = new MenuTreeParameters();
