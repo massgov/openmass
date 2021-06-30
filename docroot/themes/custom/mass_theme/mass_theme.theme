@@ -5111,7 +5111,7 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
     }
   }
 
-  $contentTypes = \Drupal::service('entity.manager')->getStorage('node_type')->loadMultiple();
+  $contentTypes = \Drupal::service('entity_type.manager')->getStorage('node_type')->loadMultiple();
 
   $contentTypesList = [];
 
