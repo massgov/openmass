@@ -509,7 +509,7 @@ class Helper {
    */
   public static function getCurrentPathAlias() {
     $path = \Drupal::service('path.current')->getPath();
-    return \Drupal::service('path.alias_manager')->getAliasByPath($path);
+    return \Drupal::service('path_alias.manager')->getAliasByPath($path);
   }
 
   /**
@@ -1407,7 +1407,7 @@ class Helper {
       $text = $options['text'];
     }
 
-    $href = \Drupal::service('path.alias_manager')->getAliasByPath('/node/' . $entity->id()) . '/events';
+    $href = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $entity->id()) . '/events';
 
     return [
       'href' => $href,
