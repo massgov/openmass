@@ -129,7 +129,7 @@ describe('WWW Backend', function() {
   const browserTTLTests = [
       ['https://www.mass.gov/', 'public, max-age=604800, stale-if-error=604800, stale-while-revalidate=604800', 'public, max-age=1800, stale-if-error=604800, stale-while-revalidate=604800'],
       ['https://www.mass.gov/jsonapi/node/alert?foo=bar', 'public, max-age=604800, stale-if-error=604800, stale-while-revalidate=604800', 'public, max-age=60, stale-if-error=604800, stale-while-revalidate=604800'],
-      ['https://www.mass.gov/alerts', 'public, max-age=604800, stale-if-error=604800, stale-while-revalidate=604800', 'public, max-age=60, stale-if-error=604800, stale-while-revalidate=604800'],
+      ['https://www.mass.gov/alerts/sitewide', 'public, max-age=604800, stale-if-error=604800, stale-while-revalidate=604800', 'public, max-age=60, stale-if-error=604800, stale-while-revalidate=604800'],
       ['https://www.mass.gov/', 'public, s-max-age=604800, max-age=604800, stale-if-error=604800, stale-while-revalidate=604800', 'public, s-max-age=604800, max-age=1800, stale-if-error=604800, stale-while-revalidate=604800'],
       ['https://www.mass.gov/', 'private', 'private'],
       ['https://www.mass.gov/info-details/covid-19-cases-quarantine-and-monitoring', 'public, s-max-age=604800, max-age=604800, stale-if-error=604800, stale-while-revalidate=604800', 'public, s-max-age=604800, max-age=60, stale-if-error=604800, stale-while-revalidate=604800'],
