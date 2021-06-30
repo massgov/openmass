@@ -8,6 +8,7 @@ services:
       - .:/var/www/mass.local:${VOLUME_FLAGS-delegated}
       # Configures SSH
       - .docker/.bashrc:/root/.bashrc
+      # Copy Git config from host.
       - ${HOME}/.gitconfig:/root/.gitconfig
     # Get Acquia SSH keys into container.
     secrets:
