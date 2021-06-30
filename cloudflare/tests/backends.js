@@ -168,7 +168,7 @@ describe('WWW Backend', function() {
     // Most pages get a 30 minute max lifetime.
     ['https://www.mass.gov/', {cf: {cacheTtl: 1800}}],
     // Alert endpoints get shortened edge TTL.
-    ['https://www.mass.gov/alerts/foo', {cf: {cacheTtl: 60}}],
+    ['https://www.mass.gov/alerts/sitewide', {cf: {cacheTtl: 60}}],
     ['https://www.mass.gov/jsonapi/node/alert?foo=bar', {cf: {cacheTtl: 60}}],
     // No override is expected for static assets.
     ['https://www.mass.gov/foo.jpg', {cf: {cacheEverything: true}}],
