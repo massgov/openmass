@@ -33,7 +33,8 @@ The recommended way to run Docker on Windows is via WSL2.
 
 1. In Notepad, edit `c:\windows\system32\drivers\etc\hosts` file and add the following line:
     ```
-    127.0.0.1 mass.local portainer.mass.local mailhog.mass.local
+    # Change the IP below to match whatever is in your hosts file for host.docker.internal
+    192.168.50.144 mass.local portainer.mass.local mailhog.mass.local
     ```
 1. Install WSL2. Until WSL2 is released and then supported by IT, you need to follow the Manual install at https://docs.microsoft.com/en-us/windows/wsl/install-win10. Install _Ubuntu_ in the last step. Also install Windows Terminal as suggested.
 1. Install [Docker Desktop](https://docs.docker.com/docker-for-windows/install/) if you havent already.
