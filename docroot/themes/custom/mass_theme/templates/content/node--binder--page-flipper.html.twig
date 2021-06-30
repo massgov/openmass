@@ -7,11 +7,13 @@
 {% set prev = false %}
 {% set next = false %}
 {% if content.page_flipper_previous[0]['#url_title'] %}
+  {% set arrowPrevInfo = "Previous page, " ~ content.page_flipper_previous[0]['#title'] %}
   {% set prev = {
     "arrowButton": {
       "href": content.page_flipper_previous[0]['#url_title'],
       "info": "",
-      "direction": "left"
+      "direction": "left",
+      "hidden": true
     },
     "label": "Previous",
     "title": "",
@@ -23,11 +25,13 @@
   } %}
 {% endif %}
 {% if content.page_flipper_next[0]['#url_title'] %}
+  {% set arrowNextInfo = "Next page, " ~ content.page_flipper_next[0]['#title'] %}
   {% set next = {
     "arrowButton": {
       "href": content.page_flipper_next[0]['#url_title'],
-      "info": "",
-      "direction": "right"
+      "info": arrowNextInfo,
+      "direction": "right",
+      "hidden": true
     },
     "label": "Next",
     "title": "",
