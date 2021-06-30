@@ -1199,6 +1199,25 @@ function mass_validation_org_page_alter_helper(array &$form) {
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_org_page_form_validate(array &$form, FormStateInterface $form_state) {
+  if ($form_state->hasValue('field_organization_sections')) {
+    $sections = $form_state->getValue('field_organization_sections');
+    foreach ($sections as $section_key => $section) {
+      if (isset($section['subform']['field_section_long_form_content'])) {
+        $paragraphs = $section['subform']['field_section_long_form_content'];
+        foreach ($paragraphs as $paragraph_key => $paragraph) {
+          if (isset($paragraph['subform']['field_caspio_data_identifier'])) {
+            foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
+              if (!empty($caspioId)) {
+                if (!preg_match('/^http(s)?:\/\/\w+\.caspio\.(com)(\/.*|$)/', $caspioId['value'])) {
+                  $form_state->setErrorByName('field_organization_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform][field_caspio_data_identifier', t('Only caspio.com URL allowed. See help text for this field.'));
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
   if ($form_state->hasValue('field_org_featured_items')) {
     $featured_items_paragraphs = $form_state->getValue('field_org_featured_items');
     if (isset($featured_items_paragraphs[0])) {
