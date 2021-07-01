@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "52becd1b6dc7bf3f0267b1651573a756",
+    "content-hash": "058aaeba1e9e9168feb68d9ee59adeb0",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -431,6 +431,18 @@
                 "source": "https://github.com/ChristianRiesen/otp/tree/2.7.0"
             },
             "time": "2021-02-23T20:13:30+00:00"
+        },
+        {
+            "name": "ckeditor/liststyle",
+            "version": "4.11.1",
+            "dist": {
+                "type": "zip",
+                "url": "https://download.ckeditor.com/liststyle/releases/liststyle_4.11.1.zip"
+            },
+            "type": "drupal-library",
+            "extra": {
+                "installer-name": "ckeditor/plugins/liststyle"
+            }
         },
         {
             "name": "clue/stream-filter",
@@ -3250,6 +3262,59 @@
             "support": {
                 "source": "https://gitlab.com/drupalspoons/cache_metrics",
                 "issues": "https://gitlab.com/drupalspoons/cache_metrics/-/issues"
+            }
+        },
+        {
+            "name": "drupal/ckeditor_liststyle",
+            "version": "1.4.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/ckeditor_liststyle.git",
+                "reference": "8.x-1.4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/ckeditor_liststyle-8.x-1.4.zip",
+                "reference": "8.x-1.4",
+                "shasum": "858f441c4603dd2925474f96b53f38d8b5174b9d"
+            },
+            "require": {
+                "drupal/ckeditor": "*",
+                "drupal/core": "^8 || ^9"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.4",
+                    "datestamp": "1590275787",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Osman Gormus",
+                    "homepage": "https://www.drupal.org/u/osman",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "This plugin adds numbered list and ordered list properties dialogs (available in context menu) in CKEditor.",
+            "homepage": "http://drupal.org/project/ckeditor_liststyle",
+            "keywords": [
+                "Drupal",
+                "ckeditor",
+                "list",
+                "list-style"
+            ],
+            "support": {
+                "source": "https://git.drupalcode.org/project/ckeditor_liststyle",
+                "issues": "https://www.drupal.org/project/issues/ckeditor_liststyle"
             }
         },
         {
@@ -7429,29 +7494,29 @@
         },
         {
             "name": "drupal/office_hours",
-            "version": "1.0.0-alpha2",
+            "version": "1.5.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/office_hours.git",
-                "reference": "8.x-1.0-alpha2"
+                "reference": "8.x-1.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/office_hours-8.x-1.0-alpha2.zip",
-                "reference": "8.x-1.0-alpha2",
-                "shasum": "bb9f1e64721ac9cf0d7b1865e07e89a2ab714113"
+                "url": "https://ftp.drupal.org/files/projects/office_hours-8.x-1.5.zip",
+                "reference": "8.x-1.5",
+                "shasum": "745079dfca40222a034da0475e516c0aa1317c67"
             },
             "require": {
-                "drupal/core": "^8"
+                "drupal/core": "^8 || ^9"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.0-alpha2",
-                    "datestamp": "1507136344",
+                    "version": "8.x-1.5",
+                    "datestamp": "1623916796",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Alpha releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 }
             },
@@ -11474,7 +11539,7 @@
                 "issues": "https://github.com/massgov/mayflower-artifacts/issues",
                 "source": "https://github.com/massgov/mayflower-artifacts/tree/DP-22215"
             },
-            "time": "2021-06-28T15:27:14+00:00"
+            "time": "2021-07-01T00:19:28+00:00"
         },
         {
             "name": "masterminds/html5",
@@ -19103,7 +19168,6 @@
         "drupal/media_entity_download": 20,
         "drupal/monolog": 10,
         "drupal/node_title_help_text": 20,
-        "drupal/office_hours": 15,
         "drupal/path_redirect_import": 10,
         "drupal/scheduled_transitions": 20,
         "drupal/scheduler_content_moderation_integration": 15,
@@ -19123,5 +19187,5 @@
     "platform-overrides": {
         "php": "7.4"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.0.0"
 }

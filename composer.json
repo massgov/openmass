@@ -109,11 +109,27 @@
                     "type": "zip"
                 }
             }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "ckeditor/liststyle",
+                "version": "4.11.1",
+                "type": "drupal-library",
+                "extra": {
+                    "installer-name": "ckeditor/plugins/liststyle"
+                },
+                "dist": {
+                    "url": "https://download.ckeditor.com/liststyle/releases/liststyle_4.11.1.zip",
+                    "type": "zip"
+                }
+            }
         }
     ],
     "require": {
         "browserstate/history.js": "dev-master",
         "christian-riesen/base32": "^1.3.1",
+        "ckeditor/liststyle": "4.11.1",
         "components/highlightjs": "9.7.*",
         "composer/installers": "^1.2",
         "cweagans/composer-patches": "^1",
@@ -131,6 +147,7 @@
         "drupal/autologout": "^1",
         "drupal/better_exposed_filters": "^5.0@beta",
         "drupal/cache_metrics": "^2",
+        "drupal/ckeditor_liststyle": "^1.4",
         "drupal/cloudflare": "^1.0@alpha",
         "drupal/components": "^2.4",
         "drupal/composer_deploy": "^1.4",
@@ -182,7 +199,7 @@
         "drupal/monolog": "^2@beta",
         "drupal/node_edit_protection": "^1.0",
         "drupal/node_title_help_text": "1.x-dev",
-        "drupal/office_hours": "^1.0@alpha",
+        "drupal/office_hours": "^1.5",
         "drupal/paragraphs": "^1.10",
         "drupal/password_policy": "^3",
         "drupal/path_redirect_import": "^1.0@beta",
@@ -298,6 +315,9 @@
                 "IMPORTANT: Make content moderation views use indexes": "patches/content-moderation-add-views-filter-indices.patch",
                 "Allow the ChangedItem to skip updating": "https://www.drupal.org/files/issues/2021-05-07/drupal-skip_update-2329253-76.patch"
             },
+            "ckeditor/liststyle": {
+                "Change code from styles to type": "https://www.drupal.org/files/issues/2019-01-02/ckeditor_liststyle-styles-to-type-2874952-4-do-not-test.patch"
+            },
             "drupal/tfa": {
                 "UID enumeration prevention. (https://www.drupal.org/project/tfa/issues/2957140)": "https://www.drupal.org/files/issues/2021-03-15/tfa-remove_uid_enumeration-2957140-5.patch",
                 "[Allow for formatted help text on login form](https://www.drupal.org/project/tfa/issues/3128020)": "https://www.drupal.org/files/issues/2020-04-15/3128020-2.patch"
@@ -354,9 +374,6 @@
             },
             "drupal/redirect": {
                 "Add an intermediate redirect": "https://www.drupal.org/files/issues/2020-07-31/tmp.diff"
-            },
-            "drupal/office_hours": {
-                "Fix timezone for the office hours module": "patches/fix-timezone-for-office-hours.patch"
             },
             "drupal/views_bulk_operations": {
                 "Remove the select/deselect all results within VBO": "patches/DP-11179-hide-select-all-results-from-views.patch"
