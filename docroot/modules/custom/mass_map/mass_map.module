@@ -155,7 +155,6 @@ function mass_map_library_info_alter(&$libraries, $extension) {
   }
 }
 
-
 /**
  * Implements hook_views_query_alter().
  *
@@ -209,10 +208,10 @@ function mass_map_views_query_alter(ViewExecutable $view, $query) {
         'destination_longitude' => 'paragraphs_item_field_data_node__field_ref_address__paragraph__field_geofield.field_geofield_lon',
       ];
       $geofield['field'] = geofield_haversine($options);
-    } else {
+    }
+    else {
       unset($query->orderby[0]);
     }
-
 
     if (!empty($nids)) {
       $query->where[0]['conditions'][] = [
@@ -220,8 +219,9 @@ function mass_map_views_query_alter(ViewExecutable $view, $query) {
         'value' => $nids,
         'operator' => 'in'
       ];
-    } else {
-      // Make it empty
+    }
+    else {
+      // Make it empty.
       $query->where[0]['conditions'][] = [
         'field' => 'node_field_data.nid',
         'value' => 0,
@@ -230,6 +230,3 @@ function mass_map_views_query_alter(ViewExecutable $view, $query) {
     }
   }
 }
-
-
-  
