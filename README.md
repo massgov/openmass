@@ -31,13 +31,14 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 ## Getting Started - Windows Subsystem for Linux (aka WSL2)
 The recommended way to run Docker on Windows is via WSL2.
 
+1. Install WSL2. Until WSL2 is released and then supported by IT, you need to follow the Manual install at https://docs.microsoft.com/en-us/windows/wsl/install-win10. Install _Ubuntu_ in the last step. Also install Windows Terminal as suggested.
+1. Install [Docker Desktop](https://docs.docker.com/docker-for-windows/install/) if you havent already.
 1. In Notepad, edit `c:\windows\system32\drivers\etc\hosts` file and add the following line:
     ```
     # Change the IP below to match whatever is in your hosts file for host.docker.internal
     192.168.50.144 mass.local portainer.mass.local mailhog.mass.local
     ```
-1. Install WSL2. Until WSL2 is released and then supported by IT, you need to follow the Manual install at https://docs.microsoft.com/en-us/windows/wsl/install-win10. Install _Ubuntu_ in the last step. Also install Windows Terminal as suggested.
-1. Install [Docker Desktop](https://docs.docker.com/docker-for-windows/install/) if you havent already.
+    Your IP will vary from the one above.Just copy the one that Docker Desktop already wrote to that file.
 1. Go to Docker Desktop settings > Resources > WSL integration > enable integration for your distro (now Docker commands will be available from within your WSL2 distro).
     1. Double-check in PowerShell: `wsl -l -v` should show three distros, and your Ubuntu should be the default )has asterisk). All three should be WSL version 2.
     1. Double check in Ubuntu CLI (i.e. open Windows Terminal with Ubuntu shell instead of Powershell) that Docker is working inside Ubuntu: `docker-compose ps`.
@@ -54,10 +55,13 @@ The recommended way to run Docker on Windows is via WSL2.
    ahoy up
    ```
 1. Verify that your development site responds by opening any Windows browser and navigating to http://mass.local. It is expected that the CSS is broken. We'll fix that soon.
-1. Install [Visual Studio Code from](https://code.visualstudio.com/) Microsoft. This will be your code editor. Also install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension.
-1. In VS Code, run the command _Attach to Running Container_ and pick the `drupal` container.   
-1. You should see a green `Connected massgoc/drupalcontainer` in lower left. This means that Remote Container extension is connected and working. You may now browse the codebase, and make changes. The codebase you are editing canonically lives in the Ubuntu filesystem (e.g. /home/), not in the Windows filesystem (/mnt/c), because you'll get vastly superior performance on the Ubuntu filesystem.
-1. Create a `.env` file at the root level of the project by copying the example file shipped with the `openmass` repo. Review and edit your .env file. Restart Docker for changes to take effect. Note that the `.env` file is ignored in `.gitignore` and will not be tracked or pushed to Github.
+2. Install and configure a code editor from the approaches below. The first approach is recommended:
+    1. Install an X Server app in order to run GUI apps in Linux. See https://ddevhq.org/ddev-local/ddev-local-and-phpstorm-debugging-with-wsl2/ (_Linux PHPStorm section_) 
+        1. Note: Moshe picked [VcXsrv](https://techcommunity.microsoft.com/t5/windows-dev-appconsult/running-wsl-gui-apps-on-windows-10/ba-p/1493242) instead of [X410](https://www.microsoft.com/store/productId/9NLP712ZMN9Q) - either should work. [VcXsrv blurry font fix](https://medium.com/@promiselchin/fixing-blurry-fonts-on-wsl-with-x-server-816b4a4f855f).
+    1. Install [Visual Studio Code from](https://code.visualstudio.com/) Microsoft. This will be your code editor. Also install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension. In VS Code, run the command _Attach to Running Container_ and pick the `drupal` container.   
+        1. You should see a green `Connected massgoc/drupalcontainer` in lower left. This means that Remote Container extension is connected and working. 
+1. You may now browse the codebase, and make changes. The codebase you are editing canonically lives in the Ubuntu filesystem (`/home/`), not in the Windows filesystem (`/mnt/c`), because you'll get vastly superior performance on the Ubuntu filesystem.
+7. Create a `.env` file at the root level of the project by copying the example file shipped with the `openmass` repo. Review and edit your .env file. Restart Docker for changes to take effect. Note that the `.env` file is ignored in `.gitignore` and will not be tracked or pushed to Github.
     ```
     $ cp .env.example .env
     ```
