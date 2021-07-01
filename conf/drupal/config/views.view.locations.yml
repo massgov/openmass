@@ -1,4 +1,4 @@
-uuid: e8d15a94-42d0-4514-b222-f309988a8c50
+uuid: 9e77b7e8-bebc-4dca-9cf4-3d6300636935
 langcode: en
 status: true
 dependencies:
@@ -10,13 +10,13 @@ dependencies:
     - 'taxonomy_term:location_icon:6e63f4d3-be19-403f-a901-ebfc762085ed'
   module:
     - better_exposed_filters
+    - geofield
     - node
     - paragraphs
     - taxonomy
     - user
-    - views_autocomplete_filters
-id: locations_demo
-label: 'Locations Demo'
+id: locations
+label: Locations
 module: views
 description: ''
 tag: ''
@@ -185,186 +185,6 @@ display:
             operator_limit_selection: false
             operator_list: {  }
           group: 1
-        field_address_address_address_line1:
-          id: field_address_address_address_line1
-          table: paragraph__field_address_address
-          field: field_address_address_address_line1
-          relationship: field_ref_address
-          group_type: group
-          admin_label: ''
-          operator: allwords
-          value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_address_address_address_line1_op
-            label: Address
-            description: ''
-            use_operator: false
-            operator: field_address_address_address_line1_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: address
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-            placeholder: ''
-            autocomplete_filter: 0
-            autocomplete_min_chars: '0'
-            autocomplete_items: '10'
-            autocomplete_field: ''
-            autocomplete_raw_suggestion: 1
-            autocomplete_raw_dropdown: 1
-            autocomplete_dependent: 0
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          plugin_id: views_autocomplete_filters_string
-        field_address_address_locality:
-          id: field_address_address_locality
-          table: paragraph__field_address_address
-          field: field_address_address_locality
-          relationship: field_ref_address
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_address_address_locality_op
-            label: City
-            description: ''
-            use_operator: false
-            operator: field_address_address_locality_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: city
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-            placeholder: ''
-            autocomplete_filter: 0
-            autocomplete_min_chars: '0'
-            autocomplete_items: '10'
-            autocomplete_field: ''
-            autocomplete_raw_suggestion: 1
-            autocomplete_raw_dropdown: 1
-            autocomplete_dependent: 0
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          plugin_id: views_autocomplete_filters_string
-        field_address_address_postal_code:
-          id: field_address_address_postal_code
-          table: paragraph__field_address_address
-          field: field_address_address_postal_code
-          relationship: field_ref_address
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_address_address_postal_code_op
-            label: Zipcode
-            description: ''
-            use_operator: false
-            operator: field_address_address_postal_code_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: zipcode
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-            placeholder: ''
-            autocomplete_filter: 0
-            autocomplete_min_chars: '0'
-            autocomplete_items: '10'
-            autocomplete_field: ''
-            autocomplete_raw_suggestion: 1
-            autocomplete_raw_dropdown: 1
-            autocomplete_dependent: 0
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          plugin_id: views_autocomplete_filters_string
         field_location_icons_target_id:
           id: field_location_icons_target_id
           table: node__field_location_icons
@@ -426,6 +246,24 @@ display:
           error_message: true
           plugin_id: taxonomy_index_tid
       sorts:
+        field_geofield_proximity:
+          id: field_geofield_proximity
+          table: paragraph__field_geofield
+          field: field_geofield_proximity
+          relationship: field_ref_address
+          group_type: group
+          admin_label: ''
+          order: ASC
+          exposed: false
+          expose:
+            label: 'Geofield Proximity (field_geofield)'
+          units: GEOFIELD_KILOMETERS
+          source: geofield_manual_origin
+          source_configuration:
+            origin:
+              lat: '0.1'
+              lon: '0.1'
+          plugin_id: geofield_proximity_sort
         title:
           id: title
           table: node_field_data
@@ -440,7 +278,7 @@ display:
           exposed: false
           expose:
             label: ''
-      title: 'Locations Demo'
+      title: Locations
       header:
         result:
           id: result
@@ -455,33 +293,14 @@ display:
       footer: {  }
       empty: {  }
       relationships:
-        reverse__node__field_org_ref_locations:
-          id: reverse__node__field_org_ref_locations
-          table: node_field_data
-          field: reverse__node__field_org_ref_locations
-          relationship: none
-          group_type: group
-          admin_label: field_org_ref_locations
-          required: true
-          entity_type: node
-          plugin_id: entity_reverse
-        field_org_ref_locations:
-          id: field_org_ref_locations
-          table: node__field_org_ref_locations
-          field: field_org_ref_locations
-          relationship: none
-          group_type: group
-          admin_label: 'field_org_ref_locations: Content'
-          required: true
-          plugin_id: standard
         field_ref_contact_info_1:
           id: field_ref_contact_info_1
           table: node__field_ref_contact_info_1
           field: field_ref_contact_info_1
-          relationship: field_org_ref_locations
+          relationship: none
           group_type: group
           admin_label: 'field_ref_contact_info_1: Content'
-          required: true
+          required: false
           plugin_id: standard
         field_ref_address:
           id: field_ref_address
@@ -490,14 +309,14 @@ display:
           relationship: field_ref_contact_info_1
           group_type: group
           admin_label: 'field_ref_address: Paragraph'
-          required: true
+          required: false
           plugin_id: standard
       arguments:
         nid:
           id: nid
           table: node_field_data
           field: nid
-          relationship: reverse__node__field_org_ref_locations
+          relationship: none
           group_type: group
           admin_label: ''
           default_action: default
@@ -527,7 +346,7 @@ display:
             fail: 'not found'
           validate_options: {  }
           break_phrase: false
-          not: false
+          not: true
           entity_type: node
           entity_field: nid
           plugin_id: node_nid
@@ -557,7 +376,7 @@ display:
       display_extenders:
         ajax_history:
           enable_history: true
-      path: node/%/locations-demo
+      path: node/%/locations
     cache_metadata:
       max-age: -1
       contexts:

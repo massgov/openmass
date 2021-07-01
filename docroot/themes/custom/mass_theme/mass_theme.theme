@@ -1357,6 +1357,8 @@ function mass_theme_preprocess_node_location(&$variables) {
       }
     }
 
+    $address_link = isset($contacts['field_address']) ? 'https://maps.google.com/?q=' . urlencode($contacts['field_address']) : '';
+
     $variables['imagePromo'] = [
       'location' => [
         'text' => isset($contacts['field_address']) ? $contacts['field_address'] : '',
@@ -1367,8 +1369,13 @@ function mass_theme_preprocess_node_location(&$variables) {
         'fax'      => isset($contacts['field_fax']) ? $contacts['field_fax'] : '',
         'email'    => isset($contacts['field_email']) ? $contacts['field_email'] : '',
         'address'  => isset($contacts['field_address']) ? $contacts['field_address'] : '',
-        'directions' => isset($contacts['field_address']) ? 'https://maps.google.com/?q=' . urlencode($contacts['field_address']) : '',
+        'directions' => $address_link,
       ],
+      'link' => [
+        'text' => t("Directions"),
+        'href' => $address_link,
+        'info' => ''
+      ]
     ];
 
     // Location subtitle.
@@ -1439,13 +1446,6 @@ function mass_theme_preprocess_node_location(&$variables) {
 
     // Add all filterable icon/terms as this listing's imagePromo tags.
     $variables['imagePromo']['tags'] = $tags;
-
-    // Create a map link for the node.
-    $variables['imagePromo']['link'] = [
-      'text' => "Show on map",
-      'href' => '#',
-      'info' => ''
-    ];
 
     if (!$node->field_ref_contact_info_1->isEmpty()) {
       $contact_information_entity = $node->field_ref_contact_info_1->entity;
@@ -5983,7 +5983,7 @@ function mass_theme_preprocess_views_view(&$variables) {
  *
  * @see mass_theme_theme_suggestions_alter()
  */
-function mass_theme_preprocess_views_view_locations_demo_page(&$variables) {
+function mass_theme_preprocess_views_view_locations_page(&$variables) {
   $view = $variables['view'];
   $view_result = $view->result;
 
@@ -5994,7 +5994,7 @@ function mass_theme_preprocess_views_view_locations_demo_page(&$variables) {
       $node_title = $node->label();
       // Set appropriate page title.
       if ($node->getType() == "location") {
-        $page_title = $this->t('Other locations related to @title', ['@title' => $node_title]);
+        $page_title = t('Other locations related to @title', ['@title' => $node_title]);
       }
       else {
         $page_title = $node_title . ' Locations';
@@ -6016,8 +6016,9 @@ function mass_theme_preprocess_views_view_locations_demo_page(&$variables) {
     }
   }
 
-  $variables['helper'] = \Drupal::request()->query->get('helper') ?: '';
-  $icons = \Drupal::request()->query->get('icons') ?: 'All';
+  $query = \Drupal::request()->query;
+  $variables['helper'] = $query->get('helper') ?: '';
+  $icons = $query->get('icons') ?: 'All';
   $variables['icons'] = ($icons == 'All') ? FALSE : TRUE;
 
   if (!empty($view_result)) {
@@ -6264,6 +6265,19 @@ function mass_theme_form_views_exposed_form_alter(&$form, FormStateInterface $fo
       '#title' => 'Helper',
       '#size' => 60,
     ];
+
+    $form['lat'] = [
+      '#type' => 'textfield',
+      '#title' => 'Lat.',
+      '#size' => 60,
+    ];
+
+    $form['lng'] = [
+      '#type' => 'textfield',
+      '#title' => 'Lng.',
+      '#size' => 60,
+    ];
+
   }
 }
 

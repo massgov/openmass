@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\mayflower\Helper;
 use Drupal\Core\Site\Settings;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_theme().
@@ -153,3 +154,82 @@ function mass_map_library_info_alter(&$libraries, $extension) {
     ];
   }
 }
+
+
+/**
+ * Implements hook_views_query_alter().
+ *
+ * Pass the related locations id to the new view.
+ */
+function mass_map_views_query_alter(ViewExecutable $view, $query) {
+  if ($view->id() == 'locations') {
+    $nids = [];
+    if ($nid = $view->args[0]) {
+      $nodeStorage = \Drupal::entityTypeManager()->getStorage('node');
+      $node = $nodeStorage->load($nid);
+      if ($node) {
+        // Possible location fields for each bundle (org, service page)
+        $map = [
+          'mappedLocations' => [
+            'field_related_locations',
+            'field_org_ref_locations',
+            'field_service_ref_locations',
+          ],
+        ];
+
+        // Determines which field names to use from the map.
+        $fields = Helper::getMappedFields($node, $map);
+        if (array_key_exists('mappedLocations', $fields) && Helper::isFieldPopulated($node, $fields['mappedLocations'])) {
+          foreach ($node->{$fields['mappedLocations']} as $entity) {
+            // Verify locations have addresses.
+            $location_id = $entity->target_id;
+            $location_node = $nodeStorage->load($location_id);
+            $contact_info_id = $location_node->field_ref_contact_info_1->target_id;
+            $contact_info_node = $nodeStorage->load($contact_info_id);
+            // Only display locations with addresses.
+            if (!$contact_info_node->field_ref_address->isEmpty()) {
+              $nids[] = $location_id;
+            }
+          }
+        }
+      }
+    }
+
+    $params = \Drupal::request()->query;
+    $lng = $params->get('lng');
+    $lat = $params->get('lat');
+
+    if ($lng && $lat) {
+      $geofield = &$query->fields['paragraphs_item_field_data_node__field_ref_address__paragrap'];
+      $options = [
+        'origin_latitude' => $lat,
+        'origin_longitude' => $lng,
+        'earth_radius' => 6371,
+        'destination_latitude' => 'paragraphs_item_field_data_node__field_ref_address__paragraph__field_geofield.field_geofield_lat',
+        'destination_longitude' => 'paragraphs_item_field_data_node__field_ref_address__paragraph__field_geofield.field_geofield_lon',
+      ];
+      $geofield['field'] = geofield_haversine($options);
+    } else {
+      unset($query->orderby[0]);
+    }
+
+
+    if (!empty($nids)) {
+      $query->where[0]['conditions'][] = [
+        'field' => 'node_field_data.nid',
+        'value' => $nids,
+        'operator' => 'in'
+      ];
+    } else {
+      // Make it empty
+      $query->where[0]['conditions'][] = [
+        'field' => 'node_field_data.nid',
+        'value' => 0,
+        'operator' => '='
+      ];
+    }
+  }
+}
+
+
+  

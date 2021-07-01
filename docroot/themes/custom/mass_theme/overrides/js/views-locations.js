@@ -15,27 +15,13 @@
           window.document.dispatchEvent(DOMContentLoaded_event);
         }
       }).on('ma:GoogleMaps:placeChanged', function (event, place) {
-
         $('.views-exposed-form input[type="text"]').val('');
-
-        if (place.address_components) {
-          for (var i = 0; i < place.address_components.length; i++) {
-
-            var component = place.address_components[i];
-            if (component.types[0] === 'route') {
-              $('.views-exposed-form [name="address"]').val(component.long_name);
-            }
-
-            if (component.types[0] === 'locality') {
-              $('.views-exposed-form [name="city"]').val(component.long_name);
-            }
-
-            if (component.types[0] === 'postal_code') {
-              $('.views-exposed-form [name="zipcode"]').val(component.long_name);
-            }
-          }
+        if (place.geometry && place.geometry.location) {
+          var lat = place.geometry.location.lat();
+          var lng = place.geometry.location.lng();
+          $('.views-exposed-form [name="lat"]').val(lat);
+          $('.views-exposed-form [name="lng"]').val(lng);
         }
-
       });
 
       $('form.js-location-filters', context).on('submit', function (e) {

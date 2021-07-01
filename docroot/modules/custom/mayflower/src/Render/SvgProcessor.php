@@ -6,6 +6,7 @@ use Drupal\Core\Render\AttachmentsInterface;
 use Drupal\Core\Render\AttachmentsResponseProcessorInterface;
 use Drupal\Core\Render\HtmlResponse;
 use Drupal\views\Ajax\ViewAjaxResponse;
+use Drupal\Core\Ajax\AjaxResponse;
 
 /**
  * Response attachments processor to dump SVGs to a single block on the page.
@@ -92,6 +93,9 @@ class SvgProcessor implements AttachmentsResponseProcessorInterface {
         }
       }
 
+      return $this->inner->processAttachments($response);
+    }
+    elseif ($response instanceof AjaxResponse) {
       return $this->inner->processAttachments($response);
     }
     else {
