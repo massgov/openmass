@@ -4,8 +4,7 @@ namespace Drupal\mass_translations\Controller;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\node\NodeStorageInterface;
+use Drupal\mass_translations\MassTranslationsService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,8 +20,9 @@ class NodeTranslationsController extends TranslationsController {
   /**
    * {@inheritdoc}
    */
-  public function __construct(NodeStorageInterface $node_storage) {
-    $this->nodeStorage = $node_storage;
+  public function __construct(MassTranslationsService $mass_translations_service) {
+    parent::__construct($mass_translations_service);
+    $this->nodeStorage = $this->entityTypeManager->getStorage('node');
     $this->englishFieldName = 'field_english_version';
   }
 
@@ -30,7 +30,7 @@ class NodeTranslationsController extends TranslationsController {
    * {@inheritdoc}
    */
   public function access(EntityInterface $node) {
-    $languages = parent::getTranslationLanguages($node, $this->nodeStorage, $this->englishFieldName);
+    $languages = $this->massTranslationsService->getTranslationLanguages($node, $this->nodeStorage, $this->englishFieldName);
 
     return AccessResult::allowedIf(count($languages) > 1);
   }
@@ -40,7 +40,7 @@ class NodeTranslationsController extends TranslationsController {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getStorage('node')
+      $container->get('mass_translations.service')
     );
   }
 

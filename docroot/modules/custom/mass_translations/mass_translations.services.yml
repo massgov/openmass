@@ -1,0 +1,8 @@
+services:
+  mass_translations.service:
+    class: Drupal\mass_translations\MassTranslationsService
+  mass_translations.redirect:
+    class: Drupal\mass_translations\EventSubscriber\MassTranslationsRedirectSubscriber
+    arguments: ['@language_manager', '@entity_type.manager', '@mass_translations.service']
+    tags:
+      - { name: event_subscriber }
