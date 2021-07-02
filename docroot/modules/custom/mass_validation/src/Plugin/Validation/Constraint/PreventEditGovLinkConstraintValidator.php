@@ -7,6 +7,7 @@ namespace Drupal\mass_validation\Plugin\Validation\Constraint;
  * Contains PreventEditGovLinkConstraintValidator class.
  */
 
+use Drupal\Component\Utility\Html;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
@@ -38,10 +39,19 @@ class PreventEditGovLinkConstraintValidator extends ConstraintValidator {
         // Other text fields validation.
         if (isset($values[0]['value'])) {
           foreach ($values as $index => $value) {
-            if (strpos($value['value'], 'edit.mass.gov') !== FALSE) {
-              $this->context->buildViolation($constraint->message)
-                ->atPath($entity_field)
-                ->addViolation();
+            $html = HTML::load($value['value']);
+            if (!empty($html)) {
+              $anchors = $html->getElementsByTagName("a");
+              if (!empty($anchors)) {
+                foreach ($anchors as $anchor) {
+                  $href = $anchor->getAttribute('href');
+                  if (strpos($href, "edit.mass.gov") !== FALSE) {
+                    $this->context->buildViolation($constraint->message)
+                      ->atPath($entity_field)
+                      ->addViolation();
+                  }
+                }
+              }
             }
           }
         }
