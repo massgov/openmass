@@ -86,9 +86,9 @@ class MassTranslationsRedirectSubscriber implements EventSubscriberInterface {
     foreach ($languages as $entity) {
       // If a translation is found, redirect to that node.
       if ($current_langcode === $entity->get('langcode')->getValue()[0]['value']) {
-        // Redirect to the correct translation using a 301 Moved Permanently
+        // Redirect to the correct translation using a 302 Moved Temporarily
         // redirect code.
-        $response = new RedirectResponse($entity->toUrl()->toString(), 301);
+        $response = new RedirectResponse($entity->toUrl()->toString(), 302);
         $event->setResponse($response);
       }
     }
