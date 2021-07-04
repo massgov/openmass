@@ -19,6 +19,13 @@ const MASS_ALERTS_SCOPE_SITEWIDE = 'site_wide';
 const MASS_ALERTS_SCOPE_PAGE = 'specific_target_pages';
 const MASS_ALERTS_SCOPE_ORG = 'by_organization';
 
+/**
+ * Get scope for an alert.
+ *
+ * @param $node
+ *  A node.
+ * @return mixed
+ */
 function mass_alerts_get_scope($node) {
   return $node->get("field_alert_display")->getValue();
 }
