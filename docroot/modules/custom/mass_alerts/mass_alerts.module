@@ -193,6 +193,7 @@ function mass_alerts_node_insert(EntityInterface $node) {
  *   A node.
  */
 function mass_alerts_invalidate_tags(NodeInterface $node) {
+  $tags = [];
   if ($node->bundle() === "alert") {
     $scope = mass_alerts_get_scope($node);
     if ($scope == MASS_ALERTS_SCOPE_ORG) {
