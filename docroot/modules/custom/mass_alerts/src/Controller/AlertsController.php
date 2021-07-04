@@ -134,7 +134,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       '#emergencyAlerts' => $results['emergencyAlerts'],
       '#cache' => [
         'tags' => [
-          'handy_cache_tags:node:alert'
+          'mass_alert_sitewide:list'
         ]
       ],
     ];
@@ -155,6 +155,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
    * Returns the specific page alerts rendered.
    */
   public function handlePageRequest($nid, Request $request) {
+    $org_ids = [];
 
     $results = [
       'headerAlerts' => [],
@@ -177,14 +178,14 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $query->condition('type', 'alert');
       $query->condition('status', 1);
 
-      $orContition = $query->orConditionGroup();
-      $orContition->condition('field_target_page.target_id', $nid);
+      $orCondition = $query->orConditionGroup();
+      $orCondition->condition('field_target_page.target_id', $nid);
 
       if (!empty($org_ids)) {
-        $orContition->condition('field_target_organization.target_id', $org_ids, 'IN');
+        $orCondition->condition('field_target_organization.target_id', $org_ids, 'IN');
       }
 
-      $query->condition($orContition);
+      $query->condition($orCondition);
 
       $nids = $query->execute();
 
@@ -238,14 +239,14 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $results['headerAlerts'] = array_values($alerts);
     }
 
+    $tags = Cache::buildTags('mass_alert_org', $org_ids);
+    $tags[] = "mass_alert_page:$nid";
     $build = [
       '#theme' => 'mass_alerts_page',
       '#headerAlerts' => $results['headerAlerts'],
       '#cache' => [
         'max-age' => Cache::PERMANENT,
-        'tags' => [
-          'handy_cache_tags:node:alert'
-        ]
+        'tags' => $tags,
       ],
     ];
 

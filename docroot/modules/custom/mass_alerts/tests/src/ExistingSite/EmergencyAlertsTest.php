@@ -124,7 +124,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $this->assertNotContains('stale-if-error', $headers['Cache-Control'][0]);
     $this->assertNotContains('stale-while-revalidate', $headers['Cache-Control'][0]);
 
-    $this->assertContains('handy_cache_tags:node:alert', $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertContains('mass_alerts_sitewide:list', $headers['X-Drupal-Cache-Tags'][0]);
     $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
   }
 
@@ -163,7 +163,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
 
     $headers = $session->getResponseHeaders();
 
-    $this->assertContains('handy_cache_tags:node:alert', $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertContains('mass_alerts_page:' . $org_node->id(), $headers['X-Drupal-Cache-Tags'][0]);
     $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
   }
 

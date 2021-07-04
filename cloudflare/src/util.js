@@ -27,7 +27,7 @@ export function isStaticUrl(url) {
 }
 
 export function isAlertsUrl(url) {
-  return url.pathname.startsWith('/alerts/sitewide') || url.pathname.startsWith('/jsonapi/node/alert')
+  return url.pathname.eq('/alerts') || url.pathname.startsWith('/alerts/sitewide') || url.pathname.startsWith('/jsonapi/node/alert')
 }
 
 export function isDrupalResponse(response) {
