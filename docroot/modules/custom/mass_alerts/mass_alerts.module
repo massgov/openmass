@@ -25,11 +25,13 @@ const MASS_ALERTS_TAG_SITEWIDE = 'mass_alerts_sitewide';
 /**
  * Get scope for an alert.
  *
- * @param $node
- *  A node.
+ * @param Drupal\node\NodeInterface $node
+ *   A node.
+ *
  * @return mixed
+ *   One of three options.
  */
-function mass_alerts_get_scope($node) {
+function mass_alerts_get_scope(NodeInterface $node) {
   return $node->get("field_alert_display")->getValue();
 }
 
