@@ -188,12 +188,13 @@ function mass_alerts_node_insert(EntityInterface $node) {
 
 /**
  * Invalidate specific cache tags based on page or org alert being saved.
- * @param NodeInterface $node
+ *
+ * @param \Drupal\node\NodeInterface $node
+ *   A node.
  */
 function mass_alerts_invalidate_tags(NodeInterface $node) {
-  $tags = [];
-  $scope = mass_alerts_get_scope($node);
   if ($node->bundle() === "alert") {
+    $scope = mass_alerts_get_scope($node);
     if ($scope == MASS_ALERTS_SCOPE_ORG) {
       $orgs = $node->get('field_target_organization.target_id')->getValue();
       $tags = Cache::buildTags('mass_alert_org', $orgs);
@@ -205,8 +206,8 @@ function mass_alerts_invalidate_tags(NodeInterface $node) {
     elseif ($scope == MASS_ALERTS_SCOPE_SITEWIDE) {
       $tags = ['mass_alerts_sitewide:list'];
     }
+    Cache::invalidateTags($tags);
   }
-  Cache::invalidateTags($tags);
 }
 
 /**
