@@ -134,7 +134,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       '#emergencyAlerts' => $results['emergencyAlerts'],
       '#cache' => [
         'tags' => [
-          'mass_alert_sitewide:list'
+          MASS_ALERTS_TAG_SITEWIDE . ':list'
         ]
       ],
     ];
@@ -239,8 +239,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $results['headerAlerts'] = array_values($alerts);
     }
 
-    $tags = Cache::buildTags('mass_alert_org', $org_ids);
-    $tags[] = "mass_alert_page:$nid";
+    $tags = Cache::buildTags(MASS_ALERTS_TAG_ORG, $org_ids);
+    $tags[] = MASS_ALERTS_TAG_PAGE . ":$nid";
     $build = [
       '#theme' => 'mass_alerts_page',
       '#headerAlerts' => $results['headerAlerts'],

@@ -18,6 +18,9 @@ use Drupal\node\Entity\Node;
 const MASS_ALERTS_SCOPE_SITEWIDE = 'site_wide';
 const MASS_ALERTS_SCOPE_PAGE = 'specific_target_pages';
 const MASS_ALERTS_SCOPE_ORG = 'by_organization';
+const MASS_ALERTS_TAG_PAGE = 'mass_alerts_page';
+const MASS_ALERTS_TAG_SITEWIDE = 'mass_alerts_org';
+const MASS_ALERTS_TAG_SITEWIDE = 'mass_alerts_sitewide';
 
 /**
  * Get scope for an alert.
@@ -205,14 +208,14 @@ function mass_alerts_invalidate_tags(NodeInterface $node) {
     $scope = mass_alerts_get_scope($node);
     if ($scope == MASS_ALERTS_SCOPE_ORG) {
       $orgs = $node->get('field_target_organization.target_id')->getValue();
-      $tags = Cache::buildTags('mass_alert_org', $orgs);
+      $tags = Cache::buildTags(MASS_ALERTS_TAG_ORG, $orgs);
     }
     elseif ($scope == MASS_ALERTS_SCOPE_PAGE) {
       $pages = $node->get('field_target_page.target_id')->getValue();
-      $tags = Cache::buildTags('mass_alert_page', $pages);
+      $tags = Cache::buildTags(MASS_ALERTS_TAG_PAGE, $pages);
     }
     elseif ($scope == MASS_ALERTS_SCOPE_SITEWIDE) {
-      $tags = ['mass_alerts_sitewide:list'];
+      $tags = [MASS_ALERTS_TAG_SITEWIDE . ':list'];
     }
     Cache::invalidateTags($tags);
   }

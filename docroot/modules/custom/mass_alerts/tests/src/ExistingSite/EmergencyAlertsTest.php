@@ -76,9 +76,9 @@ class EmergencyAlertsTest extends ExistingSiteBase {
   }
 
   /**
-   * Check that the Alerts Endpoint output contains the correct data.
+   * Check that the Alerts response contains the correct data.
    */
-  public function testEmergencyAlertAppearsInEndpoint() {
+  public function testEmergencyAlertResponseSitewide() {
     $nids = \Drupal::entityQuery('node')
       ->condition('type', 'alert')
       ->condition('status', 1)
@@ -124,14 +124,14 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $this->assertNotContains('stale-if-error', $headers['Cache-Control'][0]);
     $this->assertNotContains('stale-while-revalidate', $headers['Cache-Control'][0]);
 
-    $this->assertContains('mass_alerts_sitewide:list', $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertContains(MASS_ALERTS_TAG_SITEWIDE . ':list', $headers['X-Drupal-Cache-Tags'][0]);
     $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
   }
 
   /**
    * Check that the Alerts Endpoint for specific page output contains the correct data.
    */
-  public function testEmergencyAlertPageAppearsInEndpoint() {
+  public function testEmergencyAlertResponsePage() {
 
     $alert_message_text = $this->randomMachineName();
     $org_node = $this->createNode([
@@ -163,7 +163,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
 
     $headers = $session->getResponseHeaders();
 
-    $this->assertContains('mass_alerts_page:' . $org_node->id(), $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertContains(MASS_ALERTS_TAG_PAGE . ':' . $org_node->id(), $headers['X-Drupal-Cache-Tags'][0]);
     $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
   }
 
