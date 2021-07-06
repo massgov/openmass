@@ -1,3 +1,22 @@
+
+
+## [0.288.0] - June 29, 2021
+
+### Added
+  - DP-21203: Added flexible and fixed iframe configuration options.
+  - DP-22153: Enable debugging for local development.
+  - DP-22194: Added sortable revision count to People view.
+  - DP-22255: Allow authors to choose the type of ordered list style they need for a list.
+  
+### Changed
+  - DP-22083: Mandrill modules update.
+  - DP-22249: Updated Office Hours Module to 8.x-1.5
+  - DP-22294: Data topic field widget changed.
+  - DP-22375: Updated Mayflower version to 11.7.1
+  - DP-22122: Added aria-hidden to hide duplicate content from screen readers. (MF)
+  - DP-22255: Changed ul/ol elements styling behavior to respect type attribute. (MF)
+  - DP-9770: Hide duplicate content as linked image in image promo in news page from screen reader.
+  
 ## [0.286.1] - June 16, 2021
 
   - Temporarily neuter publish_on/unpublish_on validation until scheduler module is uninstalled.

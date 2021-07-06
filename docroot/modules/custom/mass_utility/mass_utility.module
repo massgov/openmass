@@ -9,12 +9,9 @@ use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
-use Drupal\file\FileInterface;
 use Drupal\link\LinkItemInterface;
-use Drupal\media\MediaInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\HtmlCommand;
@@ -23,7 +20,6 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Element;
-use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Database\Query\AlterableInterface;
@@ -309,6 +305,11 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
       '#weight' => -99,
     ];
   }
+
+  if ($form_id === 'media_document_add_form' || $form_id === 'media_document_edit_form') {
+    $form['actions']['submit']['#submit'][] = 'media_document_redirect';
+  }
+
   if ($media_form->getOperation() === 'add') {
     // Set the default value the same as the current user's org.
     $user = User::load(\Drupal::currentUser()->id());
@@ -329,6 +330,13 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
   if (isset($form['access_unpublished_settings'])) {
     $form['access_unpublished_settings']['#access'] = FALSE;
   }
+}
+
+/**
+ * Redirects media forms to "all documents" view.
+ */
+function media_document_redirect($form, FormStateInterface $form_state) {
+  $form_state->setRedirect('view.all_documents.page_1');
 }
 
 /**
