@@ -70,6 +70,33 @@
  *   in different view modes.
  */
 #}
+
+{# Initalize the contents array for the component. #}
+{% set contents = [{
+  "path": "@atoms/11-text/paragraph.twig",
+  "data": {
+    "paragraph" : {
+      "text": node.field_how_to_lede.value ?: ""
+    }
+  }
+}] %}
+
+{# Add only the links that exist to the components array. #}
+{% for item in node.field_how_to_link_1 %}
+  {% set decorative_link = {
+    "path": "@atoms/decorative-link.twig",
+    "data": {
+      "decorativeLink": {
+        "href": item.uri,
+        "text": item.title,
+        "chevron": true,
+        "label": ""
+      }
+    }
+  } %}
+  {% set contents = contents|merge([decorative_link]) %}
+{% endfor %}
+
 {% include "@molecules/general-teaser.twig" with {
   "generalTeaser" : {
     "title" : {
@@ -81,33 +108,6 @@
     "level": "",
     "emphasizedText": "",
     "tags": "",
-    "contents": [{
-      "path": "@atoms/11-text/paragraph.twig",
-      "data": {
-        "paragraph" : {
-          "text": node.field_how_to_lede.value ?: ""
-        }
-      }
-    },{
-      "path": "@atoms/decorative-link.twig",
-      "data": {
-        "decorativeLink": {
-          "href": node.field_how_to_link_1.0.uri,
-          "text": node.field_how_to_link_1.0.title,
-          "chevron": true,
-          "label": ""
-        }
-      }
-    },{
-      "path": "@atoms/decorative-link.twig",
-      "data": {
-        "decorativeLink": {
-          "href": node.field_how_to_link_1.1.uri,
-          "text": node.field_how_to_link_1.1.title,
-          "chevron": true,
-          "label": ""
-        }
-      }
-    }]
+    "contents": contents
   }
 } %}
