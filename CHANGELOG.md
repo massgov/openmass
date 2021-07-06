@@ -1,5 +1,12 @@
 
 
+## [0.289.0] - July 6, 2021
+
+### Changed
+  - DP-22277: Redirect authors to "All documents view" when adding/editing media of type documents.
+  
+
+
 ## [0.288.0] - June 29, 2021
 
 ### Added
