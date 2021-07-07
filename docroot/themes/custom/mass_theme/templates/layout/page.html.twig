@@ -55,6 +55,7 @@
 {% if hide_main_nav %}
   {% set header_class = ' ma__header--hidden' %}
 {% endif %}
+<div id="top-alerts"></div>
 {% if header_version_mixed %}
   <header class="ma__header__hamburger ma__header__mixed{{ header_class }}" id="header">
 
@@ -103,6 +104,7 @@
   </header>
 {% endif %}
 <main role="main" id="main-content" tabindex="-1"{% if main_class %} class="{{ main_class }}"{% endif %}>{# Keeping tabindex for accessibility purposes #}
+  <div id="content-alerts"></div>
   {% block preContent %}
     {% if page.pre_content %}
       <div class="pre-content">
