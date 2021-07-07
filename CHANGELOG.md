@@ -1,5 +1,170 @@
 
 
+## [0.288.0] - June 29, 2021
+
+### Added
+  - DP-21203: Added flexible and fixed iframe configuration options.
+  - DP-22153: Enable debugging for local development.
+  - DP-22194: Added sortable revision count to People view.
+  - DP-22255: Allow authors to choose the type of ordered list style they need for a list.
+  
+### Changed
+  - DP-22083: Mandrill modules update.
+  - DP-22249: Updated Office Hours Module to 8.x-1.5
+  - DP-22294: Data topic field widget changed.
+  - DP-22375: Updated Mayflower version to 11.7.1
+  - DP-22122: Added aria-hidden to hide duplicate content from screen readers. (MF)
+  - DP-22255: Changed ul/ol elements styling behavior to respect type attribute. (MF)
+  - DP-9770: Hide duplicate content as linked image in image promo in news page from screen reader.
+  
+## [0.286.1] - June 16, 2021
+
+  - Temporarily neuter publish_on/unpublish_on validation until scheduler module is uninstalled.
+
+## [0.287.0] - June 22, 2021
+
+### Fixed
+  - DP-19428: Fix 2 buglets related to Hotfix process (github tag creation and Circle automation)
+  - DP-22066: Fixes options in the English Version field autocomplete picker.
+  - DP-22082: Upgrades the Google Tag Manager module.
+  - DP-22160: Fixed external organizatioon image rendering issue on News content type.
+  
+### Changed
+  - DP-21996: Uninstall Scheduler modules.
+  - DP-22083: Mandrill and Route IFrame modules update.
+  - DP-22280: Show user who created the schedule transition in revision history.
+  - DP-22301: Changed the google sitemap setting to 3000 per page.
+  
+### Added
+  - DP-22180: Added pages for filtering and discovering Collections content.
+  
+### Security
+  - DP-22313: Updated drupal ctools from version 3.6.0 to 3.7.0.
+  
+
+
+## [0.286.0] - June 15, 2021
+
+### Changed
+  - DP-19428: Neuter scheduler module in favor of scheduled transitions module.
+  - DP-21655: Upgrade to PHP 7.4 for local dev and CI
+  - DP-21690: Added help text and changed batch size of service content inventory views.
+  - DP-22008: Upgrade sitemap and twig tweak modules.
+  - DP-22253: Adds ahoy command to toggle xdebug on and off.
+  
+### Added
+  - DP-21943: Created a view to show documents with no binary files attached to it.
+  - DP-21986: Added a content report page for published alerts.
+  - DP-22225: Allow Feedback Manager CSV exports with new labels and search fields.
+  
+### Fixed
+  - DP-22248: Fixed post release backstop job issue.
+  
+
+
+## [0.285.0] - June 8, 2021
+
+### Removed
+  - DP-17765: Update Cloudflare configuration to stop sending legacy prefixes to legacy server.
+  - DP-21782: Revert PR
+  
+### Added
+  - DP-21043: Created Data Listing All and Data Listing Topic views pages.
+  - DP-21657: Add a search field to the feedback manager so that CMS users can search feedback for specific words/phrases.
+  - DP-21768: Adapt ahoy commands so they also work for native dev env
+  - DP-22132: Added a reusable Collections architecture, starting with EOTSS Service Catalog and How-to pages.
+  
+### Fixed
+  - DP-21903: Fixed false positives in Drupal Backstop.
+  
+### Changed
+  - DP-22099: Changed post-release backstop job to use shorter list of pages.
+  - DP-22191: Modify alert pattern to incude additional data
+  - DP-7874: Restructure the footer navigation to correct semantics of its markup (a11y).
+  - DP-22231: Updated Mayflower version to 11.7.0.
+  - DP-21782: Add labelContext to assets/js/templates/locationListingRow.html.(MF)
+  - DP-7874: Correct semantics of footer navigation. (MF)
+  - DP-21782: DP-22191: Add extra data attributes to HeaderAlert. (MF)
+  
+### Security
+  - DP-22152: Drupal core security update to version 8.9.16.
+  
+
+
+## [0.284.0] - May 25, 2021
+
+### Changed
+  - DP-21790: Add labels to feedback manager, fix multiselect.
+  - DP-21983: Makes sure the english version translation field is empty if the content is already english.
+  - DP-22002: Metatag changes for 3 content types.
+  - DP-22130: Updated Mayflower version to 11.5.1.
+  - DP-21660: Fix bullets and list numbers overwrapped with left floated elements in IE11. (MF)
+  - DP-22079: Fixed location listing pagination error, and fixed auto complete. (MF)
+  
+### Fixed
+  - DP-22021: Fixed error when adding an existing Fee to a How-to page.
+  
+### Security
+  - DP-22023: Updated drupal ctools from version 3.4.0 to 3.6.0.
+  
+
+
+## [0.283.0] - May 18, 2021
+
+### Changed
+  - DP-20949: Removes the Basic Google Maps implementation, not the location listing page.
+  - DP-21731: Updated Pathologic, Prepopulate, Sub-pathauto, and Twig Field Value modules.
+  - DP-21783: Content and Document administrative views have proper language settings.
+  - DP-21793: Added character countdown and warning when page titles exceed 70 characters.
+  - DP-22026: Exported Rabbit Hole module configuration.
+  - DP-22060: Updated Mayflower version to 11.5.0.
+  - DP-21554: Added MapLeaflet molecule and variants. (MF)
+  - DP-21554: Switch out interactive and static google maps with leaflet maps in LocationBanners and MappedLocations, on location pages and orgs and services pages. (MF)
+  - DP-21816: Remove h2 from utility nav panel title. (MF)
+  - DP-21763: Extended the GeneralTeaser component to render tags, icon in eyebrow, and upperRight content. (MF)
+  - DP-21883: Added a query string with a version to -VF.woff2 fonts for caching. (MF)
+  
+### Added
+  - DP-21634: Added flexible header functionality to the how-to content type.
+  - DP-21949: Add missing pages to Drupal Backstop.
+  
+### Removed
+  - DP-21785: Removing libraries, clamav, and restui from composer, previously removed from drupal config.
+  
+### Fixed
+  - DP-22061: Fix missing hours on location listing pages.
+  
+
+
+## [0.282.0] - May 11, 2021
+
+### Fixed
+  - DP-19072: Fixed serialization issues with metatag output.
+  - DP-21034: Fixed log in error message appearing with wrong styles.
+  - DP-21188: Wrap long file names that have no breaking character in "all documents" view.
+  - DP-21692: Fixed empty support status message rendering upon saving content in Drupal.
+  - DP-21728: Upgrading some contrib modules do d9 compatible versions.
+  
+### Added
+  - DP-20892: Host iframe responsive height JS at docroot/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js.
+  
+### Changed
+  - DP-21622: Updated auto_entitylabel module.
+  - DP-21624: Patched the field_tokens module for D9 compatibility.
+  - DP-21677: Use 'massgov' Docker org instead of comass
+  - DP-21691: Replace h2 with div keeping its aria-labelledby for the main nav.
+  - DP-21729: Updated view_mode_page, views_autocomplete_filters, views_custom_cache_tag, and views_data_export modules.
+  - DP-21786: Uninstalling config_log module.
+  - DP-21792: Changed the field order on the node form, keeping language out of the "data" fields.
+  - DP-21990: Updated Mayflower version to 11.4.2.
+  - DP-21686: Change info details page content data from object to array for flexibility, cleanup unused data and render video in preContent-media variant page (MF)
+  - DP-21770: Align text and icon for the directions link. (MF)
+  
+### Removed
+  - DP-21691: Removed deplicated mobile version header + navigation components for the horizontal nav.
+  
+
+
 ## [0.281.1] - May 6, 2021
 
 ### Changed

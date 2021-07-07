@@ -16,7 +16,7 @@ dependencies:
     - content_moderation
     - field_group
     - link
-    - scheduler
+    - term_reference_tree
 third_party_settings:
   field_group:
     group_externaldata_edit_form:
@@ -89,9 +89,14 @@ content:
     region: content
   field_data_topic:
     weight: 15
-    settings: {  }
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
     third_party_settings: {  }
-    type: options_buttons
+    type: term_reference_tree
     region: content
   field_details_data_type:
     weight: 12
@@ -108,6 +113,7 @@ content:
       maxlength:
         maxlength_js: 500
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce_attribute: true
         maxlength_js_enforce: false
         maxlength_js_truncate_html: false
     type: string_textarea
@@ -144,11 +150,11 @@ content:
     settings: {  }
     third_party_settings: {  }
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 3
-    region: content
+    weight: 26
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
     type: options_select
     weight: 5
@@ -179,11 +185,11 @@ content:
       placeholder: ''
     third_party_settings: {  }
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 4
-    region: content
+    weight: 27
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
     type: options_select
     weight: 6

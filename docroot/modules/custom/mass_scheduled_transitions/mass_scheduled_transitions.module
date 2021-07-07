@@ -1,0 +1,313 @@
+<?php
+
+/**
+ * @file
+ * Customize St module.
+ */
+
+use Drupal\Component\Serialization\Json;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Datetime\Entity\DateFormat;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\TranslatableInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\NodeInterface;
+use Drupal\scheduled_transitions\Entity\ScheduledTransition;
+use Drupal\workflows\Entity\Workflow;
+use Drupal\Core\Entity\EntityTypeInterface;
+
+const MASS_SCHEDULED_TRANSITIONS_OPTIONS = [
+  ScheduledTransition::OPTION_RECREATE_NON_DEFAULT_HEAD => TRUE,
+  ScheduledTransition::OPTION_LATEST_REVISION => TRUE
+];
+define('MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION', '14 months');
+define('MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION', '6 months');
+define('MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_DEFAULT_DURATION', '180 days');
+define('MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION', '14 days');
+
+/**
+ * Implements hook_entity_type_alter().
+ *
+ * @param iterable $entity_types
+ *   A list of types.
+ */
+function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
+  $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsAlertSitewide');
+}
+
+/**
+ * Implements hook__entity_base_field_info_alter().
+ */
+function mass_scheduled_transitions_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
+  // Temporarily neuter validation until scheduler module is uninstalled.
+  if ($entity_type->id() == 'node' && Drupal::moduleHandler()->moduleExists('scheduler')) {
+    $fields['publish_on']->setConstraints([]);
+    $fields['unpublish_on']->setConstraints([]);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert() for node entities.
+ */
+function mass_scheduled_transitions_node_insert(NodeInterface $node) {
+  mass_scheduled_transitions_enforce_mandatory_unpublish($node);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update() for node entities.
+ */
+function mass_scheduled_transitions_node_update(NodeInterface $node) {
+  mass_scheduled_transitions_enforce_mandatory_unpublish($node);
+}
+
+/**
+ * Automatically create the required scheduled transitions per our business rules.
+ */
+function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $node) {
+  if (!$node->isPublished()) {
+    // We don't care about you.
+    return;
+  }
+
+  if (mass_scheduled_transitions_load_by_host_entity($node, FALSE, MassModeration::UNPUBLISHED)) {
+    // We don't care about you since you already have an unpublish transition.
+    return;
+  }
+
+  if ($node->bundle() == 'alert') {
+    $duration = MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION;
+    $workflow = 'editorial';
+  }
+  elseif ($node->bundle() == 'campaign_landing') {
+    $duration = MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_DEFAULT_DURATION;
+    $workflow = 'campaign_landing_page';
+  }
+  else {
+    // We don't care about you.
+    return;
+  }
+
+  /** @var \Drupal\scheduled_transitions\Entity\ScheduledTransition $transition */
+  $transition = ScheduledTransition::create([]);
+  $datetime = (new DrupalDateTime("now + $duration"))->getPhpDateTime();
+  $transition->setTransitionDate($datetime)
+    ->setAuthor(Drupal::currentUser())
+    ->setState(Workflow::load($workflow), MassModeration::UNPUBLISHED)
+    ->setEntity($node)
+    // 0 means 'latest'.
+    ->setEntityRevisionId(0)
+    ->setOptions([MASS_SCHEDULED_TRANSITIONS_OPTIONS])
+    ->save();
+  $url_edit = $transition->toUrl('reschedule-form')->toString();
+  $replacements = [':url_edit' => $url_edit, '@duration' => $duration];
+  // Use warning until Sep 4 then downgrade to status. @todo Remove after Sep 4.
+  $method = time() > strtotime('9/4/2021') ? 'addStatus' : 'addWarning';
+  \Drupal::messenger()->$method(t("An unpublish transition has been scheduled for @duration days from today. <a href=\":url_edit\">Reschedule transition</a>.", $replacements));
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ *
+ * Deny deletion of scheduled transitions when our business rules requires one for the content type.
+ */
+function mass_scheduled_transitions_scheduled_transition_access(EntityInterface $transition, $operation) {
+  $entity = $transition->getEntity();
+  if ($operation != 'delete' || !$entity->isPublished() || !in_array($entity->bundle(), ['alert', 'campaign_landing'])) {
+    return;
+  }
+
+  $duration_string = $entity->bundle() == 'alert' ? MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION : MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION;
+  $duration = (new DrupalDateTime('now +' . $duration_string))->getTimestamp();
+  $transitions = mass_scheduled_transitions_load_by_host_entity($entity, FALSE, MassModeration::UNPUBLISHED);
+  unset($transitions[$transition->id()]);
+  $fail = TRUE;
+  foreach ($transitions as $transition) {
+    if ($transition->getTransitionDate()->getTimestamp() < $duration) {
+      $fail = FALSE;
+    }
+  }
+  if ($fail) {
+    return AccessResult::forbidden('Alerts or promo page requires an imminent unpublish transition');
+  }
+}
+
+/**
+ * Move link to Admin => Reports, and use customized View.
+ *
+ * Implements hook_menu_links_discovered_alter().
+ */
+function mass_scheduled_transitions_menu_links_discovered_alter(&$links) {
+  // Disable the menu link that ships with ST.
+  $links['entity.scheduled_transition.collection']['enabled'] = FALSE;
+  // Add description to View's menu link.
+  $links['views_view:views.scheduled_transitions.page_1']['description'] = 'This report shows pages and documents that are scheduled to be published or unpublished.';
+}
+
+/**
+ * Implements hook_form_alter().
+ *
+ * - Populate default value for the time so users don't have to complete the time element.
+ * - Remove unwanted transitions.
+ * - Applies to the add_form.
+ */
+function mass_scheduled_transitions_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (strpos($form_id, '_scheduled_transitions_entity_form_form')) {
+    mass_scheduled_transitions_entity_form_do_alter($form, $form_state, $form_id);
+  }
+  elseif (strpos($form_id, 'scheduled_transitions_add_form_form')) {
+    // Hide big revisions tableselect.
+    $form['scheduled_transitions']['revision']['#access'] = FALSE;
+
+    // Set default time for better UX.
+    $form['scheduled_transitions']['new_meta']['on']['#default_value'] = new DrupalDateTime("now +1 day");
+
+    // Only show 2 transitions for less cognitive load.
+    $form['scheduled_transitions']['new_meta']['transition']['#options'] = [
+      'publish' => 'Publish',
+      'unpublish' => 'Unpublish',
+    ];
+
+    // This checkbox is too confusing to show.
+    $form['scheduled_transitions']['to_options']['recreate_non_default_head']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Enforce that date field must be in future and must not be in far future for alerts and promo pages.
+ *
+ * Add server-side validation once https://www.drupal.org/project/scheduled_transitions/issues/3084849 is resolved.
+ *
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * @param array $form
+ *   The usual $form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The usual $form_state.
+ */
+function mass_scheduled_transitions_form_scheduled_transition_reschedule_form_alter(array &$form, FormStateInterface $form_state) {
+  /** @var Drupal\scheduled_transitions\Entity\ScheduledTransition $scheduled_transition */
+  $scheduled_transition = $form_state->getFormObject()->getEntity();
+  $host_entity = $scheduled_transition->getEntity();
+  $html_date_format = DateFormat::load('html_date')->getPattern();
+  if (in_array($host_entity->bundle(), ['alert', 'campaign_landing'])) {
+    $duration = $host_entity->bundle() == 'alert' ? MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION : MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION;
+    $max_time = (new DrupalDateTime("now +" . $duration))->format($html_date_format);
+    $form['date']['#attributes']['max'] = $max_time;
+  }
+  $form['date']['#attributes']['min'] = (new DrupalDateTime())->format($html_date_format);;
+}
+
+/**
+ * Remove from_revision column.
+ */
+function mass_scheduled_transitions_entity_form_do_alter(&$form, FormStateInterface $form_state, $form_id) {
+  unset($form['table']['#header']['from_state']);
+  unset($form['table']['#header']['from_revision']);
+  foreach ($form['table']['#rows'] as $key => $row) {
+    unset($form['table']['#rows'][$key]['from_revision']);
+  }
+}
+
+/**
+ * Add helpful link to node edit form to ease migration.
+ *
+ * Implements hook_form_node_form_alter().
+ */
+function mass_scheduled_transitions_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form = mass_scheduled_transitions_do_form_alter($form_state, $form);
+}
+
+/**
+ * Add helpful link to media edit form to ease migration.
+ *
+ * Implements hook_form_media_form_alter().
+ */
+function mass_scheduled_transitions_form_media_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form = mass_scheduled_transitions_do_form_alter($form_state, $form);
+}
+
+/**
+ * Alters both the media and node forms.
+ *
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form's state.
+ * @param array $form
+ *   The form array.
+ *
+ * @return array
+ *   An altered form array.
+ */
+function mass_scheduled_transitions_do_form_alter(FormStateInterface $form_state, array $form) {
+  $entity = $form_state->getFormObject()->getEntity();
+
+  if ($entity->isNew()) {
+    $markup = t('Scheduled publishing has moved to a new <em>Scheduled Transitions</em> tab, near the Edit tab. It will become visible after you save this content.');
+  }
+  else {
+    $url = $entity->toUrl('canonical')->toString() . '/scheduled-transitions';
+    $replacements = [':url' => $url];
+    $markup = t('Scheduled publishing has moved to a new <em>Scheduled Transitions</em> tab, near the Edit tab. <a href=":url">Go there</a>.', $replacements);
+  }
+  $form['mass_scheduled_transitions'] = [
+    '#type' => 'details',
+    '#title' => t('Scheduling'),
+    '#group' => 'advanced',
+    '#open' => FALSE,
+    // @todo Remove anytime after Sep 4.
+    '#access' => time() < strtotime('9/4/2021'),
+    '#markup' => $markup,
+    '#weight' => 39,
+  ];
+  return $form;
+}
+
+/**
+ * Implements hook_menu_local_actions_alter().
+ *
+ * Make ST modal shorter, since it no longer shows a revision table.
+ */
+function mass_scheduled_transitions_menu_local_actions_alter(&$local_actions) {
+  $options = Json::encode([
+    'width' => 900,
+    'height' => 300,
+  ]);
+  $local_actions["scheduled_transitions.actions:media.add_scheduled_transition"]["options"]["attributes"]["data-dialog-options"] = $options;
+  $local_actions["scheduled_transitions.actions:node.add_scheduled_transition"]["options"]["attributes"]["data-dialog-options"] = $options;
+}
+
+/**
+ * Load a list of scheduled transitions by host entity.
+ *
+ * A copy of \Drupal\scheduled_transitions\ScheduledTransitionsEntityHooks::loadByHostEntity since that is not public.
+ * Adds a state condition as well.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   Entity.
+ * @param bool $revision_match
+ *   TRUE to match revision too.
+ * @param string $moderation_state
+ *   Optionally limit results to a single target moderation state.
+ *
+ * @return \Drupal\scheduled_transitions\Entity\ScheduledTransitionInterface[]
+ *   A list of scheduled transitions for the given entity.
+ */
+function mass_scheduled_transitions_load_by_host_entity(EntityInterface $entity, bool $revision_match = FALSE, $moderation_state = ''): array {
+  $transitionStorage = Drupal::entityTypeManager()->getStorage('scheduled_transition');
+  $query = $transitionStorage->getQuery()
+    ->condition('entity.target_id', $entity->id())
+    ->condition('entity.target_type', $entity->getEntityTypeId())
+    ->accessCheck(FALSE);
+  if ($revision_match) {
+    $query->condition('entity_revision_id', $entity->getRevisionId());
+  }
+  if ($moderation_state) {
+    $query->condition('moderation_state', $moderation_state);
+  }
+  if ($entity instanceof TranslatableInterface && !$entity->isDefaultTranslation()) {
+    $query->condition('entity_revision_langcode', $entity->language()->getId());
+  }
+  $ids = $query->execute();
+  return $transitionStorage->loadMultiple($ids);
+}

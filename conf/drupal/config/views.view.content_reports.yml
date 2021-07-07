@@ -34,6 +34,7 @@ dependencies:
     - node.type.service_details
     - node.type.service_page
   module:
+    - better_exposed_filters
     - content_moderation
     - csv_serialization
     - dynamic_entity_reference
@@ -3041,7 +3042,7 @@ display:
           entity_field: created
           plugin_id: date
       export_method: batch
-      export_batch_size: 100
+      export_batch_size: 50
       style:
         type: data_export
         options:
@@ -4914,7 +4915,7 @@ display:
       automatic_download: false
       redirect_path: /admin/ma-dash/reports/services-standard
       export_method: batch
-      export_batch_size: 100
+      export_batch_size: 50
       displays:
         page_services_standard: page_services_standard
         default: '0'
@@ -10038,6 +10039,8 @@ display:
         group_by: false
         sorts: false
         css_class: false
+        exposed_form: false
+        header: false
       display_description: ''
       path: admin/ma-dash/reports/services-custom-link-group
       relationships:
@@ -11691,6 +11694,72 @@ display:
           entity_field: created
           plugin_id: date
       css_class: view-services-reports
+      exposed_form:
+        type: bef
+        options:
+          submit_button: Apply
+          reset_button: true
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+          text_input_required: 'Select any filter and click on Apply to see results'
+          text_input_required_format: basic_html
+          bef:
+            general:
+              autosubmit: false
+              autosubmit_exclude_textfield: false
+              autosubmit_textfield_delay: 500
+              autosubmit_hide: false
+              input_required: true
+              allow_secondary: false
+              secondary_label: 'Advanced options'
+              secondary_open: false
+            filter:
+              nid:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+              title_3:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+              node_org_filter:
+                plugin_id: default
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              uid:
+                plugin_id: default
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              status:
+                plugin_id: default
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+      header:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content: 'The report generates slowly and should be run during non-business hours.'
+          plugin_id: text_custom
     cache_metadata:
       max-age: -1
       contexts:
@@ -11720,6 +11789,8 @@ display:
         group_by: false
         sorts: false
         css_class: false
+        exposed_form: false
+        header: false
       display_description: ''
       path: admin/ma-dash/reports/services-standard
       relationships: {  }
@@ -13502,6 +13573,72 @@ display:
           entity_field: created
           plugin_id: date
       css_class: view-services-reports
+      exposed_form:
+        type: bef
+        options:
+          submit_button: Apply
+          reset_button: true
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+          text_input_required: 'Select any filter and click on Apply to see results'
+          text_input_required_format: basic_html
+          bef:
+            general:
+              autosubmit: false
+              autosubmit_exclude_textfield: false
+              autosubmit_textfield_delay: 500
+              autosubmit_hide: false
+              input_required: true
+              allow_secondary: false
+              secondary_label: 'Advanced options'
+              secondary_open: false
+            filter:
+              nid:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+              title_3:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+              node_org_filter:
+                plugin_id: default
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              uid:
+                plugin_id: default
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              status:
+                plugin_id: default
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+      header:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content: 'The report generates slowly and should be run during non-business hours.'
+          plugin_id: text_custom
     cache_metadata:
       max-age: -1
       contexts:

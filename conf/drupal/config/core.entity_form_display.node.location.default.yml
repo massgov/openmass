@@ -31,6 +31,7 @@ dependencies:
     - field.field.node.location.field_state_organization_tax
     - image.style.thumbnail
     - node.type.location
+    - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
@@ -38,10 +39,9 @@ dependencies:
     - image
     - link
     - mass_validation
+    - maxlength
     - metatag
     - paragraphs
-    - scheduler
-    - scheduler_content_moderation_integration
     - text
 third_party_settings:
   field_group:
@@ -441,17 +441,17 @@ content:
     region: content
     third_party_settings: {  }
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 4
-    region: content
+    weight: 53
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
-    type: scheduler_moderation
-    weight: 7
-    region: content
+    weight: 51
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   scheduler_settings:
     weight: 2
     region: content
@@ -463,7 +463,11 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      maxlength:
+        maxlength_js: 70
+        maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
+        maxlength_js_enforce_attribute: false
     region: content
   uid:
     type: entity_reference_autocomplete
@@ -476,17 +480,17 @@ content:
       match_limit: 10
     third_party_settings: {  }
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 5
-    region: content
+    weight: 54
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 8
-    region: content
+    weight: 52
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 50
     region: content

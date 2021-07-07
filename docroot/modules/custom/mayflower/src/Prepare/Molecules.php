@@ -168,10 +168,19 @@ class Molecules {
           $alt = $options['alt'];
         }
 
+        $ariaHidden = '';
+        if ($options['ariaHidden']) {
+          $ariaHidden = $options['ariaHidden'];
+        }
+        else {
+          $ariaHidden = '';
+        }
+
         $imagePromo['image'] = [
           'src' => $src,
           'alt' => $alt,
           'href' => $href,
+          'ariaHidden' => $ariaHidden,
         ];
 
       }
@@ -1052,7 +1061,7 @@ class Molecules {
     }
 
     // mapProp.
-    $actionMap['map']['zoom'] = 15;
+    $actionMap['map']['zoom'] = FALSE;
 
     if (empty($data)) {
       return [];
@@ -1429,9 +1438,19 @@ class Molecules {
       ];
     }, $navLinksText);
 
+    // Build an array of anchor IDs for the twig template.
+    $anchorIDs = [];
+    foreach ($anchorLinks as $value) {
+      // Skip headers that are not flexible.
+      if (is_string($value['text'])) {
+        $anchorIDs[$value['text']] = $value['href'];
+      }
+    }
+
     return [
       'titleContext' => $titleContext,
       'anchorLinks' => $anchorLinks,
+      'anchorIDs' => $anchorIDs,
     ];
   }
 

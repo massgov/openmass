@@ -9,12 +9,9 @@ use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
-use Drupal\file\FileInterface;
 use Drupal\link\LinkItemInterface;
-use Drupal\media\MediaInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\HtmlCommand;
@@ -23,7 +20,6 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Element;
-use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Database\Query\AlterableInterface;
@@ -309,6 +305,11 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
       '#weight' => -99,
     ];
   }
+
+  if ($form_id === 'media_document_add_form' || $form_id === 'media_document_edit_form') {
+    $form['actions']['submit']['#submit'][] = 'media_document_redirect';
+  }
+
   if ($media_form->getOperation() === 'add') {
     // Set the default value the same as the current user's org.
     $user = User::load(\Drupal::currentUser()->id());
@@ -329,6 +330,13 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
   if (isset($form['access_unpublished_settings'])) {
     $form['access_unpublished_settings']['#access'] = FALSE;
   }
+}
+
+/**
+ * Redirects media forms to "all documents" view.
+ */
+function media_document_redirect($form, FormStateInterface $form_state) {
+  $form_state->setRedirect('view.all_documents.page_1');
 }
 
 /**
@@ -472,15 +480,18 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
     }
     else {
       // Set link field descriptions for all other link fields.
+      // Default description values.
+      $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".');
+      $element['title']['#description'] = t('For links to Mass.gov pages, leave the link text empty to automatically use the page title. External links require link text.');
 
       // Override description of the URL field in External data resource content type.
       if ($field_name == 'field_externaldata_url') {
         $element['uri']['#description'] = t('Enter a complete URL. It must begin with "https://" or "http://".');
       }
-      else {
-        $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".');
+      // Override description of the Link text field in Collections vocabulary.
+      if ($field_name == 'field_landing_page') {
+        $element['title']['#description'] = t('Link text is required for both internal and external links.');
       }
-      $element['title']['#description'] = t('For links to Mass.gov pages, leave the link text empty to automatically use the page title. External links require link text.');
     }
   }
   elseif ($type == 'entity_reference') {
@@ -894,7 +905,7 @@ function mass_utility_remove_login_validation(array &$form, FormStateInterface $
   if (isset($errors['name'])) {
     $error = $errors['name'];
     // Rebuild translated error message for displaying link.
-    \Drupal::messenger()->addStatus($error);
+    \Drupal::messenger()->addError($error);
   }
 }
 

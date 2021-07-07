@@ -10,11 +10,14 @@ dependencies:
     - field.field.paragraph.iframe.field_iframe_alignment
     - field.field.paragraph.iframe.field_iframe_caption
     - field.field.paragraph.iframe.field_iframe_display_size
+    - field.field.paragraph.iframe.field_iframe_height_config
     - field.field.paragraph.iframe.field_iframe_wrapping
     - field.field.paragraph.iframe.field_media_display
     - field.field.paragraph.iframe.field_url
+    - field.field.paragraph.iframe.field_verify_iframe_100_confirm
     - paragraphs.paragraphs_type.iframe
   module:
+    - conditional_fields
     - link
     - text
 id: paragraph.iframe.default
@@ -23,14 +26,15 @@ bundle: iframe
 mode: default
 content:
   field_height:
-    weight: 2
+    weight: 4
     settings:
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields: {  }
     type: number
     region: content
   field_iframe_accessibility_title:
-    weight: 3
+    weight: 5
     settings:
       size: 60
       placeholder: ''
@@ -46,13 +50,13 @@ content:
     type: string_textfield
     region: content
   field_iframe_alignment:
-    weight: 5
+    weight: 7
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_iframe_caption:
-    weight: 7
+    weight: 9
     settings:
       rows: 5
       placeholder: ''
@@ -60,13 +64,19 @@ content:
     type: text_textarea
     region: content
   field_iframe_display_size:
-    weight: 4
+    weight: 6
     settings: {  }
     third_party_settings: {  }
     type: options_select
     region: content
+  field_iframe_height_config:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
   field_iframe_wrapping:
-    weight: 6
+    weight: 8
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -78,6 +88,13 @@ content:
       placeholder_title: ''
     third_party_settings: {  }
     type: link_default
+    region: content
+  field_verify_iframe_100_confirm:
+    weight: 3
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
     region: content
   paragraphs_type_help__default:
     weight: -100

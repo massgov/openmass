@@ -1,0 +1,24 @@
+uuid: a779bf30-dcb0-4216-81c0-a872c58c3bae
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_landing_page
+    - taxonomy.vocabulary.collections
+  module:
+    - link
+id: taxonomy_term.collections.field_landing_page
+field_name: field_landing_page
+entity_type: taxonomy_term
+bundle: collections
+label: 'Landing Page'
+description: 'This is only defined for the top level collection itself for use in the breadcrumb. This is not needed for topics and sub topics. If you don''t populate this, there will be no top level breadcrumb.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  link_type: 17
+  title: 2
+  entity_bundles: {  }
+field_type: link

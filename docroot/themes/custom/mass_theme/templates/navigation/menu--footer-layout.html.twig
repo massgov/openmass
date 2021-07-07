@@ -29,11 +29,6 @@
 {% macro menu_links(items, attributes, menu_level) %}
   {% import _self as menus %}
   {% if items %}
-    {% if menu_level == 0 %}
-      <ul{{ attributes.addClass('ma__footer-links__items') }}>
-    {% else %}
-      <ul>
-    {% endif %}
     {% for item in items %}
       <li{{ item.attributes.addClass('ma__footer-links__item') }}>
 	{{ link(item.title, item.url, { 'class':['ma__footer-links__link'] }) }}
@@ -42,6 +37,5 @@
 	{% endif %}
       </li>
     {% endfor %}
-    </ul>
   {% endif %}
 {% endmacro %}

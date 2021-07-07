@@ -20,15 +20,16 @@ dependencies:
     - field.field.node.service_details.field_service_detail_sections
     - field.field.node.service_details.field_state_organization_tax
     - node.type.service_details
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
     - link
     - mass_validation
+    - maxlength
     - metatag
     - paragraphs
-    - scheduler
-    - scheduler_content_moderation_integration
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -52,21 +53,19 @@ third_party_settings:
         - field_service_detail_lede
         - field_service_detail_overview
         - field_organizations
+        - field_data_flag
+        - field_data_format
+        - field_details_data_type
+        - field_data_topic
+        - field_data_resource_type
         - langcode
         - field_english_version
-        - field_data_flag
-        - field_details_data_type
-        - field_data_resource_type
-        - field_data_format
-        - field_data_topic
-        - field_data_sub_topic
         - field_intended_audience
         - field_reusable_label
       parent_name: group_node_edit_form
       weight: 20
       format_type: tab
       format_settings:
-        label: Overview
         formatter: open
         description: 'Service Detail pages offer information about the service they’re linked to. A Service Detail page should be linked to a Service page – make sure that you have a Service page in mind before you start. Keep the title as short as possible and use plain language. <a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/services-and-info/service-detail" target="_blank">Learn about authoring Service Detail pages.</a>'
         required_fields: true
@@ -81,7 +80,6 @@ third_party_settings:
       weight: 21
       format_type: tab
       format_settings:
-        label: Sections
         formatter: closed
         description: 'A Service Detail page is made up of one or more sections. Sections can contain text (with a header and, optionally, additional resources for that section), or a section can be a video. We recommend limiting a Service Detail page to no more than 8 sections.'
         required_fields: true
@@ -97,7 +95,6 @@ third_party_settings:
       weight: 22
       format_type: tab
       format_settings:
-        label: Related
         formatter: closed
         description: 'Use this area to add related content.'
         required_fields: true
@@ -117,13 +114,13 @@ content:
     third_party_settings: {  }
     region: content
   field_data_flag:
-    weight: 28
+    weight: 26
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_data_format:
-    weight: 29
+    weight: 27
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -147,7 +144,7 @@ content:
     type: options_buttons
     region: content
   field_data_resource_type:
-    weight: 31
+    weight: 30
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -171,8 +168,13 @@ content:
     type: options_buttons
     region: content
   field_data_topic:
-    weight: 30
-    settings: {  }
+    weight: 29
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
     third_party_settings:
       conditional_fields:
         bfac096b-cac5-4e9b-84bb-4f9edc2a863c:
@@ -192,10 +194,10 @@ content:
             selector: ''
           entity_type: node
           bundle: service_details
-    type: options_buttons
+    type: term_reference_tree
     region: content
   field_details_data_type:
-    weight: 29
+    weight: 28
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -219,7 +221,7 @@ content:
     type: options_buttons
     region: content
   field_english_version:
-    weight: 27
+    weight: 32
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -247,7 +249,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_intended_audience:
-    weight: 32
+    weight: 33
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -263,7 +265,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_reusable_label:
-    weight: 33
+    weight: 34
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -342,7 +344,7 @@ content:
     region: content
   langcode:
     type: language_select
-    weight: 26
+    weight: 31
     region: content
     settings:
       include_locked: false
@@ -354,17 +356,17 @@ content:
     region: content
     third_party_settings: {  }
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 5
-    region: content
+    weight: 53
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
-    type: scheduler_moderation
-    weight: 9
-    region: content
+    weight: 51
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   scheduler_settings:
     weight: 4
     region: content
@@ -376,7 +378,11 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      maxlength:
+        maxlength_js: 70
+        maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
+        maxlength_js_enforce_attribute: false
     region: content
   uid:
     type: entity_reference_autocomplete
@@ -389,17 +395,17 @@ content:
     third_party_settings: {  }
     region: content
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 6
-    region: content
+    weight: 54
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 10
-    region: content
+    weight: 52
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 50
     region: content
