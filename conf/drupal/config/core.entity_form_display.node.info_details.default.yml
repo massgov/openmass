@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.info_details.field_banner_image
+    - field.field.node.info_details.field_collections
     - field.field.node.info_details.field_contact
     - field.field.node.info_details.field_data_flag
     - field.field.node.info_details.field_data_format
@@ -40,8 +41,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
-    - scheduler
-    - scheduler_content_moderation_integration
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -81,6 +81,7 @@ third_party_settings:
         - field_english_version
         - field_intended_audience
         - field_reusable_label
+        - field_collections
       parent_name: group_information_details_edit_f
       weight: 7
       format_type: tab
@@ -96,7 +97,7 @@ third_party_settings:
       children:
         - field_info_details_sections
       parent_name: group_information_details_edit_f
-      weight: 9
+      weight: 8
       format_type: tab
       format_settings:
         description: ''
@@ -161,6 +162,17 @@ content:
       preview_image_style: thumbnail
     third_party_settings: {  }
     type: image_image
+    region: content
+  field_collections:
+    weight: 20
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings: {  }
+    type: term_reference_tree
     region: content
   field_contact:
     weight: 27
@@ -228,7 +240,12 @@ content:
     region: content
   field_data_topic:
     weight: 15
-    settings: {  }
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
     third_party_settings:
       conditional_fields:
         110b5e6b-b85b-43ae-8e1a-80cd609c35ee:
@@ -248,7 +265,7 @@ content:
             selector: ''
           entity_type: node
           bundle: info_details
-    type: options_buttons
+    type: term_reference_tree
     region: content
   field_details_data_type:
     weight: 12
@@ -310,7 +327,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_footnotes:
-    weight: 2
+    weight: 6
     settings:
       rows: 5
       placeholder: ''
@@ -318,7 +335,7 @@ content:
     type: text_textarea
     region: content
   field_image_credit:
-    weight: 3
+    weight: 7
     settings:
       size: 60
       placeholder: ''
@@ -383,7 +400,7 @@ content:
     third_party_settings: {  }
     region: content
   field_infodetails_metatags:
-    weight: 5
+    weight: 6
     settings:
       sidebar: true
     third_party_settings: {  }
@@ -430,7 +447,7 @@ content:
     type: string_textarea
     region: content
   field_state_organization_tax:
-    weight: 6
+    weight: 7
     settings:
       match_operator: CONTAINS
       size: 60
@@ -453,22 +470,17 @@ content:
     region: content
     third_party_settings: {  }
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 2
-    region: content
+    weight: 32
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
-    type: scheduler_moderation
-    weight: 7
-    region: content
+    weight: 30
     settings: {  }
     third_party_settings: {  }
-  scheduler_settings:
-    weight: 1
+    type: options_select
     region: content
-    settings: {  }
-    third_party_settings: {  }
   title:
     type: string_textfield
     weight: 1
@@ -492,17 +504,17 @@ content:
       match_limit: 10
     third_party_settings: {  }
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 4
-    region: content
+    weight: 33
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 8
-    region: content
+    weight: 31
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 11
     region: content

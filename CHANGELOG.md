@@ -1,5 +1,48 @@
 
 
+## [0.288.0] - June 29, 2021
+
+### Added
+  - DP-21203: Added flexible and fixed iframe configuration options.
+  - DP-22153: Enable debugging for local development.
+  - DP-22194: Added sortable revision count to People view.
+  - DP-22255: Allow authors to choose the type of ordered list style they need for a list.
+  
+### Changed
+  - DP-22083: Mandrill modules update.
+  - DP-22249: Updated Office Hours Module to 8.x-1.5
+  - DP-22294: Data topic field widget changed.
+  - DP-22375: Updated Mayflower version to 11.7.1
+  - DP-22122: Added aria-hidden to hide duplicate content from screen readers. (MF)
+  - DP-22255: Changed ul/ol elements styling behavior to respect type attribute. (MF)
+  - DP-9770: Hide duplicate content as linked image in image promo in news page from screen reader.
+  
+## [0.286.1] - June 16, 2021
+
+  - Temporarily neuter publish_on/unpublish_on validation until scheduler module is uninstalled.
+
+## [0.287.0] - June 22, 2021
+
+### Fixed
+  - DP-19428: Fix 2 buglets related to Hotfix process (github tag creation and Circle automation)
+  - DP-22066: Fixes options in the English Version field autocomplete picker.
+  - DP-22082: Upgrades the Google Tag Manager module.
+  - DP-22160: Fixed external organizatioon image rendering issue on News content type.
+  
+### Changed
+  - DP-21996: Uninstall Scheduler modules.
+  - DP-22083: Mandrill and Route IFrame modules update.
+  - DP-22280: Show user who created the schedule transition in revision history.
+  - DP-22301: Changed the google sitemap setting to 3000 per page.
+  
+### Added
+  - DP-22180: Added pages for filtering and discovering Collections content.
+  
+### Security
+  - DP-22313: Updated drupal ctools from version 3.6.0 to 3.7.0.
+  
+
+
 ## [0.286.0] - June 15, 2021
 
 ### Changed

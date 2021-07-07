@@ -83,6 +83,15 @@ function mass_translations_field_widget_multivalue_form_alter(array &$elements, 
       $elements[0]['target_id']['#title'] = '';
     }
   }
+  // Fixes the "English Version" field help text.
+  if (isset($elements['#field_name']) && $elements['#field_name'] == 'field_media_english_version') {
+    $elements['#media_help']['#media_list_help'] = 'Start typing the document title or filename.';
+    $overview_url = Url::fromUri('internal:/admin/ma-dash/documents');
+    if ($overview_url->access()) {
+      $elements['#media_help']['#media_list_link'] = t('See the <a href=":list_url" target="_blank">document list</a> (opens a new window) to help locate media.', [':list_url' => $overview_url->toString()]);
+    }
+    $elements['#media_help']['#allowed_types_help'] = '';
+  }
 }
 
 /**
@@ -136,5 +145,19 @@ function mass_translations_node_presave(EntityInterface $entity) {
   if ($entity->hasField('field_english_version') && $entity->get('langcode')->value == 'en') {
     // If the Language is English, there isn't a seperate English version.
     $entity->set('field_english_version', '');
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function mass_translations_module_implements_alter(&$implementations, $hook) {
+  switch ($hook) {
+    // Our hook_field_widget_multivalue_form_alter() to execute last.
+    case 'field_widget_multivalue_form_alter':
+      $group = $implementations['mass_translations'];
+      unset($implementations['mass_translations']);
+      $implementations['mass_translations'] = $group;
+      break;
   }
 }

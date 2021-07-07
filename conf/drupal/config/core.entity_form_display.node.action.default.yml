@@ -26,8 +26,6 @@ dependencies:
     - link
     - metatag
     - paragraphs
-    - scheduler
-    - scheduler_content_moderation_integration
     - text
 third_party_settings:
   field_group:
@@ -327,17 +325,17 @@ content:
     region: content
     third_party_settings: {  }
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 3
-    region: content
+    weight: 36
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
-    type: scheduler_moderation
-    weight: 6
-    region: content
+    weight: 34
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   scheduler_settings:
     weight: 2
     region: content
@@ -362,17 +360,17 @@ content:
       match_limit: 10
     third_party_settings: {  }
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 4
-    region: content
+    weight: 37
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 7
-    region: content
+    weight: 35
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 8
     region: content
