@@ -3449,6 +3449,7 @@ function mass_theme_preprocess_node_news_full(&$variables) {
           $org_refs = Helper::getReferencedEntitiesFromField($signee_entity, $org_data['link']);
           if ($org_page = reset($org_refs)) {
             $promo_options = [
+              'ariaHidden' => TRUE,
               'title' => Helper::fieldValue($org_page, 'title'),
               'alt' => Helper::fieldValue($org_page, 'title'),
             ];
@@ -4971,6 +4972,19 @@ function mass_theme_preprocess_paragraph(&$variables) {
   $function = __FUNCTION__ . '__' . $paragraph->getType();
   if (function_exists($function)) {
     $function($variables);
+  }
+}
+
+/**
+ * Implements hook_preprocess_paragraph().
+ */
+function mass_theme_preprocess_paragraph__iframe(&$variables) {
+  if (!$variables['paragraph']->get('field_iframe_height_config')->isEmpty()) {
+    $variables['iframe_height'] = $variables['paragraph']->get('field_height')->getValue()[0]['value'];
+    if ($variables['paragraph']->get('field_iframe_height_config')->getValue()[0]['value'] == '100') {
+      $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
+      $variables['iframe_height'] = 'auto';
+    }
   }
 }
 

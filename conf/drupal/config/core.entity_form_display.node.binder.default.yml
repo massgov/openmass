@@ -42,6 +42,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
+    - term_reference_tree
 third_party_settings:
   field_group:
     group_binder_node_edit_form:
@@ -363,7 +364,12 @@ content:
     region: content
   field_data_topic:
     weight: 17
-    settings: {  }
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
     third_party_settings:
       conditional_fields:
         dcff2e8c-c602-4ba8-95f8-fb0f017c9487:
@@ -383,7 +389,7 @@ content:
             selector: ''
           entity_type: node
           bundle: binder
-    type: options_buttons
+    type: term_reference_tree
     region: content
   field_downloads:
     weight: 14
