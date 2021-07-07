@@ -6,13 +6,13 @@
 
 <div class="referencing-binders" data-id="{{ parent.entity.nid.value }}">
 {% if next %}
-{% set srLabel = "Next page, " ~ next['title'] %}
+  {% set ariaLabel = "Next page, " ~ next['title'] %}
   {% set next_button = {
     "arrowButton": {
       "href": next['url'],
       "info": "",
       "direction": "right",
-      "hide": TRUE
+      "ariaHide": TRUE
     },
     "label": "Next",
     "title": "",
@@ -20,18 +20,18 @@
       "href": next['url'],
       "text": next['title'],
       "info": "",
-      "srLabel": srLabel
+      "ariaLabel": ariaLabel
     }
   } %}
 {% endif %}
 {% if previous %}
-  {% set srLabel = "Previous page, " ~ next['title'] %}
+  {% set ariaLabel = "Previous page, " ~ next['title'] %}
   {% set prev_button = {
     "arrowButton": {
       "href": previous['url'],
       "info": "",
       "direction": "left",
-      "hide": TRUE
+      "ariaHidden": TRUE
     },
     "label": "Previous",
     "title": "",
@@ -39,7 +39,7 @@
       "href": previous['url'],
       "text": previous['title'],
       "info": "",
-      "srLabel": srLabel
+      "ariaLabel": ariaLabel
     }
   } %}
 {% endif %}
@@ -50,7 +50,7 @@
       "label": "This is part of:",
       "link": {
         "href": path('entity.node.canonical', {'node' : parent.entity.nid.value}),
-        "srLabel": ariaLabel,
+        "ariaLabel": ariaLabel,
         "text": parent.entity.title.value,
       }
     },
