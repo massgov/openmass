@@ -76,7 +76,7 @@ class ReportsController extends ControllerBase {
     $link = $this->menuActiveTrail->getActiveLink('mass-dashboard');
     if ($link && $content = $this->getAdminBlock($link)) {
       $output = [
-        '#theme' => 'admin_block_content',
+        '#theme' => 'mass_reports_block_content',
         '#content' => $content,
       ];
     }
