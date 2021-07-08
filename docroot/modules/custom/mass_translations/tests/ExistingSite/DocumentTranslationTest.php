@@ -85,9 +85,9 @@ class DocumentTranslationTest extends ExistingSiteBase {
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Entity page was loadable');
     $page = $this->getSession()->getPage();
     $element = $page->find('css', '.ma__listing-table__container')->getText();
-    $this->assertContains($entity->language()->getName(), $element, 'Language not found');
+    $this->assertStringContainsString($entity->language()->getName(), $element, 'Language not found');
     $tabs = $page->find('css', '.primary-tabs')->getText();
-    $this->assertContains('Translations', $tabs, 'No Translations tab was found');
+    $this->assertStringContainsString('Translations', $tabs, 'No Translations tab was found');
   }
 
 }

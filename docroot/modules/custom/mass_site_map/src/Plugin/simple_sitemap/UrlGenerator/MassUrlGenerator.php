@@ -96,7 +96,7 @@ class MassUrlGenerator extends EntityUrlGenerator {
     if ($entity->getEntityTypeId() == 'media') {
       foreach ($files as $file) {
         // We must pass URL object so that module can apply baseurl config.
-        $file_url = $file->url();
+        $file_url = $file->createFileUrl();
         if ($file_url) {
           $media_url = $entity->url();
           $media_url_object = Url::fromUserInput($media_url . '/download', ['absolute' => TRUE]);
