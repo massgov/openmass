@@ -26,8 +26,9 @@ class MassFilterEntitiesSelection extends DefaultSelection {
     $types = $handler_settings['target_bundles'];
 
     // Get the users selected filter.
-    if (!empty($_COOKIE['Drupal_visitor_autocomplete_select_filter'])) {
-      $types = unserialize($_COOKIE['Drupal_visitor_autocomplete_select_filter']);
+    $cookie = \Drupal::requestStack()->getCurrentRequest()->cookies->get('Drupal_visitor_autocomplete_select_filter');
+    if (!empty($cookie)) {
+      $types = unserialize($cookie);
     }
 
     $query = $this->entityManager->getStorage($target_type)->getQuery();
