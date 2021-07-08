@@ -335,6 +335,9 @@
 {% block main %}
   {# Increase heading number by 1 from the parent heading. #}
   {% set level = level + 1 %}
+
+  {{ content.field_info_details_sections }}
+
   <div class="stacked-row-content">
 
     {% set subtype = node.field_subtype.value %}
