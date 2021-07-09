@@ -1636,7 +1636,7 @@ function mass_theme_preprocess_node_executive_order(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_executive_order_adjustment')) {
     foreach ($node->{$fields['type']} as $adjustment) {
       $adjustmentEntity = $adjustment->entity;
-      if ($adjustmentEntity instanceof  ContentEntityInterface) {
+      if ($adjustmentEntity instanceof ContentEntityInterface) {
         $adjustmentLink = Helper::dataFromLinkField($adjustmentEntity, ['link' => 'field_adjustment_type_link']);
         if (!empty($adjustmentLink) && Helper::isFieldPopulated($adjustmentEntity, 'field_adjustment_type_term')) {
           $listingTable['rows'][] = [
@@ -3953,7 +3953,7 @@ function mass_theme_preprocess_menu(&$variables) {
 }
 
 /**
- * Implements mass_theme_add_regions_to_node().
+ * Implements hook_mass_theme_add_regions_to_node().
  *
  * Add regions to node templates.
  */
