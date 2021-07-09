@@ -1,4 +1,5 @@
 table.dataTable thead {
+    color: #fff;
     background-color: #535353;
 }
 
@@ -16,4 +17,37 @@ table.dataTable thead .sorting_desc {
 
 table.dataTable thead .sorting_asc {
     background-image: url(../../icons/333333/sort-asc.svg) !important;
+}
+
+
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before, table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+    top: 50%;
+    left: 5px;
+    height: 1em;
+    width: 1em;
+    margin-top: -9px;
+    position: absolute;
+    content: "+";
+    font-size: 1.6em;
+    font-weight: 700;
+    line-height: .75em;
+    color: #388557;
+    -webkit-transition: -webkit-transform .5s ease;
+    transition: -webkit-transform .5s ease;
+    -o-transition: transform .5s ease;
+    transition: transform .5s ease;
+    transition: transform .5s ease,-webkit-transform .5s ease;
+    -webkit-transform-origin: center center;
+    -ms-transform-origin: center center;
+    transform-origin: center center;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    background: none;
+    font-family: "Noto Sans VF","Noto Sans","Helvetica","Arial",sans-serif;
+}
+
+table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before, table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before {
+    content: "﹣"; /* small hyphen-minus */
+    background: none;
 }
