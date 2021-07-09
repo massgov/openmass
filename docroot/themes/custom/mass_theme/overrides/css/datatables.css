@@ -46,15 +46,19 @@ table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before {
     background: none;
 }
 
-table.dataTable>tbody>tr.child ul.dtr-details>li {
+table.dataTable.collapsed>tbody>tr.child ul.dtr-details>li {
     padding: .5rem 0;
     margin-bottom: 0;
 }
 
-table.dataTable.display tbody tr.odd,
-table.dataTable.display tbody tr.even,
-table.dataTable.display tbody tr.even>.sorting_1 {
+table.dataTable.display.collapsed tbody tr.odd,
+table.dataTable.display.collapsed tbody tr.even,
+table.dataTable.display.collapsed tbody tr.even>.sorting_1 {
     background-color: #F2F2F2;
+}
+
+table.dataTable.display.collapsed tbody tr:not(.child) td {
+    border-top: 1px solid #707070;
 }
 
 
