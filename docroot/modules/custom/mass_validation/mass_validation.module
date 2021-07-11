@@ -163,6 +163,16 @@ function mass_validation_form_node_form_alter(&$form, FormStateInterface $form_s
       }
     }
   }
+
+  // If the field_collections field exists, verify the user has permission to
+  // use it.
+  if (isset($form['field_collections'])) {
+    $user = \Drupal::currentUser();
+    if (!$user->hasPermission('set collection tags')) {
+      // If the user does not have permission, hide the field.
+      $form['field_collections']['#attributes']['class'][] = 'js-hide';
+    }
+  }
 }
 
 /**
@@ -678,14 +688,6 @@ function mass_validation_form_node_campaign_landing_form_alter(&$form, FormState
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_campaign_landing_form_validate(array &$form, FormStateInterface $form_state) {
-  // Get the value from the unpublished date.
-  $unpublished_date = $form_state->getValue(['unpublish_on', 0, 'value']);
-  // Add 14 months to today date.
-  $today_date = new DrupalDateTime("now +14 months");
-  // If the unpublished date is greater than 14 months than validation error is displayed.
-  if ($unpublished_date > $today_date) {
-    $form_state->setErrorByName('unpublish_on][0][value', t('An unpublish date within the next 14 months must be provided.'));
-  }
 
   // Check the Key performance indicators (KPIs) have values if the box is checked.
   // Map the KPI fields with the Key performance indicators options in the form.

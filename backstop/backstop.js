@@ -11,12 +11,18 @@ switch (file) {
   case 'all':
     pages = require('./all');
     break;
+  case 'post-release':
+    pages = require('./post-release');
+    break;
   default:
     throw new Error('has occurred with' + file + '.');
-};
+}
 
 // Determine the environment we're targeting.
 const opts = process.argv.filter(arg => arg.match(/^--target=/))
+const viewportConfig = process.argv.filter(arg => arg.match(/^--viewport=/))
+const viewportArg = viewportConfig.length ? viewportConfig[0].replace('--viewport=', '') : 'all';
+
 const target = opts.length ? opts[0].replace('--target=', '') : 'prod';
 
 const scenarios = pages.map(function(page) {
@@ -56,25 +62,32 @@ function getAuth() {
   }
 }
 
+const viewports = [
+  {
+    "label": "desktop",
+    "width": 1920,
+    "height": 1080
+  }
+];
+
+if (viewportArg !== 'desktop') {
+  viewports.push(
+    {
+      "label": "phone",
+      "width": 320,
+      "height": 480
+    },
+    {
+      "label": "tablet",
+      "width": 1024,
+      "height": 768
+    },
+  );
+}
+
 module.exports = {
     id: 'regression',
-    viewports: [
-        {
-            "label": "phone",
-            "width": 320,
-            "height": 480
-        },
-        {
-            "label": "tablet",
-            "width": 1024,
-            "height": 768
-        },
-        {
-            "label": "desktop",
-            "width": 1920,
-            "height": 1080
-        }
-    ],
+    viewports,
     "scenarios": scenarios,
     "paths": {
         "bitmaps_reference": `${__dirname}/reference`,

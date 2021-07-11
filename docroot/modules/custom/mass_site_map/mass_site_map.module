@@ -23,46 +23,16 @@ function mass_site_map_form_alter(array &$form, FormStateInterface $form_state, 
 }
 
 /**
- * Implements hook_module_implements_alter().
+ * Implements hook_simple_sitemap_sitemap_generators_alter().
  */
-function mass_site_map_module_implements_alter(&$implementations, $hook) {
-  // Move this module to be last so simple_sitemap key exists for form alter.
-  if ($hook === 'form_alter') {
-    $group = $implementations['mass_site_map'];
-    unset($implementations['mass_site_map']);
-    $implementations['mass_site_map'] = $group;
-  }
-  if ($hook === 'cron') {
-    // This will be handled as a cron task instead.
-    unset($implementations['simple_sitemap']);
-  }
+function mass_site_map_simple_sitemap_sitemap_generators_alter(array &$sitemap_generators) {
+  // Remove the default generator.
+  $sitemap_generators['default']['class'] = 'Drupal\mass_site_map\Plugin\simple_sitemap\SitemapGenerator\MassSitemapGenerator';
 }
 
 /**
- * Implements hook_form_BASE_FORM_ID_alter().
+ * Implements hook_simple_sitemap_url_generators_alter().
  */
-function mass_site_map_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  /** @var \Drupal\node\NodeForm $node_form */
-  $node_form = $form_state->getFormObject();
-  /** @var \Drupal\node\Entity\Node $node */
-  $node = $node_form->getEntity();
-  $bundle = $node->bundle();
-  if ($bundle === 'person') {
-    // Override default person enabled from simple sitemap.
-    if ($node->isNew()) {
-      $form['simple_sitemap']['simple_sitemap_index_content']['#default_value'] = 0;
-    }
-    $form['#attached']['library'][] = 'mass_site_map/mass_site_map.person_form';
-    // Having person enabled in simple_sitemap means this is normally 1.
-    // It should only be 1 when bio page is checked.
-    $form['simple_sitemap']['#states'] = [
-      'visible' => [
-        'input[name=field_publish_bio_page\\[value\\]]' => ['checked' => TRUE],
-      ],
-    ];
-  }
-  if (isset($form['simple_sitemap'])) {
-    unset($form['simple_sitemap']['simple_sitemap_regenerate_now']);
-    $form['simple_sitemap']['#weight'] = 999;
-  }
+function mass_site_map_simple_sitemap_url_generators_alter(array &$url_generators) {
+  $url_generators['entity']['class'] = $url_generators['mass_entity']['class'];
 }

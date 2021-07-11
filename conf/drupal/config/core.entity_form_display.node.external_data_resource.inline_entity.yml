@@ -17,8 +17,7 @@ dependencies:
     - content_moderation
     - field_group
     - link
-    - scheduler
-    - scheduler_content_moderation_integration
+    - term_reference_tree
 third_party_settings:
   field_group:
     group_externaldata_edit_form:
@@ -108,10 +107,15 @@ content:
     type: options_buttons
     region: content
   field_data_topic:
-    type: options_buttons
+    type: term_reference_tree
     weight: 15
     region: content
-    settings: {  }
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
     third_party_settings: {  }
   field_details_data_type:
     weight: 12
@@ -128,6 +132,7 @@ content:
       maxlength:
         maxlength_js: 500
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce_attribute: true
         maxlength_js_enforce: false
         maxlength_js_truncate_html: false
     type: string_textarea
@@ -164,17 +169,17 @@ content:
     settings: {  }
     third_party_settings: {  }
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 3
-    region: content
+    weight: 28
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
-    type: scheduler_moderation
-    weight: 5
-    region: content
+    weight: 26
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   scheduler_settings:
     weight: 2
     region: content
@@ -199,17 +204,17 @@ content:
       placeholder: ''
     third_party_settings: {  }
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 4
-    region: content
+    weight: 29
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 6
-    region: content
+    weight: 27
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 7
     region: content

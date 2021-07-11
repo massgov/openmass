@@ -10,7 +10,7 @@
    */
   Drupal.behaviors.selectizeTypeToSelect = {
     attach: function (context, settings) {
-      $('select.use-selectize-autocomplete').selectize({plugins: ['remove_button']});
+      $('select.use-selectize-autocomplete').selectize({plugins: ['remove_button'], maxOptions: 2000});
     }
   };
 

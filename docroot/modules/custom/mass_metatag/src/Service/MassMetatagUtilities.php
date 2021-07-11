@@ -57,7 +57,7 @@ class MassMetatagUtilities {
           $result[] = $this->slugify(trim($node->label()));
         }
         // If there is a parent org, add it to the array to check.
-        if (!$node->field_parent->isEmpty() && !in_array($node->field_parent->entity->id(), $checked_orgs)) {
+        if (!$node->field_parent->isEmpty() && !is_null($node->field_parent->entity) && !in_array($node->field_parent->entity->id(), $checked_orgs)) {
           $orgs[] = $node->field_parent->entity;
         }
       }
