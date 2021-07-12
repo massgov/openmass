@@ -13,7 +13,9 @@ module.exports = {
     // Pull in the CDN verification token from the environment.
     // This will be added as a header to all origin requests to prevent
     // CDN bypass attacks. See scripts/cloudflare-deploy.
-    new webpack.EnvironmentPlugin(['MASS_CDN_TOKEN'])
+    new webpack.EnvironmentPlugin({
+      'MASS_CDN_TOKEN': 'default'
+    })
   ],
   output: {
     path: __dirname + "/dist",
