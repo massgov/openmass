@@ -6,40 +6,77 @@ This is the codebase for the Drupal 8 web site `www.mass.gov`. The site's theme,
 
 See the [Table of Contents](/docs/README.md) for additional documentation related to this repository.
 
-## Getting Started
+## Getting Started - Mac
 
 1. Clone the repo: `git clone git@github.com:massgov/openmass.git`
 
 1. Move into the project directory: `cd openmass`
-
-1. Create a `.env` file at the root level of the project by copying the example file shipped with the `mass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
+1. Create a `.env` file at the root level of the project by copying the example file shipped with the `openmass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
     ```
     $ cp .env.example .env
     ```
-
-### Docker (optional)
-
-1. Install Docker for [Mac](https://docs.docker.com/docker-for-mac/install/) or [Windows](https://docs.docker.com/docker-for-windows/install/). If using Linux, skip this step.
-
-1. Edit your `hosts` file and add the following line:
+1. If using Docker (n.b. see Native alternative below), install [Docker Desktop](https://docs.docker.com/docker-for-mac/install/).
+1. Edit your `/etc/hosts` file and add the following line:
     ```
     127.0.0.1 mass.local portainer.mass.local mailhog.mass.local
     ```
-    1. **Mac/Linux:** `/etc/hosts`
-    1. **Windows:** `c:\windows\system32\drivers\etc\hosts`
-
-### Native (optional)
-If the Docker section above is unappealing, its easy to run mass.gov natively on any OS. You need to provide your own PHP, web server and DB server (and optional memcache). On OSX, [these install instructions](https://getgrav.org/blog/macos-bigsur-apache-multiple-php-versions) are good (stop at the section called _PHP Switcher Script_), along with this [mysql section](https://getgrav.org/blog/macos-bigsur-apache-mysql-vhost-apc). Point your web server at the /docroot directory.
-
-### Ahoy (optional)
-
 1. In order for the Ahoy aliases to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
-    ```bash
+   ```bash
     sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
     ```
-1. The Ahoy aliases also work for native development environments. Set an environment variable: `MASS_DEV_ENV=native`   
+1. Run `docker login`   
 1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database).
-1. Run `ahoy comi` to fetch all dependencies.
+1. Run `ahoy comi` to fetch all dependencies.   
+
+## Getting Started - Windows Subsystem for Linux (aka WSL2)
+The recommended way to run Docker on Windows is via WSL2.
+
+1. Install WSL2. Until WSL2 is released and then supported by IT, you need to follow the Manual install at https://docs.microsoft.com/en-us/windows/wsl/install-win10. Install _Ubuntu_ in the last step. Also install Windows Terminal as suggested.
+1. Install [Docker Desktop](https://docs.docker.com/docker-for-windows/install/) if you havent already.
+1. In Notepad, edit `c:\windows\system32\drivers\etc\hosts` file and add the following line:
+    ```
+    # Change the IP below to match whatever is in your hosts file for host.docker.internal
+    192.168.50.144 mass.local portainer.mass.local mailhog.mass.local
+    ```
+    Your IP will vary from the one above.Just copy the one that Docker Desktop already wrote to that file.
+1. Go to Docker Desktop settings > Resources > WSL integration > enable integration for your distro (now Docker commands will be available from within your WSL2 distro).
+    1. Double-check in PowerShell: `wsl -l -v` should show three distros, and your Ubuntu should be the default )has asterisk). All three should be WSL version 2.
+    1. Double check in Ubuntu CLI (i.e. open Windows Terminal with Ubuntu shell instead of Powershell) that Docker is working inside Ubuntu: `docker-compose ps`.
+1. In Ubuntu CLI: 
+   ```bash
+   git clone https://github.com/massgov/openmass.git
+   cd openmass
+   docker login
+   # Install Ahoy
+   sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
+   # Install PHP dependencies
+   ahoy comi
+   # Start the openmass containers
+   ahoy up
+   ```
+1. Verify that your development site responds by opening any Windows browser and navigating to http://mass.local. It is expected that the CSS is broken. We'll fix that soon.
+2. Install and configure a code editor from the approaches below. The first approach is recommended:
+    1. Install an X Server app in order to run GUI apps in Linux. See https://ddevhq.org/ddev-local/ddev-local-and-phpstorm-debugging-with-wsl2/ (_Linux PHPStorm section_) Note: Moshe picked [VcXsrv](https://techcommunity.microsoft.com/t5/windows-dev-appconsult/running-wsl-gui-apps-on-windows-10/ba-p/1493242) instead of [X410](https://www.microsoft.com/store/productId/9NLP712ZMN9Q) - either should work. [VcXsrv blurry font fix](https://medium.com/@promiselchin/fixing-blurry-fonts-on-wsl-with-x-server-816b4a4f855f). WSLg, whicb makes this set easy, is [in Preview now, and will be in the Windows 11](https://docs.microsoft.com/en-us/windows/wsl/tutorials/gui-apps)
+    1. Install [Visual Studio Code from](https://code.visualstudio.com/) Microsoft. This will be your code editor. Also install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension. In VS Code, run the command _Attach to Running Container_ and pick the `drupal` container. You should see a green `Connected massgoc/drupalcontainer` in lower left. This means that Remote Container extension is connected and working. 
+1. You may now browse the codebase, and make changes. The codebase you are editing canonically lives in the Ubuntu filesystem (`/home/`), not in the Windows filesystem (`/mnt/c`), because you'll get vastly superior performance on the Ubuntu filesystem.
+7. Create a `.env` file at the root level of the project by copying the example file shipped with the `openmass` repo. Review and edit your .env file. Restart Docker for changes to take effect. Note that the `.env` file is ignored in `.gitignore` and will not be tracked or pushed to Github.
+    ```
+    $ cp .env.example .env
+    ```
+1. In VS Code *Terminal*, run each of the lines below. This fixes the broken CSS we noted earlier.
+   ```
+   mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
+   chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+   ```
+1. Misc Tips
+   1. For CLI work, you can use the Terminal inside VS Code. That drops you right into the `drupal` container. Or you can use a shell on Ubuntu. Ahoy commands (see below) will only work in the Ubuntu shell.
+   1. Install these VS Code extensions into the Remote as needed: PHP Intelephense, PHP Debug, SQLTools (and MySQL plugin), `Open in Github, BitBucket, Gitlab`.   
+
+### Native (optional)
+If the Docker section above is unappealing, its easy to run mass.gov natively on any OS. 
+
+1. You need to provide your own PHP, web server and DB server (and optional memcache). On OSX, [these install instructions](https://getgrav.org/blog/macos-bigsur-apache-multiple-php-versions) are good (stop at the section called _PHP Switcher Script_), along with this [mysql section](https://getgrav.org/blog/macos-bigsur-apache-mysql-vhost-apc). Point your web server at the /docroot directory.
+1. The Ahoy aliases also work for native development environments. Set an environment variable: `MASS_DEV_ENV=native`
 
 ###### Notes
 - It takes a few minutes for the `mysql` container start up.
@@ -47,7 +84,6 @@ If the Docker section above is unappealing, its easy to run mass.gov natively on
 
 ## Pull Requests
 Anyone is welcome and encouraged to submit a pull request for this project. Members of the public should fork the project and submit a PR. Your PR will automatically build and get limited testing. Once that is green, a mass.gov team member will code review your PR. Once satisfied, the team member will [copy your branch into the openmass repo](scripts/git-push-fork-to-upstream-branch) so the full test suite may run. Once that is green, your PR is is eligible to be merged.
-
 
 ## Workflow
 
@@ -112,12 +148,3 @@ This usually happens if you go visit mass.local right after the containers are b
 ### Xdebug
 
 If you know where a problem is happening in your code, Xdebug is a useful tool that allows you set breakpoints to trace the problem back. See [.env.example](../.env.example) for setup instructions.
-
-### Windows troubleshooting
-
-- All host machine command line steps should be done from an elevated (admin) prompt.
-- Make sure that you have run `git config --local core.symlinks true` to enable symlinks when
-  you check out the repository.
-- If the symlinks from the theme to the Pattern Lab assets are not working after running composer,
-  delete the non-working symlinks and `git checkout` again.
-- You will find it helpful to copy `docroot/.gitattributes` to the root of the project. [@todo - add this to the automation]
