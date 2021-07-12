@@ -6762,7 +6762,7 @@ function mass_theme_preprocess_paragraph__featured_content_single_item(&$variabl
  */
 function mass_theme_preprocess_paragraph__topics(&$variables) {
   $paragraph = $variables['paragraph'];
-  if($paragraph->field_topic_name_only->value == true) {
+  if ($paragraph->field_topic_name_only->value == TRUE) {
     $field_topics = $variables['content']['field_topic_topics'];
     $count = $field_topics['#items']->count();
     if ($count) {

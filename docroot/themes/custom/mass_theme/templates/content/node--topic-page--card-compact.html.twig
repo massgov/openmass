@@ -77,7 +77,7 @@
 {% if elements['#level'] is not empty %}
   {% set level = elements['#level'] %}
 {% endif %}
-
+{# TODO: Implement 'compact' variable in the pl component. #}
 {% embed "@molecules/section-links.twig" with {
   "sectionLinks": {
     "id": node.id,
@@ -87,7 +87,8 @@
       "info": ""
     },
     "level": level,
-    "description": ""
+    "description": "",
+    "compact": true
   }
 } %}
 
