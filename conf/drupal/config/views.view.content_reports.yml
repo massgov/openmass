@@ -122,18 +122,21 @@ display:
             field_organizations: field_organizations
             uid: uid
             changed: changed
+            field_subtype: field_subtype
             status: status
-            field_service_video: field_service_video
-            field_services_social_links: field_services_social_links
-            field_service_ref_guide_page_1: field_service_ref_guide_page_1
-            field_service_eligibility_info: field_service_eligibility_info
-            field_ref_contact_info: field_ref_contact_info
-            field_log_in_links: field_log_in_links
-            field_service_ref_actions_2: field_service_ref_actions_2
-            field_link_group: field_link_group
-            field_links_documents: field_links_documents
-            field_service_ref_locations: field_service_ref_locations
-            field_service_ref_services_6: field_service_ref_services_6
+            field_parent: field_parent
+            field_billing_organization: field_billing_organization
+            field_constituent_communication: field_constituent_communication
+            field_urgent_warning: field_urgent_warning
+            field_social_links: field_social_links
+            field_org_featured_message: field_org_featured_message
+            field_org_featured_items: field_org_featured_items
+            field_links_actions_3: field_links_actions_3
+            field_ref_actions_6: field_ref_actions_6
+            field_org_ref_locations: field_org_ref_locations
+            field_org_featured_news_items: field_org_featured_news_items
+            field_ref_card_view_6: field_ref_card_view_6
+            field_org_our_orgs: field_org_our_orgs
           info:
             nid:
               sortable: false
@@ -168,6 +171,13 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
+            field_subtype:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
             status:
               sortable: false
               default_sort_order: asc
@@ -175,71 +185,87 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            field_service_video:
+            field_parent:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_billing_organization:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_constituent_communication:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_urgent_warning:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_social_links:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_org_featured_message:
               sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
-            field_services_social_links:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            field_service_ref_guide_page_1:
+            field_org_featured_items:
               sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
-            field_service_eligibility_info:
+            field_links_actions_3:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_ref_actions_6:
               sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
-            field_ref_contact_info:
+            field_org_ref_locations:
               sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
-            field_log_in_links:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            field_service_ref_actions_2:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            field_link_group:
+            field_org_featured_news_items:
               sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
-            field_links_documents:
+            field_ref_card_view_6:
               sortable: true
               default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
-            field_service_ref_locations:
-              sortable: true
-              default_sort_order: desc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            field_service_ref_services_6:
+            field_org_our_orgs:
               sortable: true
               default_sort_order: desc
               align: ''
@@ -8664,73 +8690,6 @@ display:
           group_columns: {  }
           group_rows: true
           delta_limit: 2
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          plugin_id: field
-        field_get_updates_links:
-          id: field_get_updates_links
-          table: node__field_get_updates_links
-          field: field_get_updates_links
-          relationship: none
-          group_type: count_distinct
-          admin_label: ''
-          label: 'Get updates links'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: uri
-          type: link
-          settings:
-            trim_length: 80
-            url_only: false
-            url_plain: false
-            rel: '0'
-            target: '0'
-          group_column: entity_id
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 3
           delta_offset: 0
           delta_reversed: false
           delta_first_last: false
