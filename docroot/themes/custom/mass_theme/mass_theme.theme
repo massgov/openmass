@@ -6756,3 +6756,21 @@ function mass_theme_preprocess_paragraph__featured_content_single_item(&$variabl
   mass_theme_campaign_landing_paragraph_set_header_level($variables);
   mass_theme_featured_content_cards($variables);
 }
+
+/**
+ * Display cards or compact cards depending on the settings.
+ */
+function mass_theme_preprocess_paragraph__topics(&$variables) {
+  $paragraph = $variables['paragraph'];
+  if($paragraph->field_topic_name_only->value == true) {
+    $field_topics = $variables['content']['field_topic_topics'];
+    $count = $field_topics['#items']->count();
+    if ($count) {
+      for ($i = 0; $i < $count; $i++) {
+        $field_topics[$i]['#view_mode'] = 'card_compact';
+        unset($field_topics[$i]['#cache']['keys']);
+      }
+    }
+    $variables['content']['field_topic_topics'] = $field_topics;
+  }
+}

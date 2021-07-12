@@ -1,0 +1,28 @@
+uuid: 43daca9b-f685-4a82-9e8f-41357e5cb291
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_topic_topics
+    - node.type.topic_page
+    - paragraphs.paragraphs_type.topics
+id: paragraph.topics.field_topic_topics
+field_name: field_topic_topics
+entity_type: paragraph
+bundle: topics
+label: Topics
+description: 'You can use this area to include up to 15 topics that are relevant. You can look at the site''s main navigation to explore the topics that exist.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      topic_page: topic_page
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

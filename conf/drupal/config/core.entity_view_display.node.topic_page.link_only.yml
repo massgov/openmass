@@ -1,0 +1,58 @@
+uuid: 62c749d4-8f37-4538-ac1f-ba44b4b12252
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.link_only
+    - field.field.node.topic_page.field_image_credit
+    - field.field.node.topic_page.field_intended_audience
+    - field.field.node.topic_page.field_organizations
+    - field.field.node.topic_page.field_reusable_label
+    - field.field.node.topic_page.field_state_organization_tax
+    - field.field.node.topic_page.field_topic_bg_narrow
+    - field.field.node.topic_page.field_topic_bg_wide
+    - field.field.node.topic_page.field_topic_content_cards
+    - field.field.node.topic_page.field_topic_display_links
+    - field.field.node.topic_page.field_topic_lede
+    - field.field.node.topic_page.field_topic_metatags
+    - field.field.node.topic_page.field_topic_ref_icon
+    - field.field.node.topic_page.field_topic_ref_related_topics
+    - field.field.node.topic_page.field_topic_section_bg_narrow
+    - field.field.node.topic_page.field_topic_section_bg_wide
+    - field.field.node.topic_page.field_topic_type
+    - node.type.topic_page
+  module:
+    - user
+id: node.topic_page.link_only
+targetEntityType: node
+bundle: topic_page
+mode: link_only
+content:
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  computed_card_links: true
+  content_moderation_control: true
+  extra_org_feedback_form: true
+  field_image_credit: true
+  field_intended_audience: true
+  field_organizations: true
+  field_reusable_label: true
+  field_state_organization_tax: true
+  field_topic_bg_narrow: true
+  field_topic_bg_wide: true
+  field_topic_content_cards: true
+  field_topic_display_links: true
+  field_topic_lede: true
+  field_topic_metatags: true
+  field_topic_ref_content_cards: true
+  field_topic_ref_icon: true
+  field_topic_ref_related_topics: true
+  field_topic_section_bg_narrow: true
+  field_topic_section_bg_wide: true
+  field_topic_type: true
+  langcode: true
+  links: true

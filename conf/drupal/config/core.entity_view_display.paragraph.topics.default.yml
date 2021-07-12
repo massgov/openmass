@@ -1,0 +1,33 @@
+uuid: 3524b2f6-3a00-4487-92cf-3ac0b9eafa4a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.topics.field_topic_name_only
+    - field.field.paragraph.topics.field_topic_topics
+    - paragraphs.paragraphs_type.topics
+id: paragraph.topics.default
+targetEntityType: paragraph
+bundle: topics
+mode: default
+content:
+  field_topic_name_only:
+    type: boolean
+    weight: 1
+    region: content
+    label: hidden
+    settings:
+      format: true-false
+      format_custom_true: ''
+      format_custom_false: ''
+    third_party_settings: {  }
+  field_topic_topics:
+    weight: 0
+    label: hidden
+    settings:
+      view_mode: card
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+hidden: {  }

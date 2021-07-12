@@ -33,6 +33,7 @@ dependencies:
     - field.field.node.org_page.field_org_featured_message
     - field.field.node.org_page.field_org_featured_news_items
     - field.field.node.org_page.field_org_our_orgs
+    - field.field.node.org_page.field_org_page_content
     - field.field.node.org_page.field_org_page_thumbnail
     - field.field.node.org_page.field_org_ref_locations
     - field.field.node.org_page.field_org_sentence_phrasing
@@ -373,6 +374,15 @@ content:
     type: entity_reference_revisions_entity_view
     weight: 21
     label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_org_page_content:
+    type: entity_reference_revisions_entity_view
+    weight: 138
+    label: above
     settings:
       view_mode: default
       link: ''

@@ -543,6 +543,24 @@
         {% endif %}
       {% endblock %}
 
+      {# Content paragraph #}
+      {% block orgContent %}
+        {% if node.field_org_page_content is not empty %}
+
+          {% embed "@organisms/by-author/stacked-row-section.twig" with {
+            "stackedRowSection": {
+              "title":"",
+              "id":""
+            }
+          } %}
+            {% block stackedRowContentOverride %}
+              {{ content.field_org_page_content }}
+            {% endblock %}
+          {% endembed %}
+
+        {% endif %}
+      {% endblock %}
+
       {# Recent news & announcements #}
       {% block recentNews %}
         {% if news %}
