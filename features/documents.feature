@@ -38,8 +38,7 @@ Feature: Media Documents
       | Save as                           | published                          |
     And I attach the file "upload.mp3" to "files[field_upload_file_0]"
     And I press "Save"
-    Then I should see the following success messages:
-      | "Document upload.mp3 has been created." |
+    Then I should see "Document upload.mp3 has been created."
     Given I am on "/admin/content/media"
     When I follow "upload.mp3"
     And I should see "Test mp3"
