@@ -26,7 +26,13 @@ commands:
   drush:
     cmd: ahoy exec vendor/bin/drush "$@"
   uli:
-    cmd: open $(ahoy drush uli | tr -d '\r')
+    cmd: |
+      if [ `uname` == "Darwin" ]; then
+        open $(ahoy drush uli | tr -d '\r')
+      else
+        xdg-open $(ahoy drush uli | tr -d '\r')
+      fi
+
   test:
     cmd: ahoy exec scripts/ma-test "$@"
   tail:
