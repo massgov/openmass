@@ -4265,7 +4265,7 @@ function mass_theme_preprocess_node_stacked_layout(&$variables) {
         'link' => [
           'type' => 'internal',
           'quickaction' => 'FALSE',
-          'href' => $item->url(),
+          'href' => $item->toUrl(),
           'text' => $item->getTitle(),
           'image' => Helper::getFieldImageUrl($item, 'thumbnail_130x160', 'field_photo'),
           'label' => trim($item->get('field_label')->value) == 'Guide' ? 'Guide:' : '',
