@@ -5,6 +5,7 @@ namespace Drupal\mayflower;
 use Drupal\Core\Image\Image;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\mayflower\Prepare\Atoms;
 use Drupal\mayflower\Prepare\Molecules;
@@ -99,6 +100,7 @@ class Helper {
     $fields = $entity->get($field);
 
     if ($fields) {
+      /** @var File[] $images */
       $images = $fields->referencedEntities();
     }
 
@@ -106,7 +108,7 @@ class Helper {
       $image = $images[$delta];
 
       if (!empty($style_name) && ($style = ImageStyle::load($style_name))) {
-        $url = $style->buildUri($image->createFileUrl());
+        $url = $style->buildUrl($image->getFileUri());
       }
       else {
         $url = $image->createFileUrl();
