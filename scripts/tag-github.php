@@ -23,11 +23,11 @@ echo "Find the last tag created:" . " " . $version . "\n\n";
 // The tag version will always be major.minor.patch (e.g. 0.235.0)
 
 // If the commit message has the word "release" in it the tag will increment as minor.
-if(strpos($branch, "release") !== false){
+if(stripos($branch, "release") !== false){
   $version->incrementMinor();
 }
 // If the commit message has the word "hotfix" in it the tag will increment as patch.
-elseif (strpos($branch, "hotfix") !== false){
+elseif (stripos($branch, "hotfix") !== false){
   $version->incrementPatch();
 }
 // If none of those words are found the tag will be unable to increment correctly.
