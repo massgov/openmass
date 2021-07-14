@@ -1,0 +1,51 @@
+uuid: a513828a-9eb7-4f66-bfc0-059e92279e0b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.csv_table.field_csv_file
+    - field.field.paragraph.csv_table.field_csvtable_caption
+    - field.field.paragraph.csv_table.field_csvtable_display_size
+    - field.field.paragraph.csv_table.field_csvtable_title
+    - paragraphs.paragraphs_type.csv_table
+  module:
+    - csv_field
+    - options
+    - text
+id: paragraph.csv_table.default
+targetEntityType: paragraph
+bundle: csv_table
+mode: default
+content:
+  field_csv_file:
+    weight: 1
+    label: hidden
+    settings:
+      use_description_as_link_text: true
+      display_as_datatable: true
+    third_party_settings: {  }
+    type: csv_file_table
+    region: content
+  field_csvtable_caption:
+    weight: 3
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_csvtable_display_size:
+    weight: 4
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_key
+    region: content
+  field_csvtable_title:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }
