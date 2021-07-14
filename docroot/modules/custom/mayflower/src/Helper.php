@@ -1713,7 +1713,7 @@ class Helper {
   public static function findSvg($content) {
     preg_match_all("<svg-placeholder path=\"(.*\.svg)\">", $content, $matches);
 
-    if (!empty($matches[1]))  {
+    if (!empty($matches[1])) {
       return array_unique(array_filter($matches[1]));
     }
 

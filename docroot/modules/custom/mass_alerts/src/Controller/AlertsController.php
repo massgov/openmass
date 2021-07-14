@@ -217,7 +217,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
         if ($severity == 'informational_notice') {
           $icon = 'input-warning';
-        } else {
+        }
+        else {
           $icon = 'input-error';
         }
 
@@ -277,6 +278,9 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     return $response;
   }
 
+  /**
+   * Attach svg to rendered content.
+   */
   private function attachSvg(&$content) {
 
     $svgs = Helper::findSvg($content);
@@ -298,4 +302,3 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
   }
 
 }
-
