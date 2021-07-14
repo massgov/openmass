@@ -6736,7 +6736,7 @@ function mass_theme_featured_content_cards(&$variables) {
       'thumbnail' => '',
     ];
     if (is_object($paragraph->field_image->entity)) {
-      $return_array['thumbnail'] = $paragraph->field_image->entity->url();
+      $return_array['thumbnail'] = $paragraph->field_image->entity->createFileUrl();
     }
     if (!$paragraph->field_url->isEmpty()) {
       $return_array['link'] = $paragraph->field_url->first()->getUrl()->toString();

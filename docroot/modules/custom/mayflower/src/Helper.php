@@ -106,7 +106,7 @@ class Helper {
       $image = $images[$delta];
 
       if (!empty($style_name) && ($style = ImageStyle::load($style_name))) {
-        $url = $style->buildUri($image->createFileUri());
+        $url = $style->buildUri($image->createFileUrl());
       }
       else {
         $url = $image->createFileUrl();
