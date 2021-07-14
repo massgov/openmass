@@ -102,7 +102,12 @@ table.dataTable.display.collapsed tbody tr:not(.child) td {
 }
 
 /* table header width bugfix for xScroll tables */
-.dataTables_scrollHeadInner,
+/* .dataTables_scrollHeadInner,
 .dataTables_scrollHeadInner > table {
     width: 100% !important;
+} */
+
+/* hide duplicated table header on screen reader */
+.dataTables_scrollBody thead tr {
+    display: none;
 }
