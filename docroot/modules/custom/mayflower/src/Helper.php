@@ -2,6 +2,7 @@
 
 namespace Drupal\mayflower;
 
+use Drupal\Core\Image\Image;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\image\Entity\ImageStyle;
@@ -105,10 +106,10 @@ class Helper {
       $image = $images[$delta];
 
       if (!empty($style_name) && ($style = ImageStyle::load($style_name))) {
-        $url = $style->buildUrl($image->getFileUri());
+        $url = $style->buildUri($image->createFileUri());
       }
       else {
-        $url = $image->url();
+        $url = $image->createFileUrl();
       }
     }
 
