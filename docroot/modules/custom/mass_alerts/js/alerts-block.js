@@ -19,6 +19,11 @@
       $('.mass-alerts-block', context).each(function () {
         var $this = $(this);
         var path = $this.data('alerts-path');
+
+        if (path !== '/alerts/sitewide') {
+          $this.insertBefore('.main-content--full');
+        }
+
         if (path) {
           $.ajax({
             type: 'GET',
