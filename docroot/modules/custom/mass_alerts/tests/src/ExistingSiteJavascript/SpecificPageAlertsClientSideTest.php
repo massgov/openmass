@@ -61,17 +61,17 @@ class SpecificPageAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
     $this->drupalGet('node/' . $org_node->id());
     $assert_session->pageTextContains($org_node->getTitle());
-    $assert_session->waitForElement('css', '.ma__header-alert__message');
+    $assert_session->waitForElement('css', '.ma__header-alerts');
     $assert_session->pageTextContains($alert_message);
 
     $this->drupalGet('node/' . $news_node->id());
     $assert_session->pageTextContains($news_node->getTitle());
-    $assert_session->waitForElement('css', '.ma__header-alert__message');
+    $assert_session->waitForElement('css', '.ma__header-alerts');
     $assert_session->pageTextContains($alert_message);
 
     $this->drupalGet('node/' . $event_node->id());
     $assert_session->pageTextContains($event_node->getTitle());
-    $assert_session->waitForElement('css', '.ma__header-alert__message');
+    $assert_session->waitForElement('css', '.ma__header-alerts');
     $assert_session->pageTextContains($alert_message);
   }
 
