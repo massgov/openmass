@@ -1,5 +1,4 @@
 
-
 ## [0.289.0] - July 13, 2021
 
 ### Added
@@ -26,7 +25,6 @@
   - DP-22153: Enable debugging for local development.
   - DP-22194: Added sortable revision count to People view.
   - DP-22255: Allow authors to choose the type of ordered list style they need for a list.
-
 ### Changed
   - DP-22083: Mandrill modules update.
   - DP-22249: Updated Office Hours Module to 8.x-1.5

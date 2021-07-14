@@ -1,0 +1,14 @@
+{% embed "@organisms/by-author/rich-text.twig" with {
+  "richText": {
+    "compHeading": {
+      "title": (content.field_section_long_form_heading|field_value)
+    }
+  }
+} %}
+  {% block rteElements %}
+    {{ content.field_section_long_form_content }}
+  {% endblock %}
+
+{% endembed %}
+
+{{ content.field_section_long_form_addition }}

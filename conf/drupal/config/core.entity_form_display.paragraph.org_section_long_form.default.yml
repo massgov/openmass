@@ -1,0 +1,82 @@
+uuid: 3374d25e-0a96-4b45-a884-8d2b7b2f2295
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.org_section_long_form.field_section_long_form_addition
+    - field.field.paragraph.org_section_long_form.field_section_long_form_content
+    - field.field.paragraph.org_section_long_form.field_section_long_form_heading
+    - paragraphs.paragraphs_type.org_section_long_form
+  module:
+    - field_group
+    - paragraphs
+third_party_settings:
+  field_group:
+    group_section_content:
+      children:
+        - field_section_long_form_content
+      parent_name: ''
+      weight: 1
+      format_type: details
+      region: content
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        open: false
+        required_fields: true
+      label: 'Section Content'
+    group_additional_resources:
+      children:
+        - field_section_long_form_addition
+      parent_name: ''
+      weight: 2
+      format_type: details
+      region: content
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        open: false
+        required_fields: true
+      label: 'Additional Resources'
+id: paragraph.org_section_long_form.default
+targetEntityType: paragraph
+bundle: org_section_long_form
+mode: default
+content:
+  field_section_long_form_addition:
+    weight: 3
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+    third_party_settings: {  }
+    type: entity_reference_paragraphs
+    region: content
+  field_section_long_form_content:
+    weight: 3
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: button
+      form_display_mode: media_caption_and_display
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    type: entity_reference_paragraphs
+    region: content
+  field_section_long_form_heading:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true

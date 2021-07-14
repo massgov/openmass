@@ -1,0 +1,33 @@
+uuid: e4c1e5d3-2332-439a-9baf-6ef5087eb835
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.featured_topics.field_featured_topics_topics
+    - field.field.paragraph.featured_topics.field_topic_name_only
+    - paragraphs.paragraphs_type.featured_topics
+id: paragraph.featured_topics.default
+targetEntityType: paragraph
+bundle: featured_topics
+mode: default
+content:
+  field_featured_topics_topics:
+    weight: 1
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_topic_name_only:
+    weight: 0
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+hidden:
+  created: true
+  status: true
