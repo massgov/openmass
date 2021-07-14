@@ -12,7 +12,7 @@ Any PR that is created in the Mass repository can be tested locally before being
 
 ## Tests run on every PR
 
-The following tests are included in the CircleCI workflow automatically each time a PR is pushed to the GitHub repository. 
+The following tests are included in the CircleCI workflow automatically each time a PR is pushed to the GitHub repository.
 
 To run these tests locally:
 
@@ -22,6 +22,7 @@ To run these tests locally:
 
   1. Add a tag a single behat feature file that you want to test. e.g. `@cool`
   1. Run `docker-compose exec drupal vendor/bin/behat --tags=@cool`
+  1. Locally, debug files are saved to `/tmp` (they start with `behat*`). These same files are uploaded as Artifacts in CircleCI.
 
 - Run all [PHPUnit](https://phpunit.de/) tests: `ahoy exec phpunit docroot/modules/custom`
 
@@ -58,10 +59,10 @@ More information about setup or running Nightcrawler can be found in the [Nightc
 #### Take screen captures of local pages to compare
 `ahoy backstop test --target=local --list=all`
 
-#### Open the report from the comparison 
+#### Open the report from the comparison
 `open backstop/report/index.html`
 
-#### Run backstop at CircleCI 
+#### Run backstop at CircleCI
 `drush ma:backstop`
 
 More information about setup or running Backstop can be found in the [Backstop documentation](https://github.com/massgov/openmass/blob/develop/backstop/README.md).

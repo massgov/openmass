@@ -23,6 +23,11 @@ default:
       filters:
         tags: "~@skipci"
   extensions:
+#   https://github.com/FriendsOfBehat/MinkDebugExtension
+    FriendsOfBehat\MinkDebugExtension:
+      directory: "/tmp"
+      screenshot: true
+      clean_start: false
     Imbo\BehatApiExtension:
       apiClient:
         base_uri: "http://mass.local"
@@ -82,3 +87,12 @@ default:
         sidebar: ".sidebar"
         sidebar_contactus: ".sidebar .ma__contact-us"
     MassGov\Behat\Extension: ~
+# A profile containing overrides for CI
+# https://docs.behat.org/en/latest/user_guide/configuration.html#overriding-default-params
+ci:
+  extensions:
+    FriendsOfBehat\MinkDebugExtension:
+      directory: "%paths.base%/output/behat"
+
+
+
