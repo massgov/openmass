@@ -33,6 +33,7 @@ dependencies:
     - field.field.node.how_to_page.field_what_you_need_header
     - node.type.how_to_page
   module:
+    - link
     - user
 id: node.how_to_page.listing
 targetEntityType: node
@@ -47,6 +48,18 @@ content:
     third_party_settings: {  }
     type: string
     region: content
+  field_how_to_link_1:
+    type: link
+    weight: 1
+    region: content
+    label: hidden
+    settings:
+      trim_length: null
+      url_only: false
+      url_plain: false
+      rel: '0'
+      target: '0'
+    third_party_settings: {  }
   workbench_moderation_control:
     weight: 0
     region: content
@@ -65,7 +78,6 @@ hidden:
   field_how_to_contacts_3: true
   field_how_to_fee_description: true
   field_how_to_files: true
-  field_how_to_link_1: true
   field_how_to_links_5: true
   field_how_to_metatags: true
   field_how_to_methods_5: true
