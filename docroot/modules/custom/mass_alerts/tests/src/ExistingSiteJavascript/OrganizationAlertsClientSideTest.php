@@ -23,7 +23,7 @@ class OrganizationAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
     $this->markTestSkipped('Started failing after https://github.com/massgov/openmass/pull/449. Needs followup.');
 
-    $alert_title = $this->randomMachineName();
+    $alert_message = $this->randomMachineName();
 
     $org_node = $this->createNode([
       'type' => 'org_page',
@@ -42,13 +42,13 @@ class OrganizationAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
     $this->createNode([
       'type' => 'alert',
-      'title' => $alert_title,
+      'title' => $this->randomMachineName(),
       'field_alert_display' => 'by_organization',
       'moderation_state' => MassModeration::PUBLISHED,
       'status' => 1,
       'field_alert' => Paragraph::create([
         'type' => 'emergency_alert',
-        'field_emergency_alert_message' => $this->randomMachineName(),
+        'field_emergency_alert_message' => $alert_message,
       ]),
       'field_target_organization' => ['target_id' => $org_node->id()],
     ]);
@@ -60,12 +60,12 @@ class OrganizationAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
     $assert_session->waitForElement('css', '.ma__header-alert__message', 60000);
     $this->capturePageContent();
     $this->captureScreenshot();
-    $assert_session->pageTextContains($alert_title);
+    $assert_session->pageTextContains($alert_message);
 
     $this->drupalGet('node/' . $news_node->id());
     $assert_session->pageTextContains($news_node->getTitle());
     $assert_session->waitForElement('css', '.ma__header-alert__message', 60000);
-    $assert_session->pageTextContains($alert_title);
+    $assert_session->pageTextContains($alert_message);
   }
 
 }
