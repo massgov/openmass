@@ -17,7 +17,7 @@ class SpecificPageAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
    * @throws \Behat\Mink\Exception\ResponseTextException
    */
   public function testPagesHaveOrgAlert() {
-    $alert_title = $this->randomMachineName();
+    $alert_message = $this->randomMachineName();
 
     $org_node = $this->createNode([
       'type' => 'org_page',
