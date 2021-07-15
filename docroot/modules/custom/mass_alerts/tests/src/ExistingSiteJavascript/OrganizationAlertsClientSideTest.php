@@ -57,14 +57,14 @@ class OrganizationAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
     $this->drupalGet('node/' . $org_node->id());
     $assert_session->pageTextContains($org_node->getTitle());
-    $assert_session->waitForElement('css', '.ma__header-alert__message', 60000);
+    $assert_session->waitForElement('css', '.ma__header-alerts__container', 60000);
     $this->capturePageContent();
     $this->captureScreenshot();
     $assert_session->pageTextContains($alert_message);
 
     $this->drupalGet('node/' . $news_node->id());
     $assert_session->pageTextContains($news_node->getTitle());
-    $assert_session->waitForElement('css', '.ma__header-alert__message', 60000);
+    $assert_session->waitForElement('css', '.ma__header-alerts__container', 60000);
     $assert_session->pageTextContains($alert_message);
   }
 
