@@ -82,13 +82,13 @@
 }] %}
 
 {# Add only the links that exist to the components array. #}
-{% for item in node.field_how_to_link_1 %}
+{% for item in quick_action_links %}
   {% set decorative_link = {
     "path": "@atoms/decorative-link.twig",
     "data": {
       "decorativeLink": {
-        "href": item.uri,
-        "text": item.title,
+        "href": item.url,
+        "text": item.text,
         "chevron": true,
         "label": ""
       }
