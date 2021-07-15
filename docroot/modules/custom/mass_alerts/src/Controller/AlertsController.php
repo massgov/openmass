@@ -101,11 +101,12 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         $link = [
           'chevron' => TRUE,
           'href' => $url,
-          'text' => $message . ' ' . $timestamp,
+          'text' => $message,
         ];
 
         $alerts[$unix_timestamp] = [
           'id' => $item_id,
+          'timeStamp' => $timestamp,
           'link' => $link,
         ];
       }
@@ -284,6 +285,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
   private function attachSvg(&$content) {
 
     $svgs = Helper::findSvg($content);
+    $inlined = [];
 
     if ($svgs) {
       foreach ($svgs as $path) {
@@ -298,7 +300,9 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       }
     }
 
-    $content .= Helper::wrapInlinedSvgs($inlined);
+    if (!empty($inlined)) {
+      $content .= Helper::wrapInlinedSvgs($inlined);
+    }
   }
 
 }
