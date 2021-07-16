@@ -75,6 +75,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       ];
 
       $results = [];
+
       $results['emergencyAlerts'] = $emergencyAlerts;
       $results['emergencyAlerts']['alerts'] = [];
 
