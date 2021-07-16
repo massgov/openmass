@@ -167,11 +167,13 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     $nodes = [];
 
     if ($currentPage) {
-      $organizations = $currentPage->get('field_organizations')->getValue();
       $org_ids = [];
 
-      foreach ($organizations as $org) {
-        $org_ids[] = $org['target_id'];
+      if ($currentPage->hasField('field_organizations')) {
+        $organizations = $currentPage->get('field_organizations')->getValue();
+        foreach ($organizations as $org) {
+          $org_ids[] = $org['target_id'];
+        }
       }
 
       $query = $nodeStorage->getQuery();
