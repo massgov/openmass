@@ -32,7 +32,7 @@ const MASS_ALERTS_TAG_SITEWIDE = 'mass_alerts_sitewide';
  *   One of three options.
  */
 function mass_alerts_get_scope(NodeInterface $node) {
-  return $node->get("field_alert_display")->getValue();
+  return $node->get("field_alert_display")->getString();
 }
 
 /**
@@ -170,7 +170,7 @@ function mass_alerts_entity_operation_alter(array &$operations, EntityInterface 
 function mass_alerts_node_access(NodeInterface $node, $operation, AccountInterface $account) {
   if ($operation === "update" && $node->bundle() === "alert") {
     $alert_placement = mass_alerts_get_scope($node);
-    if (!empty($alert_placement) && $alert_placement[0]['value'] === 'site_wide') {
+    if (!empty($alert_placement) && $alert_placement === 'site_wide') {
       return AccessResult::forbiddenIf(!$account->hasPermission("create site wide alerts"));
     }
   }
@@ -209,14 +209,16 @@ function mass_alerts_invalidate_tags(NodeInterface $node) {
   if ($node->bundle() === "alert") {
     $scope = mass_alerts_get_scope($node);
     if ($scope == MASS_ALERTS_SCOPE_ORG) {
-      $orgs = $node->get('field_target_organization.target_id')->getValue();
+      $orgs = array_column($node->field_target_organization->getValue(), 'target_id');
       $tags = Cache::buildTags(MASS_ALERTS_TAG_ORG, $orgs);
     }
-    elseif ($scope == MASS_ALERTS_SCOPE_PAGE) {
-      $pages = $node->get('field_target_page.target_id')->getValue();
-      $tags = Cache::buildTags(MASS_ALERTS_TAG_PAGE, $pages);
+    elseif ($scope === MASS_ALERTS_SCOPE_PAGE) {
+      if (!$node->get('field_target_page')->isEmpty()) {
+        $pages = array_column($node->field_target_page->getValue(), 'target_id');
+        $tags = Cache::buildTags(MASS_ALERTS_TAG_PAGE, $pages);
+      }
     }
-    elseif ($scope == MASS_ALERTS_SCOPE_SITEWIDE) {
+    elseif ($scope === MASS_ALERTS_SCOPE_SITEWIDE) {
       $tags = [MASS_ALERTS_TAG_SITEWIDE . ':list'];
     }
     Cache::invalidateTags($tags);
@@ -250,7 +252,7 @@ function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
   if ($node->bundle() === "alert" && !MassModeration::isPrepublish($node)) {
     // Only send notifications if the alert is site-wide.
     $alert_placement = mass_alerts_get_scope($node);
-    if (!empty($alert_placement) && $alert_placement[0]['value'] === 'site_wide') {
+    if (!empty($alert_placement) && $alert_placement === 'site_wide') {
       $langcode = $node->language()->getId();
       $email_addresses = \Drupal::state()->get('mass_alerts.alert_emails');
       if (!empty($email_addresses)) {
