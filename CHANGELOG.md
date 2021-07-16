@@ -1,3 +1,41 @@
+
+
+## [0.289.0] - July 13, 2021
+
+### Added
+  - DP-21633: Added content inventory view of org page
+  - DP-21734: Render Topic and Subtopic data to the external data resource node.
+
+### Changed
+  - DP-20421: Modify validation rule on HTML to allow text edit.mass.gov but not links.
+  - DP-22277: Redirect authors to "All documents view" when adding/editing media of type documents.
+  - DP-22487: Adding Albanian and Polish as available languages for pages and documents.
+  - DP-22506: Revert Ckeditor liststyle changes.
+  - DP-22507: |-
+        Updated Mayflower version to 11.8.0.
+            - DP-21924: Changed Twig syntax for drupal-9 (MF)
+            - DP-18737: Target regular richtext table more specifically. (MF)
+            - DP-22334: Add quick action links to GeneralTeaser component. (MF)
+            - DP-22506: Reverted globally changed ul/ol elements styling targeting types, fix the listing regressions in navs. (MF)
+            - DP-22281: Fixed the google translate element for mobile. (MF)
+
+## [0.288.0] - June 29, 2021
+
+### Added
+  - DP-21203: Added flexible and fixed iframe configuration options.
+  - DP-22153: Enable debugging for local development.
+  - DP-22194: Added sortable revision count to People view.
+  - DP-22255: Allow authors to choose the type of ordered list style they need for a list.
+
+### Changed
+  - DP-22083: Mandrill modules update.
+  - DP-22249: Updated Office Hours Module to 8.x-1.5
+  - DP-22294: Data topic field widget changed.
+  - DP-22375: Updated Mayflower version to 11.7.1
+  - DP-22122: Added aria-hidden to hide duplicate content from screen readers. (MF)
+  - DP-22255: Changed ul/ol elements styling behavior to respect type attribute. (MF)
+  - DP-9770: Hide duplicate content as linked image in image promo in news page from screen reader.
+
 ## [0.286.1] - June 16, 2021
 
   - Temporarily neuter publish_on/unpublish_on validation until scheduler module is uninstalled.
@@ -9,19 +47,19 @@
   - DP-22066: Fixes options in the English Version field autocomplete picker.
   - DP-22082: Upgrades the Google Tag Manager module.
   - DP-22160: Fixed external organizatioon image rendering issue on News content type.
-  
+
 ### Changed
   - DP-21996: Uninstall Scheduler modules.
   - DP-22083: Mandrill and Route IFrame modules update.
   - DP-22280: Show user who created the schedule transition in revision history.
   - DP-22301: Changed the google sitemap setting to 3000 per page.
-  
+
 ### Added
   - DP-22180: Added pages for filtering and discovering Collections content.
-  
+
 ### Security
   - DP-22313: Updated drupal ctools from version 3.6.0 to 3.7.0.
-  
+
 
 
 ## [0.286.0] - June 15, 2021
@@ -32,15 +70,15 @@
   - DP-21690: Added help text and changed batch size of service content inventory views.
   - DP-22008: Upgrade sitemap and twig tweak modules.
   - DP-22253: Adds ahoy command to toggle xdebug on and off.
-  
+
 ### Added
   - DP-21943: Created a view to show documents with no binary files attached to it.
   - DP-21986: Added a content report page for published alerts.
   - DP-22225: Allow Feedback Manager CSV exports with new labels and search fields.
-  
+
 ### Fixed
   - DP-22248: Fixed post release backstop job issue.
-  
+
 
 
 ## [0.285.0] - June 8, 2021
@@ -48,16 +86,16 @@
 ### Removed
   - DP-17765: Update Cloudflare configuration to stop sending legacy prefixes to legacy server.
   - DP-21782: Revert PR
-  
+
 ### Added
   - DP-21043: Created Data Listing All and Data Listing Topic views pages.
   - DP-21657: Add a search field to the feedback manager so that CMS users can search feedback for specific words/phrases.
   - DP-21768: Adapt ahoy commands so they also work for native dev env
   - DP-22132: Added a reusable Collections architecture, starting with EOTSS Service Catalog and How-to pages.
-  
+
 ### Fixed
   - DP-21903: Fixed false positives in Drupal Backstop.
-  
+
 ### Changed
   - DP-22099: Changed post-release backstop job to use shorter list of pages.
   - DP-22191: Modify alert pattern to incude additional data
@@ -66,10 +104,10 @@
   - DP-21782: Add labelContext to assets/js/templates/locationListingRow.html.(MF)
   - DP-7874: Correct semantics of footer navigation. (MF)
   - DP-21782: DP-22191: Add extra data attributes to HeaderAlert. (MF)
-  
+
 ### Security
   - DP-22152: Drupal core security update to version 8.9.16.
-  
+
 
 
 ## [0.284.0] - May 25, 2021
@@ -81,13 +119,13 @@
   - DP-22130: Updated Mayflower version to 11.5.1.
   - DP-21660: Fix bullets and list numbers overwrapped with left floated elements in IE11. (MF)
   - DP-22079: Fixed location listing pagination error, and fixed auto complete. (MF)
-  
+
 ### Fixed
   - DP-22021: Fixed error when adding an existing Fee to a How-to page.
-  
+
 ### Security
   - DP-22023: Updated drupal ctools from version 3.4.0 to 3.6.0.
-  
+
 
 
 ## [0.283.0] - May 18, 2021
@@ -104,17 +142,17 @@
   - DP-21816: Remove h2 from utility nav panel title. (MF)
   - DP-21763: Extended the GeneralTeaser component to render tags, icon in eyebrow, and upperRight content. (MF)
   - DP-21883: Added a query string with a version to -VF.woff2 fonts for caching. (MF)
-  
+
 ### Added
   - DP-21634: Added flexible header functionality to the how-to content type.
   - DP-21949: Add missing pages to Drupal Backstop.
-  
+
 ### Removed
   - DP-21785: Removing libraries, clamav, and restui from composer, previously removed from drupal config.
-  
+
 ### Fixed
   - DP-22061: Fix missing hours on location listing pages.
-  
+
 
 
 ## [0.282.0] - May 11, 2021
@@ -125,10 +163,10 @@
   - DP-21188: Wrap long file names that have no breaking character in "all documents" view.
   - DP-21692: Fixed empty support status message rendering upon saving content in Drupal.
   - DP-21728: Upgrading some contrib modules do d9 compatible versions.
-  
+
 ### Added
   - DP-20892: Host iframe responsive height JS at docroot/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js.
-  
+
 ### Changed
   - DP-21622: Updated auto_entitylabel module.
   - DP-21624: Patched the field_tokens module for D9 compatibility.
@@ -140,17 +178,17 @@
   - DP-21990: Updated Mayflower version to 11.4.2.
   - DP-21686: Change info details page content data from object to array for flexibility, cleanup unused data and render video in preContent-media variant page (MF)
   - DP-21770: Align text and icon for the directions link. (MF)
-  
+
 ### Removed
   - DP-21691: Removed deplicated mobile version header + navigation components for the horizontal nav.
-  
+
 
 
 ## [0.281.1] - May 6, 2021
 
 ### Changed
 - DP-21948: Fixed overflow pages.
-  
+
 
 
 ## [0.281.0] - May 4, 2021
@@ -159,13 +197,13 @@
   - DP-20709: Set caching expiration to 1 year for the font files.
   - DP-21703: Updated the help text on the page and document Pages Linking Here tabs.
   - DP-21712: Documentation update for descendant manager.
-  
+
 ### Removed
   - DP-21730: Uninstalled the libraries, clamav, config_log, and restui contrib modules.
-  
+
 ### Fixed
   - DP-21745: Fixes issue that allowed for the creation of duplicate aliases.
-  
+
 
 
 ## [0.280.0] - April 27, 2021
@@ -176,32 +214,32 @@
   - DP-21623: Upgraded quick_node_clone module with the latest patch.
   - DP-21682: Update the info_details config to add additional fields to descendant manager 'pages linking here' section.
   - DP-6360: Changed directions links in location listings pages to not all have same link label/title.
-  
+
 ### Fixed
   - DP-21727: Re-exported translation config not captured during translation deployment
   - DP-21733: Exposed the Moderation State field in the External Data Resource node form so nodes can be published.
   - DP-21745: Addressed memory issues with Media translations migration.
-  
+
 ### Security
   - DP-21744: Updated Drupal to 8.9.14 to eliminate security issue.
-  
+
 ### Added
   - DP-21746: Added Hindi and Nepali languages.
-  
+
 
 
 ## [0.279.0] - April 20, 2021
 
 ### Changed
   - DP-19362: D9 upgrade packages - authoring/fields.
-  
+
 ### Added
   - DP-20281: Added language fields and Translations tab for several content types and Documents.
-  
+
 ### Fixed
   - DP-21662: Adjust format of how labels come over from metadata API
   - DP-21704: Migrate unpublished header media image fields to use image wrapping field defaults.
-  
+
 
 
 ## [0.278.0] - April 13, 2021
@@ -209,14 +247,14 @@
 ### Added
   - DP-10272: Added view that shows pages that don't have a published org page in the "Organization(s)" field.
   - DP-21621: Added content inventory view of service page.
-  
+
 ### Changed
   - DP-19365: Updated the address, draggableviews, flag, metatag, paragraphs, pathauto, views_bulk_operations, token, and entity_reference_revisions modules to latest releases.
   - DP-21332: Modify Caspio embed functionality to have flexible hostname.
-  
+
 ### Removed
   - DP-19465: Uninstalled migrate modules and removed related, disabled custom modules.
-  
+
 
 
 ## [0.277.0] - April 6, 2021
@@ -224,15 +262,15 @@
 ### Changed
   - DP-20584: Configured backstop to wait 45 seconds for tableau dashboards to load.
   - DP-21591: Added 4 new test pages to Backstop for automated visual testing of new images styles on info details.
-  
+
 ### Fixed
   - DP-20992: Fixed advisory content type rendering with Title short desription view mode.
   - DP-21457: Fixed the htmlspecialchars() PHP warning for iframe paragraph captions.
   - DP-21589: Added migration to set new, required image wrapping values for image paragraphs that do not have captions.
-  
+
 ### Added
   - DP-21300: Added Data Topic Taxonomy and Topic and Sub Topic fields for Data Tab.
-  
+
 
 
 ## [0.276.0] - March 30, 2021
@@ -240,16 +278,16 @@
 ### Added
   - DP-19675: Support WYSIWYG textareas with the "Pages Linking Here" functionality.
   - DP-20411: Add data fields to binder content type and set up meta data output with the fields.
-  
+
 ### Changed
   - DP-20722: Modify image section on info page to allow text wrapping.
   - DP-21583: Updated Mayflower version to 11.3.0.
   - DP-21549: Add check to see if TOC is actually displayed before initializing. (MF)
   - DP-20722: Changed figure image atom to work similar to dataviz. (MF)
-  
+
 ### Fixed
   - DP-21586: Added missing Header Media migration and Backstop testing failures for image captions.
-  
+
 
 
 ## [0.275.0] - March 23, 2021
@@ -259,15 +297,15 @@
   - DP-21454: Added --no-tablespaces option during sql:dump
   - DP-21534: Updated Mayflower version to 11.2.2.
   - DP-20435: Fix Callout Links alignment in key actions (promoted results in search.mass.gov). (MF)
-  
+
 ### Fixed
   - DP-21249: Updated asset_cache_bust module to prevent warnings.
   - DP-21459: Fixes the missing icon in the document insert wysiwg tool.
   - DP-21464: Rich Text images set to half-width with no alignment now have a width of 50%.
-  
+
 ### Added
   - DP-21249: Re-add cache bust querystring param to aggregated CSS and JS.
-  
+
 
 
 ## [0.274.0] - March 16, 2021
@@ -276,17 +314,17 @@
   - DP-20735: Omit unneeded Acquia logs for sync to S3
   - DP-20886: Use correct log names during sync to S3
   - DP-21404: Fixed error messages coming from Mass Metatag.
-  
+
 ### Changed
   - DP-21025: Add more allowed content types for internal links of Related field in Regulation and Advisory.
   - DP-21093: Update Drush, Devel, and Composer2
   - DP-21375: Updated Pathauto maximum alias and component lengths to fix non-English blank alias generation issue.
   - DP-21449: Updated Mayflower version to 11.2.1.
   - DP-21433: Update footer data to match Mass.gov. (MF)
-  
+
 ### Added
   - DP-21274: Added docs for a native development environment.
-  
+
 
 
 ## [0.273.0] - March 2, 2021
@@ -296,17 +334,17 @@
   - DP-19699: Allow role changes and other account changes without password change.
   - DP-21120: Do not render advisory date on curated list related links section.
   - DP-21124: Adjust z-index for the admin tool bar to prevent the Mass.gov heading bar to overwrap.
-  
+
 ### Added
   - DP-13674: Enable New Relic metrics for CLI PHP commands.
   - DP-20886: Sync logs from Acquia to S3
   - DP-20141: Create a new content type, External data resource for data tab. Create a new role, External data resource mananger, for the content type.
   - DP-21259: Added search metadata documentation into openmass public repo.
-  
+
 ### Changed
   - DP-21326: Updated Mayflower version to 11.2.0.
   - DP-21258: Add BrandBanner molecule in Patternlab and generate the HTML, CSS and JS for Mayflower core documentation. (MF)
-  
+
 
 
 ## [0.272.0] - February 16, 2021
@@ -317,14 +355,14 @@
   - DP-21067: Removed menu link content from database sanitization.
   - DP-21174: Updated Mayflower version to 11.1.4.
   - DP-20381: Fix left floated figure components and images to cover list style elements in rich text containers. (MF)
-  
+
 ### Fixed
   - DP-20580: Address issue where uploading files via the WYSIWYG editor results in an error.
   - DP-21191: Address pre-deployment issue related to settings cookies in DP-20580.
-  
+
 ### Added
   - DP-21109: Added label field to the content types, added mg_labels custom metatag.
-  
+
 
 
 ## [0.271.0] - February 2, 2021
@@ -334,10 +372,10 @@
   - DP-21074: Updated Mayflower version to 11.1.3.
   - DP-19859: Fix the Relationship Indicator display at the show all state in IE. (MF)
   - DP-21059: Make a skip link target to be displayed only when its associated skip link is clicked. (MF)
-  
+
 ### Security
   - DP-21037: Drupal core update to the latest stable version 8.9.13.
-  
+
 
 
 ## [0.270.0] - January 27, 2021
@@ -345,10 +383,10 @@
 ### Added
   - DP-20579: Added contact information related fields to the mass_content_api configuration.
   - DP-20590: Add Mayflower ordered list style to ckeditor.
-  
+
 ### Fixed
   - DP-20580: Fixed the warning on Basic HTML text format, updated DropzoneJS module, applied the patch to solve multiple webservers issue related to file uploads.
-  
+
 ### Changed
   - DP-20712: Output content type label name instead of machine name in the Content Type column under the pages linking here tab in content edit page.
   - DP-21005: Updated Mayflower version to 11.1.1.
@@ -357,7 +395,7 @@
   - DP-20435: Fix filters alignment and move styles into assets.(MF)
 Updated Mayflower version to 11.1.2.
   - DP-20768: Set fillImage.js to get the page content container width for full size elements with figure component.(MF)
-  
+
 
 
 ## [0.269.0] - January 12, 2021
@@ -372,11 +410,11 @@ Updated Mayflower version to 11.1.2.
   - DP-20148: Correct the alert content type help text.
   - DP-20706: Updated documentation to make Xdebug setup instructions easier to find.
   - DP-20771: Changed admin title field to visualization title and its help text.
-  
+
 ### Added
   - DP-20498: Add service family KPI fields and dashboard to PFML service pages.
   - DP-20771: Map title field data to figure template.
-  
+
 
 
 ## [0.268.0] - January 5, 2021
@@ -390,49 +428,49 @@ Updated Mayflower version to 11.1.2.
      - DP-20659: Adjust the optional title and its visibility in all figure variation templates. (MF)
      - Sync FooterLinks markup between React and Patternlab, consolidate styles in assets. (MF)
      - Fix Noto Sans loading on IE. (MF)
-  
+
 ### Fixed
   - DP-20703: Preload font changed to woff2 format.
-  
+
 ### Added
   - DP-20500: Set up a new paragraph to embed Caspio data page.
-  
+
 
 
 ## [0.267.0] - December 15, 2020
 
 ### Added
   - DP-15991: Descendant manager added for Promotional pages content type.
-  
+
 ### Changed
   - DP-20691: Updated Mayflower version to 10.4.1.
     - DP-20682: Significantly reduced Noto Sans Latin variable font `.woff` file sizes, from ~900k to ~60k. (MF)
     - DP-20682: Add conditionals to import static fonts and variable fonts `.woff2`, in order to prevent both fonts to be downloaded. (MF)
     - DP-20681: Add polyfill for includes. (MF)
-  
+
 
 
 ## [0.266.0] - December 8, 2020
 
 ### Added
   - DP-20585: Disallow '/doc/courts-dwnld-*' in robots.txt for courts as DP-20585.
-  
+
 ### Changed
   - DP-20629: Updated Mayflower version to 10.4.0.
      - DP-19233: Fix the width of small size and adjust side margins for side by side layout. (MF)
      - Assets CSS: Cleaned up general template styles and added layout.css. (MF)
   - DP-20418: Changed "Media bundle is missing file for media entity" error message to report only to logs.
-  
+
 
 
 ## [0.265.0] - December 1, 2020
 
 ### Security
   - DP-20592: Drupal core security update to version 8.9.10.
-  
+
 ### Fixed
   - DP-19553: Authoring experience improved when adding existing media as download.
-  
+
 
 ## [0.264.0] - November 24, 2020
 
@@ -471,11 +509,11 @@ Updated Mayflower version to 11.1.2.
 
 ### Fixed
   - DP-19391: Added new iframe fields to match tableau and migrated values.
-  
+
 ### Changed
   - DP-20518: Updated Mayflower version to 10.2.0.
       - DP-19391: Added raw to iframe templates. (MF)
-  
+
 
 
 ## [0.263.0] - November 10, 2020
