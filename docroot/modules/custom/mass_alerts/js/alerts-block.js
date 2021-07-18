@@ -22,7 +22,7 @@
 
         if (path !== '/alerts/sitewide') {
           if ($('.main-content--full').length) {
-            $this.insertBefore('.main-content--full');
+            $this.insertAfter('.pre-content');
           }
         }
 
