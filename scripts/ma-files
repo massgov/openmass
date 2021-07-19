@@ -120,7 +120,7 @@ function increment() {
 
 function sync_files_2_s3() {
     # Sync files to s3
-    ${AWSCLI} --profile ${S3_PROFILE} s3 sync ${SOURCE_DIR} ${S3_PATH} --exclude "*styles/*" --exclude "*js/*" --exclude "*css/*" --exclude "*datajson/*" --delete >> $LOGFILE_NAME
+    ${AWSCLI} --profile ${S3_PROFILE} s3 sync ${SOURCE_DIR} ${S3_PATH} --exclude "*styles/*" --exclude "*js/*" --exclude "*css/*" --exclude "*datajson/*" --delete >> $LOGFILE_NAME --size-only
 }
 
 
