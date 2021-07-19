@@ -70,7 +70,6 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         'emergencyHeader' => [
           'hideText' => $this->t('Hide'),
           'showText' => $this->t('Show'),
-          'title' => $node->label(),
         ],
       ];
 
@@ -116,7 +115,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $results['emergencyAlerts']['alerts'] = array_values($alerts);
     }
 
-    $results['emergencyAlerts']['emergencyHeader']['alerts'] = count($results['emergencyAlerts']['alerts']);
+    $count = count($results['emergencyAlerts']['alerts']);
+    $results['emergencyAlerts']['emergencyHeader']['title'] = $count . ' ' . $node->label();
 
     $build = [
       '#theme' => 'mass_alerts_sitewide',

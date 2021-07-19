@@ -21,7 +21,10 @@
         var path = $this.data('alerts-path');
 
         if (path !== '/alerts/sitewide') {
-          if ($('.pre-content').length) {
+
+          if ($('.ma__location-banner').length) {
+            $this.insertBefore('.ma__location-banner');
+          } else if ($('.pre-content').length) {
             $this.insertAfter('.pre-content');
           }
         }
