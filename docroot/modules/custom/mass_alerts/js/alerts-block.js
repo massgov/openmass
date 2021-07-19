@@ -24,7 +24,8 @@
 
           if ($('.ma__location-banner').length) {
             $this.insertBefore('.ma__location-banner');
-          } else if ($('.pre-content').length) {
+          }
+          else if ($('.pre-content').length) {
             $this.insertAfter('.pre-content');
           }
         }
