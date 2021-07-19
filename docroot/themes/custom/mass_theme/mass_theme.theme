@@ -4322,32 +4322,39 @@ function mass_theme_preprocess_field__person_org_role(&$variables) {
       $org_page_node = $item['content']['#node'];
       // Iterate through the boards sections of each org_page node and get
       // the role.
-      if (!empty($org_page_node->field_boards->entity)) {
-        $board_member_sections = $org_page_node->field_boards->entity->field_board_members;
+      if (!empty($org_page_node->field_organization_sections->entity)) {
+        if (!empty($org_page_node->field_organization_sections->entity->field_section_long_form_content->entity)) {
+          $board_member_sections = $org_page_node->field_organization_sections->entity->field_section_long_form_content->entity;
 
-        // Iterate through each section of board members.
-        foreach ($board_member_sections as $section) {
-          $board_member_paragraphs = $section->entity->field_board_members;
-          foreach ($board_member_paragraphs as $board_member) {
-            $person_value = $board_member->entity->field_person->getValue();
-            if (!empty($person_value[0]['target_id']) && $person_value[0]['target_id'] == $person_node->id()) {
-              $person_roles[$org_page_node->id()] = $board_member->entity->field_eyebrow->value;
+          // Iterate through each section of board members.
+          foreach ($board_member_sections as $section) {
+            if (isset($section->entity->id) && $section->entity->id == "list_board_members") {
+              $board_member_paragraphs = $section->getEntity()->field_board_members;
+              foreach ($board_member_paragraphs as $board_member) {
+                $members = $board_member->entity->field_board_members;
+                foreach ($members as $member) {
+                  $person_value = $member->entity->field_person->getValue();
+                  if (!empty($person_value[0]['target_id']) && $person_value[0]['target_id'] == $person_node->id()) {
+                    $person_roles[$org_page_node->id()] = $member->entity->field_eyebrow->value;
+                  }
+                }
+
+              }
             }
           }
-        }
 
-        // Iterate through featured board members.
-        $featured_board_members = $org_page_node->field_boards->entity->field_featured_board_members;
-        foreach ($featured_board_members as $featured_board_member) {
-          $person_value = $featured_board_member->entity->field_person->getValue();
-          if (!empty($person_value[0]['target_id']) && $person_value[0]['target_id'] == $person_node->id()) {
-            $person_roles[$org_page_node->id()] = $featured_board_member->entity->field_eyebrow->value;
+          // Iterate through featured board members.
+          $featured_board_members = $org_page_node->field_organization_sections->entity->field_section_long_form_content->entity->field_featured_board_members;
+          foreach ($featured_board_members as $featured_board_member) {
+            $person_value = $featured_board_member->entity->field_person->getValue();
+            if (!empty($person_value[0]['target_id']) && $person_value[0]['target_id'] == $person_node->id()) {
+              $person_roles[$org_page_node->id()] = $featured_board_member->entity->field_eyebrow->value;
+            }
           }
         }
       }
     }
   }
-
   $variables['person_org_roles'] = $person_roles;
 }
 
