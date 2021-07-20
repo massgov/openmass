@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Url;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Menu\MenuTreeParameters;
 
 /**
@@ -223,6 +224,11 @@ function mass_admin_toolbar_theme() {
         'tabs' => NULL,
       ],
     ],
+    'mass_reports_block_content' => [
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
     'mass_admin_toolbar_tabs' => [
       'variables' => [
         'primary' => NULL,
@@ -230,4 +236,17 @@ function mass_admin_toolbar_theme() {
       ],
     ],
   ];
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for block admin page templates.
+ */
+function mass_admin_toolbar_preprocess_mass_reports_block_content(&$variables) {
+  if (!empty($variables['content'])) {
+    $variables['#attached']['library'][] = 'mass_admin_toolbar/mass_reports';
+    foreach ($variables['content'] as $key => $item) {
+      $variables['content'][$key]['url'] = $item['url']->toString();
+      $variables['content'][$key]['description'] = Markup::create($item['description']);
+    }
+  }
 }
