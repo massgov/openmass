@@ -16,14 +16,22 @@ bundle: featured_message
 mode: default
 content:
   field_featured_message_content:
-    weight: 0
+    weight: 1
     label: above
     settings: {  }
     third_party_settings: {  }
     type: text_default
     region: content
+  field_featured_message_heading:
+    type: string
+    weight: 0
+    region: content
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
   field_featured_message_link:
-    weight: 1
+    weight: 2
     label: above
     settings:
       trim_length: 80
@@ -34,5 +42,4 @@ content:
     third_party_settings: {  }
     type: mass_link_title_separated
     region: content
-hidden:
-  field_featured_message_heading: true
+hidden: {  }
