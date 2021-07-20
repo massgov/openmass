@@ -8,7 +8,7 @@
   var tocLastButton = tocButtons[tocButtons.length - 1];
 
   $(tocLastButton).keydown(function (e) {
-    var key = (e.keyCode ? e.keyCode : e.witch);
+    var key = e.keyCode || e.which;
     var lastContainer = $(tocLastButton).closest('.ma__toc--hierarchy__accordion');
 
     if (!lastContainer.hasClass('is-open')) {
