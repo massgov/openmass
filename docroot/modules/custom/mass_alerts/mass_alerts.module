@@ -5,6 +5,7 @@
  * Contains mass_alerts.module.
  */
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -13,6 +14,27 @@ use Drupal\node\NodeInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
+
+const MASS_ALERTS_SCOPE_SITEWIDE = 'site_wide';
+const MASS_ALERTS_SCOPE_PAGE = 'specific_target_pages';
+const MASS_ALERTS_SCOPE_ORG = 'by_organization';
+const MASS_ALERTS_TAG_GLOBAL = 'mass_alerts';
+const MASS_ALERTS_TAG_PAGE = 'mass_alerts_page';
+const MASS_ALERTS_TAG_ORG = 'mass_alerts_org';
+const MASS_ALERTS_TAG_SITEWIDE = 'mass_alerts_sitewide';
+
+/**
+ * Get scope for an alert.
+ *
+ * @param Drupal\node\NodeInterface $node
+ *   A node.
+ *
+ * @return mixed
+ *   One of three options.
+ */
+function mass_alerts_get_scope(NodeInterface $node) {
+  return $node->get("field_alert_display")->getString();
+}
 
 /**
  * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
@@ -148,8 +170,8 @@ function mass_alerts_entity_operation_alter(array &$operations, EntityInterface 
  */
 function mass_alerts_node_access(NodeInterface $node, $operation, AccountInterface $account) {
   if ($operation === "update" && $node->bundle() === "alert") {
-    $alert_placement = $node->get("field_alert_display")->getValue();
-    if (!empty($alert_placement) && $alert_placement[0]['value'] === 'site_wide') {
+    $alert_placement = mass_alerts_get_scope($node);
+    if (!empty($alert_placement) && $alert_placement === 'site_wide') {
       return AccessResult::forbiddenIf(!$account->hasPermission("create site wide alerts"));
     }
   }
@@ -163,6 +185,7 @@ function mass_alerts_node_update(EntityInterface $node) {
   if ((!isset($_ENV['AH_SITE_ENVIRONMENT']) || $_ENV['AH_SITE_ENVIRONMENT'] == 'prod')) {
     mass_alerts_sitewide_alert_send_notifications($node);
   }
+  mass_alerts_invalidate_tags($node);
 }
 
 /**
@@ -172,6 +195,34 @@ function mass_alerts_node_insert(EntityInterface $node) {
   // Send notifications on local and Prod environments only.
   if ((!isset($_ENV['AH_SITE_ENVIRONMENT']) || $_ENV['AH_SITE_ENVIRONMENT'] == 'prod')) {
     mass_alerts_sitewide_alert_send_notifications($node);
+  }
+  mass_alerts_invalidate_tags($node);
+}
+
+/**
+ * Invalidate specific cache tags based on page or org alert being saved.
+ *
+ * @param \Drupal\node\NodeInterface $node
+ *   A node.
+ */
+function mass_alerts_invalidate_tags(NodeInterface $node) {
+  $tags = [];
+  if ($node->bundle() === "alert") {
+    $scope = mass_alerts_get_scope($node);
+    if ($scope == MASS_ALERTS_SCOPE_ORG) {
+      $orgs = array_column($node->field_target_organization->getValue(), 'target_id');
+      $tags = Cache::buildTags(MASS_ALERTS_TAG_ORG, $orgs);
+    }
+    elseif ($scope === MASS_ALERTS_SCOPE_PAGE) {
+      if (!$node->get('field_target_page')->isEmpty()) {
+        $pages = array_column($node->field_target_page->getValue(), 'target_id');
+        $tags = Cache::buildTags(MASS_ALERTS_TAG_PAGE, $pages);
+      }
+    }
+    elseif ($scope === MASS_ALERTS_SCOPE_SITEWIDE) {
+      $tags = [MASS_ALERTS_TAG_SITEWIDE . ':list'];
+    }
+    Cache::invalidateTags($tags);
   }
 }
 
@@ -201,8 +252,8 @@ function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
   // Only send notifications after an alert has been published.
   if ($node->bundle() === "alert" && !MassModeration::isPrepublish($node)) {
     // Only send notifications if the alert is site-wide.
-    $alert_placement = $node->get("field_alert_display")->getValue();
-    if (!empty($alert_placement) && $alert_placement[0]['value'] === 'site_wide') {
+    $alert_placement = mass_alerts_get_scope($node);
+    if (!empty($alert_placement) && $alert_placement === 'site_wide') {
       $langcode = $node->language()->getId();
       $email_addresses = \Drupal::state()->get('mass_alerts.alert_emails');
       if (!empty($email_addresses)) {
@@ -224,4 +275,21 @@ function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
       }
     }
   }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function mass_alerts_theme() {
+  return [
+    'mass_alerts_block' => [
+      'variables' => ['path' => NULL],
+    ],
+    'mass_alerts_sitewide' => [
+      'variables' => ['emergencyAlerts' => NULL],
+    ],
+    'mass_alerts_page' => [
+      'variables' => ['headerAlerts' => NULL],
+    ],
+  ];
 }
