@@ -5033,6 +5033,39 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
 /**
  * Implements hook_preprocess_HOOK().
  *
+ * Preprocess logic for the org_news paragraph.
+ */
+function mass_theme_preprocess_paragraph__org_news(&$variables) {
+  $paragraph = $variables['paragraph'];
+  $cache_tags = [];
+
+  if (Helper::isFieldPopulated($paragraph, 'field_org_featured_news_items') || Helper::isFieldPopulated($paragraph, 'field_number_of_news_items')) {
+    $numItems = (int) Helper::fieldValue($paragraph, 'field_number_of_news_items');
+    $pressListing_options = [
+      'numOfSecondaryItems' => $numItems,
+      'displayImages' => Helper::fieldValue($paragraph, 'field_org_show_news_images'),
+    ];
+    $secondaryItems = $paragraph->recent_news->range(0, $numItems + 1)->referencedEntities();
+    $press_listing = Organisms::preparePressListing($paragraph, 'field_org_featured_news_items', $pressListing_options, $secondaryItems, $cache_tags);
+
+    if (!empty($press_listing)) {
+      $variables['news'] = [
+        'pageContent' => [
+          [
+            'path' => '@organisms/by-author/press-listing.twig',
+            'data' => [
+              'pressListing' => Organisms::preparePressListing($paragraph, 'field_org_featured_news_items', $pressListing_options, $secondaryItems, $cache_tags),
+            ],
+          ],
+        ],
+      ];
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
  * Break out url pieces for callout link paragraphs.
  */
 function mass_theme_preprocess_paragraph__related_content(&$variables) {
