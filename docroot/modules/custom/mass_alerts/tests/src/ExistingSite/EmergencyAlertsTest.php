@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_alerts\ExistingSite;
 
+use Drupal\dynamic_page_cache\EventSubscriber\DynamicPageCacheSubscriber;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
@@ -76,6 +77,104 @@ class EmergencyAlertsTest extends ExistingSiteBase {
   }
 
   /**
+   * Check that the Alerts response contains the correct data.
+   */
+  public function testEmergencyAlertResponseSitewide() {
+    $nids = \Drupal::entityQuery('node')
+      ->condition('type', 'alert')
+      ->condition('status', 1)
+      ->condition('field_alert_display', 'site_wide')
+      ->execute();
+    $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
+    foreach ($nodes as $node) {
+      $node->moderation_state = MassModeration::UNPUBLISHED;
+      $node->save();
+    }
+
+    $related = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'EmergencyAlertsTest Service Page',
+    ]);
+    $alert_message_text = $this->randomMachineName();
+    $node = $this->createNode([
+      'type' => 'alert',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'field_alert_display' => 'site_wide',
+      // 'State 911 Department (6416)'.
+      'field_alert_ref_contact' => ['target_id' => 6416],
+      'field_alert_severity' => 'emergency_alert',
+      'field_alert' => Paragraph::create([
+        'type' => 'emergency_alert',
+        'field_emergency_alert_message' => $alert_message_text,
+      ]),
+      'field_alert_related_links_5' => [
+        'uri' => 'entity:node/' . $related->id(),
+        'title' => $related->getTitle(),
+      ],
+    ]);
+
+    $session = $this->getSession();
+    $session->visit('/alerts/sitewide');
+    $page = $session->getPage();
+    $this->assertContains($alert_message_text, $page->getText());
+
+    $headers = $session->getResponseHeaders();
+    $this->assertContains('max-age=60', $headers['Cache-Control'][0]);
+    $this->assertNotContains('stale-if-error', $headers['Cache-Control'][0]);
+    $this->assertNotContains('stale-while-revalidate', $headers['Cache-Control'][0]);
+
+    $this->assertContains(MASS_ALERTS_TAG_SITEWIDE . ':list', $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
+  }
+
+  /**
+   * Check that the Alerts Endpoint for specific page output contains the correct data.
+   */
+  public function testEmergencyAlertResponsePage() {
+
+    $alert_message_text = $this->randomMachineName();
+    $org_node = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'alert',
+      'title' => $this->randomMachineName(),
+      'field_alert_display' => 'specific_target_pages',
+      'moderation_state' => MassModeration::PUBLISHED,
+      'status' => 1,
+      'field_alert' => Paragraph::create([
+        'type' => 'emergency_alert',
+        'field_emergency_alert_message' => $alert_message_text,
+      ]),
+      'field_target_page' => [
+        ['target_id' => $org_node->id()],
+      ],
+    ]);
+
+    $session = $this->getSession();
+    $session->visit('/alerts/page/' . $org_node->id());
+    $page = $session->getPage();
+    $this->assertContains($alert_message_text, $page->getText());
+    $headers = $session->getResponseHeaders();
+    $this->assertContains(MASS_ALERTS_TAG_PAGE . ':' . $org_node->id(), $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertContains('MISS', $headers[DynamicPageCacheSubscriber::HEADER]);
+
+    $this->drupalGet('/alerts/page/' . $org_node->id());
+    $headers = $session->getResponseHeaders();
+    $this->assertContains('HIT', $headers[DynamicPageCacheSubscriber::HEADER]);
+    // @todo Add these to sitewide alert as well since we don't want to lose these in a backend outage.
+    $this->assertContains('stale-if-error=604800, stale-while-revalidate=604800', $headers['Cache-Control'][0]);
+
+  }
+
+  /**
    * Filter a JSONAPI response to a single node.
    */
   private function findNodeInResponse(Node $node, array $response) {
@@ -140,7 +239,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
       'field_alert' => Paragraph::create([
         'type' => 'emergency_alert',
         'field_emergency_alert_message' => 'test',
-      ])
+      ]),
     ]);
     $session = $this->getSession();
     $session->visit('/node/add/alert');

@@ -43,7 +43,6 @@
 
   Drupal.behaviors.massValidationOrgPageNodeEditForm = {
     $conditionalTabs: {},
-    $boardsTab: {},
     $electedRequired: {},
     $generalRequired: {},
     $generalRequiredTabs: {},
@@ -66,10 +65,6 @@
       var $tabs = $('.horizontal-tab-button', context);
       this.$conditionalTabs = $tabs
         .find('a[href$="about-details-tab"]')
-        .closest('li');
-
-      this.$boardsTab = $tabs
-        .find('a[href$="boards-tab"]')
         .closest('li');
 
       // Allow a simple array of machine field names to be used to calculate the selector
@@ -123,21 +118,21 @@
 
       if (subtype === 'General Organization') {
         this.$conditionalTabs.addClass('js-hide');
-        this.$boardsTab.addClass('js-hide');
         this.$generalRequired.addClass('form-required');
         this.$electedRequired.removeClass('form-required');
         this.$generalRequiredTabs.addClass('form-required');
+        $(".field--name-field-organization-sections details.section-content .field--name-field-section-long-form-content input[id*='-subform-field-section-long-form-content-add-more-add-more-button-list-board-members']").addClass('js-hide');
       }
       else if (subtype === 'Boards') {
         this.$conditionalTabs.addClass('js-hide');
-        this.$boardsTab.removeClass('js-hide');
+        $(".field--name-field-organization-sections details.section-content .field--name-field-section-long-form-content input[id*='-subform-field-section-long-form-content-add-more-add-more-button-list-board-members']").removeClass('js-hide');
       }
       else {
         this.$conditionalTabs.removeClass('js-hide');
-        this.$boardsTab.addClass('js-hide');
         this.$generalRequired.removeClass('form-required');
         this.$electedRequired.addClass('form-required');
         this.$generalRequiredTabs.removeClass('form-required');
+        $(".field--name-field-organization-sections details.section-content .field--name-field-section-long-form-content input[id*='-subform-field-section-long-form-content-add-more-add-more-button-list-board-members']").addClass('js-hide');
       }
     }
   };

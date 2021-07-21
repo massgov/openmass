@@ -4322,32 +4322,39 @@ function mass_theme_preprocess_field__person_org_role(&$variables) {
       $org_page_node = $item['content']['#node'];
       // Iterate through the boards sections of each org_page node and get
       // the role.
-      if (!empty($org_page_node->field_boards->entity)) {
-        $board_member_sections = $org_page_node->field_boards->entity->field_board_members;
+      if (!empty($org_page_node->field_organization_sections->entity)) {
+        if (!empty($org_page_node->field_organization_sections->entity->field_section_long_form_content->entity)) {
+          $board_member_sections = $org_page_node->field_organization_sections->entity->field_section_long_form_content->entity;
 
-        // Iterate through each section of board members.
-        foreach ($board_member_sections as $section) {
-          $board_member_paragraphs = $section->entity->field_board_members;
-          foreach ($board_member_paragraphs as $board_member) {
-            $person_value = $board_member->entity->field_person->getValue();
-            if (!empty($person_value[0]['target_id']) && $person_value[0]['target_id'] == $person_node->id()) {
-              $person_roles[$org_page_node->id()] = $board_member->entity->field_eyebrow->value;
+          // Iterate through each section of board members.
+          foreach ($board_member_sections as $section) {
+            if (isset($section->entity->id) && $section->entity->id == "list_board_members") {
+              $board_member_paragraphs = $section->getEntity()->field_board_members;
+              foreach ($board_member_paragraphs as $board_member) {
+                $members = $board_member->entity->field_board_members;
+                foreach ($members as $member) {
+                  $person_value = $member->entity->field_person->getValue();
+                  if (!empty($person_value[0]['target_id']) && $person_value[0]['target_id'] == $person_node->id()) {
+                    $person_roles[$org_page_node->id()] = $member->entity->field_eyebrow->value;
+                  }
+                }
+
+              }
             }
           }
-        }
 
-        // Iterate through featured board members.
-        $featured_board_members = $org_page_node->field_boards->entity->field_featured_board_members;
-        foreach ($featured_board_members as $featured_board_member) {
-          $person_value = $featured_board_member->entity->field_person->getValue();
-          if (!empty($person_value[0]['target_id']) && $person_value[0]['target_id'] == $person_node->id()) {
-            $person_roles[$org_page_node->id()] = $featured_board_member->entity->field_eyebrow->value;
+          // Iterate through featured board members.
+          $featured_board_members = $org_page_node->field_organization_sections->entity->field_section_long_form_content->entity->field_featured_board_members;
+          foreach ($featured_board_members as $featured_board_member) {
+            $person_value = $featured_board_member->entity->field_person->getValue();
+            if (!empty($person_value[0]['target_id']) && $person_value[0]['target_id'] == $person_node->id()) {
+              $person_roles[$org_page_node->id()] = $featured_board_member->entity->field_eyebrow->value;
+            }
           }
         }
       }
     }
   }
-
   $variables['person_org_roles'] = $person_roles;
 }
 
@@ -5020,6 +5027,115 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
       $sections = ['sections' => $sectionLinks];
     }
     $variables['sectionContent'][$numOfSections]['sectionThreeUp'] = $sections;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Preprocess logic for the org_events paragraph.
+ */
+function mass_theme_preprocess_paragraph__org_events(&$variables) {
+  $paragraph = $variables['paragraph'];
+  $node = Helper::getParentNode($paragraph);
+
+  // Gather events associated with this node.
+  $eventManager = \Drupal::service('mass_content.event_manager');
+
+  // Determine if there are any past events associated with this node.
+  $is_past_events = $eventManager->hasPast($node);
+
+  $eventsData = [];
+  if ($eventManager->hasUpcoming($node)) {
+    // Set the limit on how many events should be displayed on the page. Default
+    // to 2 if no limit is set.
+    $limit = 2;
+    if ($paragraph->hasField('field_event_quantity') && !$paragraph->field_event_quantity->isEmpty()) {
+      $limit = (int) $paragraph->field_event_quantity->value;
+    }
+    $events = Helper::prepareEvents($eventManager->getUpcoming($node, $limit + 1));
+    $moreButton = '';
+
+    // Display the see all events link if there are either more than the limit
+    // set for upcoming events in Drupal or <=2 upcoming with 1+ past events.
+    if (count($events) > $limit || $is_past_events) {
+      $moreButton = Helper::prepareMoreLink($node, ['text' => t('See all events')]);
+    }
+
+    $eventsData = [
+      'pageContent' => [
+        [
+          'path' => '@organisms/by-author/event-listing.twig',
+          'data' => [
+            'eventListing' => [
+              'grid' => TRUE,
+              'events' => array_splice($events, 0, $limit),
+              'more' => $moreButton,
+            ],
+          ],
+        ],
+      ],
+    ];
+    $max_age = $eventManager->getMaxAge($node);
+  }
+  // If there are not upcoming events, check for past events to render past events link.
+  else {
+    if ($is_past_events) {
+      $eventsData = [
+        'pageContent' => [
+          [
+            'path' => '@organisms/by-author/event-listing.twig',
+            'data' => [
+              'eventListing' => [
+                'grid' => FALSE,
+                'emptyText' => t('No upcoming events scheduled'),
+                'pastMore' => [
+                  "text" => t('See past events'),
+                  "href" => \Drupal::service('path_alias.manager')
+                    ->getAliasByPath('/node/' . $node->id()) . '/events/past',
+                  "chevron" => TRUE,
+                ],
+              ],
+            ],
+          ],
+        ],
+      ];
+    }
+  }
+
+  $variables['events'] = $eventsData;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Preprocess logic for the org_news paragraph.
+ */
+function mass_theme_preprocess_paragraph__org_news(&$variables) {
+  $paragraph = $variables['paragraph'];
+  $cache_tags = [];
+
+  if (Helper::isFieldPopulated($paragraph, 'field_org_featured_news_items') || Helper::isFieldPopulated($paragraph, 'field_number_of_news_items')) {
+    $numItems = (int) Helper::fieldValue($paragraph, 'field_number_of_news_items');
+    $pressListing_options = [
+      'numOfSecondaryItems' => $numItems,
+      'displayImages' => Helper::fieldValue($paragraph, 'field_org_show_news_images'),
+    ];
+    $secondaryItems = $paragraph->recent_news->range(0, $numItems + 1)->referencedEntities();
+    $press_listing = Organisms::preparePressListing($paragraph, 'field_org_featured_news_items', $pressListing_options, $secondaryItems, $cache_tags);
+
+    if (!empty($press_listing)) {
+      $variables['news'] = [
+        'pageContent' => [
+          [
+            'path' => '@organisms/by-author/press-listing.twig',
+            'data' => [
+              'pressListing' => Organisms::preparePressListing($paragraph, 'field_org_featured_news_items', $pressListing_options, $secondaryItems, $cache_tags),
+            ],
+          ],
+        ],
+      ];
+    }
   }
 }
 
