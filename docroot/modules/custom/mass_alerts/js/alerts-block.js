@@ -19,12 +19,12 @@
       $('.mass-alerts-block', context).each(function () {
         var $this = $(this);
         var path = $this.data('alerts-path');
+        var removeContainer = false;
 
         if (path !== '/alerts/sitewide') {
 
           var nodeType = settings.mass_alerts.node.type;
           var positioned = false;
-          var removeContainer = false;
 
           if (nodeType === 'how_to_page') {
             if ($('.ma__page-header__optional-content').length) {
