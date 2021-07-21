@@ -1,4 +1,17 @@
 
+
+## [0.290.0] - July 20, 2021
+
+### Changed
+  - DP-16738: Case insensitive tag detection during deploys.
+  - DP-22571: Fix invalidation of alert responses upon alert edits.
+  - DP-22573: Send more Watchdog to New Relic APM.
+
+### Added
+  - DP-22557: Added field validation on specific page alerts request.
+
+
+
 ## [0.289.0] - July 13, 2021
 
 ### Added
@@ -25,6 +38,7 @@
   - DP-22153: Enable debugging for local development.
   - DP-22194: Added sortable revision count to People view.
   - DP-22255: Allow authors to choose the type of ordered list style they need for a list.
+
 ### Changed
   - DP-22083: Mandrill modules update.
   - DP-22249: Updated Office Hours Module to 8.x-1.5

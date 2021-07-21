@@ -587,8 +587,14 @@ class Organisms {
       // If a more link was provided, create one from an internal
       // or external reference.
       if (isset($options['numOfSecondaryItems']) && count($secondaryEntities) > $options['numOfSecondaryItems']) {
+        if ($entity->getEntityTypeId() === 'paragraph') {
+          $node = Helper::getParentNode($entity);
+        }
+        else {
+          $node = $entity;
+        }
         $moreOptions = [
-          'href' => UrlHelper::filterBadProtocol($entity->toUrl()->toString() . '/news'),
+          'href' => UrlHelper::filterBadProtocol($node->toUrl()->toString() . '/news'),
           'text' => t('See all news and announcements'),
           'chevron' => TRUE,
           'label' => t('See all news and announcements for the @label', ['@label' => $entity->label()]),
