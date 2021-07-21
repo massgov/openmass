@@ -24,7 +24,6 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
    */
   public function testSiteWideAlertDisplay() {
     // $this->markTestSkipped('Fails when DB already has a sitewide alert showing.');.
-
     $nids = \Drupal::entityQuery('node')
       ->condition('type', 'alert')
       ->condition('status', 1)
@@ -62,21 +61,23 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
     $jsWebAssert = $this->assertSession();
 
+    $this->drupalGet('/alerts/sitewide');
+    $jsWebAssert->pageTextContains($node->getTitle());
+
     // Make sure homepage shows the alert.
     $this->drupalGet('');
-    $locator = '.ma__emergency-alerts h2';
-    $jsWebAssert->waitForElementVisible('css', $locator, self::DURATION);
+    $locator = '.ma__emergency-alerts';
+    $jsWebAssert->waitForElement('css', $locator, self::DURATION);
 
     // These lines are left here as examples of how to debug requests.
     // file_put_contents('public://screenshot.png', $this->getSession()->getScreenshot());
     // file_put_contents('public://' . drupal_basename($this->getSession()->getCurrentUrl()) . '.html', $this->getCurrentPageContent());
-
     $jsWebAssert->statusCodeEquals(200);
     $jsWebAssert->pageTextContains($node->getTitle());
 
     // Visit an arbitrary page and make sure the alert appears.
     $this->drupalGet('/orgs/office-of-the-governor');
-    $jsWebAssert->waitForElementVisible('css', $locator, self::DURATION);
+    $jsWebAssert->waitForElement('css', $locator, self::DURATION);
     $jsWebAssert->statusCodeEquals(200);
     $jsWebAssert->pageTextContains($node->getTitle());
 
