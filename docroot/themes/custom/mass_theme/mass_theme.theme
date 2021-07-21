@@ -5033,6 +5033,82 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
 /**
  * Implements hook_preprocess_HOOK().
  *
+ * Preprocess logic for the org_events paragraph.
+ */
+function mass_theme_preprocess_paragraph__org_events(&$variables) {
+  $paragraph = $variables['paragraph'];
+  $node = Helper::getParentNode($paragraph);
+
+  // Gather events associated with this node.
+  $eventManager = \Drupal::service('mass_content.event_manager');
+
+  // Determine if there are any past events associated with this node.
+  $is_past_events = $eventManager->hasPast($node);
+
+  $eventsData = [];
+  if ($eventManager->hasUpcoming($node)) {
+    // Set the limit on how many events should be displayed on the page. Default
+    // to 2 if no limit is set.
+    $limit = 2;
+    if ($paragraph->hasField('field_event_quantity') && !$paragraph->field_event_quantity->isEmpty()) {
+      $limit = (int) $paragraph->field_event_quantity->value;
+    }
+    $events = Helper::prepareEvents($eventManager->getUpcoming($node, $limit + 1));
+    $moreButton = '';
+
+    // Display the see all events link if there are either more than the limit
+    // set for upcoming events in Drupal or <=2 upcoming with 1+ past events.
+    if (count($events) > $limit || $is_past_events) {
+      $moreButton = Helper::prepareMoreLink($node, ['text' => t('See all events')]);
+    }
+
+    $eventsData = [
+      'pageContent' => [
+        [
+          'path' => '@organisms/by-author/event-listing.twig',
+          'data' => [
+            'eventListing' => [
+              'grid' => TRUE,
+              'events' => array_splice($events, 0, $limit),
+              'more' => $moreButton,
+            ],
+          ],
+        ],
+      ],
+    ];
+    $max_age = $eventManager->getMaxAge($node);
+  }
+  // If there are not upcoming events, check for past events to render past events link.
+  else {
+    if ($is_past_events) {
+      $eventsData = [
+        'pageContent' => [
+          [
+            'path' => '@organisms/by-author/event-listing.twig',
+            'data' => [
+              'eventListing' => [
+                'grid' => FALSE,
+                'emptyText' => t('No upcoming events scheduled'),
+                'pastMore' => [
+                  "text" => t('See past events'),
+                  "href" => \Drupal::service('path_alias.manager')
+                    ->getAliasByPath('/node/' . $node->id()) . '/events/past',
+                  "chevron" => TRUE,
+                ],
+              ],
+            ],
+          ],
+        ],
+      ];
+    }
+  }
+
+  $variables['events'] = $eventsData;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
  * Preprocess logic for the org_news paragraph.
  */
 function mass_theme_preprocess_paragraph__org_news(&$variables) {
