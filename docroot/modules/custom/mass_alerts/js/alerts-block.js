@@ -26,14 +26,14 @@
           var positioned = false;
           var removeContainer = false;
 
-          if (nodeType == 'how_to_page') {
+          if (nodeType === 'how_to_page') {
             if ($('.ma__page-header__optional-content').length) {
               $this.insertBefore('.ma__page-header__optional-content');
               removeContainer = true;
               positioned = true;
             }
           }
-          else if (nodeType == 'person') {
+          else if (nodeType === 'person') {
             if ($('.ma__page-intro').length) {
               $this.insertAfter('.ma__page-intro');
               removeContainer = true;
