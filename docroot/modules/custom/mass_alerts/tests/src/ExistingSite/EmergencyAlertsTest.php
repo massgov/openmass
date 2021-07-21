@@ -122,8 +122,8 @@ class EmergencyAlertsTest extends ExistingSiteBase {
 
     $headers = $session->getResponseHeaders();
     $this->assertStringContainsString('max-age=60', $headers['Cache-Control'][0]);
-    $this->assertNotContains('stale-if-error', $headers['Cache-Control'][0]);
-    $this->assertNotContains('stale-while-revalidate', $headers['Cache-Control'][0]);
+    $this->assertStringNotContainsString('stale-if-error', $headers['Cache-Control'][0]);
+    $this->assertStringNotContainsString('stale-while-revalidate', $headers['Cache-Control'][0]);
 
     $this->assertStringContainsString(MASS_ALERTS_TAG_SITEWIDE . ':list', $headers['X-Drupal-Cache-Tags'][0]);
     $this->assertStringContainsString('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
