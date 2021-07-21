@@ -123,6 +123,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       '#emergencyAlerts' => $results['emergencyAlerts'],
       '#cache' => [
         'tags' => [
+          MASS_ALERTS_TAG_GLOBAL,
           MASS_ALERTS_TAG_SITEWIDE . ':list'
         ]
       ],
@@ -164,11 +165,13 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     $nodes = [];
 
     if ($currentPage && !in_array($currentPage->getType(), ['alert', 'campaign_landing'])) {
-      $organizations = $currentPage->get('field_organizations')->getValue();
       $org_ids = [];
 
-      foreach ($organizations as $org) {
-        $org_ids[] = $org['target_id'];
+      if ($currentPage->hasField('field_organizations')) {
+        $organizations = $currentPage->get('field_organizations')->getValue();
+        foreach ($organizations as $org) {
+          $org_ids[] = $org['target_id'];
+        }
       }
 
       $query = $nodeStorage->getQuery();
@@ -262,6 +265,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $results['headerAlerts'] = array_values($alerts);
     }
 
+    $tags[] = MASS_ALERTS_TAG_GLOBAL;
     $tags = Cache::buildTags(MASS_ALERTS_TAG_ORG, $org_ids);
     $tags[] = MASS_ALERTS_TAG_PAGE . ":$nid";
     $build = [

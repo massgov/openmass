@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_alerts\ExistingSite;
 
+use Drupal\dynamic_page_cache\EventSubscriber\DynamicPageCacheSubscriber;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
@@ -160,11 +161,17 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $session->visit('/alerts/page/' . $org_node->id());
     $page = $session->getPage();
     $this->assertContains($alert_message_text, $page->getText());
-
     $headers = $session->getResponseHeaders();
-
     $this->assertContains(MASS_ALERTS_TAG_PAGE . ':' . $org_node->id(), $headers['X-Drupal-Cache-Tags'][0]);
     $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertContains('MISS', $headers[DynamicPageCacheSubscriber::HEADER]);
+
+    $this->drupalGet('/alerts/page/' . $org_node->id());
+    $headers = $session->getResponseHeaders();
+    $this->assertContains('HIT', $headers[DynamicPageCacheSubscriber::HEADER]);
+    // @todo Add these to sitewide alert as well since we don't want to lose these in a backend outage.
+    $this->assertContains('stale-if-error=604800, stale-while-revalidate=604800', $headers['Cache-Control'][0]);
+
   }
 
   /**
