@@ -1,9 +1,14 @@
-{% embed "@organisms/by-author/stacked-row-section.twig" with {
-  "stackedRowSection": {
+{% set heading = { } %}
+{% if content.field_section_long_form_heading|field_value is not empty %}
+  {% set heading = {
     "title": (content.field_section_long_form_heading|field_value),
     "id": "",
     "borderless": true
-  },
+  } %}
+{% endif %}
+
+{% embed "@organisms/by-author/stacked-row-section.twig" with {
+  "stackedRowSection": heading,
   "stackedRow": {
     "borderless": true
   },
