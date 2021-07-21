@@ -1191,6 +1191,9 @@ function mass_validation_form_node_org_page_form_alter(&$form, FormStateInterfac
  *   The form array passed by reference.
  */
 function mass_validation_org_page_alter_helper(array &$form) {
+  if (isset($form['field_boards'])) {
+    $form['field_boards']['#access'] = FALSE;
+  }
   $form['#attached']['library'][] = 'mass_validation/org_page_edit_form';
   $form['#validate'][] = '_mass_validation_form_node_org_page_form_validate';
 }
@@ -1257,11 +1260,6 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
       $banner = $form_state->getValue('field_bg_wide');
       if (empty($banner[0]['fids'])) {
         $form_state->setErrorByName('field_bg_wide', t('The Banner Image (Desktop) is required.'));
-      }
-      elseif ($subtype[0]['value'] == 'Boards') {
-        if (empty($form_state->getValue('field_boards')[0])) {
-          $form_state->setErrorByName('field_boards', t('Boards is required.'));
-        }
       }
     }
   }
