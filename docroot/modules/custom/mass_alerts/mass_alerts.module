@@ -290,3 +290,18 @@ function mass_alerts_theme() {
     ],
   ];
 }
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function mass_alerts_preprocess_node(&$variables) {
+  if ($variables['view_mode'] == 'full') {
+
+    $node = $variables['node'];
+    $alert_settings = [
+      'type' => $node->getType(),
+    ];
+
+    $variables['#attached']['drupalSettings']['mass_alerts']['node'] = $alert_settings;
+  }
+} 

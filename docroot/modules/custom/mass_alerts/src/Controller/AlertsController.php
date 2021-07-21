@@ -163,7 +163,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     $currentPage = $nodeStorage->load($nid);
     $nodes = [];
 
-    if ($currentPage) {
+    if ($currentPage && !in_array($currentPage->getType(), ['alert', 'campaign_landing'])) {
       $organizations = $currentPage->get('field_organizations')->getValue();
       $org_ids = [];
 
@@ -198,6 +198,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         $items = $node->get('field_alert')->referencedEntities();
         $item = reset($items);
         $link_type = $item->get('field_emergency_alert_link_type')->getString();
+        $url = FALSE;
 
         if ($link_type == '1') {
           $uri = $item->get('field_emergency_alert_link')->getString();
@@ -205,7 +206,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
             $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
           }
         }
-        else {
+        else if ($link_type == '0') {
           $url = $node->toUrl()->toString(TRUE)->getGeneratedUrl();
           $url .= '#' . $item->id();
         }
@@ -232,7 +233,17 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           'icon' => $icon,
           'title' => $label,
           'suffix' => $timestamp,
-          'richText' => [
+        ];
+
+        if ($url) {
+          $alert['decorativeLink'] = [
+            'href' => $url,
+            'text' => $content,
+            'info' => $this->t('Learn more @label', ['@label' => $label]),
+            'property' => '',
+          ];
+        } else {
+          $alert['richText'] = [
             'rteElements' => [
               [
                 'path' => '@atoms/11-text/paragraph.twig',
@@ -241,14 +252,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
                 ]
               ]
             ]
-          ],
-          'decorativeLink' => [
-            'href' => '',
-            'text' => $this->t('Learn more'),
-            'info' => $this->t('Learn more @label', ['@label' => $label]),
-            'property' => '',
-          ]
-        ];
+          ];
+        }
 
         $alerts[$unix_timestamp] = $alert;
       }
