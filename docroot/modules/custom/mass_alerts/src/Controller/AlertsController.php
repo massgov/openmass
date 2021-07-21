@@ -209,7 +209,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
             $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
           }
         }
-        else if ($link_type == '0') {
+        elseif ($link_type == '0') {
           $url = $node->toUrl()->toString(TRUE)->getGeneratedUrl();
           $url .= '#' . $item->id();
         }
@@ -245,7 +245,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
             'info' => $this->t('Learn more @label', ['@label' => $label]),
             'property' => '',
           ];
-        } else {
+        }
+        else {
           $alert['richText'] = [
             'rteElements' => [
               [
