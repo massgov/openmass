@@ -6589,10 +6589,6 @@ function mass_theme_build_key_message_component(array &$variables) {
     $variables['textOverlaySection'] = isset($colors[$paragraph->field_section_text_overlay_color->value]) ? $colors[$paragraph->field_section_text_overlay_color->value] : '';
   }
   $variables['backgroundColor'] = '';
-  $variables['backgroundImage'] = [
-    'desktop' => '',
-    'mobile' => '',
-  ];
   if (!empty($paragraph->field_background_type->value)) {
     if (!empty($paragraph->field_background_color->value)) {
       $variables['backgroundColor'] = isset($colors[$paragraph->field_background_color->value]) ? $colors[$paragraph->field_background_color->value] : '';
@@ -6600,24 +6596,8 @@ function mass_theme_build_key_message_component(array &$variables) {
     if (!empty($paragraph->field_section_background_color->value)) {
       $variables['backgroundColor'] = isset($colors[$paragraph->field_section_background_color->value]) ? $colors[$paragraph->field_section_background_color->value] : '';
     }
-    if ($paragraph->field_background_type->value == 'image' && is_object($paragraph->field_image->entity)) {
-      $variables['componentId'] = 'ID' . $paragraph->id();
-      $image_file = $paragraph->field_image->entity;
-      $image_uri = $image_file->getFileUri();
-      if (!empty($image_uri)) {
-        $image_style_manager = \Drupal::entityTypeManager()->getStorage('image_style');
-        $responsive_styles = [
-          'desktop' => 'key_message_high_res',
-          'mobile' => 'key_message_desktop',
-        ];
-        foreach ($responsive_styles as $platform => $image_style_name) {
-          $image_style = $image_style_manager->load($image_style_name);
-          if (!empty($image_style)) {
-            $variables['backgroundImage'][$platform] = $image_style->buildUrl($image_uri);
-          }
-        }
-      }
-    }
+
+    $variables['componentId'] = 'ID' . $paragraph->id();
   }
 }
 

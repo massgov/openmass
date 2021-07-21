@@ -30,7 +30,31 @@
   {% set level = 1 %}
   {% set positionTop = TRUE %}
 {% endif %}
-{% set bgImage = (paragraph.field_background_type.value == 'image') ? file_url(backgroundImage.desktop)|t : NULL  %}
+
+{% if paragraph.field_background_type.value == 'image' %}
+  {% set backgroundImages = {} %}
+  {% for key,value in elements.field_image.0 %}
+    {% if key != '#cache'  %}
+      {% set backgroundImages = backgroundImages|merge([{ 'mediaQuery': key, 'url': value['#markup'] }]) %}
+    {% endif %}
+  {% endfor %}
+
+  {%
+    set picture = {
+    "picture": {
+      "srcSets": backgroundImages,
+      'defaultImage': backgroundImages.0.url
+    }
+  }
+  %}
+
+  {% set bgImage %}
+    {% include "@atoms/09-media/picture-element.twig" with picture %}
+  {% endset %}
+{% else %}
+  {% set bgImage = null %}
+{% endif %}
+
 {% set mobileBgImage = (paragraph.field_background_type.value == 'image') ? file_url(backgroundImage.mobile)|t : NULL %}
 {# Based on background type option, define variable for background color.
    When background has a solid color, not image, use backgroundColor value. #}

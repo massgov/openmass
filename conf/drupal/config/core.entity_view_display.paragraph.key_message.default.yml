@@ -14,6 +14,7 @@ dependencies:
     - paragraphs.paragraphs_type.key_message
   module:
     - link
+    - mass_formatters
     - options
     - text
 id: paragraph.key_message.default
@@ -22,14 +23,14 @@ bundle: key_message
 mode: default
 content:
   field_background_color:
-    weight: 7
+    weight: 5
     label: above
     settings: {  }
     third_party_settings: {  }
     type: list_default
     region: content
   field_background_type:
-    weight: 5
+    weight: 4
     label: above
     settings: {  }
     third_party_settings: {  }
@@ -47,6 +48,21 @@ content:
     third_party_settings: {  }
     type: link
     region: content
+  field_image:
+    type: mass_image_multi_style
+    weight: 7
+    region: content
+    label: above
+    settings:
+      image_styles:
+        '(max-width: 1669px)': key_message_tablet
+        565w: ''
+        '(min-width: 1670px)': key_message_desktop
+        820w: ''
+        835w: ''
+        1670w: key_message_high_res
+      image_link: ''
+    third_party_settings: {  }
   field_main_heading:
     weight: 0
     label: above
@@ -71,12 +87,11 @@ content:
     type: string
     region: content
   field_text_overlay_color:
-    weight: 10
+    weight: 6
     label: above
     settings: {  }
     third_party_settings: {  }
     type: list_default
     region: content
 hidden:
-  field_image: true
   paragraphs_type_help__default: true

@@ -29,6 +29,31 @@
 {% if paragraph.field_background_type.value == 'color' %}
   {% set textOverlaySection = backgroundColor ? backgroundColor : textOverlaySection %}
 {% endif %}
+
+{% if paragraph.field_background_type.value == 'image' %}
+  {% set backgroundImages = {} %}
+  {% for key,value in elements.field_image.0 %}
+    {% if key != '#cache'  %}
+      {% set backgroundImages = backgroundImages|merge([{ 'mediaQuery': key, 'url': value['#markup'] }]) %}
+    {% endif %}
+  {% endfor %}
+
+  {%
+    set picture = {
+    "picture": {
+      "srcSets": backgroundImages,
+      'defaultImage': backgroundImages.0.url
+    }
+  }
+  %}
+
+  {% set bgImage %}
+    {% include "@atoms/09-media/picture-element.twig" with picture %}
+  {% endset %}
+{% else %}
+  {% set bgImage = null %}
+{% endif %}
+
 {%
 set keyMessage = {
   "keyMessage": {
@@ -39,7 +64,7 @@ set keyMessage = {
       "level": level
     },
     "backgroundColor": textOverlaySection,
-    "bgImage": backgroundImage.desktop,
+    "bgImage": bgImage,
     "mobileBgImage": "",
     "subtitle": subtitle,
     "description": description,
