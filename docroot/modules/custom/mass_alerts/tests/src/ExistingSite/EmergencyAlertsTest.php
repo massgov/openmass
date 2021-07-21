@@ -168,7 +168,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
 
     $this->drupalGet('/alerts/page/' . $org_node->id());
     $headers = $session->getResponseHeaders();
-    $this->assertStringContainsString('HIT', $headers[DynamicPageCacheSubscriber::HEADER]);
+    $this->assertStringContainsString('HIT', $headers[DynamicPageCacheSubscriber::HEADER][0]);
     // @todo Add these to sitewide alert as well since we don't want to lose these in a backend outage.
     $this->assertStringContainsString('stale-if-error=604800, stale-while-revalidate=604800', $headers['Cache-Control'][0]);
 
