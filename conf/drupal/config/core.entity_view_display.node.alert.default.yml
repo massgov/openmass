@@ -5,9 +5,12 @@ dependencies:
   config:
     - field.field.node.alert.field_alert
     - field.field.node.alert.field_alert_display
+    - field.field.node.alert.field_alert_hide_message
     - field.field.node.alert.field_alert_ref_contact
     - field.field.node.alert.field_alert_related_links_5
     - field.field.node.alert.field_alert_severity
+    - field.field.node.alert.field_alert_title_link
+    - field.field.node.alert.field_alert_title_link_target
     - field.field.node.alert.field_english_version
     - field.field.node.alert.field_organizations
     - field.field.node.alert.field_reusable_label
@@ -46,6 +49,16 @@ content:
     third_party_settings: {  }
     type: list_default
     region: content
+  field_alert_hide_message:
+    weight: 12
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
   field_alert_ref_contact:
     weight: 5
     label: above
@@ -73,6 +86,25 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: list_default
+    region: content
+  field_alert_title_link:
+    weight: 13
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_alert_title_link_target:
+    weight: 14
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
     region: content
   field_english_version:
     weight: 11
