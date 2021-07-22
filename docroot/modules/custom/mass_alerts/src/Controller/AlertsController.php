@@ -207,7 +207,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         $timestamp = $item->get('field_emergency_alert_timestamp')->getString();
         $unix_timestamp = strtotime($timestamp);
         $timestamp = $this->dateFormatter->format($unix_timestamp, 'custom', 'M. jS, Y, h:i a');
-        
+
         if ($severity == 'informational_notice') {
           $icon = 'input-warning';
         }
