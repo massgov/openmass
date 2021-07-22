@@ -197,30 +197,17 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
         $changed_date = $node->getChangedTime();
         $id = $node->uuid() . '__' . $changed_date;
+        $label = $node->label();
 
         $items = $node->get('field_alert')->referencedEntities();
-        $item = reset($items);
-        $link_type = $item->get('field_emergency_alert_link_type')->getString();
-        $url = FALSE;
-
-        if ($link_type == '1') {
-          $uri = $item->get('field_emergency_alert_link')->getString();
-          if ($uri) {
-            $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
-          }
-        }
-        elseif ($link_type == '0') {
-          $url = $node->toUrl()->toString(TRUE)->getGeneratedUrl();
-          $url .= '#' . $item->id();
-        }
-
-        $label = $node->label();
         $severity = $node->get('field_alert_severity')->getString();
-        $content = $item->get('field_emergency_alert_message')->getString();;
+        $hide_message = $node->get('field_alert_hide_message')->getString();
+
+        $item = reset($items);
         $timestamp = $item->get('field_emergency_alert_timestamp')->getString();
         $unix_timestamp = strtotime($timestamp);
         $timestamp = $this->dateFormatter->format($unix_timestamp, 'custom', 'M. jS, Y, h:i a');
-
+        
         if ($severity == 'informational_notice') {
           $icon = 'input-warning';
         }
@@ -230,33 +217,62 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
         $alert = [
           'id' => $id,
-          'accordion' => TRUE,
-          'isExpanded' => FALSE,
           'accordionLabel' => $this->t('Expand @label', ['@label' => $label]),
           'icon' => $icon,
           'title' => $label,
           'suffix' => $timestamp,
         ];
 
-        if ($url) {
-          $alert['decorativeLink'] = [
-            'href' => $url,
-            'text' => $content,
-            'info' => $this->t('Learn more @label', ['@label' => $label]),
-            'property' => '',
-          ];
+        if ($hide_message == '1') {
+          $alert_title = $node->get('field_alert_title_link')->getString();
+
+          if ($alert_title == 'link') {
+            $uri = $node->get('field_alert_title_link_target')->getString();
+            if ($uri) {
+              $alert['link'] = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
+            }
+          }
         }
         else {
-          $alert['richText'] = [
-            'rteElements' => [
-              [
-                'path' => '@atoms/11-text/paragraph.twig',
-                'data' => [
-                  'paragraph' => ['text' => $content]
+          $alert['accordion'] = TRUE;
+          $alert['isExpanded'] = FALSE;
+
+          $link_type = $item->get('field_emergency_alert_link_type')->getString();
+          $url = FALSE;
+
+          if ($link_type == '1') {
+            $uri = $item->get('field_emergency_alert_link')->getString();
+            if ($uri) {
+              $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
+            }
+          }
+          elseif ($link_type == '0') {
+            $url = $node->toUrl()->toString(TRUE)->getGeneratedUrl();
+            $url .= '#' . $item->id();
+          }
+
+          $content = $item->get('field_emergency_alert_message')->getString();;
+
+          if ($url) {
+            $alert['decorativeLink'] = [
+              'href' => $url,
+              'text' => $content,
+              'info' => $this->t('Learn more @label', ['@label' => $label]),
+              'property' => '',
+            ];
+          }
+          else {
+            $alert['richText'] = [
+              'rteElements' => [
+                [
+                  'path' => '@atoms/11-text/paragraph.twig',
+                  'data' => [
+                    'paragraph' => ['text' => $content]
+                  ]
                 ]
               ]
-            ]
-          ];
+            ];
+          }
         }
 
         $alerts[$unix_timestamp] = $alert;
