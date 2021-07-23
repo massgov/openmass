@@ -85,24 +85,34 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         $timestamp = $item->get('field_emergency_alert_timestamp')->getString();
         $unix_timestamp = strtotime($timestamp);
         $timestamp = $this->dateFormatter->format($unix_timestamp, 'custom', 'M. jS, Y, h:i a');
+        $url = FALSE;
 
-        $uri = $item->get('field_emergency_alert_link')->getString();
+        $link_type = $item->get('field_emergency_alert_link_type')->getString();
+        $url = FALSE;
 
-        // For Test this could be empty.
-        if ($uri) {
-          $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
+        if ($link_type == '1') {
+          $uri = $item->get('field_emergency_alert_link')->getString();
+          if ($uri) {
+            $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
+          }
         }
-        else {
-          $url = '#';
+        elseif ($link_type == '0') {
+          $url = $node->toUrl()->toString(TRUE)->getGeneratedUrl();
+          $url .= '#' . $item->id();
         }
 
         $message = $item->get('field_emergency_alert_message')->getString();
 
-        $link = [
-          'chevron' => TRUE,
-          'href' => $url,
-          'text' => $message,
-        ];
+        if ($url) {
+          $link = [
+            'chevron' => TRUE,
+            'href' => $url,
+            'text' => $message,
+          ];
+        }
+        else {
+          $link = ['text' => $message];
+        }
 
         $alerts[$unix_timestamp] = [
           'id' => $item_id,
@@ -115,8 +125,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $results['emergencyAlerts']['alerts'] = array_values($alerts);
     }
 
-    $count = count($results['emergencyAlerts']['alerts']);
-    $results['emergencyAlerts']['emergencyHeader']['title'] = $count . ' ' . $node->label();
+    $results['emergencyAlerts']['emergencyHeader']['title'] = $node->label();
 
     $build = [
       '#theme' => 'mass_alerts_sitewide',
