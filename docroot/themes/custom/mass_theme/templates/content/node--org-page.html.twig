@@ -335,6 +335,12 @@
 {% block main %}
   <div class="main-content{{ _sidebar is not empty ? ' main-content--two': ' main-content--full'}}">
     <div class="page-content">
+      {# Short Description #}
+      {% if node.field_hide_short_description is not defined or node.field_hide_short_description.0.value == 0 %}
+        {% block shortDescription %}
+          {{ content.field_sub_title }}
+        {% endblock %}
+      {% endif %}
       {% block pageContent %}
         {{ content.field_organization_sections }}
       {% endblock %}

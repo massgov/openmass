@@ -19,6 +19,7 @@ dependencies:
     - field.field.node.org_page.field_event_quantity
     - field.field.node.org_page.field_feedback_com_link
     - field.field.node.org_page.field_get_updates_links
+    - field.field.node.org_page.field_hide_short_description
     - field.field.node.org_page.field_image_credit
     - field.field.node.org_page.field_intended_audience
     - field.field.node.org_page.field_links_actions_3
@@ -161,6 +162,7 @@ third_party_settings:
     group_overview:
       children:
         - field_sub_title
+        - field_hide_short_description
         - field_sub_brand
         - body
         - field_org_page_thumbnail
@@ -331,7 +333,7 @@ mode: default
 content:
   body:
     type: text_textarea_with_summary
-    weight: 12
+    weight: 13
     settings:
       rows: 9
       placeholder: ''
@@ -353,7 +355,7 @@ content:
     third_party_settings: {  }
     region: content
   field_application_login_links:
-    weight: 118
+    weight: 123
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -469,7 +471,7 @@ content:
     type: image_image
     region: content
   field_billing_organization:
-    weight: 122
+    weight: 127
     settings: {  }
     third_party_settings: {  }
     type: dynamic_entity_reference_options_select
@@ -488,7 +490,7 @@ content:
     region: content
   field_boards:
     type: entity_reference_paragraphs
-    weight: 79
+    weight: 106
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -499,7 +501,7 @@ content:
     third_party_settings: {  }
     region: content
   field_career_opportunities:
-    weight: 117
+    weight: 122
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -513,7 +515,7 @@ content:
     type: options_select
     region: content
   field_event_quantity:
-    weight: 121
+    weight: 126
     settings: {  }
     third_party_settings: {  }
     type: options_select
@@ -545,12 +547,19 @@ content:
     type: link_default
     region: content
   field_get_updates_links:
-    weight: 33
+    weight: 109
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
     type: link_default
+    region: content
+  field_hide_short_description:
+    weight: 11
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
     region: content
   field_image_credit:
     weight: 13
@@ -561,13 +570,13 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 15
+    weight: 16
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_links_actions_3:
-    weight: 26
+    weight: 81
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -598,7 +607,7 @@ content:
     type: metatag_firehose
     region: content
   field_more_about_agency_link:
-    weight: 114
+    weight: 119
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -606,7 +615,7 @@ content:
     type: link_default
     region: content
   field_more_about_leadership:
-    weight: 115
+    weight: 120
     settings:
       match_operator: CONTAINS
       size: 60
@@ -616,13 +625,13 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_number_of_news_items:
-    weight: 31
+    weight: 107
     settings: {  }
     third_party_settings: {  }
     type: options_select
     region: content
   field_org_directory_page:
-    weight: 116
+    weight: 121
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -654,7 +663,7 @@ content:
     third_party_settings: {  }
     region: content
   field_org_featured_news_items:
-    weight: 29
+    weight: 106
     settings:
       match_operator: CONTAINS
       size: 60
@@ -665,7 +674,7 @@ content:
     region: content
   field_org_our_orgs:
     type: entity_reference_paragraphs
-    weight: 112
+    weight: 117
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -677,7 +686,7 @@ content:
       conditional_fields: {  }
     region: content
   field_org_page_thumbnail:
-    weight: 13
+    weight: 14
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
@@ -703,7 +712,7 @@ content:
     type: string_textfield
     region: content
   field_org_show_news_images:
-    weight: 32
+    weight: 108
     settings:
       display_label: true
     third_party_settings: {  }
@@ -732,7 +741,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_parent:
-    weight: 120
+    weight: 125
     settings:
       match_operator: CONTAINS
       size: 60
@@ -770,7 +779,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_public_records_link:
-    weight: 119
+    weight: 124
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -778,7 +787,7 @@ content:
     type: link_default
     region: content
   field_ref_actions_6:
-    weight: 28
+    weight: 82
     settings:
       match_operator: CONTAINS
       size: 60
@@ -788,7 +797,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_ref_card_view_6:
-    weight: 111
+    weight: 116
     settings:
       match_operator: CONTAINS
       size: 60
@@ -808,7 +817,7 @@ content:
     third_party_settings: {  }
     region: content
   field_ref_orgs:
-    weight: 113
+    weight: 118
     settings:
       match_operator: CONTAINS
       size: 60
@@ -903,7 +912,7 @@ content:
     type: string_textfield
     region: content
   field_social_links:
-    weight: 14
+    weight: 15
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -922,7 +931,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_sub_brand:
-    weight: 11
+    weight: 12
     settings:
       preview_image_style: thumbnail
       progress_indicator: throbber
