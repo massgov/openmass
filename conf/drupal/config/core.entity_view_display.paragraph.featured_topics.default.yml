@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.featured_topics.field_featured_topics_topics
+    - field.field.paragraph.featured_topics.field_field_topics_headline
     - field.field.paragraph.featured_topics.field_topic_name_only
     - paragraphs.paragraphs_type.featured_topics
 id: paragraph.featured_topics.default
@@ -19,6 +20,14 @@ content:
       link: false
     third_party_settings: {  }
     type: entity_reference_entity_view
+    region: content
+  field_field_topics_headline:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
     region: content
   field_topic_name_only:
     weight: 0

@@ -40,8 +40,6 @@
  * @ingroup themeable
  */
 #}
-
-
  {% embed "@organisms/by-author/stacked-row-section.twig" with {
    "stackedRowSection": {
      "title":"",
@@ -52,12 +50,13 @@
      {% embed "@organisms/by-author/sections-three-up.twig" with {
        "sectionThreeUp": {
          "compHeading": {
-           "title": "Featured Topics",
+           "title": content.field_topics_headline,
            "sub": "",
            "color": "",
            "id": "",
            "centered": ""
-         }
+         },
+         "compact": content.field_topic_name_only|field_value|render
        }
      } %}
        {% block sectionLinks %}

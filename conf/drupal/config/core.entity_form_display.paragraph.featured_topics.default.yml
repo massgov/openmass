@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.featured_topics.field_featured_topics_topics
+    - field.field.paragraph.featured_topics.field_field_topics_headline
     - field.field.paragraph.featured_topics.field_topic_name_only
     - paragraphs.paragraphs_type.featured_topics
 id: paragraph.featured_topics.default
@@ -12,7 +13,7 @@ bundle: featured_topics
 mode: default
 content:
   field_featured_topics_topics:
-    weight: 1
+    weight: 2
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -21,8 +22,16 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_topic_name_only:
+  field_field_topics_headline:
     weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_topic_name_only:
+    weight: 1
     settings:
       display_label: true
     third_party_settings: {  }
