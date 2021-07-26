@@ -188,12 +188,11 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $query->condition('status', 1);
 
       $orCondition = $query->orConditionGroup();
-      
+
       $specific_page = $query
         ->andConditionGroup()
         ->condition('field_target_page.target_id', $nid)
         ->condition('field_alert_display.value', 'specific_target_pages');
-
 
       $orCondition->condition($specific_page);
 
