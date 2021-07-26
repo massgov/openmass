@@ -5285,6 +5285,34 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Preprocess logic for the org_related_orgs paragraph.
+ */
+function mass_theme_preprocess_paragraph__org_related_orgs(&$variables) {
+  $paragraph = $variables['paragraph'];
+
+  // Add related orgs stack row section.
+  if (Helper::isFieldPopulated($paragraph, 'field_ref_orgs')) {
+    $linkList_options = [
+      'sectionClass' => 'ma__related-organizations',
+    ];
+
+    $sections[] = [
+      'pageContent' => [
+        [
+          'path' => '@organisms/by-author/link-list.twig',
+          'data' => [
+            'linkList' => Organisms::prepareLinkList($paragraph, 'field_ref_orgs', $linkList_options),
+          ],
+        ],
+      ],
+    ];
+    $variables['stackedRowSections'] = $sections;
+  }
+}
+
+/**
  * Provide the desired design layout for related things.
  *
  * @param array $total_type_with_count
