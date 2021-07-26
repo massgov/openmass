@@ -162,7 +162,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       'headerAlerts' => [],
       'headerTitle' => [
         'icon' => 'warning',
-        'text' => 'Notice & Alerts',
+        'text' => 'Notices & Alerts',
         'hideText' => 'Hide',
         'showText' => 'Expand',
       ]
