@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.alert.field_alert
     - field.field.node.alert.field_alert_display
     - field.field.node.alert.field_alert_hide_message
+    - field.field.node.alert.field_alert_node_timestamp
     - field.field.node.alert.field_alert_ref_contact
     - field.field.node.alert.field_alert_related_links_5
     - field.field.node.alert.field_alert_severity
@@ -19,6 +20,7 @@ dependencies:
     - field.field.node.alert.field_target_page
     - node.type.alert
   module:
+    - datetime
     - entity_reference_revisions
     - link
     - options
@@ -58,6 +60,15 @@ content:
       format_custom_true: ''
     third_party_settings: {  }
     type: boolean
+    region: content
+  field_alert_node_timestamp:
+    weight: 15
+    label: above
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
     region: content
   field_alert_ref_contact:
     weight: 5
