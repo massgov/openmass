@@ -230,18 +230,18 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
         if ($severity == 'informational_notice') {
           $icon = 'input-warning';
-          $icon_label = 'notice';
+          $iconLabel = 'notice';
         }
         else {
           $icon = 'input-error';
-          $icon_label = 'alert';
+          $iconLabel = 'alert';
         }
 
         $alert = [
           'id' => $id,
           'accordionLabel' => $this->t('Expand @label', ['@label' => $label]),
           'icon' => $icon,
-          'icon_label' => $icon_label,
+          'iconLabel' => $iconLabel,
           'level' => 3,
           'title' => $label,
           'suffix' => $timestamp,
