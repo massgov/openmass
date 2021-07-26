@@ -239,7 +239,6 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
         $alert = [
           'id' => $id,
-          'accordionLabel' => $this->t('Expand @label', ['@label' => $label]),
           'icon' => $icon,
           'iconLabel' => $iconLabel,
           'level' => 3,
