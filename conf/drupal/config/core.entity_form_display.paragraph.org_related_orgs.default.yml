@@ -1,0 +1,25 @@
+uuid: d553caf6-2601-4f92-a202-e24d76400cd3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.org_related_orgs.field_ref_orgs
+    - paragraphs.paragraphs_type.org_related_orgs
+id: paragraph.org_related_orgs.default
+targetEntityType: paragraph
+bundle: org_related_orgs
+mode: default
+content:
+  field_ref_orgs:
+    weight: 0
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+hidden:
+  created: true
+  status: true

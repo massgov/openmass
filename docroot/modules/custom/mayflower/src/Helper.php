@@ -1618,4 +1618,21 @@ class Helper {
     return [];
   }
 
+  /**
+   * Helper for retrieving parent node from nested paragraphs.
+   *
+   * @param \Drupal\paragraphs\Entity\Paragraph $paragraph
+   *   The paragraph entity.
+   *
+   * @return \Drupal\node\Entity\Node
+   *   The parent node.
+   */
+  public static function getParentNode(Paragraph $paragraph) {
+    $parent_entity = $paragraph->getParentEntity();
+    if ($parent_entity->getEntityTypeId() === 'paragraph') {
+      $parent_entity = self::getParentNode($parent_entity);
+    }
+    return $parent_entity;
+  }
+
 }

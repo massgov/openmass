@@ -40,21 +40,12 @@
  * @ingroup themeable
  */
 #}
- {% embed "@organisms/by-author/stacked-row-section.twig" with {
-   "stackedRowSection": {
-     "title":"",
-     "id":""
-   }
- } %}
-   {% block stackedRowContentOverride %}
-     {% embed "@organisms/by-author/sections-three-up.twig" with {
-       "sectionThreeUp": {
-         "compact": content.field_topic_name_only|field_value|render
-       }
-     } %}
-       {% block sectionLinks %}
-         {{ content.field_featured_topics_topics|merge({'#level': level + 1 }) }}
-       {% endblock %}
-     {% endembed %}
-   {% endblock %}
- {% endembed %}
+{# Locations are still preprocessed in and are available for all types. #}
+{% for stackedRowSection in stackedRowSections %}
+  {% set stackedRowSection = stackedRowSection|merge({'level': level}) %}
+  {% include "@organisms/by-author/stacked-row-section.twig" %}
+  {# Add Google Maps API only when a map is included in the page. #}
+  {% if stackedRowSection.pageContent[0].path == '@organisms/by-author/mapped-locations.twig' %}
+    {{ attach_library('mass_map/google-map-api') }}
+  {% endif %}
+{% endfor %}
