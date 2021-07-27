@@ -476,9 +476,19 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
    */
   public function assertParagraphs($field, $expectedType = '') {
     $element = $this->getSession()->getPage()->find('css', '[id^=' . $field . '-wrapper]');
+    $classic_id = $field . '-add-more-add-more-button-' . $expectedType;
+    $experimental_id = $field . $expectedType . '-add-more';
+    if (NULL == $element) {
+      throw new Exception(sprintf("Couldn't find %s of paragraph type %s", $field, $field . '-wrapper'));
+    }
 
-    if (NULL == $element || NULL == $element->find('css', '[id^=' . $field . '-add-more-add-more-button-' . $expectedType . ']')) {
-      throw new Exception(sprintf("Couldn't find %s of paragraph type %s", $field, $field . '-add-more-add-more-button-' . $expectedType));
+    if (NULL == $element->find('css', '[id^=' . $classic_id . ']')) {
+      if (NULL == $element->find('css', '[id^=' . $experimental_id . ']')) {
+        throw new Exception(sprintf("Couldn't find %s of paragraph type %s", $field, $experimental_id));
+      }
+      else {
+        throw new Exception(sprintf("Couldn't find %s of paragraph type %s", $field, $classic_id));
+      }
     }
   }
 
