@@ -54,6 +54,7 @@ function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form
 function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
   $form['#validate'][] = 'mass_alerts_validate_alert_placement';
+  $form['#validate'][] = 'mass_alerts_validate_alert_content';
 
   if (!\Drupal::currentUser()->hasPermission('create site wide alerts')) {
     unset($form['field_alert_display']['widget']['#options']['site_wide']);
@@ -94,6 +95,27 @@ function mass_alerts_validate_alert_placement(array &$form, FormStateInterface $
       else {
         $form_state->setErrorByName('field_alert_display', t("A 'By Organization' alert must show on at least one organization."));
       }
+    }
+  }
+}
+
+/**
+ * Validate that an alert that has not hidden content has at least one paragraph.
+ *
+ * @param array $form
+ *   A form array.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form's state.
+ */
+function mass_alerts_validate_alert_content(array &$form, FormStateInterface $form_state) {
+
+  $field_alert_hide_message = $form_state->getValue(['field_alert_hide_message', 'value']);
+
+  if (!$field_alert_hide_message) {
+    $first = $form_state->getValue(['field_alert', '0']);
+    
+    if (!$first) {
+      $form_state->setError($form, t('You must add an Alert message'));
     }
   }
 }

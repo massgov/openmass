@@ -104,7 +104,7 @@ content:
       edit_mode: open
       add_mode: button
       form_display_mode: default
-      default_paragraph_type: emergency_alert
+      default_paragraph_type: _none
     third_party_settings:
       conditional_fields:
         fb2a5666-ad5c-460a-966d-96fc05a8575b:
@@ -112,6 +112,22 @@ content:
           settings:
             state: '!visible'
             condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: alert
+        c8ec2bf1-1882-4373-b4ab-c883d59ea48b:
+          dependee: field_alert_hide_message
+          settings:
+            state: required
+            condition: '!checked'
             grouping: AND
             values_set: 1
             value: ''
