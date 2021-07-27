@@ -1,0 +1,22 @@
+uuid: 0e0102ad-7486-4b2e-9bea-5c8eb1dc7e74
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.org_related_orgs.field_ref_orgs
+    - paragraphs.paragraphs_type.org_related_orgs
+id: paragraph.org_related_orgs.default
+targetEntityType: paragraph
+bundle: org_related_orgs
+mode: default
+content:
+  field_ref_orgs:
+    weight: 0
+    label: hidden
+    settings:
+      link: true
+      view_mode: default
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+hidden: {  }

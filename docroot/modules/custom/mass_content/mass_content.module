@@ -496,6 +496,15 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
         ->setClass('\Drupal\mass_content\Field\DynamicDirectoryByLabel')
         ->setDisplayConfigurable('view', TRUE);
     }
+    elseif ($bundle === 'org_news') {
+      $fields['recent_news'] = BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('Recent news'))
+        ->setComputed(TRUE)
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setSetting('target_type', 'node')
+        ->setClass('\Drupal\mass_content\Field\RecentNews')
+        ->setDisplayConfigurable('view', TRUE);
+    }
   }
 
   return $fields;
