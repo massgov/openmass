@@ -218,15 +218,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         $changed_date = $node->getChangedTime();
         $id = $node->uuid() . '__' . $changed_date;
         $label = $node->label();
-
-        $items = $node->get('field_alert')->referencedEntities();
         $severity = $node->get('field_alert_severity')->getString();
         $hide_message = $node->get('field_alert_hide_message')->getString();
-
-        $item = reset($items);
-        $timestamp = $item->get('field_emergency_alert_timestamp')->getString();
-        $unix_timestamp = strtotime($timestamp);
-        $timestamp = $this->dateFormatter->format($unix_timestamp, 'custom', 'M. jS, Y, h:i a');
 
         if ($severity == 'informational_notice') {
           $icon = 'input-warning';
@@ -243,11 +236,11 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           'iconLabel' => $iconLabel,
           'level' => 3,
           'title' => $label,
-          'suffix' => $timestamp,
         ];
 
         if ($hide_message == '1') {
           $alert_title = $node->get('field_alert_title_link')->getString();
+          $timestamp = $node->get('field_alert_node_timestamp')->getString();
 
           if ($alert_title == 'link') {
             $uri = $node->get('field_alert_title_link_target')->getString();
@@ -257,6 +250,11 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           }
         }
         else {
+
+          $items = $node->get('field_alert')->referencedEntities();
+          $item = reset($items);
+          $timestamp = $item->get('field_emergency_alert_timestamp')->getString();
+
           $alert['accordion'] = TRUE;
           $alert['isExpanded'] = FALSE;
 
@@ -298,7 +296,16 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           }
         }
 
-        $alerts[$unix_timestamp] = $alert;
+        $unix_timestamp = strtotime($timestamp);
+        if ($unix_timestamp) {
+          $timestamp = $this->dateFormatter->format($unix_timestamp, 'custom', 'M. jS, Y, h:i a');
+        }
+        else {
+          $timestamp = ''; //Could be empty old alerts
+        }
+
+        $alert['suffix'] = $timestamp;
+        $alerts[$unix_timestamp .'-'. $node->uuid()] = $alert;
       }
 
       krsort($alerts);
