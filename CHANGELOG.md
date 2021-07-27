@@ -1,5 +1,21 @@
 
 
+## [0.291.0] - July 27, 2021
+
+### Added
+  - DP-22000: Make report of pages with long titles.
+  - DP-22553: Add featured image to facebook and twitter metadata for news content type.
+  
+### Changed
+  - DP-22279: Modified s3 sync command to use the size-only option.
+  - DP-22334: Updated the How-to page listing display to use the Quick Actions field.
+  - DP-22598: Increase innodb_log_file_size in dev and CI.
+  - DP-22627: Updated Mayflower version to 11.10.0.
+  - DP-22395: Implement new designs for EmergencyAlerts and HeaderAlerts (replacing HeaderAlert). (MF)
+  - DP-22929: Adjust dataset for page flipper component in binder page for accessibility improvement.
+  
+
+
 ## [0.290.0] - July 20, 2021
 
 ### Changed
