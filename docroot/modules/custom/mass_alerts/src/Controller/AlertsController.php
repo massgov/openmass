@@ -294,10 +294,10 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
                 [
                   'path' => '@atoms/11-text/paragraph.twig',
                   'data' => [
-                    'paragraph' => ['text' => $content]
-                  ]
-                ]
-              ]
+                    'paragraph' => ['text' => $content],
+                  ],
+                ],
+              ],
             ];
           }
         }
