@@ -113,7 +113,7 @@ function mass_alerts_validate_alert_content(array &$form, FormStateInterface $fo
 
   if (!$field_alert_hide_message) {
     $first = $form_state->getValue(['field_alert', '0']);
-    
+
     if (!$first) {
       $form_state->setError($form, t('You must add an Alert message'));
     }
