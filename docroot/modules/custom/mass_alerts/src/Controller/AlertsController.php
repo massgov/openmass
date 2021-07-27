@@ -5,6 +5,7 @@ namespace Drupal\mass_alerts\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Cache\CacheableResponse;
 use Drupal\Core\Cache\CacheableMetadata;
+use DateTimeZone;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -82,9 +83,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $alert_items = $node->get('field_alert')->referencedEntities();
       foreach ($alert_items as $item) {
         $item_id = $item->uuid() . '__' . $changed_date;
-        $timestamp = $item->get('field_emergency_alert_timestamp')->getString();
-        $unix_timestamp = strtotime($timestamp);
-        $timestamp = $this->dateFormatter->format($unix_timestamp, 'custom', 'M. jS, Y, h:i a');
+        $timestamp_string = $item->get('field_emergency_alert_timestamp')->getString();
+        $timestamp = Helper::getDate(strtotime($timestamp_string))->format('M. jS, Y, h:i a');
         $url = FALSE;
 
         $link_type = $item->get('field_emergency_alert_link_type')->getString();
@@ -294,17 +294,17 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
                 [
                   'path' => '@atoms/11-text/paragraph.twig',
                   'data' => [
-                    'paragraph' => ['text' => $content]
-                  ]
-                ]
-              ]
+                    'paragraph' => ['text' => $content],
+                  ],
+                ],
+              ],
             ];
           }
         }
 
         $unix_timestamp = strtotime($timestamp);
         if ($unix_timestamp) {
-          $timestamp = $this->dateFormatter->format($unix_timestamp, 'custom', 'M. jS, Y, h:i a');
+          $timestamp = Helper::getDate($timestamp)->format('M. jS, Y, h:i a');
         }
         else {
           // Could be empty old alerts.
