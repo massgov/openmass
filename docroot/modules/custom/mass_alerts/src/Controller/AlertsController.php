@@ -84,7 +84,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       foreach ($alert_items as $item) {
         $item_id = $item->uuid() . '__' . $changed_date;
         $timestamp_string = $item->get('field_emergency_alert_timestamp')->getString();
-        $timestamp = Helper::getDate(strtotime($timestamp_string))->format('M. jS, Y, h:i a');
+        $unix_timestamp = strtotime($timestamp_string);
+        $timestamp = Helper::getDate($timestamp_string)->format('M. jS, Y, h:i a');
         $url = FALSE;
 
         $link_type = $item->get('field_emergency_alert_link_type')->getString();
