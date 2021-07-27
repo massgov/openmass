@@ -475,21 +475,29 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
    * @throws Exception
    */
   public function assertParagraphs($field, $expectedType = '') {
-    $element = $this->getSession()->getPage()->find('css', '[id^=' . $field . '-wrapper]');
     $field_name = str_replace('edit-', '', $field);
-    $classic_id = $field . '-add-more-add-more-button-' . $expectedType;
-    $experimental_id = $field_name . '-' . $expectedType . '-add-more';
+    $wrapper_id = $field . '-wrapper';
+    $classic_paragraph_id = $field . '-add-more-add-more-button-' . $expectedType;
+    $experimental_paragraph_id = $field_name . '-' . $expectedType . '-add-more';
+
+    // Search for the field wrapper id.
+    $element = $this->getSession()->getPage()->find('css', '[id^=' . $wrapper_id . ']');
     if (NULL == $element) {
-      throw new Exception(sprintf("Couldn't find %s of paragraph type %s", $field, $field . '-wrapper'));
+      throw new Exception(sprintf("Couldn't find %s of paragraph type %s", $field, $wrapper_id));
     }
 
-    if (NULL == $element->find('css', '[id^=' . $classic_id . ']')) {
-      if (NULL == $element->find('css', '[id^=' . $experimental_id . ']')) {
-        throw new Exception(sprintf("Couldn't find %s of paragraph type %s", $field, $experimental_id));
-      }
-      else {
-        throw new Exception(sprintf("Couldn't find %s of paragraph type %s", $field, $classic_id));
-      }
+    // Search for both paragraph add more ids.
+    $add_more_ids = [
+      $classic_paragraph_id => $element->find('css', '[id^=' . $classic_paragraph_id . ']'),
+      $experimental_paragraph_id => $element->find('css', '[id^=' . $experimental_paragraph_id . ']'),
+    ];
+
+    // Remove null values.
+    $add_more_result = array_filter($add_more_ids);
+
+    // If the result is empty, it means neither paragraph add more id was found.
+    if (empty($add_more_result)) {
+      throw new Exception(sprintf("Couldn't find %s of paragraph type %s or %s", $field, $classic_paragraph_id, $experimental_paragraph_id));
     }
   }
 
