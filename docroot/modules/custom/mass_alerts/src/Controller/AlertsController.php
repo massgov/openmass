@@ -253,6 +253,12 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
           $items = $node->get('field_alert')->referencedEntities();
           $item = reset($items);
+
+          // If by some reaonse thats not have  content ignore this alert.
+          if (!$item) {
+            continue;
+          }
+
           $timestamp = $item->get('field_emergency_alert_timestamp')->getString();
 
           $alert['accordion'] = TRUE;
