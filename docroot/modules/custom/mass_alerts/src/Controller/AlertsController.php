@@ -257,7 +257,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           // If by some reaonse thats not have  content ignore this alert.
           if (!$item) {
             continue;
-          } 
+          }
 
           $timestamp = $item->get('field_emergency_alert_timestamp')->getString();
 
