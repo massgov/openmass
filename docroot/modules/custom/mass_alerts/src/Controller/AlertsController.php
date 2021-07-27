@@ -301,11 +301,12 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           $timestamp = $this->dateFormatter->format($unix_timestamp, 'custom', 'M. jS, Y, h:i a');
         }
         else {
-          $timestamp = ''; //Could be empty old alerts
+          // Could be empty old alerts.
+          $timestamp = '';
         }
 
         $alert['suffix'] = $timestamp;
-        $alerts[$unix_timestamp .'-'. $node->uuid()] = $alert;
+        $alerts[$unix_timestamp . '-' . $node->uuid()] = $alert;
       }
 
       krsort($alerts);
