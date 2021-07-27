@@ -70,6 +70,33 @@
  *   in different view modes.
  */
 #}
+
+{# Initalize the contents array for the component. #}
+{% set contents = [{
+  "path": "@atoms/11-text/paragraph.twig",
+  "data": {
+    "paragraph" : {
+      "text": node.field_how_to_lede.value ?: ""
+    }
+  }
+}] %}
+
+{# Add only the links that exist to the components array. #}
+{% for item in quick_action_links %}
+  {% set decorative_link = {
+    "path": "@atoms/decorative-link.twig",
+    "data": {
+      "decorativeLink": {
+        "href": item.url,
+        "text": item.text,
+        "chevron": true,
+        "label": ""
+      }
+    }
+  } %}
+  {% set contents = contents|merge([decorative_link]) %}
+{% endfor %}
+
 {% include "@molecules/general-teaser.twig" with {
   "generalTeaser" : {
     "title" : {
@@ -81,25 +108,6 @@
     "level": "",
     "emphasizedText": "",
     "tags": "",
-    "contents": [{
-      "path": "@atoms/11-text/paragraph.twig",
-      "data": {
-        "paragraph" : {
-          "text": node.field_how_to_lede.value ?: ""
-        }
-      }
-    },{
-      "path": "@atoms/decorative-link.twig",
-      "data": {
-        "decorativeLink": {
-          "href": url,
-          "text": "Order Now"|t,
-          "context": "",
-          "button": false,
-          "info": "",
-          "labelContext": ""
-        }
-      }
-    }]
+    "contents": contents
   }
 } %}
