@@ -85,7 +85,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         $item_id = $item->uuid() . '__' . $changed_date;
         $timestamp_string = $item->get('field_emergency_alert_timestamp')->getString();
         $unix_timestamp = strtotime($timestamp_string);
-        $timestamp = Helper::getDate($timestamp_string)->format('M. jS, Y, h:i a');
+        $timestamp = Helper::getDate($timestamp_string)->format('M. j, Y, h:i a');
         $url = FALSE;
 
         $link_type = $item->get('field_emergency_alert_link_type')->getString();
@@ -305,7 +305,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
         $unix_timestamp = strtotime($timestamp);
         if ($unix_timestamp) {
-          $timestamp = Helper::getDate($timestamp)->format('M. jS, Y, h:i a');
+          $timestamp = Helper::getDate($timestamp)->format('M. j, Y, h:i a');
         }
         else {
           // Could be empty old alerts.
