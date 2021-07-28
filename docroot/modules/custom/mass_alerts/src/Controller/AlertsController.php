@@ -184,6 +184,10 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         }
       }
 
+      if ($currentPage->getType() == 'org_page') {
+        $org_ids[] = $currentPage->id();
+      }
+
       $query = $nodeStorage->getQuery();
       $query->condition('type', 'alert');
       $query->condition('status', 1);
