@@ -262,6 +262,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page->fillField('edit-title-0-value', $page_title);
     $page->fillField('field_alert_display', 'specific_target_pages');
     $page->fillField('edit-field-target-page-0-target-id', $this->orgNode->getTitle());
+    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
     $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
     $page->fillField('edit-field-organizations-0-target-id', $this->orgNode->getTitle());
     $page->selectFieldOption('moderation_state[0][state]', 'published');
@@ -281,6 +282,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page->fillField('edit-title-0-value', $page_title);
     $page->fillField('field_alert_display', 'by_organization');
     $page->fillField('edit-field-target-organization-0-target-id', $this->orgNode->getTitle());
+    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
     $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
     $page->fillField('edit-field-organizations-0-target-id', $this->orgNode->getTitle());
     $page->selectFieldOption('moderation_state[0][state]', 'published');
@@ -300,6 +302,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page = $session->getPage();
     $page->fillField('edit-title-0-value', $page_title);
     $page->fillField('field_alert_display', 'site_wide');
+    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
     $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
     $page->fillField('edit-field-organizations-0-target-id', $this->orgNode->getTitle());
     $page->selectFieldOption('moderation_state[0][state]', 'published');
