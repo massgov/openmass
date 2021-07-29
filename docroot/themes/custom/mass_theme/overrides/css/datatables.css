@@ -1,0 +1,107 @@
+table.dataTable {
+  /* override mayflower richtext table min-width: */
+  min-width: unset;
+}
+
+table.dataTable thead {
+  color: #fff;
+  background-color: #535353;
+}
+
+table.dataTable tr.parent {
+  background-color: #f2f2f2;
+}
+
+table.dataTable thead .sorting {
+  background-image: url(../../icons/333333/sort-both.svg) !important;
+}
+
+table.dataTable thead .sorting_desc {
+  background-image: url(../../icons/333333/sort-desc.svg) !important;
+}
+
+table.dataTable thead .sorting_asc {
+  background-image: url(../../icons/333333/sort-asc.svg) !important;
+}
+
+
+table.dataTable.dtr-inline.collapsed>tbody>tr>td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed>tbody>tr>th.dtr-control:before {
+  top: 50%;
+  left: 5px;
+  height: 1em;
+  width: 1em;
+  margin-top: -9px;
+  position: absolute;
+  content: "+";
+  font-size: 1.6em;
+  font-weight: 700;
+  line-height: .75em;
+  color: #388557;
+  border-radius: 0;
+  box-shadow: none;
+  border: none;
+  background: none;
+  font-family: "Noto Sans VF","Noto Sans","Helvetica","Arial",sans-serif;
+}
+
+table.dataTable.dtr-inline.collapsed>tbody>tr.parent>td.dtr-control:before,
+table.dataTable.dtr-inline.collapsed>tbody>tr.parent>th.dtr-control:before {
+  content: "᠆"; /* small hyphen-minus */
+  background: none;
+}
+
+table.dataTable.collapsed>tbody>tr.child ul.dtr-details>li {
+  padding: .5rem 0;
+  margin-bottom: 0;
+}
+
+table.dataTable.display.collapsed tbody tr.odd,
+table.dataTable.display.collapsed tbody tr.even,
+table.dataTable.display.collapsed tbody tr.even>.sorting_1 {
+  background-color: #f2f2f2;
+}
+
+table.dataTable.display.collapsed tbody tr:not(.child) td {
+  border-top: 1px solid #707070;
+}
+
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  color: #14558f !important;
+  border: none;
+  border-radius: 0;
+  border-bottom: 3px solid transparent;
+  box-shadow: none;
+}
+/* pagination active style */
+.dataTables_wrapper .dataTables_paginate .paginate_button.current {
+  background: #14558f;
+  color: #fff !important;
+  border: none;
+}
+.dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+  background: #14558f;
+  color: #fff !important;
+  border: none;
+}
+/* pagination hover style */
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+  color: #14558f !important;
+  background: none;
+  border: none;
+  border-bottom: 3px solid rgba(20,85,143,.5);
+}
+
+@media screen and (max-width: 640px) {
+  /* table controls */
+  .dataTables_wrapper .dataTables_length,
+  .dataTables_wrapper .dataTables_filter {
+    text-align: left;
+  }
+}
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+  margin: 0.5rem 0;
+}
