@@ -5,6 +5,14 @@ dependencies: {  }
 id: node__news
 label: 'Content: News'
 tags:
+  description: '[node:field_news_lede]'
+  image_src: '[node:field_news_image:entity:url]'
+  og_description: '[node:field_news_lede]'
+  og_image: '[node:field_news_image:entity:url]'
+  og_image_secure_url: '[node:field_news_image:entity:url]'
+  og_image_url: '[node:field_news_image:entity:url]'
+  og_type: article
+  twitter_cards_image: '[node:field_news_image:entity:url]'
   twitter_cards_type: summary
   twitter_cards_description: '[node:field_news_lede]'
   mass_metatag_organization: '[node:mass_organizations]'
@@ -26,6 +34,3 @@ tags:
   schema_news_article_author: 'a:2:{s:5:"@type";s:12:"Organization";s:4:"name";s:53:"[node:field_news_signees:entity:field_state_org_name]";}'
   schema_news_article_content_location: '[node:field_news_location]'
   schema_news_article_id: '[node:url]#news'
-  description: '[node:field_news_lede]'
-  og_description: '[node:field_news_lede]'
-  og_type: article
