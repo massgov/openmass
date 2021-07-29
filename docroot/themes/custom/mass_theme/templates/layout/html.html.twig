@@ -35,21 +35,34 @@
     <css-placeholder token="{{ placeholder_token|raw }}">
     <js-placeholder token="{{ placeholder_token|raw }}">
     {% include directory ~ "/templates/includes/page-meta.html.twig" %}
-{# Update the version '?version=1' when changes occurs to the font files for caching. #}
-<link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSans-VF.woff2?version=1') }}" as="font" crossorigin/>
+    {# Update the version '?version=1' when changes occurs to the font files for caching. #}
+    <link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSans-VF.woff2?version=1') }}" as="font" crossorigin/>
 
-<link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSansItalic-VF.woff2?version=1') }}" as="font" crossorigin/>
-
+    <link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSansItalic-VF.woff2?version=1') }}" as="font" crossorigin/>
+    {# Browser support banner #}
+    <script> 
+      var $buoop = {
+        required:{e:11,f:-6,o:-6,s:-6,c:-6},
+        insecure:true,
+        api:2021.07,
+        text: "<b>Your browser ({brow_name}) is too old.</b> Things may not look or work right.  <a{up_but}>Update browser</a>  <a{ignore_but}>Ignore</a>"
+      }; 
+      function $buo_f(){ 
+      var e = document.createElement("script"); 
+      e.src = "//browser-update.org/update.min.js"; 
+      document.body.appendChild(e);
+      };
+      try {document.addEventListener("DOMContentLoaded", $buo_f,false)}
+      catch(e){window.attachEvent("onload", $buo_f)}
+    </script>
   </head>
   <body{{ attributes.addClass(body_classes) }}>
     <svg-sprite-placeholder>
-    <!--[if lte IE 10]>
-      {% include directory ~ "/templates/includes/browser-update.html.twig" %}
-    <![endif]-->
 
     {{ page_top }}
     {{ page }}
     {{ page_bottom }}
+
 
     {# Google Translate JS #}
     <script>
