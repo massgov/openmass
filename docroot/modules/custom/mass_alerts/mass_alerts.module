@@ -18,6 +18,7 @@ use Drupal\node\Entity\Node;
 const MASS_ALERTS_SCOPE_SITEWIDE = 'site_wide';
 const MASS_ALERTS_SCOPE_PAGE = 'specific_target_pages';
 const MASS_ALERTS_SCOPE_ORG = 'by_organization';
+const MASS_ALERTS_TAG_GLOBAL = 'mass_alerts';
 const MASS_ALERTS_TAG_PAGE = 'mass_alerts_page';
 const MASS_ALERTS_TAG_ORG = 'mass_alerts_org';
 const MASS_ALERTS_TAG_SITEWIDE = 'mass_alerts_sitewide';
@@ -32,7 +33,7 @@ const MASS_ALERTS_TAG_SITEWIDE = 'mass_alerts_sitewide';
  *   One of three options.
  */
 function mass_alerts_get_scope(NodeInterface $node) {
-  return $node->get("field_alert_display")->getValue();
+  return $node->get("field_alert_display")->getString();
 }
 
 /**
@@ -41,6 +42,7 @@ function mass_alerts_get_scope(NodeInterface $node) {
 function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
   $form['#validate'][] = 'mass_alerts_validate_alert_placement';
+  $form['#validate'][] = 'mass_alerts_validate_alert_content';
 
   if (!\Drupal::currentUser()->hasPermission('create site wide alerts')) {
     unset($form['field_alert_display']['widget']['#options']['site_wide']);
@@ -53,6 +55,7 @@ function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form
 function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
   $form['#validate'][] = 'mass_alerts_validate_alert_placement';
+  $form['#validate'][] = 'mass_alerts_validate_alert_content';
 
   if (!\Drupal::currentUser()->hasPermission('create site wide alerts')) {
     unset($form['field_alert_display']['widget']['#options']['site_wide']);
@@ -93,6 +96,27 @@ function mass_alerts_validate_alert_placement(array &$form, FormStateInterface $
       else {
         $form_state->setErrorByName('field_alert_display', t("A 'By Organization' alert must show on at least one organization."));
       }
+    }
+  }
+}
+
+/**
+ * Validate that an alert that has not hidden content has at least one paragraph.
+ *
+ * @param array $form
+ *   A form array.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form's state.
+ */
+function mass_alerts_validate_alert_content(array &$form, FormStateInterface $form_state) {
+
+  $field_alert_hide_message = $form_state->getValue(['field_alert_hide_message', 'value']);
+
+  if (!$field_alert_hide_message) {
+    $first = $form_state->getValue(['field_alert', '0']);
+
+    if (!$first) {
+      $form_state->setError($form, t('You must add an Alert message'));
     }
   }
 }
@@ -170,7 +194,7 @@ function mass_alerts_entity_operation_alter(array &$operations, EntityInterface 
 function mass_alerts_node_access(NodeInterface $node, $operation, AccountInterface $account) {
   if ($operation === "update" && $node->bundle() === "alert") {
     $alert_placement = mass_alerts_get_scope($node);
-    if (!empty($alert_placement) && $alert_placement[0]['value'] === 'site_wide') {
+    if (!empty($alert_placement) && $alert_placement === 'site_wide') {
       return AccessResult::forbiddenIf(!$account->hasPermission("create site wide alerts"));
     }
   }
@@ -209,14 +233,16 @@ function mass_alerts_invalidate_tags(NodeInterface $node) {
   if ($node->bundle() === "alert") {
     $scope = mass_alerts_get_scope($node);
     if ($scope == MASS_ALERTS_SCOPE_ORG) {
-      $orgs = $node->get('field_target_organization.target_id')->getValue();
+      $orgs = array_column($node->field_target_organization->getValue(), 'target_id');
       $tags = Cache::buildTags(MASS_ALERTS_TAG_ORG, $orgs);
     }
-    elseif ($scope == MASS_ALERTS_SCOPE_PAGE) {
-      $pages = $node->get('field_target_page.target_id')->getValue();
-      $tags = Cache::buildTags(MASS_ALERTS_TAG_PAGE, $pages);
+    elseif ($scope === MASS_ALERTS_SCOPE_PAGE) {
+      if (!$node->get('field_target_page')->isEmpty()) {
+        $pages = array_column($node->field_target_page->getValue(), 'target_id');
+        $tags = Cache::buildTags(MASS_ALERTS_TAG_PAGE, $pages);
+      }
     }
-    elseif ($scope == MASS_ALERTS_SCOPE_SITEWIDE) {
+    elseif ($scope === MASS_ALERTS_SCOPE_SITEWIDE) {
       $tags = [MASS_ALERTS_TAG_SITEWIDE . ':list'];
     }
     Cache::invalidateTags($tags);
@@ -250,7 +276,7 @@ function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
   if ($node->bundle() === "alert" && !MassModeration::isPrepublish($node)) {
     // Only send notifications if the alert is site-wide.
     $alert_placement = mass_alerts_get_scope($node);
-    if (!empty($alert_placement) && $alert_placement[0]['value'] === 'site_wide') {
+    if (!empty($alert_placement) && $alert_placement === 'site_wide') {
       $langcode = $node->language()->getId();
       $email_addresses = \Drupal::state()->get('mass_alerts.alert_emails');
       if (!empty($email_addresses)) {
@@ -286,7 +312,22 @@ function mass_alerts_theme() {
       'variables' => ['emergencyAlerts' => NULL],
     ],
     'mass_alerts_page' => [
-      'variables' => ['headerAlerts' => NULL],
+      'variables' => ['headerAlerts' => NULL, 'headerTitle' => NULL],
     ],
   ];
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function mass_alerts_preprocess_node(&$variables) {
+  if ($variables['view_mode'] == 'full') {
+
+    $node = $variables['node'];
+    $alert_settings = [
+      'type' => $node->getType(),
+    ];
+
+    $variables['#attached']['drupalSettings']['mass_alerts']['node'] = $alert_settings;
+  }
 }

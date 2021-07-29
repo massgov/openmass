@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_alerts\ExistingSite;
 
+use Drupal\dynamic_page_cache\EventSubscriber\DynamicPageCacheSubscriber;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
@@ -160,11 +161,17 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $session->visit('/alerts/page/' . $org_node->id());
     $page = $session->getPage();
     $this->assertContains($alert_message_text, $page->getText());
-
     $headers = $session->getResponseHeaders();
-
     $this->assertContains(MASS_ALERTS_TAG_PAGE . ':' . $org_node->id(), $headers['X-Drupal-Cache-Tags'][0]);
     $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertContains('MISS', $headers[DynamicPageCacheSubscriber::HEADER]);
+
+    $this->drupalGet('/alerts/page/' . $org_node->id());
+    $headers = $session->getResponseHeaders();
+    $this->assertContains('HIT', $headers[DynamicPageCacheSubscriber::HEADER]);
+    // @todo Add these to sitewide alert as well since we don't want to lose these in a backend outage.
+    $this->assertContains('stale-if-error=604800, stale-while-revalidate=604800', $headers['Cache-Control'][0]);
+
   }
 
   /**
@@ -241,66 +248,6 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page->selectFieldOption('moderation_state[0][state]', 'published');
     $page->findButton('Save')->press();
     $this->assertContains('This sitewide alert cannot be published because another sitewide alert is currently active:', $page->getText());
-  }
-
-  /**
-   * Assert specific page alert can be created by a user with the editor role.
-   */
-  public function testEditorRolePageSpecificAlert() {
-    $page_title = $this->randomMachineName();
-    $this->drupalLogin($this->editor);
-    $session = $this->getSession();
-    $session->visit('/node/add/alert');
-    $page = $session->getPage();
-    $page->fillField('edit-title-0-value', $page_title);
-    $page->fillField('field_alert_display', 'specific_target_pages');
-    $page->fillField('edit-field-target-page-0-target-id', $this->orgNode->getTitle());
-    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
-    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
-    $page->fillField('edit-field-organizations-0-target-id', $this->orgNode->getTitle());
-    $page->selectFieldOption('moderation_state[0][state]', 'published');
-    $page->pressButton('Save');
-    $this->assertContains($page_title, $page->getText());
-  }
-
-  /**
-   * Assert organization alert can be created by a user with the editor role.
-   */
-  public function testEditorRoleOrganizationAlert() {
-    $page_title = $this->randomMachineName();
-    $this->drupalLogin($this->editor);
-    $session = $this->getSession();
-    $session->visit('/node/add/alert');
-    $page = $session->getPage();
-    $page->fillField('edit-title-0-value', $page_title);
-    $page->fillField('field_alert_display', 'by_organization');
-    $page->fillField('edit-field-target-organization-0-target-id', $this->orgNode->getTitle());
-    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
-    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
-    $page->fillField('edit-field-organizations-0-target-id', $this->orgNode->getTitle());
-    $page->selectFieldOption('moderation_state[0][state]', 'published');
-    $page->pressButton('Save');
-    $this->assertContains($page_title, $page->getText());
-  }
-
-  /**
-   * Assert site-wide alert can be created by a user with the emergency_alert_publisher role.
-   */
-  public function testEmergencyAlertPublisherRoleSiteWideAlert() {
-    $this->unPublishExistingSiteWideAlert();
-    $page_title = $this->randomMachineName();
-    $this->drupalLogin($this->emergencyAlertPublisher);
-    $session = $this->getSession();
-    $session->visit('/node/add/alert');
-    $page = $session->getPage();
-    $page->fillField('edit-title-0-value', $page_title);
-    $page->fillField('field_alert_display', 'site_wide');
-    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-message-0-value', 'Message text');
-    $page->fillField('edit-field-alert-0-subform-field-emergency-alert-link-0-uri', 'https://www.google.com');
-    $page->fillField('edit-field-organizations-0-target-id', $this->orgNode->getTitle());
-    $page->selectFieldOption('moderation_state[0][state]', 'published');
-    $page->pressButton('Save');
-    $this->assertContains($page_title, $page->getText());
   }
 
   /**
