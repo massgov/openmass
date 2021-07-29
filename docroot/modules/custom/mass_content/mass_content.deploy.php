@@ -443,3 +443,172 @@ function mass_content_deploy_eotss_service_catalog_terms() {
     $term_ids[$data['name']] = $term->id();
   }
 }
+
+/**
+ * Migrate data for the org_page sections.
+ */
+function mass_content_deploy_org_page_section_migration(&$sandbox) {
+  // Include migration functions.
+  require_once __DIR__ . '/includes/mass_content.org_migration.inc';
+
+  $query = \Drupal::entityQuery('node');
+  $query->condition('type', 'org_page');
+
+  if (empty($sandbox)) {
+    // Get a list of all nodes of type org_page.
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  $nids = $query->condition('nid', $sandbox['current'], '>')
+    ->sort('nid')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $memory_cache = \Drupal::service('entity.memory_cache');
+
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+
+  $nodes = $node_storage->loadMultiple($nids);
+
+  foreach ($nodes as $node) {
+    $sandbox['current'] = $node->id();
+
+    $subtype = $node->field_subtype->value;
+    switch ($subtype) {
+      case 'General Organization':
+        // Featured Message.
+        _mass_content_org_page_migration_featured_message($node);
+
+        // Featured Items Mosaic.
+        _mass_content_org_page_migration_featured_items_mosaic($node);
+
+        // Contact and Org Logo.
+        _mass_content_org_page_migration_contact_logo($node);
+
+        // Who we serve.
+        _mass_content_org_page_migration_who_we_serve($node);
+
+        // Organization Grid.
+        _mass_content_org_page_migration_organization_grid($node);
+
+        // What would you like to do?
+        _mass_content_org_page_migration_what_would_you_like_to_do($node);
+
+        // Featured Topics.
+        _mass_content_org_page_migration_featured_topics($node);
+
+        // News.
+        _mass_content_org_page_migration_news($node);
+
+        // Events.
+        _mass_content_org_page_migration_events($node);
+
+        // Locations.
+        _mass_content_org_page_migration_locations($node);
+
+        // Related Organizations.
+        _mass_content_org_page_migration_related_orgs($node);
+
+        break;
+
+      case 'Elected Official':
+        // Featured Message.
+        _mass_content_org_page_migration_featured_message($node);
+
+        // Featured Items Mosaic.
+        _mass_content_org_page_migration_featured_items_mosaic($node);
+
+        // About.
+        _mass_content_org_page_migration_about($node);
+
+        // Who we serve.
+        _mass_content_org_page_migration_who_we_serve($node);
+
+        // Contact and Org Logo.
+        _mass_content_org_page_migration_contact_logo($node);
+
+        // Organization Grid.
+        _mass_content_org_page_migration_organization_grid($node);
+
+        // What would you like to do?
+        _mass_content_org_page_migration_what_would_you_like_to_do($node);
+
+        // Featured Topics.
+        _mass_content_org_page_migration_featured_topics($node);
+
+        // News.
+        _mass_content_org_page_migration_news($node);
+
+        // Events.
+        _mass_content_org_page_migration_events($node);
+
+        // Locations.
+        _mass_content_org_page_migration_locations($node);
+
+        // Related Organizations.
+        _mass_content_org_page_migration_related_orgs($node);
+
+        break;
+
+      case 'Boards':
+        // Featured Message.
+        _mass_content_org_page_migration_featured_message($node);
+
+        // Featured Items Mosaic.
+        _mass_content_org_page_migration_featured_items_mosaic($node);
+
+        // Contact and Org Logo.
+        _mass_content_org_page_migration_contact_logo($node);
+
+        // About.
+        _mass_content_org_page_migration_about($node);
+
+        // Organization Grid.
+        _mass_content_org_page_migration_organization_grid($node);
+
+        // Board Members.
+        _mass_content_org_page_migration_board($node);
+
+        // Events.
+        _mass_content_org_page_migration_events($node);
+
+        // What would you like to do?
+        _mass_content_org_page_migration_what_would_you_like_to_do($node);
+
+        // News.
+        _mass_content_org_page_migration_news($node);
+
+        // Featured Topics.
+        _mass_content_org_page_migration_featured_topics($node);
+
+        // Locations.
+        _mass_content_org_page_migration_locations($node);
+
+        // Related Organizations.
+        _mass_content_org_page_migration_related_orgs($node);
+
+        break;
+
+    }
+
+    // Save the node.
+    // Save without updating the last modified date. This requires a core patch
+    // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
+    $node->setSyncing(TRUE);
+    $node->save();
+
+    $sandbox['progress']++;
+  }
+
+  $memory_cache->deleteAll();
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('All Organization node data has migrated to Organization Sections.');
+  }
+}
