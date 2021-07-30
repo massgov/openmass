@@ -38,7 +38,7 @@ function _mass_content_org_page_migration_featured_message(&$node) {
     // Create a new Organization Section paragraph.
     $new_org_section_long_form_paragraph = Paragraph::create([
       'type' => 'org_section_long_form',
-      ]);
+    ]);
     // Set the field values.
     $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_org_featured_message);
     // Save the new paragraph.
