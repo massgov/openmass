@@ -101,7 +101,24 @@ function _mass_content_org_page_migration_who_we_serve(&$node) {
  * Migrate data for the our organizations (organization grid) section.
  */
 function _mass_content_org_page_migration_organization_grid(&$node) {
-
+  // Migrate data if the field has a value.
+  if (!$node->field_org_our_orgs->isEmpty()) {
+    // Get the field value.
+    $field_org_our_orgs = $node->get('field_org_our_orgs')->getValue();
+    // Create a new Organization Section paragraph.
+    $new_org_section_long_form_paragraph = Paragraph::create([
+      'type' => 'org_section_long_form',
+    ]);
+    // Set the field values.
+    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_org_our_orgs);
+    // Get the heading from the paragraph (There can only be one paragraph and
+    // the heading field is required).
+    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Our Organizations');
+    // Save the new paragraph.
+    $new_org_section_long_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
+  }
 }
 
 /**
