@@ -52,7 +52,26 @@ function _mass_content_org_page_migration_featured_message(&$node) {
  * Migrate data for the featured items (mosaic) section.
  */
 function _mass_content_org_page_migration_featured_items_mosaic(&$node) {
-
+  // Migrate data if the field has a value.
+  if (!$node->field_org_featured_items->isEmpty()) {
+    // Get the field value.
+    $field_org_featured_items = $node->get('field_org_featured_items')->getValue();
+    // Create a new Organization Section paragraph.
+    $new_org_section_long_form_paragraph = Paragraph::create([
+      'type' => 'org_section_long_form',
+    ]);
+    // Set the field values.
+    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_org_featured_items);
+    // Get the heading from the paragraph (There can only be one paragraph and
+    // the heading field is required).
+    $featured_item_mosaic_paragraph = Paragraph::load($field_org_featured_items[0]['target_id']);
+    $field_mosaic_heading = $featured_item_mosaic_paragraph->get('field_mosaic_heading')->getValue();
+    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', $field_mosaic_heading);
+    // Save the new paragraph.
+    $new_org_section_long_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
+  }
 }
 
 /**
