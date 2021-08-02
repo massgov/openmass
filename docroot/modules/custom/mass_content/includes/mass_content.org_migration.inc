@@ -111,8 +111,6 @@ function _mass_content_org_page_migration_organization_grid(&$node) {
     ]);
     // Set the field values.
     $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_org_our_orgs);
-    // Get the heading from the paragraph (There can only be one paragraph and
-    // the heading field is required).
     $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Our Organizations');
     // Save the new paragraph.
     $new_org_section_long_form_paragraph->save();
@@ -139,7 +137,39 @@ function _mass_content_org_page_migration_featured_topics(&$node) {
  * Migrate data for the news section.
  */
 function _mass_content_org_page_migration_news(&$node) {
-
+  // Migrate data if the field has a value.
+  if (!$node->field_org_featured_news_items->isEmpty()
+    || !$node->field_number_of_news_items->isEmpty()) {
+    $field_org_featured_news_items = $node->get('field_org_featured_news_items')->getValue();
+    $field_number_of_news_items = $node->get('field_number_of_news_items')->getValue();
+    $field_org_show_news_images = $node->get('field_org_show_news_images')->getValue();
+    // Create a new Organization News paragraph.
+    $new_org_news_paragraph = Paragraph::create([
+      'type' => 'org_news',
+    ]);
+    // Set the field values.
+    $new_org_news_paragraph->set('field_org_featured_news_items', $field_org_featured_news_items);
+    $new_org_news_paragraph->set('field_number_of_news_items', $field_number_of_news_items);
+    $new_org_news_paragraph->set('field_org_show_news_images', $field_org_show_news_images);
+    // Save the new paragraph.
+    $new_org_news_paragraph->save();
+    // Create a value array for the new section paragraph.
+    $field_section_long_form_content = [
+      'target_id' => $new_org_news_paragraph->id(),
+      'target_revision_id' => $new_org_news_paragraph->getRevisionId(),
+    ];
+    // Create a new Organization Section paragraph.
+    $new_org_section_long_form_paragraph = Paragraph::create([
+      'type' => 'org_section_long_form',
+    ]);
+    // Set the field values.
+    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
+    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Recent news & announcements');
+    // Save the new paragraph.
+    $new_org_section_long_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
+  }
 }
 
 /**
