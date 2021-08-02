@@ -129,7 +129,15 @@ function _mass_content_org_page_migration_news(&$node) {
  * Migrate data for the board members section.
  */
 function _mass_content_org_page_migration_board(&$node) {
-
+  if (!empty($node->field_boards->target_id)) {
+    $pid = $node->field_boards->target_id;
+    $pid_revision = $node->field_boards->target_revision_id;
+    $node->set("field_boards", []);
+    $node->field_organization_sections[] = [
+      'target_id' => $pid,
+      "target_revision_id" => $pid_revision,
+    ];
+  }
 }
 
 /**
