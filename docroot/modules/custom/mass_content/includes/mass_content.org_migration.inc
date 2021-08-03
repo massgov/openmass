@@ -35,6 +35,8 @@ function _mass_content_org_page_migration_featured_message(&$node) {
   if (!$node->field_org_featured_message->isEmpty()) {
     // Get the field value.
     $field_org_featured_message = $node->get('field_org_featured_message')->getValue();
+    // Remove the old field values.
+    $node->set('field_org_featured_message', []);
     // Create a new Organization Section paragraph.
     $new_org_section_long_form_paragraph = Paragraph::create([
       'type' => 'org_section_long_form',
@@ -78,14 +80,13 @@ function _mass_content_org_page_migration_featured_items_mosaic(&$node) {
  * Migrate data for the contact and org logo section.
  */
 function _mass_content_org_page_migration_contact_logo(&$node) {
-  // @todo: Ensure this has a destination paragraph.
+
 }
 
 /**
  * Migrate data for the about section.
  */
 function _mass_content_org_page_migration_about(&$node) {
-  // @todo: Ensure this has a destination paragraph.
 
 }
 
@@ -93,7 +94,6 @@ function _mass_content_org_page_migration_about(&$node) {
  * Migrate data for the about section.
  */
 function _mass_content_org_page_migration_who_we_serve(&$node) {
-  // @todo: Ensure this has a destination paragraph.
 
 }
 
