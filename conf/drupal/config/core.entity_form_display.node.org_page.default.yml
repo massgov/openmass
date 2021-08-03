@@ -236,7 +236,6 @@ third_party_settings:
       region: content
     group_featured:
       children:
-        - field_org_featured_message
         - field_org_featured_items
       parent_name: group_node_edit_form
       weight: 23
@@ -280,7 +279,7 @@ third_party_settings:
     group_boards:
       children: {  }
       parent_name: ''
-      weight: 7
+      weight: 6
       format_type: tab
       format_settings:
         formatter: closed
@@ -632,18 +631,6 @@ content:
       title_plural: Paragraphs
       edit_mode: open
       add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings: {  }
-    region: content
-  field_org_featured_message:
-    type: entity_reference_paragraphs
-    weight: 103
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: button
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
@@ -1046,6 +1033,7 @@ hidden:
   field_action_set__bg_narrow: true
   field_action_set__bg_wide: true
   field_boards: true
+  field_org_featured_message: true
   langcode: true
   path: true
   promote: true
