@@ -69,7 +69,11 @@
   {% set pageHeader = {
       "title": label,
       "subTitle": node.field_curatedlist_lede.value,
-      "divider": false,
+      "divider": false
+    }
+  }%}
+  {% include "@organisms/by-template/page-header-addons.twig" with {
+    "pageHeader": {
       "optionalContents": optionalContents
     } 
   %}
