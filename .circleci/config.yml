@@ -1029,6 +1029,8 @@ workflows:
           requires: [build]
           target: << pipeline.parameters.target >>
           reference: << pipeline.parameters.reference >>
+          list: << pipeline.parameters.list >>
+          viewport: << pipeline.parameters.viewport >>
 
   # Usually triggered by drush ma:release.
   deploy_ad_hoc:
