@@ -1,18 +1,18 @@
 
 
-## [0.291.0] - July 28, 2021
+## [0.292.0] - August 3, 2021
 
-### Changed
-  - DP-18737: Adds Paragraph type for handling CSV files to Info Detail.
-  - DP-22279: Modified s3 sync command to use the size-only option.
-  - DP-22334: Updated the How-to page listing display to use the Quick Actions field.
-  - DP-22395: Modify alerts html return with new data structure for the new alert template.
-  - DP-22598: Increase innodb_log_file_size in dev and CI.
-  - DP-22627: Updated Mayflower version to 11.10.0.
-  - DP-22395: Implement new designs for EmergencyAlerts and HeaderAlerts (replacing HeaderAlert). (MF)
-  - DP-22929: Adjust dataset for page flipper component in binder page for accessibility improvement.
+### Security
+  - DP-19580: Upgrade webpack 4 to v5 in openmass.
   
-### Added
-  - DP-22000: Make report of pages with long titles.
-  - DP-22553: Add featured image to facebook and twitter metadata for news content type.
+### Removed
+  - DP-22391: Removed old alert block code and supporting Javascript.
+  
+### Changed
+  - DP-22673: Updated Mayflower version to 11.11.0.
+  - DP-22653: Adds PageHeaderAddons component to render additional contents below PageHeader. (MF)
+  - DP-22653: Takes out optionalContents and widgets from the PageHeader component. Add PageHeaderAddons to the template to render those instead (no change to the PageHeader data object structure). (MF)
+  
+### Fixed
+  - DP-22674: Added z-index to fix not clickable buttons.
   

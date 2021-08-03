@@ -1,5 +1,23 @@
 
 
+## [0.292.0] - August 3, 2021
+
+### Security
+  - DP-19580: Upgrade webpack 4 to v5 in openmass.
+  
+### Removed
+  - DP-22391: Removed old alert block code and supporting Javascript.
+  
+### Changed
+  - DP-22673: Updated Mayflower version to 11.11.0.
+  - DP-22653: Adds PageHeaderAddons component to render additional contents below PageHeader. (MF)
+  - DP-22653: Takes out optionalContents and widgets from the PageHeader component. Add PageHeaderAddons to the template to render those instead (no change to the PageHeader data object structure). (MF)
+  
+### Fixed
+  - DP-22674: Added z-index to fix not clickable buttons.
+  
+
+
 ## [0.291.0] - July 28, 2021
 
 ### Changed
