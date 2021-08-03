@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\mass_alerts\ExistingSite;
 
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\dynamic_page_cache\EventSubscriber\DynamicPageCacheSubscriber;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
@@ -56,6 +58,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
       'title' => 'Alert Service Page',
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
+    $timestamp = new DrupalDateTime('now');
     $node = $this->createNode([
       'type' => 'alert',
       'title' => 'Test Alert',
@@ -64,11 +67,14 @@ class EmergencyAlertsTest extends ExistingSiteBase {
         'uri' => 'entity:node/' . $related->id(),
         'title' => 'Test Alert',
       ],
+      'field_alert_node_timestamp' => [
+        'value' => $timestamp->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT),
+      ],
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
     $session = $this->getSession();
-    $session->visit('/jsonapi/node/alert?filter[status][value]=1&sort=-changed');
+    $session->visit('/jsonapi/node/alert?filter[title][value]=Test%20Alert&sort=-changed');
     $response = json_decode($session->getPage()->getContent(), TRUE);
     $alert = $this->findNodeInResponse($node, $response);
     $this->assertEquals($node->toUrl()->toString(), $alert['attributes']['entity_url'], 'Alert has entity_url attribute with aliased path.');
