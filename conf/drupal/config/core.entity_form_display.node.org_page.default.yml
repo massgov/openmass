@@ -81,12 +81,10 @@ third_party_settings:
         - group_banner
         - group_overview
         - group_content
-        - group_featured
         - group_about_details
         - group_actions
         - group_map
         - group_news
-        - group_boards
         - group_feedback
         - group_other
       parent_name: ''
@@ -137,7 +135,6 @@ third_party_settings:
     group_other:
       children:
         - field_ref_card_view_6
-        - field_org_our_orgs
         - field_ref_orgs
         - field_more_about_agency_link
         - field_more_about_leadership
@@ -235,21 +232,6 @@ third_party_settings:
         required_fields: true
       label: News
       region: content
-    group_featured:
-      children:
-        - field_org_featured_message
-        - field_org_featured_items
-      parent_name: group_node_edit_form
-      weight: 23
-      format_type: tab
-      format_settings:
-        formatter: closed
-        description: ''
-        required_fields: true
-        id: ''
-        classes: elected-only
-      label: Featured
-      region: content
     group_about_details:
       children:
         - field_short_name
@@ -279,10 +261,9 @@ third_party_settings:
       label: 'About Summary'
       region: content
     group_boards:
-      children:
-        - field_boards
-      parent_name: group_node_edit_form
-      weight: 28
+      children: {  }
+      parent_name: ''
+      weight: 6
       format_type: tab
       format_settings:
         formatter: closed
@@ -355,7 +336,7 @@ content:
     third_party_settings: {  }
     region: content
   field_application_login_links:
-    weight: 123
+    weight: 124
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -471,7 +452,7 @@ content:
     type: image_image
     region: content
   field_billing_organization:
-    weight: 127
+    weight: 128
     settings: {  }
     third_party_settings: {  }
     type: dynamic_entity_reference_options_select
@@ -479,18 +460,6 @@ content:
   field_board_members:
     type: entity_reference_paragraphs
     weight: 56
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: ''
-    third_party_settings: {  }
-    region: content
-  field_boards:
-    type: entity_reference_paragraphs
-    weight: 106
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -515,7 +484,7 @@ content:
     type: options_select
     region: content
   field_event_quantity:
-    weight: 126
+    weight: 127
     settings: {  }
     third_party_settings: {  }
     type: options_select
@@ -638,30 +607,6 @@ content:
     third_party_settings: {  }
     type: link_default
     region: content
-  field_org_featured_items:
-    type: entity_reference_paragraphs
-    weight: 104
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings: {  }
-    region: content
-  field_org_featured_message:
-    type: entity_reference_paragraphs
-    weight: 103
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: button
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings: {  }
-    region: content
   field_org_featured_news_items:
     weight: 106
     settings:
@@ -671,19 +616,6 @@ content:
       match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
-    region: content
-  field_org_our_orgs:
-    type: entity_reference_paragraphs
-    weight: 117
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings:
-      conditional_fields: {  }
     region: content
   field_org_page_thumbnail:
     weight: 14
@@ -741,7 +673,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_parent:
-    weight: 125
+    weight: 126
     settings:
       match_operator: CONTAINS
       size: 60
@@ -779,7 +711,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_public_records_link:
-    weight: 124
+    weight: 125
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -1059,6 +991,10 @@ hidden:
   created: true
   field_action_set__bg_narrow: true
   field_action_set__bg_wide: true
+  field_boards: true
+  field_org_featured_items: true
+  field_org_featured_message: true
+  field_org_our_orgs: true
   langcode: true
   path: true
   promote: true
