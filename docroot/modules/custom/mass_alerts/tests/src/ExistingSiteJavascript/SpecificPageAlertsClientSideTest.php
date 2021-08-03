@@ -17,7 +17,7 @@ class SpecificPageAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
    * @throws \Behat\Mink\Exception\ResponseTextException
    */
   public function testPagesHaveOrgAlert() {
-    $alert_message = $this->randomMachineName();
+    $alert_title = $this->randomMachineName();
 
     $org_node = $this->createNode([
       'type' => 'org_page',
@@ -42,13 +42,13 @@ class SpecificPageAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
     $this->createNode([
       'type' => 'alert',
-      'title' => $this->randomMachineName(),
+      'title' => $alert_title,
       'field_alert_display' => 'specific_target_pages',
       'moderation_state' => MassModeration::PUBLISHED,
       'status' => 1,
       'field_alert' => Paragraph::create([
         'type' => 'emergency_alert',
-        'field_emergency_alert_message' => $alert_message,
+        'field_emergency_alert_message' => $this->randomMachineName(),
       ]),
       'field_target_page' => [
         ['target_id' => $org_node->id()],
@@ -61,18 +61,18 @@ class SpecificPageAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
 
     $this->drupalGet('node/' . $org_node->id());
     $assert_session->pageTextContains($org_node->getTitle());
-    $assert_session->waitForElement('css', '.ma__header-alert__message');
-    $assert_session->pageTextContains($alert_message);
+    $assert_session->waitForElement('css', '.ma__header-alerts__container', 60000);
+    $assert_session->pageTextContains($alert_title);
 
     $this->drupalGet('node/' . $news_node->id());
     $assert_session->pageTextContains($news_node->getTitle());
-    $assert_session->waitForElement('css', '.ma__header-alert__message');
-    $assert_session->pageTextContains($alert_message);
+    $assert_session->waitForElement('css', '.ma__header-alerts__container', 60000);
+    $assert_session->pageTextContains($alert_title);
 
     $this->drupalGet('node/' . $event_node->id());
     $assert_session->pageTextContains($event_node->getTitle());
-    $assert_session->waitForElement('css', '.ma__header-alert__message');
-    $assert_session->pageTextContains($alert_message);
+    $assert_session->waitForElement('css', '.ma__header-alerts__container', 60000);
+    $assert_session->pageTextContains($alert_title);
   }
 
 }

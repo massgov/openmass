@@ -1,0 +1,24 @@
+uuid: ff84a4eb-df45-47bc-8f72-bb1b44350728
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_alert_node_timestamp
+    - node.type.alert
+  module:
+    - datetime
+id: node.alert.field_alert_node_timestamp
+field_name: field_alert_node_timestamp
+entity_type: node
+bundle: alert
+label: 'Alert timestamp'
+description: 'The date and time that this alert was created or last updated. The timestamp is initially filled with the current time when you start creating the alert. For accuracy, update it manually whenever you publish or update an alert.'
+required: true
+translatable: false
+default_value:
+  -
+    default_date_type: now
+    default_date: now
+default_value_callback: ''
+settings: {  }
+field_type: datetime

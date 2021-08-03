@@ -1191,9 +1191,6 @@ function mass_validation_form_node_org_page_form_alter(&$form, FormStateInterfac
  *   The form array passed by reference.
  */
 function mass_validation_org_page_alter_helper(array &$form) {
-  if (isset($form['field_boards'])) {
-    $form['field_boards']['#access'] = FALSE;
-  }
   $form['#attached']['library'][] = 'mass_validation/org_page_edit_form';
   $form['#validate'][] = '_mass_validation_form_node_org_page_form_validate';
 }
@@ -1217,30 +1214,26 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
               }
             }
           }
-        }
-      }
-    }
-  }
-  if ($form_state->hasValue('field_org_featured_items')) {
-    $featured_items_paragraphs = $form_state->getValue('field_org_featured_items');
-    if (isset($featured_items_paragraphs[0])) {
-      if (isset($featured_items_paragraphs[0]['subform']['field_featured_item_mosaic_items']['add_more'])) {
-        $form_state->setErrorByName('', t('You must provide 5 featured items.'));
-      }
-      // Find the item with the lowest weight.
-      foreach ($featured_items_paragraphs[0]['subform']['field_featured_item_mosaic_items'] as $mosaic_key => $mosaic_array) {
-        if (isset($mosaic_array['_weight'])) {
-          $weight = (int) $mosaic_array['_weight'];
-          if (!isset($lowest) || $weight < $lowest) {
-            $lowest = $weight;
-            $first = $mosaic_array;
+          if (isset($paragraph['subform']['field_featured_item_mosaic_items'])) {
+            if (isset($paragraph['subform']['field_featured_item_mosaic_items']['add_more'])) {
+              $form_state->setErrorByName('', t('You must provide 5 featured items.'));
+            }
+            // Find the item with the lowest weight.
+            foreach ($paragraph['subform']['field_featured_item_mosaic_items'] as $mosaic_key => $mosaic_array) {
+              if (isset($mosaic_array['_weight'])) {
+                $weight = (int) $mosaic_array['_weight'];
+                if (!isset($lowest) || $weight < $lowest) {
+                  $lowest = $weight;
+                  $first = $mosaic_array;
+                }
+              }
+            }
+            if (isset($first) && empty($first['subform']['field_featured_item_highlight'][0]['fids'])) {
+              $form_state->setErrorByName('',
+                t('You must provide a value for the Highlight Image of the first Featured Item.'));
+            }
           }
         }
-      }
-
-      if (isset($first) && empty($first['subform']['field_featured_item_highlight'][0]['fids'])) {
-        $form_state->setErrorByName('',
-          t('You must provide a value for the Highlight Image of the first Featured Item.'));
       }
     }
   }
