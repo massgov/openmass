@@ -160,6 +160,10 @@ function _mass_content_org_page_migration_news(&$node) {
     $field_org_featured_news_items = $node->get('field_org_featured_news_items')->getValue();
     $field_number_of_news_items = $node->get('field_number_of_news_items')->getValue();
     $field_org_show_news_images = $node->get('field_org_show_news_images')->getValue();
+    // Remove the old field values.
+    $node->set('field_org_featured_news_items', []);
+    $node->set('field_number_of_news_items', []);
+    $node->set('field_org_show_news_images', []);
     // Create a new Organization News paragraph.
     $new_org_news_paragraph = Paragraph::create([
       'type' => 'org_news',
