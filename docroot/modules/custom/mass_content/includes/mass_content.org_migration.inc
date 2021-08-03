@@ -130,7 +130,20 @@ function _mass_content_org_page_migration_what_would_you_like_to_do(&$node) {
  * Migrate data for the featured topics section.
  */
 function _mass_content_org_page_migration_featured_topics(&$node) {
-
+  if (!empty($node->field_ref_card_view_6->getValue())) {
+    $paragraph = Paragraph::create([
+      'type' => 'featured_topics',
+      'field_featured_topics_topics' => $node->field_ref_card_view_6->getValue(),
+    ]);
+    $paragraph->save();
+    $pid = $paragraph->id();
+    $pid_revision = $paragraph->getRevisionId();
+    $node->set("field_ref_card_view_6", []);
+    $node->field_organization_sections[] = [
+      'target_id' => $pid,
+      "target_revision_id" => $pid_revision,
+    ];
+  }
 }
 
 /**
