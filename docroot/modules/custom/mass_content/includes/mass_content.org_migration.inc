@@ -107,6 +107,8 @@ function _mass_content_org_page_migration_organization_grid(&$node) {
   if (!$node->field_org_our_orgs->isEmpty()) {
     // Get the field value.
     $field_org_our_orgs = $node->get('field_org_our_orgs')->getValue();
+    // Remove the old field values.
+    $node->set('field_org_our_orgs', []);
     // Create a new Organization Section paragraph.
     $new_org_section_long_form_paragraph = Paragraph::create([
       'type' => 'org_section_long_form',
