@@ -5,7 +5,7 @@ module.exports = {
   entry: "./src/index.js",
   mode: "production",
   optimization: {
-    minimize: true
+    minimize: false
   },
   performance: {
     hints: "warning"
