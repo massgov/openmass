@@ -81,7 +81,6 @@ third_party_settings:
         - group_banner
         - group_overview
         - group_content
-        - group_featured
         - group_about_details
         - group_actions
         - group_map
@@ -233,20 +232,6 @@ third_party_settings:
         description: ''
         required_fields: true
       label: News
-      region: content
-    group_featured:
-      children:
-        - field_org_featured_items
-      parent_name: group_node_edit_form
-      weight: 23
-      format_type: tab
-      format_settings:
-        formatter: closed
-        description: ''
-        required_fields: true
-        id: ''
-        classes: elected-only
-      label: Featured
       region: content
     group_about_details:
       children:
@@ -622,18 +607,6 @@ content:
       placeholder_title: ''
     third_party_settings: {  }
     type: link_default
-    region: content
-  field_org_featured_items:
-    type: entity_reference_paragraphs
-    weight: 104
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings: {  }
     region: content
   field_org_featured_news_items:
     weight: 106
@@ -1033,6 +1006,7 @@ hidden:
   field_action_set__bg_narrow: true
   field_action_set__bg_wide: true
   field_boards: true
+  field_org_featured_items: true
   field_org_featured_message: true
   langcode: true
   path: true
