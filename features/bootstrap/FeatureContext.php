@@ -475,10 +475,11 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
    * @throws Exception
    */
   public function assertParagraphs($field, $expectedType = '') {
+    $expectedType = $expectedType == '' ? $expectedType : '-' . $expectedType;
     $field_name = str_replace('edit-', '', $field);
     $wrapper_id = $field . '-wrapper';
-    $classic_paragraph_id = $field . '-add-more-add-more-button-' . $expectedType;
-    $experimental_paragraph_id = $field_name . '-' . $expectedType . '-add-more';
+    $classic_paragraph_id = $field . '-add-more-add-more-button' . $expectedType;
+    $experimental_paragraph_id = $field_name . $expectedType . '-add-more';
 
     // Search for the field wrapper id.
     $element = $this->getSession()->getPage()->find('css', '[id^=' . $wrapper_id . ']');
