@@ -58,6 +58,8 @@ function _mass_content_org_page_migration_featured_items_mosaic(&$node) {
   if (!$node->field_org_featured_items->isEmpty()) {
     // Get the field value.
     $field_org_featured_items = $node->get('field_org_featured_items')->getValue();
+    // Remove the old field values.
+    $node->set('field_org_featured_items', []);
     // Create a new Organization Section paragraph.
     $new_org_section_long_form_paragraph = Paragraph::create([
       'type' => 'org_section_long_form',
