@@ -81,7 +81,6 @@ third_party_settings:
         - group_banner
         - group_overview
         - group_content
-        - group_featured
         - group_about_details
         - group_actions
         - group_map
@@ -136,7 +135,6 @@ third_party_settings:
     group_other:
       children:
         - field_ref_card_view_6
-        - field_org_our_orgs
         - field_ref_orgs
         - field_more_about_agency_link
         - field_more_about_leadership
@@ -219,9 +217,6 @@ third_party_settings:
       region: content
     group_news:
       children:
-        - field_org_featured_news_items
-        - field_number_of_news_items
-        - field_org_show_news_images
         - field_get_updates_links
       parent_name: group_node_edit_form
       weight: 27
@@ -233,21 +228,6 @@ third_party_settings:
         description: ''
         required_fields: true
       label: News
-      region: content
-    group_featured:
-      children:
-        - field_org_featured_message
-        - field_org_featured_items
-      parent_name: group_node_edit_form
-      weight: 23
-      format_type: tab
-      format_settings:
-        formatter: closed
-        description: ''
-        required_fields: true
-        id: ''
-        classes: elected-only
-      label: Featured
       region: content
     group_about_details:
       children:
@@ -280,7 +260,7 @@ third_party_settings:
     group_boards:
       children: {  }
       parent_name: ''
-      weight: 7
+      weight: 6
       format_type: tab
       format_settings:
         formatter: closed
@@ -610,12 +590,6 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_number_of_news_items:
-    weight: 107
-    settings: {  }
-    third_party_settings: {  }
-    type: options_select
-    region: content
   field_org_directory_page:
     weight: 121
     settings:
@@ -623,53 +597,6 @@ content:
       placeholder_title: ''
     third_party_settings: {  }
     type: link_default
-    region: content
-  field_org_featured_items:
-    type: entity_reference_paragraphs
-    weight: 104
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings: {  }
-    region: content
-  field_org_featured_message:
-    type: entity_reference_paragraphs
-    weight: 103
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: button
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings: {  }
-    region: content
-  field_org_featured_news_items:
-    weight: 106
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
-  field_org_our_orgs:
-    type: entity_reference_paragraphs
-    weight: 117
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings:
-      conditional_fields: {  }
     region: content
   field_org_page_thumbnail:
     weight: 14
@@ -696,13 +623,6 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: string_textfield
-    region: content
-  field_org_show_news_images:
-    weight: 108
-    settings:
-      display_label: true
-    third_party_settings: {  }
-    type: boolean_checkbox
     region: content
   field_organization_sections:
     type: entity_reference_paragraphs
@@ -1046,6 +966,12 @@ hidden:
   field_action_set__bg_narrow: true
   field_action_set__bg_wide: true
   field_boards: true
+  field_number_of_news_items: true
+  field_org_featured_items: true
+  field_org_featured_message: true
+  field_org_featured_news_items: true
+  field_org_our_orgs: true
+  field_org_show_news_images: true
   langcode: true
   path: true
   promote: true
