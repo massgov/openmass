@@ -212,14 +212,22 @@ function _mass_content_org_page_migration_news(&$node) {
  * Migrate data for the board members section.
  */
 function _mass_content_org_page_migration_board(&$node) {
-  if (!empty($node->field_boards->target_id)) {
-    $pid = $node->field_boards->target_id;
-    $pid_revision = $node->field_boards->target_revision_id;
-    $node->set("field_boards", []);
-    $node->field_organization_sections[] = [
-      'target_id' => $pid,
-      "target_revision_id" => $pid_revision,
-    ];
+  // Migrate data if the field has a value.
+  if (!$node->field_boards->isEmpty()) {
+    // Get the field value.
+    $field_boards = $node->get('field_boards')->getValue();
+    // Remove the old field values.
+    $node->set('field_boards', []);
+    // Create a new Organization Section paragraph.
+    $new_org_section_long_form_paragraph = Paragraph::create([
+      'type' => 'org_section_long_form',
+    ]);
+    // Set the field values.
+    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_boards);
+    // Save the new paragraph.
+    $new_org_section_long_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
   }
 }
 
