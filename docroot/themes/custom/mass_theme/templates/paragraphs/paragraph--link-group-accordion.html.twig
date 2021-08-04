@@ -39,11 +39,11 @@
  */
 #}
 
-
 {% embed "@organisms/by-author/collapsible-content.twig" with {
   "collapsibleContent": {
+    "backgroundStyle": "light",
     "items": [{
-      "expanded": content.field_group_expanded|field_value,
+      "expanded": content.field_group_expanded|field_value|render|trim == "True",
       "collapsibleHeader": {
         "info": "Click here to expand or collapse this group.",
         "title": content.field_section_title|render
