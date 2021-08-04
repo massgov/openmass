@@ -1,5 +1,24 @@
 
 
+## [0.292.0] - August 3, 2021
+
+### Security
+  - DP-19580: Upgrade webpack 4 to v5 in openmass.
+
+### Removed
+  - DP-22391: Removed old alert block code and supporting Javascript.
+
+### Changed
+  - DP-22673: Updated Mayflower version to 11.11.0.
+  - DP-22653: Adds PageHeaderAddons component to render additional contents below PageHeader. (MF)
+  - DP-22653: Takes out optionalContents and widgets from the PageHeader component. Add PageHeaderAddons to the template to render those instead (no change to the PageHeader data object structure). (MF)
+  - DP-22653: Modify the components to break down the header and positionated the alerts below the h1
+
+### Fixed
+  - DP-22674: Added z-index to fix not clickable buttons.
+
+
+
 ## [0.291.0] - July 28, 2021
 
 ### Changed
@@ -11,11 +30,11 @@
   - DP-22627: Updated Mayflower version to 11.10.0.
   - DP-22395: Implement new designs for EmergencyAlerts and HeaderAlerts (replacing HeaderAlert). (MF)
   - DP-22929: Adjust dataset for page flipper component in binder page for accessibility improvement.
-  
+
 ### Added
   - DP-22000: Make report of pages with long titles.
   - DP-22553: Add featured image to facebook and twitter metadata for news content type.
-  
+
 
 
 ## [0.290.0] - July 20, 2021
@@ -24,10 +43,10 @@
   - DP-16738: Case insensitive tag detection during deploys.
   - DP-22571: Fix invalidation of alert responses upon alert edits.
   - DP-22573: Send more Watchdog to New Relic APM.
-  
+
 ### Added
   - DP-22557: Added field validation on specific page alerts request.
-  
+
 
 
 ## [0.289.0] - July 13, 2021
