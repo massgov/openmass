@@ -5,6 +5,7 @@ namespace Drupal\mass_alerts\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Cache\CacheableResponse;
 use Drupal\Core\Cache\CacheableMetadata;
+use DateTimeZone;
 use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -12,6 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Render\Renderer;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
+use Drupal\mayflower\Helper;
 
 /**
  * Defines a route controller for entity query.
@@ -63,30 +65,17 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $node = $nodeStorage->load($sitewide);
       $changed_date = $node->getChangedTime();
       $id = $node->uuid() . '__' . $changed_date;
-      $prefix = NULL;
-      $severity = $node->get('field_alert_severity')->getString();
-
-      if ($severity == 'informational_notice') {
-        $prefix = $this->t('Informational Alert');
-      }
 
       $emergencyAlerts = [
         'id' => $id,
-        'buttonAlert' => [
+        'emergencyHeader' => [
           'hideText' => $this->t('Hide'),
           'showText' => $this->t('Show'),
-          'text' => $this->t('Alerts'),
-        ],
-        'emergencyHeader' => [
-          'title' => $node->label(),
         ],
       ];
 
-      if ($prefix) {
-        $emergencyAlerts['emergencyHeader']['prefix'] = $prefix;
-      }
+      $results = [];
 
-      $results = $emergencyAlerts;
       $results['emergencyAlerts'] = $emergencyAlerts;
       $results['emergencyAlerts']['alerts'] = [];
 
@@ -94,40 +83,50 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $alert_items = $node->get('field_alert')->referencedEntities();
       foreach ($alert_items as $item) {
         $item_id = $item->uuid() . '__' . $changed_date;
-        $timestamp = $item->get('field_emergency_alert_timestamp')->getString();
-        $unix_timestamp = strtotime($timestamp);
-        $timestamp = $this->dateFormatter->format($unix_timestamp, 'custom', 'M. jS, Y, h:i a');
-
-        $uri = $item->get('field_emergency_alert_link')->getString();
-
-        // For Test this could be empty.
-        if ($uri) {
-          $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
-        }
-        else {
-          $url = '#';
-        }
+        $timestamp_string = $item->get('field_emergency_alert_timestamp')->getString();
+        $unix_timestamp = strtotime($timestamp_string);
+        $timestamp = Helper::getDate($timestamp_string)->format('M. j, Y, h:i a');
+        $url = FALSE;
 
         $link_type = $item->get('field_emergency_alert_link_type')->getString();
+        $url = FALSE;
 
-        $link = [
-          'chevron' => TRUE,
-          'href' => $url,
-          'text' => 'Read more',
-          'type' => $link_type,
-        ];
+        if ($link_type == '1') {
+          $uri = $item->get('field_emergency_alert_link')->getString();
+          if ($uri) {
+            $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
+          }
+        }
+        elseif ($link_type == '0') {
+          $url = $node->toUrl()->toString(TRUE)->getGeneratedUrl();
+          $url .= '#' . $item->id();
+        }
+
+        $message = $item->get('field_emergency_alert_message')->getString();
+
+        if ($url) {
+          $link = [
+            'chevron' => TRUE,
+            'href' => $url,
+            'text' => $message,
+          ];
+        }
+        else {
+          $link = ['text' => $message];
+        }
 
         $alerts[$unix_timestamp] = [
           'id' => $item_id,
-          'link' => $link,
-          'message' => $item->get('field_emergency_alert_message')->getString(),
           'timeStamp' => $timestamp,
+          'link' => $link,
         ];
       }
 
       ksort($alerts);
       $results['emergencyAlerts']['alerts'] = array_values($alerts);
     }
+
+    $results['emergencyAlerts']['emergencyHeader']['title'] = $node->label();
 
     $build = [
       '#theme' => 'mass_alerts_sitewide',
@@ -141,6 +140,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     ];
 
     $output = $this->renderer->renderRoot($build);
+    $this->attachSvg($output);
+
     $response = new CacheableResponse($output);
 
     if ($node) {
@@ -160,6 +161,12 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
     $results = [
       'headerAlerts' => [],
+      'headerTitle' => [
+        'icon' => 'warning',
+        'text' => 'Notices & Alerts',
+        'hideText' => 'Hide',
+        'showText' => 'Expand',
+      ]
     ];
 
     $nodeStorage = $this->entityTypeManager()->getStorage('node');
@@ -167,7 +174,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     $currentPage = $nodeStorage->load($nid);
     $nodes = [];
 
-    if ($currentPage) {
+    if ($currentPage && !in_array($currentPage->getType(), ['alert', 'campaign_landing'])) {
       $org_ids = [];
 
       if ($currentPage->hasField('field_organizations')) {
@@ -177,15 +184,30 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         }
       }
 
+      if ($currentPage->getType() == 'org_page') {
+        $org_ids[] = $currentPage->id();
+      }
+
       $query = $nodeStorage->getQuery();
       $query->condition('type', 'alert');
       $query->condition('status', 1);
 
       $orCondition = $query->orConditionGroup();
-      $orCondition->condition('field_target_page.target_id', $nid);
+
+      $specific_page = $query
+        ->andConditionGroup()
+        ->condition('field_target_page.target_id', $nid)
+        ->condition('field_alert_display.value', 'specific_target_pages');
+
+      $orCondition->condition($specific_page);
 
       if (!empty($org_ids)) {
-        $orCondition->condition('field_target_organization.target_id', $org_ids, 'IN');
+        $org_pages = $query
+          ->andConditionGroup()
+          ->condition('field_target_organization.target_id', $org_ids, 'IN')
+          ->condition('field_alert_display.value', 'by_organization');
+
+        $orCondition->condition($org_pages);
       }
 
       $query->condition($orCondition);
@@ -200,42 +222,102 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
         $changed_date = $node->getChangedTime();
         $id = $node->uuid() . '__' . $changed_date;
-
-        $items = $node->get('field_alert')->referencedEntities();
-        $item = reset($items);
-
-        $link_type = $item->get('field_emergency_alert_link_type')->getString();
-
-        if ($link_type == '1') {
-          $uri = $item->get('field_emergency_alert_link')->getString();
-          if ($uri) {
-            $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
-          }
-        }
-        else {
-          $url = $node->toUrl()->toString(TRUE)->getGeneratedUrl();
-          $url .= '#' . $item->id();
-        }
-
-        $prefix = NULL;
+        $label = $node->label();
         $severity = $node->get('field_alert_severity')->getString();
+        $hide_message = $node->get('field_alert_hide_message')->getString();
 
         if ($severity == 'informational_notice') {
-          $prefix = 'Notice';
+          $icon = 'input-warning';
+          $iconLabel = 'notice';
+        }
+        else {
+          $icon = 'input-error';
+          $iconLabel = 'alert';
         }
 
         $alert = [
           'id' => $id,
-          'text' => $item->get('field_emergency_alert_message')->getString(),
-          'href' => ($link_type == '2') ? '' : $url,
-          'info' => '',
+          'icon' => $icon,
+          'iconLabel' => $iconLabel,
+          'level' => 3,
+          'title' => $label,
         ];
 
-        if ($alert) {
-          $alert['prefix'] = $prefix;
+        if ($hide_message == '1') {
+          $alert_title = $node->get('field_alert_title_link')->getString();
+          $timestamp = $node->get('field_alert_node_timestamp')->getString();
+
+          if ($alert_title == 'link') {
+            $uri = $node->get('field_alert_title_link_target')->getString();
+            if ($uri) {
+              $alert['link'] = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
+            }
+          }
+        }
+        else {
+
+          $items = $node->get('field_alert')->referencedEntities();
+          $item = reset($items);
+
+          // If by some reaonse thats not have  content ignore this alert.
+          if (!$item) {
+            continue;
+          }
+
+          $timestamp = $item->get('field_emergency_alert_timestamp')->getString();
+
+          $alert['accordion'] = TRUE;
+          $alert['isExpanded'] = FALSE;
+
+          $link_type = $item->get('field_emergency_alert_link_type')->getString();
+          $url = FALSE;
+
+          if ($link_type == '1') {
+            $uri = $item->get('field_emergency_alert_link')->getString();
+            if ($uri) {
+              $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
+            }
+          }
+          elseif ($link_type == '0') {
+            $url = $node->toUrl()->toString(TRUE)->getGeneratedUrl();
+            $url .= '#' . $item->id();
+          }
+
+          $content = $item->get('field_emergency_alert_message')->getString();;
+
+          if ($url) {
+            $alert['decorativeLink'] = [
+              'href' => $url,
+              'text' => $content,
+              'info' => $this->t('Learn more @label', ['@label' => $label]),
+              'property' => '',
+            ];
+          }
+          else {
+            $alert['richText'] = [
+              'rteElements' => [
+                [
+                  'path' => '@atoms/11-text/paragraph.twig',
+                  'data' => [
+                    'paragraph' => ['text' => $content],
+                  ],
+                ],
+              ],
+            ];
+          }
         }
 
-        $alerts[$changed_date] = $alert;
+        $unix_timestamp = strtotime($timestamp);
+        if ($unix_timestamp) {
+          $timestamp = Helper::getDate($timestamp)->format('M. j, Y, h:i a');
+        }
+        else {
+          // Could be empty old alerts.
+          $timestamp = '';
+        }
+
+        $alert['suffix'] = $timestamp;
+        $alerts[$unix_timestamp . '-' . $node->uuid()] = $alert;
       }
 
       krsort($alerts);
@@ -248,6 +330,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     $build = [
       '#theme' => 'mass_alerts_page',
       '#headerAlerts' => $results['headerAlerts'],
+      '#headerTitle' => $results['headerTitle'],
       '#cache' => [
         'max-age' => Cache::PERMANENT,
         'tags' => $tags,
@@ -255,12 +338,40 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     ];
 
     $output = $this->renderer->renderRoot($build);
+    $this->attachSvg($output);
+
     $response = new CacheableResponse($output);
     foreach ($nodes as $node) {
       $response->addCacheableDependency($node);
     }
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($build));
     return $response;
+  }
+
+  /**
+   * Attach svg to rendered content.
+   */
+  private function attachSvg(&$content) {
+
+    $svgs = Helper::findSvg($content);
+    $inlined = [];
+
+    if ($svgs) {
+      foreach ($svgs as $path) {
+        $replacement = '';
+        if ($svgNode = Helper::getSvg($path)) {
+          $hash = md5($path);
+          $svgNode->setAttribute('id', $hash);
+          $replacement = Helper::getSvgEmbed($hash);
+          $inlined[] = Helper::getSvgSource($hash, $svgNode);
+        }
+        $content = str_replace(sprintf('<svg-placeholder path="%s">', $path), $replacement, $content);
+      }
+    }
+
+    if (!empty($inlined)) {
+      $content .= Helper::wrapInlinedSvgs($inlined);
+    }
   }
 
 }
