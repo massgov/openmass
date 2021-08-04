@@ -134,19 +134,34 @@ function _mass_content_org_page_migration_what_would_you_like_to_do(&$node) {
  * Migrate data for the featured topics section.
  */
 function _mass_content_org_page_migration_featured_topics(&$node) {
-  if (!empty($node->field_ref_card_view_6->getValue())) {
+  // Migrate data if the field has a value.
+  if (!$node->field_ref_card_view_6->isEmpty()) {
+    // Get the field value.
+    $field_ref_card_view_6 = $node->get('field_ref_card_view_6')->getValue();
+    // Remove the old field values.
+    $node->set('field_ref_card_view_6', []);
+
     $paragraph = Paragraph::create([
       'type' => 'featured_topics',
-      'field_featured_topics_topics' => $node->field_ref_card_view_6->getValue(),
+      'field_featured_topics_topics' => $field_ref_card_view_6,
     ]);
+
     $paragraph->save();
-    $pid = $paragraph->id();
-    $pid_revision = $paragraph->getRevisionId();
-    $node->set("field_ref_card_view_6", []);
-    $node->field_organization_sections[] = [
-      'target_id' => $pid,
-      "target_revision_id" => $pid_revision,
+    $field_section_long_form_content = [
+      'target_id' => $paragraph->id(),
+      'target_revision_id' => $paragraph->getRevisionId(),
     ];
+    // Create a new Organization Section paragraph.
+    $new_org_section_long_form_paragraph = Paragraph::create([
+      'type' => 'org_section_long_form',
+    ]);
+    // Set the field values.
+    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
+    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Featured Topics');
+    // Save the new paragraph.
+    $new_org_section_long_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
   }
 }
 
