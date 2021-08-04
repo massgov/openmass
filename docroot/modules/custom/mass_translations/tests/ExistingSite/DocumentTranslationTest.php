@@ -45,6 +45,8 @@ class DocumentTranslationTest extends ExistingSiteBase {
     $this->file = File::create([
       'uri' => 'public://llama-43.txt',
     ]);
+    $this->file->setPermanent();
+    $this->file->save();
   }
 
   /**
