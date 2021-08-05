@@ -273,6 +273,10 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
         'keyActions' => Molecules::prepareKeyActions($node, 'field_how_to_link_1'),
       ],
     ];
+
+    if ($variables['view_mode'] === 'listing') {
+      $variables['quick_action_links'] = Helper::separatedLinks($node, 'field_how_to_link_1');
+    }
   }
 
   // Set up widgets for prepare pageHeader invocation.
