@@ -458,11 +458,8 @@ function mass_content_deploy_data_topic_url_name() {
 
   $terms = $term_storage->loadMultiple($tids);
   foreach ($terms as $term) {
-    $parents = $term_storage->loadParents($term->id());
-    if (empty($parents)) {
-      $field_url_name = strtolower(Html::cleanCssIdentifier($term->label()));
-      $term->set('field_url_name', $field_url_name);
-      $term->save();
-    }
+    $field_url_name = strtolower(Html::cleanCssIdentifier($term->label()));
+    $term->set('field_url_name', $field_url_name);
+    $term->save();
   }
 }
