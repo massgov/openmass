@@ -42,6 +42,7 @@ set pageHeader = {
     {% include "@mass_theme/includes/organisms-page-action-header.html.twig" %}
   {% else %}
     {% include "@organisms/by-template/page-header.twig" %}
+    {% include "@organisms/by-template/page-header-addons.twig" %}
   {% endif %}
   {% if content.field_action_banner|render|trim is not empty %}
     {{ content.field_action_banner|field_value }}

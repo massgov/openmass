@@ -1,7 +1,9 @@
-<div class="ma__page-banner__container">
-  {% embed "@organisms/by-template/header-alerts.twig" with {
-    "headerAlerts" : headerAlerts,
-    "headerTitle" : headerTitle
-  }%}
-  {% endembed %}
-</div>
+{% if headerAlerts %}
+  <div class="ma__page-banner__container">
+    {% embed "@organisms/by-template/header-alerts.twig" with {
+      "headerAlerts" : headerAlerts,
+      "headerTitle" : headerTitle
+    }%}
+    {% endembed %}
+  </div>
+{% endif %}
