@@ -386,7 +386,9 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
   /**
    * Add to the response the standard HTTP revalidate headers.
    *
-   * @param CacheableResponse $response
+   * @param $response
+   *   A Symfony response.
+   *
    * @throws \Exception
    */
   public function addRevalidateHeaders(CacheableResponse $response) {
