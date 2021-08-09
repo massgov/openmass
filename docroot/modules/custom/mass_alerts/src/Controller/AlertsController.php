@@ -386,7 +386,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
   /**
    * Add to the response the standard HTTP revalidate headers.
    *
-   * @param $response
+   * @param \Drupal\Core\Cache\CacheableResponse $response
    *   A Symfony response.
    *
    * @throws \Exception
