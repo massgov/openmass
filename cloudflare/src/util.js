@@ -26,8 +26,12 @@ export function isStaticUrl(url) {
   return url.pathname.startsWith('/files') || url.pathname.match(staticRegexp)
 }
 
-export function isAlertsUrl(url) {
+export function isAlertsSiteUrl(url) {
   return url.pathname === '/alerts' || url.pathname.startsWith('/alerts/sitewide') || url.pathname.startsWith('/jsonapi/node/alert')
+}
+
+export function isAlertsPageUrl(url) {
+  return url.pathname.startsWith('/alerts/page')
 }
 
 export function isDrupalResponse(response) {

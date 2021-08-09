@@ -2,23 +2,26 @@
 
 namespace Drupal\mass_alerts\Controller;
 
-use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Cache\CacheableResponse;
+use Drupal\Component\Datetime\DateTimePlus;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
-use DateTimeZone;
-use Symfony\Component\HttpFoundation\Request;
+use Drupal\Core\Cache\CacheableResponse;
+use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Render\Renderer;
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
 use Drupal\mayflower\Helper;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Defines a route controller for entity query.
  */
 class AlertsController extends ControllerBase implements ContainerInjectionInterface {
+
+  const DURATION_PAGE = 900;
+  const DURATION_SITE = 60;
 
   /**
    * Constructs a ApiController object.
@@ -126,12 +129,13 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $results['emergencyAlerts']['alerts'] = array_values($alerts);
     }
 
-    $results['emergencyAlerts']['emergencyHeader']['title'] = $node->label();
+    // $results['emergencyAlerts']['emergencyHeader']['title'] = $node->label();
 
     $build = [
       '#theme' => 'mass_alerts_sitewide',
       '#emergencyAlerts' => $results['emergencyAlerts'],
       '#cache' => [
+        'max-age' => self::DURATION_SITE,
         'tags' => [
           MASS_ALERTS_TAG_GLOBAL,
           MASS_ALERTS_TAG_SITEWIDE . ':list'
@@ -149,7 +153,9 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     }
 
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($build));
-    $response->setMaxAge(60);
+    $response->setMaxAge(self::DURATION_SITE);
+    $response->headers->addCacheControlDirective('public');
+    $this->addRevalidateHeaders($response);
     return $response;
   }
 
@@ -332,7 +338,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       '#headerAlerts' => $results['headerAlerts'],
       '#headerTitle' => $results['headerTitle'],
       '#cache' => [
-        'max-age' => Cache::PERMANENT,
+        'max-age' => self::DURATION_PAGE,
         'tags' => $tags,
       ],
     ];
@@ -345,6 +351,9 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $response->addCacheableDependency($node);
     }
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($build));
+    $response->headers->addCacheControlDirective('public');
+    $response->setMaxAge(self::DURATION_PAGE);
+    $this->addRevalidateHeaders($response);
     return $response;
   }
 
@@ -372,6 +381,11 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     if (!empty($inlined)) {
       $content .= Helper::wrapInlinedSvgs($inlined);
     }
+  }
+
+  public function addRevalidateHeaders(CacheableResponse $response) {
+    $response->setLastModified(new \DateTime(gmdate(DateTimePlus::RFC7231, REQUEST_TIME)));
+    $response->setEtag(REQUEST_TIME);
   }
 
 }

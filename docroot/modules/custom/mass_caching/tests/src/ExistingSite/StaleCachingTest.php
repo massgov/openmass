@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_caching\ExistingSite;
 
+use Drupal\mass_caching\EventSubscriber\StaleResponseSubscriber;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
@@ -37,8 +38,9 @@ class StaleCachingTest extends ExistingSiteBase {
     $headers = $this->getSession()->getResponseHeaders();
 
     // Test that anonymous users have stale headers and the value is correct.
-    $this->assertContains('stale-if-error=604800', $headers['Cache-Control'][0]);
-    $this->assertContains('stale-while-revalidate=604800', $headers['Cache-Control'][0]);
+    $duration = StaleResponseSubscriber::DURATION;
+    $this->assertContains("stale-if-error=$duration", $headers['Cache-Control'][0]);
+    $this->assertContains("stale-while-revalidate=$duration", $headers['Cache-Control'][0]);
 
     // Test that authenticated users do not have stale headers of any kind.
     $account = $this->createUser();
