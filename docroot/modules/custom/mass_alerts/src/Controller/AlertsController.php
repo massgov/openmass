@@ -127,9 +127,9 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
       ksort($alerts);
       $results['emergencyAlerts']['alerts'] = array_values($alerts);
-    }
 
-    // $results['emergencyAlerts']['emergencyHeader']['title'] = $node->label();
+      $results['emergencyAlerts']['emergencyHeader']['title'] = $node->label();
+    }
 
     $build = [
       '#theme' => 'mass_alerts_sitewide',
