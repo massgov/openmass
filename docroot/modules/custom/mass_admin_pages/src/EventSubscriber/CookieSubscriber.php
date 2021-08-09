@@ -22,6 +22,9 @@ class CookieSubscriber implements EventSubscriberInterface {
 
   protected $routerAdminContext;
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(TimeInterface $time, $routerAdminContext) {
     $this->time = $time;
     $this->routerAdminContext = $routerAdminContext;
@@ -50,4 +53,5 @@ class CookieSubscriber implements EventSubscriberInterface {
     $events[KernelEvents::RESPONSE][] = ['onKernelResponse'];
     return $events;
   }
+
 }

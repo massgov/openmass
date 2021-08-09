@@ -383,6 +383,12 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     }
   }
 
+  /**
+   * Add to the response the standard HTTP revalidate headers.
+   *
+   * @param CacheableResponse $response
+   * @throws \Exception
+   */
   public function addRevalidateHeaders(CacheableResponse $response) {
     $response->setLastModified(new \DateTime(gmdate(DateTimePlus::RFC7231, REQUEST_TIME)));
     $response->setEtag(REQUEST_TIME);

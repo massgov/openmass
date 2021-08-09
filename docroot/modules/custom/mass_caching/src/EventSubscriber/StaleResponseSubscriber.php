@@ -14,6 +14,9 @@ class StaleResponseSubscriber implements EventSubscriberInterface {
 
   const DURATION = 604800;
 
+  /**
+   * Add stale http headers.
+   */
   public function onKernelResponse(FilterResponseEvent $event) {
     $response = $event->getResponse();
     if (!$response->headers->hasCacheControlDirective('private')) {
