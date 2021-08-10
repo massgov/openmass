@@ -4041,9 +4041,9 @@ function mass_theme_preprocess_node(&$variables) {
 
   // Set data_listing_icon for Data Listing nodes.
   $icon_map = [
-    'Data resource' => 'report',
     'Dataset' => 'data',
     'Data catalog' => 'catalog',
+    'Report' => 'report',
   ];
   // The field_data_flag field determines if it's a data listing. All External
   // Data Resource nodes are data listings.
@@ -4065,7 +4065,21 @@ function mass_theme_preprocess_node(&$variables) {
     if ($tid) {
       // Load the data type term and store the correct id for the component.
       $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($tid);
-      $variables['data_listing_icon'] = $icon_map[$term->label()];
+      if ($term->label() == 'Data resource') {
+        if ($node->hasField('field_data_resource_type')
+          && !$node->get('field_data_resource_type')->isEmpty()) {
+          $resource_type_tid = $node->field_data_resource_type->target_id;
+          $resource_type_term = \Drupal::entityTypeManager()
+            ->getStorage('taxonomy_term')
+            ->load($resource_type_tid);
+          $variables['data_listing_icon'] = $icon_map[$resource_type_term->label()];
+          $variables['data_listing_icon_label'] = $resource_type_term->label();
+        }
+      }
+      else {
+        $variables['data_listing_icon'] = $icon_map[$term->label()];
+        $variables['data_listing_icon_label'] = $term->label();
+      }
     }
   }
 }
