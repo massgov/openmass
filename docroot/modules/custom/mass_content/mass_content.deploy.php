@@ -5,6 +5,7 @@
  * Implementations of hook_deploy_NAME() for Mass Content.
  */
 
+use Drupal\Component\Utility\Html;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 
@@ -441,5 +442,24 @@ function mass_content_deploy_eotss_service_catalog_terms() {
     $term->save();
     // Save the term id keyed by name.
     $term_ids[$data['name']] = $term->id();
+  }
+}
+
+/**
+ * Add URL Name values for Data Topic terms.
+ */
+function mass_content_deploy_data_topic_url_name() {
+  $query = \Drupal::entityQuery('taxonomy_term');
+  $query->condition('vid', 'data_topic');
+
+  $tids = $query->sort('tid')->execute();
+
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+
+  $terms = $term_storage->loadMultiple($tids);
+  foreach ($terms as $term) {
+    $field_url_name = strtolower(Html::cleanCssIdentifier($term->label()));
+    $term->set('field_url_name', $field_url_name);
+    $term->save();
   }
 }
