@@ -7,6 +7,8 @@
  * trivial failures for an element, you can probably deal with it here.
  */
 module.exports = async function(page, scenario, vp) {
+
+  await require('./clickAndHoverHelper')(page, scenario);
     await page.addStyleTag({
         content: '' +
         // Force all animation to complete immediately.
@@ -203,6 +205,13 @@ module.exports = async function(page, scenario, vp) {
         await page.waitFor(3000);
         break;
 
+      case "Homepage Login link (Mobile)":
+        await page.evaluate(async function () {
+          document.querySelector("button.ma__header__hamburger__menu-button").click();
+          jQuery(".ma__header__hamburger__utility-nav .ma__utility-nav__items li.ma__utility-nav__item:last-child button.ma__utility-nav__link").click();
+          document.querySelector(".ma__header__hamburger__nav-container").scrollTo(0, 500);
+        })
+        break;
       case "ServiceGroupedLinks":
       case "Service1":
       case "Service2":
