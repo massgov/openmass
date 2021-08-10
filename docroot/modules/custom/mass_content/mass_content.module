@@ -444,10 +444,11 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
       $fields['computed_social_links'] = BaseFieldDefinition::create('link')
         ->setLabel(t('Computed Social Links from parent'))
         ->setComputed(TRUE)
-        ->setSetting('link_type', 16)
-        ->setSetting('parent_field', ['field_social_links'])
-        ->setClass('\Drupal\mass_content\Field\SocialLinks')
+        ->setSetting('field', 'field_section_long_form_addition')
+        ->setSetting('paragraph_field', 'field_links_downloads_link')
+        ->setSetting('link_type', 17)
         ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setClass('\Drupal\mass_content\Field\SocialLinks')
         ->setDisplayConfigurable('view', TRUE);
 
       $fields['computed_bio_page'] = BaseFieldDefinition::create('entity_reference')
