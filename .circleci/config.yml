@@ -349,9 +349,10 @@ jobs:
           command: "drush ma:deploy -v -y << parameters.skip-maint >> << parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
           no_output_timeout: 60m
       - jira/notify:
-            environment: << parameters.target >>
-            environment_type: development
-            job_type: deployment
+          environment: << parameters.target >>
+          environment_type: development
+          job_type: deployment
+          token_name: CIRCLECI_TOKEN_FOR_JIRA
 
   crawl:
     parameters:
