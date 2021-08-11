@@ -562,11 +562,14 @@ function mass_content_deploy_org_page_section_migration(&$sandbox) {
         // Featured Items Mosaic.
         _mass_content_org_page_migration_featured_items_mosaic($node);
 
+        // About.
+        _mass_content_org_page_migration_about($node);
+
         // Contact and Org Logo.
         _mass_content_org_page_migration_contact_logo($node);
 
-        // About.
-        _mass_content_org_page_migration_about($node);
+        // About us.
+        _mass_content_org_page_migration_who_we_serve($node);
 
         // Organization Grid.
         _mass_content_org_page_migration_organization_grid($node);
