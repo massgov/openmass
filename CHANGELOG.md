@@ -1,5 +1,19 @@
 
 
+## [0.293.0] - August 10, 2021
+
+### Changed
+  - DP-22550: Allow the updates block configuration form to use CKEditor.
+  
+### Added
+  - DP-22551: Drush ma:backstop can now send custom --list and --viewport params.
+  
+### Fixed
+  - DP-22703: Fixed bugs related to the Data Listing and Collections features.
+  - DP-22715: More robust queue worker for unpublished email reminders.
+  
+
+
 ## [0.292.0] - August 3, 2021
 
 ### Security
