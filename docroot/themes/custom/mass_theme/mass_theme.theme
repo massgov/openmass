@@ -6950,7 +6950,6 @@ function mass_theme_preprocess_paragraph__featured_content_single_item(&$variabl
  * Display cards or compact cards depending on the settings.
  */
 function mass_theme_preprocess_paragraph__featured_topics(&$variables) {
-  $cache_tags = [];
   $paragraph = $variables['paragraph'];
   // If the checkbox is selected, change display mode to card compact.
   if ($paragraph->field_topic_name_only->value == TRUE) {
@@ -6963,10 +6962,17 @@ function mass_theme_preprocess_paragraph__featured_topics(&$variables) {
     }
 
     $variables['content']['field_featured_topics_topics'] = $field_topics;
-
-    if (!empty($cache_tags)) {
-      // Add the cache tags to the render array.
-      $variables['#cache']['tags'] = $cache_tags;
-    }
   }
+}
+
+
+/**
+ * Fetch social links from parent node.
+ */
+function mass_theme_preprocess_paragraph__social_media(&$variables) {
+  $paragraph = $variables['paragraph'];
+  $node = Helper::getParentNode($paragraph);
+
+  $variables['social_links'] = $node->get('field_social_links')->view();
+
 }
