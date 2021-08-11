@@ -49,7 +49,7 @@
    {% block stackedRowContentOverride %}
      {% embed "@organisms/by-author/sections-three-up.twig" with {
        "sectionThreeUp": {
-         "compact": content.field_topic_name_only|field_value|render
+         "compact": content.field_topic_name_only|field_value|render=="True"?TRUE:FALSE
        }
      } %}
        {% block sectionLinks %}
