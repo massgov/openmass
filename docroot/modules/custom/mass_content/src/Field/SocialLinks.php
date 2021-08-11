@@ -7,7 +7,7 @@ use Drupal\mayflower\Helper;
 /**
  * A computed field class for social links.
  */
-class SocialLinks extends LinksOnParentParagraphs {
+class SocialLinks extends InjectParentField {
 
   /**
    * {@inheritdoc}
