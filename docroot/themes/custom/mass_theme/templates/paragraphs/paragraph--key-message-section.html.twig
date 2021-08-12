@@ -42,14 +42,12 @@
     set picture = {
     "picture": {
       "srcSets": backgroundImages,
-      'defaultImage': backgroundImages.0.url
+      'defaultImage': (paragraph.field_image.entity.fileuri)|image_style('key_message_high_res')
     }
   }
   %}
 
-  {% set bgImage %}
-    {% include "@atoms/09-media/picture-element.twig" with picture %}
-  {% endset %}
+  {% set bgImage = {"path": "@atoms/09-media/picture-element.twig", "data": picture} %}
 {% else %}
   {% set bgImage = null %}
 {% endif %}
