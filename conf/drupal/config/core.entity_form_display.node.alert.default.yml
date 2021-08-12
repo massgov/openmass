@@ -5,9 +5,13 @@ dependencies:
   config:
     - field.field.node.alert.field_alert
     - field.field.node.alert.field_alert_display
+    - field.field.node.alert.field_alert_hide_message
+    - field.field.node.alert.field_alert_node_timestamp
     - field.field.node.alert.field_alert_ref_contact
     - field.field.node.alert.field_alert_related_links_5
     - field.field.node.alert.field_alert_severity
+    - field.field.node.alert.field_alert_title_link
+    - field.field.node.alert.field_alert_title_link_target
     - field.field.node.alert.field_english_version
     - field.field.node.alert.field_organizations
     - field.field.node.alert.field_reusable_label
@@ -17,7 +21,9 @@ dependencies:
     - node.type.alert
     - workflows.workflow.editorial
   module:
+    - conditional_fields
     - content_moderation
+    - datetime
     - field_group
     - link
     - paragraphs
@@ -43,17 +49,20 @@ third_party_settings:
         - field_alert_display
         - field_target_page
         - field_target_organization
+        - field_alert_hide_message
+        - field_alert_node_timestamp
+        - field_alert_title_link
+        - field_alert_title_link_target
         - field_organizations
-        - field_reusable_label
         - langcode
+        - field_reusable_label
         - field_english_version
       parent_name: group_alert
       weight: 4
       format_type: tab
       format_settings:
-        label: 'Overview & Alert placement'
         formatter: open
-        description: "<p>There are 3 kinds of alerts: Page-level, Organization and Sitewide.</p>\r\n<p>Page-level and Organization Alerts appears as a short message in a bright yellow banner above the title of the pages or organizations you select. An Alert Detail page with optional content also is created automatically.</p>\r\n<p>An Alert contains 1 or more specific Alert Messages. For example, a weather alert may have 1 message about roads and another about public transportation.</p>\r\n<p>Sitewide Alerts typically are created only by the Governor’s office or MEMA. You can only create a Sitewide Alert if you have special permissions.</p>\r\n<p><a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/news-and-events/alerts\" target=\"_blank\">See screenshots and learn more about the Alert content type.</a></p>"
+        description: "<p>There are 3 kinds of alerts: Page-level, Organization and Sitewide.</p>\r\n<p>Page-level and Organization Alerts appears as a short message in a bright yellow banner below the title of the pages or organizations you select.</p>\r\n<p>An Alert may contain 1 or more specific Alert Messages. For example, a weather alert may have 1 message about roads and another about public transportation.</p>\r\n<p>Sitewide Alerts typically are created only by the Governor’s office or MEMA. You can only create a Sitewide Alert if you have special permissions.</p>\r\n<p><a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/news-and-events/alerts\" target=\"_blank\">See screenshots and learn more about the Alert content type.</a></p>"
         required_fields: true
         id: ''
         classes: ''
@@ -69,7 +78,6 @@ third_party_settings:
       weight: 6
       format_type: tab
       format_settings:
-        label: 'Alert content'
         formatter: closed
         description: ''
         required_fields: true
@@ -89,15 +97,32 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_alert:
-    weight: 5
+    weight: 6
     settings:
       title: Paragraph
       title_plural: Paragraphs
       edit_mode: open
       add_mode: button
       form_display_mode: default
-      default_paragraph_type: emergency_alert
-    third_party_settings: {  }
+      default_paragraph_type: _none
+    third_party_settings:
+      conditional_fields:
+        fb2a5666-ad5c-460a-966d-96fc05a8575b:
+          dependee: field_alert_hide_message
+          settings:
+            state: '!visible'
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: alert
     type: entity_reference_paragraphs
     region: content
   field_alert_display:
@@ -106,6 +131,54 @@ content:
     third_party_settings: {  }
     type: options_buttons
     region: content
+  field_alert_hide_message:
+    weight: 8
+    settings:
+      display_label: true
+    third_party_settings:
+      conditional_fields:
+        1e7e7136-723a-4261-bff4-20253f9d96d8:
+          dependee: field_alert_display
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 3
+            value: ''
+            values: "specific_target_pages\r\nby_organization"
+            value_form:
+              -
+                value: by_organization
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: alert
+    type: boolean_checkbox
+    region: content
+  field_alert_node_timestamp:
+    weight: 9
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        a663c475-3499-4caf-8540-be6dbba09382:
+          dependee: field_alert_hide_message
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: alert
+    type: datetime_default
+    region: content
   field_alert_ref_contact:
     weight: 7
     settings:
@@ -113,7 +186,24 @@ content:
       size: 60
       placeholder: ''
       match_limit: 10
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        fdd31663-b2df-4aa7-a0a6-a0be67f1ec65:
+          dependee: field_alert_hide_message
+          settings:
+            state: '!visible'
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: alert
     type: entity_reference_autocomplete
     region: content
   field_alert_related_links_5:
@@ -121,7 +211,24 @@ content:
     settings:
       placeholder_url: ''
       placeholder_title: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        20f5660e-69d1-47b3-b26e-4b75343f6062:
+          dependee: field_alert_hide_message
+          settings:
+            state: '!visible'
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: false
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: alert
     type: link_default
     region: content
   field_alert_severity:
@@ -130,8 +237,73 @@ content:
     third_party_settings: {  }
     type: options_buttons
     region: content
-  field_english_version:
+  field_alert_title_link:
     weight: 10
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        35830fca-4b15-4754-af94-4e40547846ed:
+          dependee: field_alert_hide_message
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: 1
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: alert
+    type: options_buttons
+    region: content
+  field_alert_title_link_target:
+    weight: 11
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      conditional_fields:
+        ba32f5e0-bca7-4494-a296-17fa4c2a4a79:
+          dependee: field_alert_title_link
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: link
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: alert
+        07307aa7-61fd-4310-b62b-ba9f5f552ccf:
+          dependee: field_alert_hide_message
+          settings:
+            state: visible
+            condition: checked
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              value: 1
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: alert
+    type: link_default
+    region: content
+  field_english_version:
+    weight: 15
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -159,7 +331,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_organizations:
-    weight: 8
+    weight: 12
     settings:
       match_operator: CONTAINS
       size: 60
@@ -169,7 +341,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_reusable_label:
-    weight: 9
+    weight: 14
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -246,7 +418,7 @@ content:
     region: content
   langcode:
     type: language_select
-    weight: 9
+    weight: 13
     region: content
     settings:
       include_locked: false
