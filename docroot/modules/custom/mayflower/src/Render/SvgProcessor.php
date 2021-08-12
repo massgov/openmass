@@ -103,4 +103,5 @@ class SvgProcessor implements AttachmentsResponseProcessorInterface {
       throw new \InvalidArgumentException('\Drupal\Core\Render\HtmlResponse instance expected.');
     }
   }
+
 }
