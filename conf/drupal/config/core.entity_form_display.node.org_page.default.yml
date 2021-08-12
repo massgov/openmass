@@ -231,7 +231,6 @@ third_party_settings:
     group_about_details:
       children:
         - field_short_name
-        - group_about_summary
       parent_name: group_node_edit_form
       weight: 24
       format_type: tab
@@ -242,19 +241,6 @@ third_party_settings:
         classes: elected-only
         required_fields: false
       label: 'About / Details'
-      region: content
-    group_about_summary:
-      children:
-        - field_about
-      parent_name: group_about_details
-      weight: 29
-      format_type: details
-      format_settings:
-        id: ''
-        classes: ''
-        open: true
-        required_fields: true
-      label: 'About Summary'
       region: content
     group_boards:
       children: {  }
@@ -318,18 +304,6 @@ content:
       show_summary: false
     third_party_settings:
       conditional_fields: {  }
-    region: content
-  field_about:
-    type: entity_reference_paragraphs
-    weight: 81
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings: {  }
     region: content
   field_application_login_links:
     weight: 124
@@ -956,6 +930,7 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
+  field_about: true
   field_action_set__bg_narrow: true
   field_action_set__bg_wide: true
   field_boards: true
