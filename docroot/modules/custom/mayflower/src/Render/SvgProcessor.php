@@ -95,6 +95,7 @@ class SvgProcessor implements AttachmentsResponseProcessorInterface {
           }
         }
       }
+      return $this->inner->processAttachments($response);
     }
     elseif ($response instanceof AjaxResponse) {
       return $this->inner->processAttachments($response);
