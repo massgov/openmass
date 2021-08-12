@@ -68,6 +68,11 @@
             url: path,
             cache: true,
             success: function (content) {
+              if (!content) {
+                $this.hide();
+                return;
+              }
+
               $this.html(content);
               if (removeContainer) {
                 $this.find('.ma__page-banner__container').removeClass('ma__page-banner__container');

@@ -3,15 +3,12 @@ Explain the technical implementation of the work done.
 
 
 **Jira:** (Skip unless you are MA staff)
-https://jira.mass.gov/browse/DP-****
+DP-****
 
 
 **To Test:**
 - [ ] Add steps to test this feature
 
-
-**Screenshots/GIFs:**
-Use something like [licecap](http://www.cockos.com/licecap/) to capture gifs to demonstrate behaviors.
 
 ---
 
