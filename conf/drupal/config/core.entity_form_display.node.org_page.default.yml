@@ -197,23 +197,6 @@ third_party_settings:
         speed: fast
       label: 'Organization name'
       region: content
-    group_map:
-      children:
-        - field_org_ref_locations
-        - field_location_button_label
-        - field_location_button_short_desc
-        - field_related_organization_type
-      parent_name: group_node_edit_form
-      weight: 26
-      format_type: tab
-      format_settings:
-        id: ''
-        classes: ''
-        formatter: closed
-        description: ''
-        required_fields: true
-      label: Map
-      region: content
     group_news:
       children:
         - field_get_updates_links
@@ -516,22 +499,6 @@ content:
     third_party_settings: {  }
     type: link_default
     region: content
-  field_location_button_label:
-    weight: 81
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
-    region: content
-  field_location_button_short_desc:
-    weight: 82
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_metatags:
     weight: 2
     settings:
@@ -572,16 +539,6 @@ content:
       preview_image_style: thumbnail
     third_party_settings: {  }
     type: image_image
-    region: content
-  field_org_ref_locations:
-    weight: 79
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
     region: content
   field_org_sentence_phrasing:
     weight: 110
@@ -698,13 +655,6 @@ content:
       match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
-    region: content
-  field_related_organization_type:
-    weight: 83
-    settings:
-      display_label: false
-    third_party_settings: {  }
-    type: boolean_checkbox
     region: content
   field_response_expectations:
     weight: 108
@@ -935,12 +885,16 @@ hidden:
   field_action_set__bg_wide: true
   field_boards: true
   field_event_quantity: true
+  field_location_button_label: true
+  field_location_button_short_desc: true
   field_number_of_news_items: true
   field_org_featured_items: true
   field_org_featured_message: true
   field_org_featured_news_items: true
   field_org_our_orgs: true
+  field_org_ref_locations: true
   field_org_show_news_images: true
+  field_related_organization_type: true
   langcode: true
   path: true
   promote: true

@@ -271,7 +271,48 @@ function _mass_content_org_page_migration_events(&$node) {
  * Migrate data for the locations section.
  */
 function _mass_content_org_page_migration_locations(&$node) {
-
+  // Migrate data if the field has a value.
+  if (!$node->field_location_button_short_desc->isEmpty()
+    || !$node->field_location_button_label->isEmpty()
+    || !$node->field_org_ref_locations->isEmpty()
+    || !$node->field_related_organization_type->isEmpty()) {
+    $field_location_button_short_desc = $node->get('field_location_button_short_desc')->getValue();
+    $field_location_button_label = $node->get('field_location_button_label')->getValue();
+    $field_org_ref_locations = $node->get('field_org_ref_locations')->getValue();
+    $field_related_organization_type = $node->get('field_related_organization_type')->getValue();
+    // Remove the old field values.
+    $node->set('field_location_button_short_desc', []);
+    $node->set('field_location_button_label', []);
+    $node->set('field_org_ref_locations', []);
+    $node->set('field_related_organization_type', []);
+    // Create a new Organization Locations paragraph.
+    $new_org_locations_paragraph = Paragraph::create([
+      'type' => 'org_locations',
+    ]);
+    // Set the field values.
+    $new_org_locations_paragraph->set('field_location_button_short_desc', $field_location_button_short_desc);
+    $new_org_locations_paragraph->set('field_location_button_label', $field_location_button_label);
+    $new_org_locations_paragraph->set('field_org_ref_locations', $field_org_ref_locations);
+    $new_org_locations_paragraph->set('field_related_organization_type', $field_related_organization_type);
+    // Save the new paragraph.
+    $new_org_locations_paragraph->save();
+    // Create a value array for the new section paragraph.
+    $field_section_long_form_content = [
+      'target_id' => $new_org_locations_paragraph->id(),
+      'target_revision_id' => $new_org_locations_paragraph->getRevisionId(),
+    ];
+    // Create a new Organization Section paragraph.
+    $new_org_section_long_form_paragraph = Paragraph::create([
+      'type' => 'org_section_long_form',
+    ]);
+    // Set the field values.
+    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
+    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Recent news & announcements');
+    // Save the new paragraph.
+    $new_org_section_long_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
+  }
 }
 
 /**
