@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  jira: circleci/jira@1.3.1
 
 # YAML anchors/aliases. See;
 # - https://circleci.com/blog/circleci-hacks-reuse-yaml-in-your-circleci-config-with-yaml/
@@ -352,6 +354,11 @@ jobs:
       - run:
           command: "drush ma:deploy -v -y << parameters.skip-maint >> << parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
           no_output_timeout: 60m
+      - jira/notify:
+          environment: << parameters.target >>
+          environment_type: development
+          job_type: deployment
+          token_name: CIRCLE_PERSONAL_TOKEN
 
   crawl:
     parameters:
