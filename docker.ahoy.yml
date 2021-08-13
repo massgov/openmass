@@ -2,19 +2,19 @@ ahoyapi: v2
 commands:
   exec:
     # These env variables come from https://github.com/wodby/docker4drupal/issues/273
-    cmd: docker-compose exec -e  COLUMNS=$(tput cols) -e LINES=$(tput lines) -e TERM=$TERM drupal "$@"
+    cmd: ddev exec "$@"
   bash:
-    cmd: ahoy exec bash
+    cmd: ddev ssh
   up:
-    cmd: docker-compose up -d "$@"
+    cmd: ddev start "$@"
   down:
-    cmd: docker-compose down --remove-orphans "$@"
+    cmd: ddev stop "$@"
   stop:
-    cmd: docker-compose stop "$@"
+    cmd: ddev pause "$@"
   pull:
-    cmd: docker-compose down --remove-orphans && docker-compose pull && docker-compose up -d
+    cmd: ahoy down && docker-compose pull && docker-compose up -d
   refresh:
-    cmd: scripts/ma-refresh-local -dpo && vendor/bin/drush sql:sanitize -y
+    cmd: ahoy exec "scripts/ma-refresh-local -dpo && vendor/bin/drush sql:sanitize -y"
   updatedb:
     cmd: ahoy exec scripts/ma-refresh-local --skip-db-prep
   prune:
@@ -36,7 +36,7 @@ commands:
   test:
     cmd: ahoy exec scripts/ma-test "$@"
   tail:
-    cmd: docker-compose logs -f drupal
+    cmd: ddev logs -s web
   blackfire:
     cmd: ahoy exec blackfire "$@"
   backstop:
