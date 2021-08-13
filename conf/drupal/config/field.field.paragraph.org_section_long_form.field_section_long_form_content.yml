@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.storage.paragraph.field_section_long_form_content
+    - paragraphs.paragraphs_type.about
     - paragraphs.paragraphs_type.callout_link
     - paragraphs.paragraphs_type.caspio_embed
     - paragraphs.paragraphs_type.featured_item_mosaic
@@ -43,6 +44,7 @@ settings:
   handler_settings:
     negate: 0
     target_bundles:
+      about: about
       social_media: social_media
       callout_link: callout_link
       caspio_embed: caspio_embed
@@ -54,8 +56,8 @@ settings:
       info_details_card_group: info_details_card_group
       list_board_members: list_board_members
       organization_grid: organization_grid
-      org_locations: org_locations
       org_events: org_events
+      org_locations: org_locations
       org_news: org_news
       pull_quote: pull_quote
       org_related_orgs: org_related_orgs
@@ -78,8 +80,8 @@ settings:
         weight: 119
         enabled: false
       about:
+        enabled: true
         weight: 120
-        enabled: false
       action_address:
         weight: 121
         enabled: false
@@ -256,6 +258,9 @@ settings:
         enabled: false
       link_group:
         weight: 177
+        enabled: false
+      link_group_accordion:
+        weight: 191
         enabled: false
       link_group_document:
         weight: 178
