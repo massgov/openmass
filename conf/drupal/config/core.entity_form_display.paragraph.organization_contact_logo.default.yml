@@ -1,0 +1,37 @@
+uuid: bb8e4643-b303-40b2-b930-6b754b382403
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.organization_contact_logo.field_org_contact_info
+    - field.field.paragraph.organization_contact_logo.field_org_logo
+    - image.style.thumbnail
+    - paragraphs.paragraphs_type.organization_contact_logo
+  module:
+    - image
+id: paragraph.organization_contact_logo.default
+targetEntityType: paragraph
+bundle: organization_contact_logo
+mode: default
+content:
+  field_org_contact_info:
+    weight: 0
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete_tags
+    region: content
+  field_org_logo:
+    weight: 1
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+hidden:
+  created: true
+  status: true
