@@ -200,7 +200,30 @@ class MapController extends ControllerBase {
     ];
 
     // Determines which field names to use from the map.
-    $fields = Helper::getMappedFields($node, $map);
+    $fields = [];
+    if ($node->getType() == 'org_page' && !$node->field_organization_sections->isEmpty()) {
+      $field_organization_sections = $node->get('field_organization_sections')->getValue();
+      foreach ($field_organization_sections as $section) {
+        if (!$section->field_section_long_form_content->isEmpty()) {
+          $field_section_long_form_content = $section->get('field_section_long_form_content')->getValue();
+          foreach($field_section_long_form_content as $item) {
+            $properties = [
+              'pid' => $item['target_id'],
+              'vid' => $item['target_revision_id'],
+            ];
+            $paragraph = $this->entityTypeManager->getStorage('paragraph')
+              ->loadByProperties($properties);
+            if ($paragraph->bundle() == 'org_locations') {
+              $fields = Helper::getMappedFields($paragraph, $map);
+              break 2;
+            }
+          }
+        }
+      }
+    }
+    else {
+      $fields = Helper::getMappedFields($node, $map);
+    }
 
     if (array_key_exists('mappedLocations', $fields) && Helper::isFieldPopulated($node, $fields['mappedLocations'])) {
       foreach ($node->{$fields['mappedLocations']} as $entity) {
