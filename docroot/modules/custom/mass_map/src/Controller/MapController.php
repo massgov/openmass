@@ -209,7 +209,7 @@ class MapController extends ControllerBase {
           foreach($field_section_long_form_content as $item) {
             $properties = [
               'pid' => $item['target_id'],
-              'vid' => $item['target_revision_id'],
+              'revision_id' => $item['target_revision_id'],
             ];
             $paragraph = $this->entityTypeManager->getStorage('paragraph')
               ->loadByProperties($properties);
