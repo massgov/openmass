@@ -1,0 +1,44 @@
+uuid: 8ae5ec13-7abd-47f5-9efe-3139b708917b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.link_group_accordion.field_group_expanded
+    - field.field.paragraph.link_group_accordion.field_links_documents
+    - field.field.paragraph.link_group_accordion.field_section_title
+    - paragraphs.paragraphs_type.link_group_accordion
+  module:
+    - entity_reference_revisions
+id: paragraph.link_group_accordion.default
+targetEntityType: paragraph
+bundle: link_group_accordion
+mode: default
+content:
+  field_group_expanded:
+    weight: 3
+    label: hidden
+    settings:
+      format: true-false
+      format_custom_true: ''
+      format_custom_false: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_links_documents:
+    type: entity_reference_revisions_entity_view
+    weight: 2
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_section_title:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }
