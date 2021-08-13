@@ -1,0 +1,65 @@
+uuid: b6ff9a1d-dd08-4b2e-9bb9-2a1ef2b1944c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.link_group_accordion.field_group_expanded
+    - field.field.paragraph.link_group_accordion.field_links_documents
+    - field.field.paragraph.link_group_accordion.field_section_title
+    - paragraphs.paragraphs_type.link_group_accordion
+  module:
+    - maxlength
+    - paragraphs
+id: paragraph.link_group_accordion.default
+targetEntityType: paragraph
+bundle: link_group_accordion
+mode: default
+content:
+  field_description:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_group_expanded:
+    weight: 1
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_links_documents:
+    type: entity_reference_paragraphs
+    weight: 2
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: button
+      form_display_mode: limit_fields
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_section_title:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: 75
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce_attribute: true
+    type: string_textfield
+    region: content
+  paragraphs_type_help__default:
+    weight: -100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  status: true
+  uid: true
