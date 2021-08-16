@@ -222,7 +222,7 @@ class MapController extends ControllerBase {
           // Get the content field value.
           $field_section_long_form_content = $section_paragraph->get('field_section_long_form_content')->getValue();
           // Loop through the content paragraphs.
-          foreach($field_section_long_form_content as $content_item) {
+          foreach ($field_section_long_form_content as $content_item) {
             // Set properties to use for loading the content paragraph.
             $content_properties = [
               'id' => $content_item['target_id'],
