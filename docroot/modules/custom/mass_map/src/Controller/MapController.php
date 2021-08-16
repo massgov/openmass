@@ -200,7 +200,50 @@ class MapController extends ControllerBase {
     ];
 
     // Determines which field names to use from the map.
-    $fields = Helper::getMappedFields($node, $map);
+    $fields = [];
+    // Org page locations moved to a nested paragraph.
+    if ($node->getType() == 'org_page' && !$node->field_organization_sections->isEmpty()) {
+      // Get the entity type manager service.
+      $this->entityTypeManager();
+      // Get the sections field value.
+      $field_organization_sections = $node->get('field_organization_sections')->getValue();
+      // Loop through the organization sections.
+      foreach ($field_organization_sections as $section_item) {
+        // Set properties to use for loading the section paragraph.
+        $section_properties = [
+          'id' => $section_item['target_id'],
+          'revision_id' => $section_item['target_revision_id'],
+        ];
+        // Load the section paragraph.
+        $section_paragraph = current($this->entityTypeManager->getStorage('paragraph')
+          ->loadByProperties($section_properties));
+        // If the content field is not empty, proceed.
+        if (!$section_paragraph->field_section_long_form_content->isEmpty()) {
+          // Get the content field value.
+          $field_section_long_form_content = $section_paragraph->get('field_section_long_form_content')->getValue();
+          // Loop through the content paragraphs.
+          foreach ($field_section_long_form_content as $content_item) {
+            // Set properties to use for loading the content paragraph.
+            $content_properties = [
+              'id' => $content_item['target_id'],
+              'revision_id' => $content_item['target_revision_id'],
+            ];
+            // Load the content paragraph.
+            $content_paragraph = current($this->entityTypeManager->getStorage('paragraph')
+              ->loadByProperties($content_properties));
+            // If the content paragraph is an org_locations paragraph, get data
+            // from that entity instead of the node.
+            if ($content_paragraph->bundle() == 'org_locations') {
+              $fields = Helper::getMappedFields($content_paragraph, $map);
+              break 2;
+            }
+          }
+        }
+      }
+    }
+    else {
+      $fields = Helper::getMappedFields($node, $map);
+    }
 
     if (array_key_exists('mappedLocations', $fields) && Helper::isFieldPopulated($node, $fields['mappedLocations'])) {
       foreach ($node->{$fields['mappedLocations']} as $entity) {

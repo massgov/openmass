@@ -272,10 +272,7 @@ function _mass_content_org_page_migration_events(&$node) {
  */
 function _mass_content_org_page_migration_locations(&$node) {
   // Migrate data if the field has a value.
-  if (!$node->field_location_button_short_desc->isEmpty()
-    || !$node->field_location_button_label->isEmpty()
-    || !$node->field_org_ref_locations->isEmpty()
-    || !$node->field_related_organization_type->isEmpty()) {
+  if (!$node->field_org_ref_locations->isEmpty()) {
     $field_location_button_short_desc = $node->get('field_location_button_short_desc')->getValue();
     $field_location_button_label = $node->get('field_location_button_label')->getValue();
     $field_org_ref_locations = $node->get('field_org_ref_locations')->getValue();
@@ -307,7 +304,7 @@ function _mass_content_org_page_migration_locations(&$node) {
     ]);
     // Set the field values.
     $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
-    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Recent news & announcements');
+    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Locations');
     // Save the new paragraph.
     $new_org_section_long_form_paragraph->save();
     // Add the new section to the org sections field.
