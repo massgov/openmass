@@ -1,7 +1,7 @@
 {#
 /**
  * @file
- * Theme override for the social links field.
+ * Theme implementation for a service ref actions 2 field.
  *
  * To override output, copy the "field.html.twig" from the templates directory
  * to your theme's directory and customize it, just like customizing other
@@ -36,24 +36,11 @@
  * @see template_preprocess_field()
  */
 #}
-{% embed "@molecules/icon-links.twig" with {
-  "iconLinks": {
-  }
-} %}
-  {% block iconLinkItems %}
-    {% for key,item in items %}
-      <li class="ma__icon-links__item">
-        {% include "@molecules/icon-link-item.twig" with {
-          "item": {
-            "icon": item.icon,
-            "link": {
-              "href": item.content['#url'],
-              "text": item.content['#title'],
-              "info": "",
-            }
-          }
-        } %}
-      </li>
-    {% endfor %}
-  {% endblock %}
-{% endembed %}
+{% for item in items %}
+  {% include "@molecules/callout-link.twig" with {
+    "calloutLink": {
+      "text": item.content['#title'],
+      "href": item.content['#url']
+    }
+  } %}
+{% endfor %}

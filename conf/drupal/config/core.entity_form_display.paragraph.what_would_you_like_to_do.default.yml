@@ -1,0 +1,82 @@
+uuid: 3ae201ba-f8e4-4947-820f-50b4b2cf25c8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.what_would_you_like_to_do.field_wwyltd_heading
+    - field.field.paragraph.what_would_you_like_to_do.field_wwyltd_more_services
+    - field.field.paragraph.what_would_you_like_to_do.field_wwyltd_top_s_links
+    - paragraphs.paragraphs_type.what_would_you_like_to_do
+  module:
+    - field_group
+    - link
+    - paragraphs
+third_party_settings:
+  field_group:
+    group_featur:
+      children:
+        - field_wwyltd_top_s_heading
+        - field_wwyltd_top_s_links
+      parent_name: ''
+      weight: 1
+      format_type: details
+      region: content
+      format_settings:
+        formatter: closed
+        required_fields: true
+        id: ''
+        classes: ''
+        effect: none
+        open: false
+      label: 'Featured Services'
+    group_more_services:
+      children:
+        - field_wwyltd_more_s_heading
+        - field_wwyltd_more_services
+      parent_name: ''
+      weight: 2
+      format_type: details
+      region: content
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        open: false
+        required_fields: true
+      label: 'More Services'
+id: paragraph.what_would_you_like_to_do.default
+targetEntityType: paragraph
+bundle: what_would_you_like_to_do
+mode: default
+content:
+  field_wwyltd_heading:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_wwyltd_more_services:
+    type: entity_reference_paragraphs
+    weight: 5
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: button
+      form_display_mode: limit_fields
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_wwyltd_top_s_links:
+    weight: 3
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+hidden:
+  created: true
+  status: true
