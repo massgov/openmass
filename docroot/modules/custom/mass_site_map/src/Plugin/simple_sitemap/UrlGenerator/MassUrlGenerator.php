@@ -4,6 +4,7 @@ namespace Drupal\mass_site_map\Plugin\simple_sitemap\UrlGenerator;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
+use Drupal\media\MediaInterface;
 use Drupal\simple_sitemap\Plugin\simple_sitemap\UrlGenerator\EntityUrlGenerator;
 
 /**
@@ -98,7 +99,7 @@ class MassUrlGenerator extends EntityUrlGenerator {
         // We must pass URL object so that module can apply baseurl config.
         $file_url = $file->createFileUrl();
         if ($file_url) {
-          $media_url = $entity->url();
+          $media_url = $entity->toUrl()->toString();
           $media_url_object = Url::fromUserInput($media_url . '/download', ['absolute' => TRUE]);
           $data = [
             'url' => $media_url_object,
