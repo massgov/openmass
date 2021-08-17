@@ -268,7 +268,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           $alert['isExpanded'] = FALSE;
           $messages = [];
 
-          foreach($items as $item) {
+          foreach ($items as $item) {
             $message_timestamp = $item->get('field_emergency_alert_timestamp')->getString();
 
             $link_type = $item->get('field_emergency_alert_link_type')->getString();
@@ -288,7 +288,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
             $content = $item->get('field_emergency_alert_message')->getString();;
 
             if ($url) {
-              $messages[] = [ 
+              $messages[] = [
                 'decorativeLink' => [
                   'href' => $url,
                   'text' => $content,
@@ -312,7 +312,6 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
               ];
             }
           }
-
 
           if (count($messages) == 1) {
             $alert = array_merge($alert, $messages[0]);
