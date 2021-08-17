@@ -1,5 +1,15 @@
 
 
+## [0.294.0] - August 17, 2021
+
+### Added
+  - DP-11358: Show CircleCI deployments in any associated Jira issue.
+  
+### Changed
+  - DP-22643: Add browser support banner to cover IE10.
+  
+
+
 ## [0.293.0] - August 10, 2021
 
 ### Changed
