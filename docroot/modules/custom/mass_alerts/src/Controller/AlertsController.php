@@ -315,7 +315,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
           if (count($messages) == 1) {
             $alert = array_merge($alert, $messages[0]);
-            if (!$timestamp && $message_timestamp)  {
+            if (!$timestamp && $message_timestamp) {
               $timestamp = $message_timestamp;
             }
           }
