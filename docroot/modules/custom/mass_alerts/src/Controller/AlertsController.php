@@ -243,9 +243,10 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           'title' => $label,
         ];
 
+        $timestamp = $node->get('field_alert_node_timestamp')->getString();
+
         if ($hide_message == '1') {
           $alert_title = $node->get('field_alert_title_link')->getString();
-          $timestamp = $node->get('field_alert_node_timestamp')->getString();
 
           if ($alert_title == 'link') {
             $uri = $node->get('field_alert_title_link_target')->getString();
@@ -257,53 +258,70 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         else {
 
           $items = $node->get('field_alert')->referencedEntities();
-          $item = reset($items);
 
-          // If by some reaonse thats not have  content ignore this alert.
-          if (!$item) {
+          // If by some reason there is not content, ignore this alert.
+          if (empty($items)) {
             continue;
           }
 
-          $timestamp = $item->get('field_emergency_alert_timestamp')->getString();
-
           $alert['accordion'] = TRUE;
           $alert['isExpanded'] = FALSE;
+          $messages = [];
 
-          $link_type = $item->get('field_emergency_alert_link_type')->getString();
-          $url = FALSE;
+          foreach($items as $item) {
+            $message_timestamp = $item->get('field_emergency_alert_timestamp')->getString();
 
-          if ($link_type == '1') {
-            $uri = $item->get('field_emergency_alert_link')->getString();
-            if ($uri) {
-              $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
+            $link_type = $item->get('field_emergency_alert_link_type')->getString();
+            $url = FALSE;
+
+            if ($link_type == '1') {
+              $uri = $item->get('field_emergency_alert_link')->getString();
+              if ($uri) {
+                $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
+              }
+            }
+            elseif ($link_type == '0') {
+              $url = $node->toUrl()->toString(TRUE)->getGeneratedUrl();
+              $url .= '#' . $item->id();
+            }
+
+            $content = $item->get('field_emergency_alert_message')->getString();;
+
+            if ($url) {
+              $messages[] = [ 
+                'decorativeLink' => [
+                  'href' => $url,
+                  'text' => $content,
+                  'info' => $this->t('Learn more @label', ['@label' => $label]),
+                  'property' => '',
+                ]
+              ];
+            }
+            else {
+              $messages[] = [
+                'richText' => [
+                  'rteElements' => [
+                    [
+                      'path' => '@atoms/11-text/paragraph.twig',
+                      'data' => [
+                        'paragraph' => ['text' => $content],
+                      ],
+                    ],
+                  ],
+                ]
+              ];
             }
           }
-          elseif ($link_type == '0') {
-            $url = $node->toUrl()->toString(TRUE)->getGeneratedUrl();
-            $url .= '#' . $item->id();
-          }
 
-          $content = $item->get('field_emergency_alert_message')->getString();;
 
-          if ($url) {
-            $alert['decorativeLink'] = [
-              'href' => $url,
-              'text' => $content,
-              'info' => $this->t('Learn more @label', ['@label' => $label]),
-              'property' => '',
-            ];
+          if (count($messages) == 1) {
+            $alert = array_merge($alert, $messages[0]);
+            if (!$timestamp && $message_timestamp)  {
+              $timestamp = $message_timestamp;
+            }
           }
           else {
-            $alert['richText'] = [
-              'rteElements' => [
-                [
-                  'path' => '@atoms/11-text/paragraph.twig',
-                  'data' => [
-                    'paragraph' => ['text' => $content],
-                  ],
-                ],
-              ],
-            ];
+            $alert['content'] = $messages;
           }
         }
 
