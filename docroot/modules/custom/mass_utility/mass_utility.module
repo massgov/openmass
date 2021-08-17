@@ -16,6 +16,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\file\Entity\File;
+use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Url;
@@ -352,7 +353,7 @@ function mass_utility_form_revision_overview_form_alter(&$form, FormStateInterfa
     $vid = $row['select_column_one']['#return_value'];
 
     if ($revision = $nodeStorage->loadRevision($vid)) {
-      if ($revisionAuthor = $revision->getRevisionAuthor()) {
+      if ($revisionAuthor = $revision->get('revision_uid')->entity) {
         $title = $revision->getTitle();
         $nid = $revision->id();
         $title_nid = "Outreach about Mass.gov revision \"$title\" ($nid)";
