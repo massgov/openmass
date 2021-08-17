@@ -1,0 +1,35 @@
+uuid: be88fc8c-9e7b-4c60-9501-ddb72d685050
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.organization_contact_logo.field_org_contact_info
+    - field.field.paragraph.organization_contact_logo.field_org_logo
+    - image.style.organization_logo
+    - paragraphs.paragraphs_type.organization_contact_logo
+  module:
+    - image
+id: paragraph.organization_contact_logo.default
+targetEntityType: paragraph
+bundle: organization_contact_logo
+mode: default
+content:
+  field_org_contact_info:
+    weight: 0
+    label: hidden
+    settings:
+      view_mode: contact_us
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_org_logo:
+    weight: 1
+    label: hidden
+    settings:
+      image_style: organization_logo
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+hidden: {  }
