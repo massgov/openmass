@@ -73,7 +73,6 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
-    - text
 third_party_settings:
   field_group:
     group_node_edit_form:
@@ -83,7 +82,6 @@ third_party_settings:
         - group_content
         - group_about_details
         - group_actions
-        - group_map
         - group_news
         - group_feedback
         - group_other
@@ -160,7 +158,6 @@ third_party_settings:
         - field_sub_title
         - field_hide_short_description
         - field_sub_brand
-        - body
         - field_org_page_thumbnail
         - field_social_links
         - field_intended_audience
@@ -277,17 +274,6 @@ targetEntityType: node
 bundle: org_page
 mode: default
 content:
-  body:
-    type: text_textarea_with_summary
-    weight: 13
-    settings:
-      rows: 9
-      placeholder: ''
-      summary_rows: 3
-      show_summary: false
-    third_party_settings:
-      conditional_fields: {  }
-    region: content
   field_application_login_links:
     weight: 124
     settings:
@@ -879,6 +865,7 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  body: true
   created: true
   field_about: true
   field_action_set__bg_narrow: true
