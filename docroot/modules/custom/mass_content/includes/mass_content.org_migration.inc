@@ -82,7 +82,41 @@ function _mass_content_org_page_migration_featured_items_mosaic(&$node) {
  * Migrate data for the contact and org logo section.
  */
 function _mass_content_org_page_migration_contact_logo(&$node) {
+  // Migrate data if the field has a value.
+  if (!$node->field_sub_brand->isEmpty()
+    || !$node->field_ref_contact_info_1->isEmpty()) {
+    $field__sub_brand = $node->get('field_sub_brand')->getValue();
+    $field_ref_contact_info_1 = $node->get('field_ref_contact_info_1')->getValue();
+    // Remove the old field values.
+    $node->set('field_sub_brand', []);
+    $node->set('field_ref_contact_info_1', []);
 
+    // Create a new Organization News paragraph.
+    $new_organization_contact_logo_paragraph = Paragraph::create([
+      'type' => 'organization_contact_logo',
+    ]);
+    // Set the field values.
+    $new_organization_contact_logo_paragraph->set('field_org_logo', $field__sub_brand);
+    $new_organization_contact_logo_paragraph->set('field_org_contact_info', $field_ref_contact_info_1);
+    // Save the new paragraph.
+    $new_organization_contact_logo_paragraph->save();
+    // Create a value array for the new section paragraph.
+    $field_section_long_form_content = [
+      'target_id' => $new_organization_contact_logo_paragraph->id(),
+      'target_revision_id' => $new_organization_contact_logo_paragraph->getRevisionId(),
+    ];
+    // Create a new Organization Section paragraph.
+    $new_org_section_long_form_paragraph = Paragraph::create([
+      'type' => 'org_section_long_form',
+    ]);
+    // Set the field values.
+    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
+    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Contact Us');
+    // Save the new paragraph.
+    $new_org_section_long_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
+  }
 }
 
 /**
