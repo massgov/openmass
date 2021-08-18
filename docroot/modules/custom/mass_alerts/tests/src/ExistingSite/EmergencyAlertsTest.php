@@ -89,15 +89,15 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $session = $this->getSession();
     $session->visit('/alerts/sitewide');
     $page = $session->getPage();
-    $this->assertContains($alert_message_text, $page->getText());
+    $this->assertStringContainsString($alert_message_text, $page->getText());
 
     $headers = $session->getResponseHeaders();
-    $this->assertContains('max-age=60', $headers['Cache-Control'][0]);
-    $this->assertNotContains('stale-if-error', $headers['Cache-Control'][0]);
-    $this->assertNotContains('stale-while-revalidate', $headers['Cache-Control'][0]);
+    $this->assertStringContainsString('max-age=60', $headers['Cache-Control'][0]);
+    $this->assertStringNotContainsString('stale-if-error', $headers['Cache-Control'][0]);
+    $this->assertStringNotContainsString('stale-while-revalidate', $headers['Cache-Control'][0]);
 
-    $this->assertContains(MASS_ALERTS_TAG_SITEWIDE . ':list', $headers['X-Drupal-Cache-Tags'][0]);
-    $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertStringContainsString(MASS_ALERTS_TAG_SITEWIDE . ':list', $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertStringContainsString('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
   }
 
   /**
@@ -131,17 +131,17 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $session = $this->getSession();
     $session->visit('/alerts/page/' . $org_node->id());
     $page = $session->getPage();
-    $this->assertContains($alert_message_text, $page->getText());
+    $this->assertStringContainsString($alert_message_text, $page->getText());
     $headers = $session->getResponseHeaders();
-    $this->assertContains(MASS_ALERTS_TAG_PAGE . ':' . $org_node->id(), $headers['X-Drupal-Cache-Tags'][0]);
-    $this->assertContains('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
-    $this->assertContains('MISS', $headers[DynamicPageCacheSubscriber::HEADER]);
+    $this->assertStringContainsString(MASS_ALERTS_TAG_PAGE . ':' . $org_node->id(), $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertStringContainsString('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
+    $this->assertStringContainsString('MISS', $headers[DynamicPageCacheSubscriber::HEADER][0]);
 
     $this->drupalGet('/alerts/page/' . $org_node->id());
     $headers = $session->getResponseHeaders();
-    $this->assertContains('HIT', $headers[DynamicPageCacheSubscriber::HEADER]);
+    $this->assertStringContainsString('HIT', $headers[DynamicPageCacheSubscriber::HEADER][0]);
     // @todo Add these to sitewide alert as well since we don't want to lose these in a backend outage.
-    $this->assertContains('stale-if-error=604800, stale-while-revalidate=604800', $headers['Cache-Control'][0]);
+    $this->assertStringContainsString('stale-if-error=604800, stale-while-revalidate=604800', $headers['Cache-Control'][0]);
 
   }
 
@@ -172,7 +172,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page->fillField('field_alert_display', 'specific_target_pages');
     $page->selectFieldOption('moderation_state[0][state]', 'published');
     $page->findButton('Save')->press();
-    $this->assertContains('must show on at least one page', $page->getText());
+    $this->assertStringContainsString('must show on at least one page', $page->getText());
   }
 
   /**
@@ -190,7 +190,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page->fillField('field_alert_display', 'by_organization');
     $page->selectFieldOption('moderation_state[0][state]', 'published');
     $page->findButton('Save')->press();
-    $this->assertContains('must show on at least one organization', $page->getText());
+    $this->assertStringContainsString('must show on at least one organization', $page->getText());
   }
 
   /**
@@ -218,7 +218,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page->fillField('field_alert_display', 'site_wide');
     $page->selectFieldOption('moderation_state[0][state]', 'published');
     $page->findButton('Save')->press();
-    $this->assertContains('This sitewide alert cannot be published because another sitewide alert is currently active:', $page->getText());
+    $this->assertStringContainsString('This sitewide alert cannot be published because another sitewide alert is currently active:', $page->getText());
   }
 
   /**
@@ -229,7 +229,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $session = $this->getSession();
     $session->visit('/node/add/alert');
     $page = $session->getPage();
-    $this->assertNotContains('Sitewide on all Mass.gov pages', $page->getText());
+    $this->assertStringNotContainsString('Sitewide on all Mass.gov pages', $page->getText());
     $this->assertSession()->fieldNotExists('edit-field-alert-display-site-wide');
   }
 

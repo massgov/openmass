@@ -12,7 +12,7 @@ class DirectAuthenticationManager extends DrupalAuthenticationManager {
   /**
    * @var DrupalDriverManager
    */
-  private $driverManager;
+  protected $driverManager;
 
   public function setDriver(DrupalDriverManager $driverManager) {
     $this->driverManager = $driverManager;

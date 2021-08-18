@@ -19,7 +19,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id="mass_flagging",
  *   admin_label="Content Flags",
  *   category = @Translation("Flags"),
- *   context= {
+ *   context_definitions = {
  *     "node" = @ContextDefinition("entity:node", label = @Translation("Node"))
  *   }
  * )

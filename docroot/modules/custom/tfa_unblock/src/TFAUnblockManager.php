@@ -112,7 +112,7 @@ class TFAUnblockManager {
 
     foreach ($records as $uid => $record) {
       $settings = $record->serialized ? unserialize($record->value) : $record->value;
-      $user_name = $users[$uid]->getUsername();
+      $user_name = $users[$uid]->getAccountName();
       $entries[$uid] = [
         'uid' => $uid,
         'user_name' => $user_name,

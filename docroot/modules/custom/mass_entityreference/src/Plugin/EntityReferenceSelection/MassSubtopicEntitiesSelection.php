@@ -21,7 +21,8 @@ class MassSubtopicEntitiesSelection extends DefaultSelection {
    * {@inheritdoc}
    */
   protected function buildEntityQuery($match = NULL, $match_operator = 'CONTAINS') {
-    if ($nid = $_COOKIE['Drupal_visitor_subtopic_nid']) {
+    $nid = \Drupal::requestStack()->getCurrentRequest()->cookies->get('Drupal_visitor_subtopic_nid');
+    if ($nid) {
       $query = parent::buildEntityQuery($match, $match_operator);
       $query->condition('field_action_parent.target_id', $nid);
       return $query;

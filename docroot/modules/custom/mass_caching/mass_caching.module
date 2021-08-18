@@ -8,6 +8,7 @@
 use Drupal\file\FileInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\media\MediaInterface;
+use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
 
 /**
@@ -75,7 +76,7 @@ function mass_caching_file_move(FileInterface $file, FileInterface $source) {
 }
 
 /**
- * Implements hook_path_insert().
+ * Implements hook_path_alias_insert().
  *
  * Purges new aliases as they are created.  Without this, it's possible
  * to create content that lives at a URL that's already cached with a 404.
@@ -84,20 +85,20 @@ function mass_caching_file_move(FileInterface $file, FileInterface $source) {
  * in our purging where the internal path (/node/123) could be stuck with a
  * 404, but it's extremely unlikely that this will happen or matter if it does.
  */
-function mass_caching_path_insert(array $path) {
-  \Drupal::service('manual_purger')->purgePath($path['alias']);
+function mass_caching_path_alias_insert(PathAliasInterface $path) {
+  \Drupal::service('manual_purger')->purgePath($path->getAlias());
 }
 
 /**
- * Implements hook_path_update().
+ * Implements hook_path_alias_update().
  *
  * Purges aliases when they change.
  *
- * @see \mass_caching_path_insert()
+ * @see \mass_caching_path_alias_insert()
  */
-function mass_caching_path_update(array $path) {
-  if ($path['alias'] !== $path['original']['alias']) {
-    \Drupal::service('manual_purger')->purgePath($path['alias']);
+function mass_caching_path_alias_update(PathAliasInterface $path) {
+  if ($path->getAlias() !== $path->original->getAlias()) {
+    \Drupal::service('manual_purger')->purgePath($path->getAlias());
   }
 }
 

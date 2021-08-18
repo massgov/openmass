@@ -115,7 +115,7 @@ function mass_map_preprocess_node(&$variables) {
   if ($node->bundle() === 'contact_information' && !empty($variables['elements']['#view_mode']) && $variables['elements']['#view_mode'] === 'map') {
     $address = $node->field_ref_address->entity;
     $massMap = \Drupal::service('mass_map');
-    $variables['static_map_link'] = $massMap->getMapLinkUrl($address->field_address_address);;
+    $variables['static_map_link'] = $massMap->getMapLinkUrl($address->field_address_address);
     $variables['lat'] = $address->field_geofield->lat;
     $variables['lon'] = $address->field_geofield->lon;
     $street_address = Helper::formatAddress($address->field_address_address);

@@ -46,7 +46,7 @@ class MediaDeleteTest extends ExistingSiteBase {
       'status' => 1,
     ]);
 
-    $this->visit($file->url());
+    $this->visit($file->createFileUrl());
     $this->assertEquals($this->getSession()->getStatusCode(), 200);
 
     // Now replace that file.
@@ -65,7 +65,7 @@ class MediaDeleteTest extends ExistingSiteBase {
     $media->field_upload_file->target_id = $file2->id();
     $media->save();
     // The original file is now unavailable.
-    $this->visit($file->url());
+    $this->visit($file->createFileUrl());
     $this->assertEquals($this->getSession()->getStatusCode(), 404);
   }
 
