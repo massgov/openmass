@@ -47,7 +47,7 @@
     {% endblock %}
   {% endembed %}
   {{ content.referencing_binders }}
-  {% set optionalContents = fales %}
+  {% set optionalContents = false %}
   {% if node.field_curatedlist_overview.value is not empty %}
     {% set optionalContents = [{
       "path": "@organisms/by-author/rich-text.twig",
@@ -65,14 +65,18 @@
       }
     }] %}
   {% endif %}
-  {% include "@organisms/by-template/page-header.twig" with {
-    "pageHeader": {
+
+  {% set pageHeader = {
       "title": label,
       "subTitle": node.field_curatedlist_lede.value,
       "divider": false,
       "optionalContents": optionalContents
-    }
-  }%}
+    } 
+  %}
+  {% include "@organisms/by-template/page-header.twig" %}
+  {% include "@organisms/by-template/page-header-addons.twig" %}
+
+
   {% include "@organisms/by-template/sticky-toc.twig" with {
     "stickyTOC": {
       "title": "Table of Contents"|t,
