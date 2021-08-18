@@ -161,7 +161,7 @@ function _mass_content_org_page_migration_who_we_serve(&$node) {
       $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'About Us');
     }
     else {
-      $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Wo we serve');
+      $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Who we serve');
     }
     // Save the new paragraph.
     $new_org_section_long_form_paragraph->save();
