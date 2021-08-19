@@ -234,7 +234,7 @@ function mass_alerts_invalidate_tags(NodeInterface $node) {
     // We must clear based on new and old values for org, target pages, etc.
     // It is harmless to invalidate tags multiple times as they get uniqued later.
     $to_check[] = $node;
-    if ((!$node->isNew())) {
+    if ((!empty($node->original))) {
       $to_check[] = $node->original;
     }
     foreach ($to_check as $node) {
