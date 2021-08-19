@@ -235,7 +235,7 @@ function mass_alerts_invalidate_tags(NodeInterface $node) {
     // It is harmless to invalidate tags multiple times as they get uniqued later.
     $to_check[] = $node;
     if ((!$node->isNew())) {
-      $to_check[]  = $node->original;
+      $to_check[] = $node->original;
     }
     foreach ($to_check as $node) {
       $scope = mass_alerts_get_scope($node);
