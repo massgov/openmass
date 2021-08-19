@@ -144,7 +144,8 @@ function _mass_content_org_page_migration_organization_grid(&$node) {
 
 /**
  * Migrate data for the services offered (what would you like to do) section.
- * The organization "more services" field will be manually migrated.
+ *
+ * Note: The organization "more services" field will be manually migrated.
  */
 function _mass_content_org_page_migration_what_would_you_like_to_do(&$node) {
   // Migrate data if the field has a value.
