@@ -283,7 +283,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
             $url .= '#' . $item->id();
           }
 
-          $content = $item->get('field_emergency_alert_message')->getString();;
+          $content = $item->get('field_emergency_alert_message')->getString();
 
           if ($url) {
             $alert['decorativeLink'] = [

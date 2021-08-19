@@ -37,7 +37,7 @@ class UpdatesBlockForm extends ConfigFormBase {
     $alert_text = \Drupal::state()->get('mass_admin_pages.updates_block_settings.alert_text');
 
     $form['text_field'] = [
-      '#type' => 'textarea',
+      '#type' => 'text_format',
       '#title' => $this->t('Update content'),
       '#description' => $this->t('Add content to provide important updates for content authors. Use HTML markup to add links or basic styling.  For simple text, be sure to add a P tag around it so that it takes default styling.'),
       '#default_value' => isset($text_field) ? $text_field : '',
@@ -65,7 +65,7 @@ class UpdatesBlockForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    \Drupal::state()->set('mass_admin_pages.updates_block_settings.text_field', $form_state->getValue('text_field'));
+    \Drupal::state()->set('mass_admin_pages.updates_block_settings.text_field', $form_state->getValue('text_field')['value']);
     \Drupal::state()->set('mass_admin_pages.updates_block_settings.alert_text', $form_state->getValue('alert_text'));
     parent::submitForm($form, $form_state);
 

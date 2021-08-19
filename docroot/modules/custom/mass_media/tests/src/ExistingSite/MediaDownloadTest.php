@@ -53,7 +53,7 @@ class MediaDownloadTest extends ExistingSiteBase {
     // Ensure that the redirect is properly formulated and that it uses the
     // url.site cache context.
     $this->assertEquals(file_create_url($file->getFileUri()), $location, 'Download URL is redirected to the file.');
-    $this->assertContains('url.site', $this->getSession()->getResponseHeader('X-Drupal-Cache-Contexts'), 'url.site cache context is added to the response.');
+    $this->assertStringContainsString('url.site', $this->getSession()->getResponseHeader('X-Drupal-Cache-Contexts'), 'url.site cache context is added to the response.');
   }
 
 }

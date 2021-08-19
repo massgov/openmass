@@ -606,7 +606,7 @@ class MassContentContext extends RawDrupalContext implements SnippetAcceptingCon
   }
 
   protected function getTermsByTitle($vid, $name) {
-    return \Drupal::entityManager()->getStorage('taxonomy_term')
+    return \Drupal::entityTypeManager()->getStorage('taxonomy_term')
       ->loadByProperties(['vid' => $vid, 'name' => $name]);
   }
 

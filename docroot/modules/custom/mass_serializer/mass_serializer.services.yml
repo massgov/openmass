@@ -1,7 +1,7 @@
 services:
   mass_serializer.media_entity.document:
     class: Drupal\mass_serializer\Normalizer\MediaEntityDocumentNormalizer
-    arguments: ['@entity.manager']
+    arguments: ['@entity_type.manager', '@entity_type.repository', '@entity_field.manager']
     tags:
       - { name: normalizer, priority: 8 }
 
@@ -12,7 +12,7 @@ services:
 
   mass_serializer.taxonomy_term.user_organization:
     class: Drupal\mass_serializer\Normalizer\TaxonomyTermUserOrganizationNormalizer
-    arguments: ['@entity.manager']
+    arguments: ['@entity_type.manager', '@entity_type.repository', '@entity_field.manager']
     tags:
       - { name: normalizer, priority: 8 }
 

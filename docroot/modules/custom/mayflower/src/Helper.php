@@ -2,8 +2,10 @@
 
 namespace Drupal\mayflower;
 
+use Drupal\Core\Image\Image;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\mayflower\Prepare\Atoms;
 use Drupal\mayflower\Prepare\Molecules;
@@ -98,6 +100,7 @@ class Helper {
     $fields = $entity->get($field);
 
     if ($fields) {
+      /** @var File[] $images */
       $images = $fields->referencedEntities();
     }
 
@@ -108,7 +111,7 @@ class Helper {
         $url = $style->buildUrl($image->getFileUri());
       }
       else {
-        $url = $image->url();
+        $url = $image->createFileUrl();
       }
     }
 
@@ -509,7 +512,7 @@ class Helper {
    */
   public static function getCurrentPathAlias() {
     $path = \Drupal::service('path.current')->getPath();
-    return \Drupal::service('path.alias_manager')->getAliasByPath($path);
+    return \Drupal::service('path_alias.manager')->getAliasByPath($path);
   }
 
   /**
@@ -1407,7 +1410,7 @@ class Helper {
       $text = $options['text'];
     }
 
-    $href = \Drupal::service('path.alias_manager')->getAliasByPath('/node/' . $entity->id()) . '/events';
+    $href = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $entity->id()) . '/events';
 
     return [
       'href' => $href,

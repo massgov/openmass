@@ -2002,7 +2002,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
   public function assertRoleHasPermission($role, TableNode $perms)
   {
     // Get the role storage object so we can query it for permissions.
-    $roleStorage = \Drupal::entityManager()->getStorage('user_role');
+    $roleStorage = \Drupal::entityTypeManager()->getStorage('user_role');
 
     // Convert the single role given to an array for the isPermissionInRoles() function.
     $rids = array($role);
@@ -2035,7 +2035,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
   public function assertRoleHasNoPermission($role, TableNode $perms)
   {
     // Get the role storage object so we can query it for permissions.
-    $roleStorage = \Drupal::getContainer()->get('entity.manager')->getStorage('user_role');
+    $roleStorage = Drupal::entityTypeManager()->getStorage('user_role');
 
     // Convert the single role given to an array for the isPermissionInRoles() function.
     $rids = array($role);

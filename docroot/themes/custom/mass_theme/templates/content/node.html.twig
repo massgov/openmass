@@ -73,10 +73,22 @@
 #}
 
 {# Set our twig block regions at the top so we can test their existence #}
-{% set _preContent = block('preContent')|trim %}
+{% if block('preContent') is defined %}
+  {% set _preContent = block('preContent')|trim %}
+{% endif %}
+
+
+{% if block('sidebar') is defined %}
 {% set _sidebar = block('sidebar')|trim %}
+{% endif %}
+
+{% if block('postContent') is defined %}
 {% set _postContent = block('postContent')|trim %}
+{% endif %}
+
+{% if block('schemaContent') is defined %}
 {% set _schemaContent = block('schemaContent')|trim %}
+{% endif %}
 
 {# Set top heading level for the page. #}
 {% set level = 1 %}

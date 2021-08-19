@@ -1812,7 +1812,7 @@ class Organisms {
         $return_array['emptyText'] = t('No upcoming events scheduled');
         $return_array['pastMore'] = [
           "text" => t('See past events'),
-          "href" => \Drupal::service('path.alias_manager')->getAliasByPath('/node/' . $entity->id()) . '/events/past',
+          "href" => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $entity->id()) . '/events/past',
           "chevron" => TRUE,
         ];
       }
