@@ -1,7 +1,7 @@
 default:
   autoload:
     # https://stackoverflow.com/a/26669623/265501
-    '': %paths.base%/features/bootstrap
+    '': "%paths.base%/features/bootstrap"
   suites:
     default:
       contexts:
@@ -23,6 +23,11 @@ default:
       filters:
         tags: "~@skipci"
   extensions:
+#   https://github.com/FriendsOfBehat/MinkDebugExtension
+    FriendsOfBehat\MinkDebugExtension:
+      directory: "/tmp"
+      screenshot: true
+      clean_start: false
     Imbo\BehatApiExtension:
       apiClient:
         base_uri: "http://mass.local"
@@ -31,7 +36,7 @@ default:
       selenium2:
         wd_host: "http://127.0.0.1:8643/wd/hub"
       base_url: http://mass.local
-      files_path: %paths.base%/features/fixtures
+      files_path: "%paths.base%/features/fixtures"
     Drupal\DrupalExtension:
       blackbox: ~
       api_driver: 'drupal'
@@ -83,3 +88,12 @@ default:
         sidebar: ".sidebar"
         sidebar_contactus: ".sidebar .ma__contact-us"
     MassGov\Behat\Extension: ~
+# A profile containing overrides for CI
+# https://docs.behat.org/en/latest/user_guide/configuration.html#overriding-default-params
+ci:
+  extensions:
+    FriendsOfBehat\MinkDebugExtension:
+      directory: "%paths.base%/output/behat"
+
+
+

@@ -8,6 +8,7 @@
 use Drupal\Core\Url;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Menu\MenuTreeParameters;
+use Drupal\mass_admin_toolbar\MassAdminToolbarRender;
 
 /**
  * Implements hook_preprocess_HOOK().
@@ -85,9 +86,7 @@ function mass_admin_toolbar_toolbar() {
     'tray' => [
       '#heading' => t('Editorial Dashboard'),
       'mass_admin_toolbar_toolbar' => [
-        '#pre_render' => [
-          'mass_admin_toolbar_toolbar_prerender_tray',
-        ],
+        '#pre_render' => [[MassAdminToolbarRender::class, 'massAdminToolbarToolbarPrerenderTray']],
       ],
       '#type' => 'container',
       '#attributes' => [

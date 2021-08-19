@@ -35,8 +35,8 @@ class RobotsMetatagTest extends ExistingSiteBase {
     $session->visit('/media/' . $media->id());
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Media entity is loadable');
     $content = $session->getPage()->find('xpath', '//meta[@name="robots"]')->getAttribute('content');
-    $this->assertContains('noindex', $content);
-    $this->assertContains('follow', $content);
+    $this->assertStringContainsString('noindex', $content);
+    $this->assertStringContainsString('follow', $content);
   }
 
   /**
@@ -66,29 +66,29 @@ class RobotsMetatagTest extends ExistingSiteBase {
     $session->visit('/node/' . $service_page->id() . '/need-to-know');
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Page loads');
     $content = $session->getPage()->find('xpath', '//meta[@name="robots"]')->getAttribute('content');
-    $this->assertContains('noindex', $content);
-    $this->assertContains('follow', $content);
+    $this->assertStringContainsString('noindex', $content);
+    $this->assertStringContainsString('follow', $content);
 
     // Check robots metatag on tasks page.
     $session->visit('/node/' . $service_page->id() . '/tasks');
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Page loads');
     $content = $session->getPage()->find('xpath', '//meta[@name="robots"]')->getAttribute('content');
-    $this->assertContains('noindex', $content);
-    $this->assertContains('follow', $content);
+    $this->assertStringContainsString('noindex', $content);
+    $this->assertStringContainsString('follow', $content);
 
     // Check robots metatag on related page.
     $session->visit('/node/' . $service_page->id() . '/related');
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Page loads');
     $content = $session->getPage()->find('xpath', '//meta[@name="robots"]')->getAttribute('content');
-    $this->assertContains('noindex', $content);
-    $this->assertContains('follow', $content);
+    $this->assertStringContainsString('noindex', $content);
+    $this->assertStringContainsString('follow', $content);
 
     // Check robots metatag on resources page.
     $session->visit('/node/' . $service_page->id() . '/resources');
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Page loads');
     $content = $session->getPage()->find('xpath', '//meta[@name="robots"]')->getAttribute('content');
-    $this->assertContains('noindex', $content);
-    $this->assertContains('follow', $content);
+    $this->assertStringContainsString('noindex', $content);
+    $this->assertStringContainsString('follow', $content);
 
     // Check the regular service node does NOT have a robots metatag.
     $session->visit('/node/' . $service_page->id());

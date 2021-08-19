@@ -196,7 +196,7 @@ function mass_scheduled_transitions_form_scheduled_transition_reschedule_form_al
     $max_time = (new DrupalDateTime("now +" . $duration))->format($html_date_format);
     $form['date']['#attributes']['max'] = $max_time;
   }
-  $form['date']['#attributes']['min'] = (new DrupalDateTime())->format($html_date_format);;
+  $form['date']['#attributes']['min'] = (new DrupalDateTime())->format($html_date_format);
 }
 
 /**

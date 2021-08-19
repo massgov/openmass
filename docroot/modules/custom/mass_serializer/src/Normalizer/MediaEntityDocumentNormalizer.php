@@ -328,11 +328,11 @@ class MediaEntityDocumentNormalizer extends ContentEntityNormalizer {
     if (!empty($attributes['field_upload_file']) && !empty($attributes['field_upload_file']['target_id'])) {
       $file = File::load($attributes['field_upload_file']['target_id']);
       if ($file) {
-        $url_parts = explode('.', $file->url());
+        $url_parts = explode('.', $file->createFileUrl());
         $attributes['distribution'][] = [
           '@type' => 'dcat:Distribution',
           'title' => $attributes['title'],
-          'downloadURL' => $file->url(),
+          'downloadURL' => $file->createFileUrl(),
           'format' => end($url_parts),
           'mediaType' => $file->getMimeType(),
         ];

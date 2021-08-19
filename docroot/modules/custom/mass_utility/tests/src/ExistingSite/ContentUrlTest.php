@@ -57,12 +57,12 @@ class ContentUrlTest extends ExistingSiteBase {
       $path_alias = \Drupal::service('path_alias.manager')->getAliasByPath($source, $langcode);
 
       if (!empty($path_pattern_substring)) {
-        $this->assertContains($path_pattern_substring, $path_alias);
+        $this->assertStringContainsString($path_pattern_substring, $path_alias);
       }
       else {
         $this->assertStringStartsWith("/qa-", $path_alias);
       }
-      $this->assertContains("---unpublished", $path_alias);
+      $this->assertStringContainsString("---unpublished", $path_alias);
     }
   }
 
@@ -117,14 +117,14 @@ class ContentUrlTest extends ExistingSiteBase {
 
       // For patterns like "/how-to/some-how-to-page-title".
       if (!empty($path_pattern_substring)) {
-        $this->assertContains($path_pattern_substring, $path_alias);
+        $this->assertStringContainsString($path_pattern_substring, $path_alias);
       }
       // For patterns like "/some-advisory-page-title" where path alias is
       // directly made of content title and does not depend on content type.
       else {
         $this->assertStringStartsWith("/qa-", $path_alias);
       }
-      $this->assertNotContains("---unpublished", $path_alias);
+      $this->assertStringNotContainsString("---unpublished", $path_alias);
     }
   }
 

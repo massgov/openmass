@@ -454,7 +454,7 @@ class MassUtilityCommands extends DrushCommands {
   /**
    * Create a Redirect content entity.
    *
-   * @param \stdClass $record
+   * @param object $record
    *   A stdClass with entity values.
    */
   protected function saveRedirect(\stdClass $record) {
