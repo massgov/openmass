@@ -364,6 +364,9 @@ function _mass_validation_form_node_service_page_form_validate(array &$form, For
   $template_value = isset($template[0]['value']) ? $template[0]['value'] : '';
   if ($template_value === 'custom') {
     $link_groups = $form_state->getvalue('field_link_group');
+    if (!empty($link_groups['dragdrop'])) {
+      $link_groups = $link_groups['dragdrop']['field_link_group']['list'];
+    }
     if (count($link_groups) <= 1) {
       $form_state->setErrorByName('field_link_group', t('A service page using a custom link groups template requires at least one link group.'));
     }
