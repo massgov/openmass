@@ -387,5 +387,34 @@ function _mass_content_org_page_migration_locations(&$node) {
  * Migrate data for the related organizations section.
  */
 function _mass_content_org_page_migration_related_orgs(&$node) {
-
+  // Migrate data if the field has a value.
+  if (!$node->field_ref_orgs->isEmpty()) {
+    $field_ref_orgs = $node->get('field_ref_orgs')->getValue();
+    // Remove the old field values.
+    $node->set('field_ref_orgs', []);
+    // Create a new Organization Related Organization paragraph.
+    $new_org_related_orgs_paragraph = Paragraph::create([
+      'type' => 'org_related_orgs',
+    ]);
+    // Set the field values.
+    $new_org_related_orgs_paragraph->set('field_ref_orgs', $field_ref_orgs);
+    // Save the new paragraph.
+    $new_org_related_orgs_paragraph->save();
+    // Create a value array for the new section paragraph.
+    $field_section_long_form_content = [
+      'target_id' => $new_org_related_orgs_paragraph->id(),
+      'target_revision_id' => $new_org_related_orgs_paragraph->getRevisionId(),
+    ];
+    // Create a new Organization Section paragraph.
+    $new_org_section_long_form_paragraph = Paragraph::create([
+      'type' => 'org_section_long_form',
+    ]);
+    // Set the field values.
+    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
+    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Related organizations');
+    // Save the new paragraph.
+    $new_org_section_long_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
+  }
 }
