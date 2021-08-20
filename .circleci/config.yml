@@ -231,7 +231,7 @@ jobs:
       # Validate .json and check if it is in sync with the .lock file
       - run: composer validate
       # Check coding standards with php code sniffer. See phpcs.xml
-      - run: phpcs -v -n
+      - run: phpcs -v -n -s
       # Make sure changelogs are parseable by PHP (since build-changelog.php requires that).
       - run: php scripts/directory-yaml-parse.php
       # Lint javascript
@@ -273,13 +273,13 @@ jobs:
             and:
               - equal: [ behat, << parameters.command >> ]
           steps:
-            run: behat --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+            run: behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - when:
           condition:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-           run: 'su -s /bin/bash www-data -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
+           run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:

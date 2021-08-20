@@ -81,7 +81,6 @@ function mass_views_field_views_data_alter(array &$data, FieldStorageConfigInter
     return $data;
   }
   $field_name = $field_storage->getName();
-  $entity_manager = \Drupal::getContainer()->get('entity.manager');
   $entity_type_manager = \Drupal::entityTypeManager();
 
   $entity_type_id = $field_storage->getTargetEntityTypeId();
