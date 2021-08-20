@@ -36,7 +36,7 @@ function mass_translations_page_attachments(array &$attachments) {
       continue;
     }
 
-    $node_storage = \Drupal::service('entity.manager')->getStorage('node');
+    $node_storage = \Drupal::service('entity_type.manager')->getStorage('node');
     $translations_controller = new TranslationsController($node_storage);
 
     $entity = $route_match->getParameter($name);

@@ -9,7 +9,7 @@ libraries:
   - mass_theme/global-styling
 
 ckeditor_stylesheets:
-  - overrides/css/ckeditor.cssv
+  - overrides/css/ckeditor.css
 
 base theme: false
 
@@ -35,13 +35,11 @@ libraries-extend:
   views/views.ajax: [mass_theme/views.ajax.extension]
   views/data-listing: [mass_theme/views-view--data-listing]
 
-component-libraries:
-  custom_includes:
-    paths:
+components:
+  namespaces:
+    custom_includes:
       - templates/includes
-  custom_templates:
-    paths:
+    custom_templates:
       - templates
-  custom_fields:
-    paths:
+    custom_fields:
       - templates/field
