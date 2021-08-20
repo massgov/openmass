@@ -285,8 +285,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
               $url .= '#' . $item->id();
             }
 
-<<<<<<< HEAD
-            $content = $item->get('field_emergency_alert_message')->getString();;
+            $content = $item->get('field_emergency_alert_message')->getString();
 
             if ($url) {
               $messages[] = [
@@ -313,9 +312,6 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
               ];
             }
           }
-=======
-          $content = $item->get('field_emergency_alert_message')->getString();
->>>>>>> 8d0d9e4ef999a9be6e33468b87a6efa33c2723e1
 
           if (count($messages) == 1) {
             $alert = array_merge($alert, $messages[0]);
