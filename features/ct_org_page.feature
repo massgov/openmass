@@ -9,16 +9,12 @@ Feature: Organization Landing Page Content type
     Then the content type "org_page" has the fields:
       | field                        | tag        | type                       | multivalue |
       | field-title-sub-text         | input      | text                       | false      |
-      | field-ref-actions-6          | input      | text                       | true      |
-      | field-ref-card-view-6        | input      | text                       | false      |
       | field-bg-wide                | input      | submit                     | false      |
       | field-bg-narrow              | input      | submit                     | false      |
       | field-sub-title              | textarea   |                            | false      |
       | field-sub-brand              | input      | submit                     | false      |
-      | field-ref-orgs               | input      | text                       | true       |
       | field-link                   | input      | text                       | false      |
       | field-social-links           | input      | text                       | true       |
-      | body                         | textarea   |                            | false      |
       | field-subtype                | select     | submit                     | false      |
 
   Scenario: Verify that pathauto patterns are applied to org_page nodes.
