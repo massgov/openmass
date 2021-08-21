@@ -65,9 +65,9 @@ services:
     labels:
       - 'traefik.frontend.rule=Host:mass.local'
 
-  # The following database service uses a `percona-server:5.6.40` image where mysql initialization done by
-  # a custom `docker-entrypoint.sh` script. You can find that script and the `Dockerfile` in `.circleci/mysql-rebuild/`.
-  # See https://medium.com/massgovdigital/dev-env-5d35b97f3473#cba3 for more info.
+  # The following database service uses a `mysql:5.7` image where mysql data is stored in the mage, not ina volume.
+  # You can find that script and the `Dockerfile` in `.circleci/mysql-rebuild/`.
+  # See https://medium.com/@stevenlandow/persist-share-dev-mysql-data-in-a-docker-image-with-commit-f9aa9910be0a for more info.
   # Further, the image is super sanitized (no unpublished content, old revisions, user data, etc.).
   mysql:
     # Access to the database is granted by adding your ID to Docker Hub (ask a team member)
