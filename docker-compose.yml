@@ -76,16 +76,16 @@ services:
     # That version includes revisions, unpublished content, and other information we keep private
     #image: massgov/mysql-sanitized:super
     image: massgov/mysql-sanitized:latest
-    environment:
-      MYSQL_USER: circle
-      MYSQL_PASSWORD: circle
-      MYSQL_DATABASE: circle
-      MYSQL_RANDOM_ROOT_PASSWORD: 1
-    command: --datadir=/var/lib/mysql-no-volume --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=128M
+#    environment:
+#      MYSQL_USER: circle
+#      MYSQL_PASSWORD: circle
+#      MYSQL_DATABASE: circle
+#      MYSQL_RANDOM_ROOT_PASSWORD: 1
+    command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=128M
     ports:
       - '3206:3306'
-    volumes:
-      - mysql-datavolume:/var/lib/mysql
+#    volumes:
+#      - mysql-datavolume:/var/lib/mysql
 
   memcached:
     image: memcached:1-alpine
@@ -139,5 +139,5 @@ secrets:
   mass_id_rsa:
     # Specify alternative key via your .env file.
     file: ${PRIVATE_KEY:-~/.ssh/id_rsa}
-volumes:
-  mysql-datavolume:
+#volumes:
+#  mysql-datavolume:
