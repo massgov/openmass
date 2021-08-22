@@ -26,6 +26,6 @@ RUN ["/usr/local/bin/docker-entrypoint.sh", "mysqld", "--datadir", "/initialized
 FROM mariadb:latest
 
 # needed for intialization
-ENV MYSQL_ROOT_PASSWORD=root
+ENV MYSQL_ROOT_PASSWORD=circle
 
 COPY --from=builder /initialized-db /var/lib/mysql
