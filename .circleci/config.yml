@@ -1021,12 +1021,12 @@ workflows:
           instance: massgov/mysql-sanitized:super
     triggers:
       - schedule:
-          cron: "48 18 * * *"
+          cron: "55 18 * * *"
           filters:
             branches:
               only:
                 - develop
-                - rolback-mysql-upgrade
+                - rollback-mysql-upgrade
 
   # Usually triggered by drush ma:backstop.
   backstop_ad_hoc:
