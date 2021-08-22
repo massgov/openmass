@@ -24,13 +24,12 @@ services:
     working_dir: /var/www
 
   mysql:
-    image: mysql:5.7
+    build: .
     environment:
       MYSQL_USER: circle
       MYSQL_PASSWORD: circle
       MYSQL_DATABASE: circle
       MYSQL_RANDOM_ROOT_PASSWORD: 1
-    # datadir approach borrowed from https://medium.com/@stevenlandow/persist-share-dev-mysql-data-in-a-docker-image-with-commit-f9aa9910be0a
-    command: --datadir=/var/lib/mysql-no-volume --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=128M
+    command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=128M
 
 
