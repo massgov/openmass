@@ -8,12 +8,6 @@ services:
   dbmass:
     container_name: ddev-${DDEV_SITENAME}-dbmass
     image: massgov/mysql-sanitized:super
-#    build:
-#      args:
-#        gid: '1002'
-#        uid: '1002'
-#      context: ''
-#      dockerfile: './db-build/Dockerfile'
     # These labels ensure this service is discoverable by ddev.
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
@@ -24,13 +18,12 @@ services:
       MYSQL_DATABASE: circle
       MYSQL_RANDOM_ROOT_PASSWORD: 1
     command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
-#    ports:
-#      - '3206:3306'
+    ports:
+      - '3206:3306'
     volumes:
       - dbmass:/var/lib/mysql
-
-#  web:
-#    links:
-#      - dbmass:dbmass
+  web:
+    links:
+      - dbmass:dbmass
 volumes:
   dbmass:
