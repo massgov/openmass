@@ -132,7 +132,6 @@ third_party_settings:
       region: content
     group_other:
       children:
-        - field_ref_card_view_6
         - field_more_about_agency_link
         - field_more_about_leadership
         - field_org_directory_page
@@ -220,19 +219,6 @@ third_party_settings:
         classes: elected-only
         required_fields: false
       label: 'About / Details'
-      region: content
-    group_boards:
-      children: {  }
-      parent_name: ''
-      weight: 6
-      format_type: tab
-      format_settings:
-        formatter: closed
-        description: ''
-        required_fields: true
-        id: boards-tab
-        classes: ''
-      label: Boards
       region: content
     group_feedback:
       children:
@@ -611,16 +597,6 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_ref_card_view_6:
-    weight: 116
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_ref_contact_info_1:
     type: entity_reference_autocomplete_tags
     weight: 8
@@ -870,6 +846,7 @@ hidden:
   field_org_our_orgs: true
   field_org_ref_locations: true
   field_org_show_news_images: true
+  field_ref_card_view_6: true
   field_ref_orgs: true
   field_related_organization_type: true
   langcode: true
