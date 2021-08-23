@@ -37,9 +37,7 @@ Feature: Organization Landing Page Content type
       | title                    | Some Nice Org Page 2   |
       | field-action-set-bg-wide | A header image         |
       | field-sub-title          | Some lede text.        |
-      | field-links-actions-3    | Some Featured Service  |
     And I follow "Edit"
-    And I fill in "edit-field-links-actions-3-0-uri" with "Some Featured Service"
     And I fill in "moderation_state[0][state]" with "prepublished_draft"
     And I press "Save"
     Then I should see the text "field is required"
