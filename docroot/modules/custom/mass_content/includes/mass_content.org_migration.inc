@@ -205,8 +205,8 @@ function _mass_content_org_page_migration_what_would_you_like_to_do(&$node) {
     $field_ref_actions_6 = $node->get('field_ref_actions_6');
 
     // Set the link group link values.
-    $field_wwyltd_more_services =[];
-    if(!$node->field_ref_actions_6->isEmpty()) {
+    $field_wwyltd_more_services = [];
+    if (!$node->field_ref_actions_6->isEmpty()) {
       $field_links_documents = [];
       foreach ($field_ref_actions_6->referencedEntities() as $service) {
         // Create a new Link Group Link paragraph to host each "more services".
@@ -214,7 +214,7 @@ function _mass_content_org_page_migration_what_would_you_like_to_do(&$node) {
           'type' => 'link_group_link',
         ]);
         // Get the internal URI for each service.
-        $new_link_group_link_paragraph->set('field_link_group_link', ['uri'=> "entity:".$service->toUrl()->getInternalPath(), "title" => ""]);
+        $new_link_group_link_paragraph->set('field_link_group_link', ['uri' => "entity:" . $service->toUrl()->getInternalPath(), "title" => ""]);
         // Save the new paragraph.
         $new_link_group_link_paragraph->save();
 
@@ -239,7 +239,6 @@ function _mass_content_org_page_migration_what_would_you_like_to_do(&$node) {
         'target_revision_id' => $new_link_group_accordion_paragraph->getRevisionId(),
       ];
     }
-
 
     // Create a new What Would You Like To Do paragraph.
     $new_wwyltd_paragraph = Paragraph::create([
@@ -266,8 +265,8 @@ function _mass_content_org_page_migration_what_would_you_like_to_do(&$node) {
     // Save the new paragraph.
     $new_org_section_long_form_paragraph->save();
     // Remove the old field values.
-     $node->set('field_links_actions_3', []);
-     $node->set('field_ref_actions_6', []);
+    $node->set('field_links_actions_3', []);
+    $node->set('field_ref_actions_6', []);
     // Add the new section to the org sections field.
     _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
   }
