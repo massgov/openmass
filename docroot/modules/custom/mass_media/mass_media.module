@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\file\Entity\File;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
@@ -19,10 +20,10 @@ use Drupal\Core\File\FileSystemInterface;
 /**
  * Immediately delete any old file entity on this media entity.
  *
+ * See https://jira.state.ma.us/browse/DP-8699.
+ *
  * @param \Drupal\Core\Entity\EntityInterface $entity
  *   A media entity.
- *
- * @link https://jira.state.ma.us/browse/DP-8699.
  *
  * @throws \Drupal\Core\Entity\EntityStorageException
  */
@@ -33,7 +34,7 @@ function mass_media_media_update(EntityInterface $entity) {
     if ($target_original && $target_original !== $target_new) {
       if ($file = File::load($target_original)) {
         $file->delete();
-        Drupal::logger('content')->info('File entity @num was replaced and then deleted. Was @url', ['@num' => $file->id(), '@url' => $file->url()]);
+        Drupal::logger('content')->info('File entity @num was replaced and then deleted. Was @url', ['@num' => $file->id(), '@url' => $file->createFileUrl()]);
       }
     }
   }
@@ -178,7 +179,7 @@ function mass_media_media_presave(MediaInterface $entity) {
       $file_uri = $file->getFileUri();
       /** @var \Drupal\Core\File\FileSystem $file_system */
       $file_system = \Drupal::service('file_system');
-      $file_scheme = $file_system->uriScheme($file_uri);
+      $file_scheme = StreamWrapperManager::getScheme($file_uri);
       $file_uri_target = \Drupal::service('stream_wrapper_manager')->getTarget($file_uri);
 
       // Checks for unpublished Documents to ensure file is private.
@@ -227,7 +228,7 @@ function mass_media_file_move(FileInterface $file, FileInterface $source) {
       $key == 'field_upload_file'
       && !empty($media = reset($reference['media']))
       && $media->bundle() == 'document'
-      && $file_system->uriScheme($file->getFileUri()) != $file_system->uriScheme($source->getFileUri())
+      && StreamWrapperManager::getScheme($file->getFileUri()) != StreamWrapperManager::getScheme($source->getFileUri())
     ) {
       $delete_source_document = TRUE;
     }

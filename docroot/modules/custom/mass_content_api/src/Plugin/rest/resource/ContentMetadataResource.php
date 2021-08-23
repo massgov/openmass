@@ -51,7 +51,7 @@ class ContentMetadataResource extends ResourceBase implements ContainerFactoryPl
   /**
    * Alias Manager definition.
    *
-   * @var \Drupal\Core\Path\AliasManagerInterface
+   * @var \Drupal\path_alias\AliasManagerInterface
    */
   private $aliasManager;
 
