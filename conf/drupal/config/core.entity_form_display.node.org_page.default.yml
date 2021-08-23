@@ -81,7 +81,6 @@ third_party_settings:
         - group_overview
         - group_content
         - group_about_details
-        - group_actions
         - group_news
         - group_feedback
         - group_other
@@ -116,11 +115,9 @@ third_party_settings:
       label: 'Title Banner'
       region: content
     group_actions:
-      children:
-        - field_links_actions_3
-        - field_ref_actions_6
-      parent_name: group_node_edit_form
-      weight: 25
+      children: {  }
+      parent_name: ''
+      weight: 31
       format_type: tab
       format_settings:
         formatter: closed
@@ -129,7 +126,7 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Services Offered'
-      region: content
+      region: hidden
     group_other:
       children:
         - field_more_about_agency_link
@@ -462,14 +459,6 @@ content:
     third_party_settings: {  }
     type: options_buttons
     region: content
-  field_links_actions_3:
-    weight: 81
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
-    third_party_settings: {  }
-    type: link_default
-    region: content
   field_metatags:
     weight: 2
     settings:
@@ -586,16 +575,6 @@ content:
       placeholder_title: ''
     third_party_settings: {  }
     type: link_default
-    region: content
-  field_ref_actions_6:
-    weight: 82
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
     region: content
   field_ref_contact_info_1:
     type: entity_reference_autocomplete_tags
@@ -837,6 +816,7 @@ hidden:
   field_action_set__bg_wide: true
   field_boards: true
   field_event_quantity: true
+  field_links_actions_3: true
   field_location_button_label: true
   field_location_button_short_desc: true
   field_number_of_news_items: true
@@ -846,6 +826,7 @@ hidden:
   field_org_our_orgs: true
   field_org_ref_locations: true
   field_org_show_news_images: true
+  field_ref_actions_6: true
   field_ref_card_view_6: true
   field_ref_orgs: true
   field_related_organization_type: true

@@ -63,7 +63,6 @@ dependencies:
     - field.field.node.org_page.field_verification
     - node.type.org_page
   module:
-    - mass_content
     - user
 id: node.org_page.all_services
 targetEntityType: node
@@ -80,7 +79,7 @@ content:
       link: false
     third_party_settings: {  }
   extra_node_all_actions:
-    weight: 4
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -93,27 +92,6 @@ content:
     weight: 1
     region: content
     settings: {  }
-    third_party_settings: {  }
-  field_links_actions_3:
-    type: dynamic_link_separate
-    weight: 3
-    region: content
-    label: above
-    settings:
-      trim_length: '80'
-      url_only: ''
-      url_plain: ''
-      rel: ''
-      target: ''
-    third_party_settings: {  }
-  field_ref_actions_6:
-    type: entity_reference_entity_view
-    weight: 2
-    region: content
-    label: above
-    settings:
-      view_mode: title_short_desc
-      link: false
     third_party_settings: {  }
 hidden:
   body: true
@@ -142,6 +120,7 @@ hidden:
   field_hide_short_description: true
   field_image_credit: true
   field_intended_audience: true
+  field_links_actions_3: true
   field_location_button_label: true
   field_location_button_short_desc: true
   field_login_application_links: true
@@ -163,6 +142,7 @@ hidden:
   field_parent: true
   field_person_bio: true
   field_public_records_link: true
+  field_ref_actions_6: true
   field_ref_card_view_6: true
   field_ref_contact_info_1: true
   field_ref_orgs: true
