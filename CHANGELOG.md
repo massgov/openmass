@@ -1,5 +1,29 @@
 
 
+## [0.294.0] - August 24, 2021
+
+### Added
+  - DP-11358: Show CircleCI deployments in any associated Jira issue.
+  
+### Changed
+  - DP-21924: Upgraded Drupal Version to Drupal 9.2
+  - DP-22560: Update GTM settings, remove unneded patches.
+  - DP-22643: Add browser support banner to cover IE10.
+  - DP-22720: Add support to handle multiple messages on page and org alerts.
+  - DP-22808: Rollback mysql version in Docker.
+  - DP-22814: Updated Mayflower version to 11.13.0.
+  - DP-22736: Add report icon to Patternlab. (MF #1469)
+  - DP-27720: Add content to ActionSteps to allow rendering multiple items in the content area of a HeaderAlerts accordion. (MF #1472)
+  - DP-22787: Fixed CircleCI job installing AWS CLI. (MF #1471)
+  
+### Fixed
+  - DP-22795: Fixed error thrown on feedback manager when filtering content.
+  - DP-22796: Invalidate alert responses based on old and new field values.
+  - DP-22798: Fixed autocomplete feature when adding links to a rich text editor.
+  - DP-22810: Removed duplicated library reference.
+  
+
+
 ## [0.293.0] - August 10, 2021
 
 ### Changed
