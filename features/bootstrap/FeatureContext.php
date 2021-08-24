@@ -1653,11 +1653,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => '',
           ],
           [
-            'field' => 'field-short-name',
-            'tag' => 'input',
-            'type' => 'text',
-          ],
-          [
             'field' => 'field-get-updates-links',
             'tag' => 'input',
             'type' => 'text',
