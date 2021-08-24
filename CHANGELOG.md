@@ -4,7 +4,7 @@
 
 ### Added
   - DP-11358: Show CircleCI deployments in any associated Jira issue.
-  
+
 ### Changed
   - DP-21924: Upgraded Drupal Version to Drupal 9.2
   - DP-22560: Update GTM settings, remove unneded patches.
@@ -15,27 +15,28 @@
   - DP-22736: Add report icon to Patternlab. (MF #1469)
   - DP-27720: Add content to ActionSteps to allow rendering multiple items in the content area of a HeaderAlerts accordion. (MF #1472)
   - DP-22787: Fixed CircleCI job installing AWS CLI. (MF #1471)
-  
+
 ### Fixed
   - DP-22795: Fixed error thrown on feedback manager when filtering content.
   - DP-22796: Invalidate alert responses based on old and new field values.
   - DP-22798: Fixed autocomplete feature when adding links to a rich text editor.
   - DP-22810: Removed duplicated library reference.
-  
+  - DP-22810: Added back missing library reference.
+
 
 
 ## [0.293.0] - August 10, 2021
 
 ### Changed
   - DP-22550: Allow the updates block configuration form to use CKEditor.
-  
+
 ### Added
   - DP-22551: Drush ma:backstop can now send custom --list and --viewport params.
-  
+
 ### Fixed
   - DP-22703: Fixed bugs related to the Data Listing and Collections features.
   - DP-22715: More robust queue worker for unpublished email reminders.
-  
+
 
 
 ## [0.292.0] - August 3, 2021
