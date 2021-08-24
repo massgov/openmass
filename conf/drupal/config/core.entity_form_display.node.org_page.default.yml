@@ -80,8 +80,6 @@ third_party_settings:
         - group_banner
         - group_overview
         - group_content
-        - group_about_details
-        - group_news
         - group_feedback
         - group_other
       parent_name: ''
@@ -117,7 +115,7 @@ third_party_settings:
     group_actions:
       children: {  }
       parent_name: ''
-      weight: 31
+      weight: 33
       format_type: tab
       format_settings:
         formatter: closed
@@ -137,6 +135,7 @@ third_party_settings:
         - field_public_records_link
         - field_parent
         - field_billing_organization
+        - field_get_updates_links
       parent_name: group_node_edit_form
       weight: 30
       format_type: tab
@@ -189,34 +188,6 @@ third_party_settings:
         speed: fast
       label: 'Organization name'
       region: content
-    group_news:
-      children:
-        - field_get_updates_links
-      parent_name: group_node_edit_form
-      weight: 27
-      format_type: tab
-      format_settings:
-        id: ''
-        classes: ''
-        formatter: closed
-        description: ''
-        required_fields: true
-      label: News
-      region: content
-    group_about_details:
-      children:
-        - field_short_name
-      parent_name: group_node_edit_form
-      weight: 24
-      format_type: tab
-      format_settings:
-        formatter: closed
-        description: ''
-        id: about-details-tab
-        classes: elected-only
-        required_fields: false
-      label: 'About / Details'
-      region: content
     group_feedback:
       children:
         - field_constituent_communication
@@ -257,7 +228,7 @@ bundle: org_page
 mode: default
 content:
   field_application_login_links:
-    weight: 124
+    weight: 123
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -373,7 +344,7 @@ content:
     type: image_image
     region: content
   field_billing_organization:
-    weight: 128
+    weight: 126
     settings: {  }
     third_party_settings: {  }
     type: dynamic_entity_reference_options_select
@@ -431,7 +402,7 @@ content:
     type: link_default
     region: content
   field_get_updates_links:
-    weight: 109
+    weight: 127
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -531,7 +502,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_parent:
-    weight: 126
+    weight: 125
     settings:
       match_operator: CONTAINS
       size: 60
@@ -569,7 +540,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_public_records_link:
-    weight: 125
+    weight: 124
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -655,14 +626,6 @@ content:
           entity_type: node
           bundle: org_page
     type: entity_reference_autocomplete
-    region: content
-  field_short_name:
-    weight: 28
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
     region: content
   field_social_links:
     weight: 15
@@ -830,6 +793,7 @@ hidden:
   field_ref_card_view_6: true
   field_ref_orgs: true
   field_related_organization_type: true
+  field_short_name: true
   langcode: true
   path: true
   promote: true
