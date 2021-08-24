@@ -6980,12 +6980,24 @@ function mass_theme_preprocess_paragraph__featured_topics(&$variables) {
 }
 
 /**
- * Fetch social links from parent node.
+ * Fetch social links from parent org node.
  */
 function mass_theme_preprocess_paragraph__social_media(&$variables) {
   $paragraph = $variables['paragraph'];
   $node = Helper::getParentNode($paragraph);
 
   $variables['social_links'] = $node->get('field_social_links')->view();
+
+}
+
+/**
+ * Fetch contact info and logo from parent org node.
+ */
+function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables) {
+  $paragraph = $variables['paragraph'];
+  $node = Helper::getParentNode($paragraph);
+
+  $variables['org_contact'] = $node->get('field_ref_contact_info_1')->view('contact_us');
+  $variables['org_logo'] = $node->get('field_sub_brand')->view('logo_link');
 
 }
