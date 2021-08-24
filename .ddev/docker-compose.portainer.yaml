@@ -11,9 +11,14 @@ services:
     command: --no-auth -H unix:///var/run/docker.sock
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-    ports:
-      - "127.0.0.1:440:9000"
+    environment:
+      - VIRTUAL_HOST=$DDEV_HOSTNAME
+      - HTTP_EXPOSE=89:9000
+    expose:
+      - 9000
     # These labels ensure this service is discoverable by ddev.
+    external_links:
+      - "ddev-router:${DDEV_HOSTNAME}"
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT
