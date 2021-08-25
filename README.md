@@ -19,11 +19,11 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 
 ### Docker (optional)
 
-1. Install Docker for [Mac](https://docs.docker.com/docker-for-mac/install/) or [Windows](https://docs.docker.com/docker-for-windows/install/). If using Linux, skip this step.
-
-1. Edit your `hosts` file and add the following line:
+1. [Install Docker](https://docs.docker.com/get-docker/).
+2. [Install DDEV](https://ddev.readthedocs.io/en/stable/).
+3. Edit your `hosts` file and add the following line:
     ```
-    127.0.0.1 mass.local portainer.mass.local mailhog.mass.local
+    127.0.0.1 mass.local
     ```
     1. **Mac/Linux:** `/etc/hosts`
     1. **Windows:** `c:\windows\system32\drivers\etc\hosts`
@@ -33,15 +33,16 @@ If the Docker section above is unappealing, its easy to run mass.gov natively on
 
 ### Ahoy (optional)
 
-1. In order for the Ahoy aliases to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
+1. You may use `ddev` commands, our legacy Ahoy commands. In order for Ahoy to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
     ```bash
     sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
     ```
-1. The Ahoy aliases also work for native development environments. Set an environment variable: `MASS_DEV_ENV=native`   
+1. The Ahoy commands also work for native development environments. Set an environment variable: `MASS_DEV_ENV=native`
 1. Run `ahoy up` to start the Docker containers (n.b. takes about 30 minutes to pull down the latest database).
 1. Run `ahoy comi` to fetch all dependencies.
 
 ###### Notes
+- The site is browseable at https://mass.local
 - It takes a few minutes for the `mysql` container start up.
 - Mass Digital team members: see additional information at [Mass Digital Developers](https://github.com/massgov/massgov-internal-docs/blob/master/development-massgov-team.md).
 
@@ -69,7 +70,11 @@ This is a suggestion for how you can transition between branches when working on
 
 ### Email
 
-To access MailHog using the browser, go to http://mailhog.mass.local.
+To access MailHog using the browser, use the URL shown in `ddev describe`.
+
+### Portainer
+
+To access Portainer using the browser, use the URL shown in `ddev describe`.
 
 ### Memcache
 
@@ -102,12 +107,12 @@ If you are using a dedicated SSH Key pair and you have named it other than `~/.s
 View `/etc/hosts` for Mac/Linux or `c:\windows\system32\drivers\etc\hosts` in Windows; and verify that there is only one entry for `mass.local` and it displays as follows:
 
 ```
-127.0.0.1 mass.local portainer.mass.local mailhog.mass.local
+127.0.0.1 mass.local
 ```
 
 ### `SQLSTATE[HY000][2002]` Connection refused
 
-This usually happens if you go visit mass.local right after the containers are brought up. MySQL has not started yet. Open `portainer.mass.local`; and go to _Containers > mass_mysql_1 > Logs_ and check for the message: _mysqld: ready for connections._ If you don't see this message, _mysqld_ has not started yet.
+This usually happens if you go visit mass.local right after the containers are brought up. MySQL has not started yet. Open Portainer and go to _Containers > mass_mysql_1 > Logs_ and check for the message: _mysqld: ready for connections._ If you don't see this message, _mysqld_ has not started yet.
 
 ### Xdebug
 
