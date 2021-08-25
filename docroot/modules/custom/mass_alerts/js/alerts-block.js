@@ -23,41 +23,46 @@
 
         if (path !== '/alerts/sitewide') {
 
-          var nodeType = settings.mass_alerts.node.type;
-          var positioned = false;
+          if (settings.mass_alerts) {
+            var nodeType = settings.mass_alerts.node.type;
+            var positioned = false;
 
-          if (nodeType === 'how_to_page') {
-            if ($('.ma__page-header__optional-content').length) {
-              $this.insertBefore('.ma__page-header__optional-content');
-              removeContainer = true;
-              positioned = true;
+            if (nodeType === 'how_to_page') {
+              if ($('.ma__page-header__optional-content').length) {
+                $this.insertBefore('.ma__page-header__optional-content');
+                removeContainer = true;
+                positioned = true;
+              }
             }
-          }
-          else if (nodeType === 'person') {
-            if ($('.ma__page-intro').length) {
-              $this.insertAfter('.ma__page-intro');
-              removeContainer = true;
-              positioned = true;
+            else if (nodeType === 'person') {
+              if ($('.ma__page-intro').length) {
+                $this.insertAfter('.ma__page-intro');
+                removeContainer = true;
+                positioned = true;
+              }
             }
-          }
 
-          if (!positioned) {
+            if (!positioned) {
 
-            if ($('.ma__illustrated-header').length) {
-              $this.insertAfter('.ma__illustrated-header');
+              if ($('.ma__illustrated-header').length) {
+                $this.insertAfter('.ma__illustrated-header');
+              }
+              else if ($('.ma__page-header').length) {
+                $this.insertAfter('.ma__page-header');
+              }
+              else if ($('.ma__organization-navigation').length) {
+                $this.insertAfter('.ma__organization-navigation');
+              }
+              else if ($('.ma__page-banner').length) {
+                $this.insertAfter('.ma__page-banner');
+              }
+              else if ($('.pre-content').length) {
+                $this.insertAfter('.pre-content');
+              }
             }
-            else if ($('.ma__page-header').length) {
-              $this.insertAfter('.ma__page-header');
-            }
-            else if ($('.ma__organization-navigation').length) {
-              $this.insertAfter('.ma__organization-navigation');
-            }
-            else if ($('.ma__page-banner').length) {
-              $this.insertAfter('.ma__page-banner');
-            }
-            else if ($('.pre-content').length) {
-              $this.insertAfter('.pre-content');
-            }
+          } else {
+            // Not a node page.
+            path = false;
           }
         }
 
