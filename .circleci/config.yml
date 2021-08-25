@@ -230,10 +230,10 @@ jobs:
     steps:
       - checkout
       - setup_remote_docker
-      - run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-      - run: brew install drud/ddev/ddev
+      - run: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
       - run: ddev start
       - run: ddev describe
+      - run: ddev composer install
 #      # Wait for mysql.
 #      - run: dockerize -wait tcp://localhost:3306 -timeout 2m
 #      # Run drush updatedb and cim.
