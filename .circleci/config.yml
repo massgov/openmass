@@ -48,36 +48,15 @@ executors:
       instance:
         type: string
         default: massgov/mysql-sanitized:latest
-    working_directory: /var/www/code
+#    working_directory: /var/www/code
     # https://circleci.com/docs/2.0/configuration-reference/#resource_class
     resource_class: xlarge
     docker:
-      - image: massgov/drupal-container:1.0.19-ci
-        environment:
-          COMPOSER_ALLOW_SUPERUSER: 1
-          DOCKER_ENV: ci
-          APACHE_DOCROOT: /var/www/code/docroot
-          MYSQL_USER: circle
-          MYSQL_PASSWORD: circle
-          MYSQL_DATABASE: circle
-          MYSQL_HOST: 127.0.0.1
-          MEMCACHED_HOST: 127.0.0.1
-          DTT_BASE_URL: http://mass.local
-          DTT_API_URL: http://mass.local:9222
-          BROWSERTEST_OUTPUT_DIRECTORY: /tmp
-      - image: << parameters.instance >>
-        auth:
-          username: $DOCKER_USER
-          password: $DOCKER_API_KEY
-        environment:
-          MYSQL_USER: circle
-          MYSQL_PASSWORD: circle
-          MYSQL_DATABASE: circle
-          MYSQL_RANDOM_ROOT_PASSWORD: 1
-        command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
-      - image: memcached:1-alpine
-        command: memcached -m 128
-      - image: previousnext/chrome-headless:65
+      - image: circleci/golang:1.15
+
+#        auth:
+#          username: $DOCKER_USER
+#          password: $DOCKER_API_KEY
 
 commands:
   fetch_drush_aliases:
@@ -246,51 +225,50 @@ jobs:
       command:
         type: enum
         enum: ['phpunit', 'behat']
-    executor:
-      name: base
-      instance: << parameters.instance >>
+    docker:
+      - image: circleci/golang:1.15
     steps:
       - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
-      - run: {name: 'Start Apache', command: '/usr/local/bin/apache2-foreground-enhanced', background: true}
-      - run:
-          name: Update host file
-          command: echo '127.0.0.1 mass.local' >> /etc/hosts
-      # Wait for mysql.
-      - run: dockerize -wait tcp://localhost:3306 -timeout 2m
-      # Run drush updatedb and cim.
-      - run: scripts/ma-refresh-local --skip-db-prep
-      # Get an overview
-      - run: drush status
-      - run: cat /proc/cpuinfo
-      - run: cat /proc/meminfo
-      # Ensure files and DTT directories are writable by www-data
-      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
-      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
-      # Run DTT or Behat test command
-      - when:
-          condition:
-            and:
-              - equal: [ behat, << parameters.command >> ]
-          steps:
-            run: behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
-      - when:
-          condition:
-            and:
-              - equal: [ phpunit, << parameters.command >> ]
-          steps:
-           run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
-      - store_test_results:
-          path: /tmp/test-results
-      - store_artifacts:
-          # Pages saved via 'Then save the html for the page'. @see \FeatureContext::saveHtml.
-          path: /var/www/code/output
-      - store_artifacts:
-          # DTT saves page output for all requests.
-          path: /var/www/code/docroot/sites/simpletest/browser_output
-      - store_artifacts:
-          # Save Junit files for timing inspection.
-          path: /tmp/test-results
+      - setup_remote_docker
+      - run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+      - run: brew install drud/ddev/ddev
+      - run: ddev start
+      - run: ddev describe
+#      # Wait for mysql.
+#      - run: dockerize -wait tcp://localhost:3306 -timeout 2m
+#      # Run drush updatedb and cim.
+#      - run: scripts/ma-refresh-local --skip-db-prep
+#      # Get an overview
+#      - run: drush status
+#      - run: cat /proc/cpuinfo
+#      - run: cat /proc/meminfo
+#      # Ensure files and DTT directories are writable by www-data
+#      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
+#      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+#      # Run DTT or Behat test command
+#      - when:
+#          condition:
+#            and:
+#              - equal: [ behat, << parameters.command >> ]
+#          steps:
+#            run: behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+#      - when:
+#          condition:
+#            and:
+#              - equal: [ phpunit, << parameters.command >> ]
+#          steps:
+#           run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
+#      - store_test_results:
+#          path: /tmp/test-results
+#      - store_artifacts:
+#          # Pages saved via 'Then save the html for the page'. @see \FeatureContext::saveHtml.
+#          path: /var/www/code/output
+#      - store_artifacts:
+#          # DTT saves page output for all requests.
+#          path: /var/www/code/docroot/sites/simpletest/browser_output
+#      - store_artifacts:
+#          # Save Junit files for timing inspection.
+#          path: /tmp/test-results
 
   cloudflare:
     <<: *container_config
