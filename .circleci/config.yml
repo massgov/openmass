@@ -228,7 +228,7 @@ jobs:
     docker:
       - image: circleci/golang:1.15
     steps:
-      - attach_workspace: {at: /var/www}
+      - checkout
       - setup_remote_docker
       - run: /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
       - run: brew install drud/ddev/ddev
