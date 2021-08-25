@@ -42,22 +42,6 @@ references:
       - master
       - /^mayflower-dev-.*/
 
-executors:
-  base:
-    parameters:
-      instance:
-        type: string
-        default: massgov/mysql-sanitized:latest
-#    working_directory: /var/www/code
-    # https://circleci.com/docs/2.0/configuration-reference/#resource_class
-    resource_class: xlarge
-    docker:
-      - image: circleci/golang:1.15
-
-#        auth:
-#          username: $DOCKER_USER
-#          password: $DOCKER_API_KEY
-
 commands:
   fetch_drush_aliases:
     parameters:
@@ -218,6 +202,7 @@ jobs:
 
 
   test:
+    resource_class: xlarge
     parameters:
       instance:
         type: string
@@ -231,6 +216,7 @@ jobs:
       - checkout
       - setup_remote_docker:
           version: 19.03.13
+      - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
       - run: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
       - run: ddev start
       - run: ddev describe
