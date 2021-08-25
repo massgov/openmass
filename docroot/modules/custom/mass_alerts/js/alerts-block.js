@@ -60,7 +60,8 @@
                 $this.insertAfter('.pre-content');
               }
             }
-          } else {
+          }
+          else {
             // Not a node page.
             path = false;
           }
