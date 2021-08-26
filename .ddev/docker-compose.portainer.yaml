@@ -13,7 +13,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - VIRTUAL_HOST=$DDEV_HOSTNAME
-      - HTTP_EXPOSE=89:9000
+      - HTTP_EXPOSE=8089:9000
     expose:
       - 9000
     # These labels ensure this service is discoverable by ddev.

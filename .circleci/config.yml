@@ -245,6 +245,9 @@ jobs:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
+      - run: docker cp web:/tmp/test-results /tmp/test-results
+      - run: docker cp web:/var/www/code/output /var/www/code/output
+      - run: docker cp web: /var/www/code/docroot/sites/simpletest/browser_output  /var/www/code/docroot/sites/simpletest/browser_output
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:

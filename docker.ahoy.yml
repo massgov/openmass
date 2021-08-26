@@ -6,7 +6,7 @@ commands:
   bash:
     cmd: ddev ssh
   up:
-    cmd: ddev start "$@"
+    cmd: ddev start "$@" && ddev describe
   down:
     cmd: ddev stop "$@"
   stop:

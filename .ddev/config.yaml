@@ -11,7 +11,6 @@ router_https_port: "443"
 xdebug_enabled: false
 project_tld: local
 use_dns_when_possible: true
-composer_version: ""
 web_environment:
   - DOCKER_ENV=devel
   - MYSQL_USER=circle
@@ -24,10 +23,6 @@ web_environment:
   - DTT_API_URL=http://chromedriver:9515
 #  - BROWSERTEST_OUTPUT_DIRECTORY=/tmp
 #  - BROWSERTEST_OUTPUT_BASE_URL=https://mass.local:$DDEV_ROUTER_HTTPS_PORT
-  # - SENDMAIL_PATH=mhsendmail --smtp-addr="mailhog:1025"
-  # Needed here per https://blackfire.io/docs/integrations/docker#using-the-client-for-cli-profiling
-  #- BLACKFIRE_CLIENT_ID
-  #- BLACKFIRE_CLIENT_TOKEN
   # Acquia Cloud - v2
   - AC_API2_KEY
   - AC_API2_SECRET

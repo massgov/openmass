@@ -44,6 +44,7 @@ If the Docker section above is unappealing, its easy to run mass.gov natively on
 ###### Notes
 - The site is browseable at https://mass.local
 - It takes a few minutes for the `mysql` container start up.
+- Inject your ssh keys into the container via `ddev auth ssh`. [Read more about ddev CLI](https://ddev.readthedocs.io/en/stable/users/cli-usage/).
 - Mass Digital team members: see additional information at [Mass Digital Developers](https://github.com/massgov/massgov-internal-docs/blob/master/development-massgov-team.md).
 
 ## Pull Requests
@@ -66,7 +67,7 @@ This is a suggestion for how you can transition between branches when working on
 
 ### Blackfire
 
-[Blackfire](http://blackfire.io/) is available for performance profiling of CLI or web requests. See `.env.example` for information on how to enable it, and the [Performance](https://github.com/massgov/openmass/blob/develop/docs/performance.md#blackfire) documentation on how to use it.
+[Blackfire](http://blackfire.io/) is available for performance profiling of CLI or web requests. See https://ddev.readthedocs.io/en/stable/users/blackfire-profiling/ and https://blackfire.io/docs/integrations/paas/ddev for information on how to enable it, and the [Performance](https://github.com/massgov/openmass/blob/develop/docs/performance.md#blackfire) documentation on how to use it.
 
 ### Email
 
