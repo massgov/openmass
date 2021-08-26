@@ -146,7 +146,7 @@ jobs:
           paths:
             - node_modules/
       - persist_to_workspace:
-          root: /var/www
+          root: /tmp
           paths: [code]
 
   push_acquia:
@@ -156,7 +156,7 @@ jobs:
       - *no_ssh_timeout
       - checkout
       - fetch_drush_aliases
-      - run: git add -f /var/www/code/drush/sites/self.site.yml
+      - run: git add -f /tmp/code/drush/sites/self.site.yml
       - *restore_composer_cache
       - run: { name: 'Composer install', command: 'composer install --no-dev --no-interaction --optimize-autoloader' }
       # Identify the committer i.e. CircleCI deployment bot
@@ -173,7 +173,7 @@ jobs:
   danger:
     <<: *container_config
     steps:
-      - attach_workspace: {at: /var/www}
+      - attach_workspace: {at: /tmp}
       - run:
           #Fail when there is no PR. This helps avoid false positives given by Danger when no PR exists.
           command: '[ -n "$CIRCLE_PULL_REQUEST" ] && DANGER_GITHUB_API_TOKEN=$GITHUB_MASSGOV_BOT_TOKEN yarn danger ci --failOnErrors'
@@ -181,9 +181,9 @@ jobs:
   # Automate the tagging process in GitHub
   tagging_github:
     <<: *container_config
-    working_directory: /var/www/code
+    working_directory: /tmp/code
     steps:
-      - attach_workspace: {at: /var/www}
+      - attach_workspace: {at: /tmp}
       - *no_host_check
       # Identify the committer i.e. CircleCI deployment bot
       - run: git config --global user.email "circleci@example.com"
