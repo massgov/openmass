@@ -216,7 +216,7 @@ jobs:
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: composer global require squizlabs/php_codesniffer
-      - run: $HOME/.composer/vendor/bin/phpcs -v -n -s
+      - run: composer global exec phpcs -v -n -s
 
   test:
     working_directory: /tmp/code
@@ -232,17 +232,22 @@ jobs:
       instance: << parameters.instance >>
     steps:
       - attach_workspace: {at: /tmp}
-      - run:
-          command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C . -xzv && chmod +x ./dockerize
-          name: Install Dockerize
+#      - run:
+#          command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C . -xzv && chmod +x ./dockerize
+#          name: Install Dockerize
       - run:
           command: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
           name: Install DDEV
-      - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
+      - run: echo $DOCKER_API_KEY | docker login -u "${$DOCKER_USER}" --password-stdin
       - run: ddev start -y
       - run: ddev describe
-      # Wait for mysql.
-      - run: ./dockerize -wait tcp://localhost:3306 -timeout 2m
+      - run:
+        command: |
+          while ! ddev drush sqlq "'SELECT 1'"
+          do
+              sleep 5
+          done
+        name: Wait for mysql
       # Run drush updatedb and cim.
       - run: ddev exec scripts/ma-refresh-local --skip-db-prep
       # Get an overview
