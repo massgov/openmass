@@ -126,9 +126,6 @@ jobs:
     steps:
       - checkout
       - run:
-          command: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
-          name: Install DDEV
-      - run:
           command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C /usr/local/bin -xzv && chmod +x /usr/local/bin/dockerize
           name: Install Dockerize
       # See https://stackoverflow.com/questions/18126559/how-can-i-download-a-single-raw-file-from-a-private-github-repo-using-the-comman
@@ -236,6 +233,9 @@ jobs:
       instance: << parameters.instance >>
     steps:
       - attach_workspace: {at: /var/www}
+      - run:
+          command: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
+          name: Install DDEV
       - run: ddev start -y
       - run: ddev describe
       # Wait for mysql.
