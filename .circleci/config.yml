@@ -213,13 +213,12 @@ jobs:
       - attach_workspace: {at: /tmp}
       # Validate .json and check if it is in sync with the .lock file
       - run: composer validate
-      # Check coding standards with php code sniffer. See phpcs.xml
-      - run: phpcs -v -n -s
       # Make sure changelogs are parseable by PHP (since build-changelog.php requires that).
       - run: php scripts/directory-yaml-parse.php
       # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
-
+      # Check coding standards with php code sniffer. See phpcs.xml
+      - run: phpcs -v -n -s
 
   test:
     working_directory: /tmp/code
@@ -238,6 +237,7 @@ jobs:
       - run:
           command: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
           name: Install DDEV
+      - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
       - run: ddev start -y
       - run: ddev describe
       # Wait for mysql.
