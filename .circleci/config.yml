@@ -126,9 +126,9 @@ jobs:
       - image: cimg/php:7.4-node
     steps:
       - checkout
-      - *restore_composer_cache
+#      - *restore_composer_cache
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
-      - *save_composer_cache
+#      - *save_composer_cache
       # Same for yarn - https://circleci.com/docs/2.0/yarn/#caching
       - restore_cache:
           name: Restore Yarn Package Cache
