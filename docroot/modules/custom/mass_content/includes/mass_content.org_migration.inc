@@ -85,19 +85,11 @@ function _mass_content_org_page_migration_contact_logo(&$node) {
   // Migrate data if the field has a value.
   if (!$node->field_sub_brand->isEmpty()
     || !$node->field_ref_contact_info_1->isEmpty()) {
-    $field__sub_brand = $node->get('field_sub_brand')->getValue();
-    $field_ref_contact_info_1 = $node->get('field_ref_contact_info_1')->getValue();
-    // Remove the old field values.
-    $node->set('field_sub_brand', []);
-    $node->set('field_ref_contact_info_1', []);
 
     // Create a new Organization News paragraph.
     $new_organization_contact_logo_paragraph = Paragraph::create([
       'type' => 'organization_contact_logo',
     ]);
-    // Set the field values.
-    $new_organization_contact_logo_paragraph->set('field_org_logo', $field__sub_brand);
-    $new_organization_contact_logo_paragraph->set('field_org_contact_info', $field_ref_contact_info_1);
     // Save the new paragraph.
     $new_organization_contact_logo_paragraph->save();
     // Create a value array for the new section paragraph.
