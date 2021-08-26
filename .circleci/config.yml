@@ -205,7 +205,7 @@ jobs:
   validate:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:7.3-node
+      - image: cimg/php:7.4-node
     steps:
       - attach_workspace: {at: /tmp}
       # Validate .json and check if it is in sync with the .lock file
@@ -233,7 +233,7 @@ jobs:
     steps:
       - attach_workspace: {at: /tmp}
       - run:
-          command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C /usr/local/bin -xzv && chmod +x /usr/local/bin/dockerize
+          command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C . -xzv && chmod +x ./dockerize
           name: Install Dockerize
       - run:
           command: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
@@ -242,7 +242,7 @@ jobs:
       - run: ddev start -y
       - run: ddev describe
       # Wait for mysql.
-      - run: dockerize -wait tcp://localhost:3306 -timeout 2m
+      - run: ./dockerize -wait tcp://localhost:3306 -timeout 2m
       # Run drush updatedb and cim.
       - run: ddev exec scripts/ma-refresh-local --skip-db-prep
       # Get an overview
@@ -278,9 +278,11 @@ jobs:
           path: /tmp/test-results
 
   cloudflare:
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: {at: /var/www}
+      - attach_workspace: {at: /tmp}
       - run: "cd cloudflare && yarn install"
       - run: "cd cloudflare && npm test"
 
