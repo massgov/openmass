@@ -146,8 +146,8 @@ jobs:
           paths:
             - node_modules/
       - persist_to_workspace:
-          root: /tmp
-          paths: [code]
+          root: project
+          paths: [.]
 
   push_acquia:
     <<: *container_config
