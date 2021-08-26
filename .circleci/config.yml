@@ -125,9 +125,6 @@ jobs:
     <<: *container_config
     steps:
       - checkout
-      - run:
-          command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C /usr/local/bin -xzv && chmod +x /usr/local/bin/dockerize
-          name: Install Dockerize
       # See https://stackoverflow.com/questions/18126559/how-can-i-download-a-single-raw-file-from-a-private-github-repo-using-the-comman
       - *restore_composer_cache
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
@@ -151,26 +148,6 @@ jobs:
       - persist_to_workspace:
           root: /var/www
           paths: [code]
-
-  push_acquia:
-      <<: *container_config
-      steps:
-        - *no_host_check
-        - *no_ssh_timeout
-        - checkout
-        - fetch_drush_aliases
-        - run: git add -f /var/www/code/drush/sites/self.site.yml
-        - *restore_composer_cache
-        - run: {name: 'Composer install', command: 'composer install --no-dev --no-interaction --optimize-autoloader'}
-        # Identify the committer i.e. CircleCI deployment bot
-        - run: git config --global user.email "circleci@example.com"
-        - run: git config --global user.name "CircleCI Deployment Bot"
-        # Prep for push to Acquia Git. Do so while we have a clean build.
-        - run: ( find docroot -type d -name .git && find docroot -type f -name .gitmodules ) | xargs rm -rf
-        - run: git add -A -f /var/www/code
-        - run: git commit -m "Add vendor code and drush alias."
-        # Add a deployment identifier file and push current branch to Acquia's Git repo.
-        - run: scripts/stamp-and-deploy
 
   # Run Danger to check for a changelog file in the PR.
   danger:
@@ -218,7 +195,8 @@ jobs:
       # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
-      - run: phpcs -v -n -s
+      - composer global require squizlabs/php_codesniffer
+      - run: $HOME/.composer/vendor/bin/phpcs -v -n -s
 
   test:
     working_directory: /tmp/code
@@ -234,6 +212,9 @@ jobs:
       instance: << parameters.instance >>
     steps:
       - attach_workspace: {at: /tmp}
+      - run:
+          command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C /usr/local/bin -xzv && chmod +x /usr/local/bin/dockerize
+          name: Install Dockerize
       - run:
           command: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
           name: Install DDEV
@@ -263,15 +244,15 @@ jobs:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-           run: 'ddev exec su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
+            run: 'ddev exec su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
           # Pages saved via 'Then save the html for the page'. @see \FeatureContext::saveHtml.
-          path: /var/www/code/output
+          path: /tmp/code/output
       - store_artifacts:
           # DTT saves page output for all requests.
-          path: /var/www/code/docroot/sites/simpletest/browser_output
+          path: /tmp/code/docroot/sites/simpletest/browser_output
       - store_artifacts:
           # Save Junit files for timing inspection.
           path: /tmp/test-results
