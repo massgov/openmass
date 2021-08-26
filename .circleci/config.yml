@@ -206,10 +206,11 @@ jobs:
       - run: scripts/tag-release-deploy
 
   validate:
-    <<: *container_config
+    working_directory: /var/www/code
+    docker:
+      - image: cimg/php:7.3-node
     steps:
-      - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - attach_workspace: {at: .}
       # Validate .json and check if it is in sync with the .lock file
       - run: composer validate
       # Check coding standards with php code sniffer. See phpcs.xml
@@ -232,7 +233,7 @@ jobs:
       name: base
       instance: << parameters.instance >>
     steps:
-      - attach_workspace: {at: /var/www}
+      - attach_workspace: {at: .}
       - run:
           command: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
           name: Install DDEV
