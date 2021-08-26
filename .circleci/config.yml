@@ -211,7 +211,9 @@ jobs:
         type: enum
         enum: ['phpunit', 'behat']
     machine:
-      image: circleci/golang:1.15
+      image: ubuntu-2004:202101-01
+    environment:
+      DDEV_NONINTERACTIVE: "true"
     steps:
       - checkout
 #      - setup_remote_docker:
