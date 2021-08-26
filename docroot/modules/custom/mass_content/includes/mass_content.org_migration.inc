@@ -116,7 +116,7 @@ function _mass_content_org_page_migration_contact_logo(&$node) {
  */
 function _mass_content_org_page_migration_about(&$node) {
   // Migrate data if the field has a value.
-  if (!$node->field_org_our_orgs->isEmpty()) {
+  if (!$node->field_about->isEmpty()) {
     // Get the field value.
     $field_about = $node->get('field_about')->getValue();
     $field_short_name_value = $node->get('field_short_name')
@@ -141,7 +141,59 @@ function _mass_content_org_page_migration_about(&$node) {
  * Migrate data for the about section.
  */
 function _mass_content_org_page_migration_who_we_serve(&$node) {
-
+  // Migrate data if the field has a value.
+  if (!$node->body->isEmpty()) {
+    // Get the field value.
+    $body = $node->get('body')->getValue();
+    $field_subtype = $node->get('field_subtype')->getValue()[0]['value'];
+    // Remove the old field values.
+    $node->set('body', []);
+    // Create a new Rich Text paragraph.
+    $new_rich_text_paragraph = Paragraph::create([
+      'type' => 'rich_text',
+    ]);
+    // Set the field values.
+    $new_rich_text_paragraph->set('field_body', $body);
+    // Save the new paragraph.
+    $new_rich_text_paragraph->save();
+    // Create a value array for the new section paragraph.
+    $field_section_long_form_content = [];
+    $field_section_long_form_content[] = [
+      'target_id' => $new_rich_text_paragraph->id(),
+      'target_revision_id' => $new_rich_text_paragraph->getRevisionId(),
+    ];
+    // If there are social links on the org_page, add a Social Media paragraph.
+    if (!$node->field_social_links->isEmpty()) {
+      // Create a new Social Media paragraph.
+      $new_social_media_paragraph = Paragraph::create([
+        'type' => 'social_media',
+      ]);
+      // Save the new paragraph.
+      $new_social_media_paragraph->save();
+      // Add the new paragraph to the field value array.
+      $field_section_long_form_content[] = [
+        'target_id' => $new_social_media_paragraph->id(),
+        'target_revision_id' => $new_social_media_paragraph->getRevisionId(),
+      ];
+    }
+    // Create a new Organization Section paragraph.
+    $new_org_section_long_form_paragraph = Paragraph::create([
+      'type' => 'org_section_long_form',
+    ]);
+    // Set the field values.
+    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
+    // Set the section heading based on the org subtype.
+    if ($field_subtype === 'Boards') {
+      $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'About Us');
+    }
+    else {
+      $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Who we serve');
+    }
+    // Save the new paragraph.
+    $new_org_section_long_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
+  }
 }
 
 /**
@@ -172,7 +224,78 @@ function _mass_content_org_page_migration_organization_grid(&$node) {
  * Migrate data for the services offered (what would you like to do) section.
  */
 function _mass_content_org_page_migration_what_would_you_like_to_do(&$node) {
+  // Migrate data if the field has a value.
+  if (!$node->field_links_actions_3->isEmpty() ||
+    !$node->field_ref_actions_6->isEmpty()) {
+    $field_links_actions_3 = $node->get('field_links_actions_3')->getValue();
+    $field_ref_actions_6 = $node->get('field_ref_actions_6');
 
+    // Set the link group link values.
+    $field_wwyltd_more_services = [];
+    if (!$node->field_ref_actions_6->isEmpty()) {
+      $field_links_documents = [];
+      foreach ($field_ref_actions_6->referencedEntities() as $service) {
+        // Create a new Link Group Link paragraph to host each "more services".
+        $new_link_group_link_paragraph = Paragraph::create([
+          'type' => 'link_group_link',
+        ]);
+        // Get the internal URI for each service.
+        $new_link_group_link_paragraph->set('field_link_group_link', ['uri' => "entity:" . $service->toUrl()->getInternalPath(), "title" => ""]);
+        // Save the new paragraph.
+        $new_link_group_link_paragraph->save();
+
+        $field_links_documents[] = [
+          'target_id' => $new_link_group_link_paragraph->id(),
+          'target_revision_id' => $new_link_group_link_paragraph->getRevisionId(),
+        ];
+      }
+
+      // Create a new Link Group Accordion paragraph to host "more services".
+      $new_link_group_accordion_paragraph = Paragraph::create([
+        'type' => 'link_group_accordion',
+      ]);
+      // Set the link group accordion values
+      $new_link_group_accordion_paragraph->set('field_section_title', "More actions & services");
+      $new_link_group_accordion_paragraph->set('field_links_documents', $field_links_documents);
+      // Save the new paragraph.
+      $new_link_group_accordion_paragraph->save();
+      // Create a value array for the new section paragraph.
+      $field_wwyltd_more_services = [
+        'target_id' => $new_link_group_accordion_paragraph->id(),
+        'target_revision_id' => $new_link_group_accordion_paragraph->getRevisionId(),
+      ];
+    }
+
+    // Create a new What Would You Like To Do paragraph.
+    $new_wwyltd_paragraph = Paragraph::create([
+      'type' => 'what_would_you_like_to_do',
+    ]);
+    // Set the field values.
+    $new_wwyltd_paragraph->set('field_wwyltd_heading', "What would you like to do?");
+    $new_wwyltd_paragraph->set('field_wwyltd_top_s_links', $field_links_actions_3);
+    $new_wwyltd_paragraph->set('field_wwyltd_more_services', $field_wwyltd_more_services);
+    // Save the new paragraph.
+    $new_wwyltd_paragraph->save();
+    // Create a value array for the new section paragraph.
+    $field_section_long_form_content = [
+      'target_id' => $new_wwyltd_paragraph->id(),
+      'target_revision_id' => $new_wwyltd_paragraph->getRevisionId(),
+    ];
+
+    // Create a new Organization Section paragraph.
+    $new_org_section_long_form_paragraph = Paragraph::create([
+      'type' => 'org_section_long_form',
+    ]);
+    // Set the field values.
+    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
+    // Save the new paragraph.
+    $new_org_section_long_form_paragraph->save();
+    // Remove the old field values.
+    $node->set('field_links_actions_3', []);
+    $node->set('field_ref_actions_6', []);
+    // Add the new section to the org sections field.
+    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
+  }
 }
 
 /**
@@ -361,5 +484,34 @@ function _mass_content_org_page_migration_locations(&$node) {
  * Migrate data for the related organizations section.
  */
 function _mass_content_org_page_migration_related_orgs(&$node) {
-
+  // Migrate data if the field has a value.
+  if (!$node->field_ref_orgs->isEmpty()) {
+    $field_ref_orgs = $node->get('field_ref_orgs')->getValue();
+    // Remove the old field values.
+    $node->set('field_ref_orgs', []);
+    // Create a new Organization Related Organization paragraph.
+    $new_org_related_orgs_paragraph = Paragraph::create([
+      'type' => 'org_related_orgs',
+    ]);
+    // Set the field values.
+    $new_org_related_orgs_paragraph->set('field_ref_orgs', $field_ref_orgs);
+    // Save the new paragraph.
+    $new_org_related_orgs_paragraph->save();
+    // Create a value array for the new section paragraph.
+    $field_section_long_form_content = [
+      'target_id' => $new_org_related_orgs_paragraph->id(),
+      'target_revision_id' => $new_org_related_orgs_paragraph->getRevisionId(),
+    ];
+    // Create a new Organization Section paragraph.
+    $new_org_section_long_form_paragraph = Paragraph::create([
+      'type' => 'org_section_long_form',
+    ]);
+    // Set the field values.
+    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
+    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Related organizations');
+    // Save the new paragraph.
+    $new_org_section_long_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
+  }
 }
