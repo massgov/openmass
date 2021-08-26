@@ -206,7 +206,7 @@ jobs:
       - run: scripts/tag-release-deploy
 
   validate:
-    working_directory: /var/www/code
+    working_directory: ./code
     docker:
       - image: cimg/php:7.3-node
     steps:
@@ -222,6 +222,7 @@ jobs:
 
 
   test:
+    working_directory: ./code
     parameters:
       instance:
         type: string
