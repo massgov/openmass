@@ -210,12 +210,12 @@ jobs:
       command:
         type: enum
         enum: ['phpunit', 'behat']
-    docker:
-      - image: circleci/golang:1.15
+    machine:
+      image: circleci/golang:1.15
     steps:
       - checkout
-      - setup_remote_docker:
-          version: 19.03.13
+#      - setup_remote_docker:
+#          version: 19.03.13
       - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
       - run: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
       - run: ddev start -y
