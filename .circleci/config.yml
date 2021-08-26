@@ -130,13 +130,13 @@ jobs:
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - *save_composer_cache
       # Same for yarn - https://circleci.com/docs/2.0/yarn/#caching
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - v10-yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-{{ .Branch }}
-            - yarn-packages-master
-            - yarn-packages-
+#      - restore_cache:
+#          name: Restore Yarn Package Cache
+#          keys:
+#            - yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
+#            - yarn-packages-{{ .Branch }}
+#            - yarn-packages-master
+#            - yarn-packages-
       - run:
           name: Install Dependencies
           command: yarn install
