@@ -149,6 +149,26 @@ jobs:
           root: /var/www
           paths: [code]
 
+  push_acquia:
+    <<: *container_config
+    steps:
+      - *no_host_check
+      - *no_ssh_timeout
+      - checkout
+      - fetch_drush_aliases
+      - run: git add -f /var/www/code/drush/sites/self.site.yml
+      - *restore_composer_cache
+      - run: { name: 'Composer install', command: 'composer install --no-dev --no-interaction --optimize-autoloader' }
+      # Identify the committer i.e. CircleCI deployment bot
+      - run: git config --global user.email "circleci@example.com"
+      - run: git config --global user.name "CircleCI Deployment Bot"
+      # Prep for push to Acquia Git. Do so while we have a clean build.
+      - run: ( find docroot -type d -name .git && find docroot -type f -name .gitmodules ) | xargs rm -rf
+      - run: git add -A -f /var/www/code
+      - run: git commit -m "Add vendor code and drush alias."
+      # Add a deployment identifier file and push current branch to Acquia's Git repo.
+      - run: scripts/stamp-and-deploy
+
   # Run Danger to check for a changelog file in the PR.
   danger:
     <<: *container_config
@@ -195,7 +215,7 @@ jobs:
       # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
-      - composer global require squizlabs/php_codesniffer
+      - run: composer global require squizlabs/php_codesniffer
       - run: $HOME/.composer/vendor/bin/phpcs -v -n -s
 
   test:
@@ -495,10 +515,6 @@ workflows:
               <<: *branch_ignore
       - danger:
           requires: [build]
-      - push_acquia:
-          filters:
-            branches:
-              <<: *branch_ignore
       - test:
           name: test-phpunit
           command: phpunit
