@@ -122,10 +122,10 @@ jobs:
           command: .circleci/circle_trigger.sh
 
   build:
-    <<: *container_config
+    docker:
+      - image: cimg/php:7.4-node
     steps:
       - checkout
-      # See https://stackoverflow.com/questions/18126559/how-can-i-download-a-single-raw-file-from-a-private-github-repo-using-the-comman
       - *restore_composer_cache
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - *save_composer_cache
@@ -215,8 +215,7 @@ jobs:
       # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
-      - run: composer global require squizlabs/php_codesniffer
-      - run: composer global exec phpcs -- -v -n -s
+      - run: vendor/bin/phpcs -v -n -s
 
   test:
     working_directory: /tmp/code
@@ -245,7 +244,7 @@ jobs:
           name: Wait for mysql
           command: ./dockerize -wait tcp://localhost:3206 -timeout 2m
       # Run drush updatedb and cim.
-      - run: ddev exec scripts/ma-refresh-local --skip-db-prep
+      - run: ddev drush deploy
       # Get an overview
       - run: ddev drush status
       - run: cat /proc/cpuinfo
