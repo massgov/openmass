@@ -216,7 +216,7 @@ jobs:
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: composer global require squizlabs/php_codesniffer
-      - run: composer global exec phpcs -v -n -s
+      - run: composer global exec phpcs -- -v -n -s
 
   test:
     working_directory: /tmp/code
@@ -238,7 +238,7 @@ jobs:
       - run:
           command: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
           name: Install DDEV
-      - run: echo $DOCKER_API_KEY | docker login -u "${$DOCKER_USER}" --password-stdin
+      - run: echo $DOCKER_API_KEY | docker login -u $DOCKER_USER --password-stdin
       - run: ddev start -y
       - run: ddev describe
       - run:
