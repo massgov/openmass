@@ -42,6 +42,22 @@ references:
       - master
       - /^mayflower-dev-.*/
 
+executors:
+  base:
+    parameters:
+      instance:
+        type: string
+        default: massgov/mysql-sanitized:latest
+#    working_directory: /var/www/code
+    # https://circleci.com/docs/2.0/configuration-reference/#resource_class
+    resource_class: xlarge
+    machine:
+      image: ubuntu-2004:202101-01
+    environment:
+      DOCKER_ENV: ci
+      DDEV_NONINTERACTIVE: "true"
+
+
 commands:
   fetch_drush_aliases:
     parameters:
@@ -109,6 +125,12 @@ jobs:
     <<: *container_config
     steps:
       - checkout
+      - run:
+          command: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
+          name: Install DDEV
+      - run:
+          command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C /usr/local/bin -xzv && chmod +x /usr/local/bin/dockerize
+          name: Install Dockerize
       # See https://stackoverflow.com/questions/18126559/how-can-i-download-a-single-raw-file-from-a-private-github-repo-using-the-comman
       - *restore_composer_cache
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
@@ -202,7 +224,6 @@ jobs:
 
 
   test:
-    resource_class: xlarge
     parameters:
       instance:
         type: string
@@ -210,46 +231,37 @@ jobs:
       command:
         type: enum
         enum: ['phpunit', 'behat']
-    machine:
-      image: ubuntu-2004:202101-01
-    environment:
-      DDEV_NONINTERACTIVE: "true"
+    executor:
+      name: base
+      instance: << parameters.instance >>
     steps:
-      - checkout
-#      - setup_remote_docker:
-#          version: 19.03.13
-      - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
-      - run: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
+      - attach_workspace: {at: /var/www}
       - run: ddev start -y
       - run: ddev describe
-      - run: ddev composer install
-#     # Wait for mysql.
+      # Wait for mysql.
       - run: dockerize -wait tcp://localhost:3306 -timeout 2m
-#      # Run drush updatedb and cim.
-      - run: scripts/ma-refresh-local --skip-db-prep
-#      # Get an overview
-      - run: drush status
+      # Run drush updatedb and cim.
+      - run: ddev exec scripts/ma-refresh-local --skip-db-prep
+      # Get an overview
+      - run: ddev drush status
       - run: cat /proc/cpuinfo
       - run: cat /proc/meminfo
-#      # Ensure files and DTT directories are writable by www-data
-      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
-      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
-#      # Run DTT or Behat test command
+      # Ensure files and DTT directories are writable by www-data
+      - run: ddev exec mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: ddev exec chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+      # Run DTT or Behat test command
       - when:
           condition:
             and:
               - equal: [ behat, << parameters.command >> ]
           steps:
-            run: behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+            run: ddev exec behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - when:
           condition:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-           run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
-      - run: "docker cp web:/tmp/test-results /tmp/test-results"
-      - run: "docker cp web:/var/www/code/output /var/www/code/output"
-      - run: "docker cp web: /var/www/code/docroot/sites/simpletest/browser_output  /var/www/code/docroot/sites/simpletest/browser_output"
+           run: 'ddev exec su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -953,26 +965,26 @@ workflows:
               only: /.*/
 
   # Daily run of test suite using super sanitized DB
-#  build_test_super:
-#    jobs:
-#      - build
-#      - test:
-#          name: test-phpunit-super
-#          command: phpunit
-#          instance: massgov/mysql-sanitized:super
-#          requires: [build]
-#      - test:
-#          name: test-super-behat
-#          command: behat
-#          instance: massgov/mysql-sanitized:super
-#          requires: [build]
-#    triggers:
-#      - schedule:
-#          cron: "49 20 * * *"
-#          filters:
-#            branches:
-#              only:
-#                - develop
+  build_test_super:
+    jobs:
+      - build
+      - test:
+          name: test-phpunit-super
+          command: phpunit
+          instance: massgov/mysql-sanitized:super
+          requires: [build]
+      - test:
+          name: test-super-behat
+          command: behat
+          instance: massgov/mysql-sanitized:super
+          requires: [build]
+    triggers:
+      - schedule:
+          cron: "49 20 * * *"
+          filters:
+            branches:
+              only:
+                - develop
 
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
@@ -991,11 +1003,12 @@ workflows:
           instance: massgov/mysql-sanitized:super
     triggers:
       - schedule:
-          cron: "42 15 * * *"
+          cron: "55 18 * * *"
           filters:
             branches:
               only:
                 - develop
+                - rollback-mysql-upgrade
 
   # Usually triggered by drush ma:backstop.
   backstop_ad_hoc:
