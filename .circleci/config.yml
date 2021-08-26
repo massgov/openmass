@@ -232,9 +232,9 @@ jobs:
       instance: << parameters.instance >>
     steps:
       - attach_workspace: {at: /tmp}
-#      - run:
-#          command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C . -xzv && chmod +x ./dockerize
-#          name: Install Dockerize
+      - run:
+          command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C . -xzv && chmod +x ./dockerize
+          name: Install Dockerize
       - run:
           command: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
           name: Install DDEV
@@ -242,12 +242,8 @@ jobs:
       - run: ddev start -y
       - run: ddev describe
       - run:
-        command: |
-          while ! ddev drush sqlq "'SELECT 1'"
-          do
-              sleep 5
-          done
-        name: Wait for mysql
+          name: Wait for mysql
+          command: ./dockerize -wait tcp://localhost:3206 -timeout 2m
       # Run drush updatedb and cim.
       - run: ddev exec scripts/ma-refresh-local --skip-db-prep
       # Get an overview
