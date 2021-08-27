@@ -157,7 +157,8 @@ jobs:
           paths: [code]
 
   push_acquia:
-    <<: *container_config
+    docker:
+      - image: cimg/php:7.4-node
     steps:
       - *no_host_check
       - *no_ssh_timeout
@@ -171,7 +172,7 @@ jobs:
       - run: git config --global user.name "CircleCI Deployment Bot"
       # Prep for push to Acquia Git. Do so while we have a clean build.
       - run: ( find docroot -type d -name .git && find docroot -type f -name .gitmodules ) | xargs rm -rf
-      - run: git add -A -f /var/www/code
+      - run: git add -A -f .
       - run: git commit -m "Add vendor code and drush alias."
       # Add a deployment identifier file and push current branch to Acquia's Git repo.
       - run: scripts/stamp-and-deploy
@@ -248,7 +249,7 @@ jobs:
       - ddev_install_run
       - run:
           name: Wait for mysql
-          command: while [[ $(ddev drush sqlq "'SELECT 1;'")]];do echo 'Sleep 5';sleep 5;done
+          command: ddev exec ./dockerize -wait tcp://dbmass:3306 -timeout 2m
       - run: ddev drush status
       # Run drush updatedb and cim.
       - run: ddev drush deploy -vvv
@@ -468,7 +469,9 @@ jobs:
       auto-approve:
         type: boolean
         default: false
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
       - checkout
       - run: curl -L -f -o chamber https://github.com/segmentio/chamber/releases/download/v2.7.5/chamber-v2.7.5-linux-amd64
@@ -480,7 +483,7 @@ jobs:
           mv /tmp/terraform/terraform .
           chmod +x ./terraform
           rm -rf /tmp/terraform
-      - run: echo 'export PATH=/var/www/code:$PATH' >> $BASH_ENV
+      - run: echo 'export PATH=/tmp/code:$PATH' >> $BASH_ENV
       - when:
           condition: << parameters.auto-approve >>
           steps:
