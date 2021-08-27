@@ -59,6 +59,12 @@ executors:
 
 
 commands:
+  ddev_install_run:
+    steps:
+      - run: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
+      - run: echo $DOCKER_API_KEY | docker login -u $DOCKER_USER --password-stdin
+      - run: ddev start -y
+      - run: ddev describe
   fetch_drush_aliases:
     parameters:
       destination:
@@ -239,15 +245,10 @@ jobs:
       - run:
           command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C . -xzv && chmod +x ./dockerize
           name: Install Dockerize
-      - run:
-          command: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
-          name: Install DDEV
-      - run: echo $DOCKER_API_KEY | docker login -u $DOCKER_USER --password-stdin
-      - run: ddev start -y
-      - run: ddev describe
+      - ddev_install_run
       - run:
           name: Wait for mysql
-          command: while [[ $(ddev drush sqlq "'SELECT 1;'") ]];do echo 'Sleep 5';sleep 5;done && echo 'Success.'
+          command: while [[ $(ddev drush sqlq "'SELECT 1;'")]];do echo 'Sleep 5';sleep 5;done
       - run: ddev drush status
       # Run drush updatedb and cim.
       - run: ddev drush deploy -vvv
@@ -294,10 +295,12 @@ jobs:
 
   # Cut the release branch for Wednesday release only
   cut_release_branch:
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - attach_workspace: {at: /tmp}
+      - run: echo 'export PATH=/tmp/code/vendor/bin:$PATH' >> $BASH_ENV
       - *no_host_check
       - checkout
       # Identify the committer i.e. CircleCI deployment bot
@@ -309,10 +312,12 @@ jobs:
 
   # Create the mayflower branch for testing the develop branch.
   mayflower_develop_branch:
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - attach_workspace: {at: /tmp}
+      - run: echo 'export PATH=/tmp/code/vendor/bin:$PATH' >> $BASH_ENV
       - *no_host_check
       - checkout
       # Identify the committer i.e. CircleCI deployment bot
@@ -454,9 +459,9 @@ jobs:
       - image: cimg/php:7.4-node
     steps:
       - attach_workspace: {at: /tmp}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
-      - run: "drush pm:security"
-      - run: "drush pm:security-php"
+      - ddev_install_run
+      - run: "ddev drush pm:security"
+      - run: "ddev drush pm:security-php"
 
   ma-cf-deploy:
     parameters:
