@@ -172,7 +172,9 @@ jobs:
 
   # Run Danger to check for a changelog file in the PR.
   danger:
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
       - attach_workspace: {at: /tmp}
       - run:
@@ -244,8 +246,9 @@ jobs:
       - run:
           name: Wait for mysql
           command: ./dockerize -wait tcp://localhost:3206 -timeout 2m
+      - run: ddev drush status
       # Run drush updatedb and cim.
-      - run: ddev drush deploy
+      - run: ddev drush deploy -vvv
       # Get an overview
       - run: ddev drush status
       - run: cat /proc/cpuinfo
@@ -332,15 +335,16 @@ jobs:
         type: enum
         enum: ["", "--refresh-db"]
         default: ""
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - attach_workspace: {at: /tmp}
       - *no_host_check
       - *no_ssh_timeout
       - fetch_drush_aliases
       - run:
-          command: "drush ma:deploy -v -y << parameters.skip-maint >> << parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
+          command: "vendor/bin/drush ma:deploy -v -y << parameters.skip-maint >> << parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
           no_output_timeout: 60m
       - jira/notify:
           environment: << parameters.target >>
@@ -354,10 +358,12 @@ jobs:
         type: integer
       target:
         type: string
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
+      - attach_workspace: {at: /tmp}
+      - run: echo 'export PATH=/tmp/code/vendor/bin:/tmp/code/node_modules/.bin:$PATH' >> $BASH_ENV
       - *no_host_check
       - *no_ssh_timeout
       - fetch_drush_aliases
@@ -441,12 +447,14 @@ jobs:
       - run: docker push << parameters.instance >>
 
   pending_security:
-      <<: *container_config
-      steps:
-        - attach_workspace: {at: /var/www}
-        - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
-        - run: "drush pm:security"
-        - run: "drush pm:security-php"
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
+    steps:
+      - attach_workspace: {at: /tmp}
+      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - run: "drush pm:security"
+      - run: "drush pm:security-php"
 
   ma-cf-deploy:
     parameters:
