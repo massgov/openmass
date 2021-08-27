@@ -247,7 +247,7 @@ jobs:
       - run: ddev describe
       - run:
           name: Wait for mysql
-          command: while [[ ddev drush sql:cli ]];do echo 'Sleep 5';sleep 5;done && echo 'Success.'
+          command: while [[ $(ddev drush sqlq "'SELECT 1;'") ]];do echo 'Sleep 5';sleep 5;done && echo 'Success.'
       - run: ddev drush status
       # Run drush updatedb and cim.
       - run: ddev drush deploy -vvv
