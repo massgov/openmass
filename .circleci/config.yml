@@ -63,7 +63,7 @@ commands:
     parameters:
       destination:
         type: string
-        default: "/var/www/code/drush/sites/self.site.yml"
+        default: "/tmp/code/drush/sites/self.site.yml"
     steps:
       - run: "curl -f -o << parameters.destination >> -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml"
 
@@ -183,8 +183,9 @@ jobs:
 
   # Automate the tagging process in GitHub
   tagging_github:
-    <<: *container_config
     working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
       - attach_workspace: {at: /tmp}
       - *no_host_check
@@ -195,7 +196,8 @@ jobs:
 
   # Automate the tagging process by using the GitHub then pushing to Acquia repository.
   tagging_acquia:
-    <<: *container_config
+    docker:
+      - image: cimg/php:7.4-node
     steps:
       - *no_host_check
       - checkout
@@ -245,7 +247,7 @@ jobs:
       - run: ddev describe
       - run:
           name: Wait for mysql
-          command: ./dockerize -wait tcp://localhost:3206 -timeout 2m
+          command: while [[ ddev drush sql:cli ]];do echo 'Sleep 5';sleep 5;done && echo 'Success.'
       - run: ddev drush status
       # Run drush updatedb and cim.
       - run: ddev drush deploy -vvv
