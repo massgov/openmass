@@ -6,15 +6,6 @@ orbs:
 # - https://circleci.com/blog/circleci-hacks-reuse-yaml-in-your-circleci-config-with-yaml/
 # - https://github.com/circleci/frontend/blob/master/.circleci/config.yml
 references:
-  container_config: &container_config
-    working_directory: /var/www/code
-    docker:
-      # @see https://github.com/massgov/Drupal-Container
-      - image: massgov/drupal-container:1.0.19-ci
-        environment:
-          COMPOSER_ALLOW_SUPERUSER: 1
-          AWS_REGION: us-east-1
-
   # Dynamic hosts mean constantly checking interactively that we mean to connect to an unknown host. We ignore those here.
   no_host_check: &no_host_check
     run: {name: 'Disable StrictHostKeyChecking', command: 'mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config'}
@@ -45,10 +36,10 @@ references:
 executors:
   base:
     parameters:
+      #  @todo
       instance:
         type: string
         default: massgov/mysql-sanitized:latest
-#    working_directory: /var/www/code
     # https://circleci.com/docs/2.0/configuration-reference/#resource_class
     resource_class: xlarge
     machine:
@@ -65,6 +56,10 @@ commands:
       - run: echo $DOCKER_API_KEY | docker login -u $DOCKER_USER --password-stdin
       - run: ddev start -y
       - run: ddev describe
+  git_configure_user:
+    steps:
+      - run: git config --global user.email "circleci@example.com"
+      - run: git config --global user.name "CircleCI Deployment Bot"
   fetch_drush_aliases:
     parameters:
       destination:
@@ -168,8 +163,7 @@ jobs:
       - *restore_composer_cache
       - run: { name: 'Composer install', command: 'composer install --no-dev --no-interaction --optimize-autoloader' }
       # Identify the committer i.e. CircleCI deployment bot
-      - run: git config --global user.email "circleci@example.com"
-      - run: git config --global user.name "CircleCI Deployment Bot"
+      - git_configure_user
       # Prep for push to Acquia Git. Do so while we have a clean build.
       - run: ( find docroot -type d -name .git && find docroot -type f -name .gitmodules ) | xargs rm -rf
       - run: git add -A -f .
@@ -197,8 +191,7 @@ jobs:
       - attach_workspace: {at: /tmp}
       - *no_host_check
       # Identify the committer i.e. CircleCI deployment bot
-      - run: git config --global user.email "circleci@example.com"
-      - run: git config --global user.name "CircleCI Deployment Bot"
+      - git_configure_user
       - run: php scripts/tag-github.php
 
   # Automate the tagging process by using the GitHub then pushing to Acquia repository.
@@ -209,8 +202,7 @@ jobs:
       - *no_host_check
       - checkout
       # Identify the committer i.e. CircleCI deployment bot
-      - run: git config --global user.email "circleci@example.com"
-      - run: git config --global user.name "CircleCI Deployment Bot"
+      - git_configure_user
       # Push this build to Acquia's master branch, and tag it there.
       - run: scripts/tag-release-deploy
 
@@ -249,8 +241,7 @@ jobs:
       - ddev_install_run
       - run:
           name: Wait for mysql
-          command: ddev exec ./dockerize -wait tcp://dbmass:3306 -timeout 2m
-      - run: ddev drush status
+          command: ddev exec ./dockerize -wait tcp://dbmass:3306 -timeout 5m
       # Run drush updatedb and cim.
       - run: ddev drush deploy -vvv
       # Get an overview
@@ -266,13 +257,13 @@ jobs:
             and:
               - equal: [ behat, << parameters.command >> ]
           steps:
-            run: ddev exec behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+            - run: ddev exec behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - when:
           condition:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-            run: 'ddev exec su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
+            - run: 'ddev exec su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -305,8 +296,7 @@ jobs:
       - *no_host_check
       - checkout
       # Identify the committer i.e. CircleCI deployment bot
-      - run: git config --global user.email "circleci@example.com"
-      - run: git config --global user.name "CircleCI Deployment Bot"
+      - git_configure_user
       # Create a release branch from the develop branch in GitHub.
       - run:
           command: "php scripts/build-changelog.php"
@@ -322,8 +312,7 @@ jobs:
       - *no_host_check
       - checkout
       # Identify the committer i.e. CircleCI deployment bot
-      - run: git config --global user.email "circleci@example.com"
-      - run: git config --global user.name "CircleCI Deployment Bot"
+      - git_configure_user
       # Create a release branch from the develop branch in GitHub.
       - run:
           command: "php scripts/ma-mayflower-develop.php"
