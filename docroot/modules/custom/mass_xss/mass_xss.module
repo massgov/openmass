@@ -193,7 +193,7 @@ function mass_xss_xssify_entity(ContentEntityInterface $entity) {
 
       default:
         // Warn if we hit a field type we don't know about.
-        drupal_set_message(t('Unknown data type @type', [
+        Drupal::messenger()->addMessage(t('Unknown data type @type', [
           '@type' => $definition->getType(),
         ]));
     }

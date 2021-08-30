@@ -435,14 +435,13 @@ display:
             format: default_summary
           specify_validation: true
           validate:
-            type: mass_taxonomy_term_name_into_id_depth_parent
+            type: mass_taxonomy_term_url_name_into_id_depth_parent
             fail: 'not found'
           validate_options:
             bundles:
               data_topic: data_topic
             access: '1'
             operation: view
-            transform: '1'
             term_depth: '1'
             term_depth_value: '1'
             term_parent: 0

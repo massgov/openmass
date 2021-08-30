@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_media\ExistingSite;
 
+use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
@@ -36,11 +37,10 @@ class MediaPrivateTest extends ExistingSiteBase {
     $this->markEntityForCleanup($media);
 
     $file2 = File::load($media->field_upload_file->target_id);
-    $fs = \Drupal::service('file_system');
-    $this->assertEquals('private', $fs->uriScheme($file2->getFileUri()));
+    $this->assertEquals('private', StreamWrapperManager::getScheme($file2->getFileUri()));
 
     // Make sure the original public file is gone. See mass_caching_file_move().
-    $this->assertFileNotExists($file->getFileUri());
+    $this->assertFileDoesNotExist($file->getFileUri());
   }
 
   /**
@@ -65,8 +65,7 @@ class MediaPrivateTest extends ExistingSiteBase {
     $this->markEntityForCleanup($media);
 
     $file2 = File::load($media->field_upload_file->target_id);
-    $fs = \Drupal::service('file_system');
-    $this->assertEquals('private', $fs->uriScheme($file2->getFileUri()));
+    $this->assertEquals('private', StreamWrapperManager::getScheme($file2->getFileUri()));
   }
 
   /**
@@ -91,8 +90,7 @@ class MediaPrivateTest extends ExistingSiteBase {
     $this->markEntityForCleanup($media);
 
     $file2 = File::load($media->field_upload_file->target_id);
-    $fs = \Drupal::service('file_system');
-    $this->assertEquals('public', $fs->uriScheme($file2->getFileUri()));
+    $this->assertEquals('public', StreamWrapperManager::getScheme($file2->getFileUri()));
   }
 
 }
