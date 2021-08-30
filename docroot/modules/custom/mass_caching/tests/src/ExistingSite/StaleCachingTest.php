@@ -39,8 +39,8 @@ class StaleCachingTest extends ExistingSiteBase {
 
     // Test that anonymous users have stale headers and the value is correct.
     $duration = StaleResponseSubscriber::DURATION;
-    $this->assertContains("stale-if-error=$duration", $headers['Cache-Control'][0]);
-    $this->assertContains("stale-while-revalidate=$duration", $headers['Cache-Control'][0]);
+    $this->assertStringContainsString("stale-if-error=$duration", $headers['Cache-Control'][0]);
+    $this->assertStringContainsString("stale-while-revalidate=$duration", $headers['Cache-Control'][0]);
 
     // Test that authenticated users do not have stale headers of any kind.
     $account = $this->createUser();
@@ -48,8 +48,8 @@ class StaleCachingTest extends ExistingSiteBase {
 
     $this->drupalGet('foo-foo');
     $headers = $this->getSession()->getResponseHeaders();
-    $this->assertNotContains('stale-if-error', $headers['Cache-Control'][0]);
-    $this->assertNotContains('stale-while-revalidate', $headers['Cache-Control'][0]);
+    $this->assertStringNotContainsString('stale-if-error', $headers['Cache-Control'][0]);
+    $this->assertStringNotContainsString('stale-while-revalidate', $headers['Cache-Control'][0]);
   }
 
 }

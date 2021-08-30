@@ -44,9 +44,14 @@ const scenarios = pages.map(function(page) {
       base = `https://massgov${target}.prod.acquia-sites.com`;
       auth = getAuth();
   }
+  const url = new URL(`${base}${page.url}`);
+  let separator = "?";
+  if (url.search !== "") {
+    separator = "&";
+  }
   return {
     ...page,
-    url: `${base}${page.url}?cachebuster=${Math.random().toString(36).substring(7)}`,
+    url: `${base}${page.url}${separator}cachebuster=${Math.random().toString(36).substring(7)}`,
     misMatchThreshold: 0.05,
     auth,
   }

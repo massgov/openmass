@@ -16,6 +16,7 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\file\Entity\File;
+use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Url;
@@ -23,6 +24,7 @@ use Drupal\Core\Render\Element;
 use Drupal\node\Entity\Node;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\path_alias\PathAliasInterface;
 use Drupal\user\Entity\User;
 use Drupal\redirect\Entity\Redirect;
 
@@ -351,7 +353,7 @@ function mass_utility_form_revision_overview_form_alter(&$form, FormStateInterfa
     $vid = $row['select_column_one']['#return_value'];
 
     if ($revision = $nodeStorage->loadRevision($vid)) {
-      if ($revisionAuthor = $revision->getRevisionAuthor()) {
+      if ($revisionAuthor = $revision->get('revision_uid')->entity) {
         $title = $revision->getTitle();
         $nid = $revision->id();
         $title_nid = "Outreach about Mass.gov revision \"$title\" ($nid)";
@@ -1289,20 +1291,20 @@ function mass_utility_inline_entity_form_entity_form_alter(&$entity_form, &$form
 }
 
 /**
- * Implements hook_path_update().
+ * Implements hook_path_alias_update().
  *
  * Update the media download link when a media entity alias is updated.
  */
-function mass_utility_path_update(array $path) {
-  if ($path['alias'] != $path['original']['alias']) {
-    $params = Url::fromUserInput($path['source'])->getRouteParameters();
+function mass_utility_path_alias_update(PathAliasInterface $path) {
+  if ($path->getAlias() != $path->original->getAlias()) {
+    $params = Url::fromUserInput($path->getPath())->getRouteParameters();
     if (isset($params['media'])) {
-      $og_document_alias = $path['original']['alias'] . '/download';
-      if (!redirect_repository()->findMatchingRedirect($og_document_alias, [], $path['original']['langcode'])) {
+      $og_document_alias = $path->original->getAlias() . '/download';
+      if (!redirect_repository()->findMatchingRedirect($og_document_alias, [], $path->original->getLangcode())) {
         $redirect = Redirect::create();
         $redirect->setSource($og_document_alias);
-        $redirect->setRedirect($path['source'] . '/download');
-        $redirect->setLanguage($path['original']['langcode']);
+        $redirect->setRedirect($path->getPath() . '/download');
+        $redirect->setLanguage($path->original->getLangcode());
         $redirect->setStatusCode(\Drupal::config('redirect.settings')->get('default_status_code'));
         $redirect->save();
       }
