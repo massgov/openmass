@@ -88,9 +88,9 @@
   {% set level = level + 1 %}
 
   {% for i in range(1, numOfSections) %}
-    {% if pageContent[i]['sectionThreeUp'] %}
-      {% set sectionThreeUp = pageContent[i]['sectionThreeUp'] %}
-      {% include "@organisms/by-author/sections-three-up.twig" %}
+    {% if pageContent[i]['collapsibleContent'] %}
+      {% set collapsibleContent = pageContent[i]['collapsibleContent'] %}
+      {% include "@organisms/by-author/collapsible-content.twig" %}
     {% endif %}
   {% endfor %}
 

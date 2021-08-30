@@ -1820,4 +1820,80 @@ class Organisms {
     return $return_array;
   }
 
+  /**
+   * Returns the variables structure required to render Collapsible Content.
+   *
+   * @param object $entities
+   *   The object that contains the fields.
+   * @param array $options
+   *   An array containing options.
+   * @param array $field_map
+   *   An optional array of fields.
+   * @param array $cache_tags
+   *   The array of cache_tags sent in the node render array.
+   *
+   * @see @organsms/by-author/collapsible-content
+   *
+   * @return array
+   *   Returns structured array.
+   */
+  public static function prepareCollapsibleContent($entities, array $options = [], array $field_map = NULL, array &$cache_tags = []) {
+    $items = [];
+    $fields = [];
+
+    if ($field_map) {
+      $fields = Helper::getMappedFields($entities, $field_map);
+    }
+
+    // Logic for topic_cards related field.
+    if (isset($fields['topic_cards'])) {
+      // Loop through the Link Groups.
+      foreach ($entities->{$fields['topic_cards']} as $item) {
+        $url = $item->getUrl();
+        $link = Helper::separatedLink($item);
+        // Load up our entity if internal.
+        if ($url->isExternal() == FALSE && $url->isRouted() == TRUE && method_exists($url, 'getRouteParameters')) {
+          $params = $url->getRouteParameters();
+          $entity_type = key($params);
+          $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($params[$entity_type]);
+          // If the entity is a topic_page, set the item array differently.
+          if (!empty($entity) && $entity->bundle() == 'topic_page') {
+            // @todo: Update this based on new design.
+            // @todo: Include topic link groups for the item.
+            $items[] = [
+              'expanded' => false,
+              'collapsibleHeader' => [
+                "title" => $link['text'],
+                "icon" => 'circle-chevron',
+              ],
+              'more' => [
+                "href" => $link['url'],
+                "text" => $link['text'],
+                "info" => '',
+              ],
+            ];
+            continue;
+          }
+        }
+        // Otherwise, set the item array.
+        // @todo: Update this based on new design.
+        $items[] = [
+          'expanded'=> false,
+          'collapsibleHeader' => [
+            "title" => $link['text'],
+          ],
+          'more' => [
+            "href" => $link['url'],
+            "text" => $link['text'],
+            "info" => '',
+          ],
+        ];
+      }
+    }
+    // Set the section heading.
+    $heading = isset($options['compHeading']) ? Helper::buildHeading($options['compHeading']) : [];
+    // Return the link group array.
+    return array_merge($heading, ['items' => $items]);
+  }
+
 }
