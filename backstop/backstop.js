@@ -28,6 +28,7 @@ const target = opts.length ? opts[0].replace('--target=', '') : 'prod';
 const scenarios = pages.map(function(page) {
   let base = process.env.BASE_URL;
   let auth = false;
+
   switch (target) {
     case 'prod':
       base = 'https://www.mass.gov';
