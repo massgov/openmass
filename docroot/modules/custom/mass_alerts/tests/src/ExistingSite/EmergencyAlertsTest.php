@@ -146,7 +146,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
 
     $this->drupalGet('/alerts/page/' . $org_node->id());
     $headers = $session->getResponseHeaders();
-    $this->assertStringContainsString('HIT', $headers[DynamicPageCacheSubscriber::HEADER]);
+    $this->assertStringContainsString('HIT', $headers[DynamicPageCacheSubscriber::HEADER][0]);
   }
 
   /**
