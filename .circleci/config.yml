@@ -252,9 +252,6 @@ jobs:
       # Ensure files and DTT directories are writable by www-data
       - run: ddev exec mkdir -p output docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: ddev exec sudo chown -R www-data:www-data output docroot/sites/default/files docroot/sites/simpletest/browser_output
-      - run: ddev exec pwd
-      - run: ddev exec behat --profile=ci --config-reference
-      - run: ddev exec behat --profile=ci --debug
       # Run DTT or Behat test command
       - when:
           condition:
@@ -267,7 +264,7 @@ jobs:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-            - run: ddev exec sudo -u www-data phpunit docroot/modules/custom --verbose --log-junit output/test-results/dtt/junit.xml
+            - run: ddev exec sudo phpunit docroot/modules/custom --verbose --log-junit output/test-results/dtt/junit.xml
       - store_test_results:
           path: output/test-results
       - store_test_results:
