@@ -258,13 +258,13 @@ jobs:
             and:
               - equal: [ behat, << parameters.command >> ]
           steps:
-            - run: ddev exec behat --profile=ci --strict --format=junit --out=output/behat --format=pretty --out=std
+            - run: ddev exec behat --profile=ci --strict --format=junit --out=/var/www/html/output/behat --format=pretty --out=std
       - when:
           condition:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-            - run: ddev exec sudo phpunit docroot/modules/custom --verbose --log-junit output/test-results/dtt/junit.xml
+            - run: ddev exec sudo vendor/bin/phpunit docroot/modules/custom --verbose --log-junit output/test-results/dtt/junit.xml
       - store_test_results:
           path: output/test-results
       - store_test_results:
