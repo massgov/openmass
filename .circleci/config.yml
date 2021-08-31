@@ -250,8 +250,8 @@ jobs:
       - run: cat /proc/cpuinfo
       - run: cat /proc/meminfo
       # Ensure files and DTT directories are writable by www-data
-      - run: ddev exec mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
-      - run: ddev exec sudo chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: ddev exec mkdir -p output docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: ddev exec sudo chown -R www-data:www-data output docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: ddev exec pwd
       - run: ddev exec behat --profile=ci --config-reference
       - run: ddev exec behat --profile=ci --debug
@@ -261,24 +261,23 @@ jobs:
             and:
               - equal: [ behat, << parameters.command >> ]
           steps:
-            - run: ddev exec behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+            - run: ddev exec behat --profile=ci --strict --format=junit --out=output/behat --format=pretty --out=std
       - when:
           condition:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-            - run: ddev exec phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml
+            - run: ddev exec sudo -u www-data phpunit docroot/modules/custom --verbose --log-junit output/test-results/dtt/junit.xml
       - store_test_results:
-          path: /tmp/test-results
+          path: output/test-results
+      - store_test_results:
+          path: output/default.xml
       - store_artifacts:
           # Pages saved via 'Then save the html for the page'. @see \FeatureContext::saveHtml.
-          path: /tmp/code/output
+          path: output
       - store_artifacts:
           # DTT saves page output for all requests.
-          path: /tmp/code/docroot/sites/simpletest/browser_output
-      - store_artifacts:
-          # Save Junit files for timing inspection.
-          path: /tmp/test-results
+          path: docroot/sites/simpletest/browser_output
 
   cloudflare:
     working_directory: /tmp/code
