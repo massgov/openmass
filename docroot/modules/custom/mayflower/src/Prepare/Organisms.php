@@ -1908,7 +1908,7 @@ class Organisms {
                 'path' => '@organisms/by-author/link-list.twig',
                 'data' => [
                   'linkList' => $topic_data,
-                  ],
+                ],
               ];
             }
             // Add the topic link includes to the topic item.
