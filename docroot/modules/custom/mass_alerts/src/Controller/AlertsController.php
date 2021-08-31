@@ -2,23 +2,26 @@
 
 namespace Drupal\mass_alerts\Controller;
 
-use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Cache\CacheableResponse;
+use Drupal\Component\Datetime\DateTimePlus;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
-use DateTimeZone;
-use Symfony\Component\HttpFoundation\Request;
+use Drupal\Core\Cache\CacheableResponse;
+use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Render\Renderer;
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
 use Drupal\mayflower\Helper;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Defines a route controller for entity query.
  */
 class AlertsController extends ControllerBase implements ContainerInjectionInterface {
+
+  const DURATION_PAGE = 900;
+  const DURATION_SITE = 60;
 
   /**
    * Constructs a ApiController object.
@@ -124,14 +127,21 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
       ksort($alerts);
       $results['emergencyAlerts']['alerts'] = array_values($alerts);
-    }
 
-    $results['emergencyAlerts']['emergencyHeader']['title'] = $node->label();
+      $severity = $node->get('field_alert_severity')->getString();
+      // The header prefix defaults to "Emergency Alerts" in the
+      // emergency-header.twig molecule mayflower component.
+      if ($severity == 'informational_notice') {
+        $results['emergencyAlerts']['emergencyHeader']['prefix'] = "Informational Alerts";
+      }
+      $results['emergencyAlerts']['emergencyHeader']['title'] = $node->label();
+    }
 
     $build = [
       '#theme' => 'mass_alerts_sitewide',
       '#emergencyAlerts' => $results['emergencyAlerts'],
       '#cache' => [
+        'max-age' => self::DURATION_SITE,
         'tags' => [
           MASS_ALERTS_TAG_GLOBAL,
           MASS_ALERTS_TAG_SITEWIDE . ':list'
@@ -149,7 +159,9 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     }
 
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($build));
-    $response->setMaxAge(60);
+    $response->setMaxAge(self::DURATION_SITE);
+    $response->headers->addCacheControlDirective('public');
+    $this->addRevalidateHeaders($response);
     return $response;
   }
 
@@ -243,9 +255,10 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           'title' => $label,
         ];
 
+        $timestamp = $node->get('field_alert_node_timestamp')->getString();
+
         if ($hide_message == '1') {
           $alert_title = $node->get('field_alert_title_link')->getString();
-          $timestamp = $node->get('field_alert_node_timestamp')->getString();
 
           if ($alert_title == 'link') {
             $uri = $node->get('field_alert_title_link_target')->getString();
@@ -257,53 +270,69 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
         else {
 
           $items = $node->get('field_alert')->referencedEntities();
-          $item = reset($items);
 
-          // If by some reaonse thats not have  content ignore this alert.
-          if (!$item) {
+          // If by some reason there is not content, ignore this alert.
+          if (empty($items)) {
             continue;
           }
 
-          $timestamp = $item->get('field_emergency_alert_timestamp')->getString();
-
           $alert['accordion'] = TRUE;
           $alert['isExpanded'] = FALSE;
+          $messages = [];
 
-          $link_type = $item->get('field_emergency_alert_link_type')->getString();
-          $url = FALSE;
+          foreach ($items as $item) {
+            $message_timestamp = $item->get('field_emergency_alert_timestamp')->getString();
 
-          if ($link_type == '1') {
-            $uri = $item->get('field_emergency_alert_link')->getString();
-            if ($uri) {
-              $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
+            $link_type = $item->get('field_emergency_alert_link_type')->getString();
+            $url = FALSE;
+
+            if ($link_type == '1') {
+              $uri = $item->get('field_emergency_alert_link')->getString();
+              if ($uri) {
+                $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
+              }
+            }
+            elseif ($link_type == '0') {
+              $url = $node->toUrl()->toString(TRUE)->getGeneratedUrl();
+              $url .= '#' . $item->id();
+            }
+
+            $content = $item->get('field_emergency_alert_message')->getString();
+
+            if ($url) {
+              $messages[] = [
+                'decorativeLink' => [
+                  'href' => $url,
+                  'text' => $content,
+                  'info' => $this->t('Learn more @label', ['@label' => $label]),
+                  'property' => '',
+                ]
+              ];
+            }
+            else {
+              $messages[] = [
+                'richText' => [
+                  'rteElements' => [
+                    [
+                      'path' => '@atoms/11-text/paragraph.twig',
+                      'data' => [
+                        'paragraph' => ['text' => $content],
+                      ],
+                    ],
+                  ],
+                ]
+              ];
             }
           }
-          elseif ($link_type == '0') {
-            $url = $node->toUrl()->toString(TRUE)->getGeneratedUrl();
-            $url .= '#' . $item->id();
-          }
 
-          $content = $item->get('field_emergency_alert_message')->getString();
-
-          if ($url) {
-            $alert['decorativeLink'] = [
-              'href' => $url,
-              'text' => $content,
-              'info' => $this->t('Learn more @label', ['@label' => $label]),
-              'property' => '',
-            ];
+          if (count($messages) == 1) {
+            $alert = array_merge($alert, $messages[0]);
+            if (!$timestamp && $message_timestamp) {
+              $timestamp = $message_timestamp;
+            }
           }
           else {
-            $alert['richText'] = [
-              'rteElements' => [
-                [
-                  'path' => '@atoms/11-text/paragraph.twig',
-                  'data' => [
-                    'paragraph' => ['text' => $content],
-                  ],
-                ],
-              ],
-            ];
+            $alert['content'] = $messages;
           }
         }
 
@@ -332,7 +361,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       '#headerAlerts' => $results['headerAlerts'],
       '#headerTitle' => $results['headerTitle'],
       '#cache' => [
-        'max-age' => Cache::PERMANENT,
+        'max-age' => self::DURATION_PAGE,
         'tags' => $tags,
       ],
     ];
@@ -345,6 +374,9 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $response->addCacheableDependency($node);
     }
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($build));
+    $response->headers->addCacheControlDirective('public');
+    $response->setMaxAge(self::DURATION_PAGE);
+    $this->addRevalidateHeaders($response);
     return $response;
   }
 
@@ -372,6 +404,19 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     if (!empty($inlined)) {
       $content .= Helper::wrapInlinedSvgs($inlined);
     }
+  }
+
+  /**
+   * Add to the response the standard HTTP revalidate headers.
+   *
+   * @param \Drupal\Core\Cache\CacheableResponse $response
+   *   A Symfony response.
+   *
+   * @throws \Exception
+   */
+  public function addRevalidateHeaders(CacheableResponse $response) {
+    $response->setLastModified(new \DateTime(gmdate(DateTimePlus::RFC7231, REQUEST_TIME)));
+    $response->setEtag(REQUEST_TIME);
   }
 
 }

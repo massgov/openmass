@@ -183,7 +183,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
-  public function release($target, $git_ref, array $options = ['ci-branch' => 'develop']) {
+  public function release($target, $git_ref, array $options = ['ci-branch' => self::REQ]) {
     // For production deployments, prompt the user if they are sure. If they say no, exit.
     if ($target === 'prod') {
       $this->confirmProd();
@@ -195,7 +195,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $options = [
       'auth' => [$this->getTokenCircle()],
       'json' => [
-        'branch' => $options['ci-branch'],
+        'branch' => $options['ci-branch'] ?: $git_ref,
         'parameters' => [
           'post-trigger' => FALSE,
           'webhook' => FALSE,
