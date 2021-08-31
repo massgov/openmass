@@ -251,7 +251,7 @@ jobs:
       - run: cat /proc/meminfo
       # Ensure files and DTT directories are writable by www-data
       - run: ddev exec mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
-      - run: ddev sudo exec chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: ddev exec sudo chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
       # Run DTT or Behat test command
       - when:
           condition:
