@@ -9,24 +9,22 @@ use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
-use Drupal\file\FileInterface;
 use Drupal\link\LinkItemInterface;
-use Drupal\media\MediaInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\file\Entity\File;
+use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Element;
-use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Database\Query\AlterableInterface;
+use Drupal\path_alias\PathAliasInterface;
 use Drupal\user\Entity\User;
 use Drupal\redirect\Entity\Redirect;
 
@@ -309,6 +307,11 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
       '#weight' => -99,
     ];
   }
+
+  if ($form_id === 'media_document_add_form' || $form_id === 'media_document_edit_form') {
+    $form['actions']['submit']['#submit'][] = 'media_document_redirect';
+  }
+
   if ($media_form->getOperation() === 'add') {
     // Set the default value the same as the current user's org.
     $user = User::load(\Drupal::currentUser()->id());
@@ -332,6 +335,13 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
 }
 
 /**
+ * Redirects media forms to "all documents" view.
+ */
+function media_document_redirect($form, FormStateInterface $form_state) {
+  $form_state->setRedirect('view.all_documents.page_1');
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function mass_utility_form_revision_overview_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -343,7 +353,7 @@ function mass_utility_form_revision_overview_form_alter(&$form, FormStateInterfa
     $vid = $row['select_column_one']['#return_value'];
 
     if ($revision = $nodeStorage->loadRevision($vid)) {
-      if ($revisionAuthor = $revision->getRevisionAuthor()) {
+      if ($revisionAuthor = $revision->get('revision_uid')->entity) {
         $title = $revision->getTitle();
         $nid = $revision->id();
         $title_nid = "Outreach about Mass.gov revision \"$title\" ($nid)";
@@ -472,15 +482,18 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
     }
     else {
       // Set link field descriptions for all other link fields.
+      // Default description values.
+      $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".');
+      $element['title']['#description'] = t('For links to Mass.gov pages, leave the link text empty to automatically use the page title. External links require link text.');
 
       // Override description of the URL field in External data resource content type.
       if ($field_name == 'field_externaldata_url') {
         $element['uri']['#description'] = t('Enter a complete URL. It must begin with "https://" or "http://".');
       }
-      else {
-        $element['uri']['#description'] = t('Start typing to choose an existing page on Mass.gov, or enter a complete URL to another site. If you want to add an external link, it must begin with "https://" or "http://".');
+      // Override description of the Link text field in Collections vocabulary.
+      if ($field_name == 'field_landing_page') {
+        $element['title']['#description'] = t('Link text is required for both internal and external links.');
       }
-      $element['title']['#description'] = t('For links to Mass.gov pages, leave the link text empty to automatically use the page title. External links require link text.');
     }
   }
   elseif ($type == 'entity_reference') {
@@ -1278,20 +1291,20 @@ function mass_utility_inline_entity_form_entity_form_alter(&$entity_form, &$form
 }
 
 /**
- * Implements hook_path_update().
+ * Implements hook_path_alias_update().
  *
  * Update the media download link when a media entity alias is updated.
  */
-function mass_utility_path_update(array $path) {
-  if ($path['alias'] != $path['original']['alias']) {
-    $params = Url::fromUserInput($path['source'])->getRouteParameters();
+function mass_utility_path_alias_update(PathAliasInterface $path) {
+  if ($path->getAlias() != $path->original->getAlias()) {
+    $params = Url::fromUserInput($path->getPath())->getRouteParameters();
     if (isset($params['media'])) {
-      $og_document_alias = $path['original']['alias'] . '/download';
-      if (!redirect_repository()->findMatchingRedirect($og_document_alias, [], $path['original']['langcode'])) {
+      $og_document_alias = $path->original->getAlias() . '/download';
+      if (!redirect_repository()->findMatchingRedirect($og_document_alias, [], $path->original->getLangcode())) {
         $redirect = Redirect::create();
         $redirect->setSource($og_document_alias);
-        $redirect->setRedirect($path['source'] . '/download');
-        $redirect->setLanguage($path['original']['langcode']);
+        $redirect->setRedirect($path->getPath() . '/download');
+        $redirect->setLanguage($path->original->getLangcode());
         $redirect->setStatusCode(\Drupal::config('redirect.settings')->get('default_status_code'));
         $redirect->save();
       }

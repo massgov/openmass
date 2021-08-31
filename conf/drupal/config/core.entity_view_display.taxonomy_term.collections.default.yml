@@ -3,10 +3,11 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_landing_page
+    - field.field.taxonomy_term.collections.field_url_name
     - taxonomy.vocabulary.collections
   module:
-    - link
     - text
 id: taxonomy_term.collections.default
 targetEntityType: taxonomy_term
@@ -20,17 +21,8 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_landing_page:
-    weight: 1
-    label: hidden
-    settings:
-      trim_length: null
-      url_only: false
-      url_plain: false
-      rel: '0'
-      target: '0'
-    third_party_settings: {  }
-    type: link
-    region: content
 hidden:
+  field_all_collection_breadcrumb: true
+  field_landing_page: true
+  field_url_name: true
   langcode: true

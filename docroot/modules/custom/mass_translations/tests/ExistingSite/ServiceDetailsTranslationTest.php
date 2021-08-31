@@ -91,7 +91,7 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
     $element = $page->find('css', 'link[hreflang="x-default"]')->getAttribute('href');
     $this->assertEqual($element, $entity->toUrl()->setOption('language', $entity->language())->setAbsolute()->toString());
     $tabs = $page->find('css', '.primary-tabs')->getText();
-    $this->assertContains('Translations', $tabs, 'No Translations tab was found');
+    $this->assertStringContainsString('Translations', $tabs, 'No Translations tab was found');
   }
 
   /**
@@ -107,7 +107,7 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
     $element = $page->find('css', 'link[hreflang="' . $translation->language()->getId() . '"]');
     $this->assertNotEmpty($element, 'No hreflang value found for translation on the English page');
     $tabs = $page->find('css', '.primary-tabs')->getText();
-    $this->assertContains('Translations', $tabs, 'No Translations tab was found');
+    $this->assertStringContainsString('Translations', $tabs, 'No Translations tab was found');
   }
 
   /**

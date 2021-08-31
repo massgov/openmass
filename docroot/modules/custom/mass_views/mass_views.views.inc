@@ -35,6 +35,28 @@ function mass_views_views_data_alter(array &$data) {
     ],
   ];
 
+  // Adds an org parent filter for nodes.
+  $data['node_field_data']['node_parent_org_filter'] = [
+    'title' => 'Organization Parent Filter',
+    'filter' => [
+      'title' => t('Organization Parent Filter'),
+      'help' => t('Filter nodes by their organization parent reference'),
+      'field' => 'nid',
+      'id' => 'mass_views_node_org_parent_filter',
+    ],
+  ];
+
+  // Adds an org filter for nodes.
+  $data['node_field_data']['node_billing_org_filter'] = [
+    'title' => 'Billing Organization Filter',
+    'filter' => [
+      'title' => t('Billing Organization Filter'),
+      'help' => t('Filter nodes by their Billing organization reference'),
+      'field' => 'nid',
+      'id' => 'mass_views_node_billing_org_filter',
+    ],
+  ];
+
   // Adds an org filter for media.
   $data['media_field_data']['media_org_filter'] = [
     'title' => 'Organization Filter',
@@ -59,7 +81,6 @@ function mass_views_field_views_data_alter(array &$data, FieldStorageConfigInter
     return $data;
   }
   $field_name = $field_storage->getName();
-  $entity_manager = \Drupal::getContainer()->get('entity.manager');
   $entity_type_manager = \Drupal::entityTypeManager();
 
   $entity_type_id = $field_storage->getTargetEntityTypeId();

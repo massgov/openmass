@@ -181,12 +181,13 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   if (file_exists($app_root . '/' . $site_path . '/settings.local.php')) {
     include $app_root . '/' . $site_path . '/settings.local.php';
   }
-}
-if (PHP_SAPI === 'cli') {
-  ini_set('memory_limit', '512M');
+
+  if (getenv('DOCKER_ENV') !== 'ci' && file_exists($app_root . '/' . $site_path . '/services.local.yml')) {
+    $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.local.yml';
+  }
 }
 
-// Increase memory limit when on CircleCi to prevent running out of memory when running phpunit tests.
-if (getenv('DOCKER_ENV') === 'ci') {
-  ini_set('memory_limit', '2048M');
+// phpunit.xml.dist sets -1 for memory_limit so just change for other cli requests.
+if (PHP_SAPI === 'cli' && ini_get('memory_limit')) {
+  ini_set('memory_limit', '1024M');
 }

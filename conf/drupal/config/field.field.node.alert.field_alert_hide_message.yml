@@ -1,0 +1,23 @@
+uuid: 97c4d4a7-445a-4dbb-8272-a1dbf6a06356
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_alert_hide_message
+    - node.type.alert
+id: node.alert.field_alert_hide_message
+field_name: field_alert_hide_message
+entity_type: node
+bundle: alert
+label: 'Hide alert message, use alert title only'
+description: 'If your alert title is short and doesn''t need any extra information to be shown in an alert message, you can hide it and optionally link to another page directly from the alert title.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

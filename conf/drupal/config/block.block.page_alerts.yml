@@ -1,0 +1,27 @@
+uuid: d5d28beb-e1d4-49ff-893f-466053c9c93b
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_alerts
+    - system
+  theme:
+    - mass_theme
+id: page_alerts
+theme: mass_theme
+region: header
+weight: 0
+provider: null
+plugin: mass_alerts_block
+settings:
+  id: mass_alerts_block
+  label: 'Page Alerts block'
+  provider: mass_alerts
+  label_display: '0'
+  alerts_block_type: page
+visibility:
+  request_path:
+    id: request_path
+    pages: '<front>'
+    negate: true
+    context_mapping: {  }

@@ -45,8 +45,18 @@
   ]
 %}
 <div{{ attributes.addClass(classes) }}>
-  <div class="ma__breadcrumb--views">{{ header.area }}</div>
-  <h1>{{ title }}</h1>
+  <div class="ma__breadcrumb--views">
+    {% if header.area %}
+      {{ header.area }}
+    {% endif %}
+  </div>
+  {#
+  Using the raw filter allows special characters to render properly.
+  It allows markup to render. This should be safe in this case because
+  administrators and content administrators are the only users that
+  can edit Collection term names.
+  #}
+  <h1>{{ title|raw }}</h1>
 
 
   <aside class="sidebar">
@@ -60,10 +70,10 @@
   </aside>
 
   <section class="page-content">
-    {% if header %}
+    {% if header.result %}
     <div class="ma__results-heading__container">
       <h2 class="ma__results-heading__title">
-        {{ header }}
+        {{ header.result }}
       </h2>
     </div>
     {% endif %}
@@ -75,7 +85,7 @@
       {{ empty }}
     {% endif %}
     {{ pager }}
-  
+
     {{ attachment_after }}
     {{ more }}
   </section>

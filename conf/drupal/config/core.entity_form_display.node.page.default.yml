@@ -13,8 +13,6 @@ dependencies:
     - content_moderation
     - metatag
     - path
-    - scheduler
-    - scheduler_content_moderation_integration
     - text
 _core:
   default_config_hash: KSvzyFhdLuxniTsunUnUfpfMmod2l57GibtVjL8ymHM
@@ -86,17 +84,17 @@ content:
     third_party_settings: {  }
     region: content
   publish_on:
-    type: datetime_timestamp_no_default
-    weight: 10
-    region: content
+    weight: 104
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   publish_state:
-    type: scheduler_moderation
-    weight: 8
-    region: content
+    weight: 102
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   scheduler_settings:
     weight: 5
     region: content
@@ -128,17 +126,17 @@ content:
     third_party_settings: {  }
     region: content
   unpublish_on:
-    type: datetime_timestamp_no_default
-    weight: 7
-    region: content
+    weight: 105
     settings: {  }
     third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 9
-    region: content
+    weight: 103
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 50
     region: content

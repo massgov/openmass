@@ -97,8 +97,14 @@ function mass_theme_theme_suggestions_image_style_alter(array &$suggestions, arr
  */
 function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
   $view = $variables['view'];
+
   // Allow all data listing views pages to use the same template file.
   if (strpos($view->id(), 'data_listing') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
+    $suggestions[] = 'views_view__data_listing';
+  }
+
+  // Allow all collection views pages to use the same template file.
+  if (strpos($view->id(), 'collection') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
     $suggestions[] = 'views_view__data_listing';
   }
 }
@@ -267,6 +273,10 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
         'keyActions' => Molecules::prepareKeyActions($node, 'field_how_to_link_1'),
       ],
     ];
+
+    if ($variables['view_mode'] === 'listing') {
+      $variables['quick_action_links'] = Helper::separatedLinks($node, 'field_how_to_link_1');
+    }
   }
 
   // Set up widgets for prepare pageHeader invocation.
@@ -1630,7 +1640,7 @@ function mass_theme_preprocess_node_executive_order(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_executive_order_adjustment')) {
     foreach ($node->{$fields['type']} as $adjustment) {
       $adjustmentEntity = $adjustment->entity;
-      if ($adjustmentEntity instanceof  ContentEntityInterface) {
+      if ($adjustmentEntity instanceof ContentEntityInterface) {
         $adjustmentLink = Helper::dataFromLinkField($adjustmentEntity, ['link' => 'field_adjustment_type_link']);
         if (!empty($adjustmentLink) && Helper::isFieldPopulated($adjustmentEntity, 'field_adjustment_type_term')) {
           $listingTable['rows'][] = [
@@ -3428,7 +3438,7 @@ function mass_theme_preprocess_node_news_full(&$variables) {
       'link' => ['field_state_org_ref_org'],
       'title' => ['field_external_org_name'],
       'lede' => ['field_state_org_description', 'field_external_org_description'],
-      'image' => ['field_state_org_photo_url'],
+      'image' => ['field_state_org_photo_url', 'field_external_org_photo'],
     ];
 
     $signee_ref = Helper::getReferencedEntitiesFromField($node, $field['signees']);
@@ -3443,6 +3453,7 @@ function mass_theme_preprocess_node_news_full(&$variables) {
           $org_refs = Helper::getReferencedEntitiesFromField($signee_entity, $org_data['link']);
           if ($org_page = reset($org_refs)) {
             $promo_options = [
+              'ariaHidden' => TRUE,
               'title' => Helper::fieldValue($org_page, 'title'),
               'alt' => Helper::fieldValue($org_page, 'title'),
             ];
@@ -3946,7 +3957,7 @@ function mass_theme_preprocess_menu(&$variables) {
 }
 
 /**
- * Implements mass_theme_add_regions_to_node().
+ * Implements hook_mass_theme_add_regions_to_node().
  *
  * Add regions to node templates.
  */
@@ -4030,9 +4041,9 @@ function mass_theme_preprocess_node(&$variables) {
 
   // Set data_listing_icon for Data Listing nodes.
   $icon_map = [
-    'Data resource' => 'report',
     'Dataset' => 'data',
     'Data catalog' => 'catalog',
+    'Report' => 'report',
   ];
   // The field_data_flag field determines if it's a data listing. All External
   // Data Resource nodes are data listings.
@@ -4054,7 +4065,21 @@ function mass_theme_preprocess_node(&$variables) {
     if ($tid) {
       // Load the data type term and store the correct id for the component.
       $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($tid);
-      $variables['data_listing_icon'] = $icon_map[$term->label()];
+      if ($term->label() == 'Data resource') {
+        if ($node->hasField('field_data_resource_type')
+          && !$node->get('field_data_resource_type')->isEmpty()) {
+          $resource_type_tid = $node->field_data_resource_type->target_id;
+          $resource_type_term = \Drupal::entityTypeManager()
+            ->getStorage('taxonomy_term')
+            ->load($resource_type_tid);
+          $variables['data_listing_icon'] = $icon_map[$resource_type_term->label()];
+          $variables['data_listing_icon_label'] = $resource_type_term->label();
+        }
+      }
+      else {
+        $variables['data_listing_icon'] = $icon_map[$term->label()];
+        $variables['data_listing_icon_label'] = $term->label();
+      }
     }
   }
 }
@@ -4258,7 +4283,7 @@ function mass_theme_preprocess_node_stacked_layout(&$variables) {
         'link' => [
           'type' => 'internal',
           'quickaction' => 'FALSE',
-          'href' => $item->url(),
+          'href' => $item->toUrl(),
           'text' => $item->getTitle(),
           'image' => Helper::getFieldImageUrl($item, 'thumbnail_130x160', 'field_photo'),
           'label' => trim($item->get('field_label')->value) == 'Guide' ? 'Guide:' : '',
@@ -4353,6 +4378,8 @@ function mass_theme_preprocess_html(&$variables) {
   if (isset($variables['node_type'])) {
     $node_type = $variables['node_type'];
   }
+
+  $variables['optimize_hiding_snippet'] = \Drupal::state()->get('optimize_hiding_snippet', FALSE);
 
   // Add Schema.org markup for body.
   $variables['deployment_identifier'] = Settings::get('deployment_identifier');
@@ -4970,6 +4997,19 @@ function mass_theme_preprocess_paragraph(&$variables) {
 
 /**
  * Implements hook_preprocess_paragraph().
+ */
+function mass_theme_preprocess_paragraph__iframe(&$variables) {
+  if (!$variables['paragraph']->get('field_iframe_height_config')->isEmpty()) {
+    $variables['iframe_height'] = $variables['paragraph']->get('field_height')->getValue()[0]['value'];
+    if ($variables['paragraph']->get('field_iframe_height_config')->getValue()[0]['value'] == '100') {
+      $variables['#attached']['library'][] = 'mass_theme/iframe-resizer';
+      $variables['iframe_height'] = 'auto';
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_paragraph().
  *
  * Process info_details card group/
  */
@@ -5091,7 +5131,7 @@ function mass_theme_preprocess_paragraph__related_content(&$variables) {
     }
   }
 
-  $contentTypes = \Drupal::service('entity.manager')->getStorage('node_type')->loadMultiple();
+  $contentTypes = \Drupal::service('entity_type.manager')->getStorage('node_type')->loadMultiple();
 
   $contentTypesList = [];
 
@@ -6716,7 +6756,7 @@ function mass_theme_featured_content_cards(&$variables) {
       'thumbnail' => '',
     ];
     if (is_object($paragraph->field_image->entity)) {
-      $return_array['thumbnail'] = $paragraph->field_image->entity->url();
+      $return_array['thumbnail'] = $paragraph->field_image->entity->createFileUrl();
     }
     if (!$paragraph->field_url->isEmpty()) {
       $return_array['link'] = $paragraph->field_url->first()->getUrl()->toString();

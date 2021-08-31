@@ -17,8 +17,11 @@ global-styling:
       overrides/css/decision-tree-callout.css: {}
       overrides/css/sticky-nav.css: {}
       overrides/css/view-external-data-resource.css: {}
+      overrides/css/datatables.css: {}
+      overrides/css/alerts.css: {}
   js:
     overrides/js/fixed-feedback-button.js: {}
+    overrides/js/inline-overlay.js: {}
   dependencies:
     - mayflower/global
     - core/drupal
@@ -52,3 +55,7 @@ tableau:
   js:
     https://public.tableau.com/javascripts/api/tableau-2.3.0.min.js: { type: external }
     overrides/js/tableau_settings.js: {}
+
+iframe-resizer:
+  js:
+    overrides/js/iframe_resizer_parent.js: { scope: footer }

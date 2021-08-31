@@ -14,7 +14,6 @@ dependencies:
   module:
     - content_moderation
     - field_group
-    - scheduler_content_moderation_integration
 third_party_settings:
   field_group:
     group_fee_edit_form:
@@ -111,11 +110,11 @@ content:
     region: content
     third_party_settings: {  }
   publish_state:
-    type: scheduler_moderation
-    weight: 30
-    region: content
+    weight: 101
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   title:
     type: string_textfield
     weight: 0
@@ -125,11 +124,11 @@ content:
     third_party_settings: {  }
     region: content
   unpublish_state:
-    type: scheduler_moderation
-    weight: 30
-    region: content
+    weight: 102
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
   url_redirects:
     weight: 50
     region: content
