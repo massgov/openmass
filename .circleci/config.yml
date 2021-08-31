@@ -252,6 +252,9 @@ jobs:
       # Ensure files and DTT directories are writable by www-data
       - run: ddev exec mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: ddev exec sudo chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - run: ddev exec pwd
+      - run: ddev exec behat --profile-ci --config-reference
+      - run: ddev exec behat --profile-ci --debug
       # Run DTT or Behat test command
       - when:
           condition:
