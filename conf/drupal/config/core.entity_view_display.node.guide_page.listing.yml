@@ -1,9 +1,9 @@
-uuid: 18053d94-223b-468b-b812-dd2e7f26a538
+uuid: cf2b9bc3-6316-4674-9074-dfe3d443088d
 langcode: en
 status: true
 dependencies:
   config:
-    - core.entity_view_mode.node.title_short_desc
+    - core.entity_view_mode.node.listing
     - field.field.node.guide_page.field_data_flag
     - field.field.node.guide_page.field_data_format
     - field.field.node.guide_page.field_data_resource_type
@@ -21,39 +21,76 @@ dependencies:
     - field.field.node.guide_page.field_state_organization_tax
     - node.type.guide_page
   module:
+    - options
     - user
-id: node.guide_page.title_short_desc
+id: node.guide_page.listing
 targetEntityType: node
 bundle: guide_page
-mode: title_short_desc
+mode: listing
 content:
-  field_guide_page_lede:
-    weight: 0
-    label: hidden
+  field_data_flag:
+    weight: 2
+    label: above
     settings: {  }
     third_party_settings: {  }
-    type: basic_string
+    type: list_default
     region: content
+  field_data_format:
+    weight: 5
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_data_resource_type:
+    weight: 4
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_details_data_type:
+    weight: 3
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_guide_page_lede:
+    type: basic_string
+    weight: 1
+    region: content
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+  field_organizations:
+    type: entity_reference_label
+    weight: 0
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
 hidden:
   computed_log_in_links: true
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
-  field_data_flag: true
-  field_data_format: true
-  field_data_resource_type: true
   field_data_topic: true
-  field_details_data_type: true
   field_guide_page_bg_wide: true
   field_guide_page_metatags: true
   field_guide_page_related_guides: true
   field_guide_page_sections: true
   field_image_credit: true
   field_intended_audience: true
-  field_organizations: true
   field_reusable_label: true
   field_state_organization_tax: true
   langcode: true
   links: true
-  referencing_services: true
-  workbench_moderation_control: true

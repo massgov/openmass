@@ -118,7 +118,11 @@ class MassTermUrlNameAsIdWithDepthWithParent extends Entity {
     }
     $terms = $this->termStorage->loadByProperties($properties);
 
-    // $terms are already bundle tested but we need to test access control.
+    // If there are no terms found matching the argument, return false.
+    if (empty($terms)) {
+      return FALSE;
+    }
+    // $terms are already bundle tested, but we need to test access control.
     foreach ($terms as $term) {
       // Set default return for this validation to FALSE.
       $returns = ['term' => FALSE];
@@ -169,16 +173,14 @@ class MassTermUrlNameAsIdWithDepthWithParent extends Entity {
             if (array_key_exists($parent_term->id(), $parents)) {
               // Set the validation return to TRUE.
               $returns['term_parent'] = TRUE;
-            }
-            else {
-              continue;
+              break 2;
             }
           }
         }
       }
     }
     // If any validations failed, return FALSE.
-    if (!empty($returns) && in_array(FALSE, $returns)) {
+    if (in_array(FALSE, $returns)) {
       return FALSE;
     }
     return TRUE;
