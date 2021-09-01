@@ -3,6 +3,7 @@
 namespace Drupal\Tests\mass_alerts\ExistingSite;
 
 use Drupal\dynamic_page_cache\EventSubscriber\DynamicPageCacheSubscriber;
+use Drupal\mass_caching\EventSubscriber\StaleResponseSubscriber;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
@@ -93,8 +94,10 @@ class EmergencyAlertsTest extends ExistingSiteBase {
 
     $headers = $session->getResponseHeaders();
     $this->assertStringContainsString('max-age=60', $headers['Cache-Control'][0]);
-    $this->assertStringNotContainsString('stale-if-error', $headers['Cache-Control'][0]);
-    $this->assertStringNotContainsString('stale-while-revalidate', $headers['Cache-Control'][0]);
+    $duration = StaleResponseSubscriber::DURATION;
+    $this->assertStringContainsString("stale-if-error=$duration", $headers['Cache-Control'][0]);
+    $this->assertStringContainsString("stale-while-revalidate=$duration", $headers['Cache-Control'][0]);
+    $this->assertStringContainsString('max-age=60', $headers['Cache-Control'][0]);
 
     $this->assertStringContainsString(MASS_ALERTS_TAG_SITEWIDE . ':list', $headers['X-Drupal-Cache-Tags'][0]);
     $this->assertStringContainsString('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
@@ -133,16 +136,17 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $page = $session->getPage();
     $this->assertStringContainsString($alert_message_text, $page->getText());
     $headers = $session->getResponseHeaders();
+    $this->assertStringContainsString('max-age=900', $headers['Cache-Control'][0]);
     $this->assertStringContainsString(MASS_ALERTS_TAG_PAGE . ':' . $org_node->id(), $headers['X-Drupal-Cache-Tags'][0]);
     $this->assertStringContainsString('node:' . $node->id(), $headers['X-Drupal-Cache-Tags'][0]);
     $this->assertStringContainsString('MISS', $headers[DynamicPageCacheSubscriber::HEADER][0]);
+    $duration = StaleResponseSubscriber::DURATION;
+    $this->assertStringContainsString("stale-if-error=$duration", $headers['Cache-Control'][0]);
+    $this->assertStringContainsString("stale-while-revalidate=$duration", $headers['Cache-Control'][0]);
 
     $this->drupalGet('/alerts/page/' . $org_node->id());
     $headers = $session->getResponseHeaders();
     $this->assertStringContainsString('HIT', $headers[DynamicPageCacheSubscriber::HEADER][0]);
-    // @todo Add these to sitewide alert as well since we don't want to lose these in a backend outage.
-    $this->assertStringContainsString('stale-if-error=604800, stale-while-revalidate=604800', $headers['Cache-Control'][0]);
-
   }
 
   /**

@@ -23,7 +23,7 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function testSiteWideAlertDisplay() {
-    // $this->markTestSkipped('Fails when DB already has a sitewide alert showing.');.
+    // Unpublish any existing sitewide alerts so our slate is clean.
     $nids = \Drupal::entityQuery('node')
       ->condition('type', 'alert')
       ->condition('status', 1)
