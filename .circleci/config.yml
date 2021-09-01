@@ -42,7 +42,7 @@ executors:
     # https://circleci.com/docs/2.0/configuration-reference/#resource_class
     resource_class: xlarge
     machine:
-      image: ubuntu-2004:202101-01
+      image: ubuntu-2004:202107-02
     environment:
       DOCKER_ENV: ci
       DDEV_NONINTERACTIVE: "true"
@@ -223,7 +223,7 @@ jobs:
       - run: vendor/bin/phpcs -v -n -s
 
   test:
-    working_directory: /mnt/ramdisk/code
+    working_directory: /tmp/code
     parameters:
       instance:
         type: string
@@ -235,7 +235,7 @@ jobs:
       name: base
       instance: << parameters.instance >>
     steps:
-      - attach_workspace: {at: /mnt/ramdisk}
+      - attach_workspace: {at: /tmp}
       - run:
           command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C . -xzv && chmod +x ./dockerize
           name: Install Dockerize
