@@ -223,7 +223,7 @@ jobs:
       - run: vendor/bin/phpcs -v -n -s
 
   test:
-    working_directory: /tmp/code
+    working_directory: /mnt/ramdisk/code
     parameters:
       instance:
         type: string
@@ -235,7 +235,7 @@ jobs:
       name: base
       instance: << parameters.instance >>
     steps:
-      - attach_workspace: {at: /tmp}
+      - attach_workspace: {at: /mnt/ramdisk}
       - run:
           command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C . -xzv && chmod +x ./dockerize
           name: Install Dockerize
