@@ -151,14 +151,16 @@ jobs:
           paths: [code]
 
   push_acquia:
+    working_directory: ~/project/code
     docker:
       - image: cimg/php:7.4-node
     steps:
       - *no_host_check
       - *no_ssh_timeout
       - checkout
-      - fetch_drush_aliases
-      - run: git add -f /tmp/code/drush/sites/self.site.yml
+      - fetch_drush_aliases:
+          destination: ./drush/sites/self.site.yml
+      - run: git add -f ./drush/sites/self.site.yml
       - *restore_composer_cache
       - run: { name: 'Composer install', command: 'composer install --no-dev --no-interaction --optimize-autoloader' }
       # Identify the committer i.e. CircleCI deployment bot
