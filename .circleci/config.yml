@@ -250,22 +250,23 @@ jobs:
       - run: ddev drush status
       - run: cat /proc/cpuinfo
       - run: cat /proc/meminfo
-      # Ensure files and DTT directories are writable by www-data
       - run: ddev exec mkdir -p output docroot/sites/default/files docroot/sites/simpletest/browser_output
-#      - run: ddev exec sudo chown -R www-data:www-data output docroot/sites/default/files docroot/sites/simpletest/browser_output
       # Run DTT or Behat test command
       - when:
           condition:
             and:
               - equal: [ behat, << parameters.command >> ]
           steps:
-            - run: ddev exec sudo --preserve-env vendor/bin/behat --profile=ci --strict --format=junit --out=/var/www/html/output/test-results --format=pretty --out=std
+            - run: ddev exec vendor/bin/behat -v --profile=ci --strict --format=junit --out=/var/www/html/output/test-results --format=pretty --out=std
       - when:
           condition:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-            - run: ddev exec sudo --preserve-env vendor/bin/phpunit docroot/modules/custom --verbose --log-junit output/test-results/dtt/junit.xml
+            - run: ddev exec vendor/bin/phpunit docroot/modules/custom --verbose --log-junit output/test-results/dtt/junit.xml
+      - run:
+          command: ddev logs
+          when: always
       - store_test_results:
           path: output/test-results
       - store_test_results:
