@@ -49,9 +49,9 @@ if(getenv('DOCKER_ENV')) {
  * Show all error messages with backtrace information, except during Behat runs.
  * Those would fail dynamic page cache tests (at minimum).
  */
-if (getenv('HTTP_USER_AGENT') !== 'Symfony BrowserKit') {
+//if (getenv('HTTP_USER_AGENT') !== 'Symfony BrowserKit') {
   $config['system.logging']['error_level'] = 'verbose';
-}
+//}
 
 // Make the Static Google Map API key available to CircleCI.
 $settings['static_google_map'] = getenv('STATIC_GOOGLE_MAP');
