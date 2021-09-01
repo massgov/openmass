@@ -258,7 +258,7 @@ jobs:
             and:
               - equal: [ behat, << parameters.command >> ]
           steps:
-            - run: ddev exec sudo --preserve-env vendor/bin/behat --profile=ci --strict --format=junit --out=/var/www/html/output/behat --format=pretty --out=std
+            - run: ddev exec sudo --preserve-env vendor/bin/behat --profile=ci --strict --format=junit --out=/var/www/html/output/test-results --format=pretty --out=std
       - when:
           condition:
             and:
