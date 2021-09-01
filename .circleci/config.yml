@@ -36,7 +36,6 @@ references:
 executors:
   base:
     parameters:
-      #  @todo
       instance:
         type: string
         default: massgov/mysql-sanitized:latest
@@ -47,7 +46,7 @@ executors:
     environment:
       DOCKER_ENV: ci
       DDEV_NONINTERACTIVE: "true"
-
+      DB_IMAGE: << parameters.instance >>
 
 commands:
   ddev_install_run:
@@ -525,6 +524,10 @@ workflows:
               <<: *branch_ignore
       - danger:
           requires: [build]
+      - push_acquia:
+          filters:
+            branches:
+              <<: *branch_ignore
       - test:
           name: test-phpunit
           command: phpunit

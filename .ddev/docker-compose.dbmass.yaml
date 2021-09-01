@@ -7,7 +7,7 @@ version: '3.6'
 services:
   dbmass:
     container_name: ddev-${DDEV_SITENAME}-dbmass
-    image: massgov/mysql-sanitized:super
+    image: ${DB_IMAGE-massgov/mysql-sanitized:super}
     # These labels ensure this service is discoverable by ddev.
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
@@ -18,9 +18,6 @@ services:
       MYSQL_DATABASE: circle
       MYSQL_RANDOM_ROOT_PASSWORD: 1
     command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
-# Not working on CircleCI
-#    ports:
-#      - '3206:3306'
     volumes:
       - dbmass:/var/lib/mysql
   web:
