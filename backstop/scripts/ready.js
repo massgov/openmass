@@ -203,6 +203,11 @@ module.exports = async function(page, scenario, vp) {
         await page.waitFor(3000);
         break;
 
+      case "InfoDetails1":
+        await page.waitForFunction("document.querySelector('div.csv-table') === null");
+        await page.waitFor(1000);
+        break;
+
       case "ServiceGroupedLinks":
       case "Service1":
       case "Service2":
