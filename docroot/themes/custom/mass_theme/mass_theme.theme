@@ -4379,6 +4379,8 @@ function mass_theme_preprocess_html(&$variables) {
     $node_type = $variables['node_type'];
   }
 
+  $variables['optimize_hiding_snippet'] = \Drupal::state()->get('optimize_hiding_snippet', FALSE);
+
   // Add Schema.org markup for body.
   $variables['deployment_identifier'] = Settings::get('deployment_identifier');
   if (isset($node_type)) {
