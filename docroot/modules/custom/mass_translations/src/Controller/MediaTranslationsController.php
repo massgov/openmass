@@ -39,7 +39,7 @@ class MediaTranslationsController extends TranslationsController {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getStorage('media')
+      $container->get('entity_type.manager')->getStorage('media')
     );
   }
 

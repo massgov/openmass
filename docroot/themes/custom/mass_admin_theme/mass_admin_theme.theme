@@ -213,7 +213,7 @@ function mass_admin_theme_preprocess_menu_local_action(&$variables) {
 function _add_description_display_before(&$variables) {
   // Check for current path to match node and media add/edit pages.
   $current_path = \Drupal::service('path.current')->getPath();
-  $result = \Drupal::service('path.alias_manager')->getAliasByPath($current_path);
+  $result = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
 
   // Set description display so it will take effect in the template,
   // leaving the description placement as-is on other pages.

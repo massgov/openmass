@@ -1,5 +1,63 @@
 
 
+## [0.294.0] - August 31, 2021
+
+### Added
+  - DP-11358: Show CircleCI deployments in any associated Jira issue.
+  - DP-22771: Add collections pages to default backstop job.
+  - DP-22774: Added Data Administrator and Collection Administrator roles.
+  
+### Changed
+  - DP-21924: Upgraded Drupal Version to Drupal 9.2
+  - DP-22460: Use Drupal state to load google optimize differently and don't block page load
+  - DP-22560: Update GTM settings, remove unneded patches.
+  - DP-22572: Tweak alerts reponse headers - staleness and duration
+  - DP-22643: Add browser support banner to cover IE10.
+  - DP-22720: Add support to handle multiple messages on page and org alerts.
+  - DP-22775: Fixed help text for alert type field.
+  - DP-22792: Updated Drupal to 9.2.4.
+  - DP-22808: Rollback mysql version in Docker.
+  - DP-22814: Updated Mayflower version to 11.13.0.
+  - DP-22736: Add report icon to Patternlab. (MF #1469)
+  - DP-27720: Add content to ActionSteps to allow rendering multiple items in the content area of a HeaderAlerts accordion. (MF #1472)
+  - DP-22787: Fixed CircleCI job installing AWS CLI. (MF #1471)
+  - DP-22852: Lower browser version requirements for browser update banner display.
+  - DP-22859: Added an extra resize call after 300 ms to ensure the correct height on load.
+  - DP-22891: Updated Mayflower version to 11.14.0.
+  - DP-21342: Add text underline for all inline links. (MF #1468)
+  - DP-22857: Disable pointer-events to avoid colliding with other content. (MF #1483)
+  - DP-22859: Detect iframe in full width figure element, and post an update message to the iframe to update iframe dimension for the responsive iframe height javascript. (MF #1486)
+  
+### Fixed
+  - DP-22650: Fix js errors on safari.
+  - DP-22745: Fixed the sitewide alert header to correspond to the alert label selection.
+  - DP-22795: Fixed error thrown on feedback manager when filtering content.
+  - DP-22796: Invalidate alert responses based on old and new field values.
+  - DP-22798: Fixed autocomplete feature when adding links to a rich text editor.
+  - DP-22810: Removed duplicated library reference.
+  - DP-22817: Fixed errors and bugs with Collections URL term validation and breadcrumb logic.
+  - DP-22867: Added back library reference that went missing after merge.
+  - DP-22880: Migration script to populate the alert date field.
+  
+### Security
+  - DP-22863: Updated Admin Toolbar to 3.0.2 per https://www.drupal.org/sa-contrib-2021-025
+  
+
+
+## [0.293.0] - August 10, 2021
+
+### Changed
+  - DP-22550: Allow the updates block configuration form to use CKEditor.
+  
+### Added
+  - DP-22551: Drush ma:backstop can now send custom --list and --viewport params.
+  
+### Fixed
+  - DP-22703: Fixed bugs related to the Data Listing and Collections features.
+  - DP-22715: More robust queue worker for unpublished email reminders.
+  
+
+
 ## [0.292.0] - August 3, 2021
 
 ### Security

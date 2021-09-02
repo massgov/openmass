@@ -4,6 +4,7 @@ namespace Drupal\Tests\mass_alerts\ExistingSite;
 
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\StreamWrapper\PrivateStream;
+use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
@@ -15,7 +16,7 @@ class AutomatedPurgingTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     /** @var \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $queue */
     $queue = \Drupal::service('purge.queue');
@@ -34,10 +35,10 @@ class AutomatedPurgingTest extends ExistingSiteBase {
     ]);
     $file->save();
     $this->markEntityForCleanup($file);
-    $this->assertCount(1, $this->getInvalidations('url', $file->url()));
+    $this->assertCount(1, $this->getInvalidations('url', $file->createFileUrl(FALSE)));
     $file->set('uri', 'public://llama-44.txt');
     $file->save();
-    $this->assertCount(1, $this->getInvalidations('url', $file->url()));
+    $this->assertCount(1, $this->getInvalidations('url', $file->createFileUrl(FALSE)));
   }
 
   /**
@@ -53,7 +54,7 @@ class AutomatedPurgingTest extends ExistingSiteBase {
     ]);
     $file->save();
     $this->markEntityForCleanup($file);
-    $this->assertCount(0, $this->getInvalidations('url', $file->url()));
+    $this->assertCount(0, $this->getInvalidations('url', $file->createFileUrl(FALSE)));
   }
 
   /**

@@ -10,6 +10,7 @@ dependencies:
     - better_exposed_filters
     - entityreference_filter
     - node
+    - options
     - taxonomy
     - user
     - views_autocomplete_filters
@@ -185,6 +186,47 @@ display:
             operator_limit_selection: false
             operator_list: {  }
           group: 1
+        field_data_flag_value:
+          id: field_data_flag_value
+          table: node__field_data_flag
+          field: field_data_flag_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: or
+          value:
+            data: data
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          plugin_id: list_field
         field_data_topic_target_id:
           id: field_data_topic_target_id
           table: node__field_data_topic
@@ -435,14 +477,13 @@ display:
             format: default_summary
           specify_validation: true
           validate:
-            type: mass_taxonomy_term_name_into_id_depth_parent
+            type: mass_taxonomy_term_url_name_into_id_depth_parent
             fail: 'not found'
           validate_options:
             bundles:
               data_topic: data_topic
             access: '1'
             operation: view
-            transform: '1'
             term_depth: '1'
             term_depth_value: '1'
             term_parent: 0

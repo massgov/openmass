@@ -49,8 +49,8 @@ third_party_settings:
         - field_alert_display
         - field_target_page
         - field_target_organization
-        - field_alert_hide_message
         - field_alert_node_timestamp
+        - field_alert_hide_message
         - field_alert_title_link
         - field_alert_title_link_target
         - field_organizations
@@ -132,7 +132,7 @@ content:
     type: options_buttons
     region: content
   field_alert_hide_message:
-    weight: 8
+    weight: 9
     settings:
       display_label: true
     third_party_settings:
@@ -157,21 +157,22 @@ content:
     type: boolean_checkbox
     region: content
   field_alert_node_timestamp:
-    weight: 9
+    weight: 8
     settings: {  }
     third_party_settings:
       conditional_fields:
-        a663c475-3499-4caf-8540-be6dbba09382:
-          dependee: field_alert_hide_message
+        f16795f8-ef6d-413c-a2b7-46e45dc88754:
+          dependee: field_alert_display
           settings:
             state: visible
-            condition: checked
+            condition: value
             grouping: AND
-            values_set: 1
+            values_set: 5
             value: ''
-            values: {  }
+            values: site_wide
             value_form:
-              value: false
+              -
+                value: specific_target_pages
             effect: show
             effect_options: {  }
             selector: ''
