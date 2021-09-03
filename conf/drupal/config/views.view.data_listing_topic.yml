@@ -7,6 +7,7 @@ dependencies:
     - field.storage.node.field_binder_short_desc
     - field.storage.node.field_curatedlist_lede
     - field.storage.node.field_externaldata_description
+    - field.storage.node.field_guide_page_lede
     - field.storage.node.field_service_detail_lede
     - field.storage.node.field_service_lede
     - field.storage.node.field_short_desc
@@ -755,6 +756,68 @@ display:
           entity_type: taxonomy_term
           entity_field: name
           plugin_id: term_name
+        field_guide_page_lede:
+          id: field_guide_page_lede
+          table: node__field_guide_page_lede
+          field: field_guide_page_lede
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: basic_string
+          settings: {  }
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          plugin_id: field
       filters:
         status:
           value: '1'
@@ -952,6 +1015,8 @@ display:
               campaign_landing_page_publisher: '0'
               d2d_redirect_manager: '0'
               external_data_resource_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
             placeholder: ''
             autocomplete_filter: 0
             autocomplete_min_chars: '0'
@@ -981,6 +1046,7 @@ display:
             field_short_desc: field_short_desc
             description__value: description__value
             name: name
+            field_guide_page_lede: field_guide_page_lede
           plugin_id: views_autocomplete_filters_combine
       sorts:
         title:
@@ -1183,6 +1249,7 @@ display:
         - 'config:core.entity_view_display.node.form_page.teaser'
         - 'config:core.entity_view_display.node.form_page.title_short_desc'
         - 'config:core.entity_view_display.node.guide_page.default'
+        - 'config:core.entity_view_display.node.guide_page.listing'
         - 'config:core.entity_view_display.node.guide_page.teaser'
         - 'config:core.entity_view_display.node.guide_page.title_short_desc'
         - 'config:core.entity_view_display.node.guide_page.token'
@@ -1260,6 +1327,7 @@ display:
         - 'config:field.storage.node.field_binder_short_desc'
         - 'config:field.storage.node.field_curatedlist_lede'
         - 'config:field.storage.node.field_externaldata_description'
+        - 'config:field.storage.node.field_guide_page_lede'
         - 'config:field.storage.node.field_service_detail_lede'
         - 'config:field.storage.node.field_service_lede'
         - 'config:field.storage.node.field_short_desc'
@@ -1359,6 +1427,7 @@ display:
         - 'config:core.entity_view_display.node.form_page.teaser'
         - 'config:core.entity_view_display.node.form_page.title_short_desc'
         - 'config:core.entity_view_display.node.guide_page.default'
+        - 'config:core.entity_view_display.node.guide_page.listing'
         - 'config:core.entity_view_display.node.guide_page.teaser'
         - 'config:core.entity_view_display.node.guide_page.title_short_desc'
         - 'config:core.entity_view_display.node.guide_page.token'
@@ -1436,6 +1505,7 @@ display:
         - 'config:field.storage.node.field_binder_short_desc'
         - 'config:field.storage.node.field_curatedlist_lede'
         - 'config:field.storage.node.field_externaldata_description'
+        - 'config:field.storage.node.field_guide_page_lede'
         - 'config:field.storage.node.field_service_detail_lede'
         - 'config:field.storage.node.field_service_lede'
         - 'config:field.storage.node.field_short_desc'
