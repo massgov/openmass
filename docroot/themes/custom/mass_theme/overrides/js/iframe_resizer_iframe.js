@@ -80,7 +80,6 @@ window.addEventListener('load', function () {
   console.log('loaded iframe JS: ' + document.URL);
   sendDimensionsToParent();
 
-
   // if mutationobserver is supported by this browser
   if (window.MutationObserver) {
     // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
@@ -99,6 +98,9 @@ window.addEventListener('load', function () {
     };
 
     observer.observe(document.body, config);
+
+    // Sent another update after 1/3 of a second just in case
+    window.setTimeout(sendDimensionsToParent, 300);
 
   }
   // if mutationobserver is NOT supported
