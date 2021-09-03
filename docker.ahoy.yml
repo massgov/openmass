@@ -40,6 +40,6 @@ commands:
   blackfire:
     cmd: ahoy exec blackfire "$@"
   backstop:
-    cmd: docker-compose run backstop "$@"
+    cmd: ddev exec --service backstop backstop "$@"
   nightcrawler:
     cmd: ahoy exec node_modules/.bin/nightcrawler --config=.circleci/nightcrawler/nightcrawler $@
