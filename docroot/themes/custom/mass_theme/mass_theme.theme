@@ -3105,6 +3105,7 @@ function mass_theme_preprocess_node_event(&$variables) {
           'text' => t('See past related events'),
           'href' => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()) . '/events/past',
           'chevron' => TRUE,
+          'labelContext' => t('for the @label', ['@label' => $node->label()]),
         ],
       ];
     }
@@ -3318,7 +3319,7 @@ function mass_theme_preprocess_node_service_page(&$variables) {
         'href' => $node->toUrl()->toString() . '/related',
         'text' => $text_ref_services,
         'chevron' => TRUE,
-        'label' => $text_ref_services,
+        'labelContext' => t('for the @label', ['@label' => $node->label()]),
       ];
     }
     $linkList_options = [
@@ -3374,7 +3375,7 @@ function mass_theme_preprocess_node_service_page(&$variables) {
         'href' => $node->toUrl()->toString() . '/resources',
         'text' => $text_download_links,
         'chevron' => TRUE,
-        'label' => $text_download_links,
+        'labelContext' => t('for the @label', ['@label' => $node->label()]),
       ];
     }
 
