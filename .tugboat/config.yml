@@ -2,7 +2,7 @@ services:
   # What to call the service hosting the site.
   php:
     # Use PHP 7.x with Apache; this syntax pulls in the latest version of PHP 7
-    image: tugboatqa/php:7-apache
+    image: tugboatqa/php:7.4-apache
 
     # Set this as the default service. This does a few things
     #   1. Clones the git repository into the service container
@@ -23,19 +23,11 @@ services:
 
         # Link the document root to the expected path. This example links /web
         # to the docroot.
-        - ln -snf "${TUGBOAT_ROOT}/web" "${DOCROOT}"
+        - ln -snf "${TUGBOAT_ROOT}/docroot" "${DOCROOT}"
 
         # Create the Drupal private and public files directories if they aren't
         # already present.
         - mkdir -p "${TUGBOAT_ROOT}/files-private" "${DOCROOT}/sites/default/files"
-
-        # A common practice in many Drupal projects is to store the config and
-        # private files outside of the Drupal root. If that's the case for your
-        # project, you can either specify the absolute paths to those
-        # directories in your settings.local.php, or you can symlink them in
-        # here. Here is an example of the latter option:
-        - ln -snf "${TUGBOAT_ROOT}/config" "${DOCROOT}/../config"
-        - ln -snf "${TUGBOAT_ROOT}/files-private" "${DOCROOT}/../files-private"
 
       # Commands that import files, databases, or other assets. When an
       # existing preview is refreshed, the build workflow starts here,
@@ -48,6 +40,9 @@ services:
         # Install/update packages managed by composer, including drush.
         - composer install --optimize-autoloader
 
+        - vendor/bin/drush -y sql:drop
+        - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
+
         # Copy Drupal's public files directory from an external server. The
         # public SSH key found in the Tugboat Repository configuration must be
         # copied to the external server in order to use rsync over SSH.
@@ -58,7 +53,6 @@ services:
         # files from another publicly-accessible Drupal site instead of
         # syncing the entire files directory into the Tugboat Preview.
         # This results in smaller previews and reduces the build time.
-        - composer require --dev drupal/stage_file_proxy
         - vendor/bin/drush pm:enable --yes stage_file_proxy
         - vendor/bin/drush config:set --yes stage_file_proxy.settings origin "https://www.mass.gov"
 
@@ -84,17 +78,14 @@ services:
     image: tugboatqa/mariadb:10.5
 
     # A set of commands to run while building this service
-    commands:
-      # Commands that import files, databases, or other assets. When an
-      # existing preview is refreshed, the build workflow starts here,
-      # skipping the init step, because the results of that step will
-      # already be present.
-      update:
-        # Copy a database dump from an external server. The public
-        # SSH key found in the Tugboat Repository configuration must be
-        # copied to the external server in order to use scp.
-        - LATEST_BACKUP=`drush ma:latest-backup-url prod`
-        - wget -q --continue $LATEST_BACKUP --output-document=/tmp/database.sql.gz
-#        - scp user@example.com:database.sql.gz /tmp/database.sql.gz
-        - zcat /tmp/database.sql.gz | mysql tugboat
-        - rm /tmp/database.sql.gz
+#    commands:
+#      # Commands that import files, databases, or other assets. When an
+#      # existing preview is refreshed, the build workflow starts here,
+#      # skipping the init step, because the results of that step will
+#      # already be present.
+#      update:
+#        # Copy a database dump from an external server. The public
+#        # SSH key found in the Tugboat Repository configuration must be
+#        # copied to the external server in order to use scp.
+#        - zcat /tmp/database.sql.gz | mysql tugboat
+#        - rm /tmp/database.sql.gz
