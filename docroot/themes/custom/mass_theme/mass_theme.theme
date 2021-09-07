@@ -1407,31 +1407,21 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
 
     // Make pageBanner data structure available in twig template.
     $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
+    // Make collapsibleContent data structure available in twig template.
     $renderer = \Drupal::service('renderer');
     foreach ($node->field_topic_content_cards as $index => $section) {
       $variables['numOfSections'] = ++$index;
-      $sectionThreeUp_options = [
-        'noCardLinks' => [
-          ($node->field_topic_display_links->value == '1') ? 'topic_page' : [],
-        ],
-        'use4TopLinks' => [
-          'topic_page',
-        ],
-        'useCallout' => [
-          'service_page',
-        ],
-      ];
-
+      $collapsibleContent_options = [];
       $title_field = Helper::fieldFullView($section->entity, 'field_content_card_category');
       if (!empty($title_field)) {
-        $sectionThreeUp_options += [
-          'heading' => [
+        $collapsibleContent_options += [
+          'compHeading' => [
             'title' => $renderer->renderRoot($title_field),
           ],
         ];
       }
 
-      $variables['pageContent'][$index]['sectionThreeUp'] = Organisms::prepareSectionThreeUp($section->entity, $sectionThreeUp_options, ['topic_cards' => ['field_content_card_link_cards']], $cache_tags);
+      $variables['pageContent'][$index]['collapsibleContent'] = Organisms::prepareCollapsibleContent($section->entity, $collapsibleContent_options, ['topic_cards' => ['field_content_card_link_cards']], $cache_tags);
     }
 
     $linkList_options = [
