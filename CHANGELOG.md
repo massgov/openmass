@@ -18,7 +18,11 @@
   - DP-22734: Added function to wait for table csv rendering on backstop test.
   - DP-22740: Convert block for news and updates field to use rich text.
   - DP-22899: Help text of alert message timestamp changed to emphasize that it is used only on sitewide alerts.
-  
+  - DP-22924:  |-
+         Updated Mayflower version to 11.14.1.
+          - DP-22608: Fix keyboard accessibility and aria-controls. (MF #1482)
+          - DP-22608: Fix variable logic. (MF #1482)
+
 
 
 ## [0.294.0] - August 31, 2021
