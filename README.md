@@ -20,14 +20,8 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 ### Docker (optional)
 
 1. [Install Docker](https://docs.docker.com/get-docker/).
-2. [Install DDEV](https://ddev.readthedocs.io/en/stable/).
-3. Edit your `hosts` file and add the following line:
-    ```
-    127.0.0.1 mass.local
-    ```
-    1. **Mac/Linux:** `/etc/hosts`
-    2. **Windows:** `c:\windows\system32\drivers\etc\hosts`
-4. Inject your ssh keys into the container via `ddev auth ssh`. [Read more about ddev CLI](https://ddev.readthedocs.io/en/stable/users/cli-usage/).
+1. [Install DDEV](https://ddev.readthedocs.io/en/stable/). On Windows, use the WSL2 method.
+1. Inject your ssh keys into the container via `ddev auth ssh`. [Read more about ddev CLI](https://ddev.readthedocs.io/en/stable/users/cli-usage/).
 
 ### Native (optional)
 If the Docker section above is unappealing, its easy to run mass.gov natively on any OS. You need to provide your own PHP, web server and DB server (and optional memcache). On OSX, [these install instructions](https://getgrav.org/blog/macos-bigsur-apache-multiple-php-versions) are good (stop at the section called _PHP Switcher Script_), along with this [mysql section](https://getgrav.org/blog/macos-bigsur-apache-mysql-vhost-apc). Point your web server at the /docroot directory.
@@ -44,7 +38,9 @@ If the Docker section above is unappealing, its easy to run mass.gov natively on
 
 ###### Notes
 - The site is browseable at https://mass.local
-- It takes a few minutes for the `mysql` container start up.
+- It takes a few minutes for the `dbmass` container start up.
+- [You may override ddev config locally](https://ddev.readthedocs.io/en/stable/users/extend/config_yaml/). Use .ddev/personal.config.yml since that is already in our .gitignore.
+- Since we use a custom `dbmass` service and not DDEV's usual `db`, some DDEV DB commands will not work here. @todo try to improve this.
 - Mass Digital team members: see additional information at [Mass Digital Developers](https://github.com/massgov/massgov-internal-docs/blob/master/development-massgov-team.md).
 
 ## Pull Requests
