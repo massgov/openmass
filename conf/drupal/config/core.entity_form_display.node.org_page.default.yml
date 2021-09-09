@@ -133,19 +133,17 @@ third_party_settings:
         - field_career_opportunities
         - field_application_login_links
         - field_public_records_link
-        - field_parent
-        - field_billing_organization
         - field_get_updates_links
       parent_name: group_node_edit_form
-      weight: 30
+      weight: 25
       format_type: tab
       format_settings:
-        formatter: closed
         description: ''
+        formatter: closed
         required_fields: true
         id: ''
         classes: ''
-      label: More
+      label: 'Navigation menu'
       region: content
     group_overview:
       children:
@@ -155,6 +153,8 @@ third_party_settings:
         - field_org_page_thumbnail
         - field_social_links
         - field_intended_audience
+        - field_parent
+        - field_billing_organization
       parent_name: group_node_edit_form
       weight: 21
       format_type: tab
@@ -198,7 +198,7 @@ third_party_settings:
         - field_urgent_warning
         - field_org_sentence_phrasing
       parent_name: group_node_edit_form
-      weight: 29
+      weight: 24
       format_type: tab
       format_settings:
         formatter: closed
@@ -212,7 +212,7 @@ third_party_settings:
       children:
         - field_organization_sections
       parent_name: group_node_edit_form
-      weight: 22
+      weight: 23
       format_type: tab
       region: content
       format_settings:
@@ -344,7 +344,7 @@ content:
     type: image_image
     region: content
   field_billing_organization:
-    weight: 126
+    weight: 133
     settings: {  }
     third_party_settings: {  }
     type: dynamic_entity_reference_options_select
@@ -410,7 +410,7 @@ content:
     type: link_default
     region: content
   field_hide_short_description:
-    weight: 11
+    weight: 127
     settings:
       display_label: true
     third_party_settings: {  }
@@ -425,7 +425,7 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 16
+    weight: 131
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -464,7 +464,7 @@ content:
     type: link_default
     region: content
   field_org_page_thumbnail:
-    weight: 14
+    weight: 129
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
@@ -502,7 +502,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_parent:
-    weight: 125
+    weight: 132
     settings:
       match_operator: CONTAINS
       size: 60
@@ -628,7 +628,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_social_links:
-    weight: 15
+    weight: 130
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -647,7 +647,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_sub_brand:
-    weight: 12
+    weight: 128
     settings:
       preview_image_style: thumbnail
       progress_indicator: throbber
@@ -655,7 +655,7 @@ content:
     type: image_image
     region: content
   field_sub_title:
-    weight: 10
+    weight: 126
     settings:
       rows: 5
       placeholder: ''
