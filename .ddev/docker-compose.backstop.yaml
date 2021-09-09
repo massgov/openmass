@@ -1,0 +1,23 @@
+version: '3.6'
+
+services:
+  # This is the service name used when running ddev commands accepting the
+  # --service flag.
+  backstop:
+    # This is the name of the container. It is recommended to follow the same
+    # name convention used in the main docker-compose.yml file.
+    container_name: ddev-${DDEV_SITENAME}-backstop
+    image: "backstopjs/backstopjs:4.4.2"
+    entrypoint: top -b
+    volumes:
+      - ./backstop:/src
+    shm_size: 1gb
+#    entrypoint: [ backstop, --config=/src/backstop.js ]
+    environment:
+      # Pass auth variables to container.
+      LOWER_ENVIR_AUTH_USER:
+      LOWER_ENVIR_AUTH_PASS:
+    # These labels ensure this service is discoverable by ddev.
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: $DDEV_APPROOT
