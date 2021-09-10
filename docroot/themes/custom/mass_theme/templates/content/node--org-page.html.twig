@@ -347,3 +347,18 @@
     </div>
   </div>
 {% endblock %}
+
+{% block postContent %}
+  {# Increase heading number by 1 from the parent heading. #}
+  {% set level = level + 1 %}
+  {% if content.field_image_credit is not empty %}
+    {{ content.field_image_credit }}
+  {% endif %}
+  {{ content.extra_org_feedback_form }}
+{% endblock %}
+{% block schemaContent %}
+  {% if schema.governmentOrganization %}
+    {% set governmentOrganization = schema.governmentOrganization %}
+    {% include "@meta/schema/government-organization.twig" %}
+  {% endif %}
+{% endblock %}
