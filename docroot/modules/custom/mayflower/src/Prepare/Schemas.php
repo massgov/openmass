@@ -74,6 +74,7 @@ class Schemas {
     $schema['governmentOrganization']['memberOf']['id'] = $hostname . "/#organization";
 
     // Use first line of optional "who we serve" as disambiguating description.
+    // @todo: Both of these fields could be found in an org section.
     if (!empty($variables['node']->body->value)) {
       $schema['governmentOrganization']['disambiguatingDescription'] = Helper::getFirstParagraph($variables['node']->body->value);
     }

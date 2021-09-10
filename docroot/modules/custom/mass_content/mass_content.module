@@ -372,15 +372,6 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
         ->setClass('\Drupal\mass_content\Field\RecentNews')
         ->setDisplayConfigurable('view', TRUE);
 
-      // The field used for the "All services" View Mode Page.
-      $fields['computed_all_services'] = BaseFieldDefinition::create('entity_reference')
-        ->setLabel(t('All Services list'))
-        ->setComputed(TRUE)
-        ->setSetting('target_type', 'node')
-        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
-        ->setClass('\Drupal\mass_content\Field\OrgPageAllServices')
-        ->setDisplayConfigurable('view', TRUE);
-
       // Lists all the referencing organizations from field_organizations.
       $fields['referenced_organizations'] = BaseFieldDefinition::create('entity_reference')
         ->setLabel(t('Referenced organizations'))
