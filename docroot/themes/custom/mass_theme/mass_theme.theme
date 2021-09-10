@@ -625,6 +625,21 @@ function mass_theme_preprocess_node_org_page(&$variables) {
     // Slugified title.
     $variables['slugified_title'] = _mass_metatag_slugify(trim($page_title));
 
+    $subtype = $node->field_subtype->value;
+    if ($subtype === 'General Organization' ||
+      $subtype === 'Boards' ||
+      $node->field_banner_image->count() === 0) {
+      // Set static pageBanner properties to pass to prepare function.
+      $pageBanner_options = [
+        "size" => "large",
+        "icon" => NULL,
+      ];
+
+      // Make pageBanner data object available in twig template.
+      $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
+
+    }
+
     if (!empty($cache_tags)) {
       // Merge arrays of existing and new cache tags and removes duplicates.
       $merged_tags = Cache::mergeTags($node->getCacheTags(), $cache_tags);
