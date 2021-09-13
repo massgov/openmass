@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.org_section_long_form.field_hide_heading
     - field.field.paragraph.org_section_long_form.field_section_long_form_content
     - field.field.paragraph.org_section_long_form.field_section_long_form_heading
     - paragraphs.paragraphs_type.org_section_long_form
@@ -23,7 +24,7 @@ content:
     type: entity_reference_revisions_entity_view
     region: content
   field_section_long_form_heading:
-    weight: 2
+    weight: 0
     label: above
     settings:
       link_to_entity: false
@@ -32,3 +33,4 @@ content:
     region: content
 hidden:
   computed_org_page: true
+  field_hide_heading: true

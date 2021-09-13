@@ -43,6 +43,8 @@ function _mass_content_org_page_migration_featured_message(&$node) {
     ]);
     // Set the field values.
     $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_org_featured_message);
+    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Featured message');
+    $new_org_section_long_form_paragraph->set('field_hide_heading', 1);
     // Save the new paragraph.
     $new_org_section_long_form_paragraph->save();
     // Add the new section to the org sections field.
@@ -288,6 +290,8 @@ function _mass_content_org_page_migration_what_would_you_like_to_do(&$node) {
     ]);
     // Set the field values.
     $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
+    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'What would you like to do?');
+    $new_org_section_long_form_paragraph->set('field_hide_heading', 1);
     // Save the new paragraph.
     $new_org_section_long_form_paragraph->save();
     // Remove the old field values.
@@ -392,6 +396,8 @@ function _mass_content_org_page_migration_board(&$node) {
     ]);
     // Set the field values.
     $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_boards);
+    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Board members');
+    $new_org_section_long_form_paragraph->set('field_hide_heading', 1);
     // Save the new paragraph.
     $new_org_section_long_form_paragraph->save();
     // Add the new section to the org sections field.
