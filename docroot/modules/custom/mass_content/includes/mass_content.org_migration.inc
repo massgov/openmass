@@ -405,33 +405,38 @@ function _mass_content_org_page_migration_board(&$node) {
 function _mass_content_org_page_migration_events(&$node) {
   // Migrate data if the field has a value.
   if (!$node->field_event_quantity->isEmpty()) {
-    $field_event_quantity = $node->get('field_event_quantity')->getValue();
-    // Remove the old field values.
-    $node->set('field_event_quantity', []);
-    // Create a new Organization Events paragraph.
-    $new_org_events_paragraph = Paragraph::create([
-      'type' => 'org_events',
-    ]);
-    // Set the field values.
-    $new_org_events_paragraph->set('field_event_quantity', $field_event_quantity);
-    // Save the new paragraph.
-    $new_org_events_paragraph->save();
-    // Create a value array for the new section paragraph.
-    $field_section_long_form_content = [
-      'target_id' => $new_org_events_paragraph->id(),
-      'target_revision_id' => $new_org_events_paragraph->getRevisionId(),
-    ];
-    // Create a new Organization Section paragraph.
-    $new_org_section_long_form_paragraph = Paragraph::create([
-      'type' => 'org_section_long_form',
-    ]);
-    // Set the field values.
-    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
-    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Upcoming Events');
-    // Save the new paragraph.
-    $new_org_section_long_form_paragraph->save();
-    // Add the new section to the org sections field.
-    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
+    // Load the event manager.
+    $eventManager = \Drupal::service('mass_content.event_manager');
+    // Only migrate if there are upcoming or past events for the org_page.
+    if ($eventManager->hasUpcoming($node) || $eventManager->hasPast($node)) {
+      $field_event_quantity = $node->get('field_event_quantity')->getValue();
+      // Remove the old field values.
+      $node->set('field_event_quantity', []);
+      // Create a new Organization Events paragraph.
+      $new_org_events_paragraph = Paragraph::create([
+        'type' => 'org_events',
+      ]);
+      // Set the field values.
+      $new_org_events_paragraph->set('field_event_quantity', $field_event_quantity);
+      // Save the new paragraph.
+      $new_org_events_paragraph->save();
+      // Create a value array for the new section paragraph.
+      $field_section_long_form_content = [
+        'target_id' => $new_org_events_paragraph->id(),
+        'target_revision_id' => $new_org_events_paragraph->getRevisionId(),
+      ];
+      // Create a new Organization Section paragraph.
+      $new_org_section_long_form_paragraph = Paragraph::create([
+        'type' => 'org_section_long_form',
+      ]);
+      // Set the field values.
+      $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
+      $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Upcoming Events');
+      // Save the new paragraph.
+      $new_org_section_long_form_paragraph->save();
+      // Add the new section to the org sections field.
+      _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
+    }
   }
 }
 
