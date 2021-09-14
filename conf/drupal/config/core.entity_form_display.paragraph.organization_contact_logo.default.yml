@@ -3,12 +3,20 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.organization_contact_logo.field_component_add_separator
     - paragraphs.paragraphs_type.organization_contact_logo
 id: paragraph.organization_contact_logo.default
 targetEntityType: paragraph
 bundle: organization_contact_logo
 mode: default
-content: {  }
+content:
+  field_component_add_separator:
+    weight: 0
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
 hidden:
   created: true
   status: true

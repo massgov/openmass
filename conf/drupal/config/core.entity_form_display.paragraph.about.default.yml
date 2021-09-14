@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.about.field_component_add_separator
     - field.field.paragraph.about.field_read_more_page
     - field.field.paragraph.about.field_summary
     - paragraphs.paragraphs_type.about
@@ -14,6 +15,13 @@ targetEntityType: paragraph
 bundle: about
 mode: default
 content:
+  field_component_add_separator:
+    weight: 7
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
   field_read_more_page:
     weight: 6
     settings:
