@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.org_related_orgs.field_component_add_separator
     - field.field.paragraph.org_related_orgs.field_ref_orgs
     - paragraphs.paragraphs_type.org_related_orgs
 id: paragraph.org_related_orgs.default
@@ -10,6 +11,13 @@ targetEntityType: paragraph
 bundle: org_related_orgs
 mode: default
 content:
+  field_component_add_separator:
+    weight: 1
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
   field_ref_orgs:
     weight: 0
     settings:
