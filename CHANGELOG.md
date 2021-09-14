@@ -1,5 +1,18 @@
 
 
+## [0.296.0] - September 14, 2021
+
+### Changed
+  - DP-15164: Update different links to use the new labelContext attibute for links.
+  - DP-22363: Introduce ddev for local development and CI.
+  - DP-22540: Updated Terraform from 0.12.3 to 0.12.31.
+  - DP-22776: Edit format settings for 'All content' view so that if someone clicks the pageviews to sort, it will sort descending.
+  - DP-22924: Updated Mayflower version to 11.14.1.
+  - DP-22608: Fix keyboard accessibility and aria-controls. (MF #1482)
+  - DP-22608: Fix variable logic. (MF #1482)
+  
+
+
 ## [0.295.0] - September 7, 2021
 
 ### Removed
