@@ -51,3 +51,6 @@
      {{ social_links }}
    {% endblock %}
  {% endembed %}
+{% if content.field_component_add_separator|field_value|render == "True" %}
+  <div class="ma__divider ma__divider--thin"></div>
+{% endif %}
