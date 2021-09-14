@@ -71,7 +71,7 @@ Feature: Mass Search API
           "nid": "@variableType(integer)",
           "name": "An Org Page",
           "acronym": "(AOP)",
-          "url": "http://mass.local/orgs/an-org-page",
+          "url": "http://mass-web/orgs/an-org-page",
           "logoUrl": "",
           "description": "AOP description text."
         }
@@ -86,7 +86,7 @@ Feature: Mass Search API
           "nid": "@variableType(integer)",
           "name": "An Org Page",
           "acronym": "(AOP)",
-          "url": "http://mass.local/orgs/an-org-page",
+          "url": "http://mass-web/orgs/an-org-page",
           "logoUrl": "",
           "description": "AOP description text.",
           "contentInfo": [
@@ -139,7 +139,7 @@ Feature: Mass Search API
         {
           "nid": "@variableType(integer)",
           "title": "HasNewsOrg TestNews",
-          "url": "http://mass.local/news/hasnewsorg-testnews",
+          "url": "http://mass-web/news/hasnewsorg-testnews",
           "type": "",
           "datePublished": "@variableType(string)",
           "signees": ["HasNewsOrg"]
