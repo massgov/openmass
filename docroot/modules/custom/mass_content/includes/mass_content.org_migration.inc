@@ -5,6 +5,8 @@
  * Functions needed for the migration of org_page data into dynamic sections.
  */
 
+use Drupal\mayflower\Helper;
+use Drupal\mayflower\Prepare\Organisms;
 use Drupal\paragraphs\Entity\Paragraph;
 
 /**
@@ -85,10 +87,8 @@ function _mass_content_org_page_migration_featured_items_mosaic(&$node) {
  */
 function _mass_content_org_page_migration_contact_logo(&$node) {
   // Migrate data if the field has a value.
-  if (!$node->field_sub_brand->isEmpty()
-    || !$node->field_ref_contact_info_1->isEmpty()) {
-
-    // Create a new Organization News paragraph.
+  if (!$node->field_ref_contact_info_1->isEmpty()) {
+    // Create a new Organization Contact paragraph.
     $new_organization_contact_logo_paragraph = Paragraph::create([
       'type' => 'organization_contact_logo',
     ]);
@@ -344,39 +344,56 @@ function _mass_content_org_page_migration_news(&$node) {
   // Migrate data if the field has a value.
   if (!$node->field_org_featured_news_items->isEmpty()
     || !$node->field_number_of_news_items->isEmpty()) {
-    $field_org_featured_news_items = $node->get('field_org_featured_news_items')->getValue();
-    $field_number_of_news_items = $node->get('field_number_of_news_items')->getValue();
-    $field_org_show_news_images = $node->get('field_org_show_news_images')->getValue();
-    // Remove the old field values.
-    $node->set('field_org_featured_news_items', []);
-    $node->set('field_number_of_news_items', []);
-    $node->set('field_org_show_news_images', []);
-    // Create a new Organization News paragraph.
-    $new_org_news_paragraph = Paragraph::create([
-      'type' => 'org_news',
-    ]);
-    // Set the field values.
-    $new_org_news_paragraph->set('field_org_featured_news_items', $field_org_featured_news_items);
-    $new_org_news_paragraph->set('field_number_of_news_items', $field_number_of_news_items);
-    $new_org_news_paragraph->set('field_org_show_news_images', $field_org_show_news_images);
-    // Save the new paragraph.
-    $new_org_news_paragraph->save();
-    // Create a value array for the new section paragraph.
-    $field_section_long_form_content = [
-      'target_id' => $new_org_news_paragraph->id(),
-      'target_revision_id' => $new_org_news_paragraph->getRevisionId(),
+    // Use the logic for displaying the news section content to determine if the
+    // news section should migrate.
+    $cache_tags = [];
+    $numItems = (int) Helper::fieldValue($node, 'field_number_of_news_items');
+    $pressListing_options = [
+      'numOfSecondaryItems' => $numItems,
+      'displayImages' => Helper::fieldValue($node, 'field_org_show_news_images'),
     ];
-    // Create a new Organization Section paragraph.
-    $new_org_section_long_form_paragraph = Paragraph::create([
-      'type' => 'org_section_long_form',
-    ]);
-    // Set the field values.
-    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
-    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Recent news & announcements');
-    // Save the new paragraph.
-    $new_org_section_long_form_paragraph->save();
-    // Add the new section to the org sections field.
-    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
+    $secondaryItems = $node->recent_news->range(0, $numItems + 1)
+      ->referencedEntities();
+    $press_listing = Organisms::preparePressListing($node, 'field_org_featured_news_items', $pressListing_options, $secondaryItems, $cache_tags);
+    // If there are news items to display, migrate the news section.
+    if (!empty($press_listing)) {
+      $field_org_featured_news_items = $node->get('field_org_featured_news_items')
+        ->getValue() ?: [];
+      $field_number_of_news_items = $node->get('field_number_of_news_items')
+        ->getValue() ?: [['value' => '3']];
+      $field_org_show_news_images = $node->get('field_org_show_news_images')
+        ->getValue() ?: [['value' => 0]];
+      // Remove the old field values.
+      $node->set('field_org_featured_news_items', []);
+      $node->set('field_number_of_news_items', []);
+      $node->set('field_org_show_news_images', []);
+      // Create a new Organization News paragraph.
+      $new_org_news_paragraph = Paragraph::create([
+        'type' => 'org_news',
+      ]);
+      // Set the field values.
+      $new_org_news_paragraph->set('field_org_featured_news_items', $field_org_featured_news_items);
+      $new_org_news_paragraph->set('field_number_of_news_items', $field_number_of_news_items);
+      $new_org_news_paragraph->set('field_org_show_news_images', $field_org_show_news_images);
+      // Save the new paragraph.
+      $new_org_news_paragraph->save();
+      // Create a value array for the new section paragraph.
+      $field_section_long_form_content = [
+        'target_id' => $new_org_news_paragraph->id(),
+        'target_revision_id' => $new_org_news_paragraph->getRevisionId(),
+      ];
+      // Create a new Organization Section paragraph.
+      $new_org_section_long_form_paragraph = Paragraph::create([
+        'type' => 'org_section_long_form',
+      ]);
+      // Set the field values.
+      $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
+      $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Recent news & announcements');
+      // Save the new paragraph.
+      $new_org_section_long_form_paragraph->save();
+      // Add the new section to the org sections field.
+      _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
+    }
   }
 }
 
@@ -409,40 +426,37 @@ function _mass_content_org_page_migration_board(&$node) {
  * Migrate data for the events section.
  */
 function _mass_content_org_page_migration_events(&$node) {
-  // Migrate data if the field has a value.
-  if (!$node->field_event_quantity->isEmpty()) {
-    // Load the event manager.
-    $eventManager = \Drupal::service('mass_content.event_manager');
-    // Only migrate if there are upcoming or past events for the org_page.
-    if ($eventManager->hasUpcoming($node) || $eventManager->hasPast($node)) {
-      $field_event_quantity = $node->get('field_event_quantity')->getValue();
-      // Remove the old field values.
-      $node->set('field_event_quantity', []);
-      // Create a new Organization Events paragraph.
-      $new_org_events_paragraph = Paragraph::create([
-        'type' => 'org_events',
-      ]);
-      // Set the field values.
-      $new_org_events_paragraph->set('field_event_quantity', $field_event_quantity);
-      // Save the new paragraph.
-      $new_org_events_paragraph->save();
-      // Create a value array for the new section paragraph.
-      $field_section_long_form_content = [
-        'target_id' => $new_org_events_paragraph->id(),
-        'target_revision_id' => $new_org_events_paragraph->getRevisionId(),
-      ];
-      // Create a new Organization Section paragraph.
-      $new_org_section_long_form_paragraph = Paragraph::create([
-        'type' => 'org_section_long_form',
-      ]);
-      // Set the field values.
-      $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
-      $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Upcoming Events');
-      // Save the new paragraph.
-      $new_org_section_long_form_paragraph->save();
-      // Add the new section to the org sections field.
-      _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
-    }
+  // Load the event manager.
+  $eventManager = \Drupal::service('mass_content.event_manager');
+  // Only migrate if there are upcoming or past events for the org_page.
+  if ($eventManager->hasUpcoming($node) || $eventManager->hasPast($node)) {
+    $field_event_quantity = $node->get('field_event_quantity')->getValue() ?: [['value' => '2']];
+    // Remove the old field values.
+    $node->set('field_event_quantity', []);
+    // Create a new Organization Events paragraph.
+    $new_org_events_paragraph = Paragraph::create([
+      'type' => 'org_events',
+    ]);
+    // Set the field values.
+    $new_org_events_paragraph->set('field_event_quantity', $field_event_quantity);
+    // Save the new paragraph.
+    $new_org_events_paragraph->save();
+    // Create a value array for the new section paragraph.
+    $field_section_long_form_content = [
+      'target_id' => $new_org_events_paragraph->id(),
+      'target_revision_id' => $new_org_events_paragraph->getRevisionId(),
+    ];
+    // Create a new Organization Section paragraph.
+    $new_org_section_long_form_paragraph = Paragraph::create([
+      'type' => 'org_section_long_form',
+    ]);
+    // Set the field values.
+    $new_org_section_long_form_paragraph->set('field_section_long_form_content', $field_section_long_form_content);
+    $new_org_section_long_form_paragraph->set('field_section_long_form_heading', 'Upcoming Events');
+    // Save the new paragraph.
+    $new_org_section_long_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_org_page_migration_add_section($node, $new_org_section_long_form_paragraph);
   }
 }
 
