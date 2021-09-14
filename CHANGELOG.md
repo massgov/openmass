@@ -6,12 +6,10 @@
   - DP-15164: Update different links to use the new labelContext attibute for links.
   - DP-22363: Introduce ddev for local development and CI.
   - DP-22540: Updated Terraform from 0.12.3 to 0.12.31.
-  - DP-22776: Edit format settings for 'All content' view so that if someone clicks the pageviews to sort, it will sort descending.
-  - DP-22924: Updated Mayflower version to 11.14.1.
-  - DP-22608: Fix keyboard accessibility and aria-controls. (MF #1482)
-  - DP-22608: Fix variable logic. (MF #1482)
-  
-
+  - DP-22263: Enabling and implementing Drupal responsive images for key message paragraph.
+  - DP-22967: Updated Mayflower version to 11.15.0.
+  - DP-20436: Fix and optimize Noto Sans multi-language fonts. (MF #1322)
+  - DP-22263: Adjusted Picture, KeyMessage, MarketingCampaign to support responsive images. (MF #1484)
 
 ## [0.295.0] - September 7, 2021
 
