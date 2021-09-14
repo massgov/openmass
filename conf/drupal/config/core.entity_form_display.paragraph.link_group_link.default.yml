@@ -6,7 +6,8 @@ dependencies:
     - field.field.paragraph.link_group_link.field_link_group_link
     - paragraphs.paragraphs_type.link_group_link
   module:
-    - link
+    - linkit
+    - maxlength
 id: paragraph.link_group_link.default
 targetEntityType: paragraph
 bundle: link_group_link
@@ -17,8 +18,14 @@ content:
     settings:
       placeholder_url: ''
       placeholder_title: ''
-    third_party_settings: {  }
-    type: link_default
+      linkit_profile: link_group_link
+      linkit_auto_link_text: false
+    third_party_settings:
+      maxlength:
+        maxlength_js: null
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce_attribute: false
+    type: linkit
     region: content
   paragraphs_type_help__default:
     weight: -100
