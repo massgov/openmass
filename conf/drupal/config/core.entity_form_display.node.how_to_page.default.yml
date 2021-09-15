@@ -28,6 +28,7 @@ dependencies:
     - field.field.node.how_to_page.field_more_info_header
     - field.field.node.how_to_page.field_next_steps_header
     - field.field.node.how_to_page.field_organizations
+    - field.field.node.how_to_page.field_primary_parent
     - field.field.node.how_to_page.field_reusable_label
     - field.field.node.how_to_page.field_state_organization_tax
     - field.field.node.how_to_page.field_what_you_need_header
@@ -36,6 +37,7 @@ dependencies:
   module:
     - content_moderation
     - entity_browser_entity_form
+    - entity_hierarchy
     - field_group
     - inline_entity_form
     - link
@@ -71,6 +73,7 @@ third_party_settings:
         - field_how_to_link_1
         - field_customize_header_text
         - field_organizations
+        - field_primary_parent
         - field_intended_audience
         - field_reusable_label
         - field_collections
@@ -159,7 +162,7 @@ bundle: how_to_page
 mode: default
 content:
   field_collections:
-    weight: 5
+    weight: 6
     settings:
       start_minimized: true
       select_parents: true
@@ -380,7 +383,7 @@ content:
     type: text_textarea
     region: content
   field_intended_audience:
-    weight: 3
+    weight: 4
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -482,8 +485,19 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_primary_parent:
+    weight: 3
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: false
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
+    region: content
   field_reusable_label:
-    weight: 4
+    weight: 5
     settings:
       match_operator: CONTAINS
       match_limit: 10

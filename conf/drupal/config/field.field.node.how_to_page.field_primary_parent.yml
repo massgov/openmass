@@ -1,0 +1,41 @@
+uuid: e9440856-0308-4ba4-9992-93c55f1dc93c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_primary_parent
+    - node.type.binder
+    - node.type.how_to_page
+    - node.type.info_details
+    - node.type.org_page
+    - node.type.topic_page
+  module:
+    - entity_hierarchy
+id: node.how_to_page.field_primary_parent
+field_name: field_primary_parent
+entity_type: node
+bundle: how_to_page
+label: 'Primary Parent'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      binder: binder
+      how_to_page: how_to_page
+      info_details: info_details
+      org_page: org_page
+      topic_page: topic_page
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: how_to_page
+  weight_min: -50
+  weight_max: 50
+  weight_label: Weight
+field_type: entity_reference_hierarchy

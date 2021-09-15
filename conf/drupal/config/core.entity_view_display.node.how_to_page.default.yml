@@ -27,11 +27,13 @@ dependencies:
     - field.field.node.how_to_page.field_more_info_header
     - field.field.node.how_to_page.field_next_steps_header
     - field.field.node.how_to_page.field_organizations
+    - field.field.node.how_to_page.field_primary_parent
     - field.field.node.how_to_page.field_reusable_label
     - field.field.node.how_to_page.field_state_organization_tax
     - field.field.node.how_to_page.field_what_you_need_header
     - node.type.how_to_page
   module:
+    - entity_hierarchy
     - entity_reference_revisions
     - link
     - metatag
@@ -249,6 +251,15 @@ content:
     settings:
       link: true
     third_party_settings: {  }
+  field_primary_parent:
+    weight: 29
+    label: above
+    settings:
+      weight_output: attribute
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_label
+    region: content
   field_what_you_need_header:
     weight: 6
     label: hidden
