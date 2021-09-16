@@ -30,12 +30,12 @@ class OrgPageMetadataTest extends MetadataTestCase {
       'moderation_state' => 'published',
     ]);
     $org_locations = Paragraph::create([
-      'bundle' => 'org_locations',
+      'type' => 'org_locations',
       'field_org_ref_locations' => [$location],
     ]);
     $org_locations->save();
     $location_org_section = Paragraph::create([
-      'bundle' => 'org_section_long_form',
+      'type' => 'org_section_long_form',
       'field_section_long_form_content' => [$org_locations],
     ]);
     $location_org_section->save();
