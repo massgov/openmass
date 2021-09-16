@@ -370,7 +370,7 @@ class Helper {
    *
    * @param object $entity
    *   The entity which contains the nested reference field.
-   * @param array $reference_field
+   * @param array $reference_fields
    *   An array of the nested entity reference field names.
    *
    * @return array
