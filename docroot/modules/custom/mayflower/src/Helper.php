@@ -1459,7 +1459,7 @@ class Helper {
       'href' => $href,
       'text' => $text,
       'chevron' => TRUE,
-      'label' => '',
+      'labelContext' => t('for the @label', ['@label' => $entity->label()]),
     ];
   }
 

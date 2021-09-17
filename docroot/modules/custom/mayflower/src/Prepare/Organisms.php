@@ -597,7 +597,7 @@ class Organisms {
           'href' => UrlHelper::filterBadProtocol($node->toUrl()->toString() . '/news'),
           'text' => t('See all news and announcements'),
           'chevron' => TRUE,
-          'label' => t('See all news and announcements for the @label', ['@label' => $entity->label()]),
+          'labelContext' => t('for the @label', ['@label' => $entity->label()]),
         ];
         $moreLink = Molecules::prepareMoreLink($entity, $moreOptions);
       }
@@ -1746,7 +1746,6 @@ class Organisms {
           'accordion' => TRUE,
           'expanded' => FALSE,
           'label' => "Expand {$title} step.",
-
         ];
 
         $steps[] = Molecules::prepareActionStep($item, $referenced_fields, $step_options);
