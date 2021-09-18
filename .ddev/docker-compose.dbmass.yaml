@@ -7,7 +7,7 @@ version: '3.6'
 services:
   dbmass:
     container_name: ddev-${DDEV_SITENAME}-dbmass
-    image: ${DB_IMAGE-massgov/mysql-sanitized:super}
+    image: ${DDEV_DBIMAGE-massgov/mysql-sanitized:super}
     # These labels ensure this service is discoverable by ddev.
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
