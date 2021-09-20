@@ -172,10 +172,10 @@
         <div class="ma__organization-navigation__subitem">
           {% embed "@organisms/by-template/org-nav-i-want-to-menu.twig" %}
             {% block findService %}
-              {% if content.extra_org_nav_featured_services|render or node.field_ref_actions_6|length %}
+              {% if content.extra_org_nav_featured_services|render %}
                 <div class="ma__org-nav-i-want-to-section ma__org-nav-i-want-to__findService">
                   {% if content.extra_org_nav_featured_services|render is not empty %}
-                    {# Display the links from "Featured Services" and "More services". #}
+                    {# Display the links from "Featured Services". #}
                     {{ content.extra_org_nav_featured_services }}
                   {% endif %}
                 </div>

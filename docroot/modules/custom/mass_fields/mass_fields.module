@@ -228,10 +228,56 @@ function mass_fields_entity_extra_field_info() {
 }
 
 /**
+ * Get org_page section data for display fields used in SubNav.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ */
+function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
+  // Initalize the return array.
+  $org_page_field_data = [];
+  // If there no sections, return an empty array.
+  if ($entity->get('field_organization_sections')->isEmpty()) {
+    return $org_page_field_data;
+  }
+  // Get the sections field value.
+  $field_organization_sections = $entity->get('field_organization_sections')->getValue();
+  // Loop through the sections.
+  foreach ($field_organization_sections as $section_key => $section_value) {
+    // Get the section entity.
+    $section_entity = $entity->get('field_organization_sections')[$section_key]->entity;
+    // If the section content field is empty, continue to the next section.
+    if ($section_entity->get('field_section_long_form_content')->isEmpty()) {
+      continue;
+    }
+    // Get the section content field value.
+    $field_section_long_form_content = $section_entity->get('field_section_long_form_content')->getValue();
+    // Loop through the section content paragraphs.
+    foreach ($field_section_long_form_content as $content_key => $content_value) {
+      // Get the content paragraph entity.
+      $content_entity = $section_entity->get('field_section_long_form_content')[$content_key]->entity;
+      // Get the paragraph type.
+      $paragraph_type = $content_entity->bundle();
+      // For certain paragraph types, get field data and store in return array.
+      switch ($paragraph_type) {
+        case 'what_would_you_like_to_do':
+          $org_page_field_data['field_wwyltd_top_s_links'] = $content_entity->field_wwyltd_top_s_links->view();
+          $org_page_field_data['field_wwyltd_more_services'] = $content_entity->field_wwyltd_more_services->view();
+          break;
+      }
+    }
+  }
+  return $org_page_field_data;
+}
+
+/**
  * Implements hook_ENTITY_TYPE_view().
  */
 function mass_fields_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   $entityTypeManager = \Drupal::entityTypeManager();
+
+  if ($entity->getEntityTypeId() == 'node' && $entity->bundle() == 'org_page') {
+    $org_page_sections_data = _mass_fields_get_org_page_sections_data($entity);
+  }
 
   if ($display->getComponent('extra_sidebar_contact') && !empty($build['field_contact'])) {
     $build['extra_sidebar_contact'] = $build['field_contact'];
@@ -275,25 +321,17 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     }
   }
 
-  if ($display->getComponent('extra_org_nav_featured_services') && (!empty($build['field_links_actions_3'][0]) || !empty($build['field_ref_actions_6'][0]))) {
+  if ($display->getComponent('extra_org_nav_featured_services') && (!empty($org_page_sections_data['field_wwyltd_top_s_links'][0]) || !empty($org_page_sections_data['field_wwyltd_more_services'][0]))) {
     // If there are featured services links, copy them.
-    if (!empty($build['field_links_actions_3'][0])) {
-      $build['extra_org_nav_featured_services'] = $build['field_links_actions_3'];
+    if (!empty($org_page_sections_data['field_wwyltd_top_s_links'][0])) {
+      $build['extra_org_nav_featured_services'] = $org_page_sections_data['field_wwyltd_top_s_links'];
       // If there are "More services" links, add them to the render array.
-      if (!empty($build['field_ref_actions_6'][0])) {
-        foreach ($entity->field_ref_actions_6->referencedEntities() as $linked) {
-          $build['extra_org_nav_featured_services'][] = [
-            '#type' => 'link',
-            '#title' => $linked->title->value,
-            '#url' => $linked->toUrl(),
-            '#theme' => 'link_formatter_link_separate',
-            '#field_name' => 'extra_org_nav_featured_services',
-          ];
-        }
+      if (!empty($org_page_sections_data['field_wwyltd_more_services'][0])) {
+        $build['extra_org_nav_featured_services'] = array_merge($build['extra_org_nav_featured_services'], $org_page_sections_data['field_wwyltd_more_services']);
       }
     }
     else {
-      $build['extra_org_nav_featured_services'] = $build['field_ref_actions_6'];
+      $build['extra_org_nav_featured_services'] = $org_page_sections_data['field_wwyltd_more_services'];
     }
 
     $build['extra_org_nav_featured_services']['#view_mode'] = 'org_nav_featured_services';
