@@ -225,9 +225,9 @@ class MassContentContext extends RawDrupalContext implements SnippetAcceptingCon
           'Department of Fish - http://www.google.com',
         ]),
         'field_topic_callout_links' => implode(', ', [
-          'Camping - http://mass.local/subtopic/nature-outdoor-activities?filter=Camping',
-          'Hiking - http://mass.local/subtopic/nature-outdoor-activities?filter=Hiking',
-          'Biking - http://mass.local/subtopic/nature-outdoor-activities?filter=Biking',
+          'Camping - https://mass.local/subtopic/nature-outdoor-activities?filter=Camping',
+          'Hiking - https://mass.local/subtopic/nature-outdoor-activities?filter=Hiking',
+          'Biking - https://mass.local/subtopic/nature-outdoor-activities?filter=Biking',
         ]),
       ],
       [
@@ -245,9 +245,9 @@ class MassContentContext extends RawDrupalContext implements SnippetAcceptingCon
           'Department of Fish - http://www.google.com',
         ]),
         'field_topic_callout_links' => implode(', ', [
-          'Camping - http://mass.local/subtopic/nature-outdoor-activities?filter=Camping',
-          'Hiking - http://mass.local/subtopic/nature-outdoor-activities?filter=Hiking',
-          'Biking - http://mass.local/subtopic/nature-outdoor-activities?filter=Biking',
+          'Camping - https://mass.local/subtopic/nature-outdoor-activities?filter=Camping',
+          'Hiking - https://mass.local/subtopic/nature-outdoor-activities?filter=Hiking',
+          'Biking - https://mass.local/subtopic/nature-outdoor-activities?filter=Biking',
         ]),
       ],
       [
@@ -277,9 +277,9 @@ class MassContentContext extends RawDrupalContext implements SnippetAcceptingCon
           'MassIT - http://www.google.com'
         ]),
         'field_topic_callout_links' => implode(', ', [
-          'Education - http://mass.local/subtopic/search-jobs?filter=Education',
-          'Public Sector - http://mass.local/subtopic/search-jobs?filter=Public Sector',
-          'Public Safety - http://mass.local/subtopic/search-jobs?filter=Public Safety',
+          'Education - https://mass.local/subtopic/search-jobs?filter=Education',
+          'Public Sector - https://mass.local/subtopic/search-jobs?filter=Public Sector',
+          'Public Safety - https://mass.local/subtopic/search-jobs?filter=Public Safety',
         ]),
       ],
     ];
