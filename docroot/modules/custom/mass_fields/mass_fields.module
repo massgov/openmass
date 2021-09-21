@@ -260,11 +260,15 @@ function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
       // For certain paragraph types, get field data and store in return array.
       switch ($paragraph_type) {
         case 'what_would_you_like_to_do':
-          $org_page_field_data['field_wwyltd_top_s_links'] = $content_entity->field_wwyltd_top_s_links->view();
-          $org_page_field_data['field_wwyltd_more_services'] = $content_entity->field_wwyltd_more_services->view();
+          $org_page_field_data['field_wwyltd_top_s_links']['value'] = $content_entity->field_wwyltd_top_s_links->value;
+          $org_page_field_data['field_wwyltd_top_s_links']['build'] = $content_entity->field_wwyltd_top_s_links->view();
+          $org_page_field_data['field_wwyltd_more_services']['value'] = $content_entity->field_wwyltd_more_services->value;
+          $org_page_field_data['field_wwyltd_more_services']['build'] = $content_entity->field_wwyltd_more_services->view();
+          $org_page_field_data['field_wwyltd_more_services']['entities'] = $content_entity->field_wwyltd_more_services->referencedEntities();
           break;
         case 'featured_topics':
-          $org_page_field_data['field_featured_topics_topics'] = $content_entity->field_featured_topics_topics->referencedEntities();
+          $org_page_field_data['field_featured_topics_topics']['build'] = $content_entity->field_featured_topics_topics->view();
+          $org_page_field_data['field_featured_topics_topics']['entities'] = $content_entity->field_featured_topics_topics->referencedEntities();
           break;
       }
     }
@@ -324,30 +328,32 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     }
   }
 
-  if ($display->getComponent('extra_org_nav_featured_services') && (!empty($org_page_sections_data['field_wwyltd_top_s_links'][0]) || !empty($org_page_sections_data['field_wwyltd_more_services'][0]))) {
+  if ($display->getComponent('extra_org_nav_featured_services')
+    && (!empty($org_page_sections_data['field_wwyltd_top_s_links']['build'][0]) || !empty($org_page_sections_data['field_wwyltd_more_services']['build'][0]))) {
     // If there are featured services links, copy them.
-    if (!empty($org_page_sections_data['field_wwyltd_top_s_links'][0])) {
-      $build['extra_org_nav_featured_services'] = $org_page_sections_data['field_wwyltd_top_s_links'];
+    if (!empty($org_page_sections_data['field_wwyltd_top_s_links']['build'][0])) {
+      $build['extra_org_nav_featured_services'] = $org_page_sections_data['field_wwyltd_top_s_links']['build'];
       // If there are "More services" links, add them to the render array.
-      if (!empty($org_page_sections_data['field_wwyltd_more_services'][0])) {
-        $build['extra_org_nav_featured_services'] = array_merge($build['extra_org_nav_featured_services'], $org_page_sections_data['field_wwyltd_more_services']);
+      if (!empty($org_page_sections_data['field_wwyltd_more_services']['build'][0])) {
+        $build['extra_org_nav_featured_services'] = array_merge($build['extra_org_nav_featured_services'], $org_page_sections_data['field_wwyltd_more_services']['build']);
       }
     }
     else {
-      $build['extra_org_nav_featured_services'] = $org_page_sections_data['field_wwyltd_more_services'];
+      $build['extra_org_nav_featured_services'] = $org_page_sections_data['field_wwyltd_more_services']['build'];
     }
 
     $build['extra_org_nav_featured_services']['#view_mode'] = 'org_nav_featured_services';
     $build['extra_org_nav_featured_services']['#field_name'] = 'extra_org_nav_featured_services';
   }
 
-  if ($display->getComponent('extra_org_nav_application_login_links') && (!empty($build['field_application_login_links']))) {
+  if ($display->getComponent('extra_org_nav_application_login_links')&& (!empty($build['field_application_login_links']))) {
     $build['extra_org_nav_application_login_links'] = $build['field_application_login_links'];
     $build['extra_org_nav_application_login_links']['#field_name'] = 'extra_org_nav_application_login_links';
   }
 
-  if ($display->getComponent('extra_org_nav_featured_topics') && !empty($org_page_sections_data['field_featured_topics_topics'])) {
-    foreach ($org_page_sections_data['field_featured_topics_topics'] as $linked) {
+  if ($display->getComponent('extra_org_nav_featured_topics')
+    && !empty($org_page_sections_data['field_featured_topics_topics']['entities'])) {
+    foreach ($org_page_sections_data['field_featured_topics_topics']['entities'] as $linked) {
       $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
       $item = $builder->view($linked, 'org_nav_featured_topics');
       $item['#field_name'] = 'extra_org_nav_featured_topics';
@@ -472,9 +478,9 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     }
     elseif ($entity->bundle() === 'org_page') {
       // If there are featured services links, copy them.
-      if (!empty($build['field_links_actions_3'])) {
-        $build['extra_node_all_actions'] = $build['field_links_actions_3'];
-        foreach ($entity->field_links_actions_3->getValue() as $delta => $item) {
+      if (!empty($org_page_sections_data['field_wwyltd_top_s_links'])) {
+        $build['extra_node_all_actions'] = $org_page_sections_data['field_wwyltd_top_s_links']['build'];
+        foreach ($org_page_sections_data['field_wwyltd_top_s_links']['value'] as $delta => $item) {
           if (strpos($item['uri'], 'entity:') !== FALSE) {
             [$entity_type, $entity_id] = explode('/', str_replace('entity:', '', $item['uri']));
 
@@ -494,8 +500,8 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
         }
 
         // If there are "More services" links, add them to the render array.
-        if (!empty($build['field_ref_actions_6'])) {
-          foreach ($entity->field_ref_actions_6->referencedEntities() as $linked) {
+        if (!empty($org_page_sections_data['field_wwyltd_more_services'])) {
+          foreach ($org_page_sections_data['field_wwyltd_more_services']['entities'] as $linked) {
             $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
             $item = $builder->view($linked, 'title_short_desc');
             $item['#field_name'] = 'extra_node_all_actions';
@@ -503,8 +509,8 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
           }
         }
       }
-      elseif (!empty($build['field_ref_actions_6'])) {
-        $build['extra_node_all_actions'] = $build['field_ref_actions_6'];
+      elseif (!empty($org_page_sections_data['field_featured_topics_topics'])) {
+        $build['extra_node_all_actions'] = $org_page_sections_data['field_featured_topics_topics']['build'];
       }
       $build['extra_node_all_actions']['#view_mode'] = 'title_short_desc';
       $build['extra_node_all_actions']['#field_name'] = 'extra_node_all_actions';
