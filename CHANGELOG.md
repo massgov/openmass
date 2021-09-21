@@ -12,8 +12,9 @@
   - DP-20436: Fix and optimize Noto Sans multi-language fonts. (MF #1322)
   - DP-22263: Adjusted Picture, KeyMessage, MarketingCampaign to support responsive images. (MF #1484)
   - DP-22971: Fix Behat URL under DDEV.
-  - DP-23001: Updated Mayflower version to 11.15.1.
+  - DP-23001: Updated Mayflower version to 11.15.2.
   - DP-22974: Adjusted it to fix regression issue. (MF #1503)
+  - DP-22979: Fix webfonts `woff2` and `woff` fallback order, to avoid duplicated loading. (MF #1501)
   
 ### Removed
   - DP-19071: Remove person pages from xml sitemap.
