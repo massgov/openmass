@@ -1,5 +1,33 @@
 
 
+## [0.296.0] - September 21, 2021
+
+### Changed
+  - DP-15164: Update different links to use the new labelContext attibute for links.
+  - DP-22363: Introduce ddev for local development and CI.
+  - DP-22540: Updated Terraform from 0.12.3 to 0.12.31.
+  - DP-22646: Disable client IP restore in Cloudflare module
+  - DP-22776: Edit format settings for 'All content' view so that if someone clicks the pageviews to sort, it will sort descending.
+  - DP-22967: Updated Mayflower version to 11.15.0.
+  - DP-20436: Fix and optimize Noto Sans multi-language fonts. (MF #1322)
+  - DP-22263: Adjusted Picture, KeyMessage, MarketingCampaign to support responsive images. (MF #1484)
+  - DP-22971: Fix Behat URL under DDEV.
+  - DP-23001: Updated Mayflower version to 11.15.2.
+  - DP-22974: Adjusted it to fix regression issue. (MF #1503)
+  - DP-22979: Fix webfonts `woff2` and `woff` fallback order, to avoid duplicated loading. (MF #1501)
+  
+### Removed
+  - DP-19071: Remove person pages from xml sitemap.
+  
+### Fixed
+  - DP-22263: Enabling and implementing Drupal responsive images for key message paragraph.
+  - DP-22979: Fix preload fonts 404 errors.
+  
+### Added
+  - DP-22918: Make organization user filter persist in the All Content view.
+  
+
+
 ## [0.295.0] - September 7, 2021
 
 ### Removed
