@@ -41,6 +41,8 @@ services:
         - composer install --optimize-autoloader
 
         - vendor/bin/drush -y sql:drop
+        - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+        - vendor/bin/drush ma:latest-backup-url -vvv prod
         - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
 
         # Copy Drupal's public files directory from an external server. The
@@ -53,8 +55,8 @@ services:
         # files from another publicly-accessible Drupal site instead of
         # syncing the entire files directory into the Tugboat Preview.
         # This results in smaller previews and reduces the build time.
-        - vendor/bin/drush pm:enable --yes stage_file_proxy
-        - vendor/bin/drush config:set --yes stage_file_proxy.settings origin "https://www.mass.gov"
+        #- vendor/bin/drush pm:enable --yes stage_file_proxy
+        #- vendor/bin/drush config:set --yes stage_file_proxy.settings origin "https://www.mass.gov"
 
         # Set file permissions such that Drupal will not complain.
         - chgrp -R www-data "${DOCROOT}/sites/default/files"
