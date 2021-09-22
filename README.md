@@ -28,7 +28,7 @@ If the Docker section above is unappealing, its easy to run mass.gov natively on
 
 ### Ahoy (optional)
 
-1. You may use `ddev` commands, our legacy Ahoy commands. In order for Ahoy to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
+1. You may use [DDEV commands](https://ddev.readthedocs.io/en/latest/users/cli-usage/), or our legacy Ahoy commands. In order for Ahoy to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
     ```bash
     sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
     ```
