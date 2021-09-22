@@ -35,15 +35,13 @@ services:
       # already be present.
       update:
         # Use the tugboat-specific Drupal settings.
-        - cp "${TUGBOAT_ROOT}/.tugboat/settings.local.php" "${DOCROOT}/sites/default/"
+        #- cp "${TUGBOAT_ROOT}/.tugboat/settings.local.php" "${DOCROOT}/sites/default/"
 
         # Install/update packages managed by composer, including drush.
         - composer install --optimize-autoloader
-
-        - vendor/bin/drush -y sql:drop
-        - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
-        - vendor/bin/drush ma:latest-backup-url -vvv prod
-        - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
+        - scripts/ma-refresh-local --db-prep-only
+        - #        - vendor/bin/drush ma:latest-backup-url -vvv prod
+#        - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
 
         # Copy Drupal's public files directory from an external server. The
         # public SSH key found in the Tugboat Repository configuration must be
@@ -77,7 +75,7 @@ services:
         - sudo apt update
         - sudo apt install yarn
         - yarn install
-        - vendor/bin/drush deploy -v -y
+        - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
 
   # This 'mysql' key acts as the hostname to access the service by from the php service.
   mysql:
