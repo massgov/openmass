@@ -65,8 +65,7 @@
   {% set iWantToTabContents = false %}
   {% if content.extra_org_nav_featured_services|render or
     content.extra_org_nav_featured_topics|render or
-    content.field_application_login_links|render or
-    node.field_ref_actions_6|length %}
+    content.field_application_login_links|render %}
     {% set iWantToTabContents = true %}
   {% endif %}
 
@@ -109,20 +108,26 @@
 
   {# Our Organizations. #}
   {% set ourOrganizationsHasContent = false %}
-  {% if node.field_org_our_orgs is not empty %}
+  {% if content.extra_org_nav_our_organizations is not empty %}
     {% set ourOrganizationsHasContent = true %}
   {% endif %}
 
   {# News. #}
   {% set newsHasContent = false %}
-  {% if news %}
+  {% if content.extra_org_nav_news is not empty %}
     {% set newsHasContent = true %}
   {% endif %}
 
   {# Locations. #}
   {% set locationsHasContent = false %}
-  {% if node.field_org_ref_locations is not empty %}
+  {% if content.extra_org_nav_locations is not empty %}
     {% set locationsHasContent = true %}
+  {% endif %}
+
+  {# Events. #}
+  {% set eventsHasContent = false %}
+  {% if content.extra_org_nav_events is not empty %}
+    {% set eventsHasContent = true %}
   {% endif %}
 
   {% set orgNavTabs = [
@@ -132,6 +137,7 @@
     ourOrganizationsHasContent,
     newsHasContent,
     locationsHasContent,
+    eventsHasContent,
   ] %}
 
   {% set itemsWithContent = 0 %}
@@ -172,10 +178,10 @@
         <div class="ma__organization-navigation__subitem">
           {% embed "@organisms/by-template/org-nav-i-want-to-menu.twig" %}
             {% block findService %}
-              {% if content.extra_org_nav_featured_services|render or node.field_ref_actions_6|length %}
+              {% if content.extra_org_nav_featured_services|render %}
                 <div class="ma__org-nav-i-want-to-section ma__org-nav-i-want-to__findService">
                   {% if content.extra_org_nav_featured_services|render is not empty %}
-                    {# Display the links from "Featured Services" and "More services". #}
+                    {# Display the links from "Featured Services". #}
                     {{ content.extra_org_nav_featured_services }}
                   {% endif %}
                 </div>
