@@ -286,22 +286,28 @@ function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
         case 'about':
           $org_page_field_data['about']['entities'][] = $content_entity;
           break;
+
         case 'featured_topics':
           $org_page_field_data['field_featured_topics_topics']['build'] = $content_entity->field_featured_topics_topics->view();
           $org_page_field_data['field_featured_topics_topics']['entities'] = $content_entity->field_featured_topics_topics->referencedEntities();
           break;
+
         case 'org_events':
           $org_page_field_data['org_events']['entities'][] = $content_entity;
           break;
+
         case 'org_locations':
           $org_page_field_data['org_locations']['entities'][] = $content_entity;
           break;
+
         case 'org_news':
           $org_page_field_data['org_news']['entities'][] = $content_entity;
           break;
+
         case 'organization_grid':
           $org_page_field_data['organization_grid']['entities'][] = $content_entity;
           break;
+
         case 'what_would_you_like_to_do':
           $org_page_field_data['field_wwyltd_top_s_links']['value'] = $content_entity->get('field_wwyltd_top_s_links')->getValue();
           $org_page_field_data['field_wwyltd_top_s_links']['build'] = $content_entity->field_wwyltd_top_s_links->view();
