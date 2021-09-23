@@ -209,6 +209,30 @@ function mass_fields_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   ];
+  $extra['node']['org_page']['display']['extra_org_nav_events'] = [
+    'label' => t('Organization Navigation Events'),
+    'description' => t('The org_events paragraph referenced in an organization section.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+  $extra['node']['org_page']['display']['extra_org_nav_locations'] = [
+    'label' => t('Organization Navigation Locations'),
+    'description' => t('The org_locations paragraph referenced in an organization section.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+  $extra['node']['org_page']['display']['extra_org_nav_news'] = [
+    'label' => t('Organization Navigation News'),
+    'description' => t('The org_news paragraph referenced in an organization section.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+  $extra['node']['org_page']['display']['extra_org_nav_our_organizations'] = [
+    'label' => t('Organization Navigation Our Organizations'),
+    'description' => t('The organization_grid paragraph referenced in an organization section.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
 
   // Add the extra_node_all_actions field to corresponding content types.
   $all_actions_types = [
@@ -259,16 +283,31 @@ function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
       $paragraph_type = $content_entity->bundle();
       // For certain paragraph types, get field data and store in return array.
       switch ($paragraph_type) {
-        case 'what_would_you_like_to_do':
-          $org_page_field_data['field_wwyltd_top_s_links']['value'] = $content_entity->field_wwyltd_top_s_links->value;
-          $org_page_field_data['field_wwyltd_top_s_links']['build'] = $content_entity->field_wwyltd_top_s_links->view();
-          $org_page_field_data['field_wwyltd_more_services']['value'] = $content_entity->field_wwyltd_more_services->value;
-          $org_page_field_data['field_wwyltd_more_services']['build'] = $content_entity->field_wwyltd_more_services->view();
-          $org_page_field_data['field_wwyltd_more_services']['entities'] = $content_entity->field_wwyltd_more_services->referencedEntities();
+        case 'about':
+          $org_page_field_data['about']['entities'][] = $content_entity;
           break;
         case 'featured_topics':
           $org_page_field_data['field_featured_topics_topics']['build'] = $content_entity->field_featured_topics_topics->view();
           $org_page_field_data['field_featured_topics_topics']['entities'] = $content_entity->field_featured_topics_topics->referencedEntities();
+          break;
+        case 'org_events':
+          $org_page_field_data['org_events']['entities'][] = $content_entity;
+          break;
+        case 'org_locations':
+          $org_page_field_data['org_locations']['entities'][] = $content_entity;
+          break;
+        case 'org_news':
+          $org_page_field_data['org_news']['entities'][] = $content_entity;
+          break;
+        case 'organization_grid':
+          $org_page_field_data['organization_grid']['entities'][] = $content_entity;
+          break;
+        case 'what_would_you_like_to_do':
+          $org_page_field_data['field_wwyltd_top_s_links']['value'] = $content_entity->get('field_wwyltd_top_s_links')->getValue();
+          $org_page_field_data['field_wwyltd_top_s_links']['build'] = $content_entity->field_wwyltd_top_s_links->view();
+          $org_page_field_data['field_wwyltd_more_services']['value'] = $content_entity->get('field_wwyltd_more_services')->getValue();
+          $org_page_field_data['field_wwyltd_more_services']['build'] = $content_entity->field_wwyltd_more_services->view();
+          $org_page_field_data['field_wwyltd_more_services']['entities'] = $content_entity->field_wwyltd_more_services->referencedEntities();
           break;
       }
     }
@@ -380,13 +419,33 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     }
   }
 
-  if ($display->getComponent('extra_org_nav_more_agency_link') && !empty($build['field_about'])) {
-    foreach ($entity->field_about->referencedEntities() as $linked) {
+  if ($display->getComponent('extra_org_nav_more_agency_link') && !empty($org_page_sections_data['about'])) {
+    foreach ($org_page_sections_data['about']['entities'] as $linked) {
       $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
       $item = $builder->view($linked, 'organization_navigation');
       $item['#field_name'] = 'extra_org_nav_more_agency_link';
       $build['extra_org_nav_more_agency_link'][] = $item;
     }
+  }
+
+  // Provide a value that represents the presence of an organization events.
+  if ($display->getComponent('extra_org_nav_events') && !empty($org_page_sections_data['org_events'])) {
+    $build['extra_org_nav_events'] = $org_page_sections_data['org_events']['entities'];
+  }
+
+  // Provide a value that represents the presence of an organization locations.
+  if ($display->getComponent('extra_org_nav_locations') && !empty($org_page_sections_data['org_locations'])) {
+    $build['extra_org_nav_locations'] = $org_page_sections_data['org_locations']['entities'];
+  }
+
+  // Provide a value that represents the presence of an organization news.
+  if ($display->getComponent('extra_org_nav_news') && !empty($org_page_sections_data['org_news'])) {
+    $build['extra_org_nav_news'] = $org_page_sections_data['org_news']['entities'];
+  }
+
+  // Provide a value that represents the presence of an organization grid.
+  if ($display->getComponent('extra_org_nav_our_organizations') && !empty($org_page_sections_data['organization_grid'])) {
+    $build['extra_org_nav_our_organizations'] = $org_page_sections_data['organization_grid']['entities'];
   }
 
   if ($display->getComponent('extra_node_pager') && !empty($build['referencing_binders'][0])) {

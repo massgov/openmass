@@ -108,20 +108,26 @@
 
   {# Our Organizations. #}
   {% set ourOrganizationsHasContent = false %}
-  {% if node.field_org_our_orgs is not empty %}
+  {% if content.extra_org_nav_our_organizations is not empty %}
     {% set ourOrganizationsHasContent = true %}
   {% endif %}
 
   {# News. #}
   {% set newsHasContent = false %}
-  {% if news %}
+  {% if content.extra_org_nav_news is not empty %}
     {% set newsHasContent = true %}
   {% endif %}
 
   {# Locations. #}
   {% set locationsHasContent = false %}
-  {% if node.field_org_ref_locations is not empty %}
+  {% if content.extra_org_nav_locations is not empty %}
     {% set locationsHasContent = true %}
+  {% endif %}
+
+  {# Events. #}
+  {% set eventsHasContent = false %}
+  {% if content.extra_org_nav_events is not empty %}
+    {% set eventsHasContent = true %}
   {% endif %}
 
   {% set orgNavTabs = [
@@ -131,6 +137,7 @@
     ourOrganizationsHasContent,
     newsHasContent,
     locationsHasContent,
+    eventsHasContent,
   ] %}
 
   {% set itemsWithContent = 0 %}
