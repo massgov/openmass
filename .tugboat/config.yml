@@ -20,6 +20,7 @@ services:
         # Install opcache and mod-rewrite.
         - docker-php-ext-install opcache
         - a2enmod headers rewrite
+        - service apache2 restart
 
         # Link the document root to the expected path. This example links /web
         # to the docroot.
@@ -34,27 +35,11 @@ services:
       # skipping the init step, because the results of that step will
       # already be present.
       update:
-        # Use the tugboat-specific Drupal settings.
-        #- cp "${TUGBOAT_ROOT}/.tugboat/settings.local.php" "${DOCROOT}/sites/default/"
-
-        # Install/update packages managed by composer, including drush.
+        # Install/update packages that may have changed since the build stage.
         - composer install --optimize-autoloader
-        - scripts/ma-refresh-local --db-prep-only
+        - PATH=vendor/bin:$PATH scripts/ma-refresh-local --db-prep-only
         - #        - vendor/bin/drush ma:latest-backup-url -vvv prod
 #        - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
-
-        # Copy Drupal's public files directory from an external server. The
-        # public SSH key found in the Tugboat Repository configuration must be
-        # copied to the external server in order to use rsync over SSH.
-#        - rsync -av --delete user@example.com:/path/to/files/ "${DOCROOT}/sites/default/files/"
-
-        # Alternatively, another common practice is to use the
-        # stage_file_proxy Drupal module. This module lets Drupal serve
-        # files from another publicly-accessible Drupal site instead of
-        # syncing the entire files directory into the Tugboat Preview.
-        # This results in smaller previews and reduces the build time.
-        #- vendor/bin/drush pm:enable --yes stage_file_proxy
-        #- vendor/bin/drush config:set --yes stage_file_proxy.settings origin "https://www.mass.gov"
 
         # Set file permissions such that Drupal will not complain.
         - chgrp -R www-data "${DOCROOT}/sites/default/files"
