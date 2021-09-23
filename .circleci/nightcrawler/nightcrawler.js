@@ -33,7 +33,7 @@ switch(target) {
     alias = '@prod';
     break;
   case 'local':
-    base = 'https://mass.local';
+    base = 'http://mass-web';
     alias = '@self';
     break;
   case 'test':
