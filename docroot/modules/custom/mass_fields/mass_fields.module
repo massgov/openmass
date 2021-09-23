@@ -325,10 +325,10 @@ function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
  * Prepare a link field with node titles for missing node link titles.
  *
  * @param array $field_build
- *  The link field value.
+ *   The link field value.
  *
  * @return array
- *  Updated field value array.
+ *   Updated field value array.
  */
 function _mass_fields_prepare_link_field_build(array &$field_build) {
   $entityTypeManager = \Drupal::entityTypeManager();
@@ -409,7 +409,7 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     // If there are featured services links, copy them.
     if (!empty($org_page_sections_data['field_wwyltd_top_s_links']['build'][0])) {
       // Ensure all links have titles.
-     _mass_fields_prepare_link_field_build($org_page_sections_data['field_wwyltd_top_s_links']['build']);
+      _mass_fields_prepare_link_field_build($org_page_sections_data['field_wwyltd_top_s_links']['build']);
       $build['extra_org_nav_featured_services'] = $org_page_sections_data['field_wwyltd_top_s_links']['build'];
       // If there are "More services" links, add them to the render array.
       if (!empty($org_page_sections_data['field_wwyltd_more_services']['build'][0])) {
