@@ -322,6 +322,37 @@ function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
 }
 
 /**
+ * Prepare a link field with node titles for missing node link titles.
+ *
+ * @param array $field_build
+ *  The link field value.
+ *
+ * @return array
+ *  Updated field value array.
+ */
+function _mass_fields_prepare_link_field_build(array &$field_build) {
+  $entityTypeManager = \Drupal::entityTypeManager();
+  // Ensure all links have titles.
+  foreach ($field_build['#items'] as $delta => $item) {
+    $test = $item->uri;
+    if (strpos($item->uri, 'entity:') !== FALSE) {
+      [$entity_type, $entity_id] = explode('/', str_replace('entity:', '', $item->uri));
+      $storage = $entityTypeManager->getStorage('node');
+      $node = $storage->load($entity_id);
+      if ($node !== NULL && $node->isPublished() === TRUE) {
+        // Override the node title with the link title.
+        if ($item->title !== '' && $item->title !== $node->title->value) {
+          $node->set('title', $item->title);
+        }
+        // Update the title value.
+        $field_build[$delta]['#title'] = $node->label();
+      }
+    }
+  }
+  return $field_build;
+}
+
+/**
  * Implements hook_ENTITY_TYPE_view().
  */
 function mass_fields_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
@@ -377,6 +408,8 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     && (!empty($org_page_sections_data['field_wwyltd_top_s_links']['build'][0]) || !empty($org_page_sections_data['field_wwyltd_more_services']['build'][0]))) {
     // If there are featured services links, copy them.
     if (!empty($org_page_sections_data['field_wwyltd_top_s_links']['build'][0])) {
+      // Ensure all links have titles.
+     _mass_fields_prepare_link_field_build($org_page_sections_data['field_wwyltd_top_s_links']['build']);
       $build['extra_org_nav_featured_services'] = $org_page_sections_data['field_wwyltd_top_s_links']['build'];
       // If there are "More services" links, add them to the render array.
       if (!empty($org_page_sections_data['field_wwyltd_more_services']['build'][0])) {
