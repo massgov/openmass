@@ -71,7 +71,7 @@ To profile a single page, run the following command:
 
 ```bash
 # eg: the homepage
-blackfire run http://mass.local/
+blackfire run https://mass.local/
 ```
 
 This will hit the homepage 10 times, averaging the time spent across all runs to make the calculations more accurate.
