@@ -37,6 +37,7 @@ services:
       update:
         # Install/update packages that may have changed since the build stage.
         - composer install --optimize-autoloader
+        - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
         - PATH=vendor/bin:$PATH scripts/ma-refresh-local --db-prep-only
         - #        - vendor/bin/drush ma:latest-backup-url -vvv prod
 #        - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
@@ -60,7 +61,6 @@ services:
         - sudo apt update
         - sudo apt install yarn
         - yarn install
-        - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
 
   # This 'mysql' key acts as the hostname to access the service by from the php service.
   mysql:
