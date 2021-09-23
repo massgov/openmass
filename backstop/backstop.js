@@ -34,7 +34,7 @@ const scenarios = pages.map(function(page) {
       base = 'https://www.mass.gov';
       break;
     case 'local':
-      base = 'http://mass.local';
+      base = 'http://mass-web';
       break;
     case 'test':
       base = 'https://massgovstg.prod.acquia-sites.com';
