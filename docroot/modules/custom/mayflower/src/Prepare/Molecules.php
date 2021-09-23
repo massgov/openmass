@@ -1831,6 +1831,7 @@ class Molecules {
       'text' => isset($options['text']) ? $options['text'] : '',
       'chevron' => isset($options['chevron']) ? $options['chevron'] : TRUE,
       'label' => isset($options['label']) ? $options['label'] : '',
+      'labelContext' => isset($options['labelContext']) ? $options['labelContext'] : '',
     ];
   }
 
