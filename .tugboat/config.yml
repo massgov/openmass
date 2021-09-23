@@ -39,8 +39,6 @@ services:
         - composer install --optimize-autoloader
         - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
         - PATH=vendor/bin:$PATH scripts/ma-refresh-local --db-prep-only
-        - #        - vendor/bin/drush ma:latest-backup-url -vvv prod
-#        - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
 
         # Set file permissions such that Drupal will not complain.
         - chgrp -R www-data "${DOCROOT}/sites/default/files"

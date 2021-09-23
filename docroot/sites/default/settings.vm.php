@@ -26,8 +26,7 @@ $settings['file_private_path'] = 'sites/default/files/private';
 
 // Allow media entity download to work with files from production.
 $config['media_entity_download.settings']['external_file_storage'] = 1;
-// Disable ClamAV in the VM to allow file uploads.
-$config['clamav.settings']['enabled'] = 0;
+
 // Disable autologout
 $config['autologout.settings']['timeout'] = 9999999;
 $config['autologout.settings']['max_timeout'] = 9999999;
