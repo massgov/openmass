@@ -48,6 +48,12 @@
  * @see html.html.twig
  */
 #}
+{% include "@molecules/brand-banner.twig" with {
+  "brandBanner": {
+    "hasSeal": true,
+    "hasToggle": true
+  }
+} %}
 {{ page.emergency_alert }}
   <div class="alert-overlay"></div>
 {{ page.flag_links }}
