@@ -15,7 +15,20 @@
   "externalSidebar": true
 } %}
   {% block stackedRowContentOverride %}
-    {{ content.field_section_long_form_content }}
+    {% for org_component in org_components %}
+      {% if org_component|length > 1 %}
+        {% embed "@organisms/by-author/rich-text.twig"%}
+          {% block rteElements %}
+            {% for c in org_component %}
+              {{ c|view }}
+            {% endfor %}
+          {% endblock %}
+        {% endembed %}
+      {% else %}
+        {{ org_component[0]|view }}
+      {% endif %}
+    {% endfor %}
+
   {% endblock %}
 {% endembed %}
 
