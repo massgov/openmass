@@ -6824,3 +6824,36 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
   $variables['org_logo'] = $node->get('field_sub_brand')->view('logo_link');
 
 }
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Break out url pieces for callout link paragraphs.
+ */
+function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
+  $components = [];
+  $container = $variables['paragraph'];
+  $paragraphs = Helper::getReferencedEntitiesFromField($container, "field_section_long_form_content");
+
+  for ($i = 0; $i < count($paragraphs); $i++) {
+    $component = [];
+    // If the current component has the "wrapping" field, group it with the following component and move the loop pointer.
+    if ($paragraphs[$i]->hasField('field_image_wrapping') && $paragraphs[$i]->get('field_image_wrapping')->getValue()) {
+      $items = [];
+      do {
+        $items[] = $paragraphs[$i];
+        $i++;
+      } while (isset($paragraphs[$i]) && $paragraphs[$i]->hasField('field_image_wrapping') && $paragraphs[$i]->get('field_image_wrapping')->getValue());
+      $items[] = $paragraphs[$i];
+
+      $component = $items;
+    }
+    else {
+      // Otherwise, create a group of a single element.
+      $component[] = $paragraphs[$i];
+    }
+    $components[] = $component;
+  }
+  $variables["org_components"] = $components;
+
+}
