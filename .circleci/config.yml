@@ -627,6 +627,7 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
+          # UTC time-zone
           cron: "00 16 * * 2"
           filters:
             branches:
