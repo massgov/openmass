@@ -74,6 +74,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageController {
    * {@inheritdoc}
    */
   protected function getRows($entity_type, $entity_id) {
+    // Copied and tweaked from the parent method.
     if (!empty($this->allRows)) {
       return $this->allRows;
       // @todo Cache this based on the target entity, invalidating the cached
@@ -113,7 +114,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageController {
         }
         $link = $this->getSourceEntityLink($source_entity);
         // If the label is empty it means this usage shouldn't be shown
-        // on the UI, just skip this row.
+        // on the UI, just skip this row. Also, only show Default sources.
         if (empty($link) || !$used_in_default) {
           continue;
         }
@@ -126,6 +127,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageController {
           $field_label,
           $published,
         ];
+        // Capture the title text in an array for sorting.
         switch (gettype($link)) {
           case 'string':
             $row_link_text[] = trim($link);
@@ -142,6 +144,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageController {
         }
       }
     }
+    // Sort the array by title text.
     array_multisort($row_link_text, SORT_ASC, $rows);
     $this->allRows = $rows;
     return $this->allRows;
