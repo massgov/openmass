@@ -69,6 +69,6 @@ services:
     commands:
       init:
         # Increase the allowed packet size to 512MB.
-        - mysql -e "SET GLOBAL max_allowed_packet=536870912;"
+        - mysql -h localhost -e "SET GLOBAL max_allowed_packet=536870912;"
         # Ensure this packet size persists even if MySQL restarts.
         - echo "max_allowed_packet=536870912" >> /etc/mysql/conf.d/tugboat.cnf
