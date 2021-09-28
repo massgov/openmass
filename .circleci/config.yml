@@ -399,8 +399,8 @@ jobs:
       - image: cimg/php:7.4-node
     steps:
       - attach_workspace: { at: /tmp }
-      - ddev_install_run:
-          omit-containers: dbmass,db
+      - run: rm -f /tmp/code/.ddev/docker-compose.dbmass.yaml
+      - ddev_install_run
       - run:
           name: Backstop reference
           command: ddev exec --service backstop backstop --config=/src/backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
