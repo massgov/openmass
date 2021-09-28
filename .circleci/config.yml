@@ -388,24 +388,27 @@ jobs:
       viewport:
         type: string
         default: all
-    working_directory: /home/circleci/code
+    working_directory: /tmp/code
     docker:
-      # Need to use docker image for these steps.
-      - image: circleci/python:2.7.14
+      - image: cimg/php:7.4-node
     steps:
-      - checkout
-      - setup_remote_docker
-      - run: docker-compose up --no-start backstop
-      - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
-      - run: docker-compose run backstop reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
-      - run: docker-compose run backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+      - attach_workspace: { at: /tmp }
+      - run: echo 'export PATH=/tmp/code/vendor/bin:/tmp/code/node_modules/.bin:$PATH' >> $BASH_ENV
+      - *no_host_check
+      - *no_ssh_timeout
+      - fetch_drush_aliases
       - run:
-          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
-          when: always
+          name: Backstop reference
+          command: backstop --config=/src/backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+          no_output_timeout: 300m
+      - run:
+          name: Backstop test
+          command: backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+          no_output_timeout: 300m
       - store_test_results:
-          path: /home/circleci/code/backstop/report
+          path: /tmp/code/backstop/report
       - store_artifacts:
-          path: /home/circleci/code/backstop
+          path: /tmp/code/backstop
 
   # If you make changes to this job, consider pushing to a tag that's not 'latest'
   # at Docker Hub. That way, your in-progress work does not interfere with build
