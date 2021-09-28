@@ -53,7 +53,7 @@ commands:
     parameters:
       omit-containers:
         description: "Any containers that should not start"
-        default: db
+        default: db,dba
         type: string
     steps:
       - run: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
@@ -395,8 +395,8 @@ jobs:
         type: string
         default: all
     working_directory: /tmp/code
-    docker:
-      - image: cimg/php:7.4-node
+    executor:
+      name: base
     steps:
       - attach_workspace: { at: /tmp }
       - run: rm -f /tmp/code/.ddev/docker-compose.dbmass.yaml
