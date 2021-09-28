@@ -393,18 +393,22 @@ jobs:
       - image: cimg/php:7.4-node
     steps:
       - attach_workspace: { at: /tmp }
-      - run: echo 'export PATH=/tmp/code/vendor/bin:/tmp/code/node_modules/.bin:$PATH' >> $BASH_ENV
-      - *no_host_check
-      - *no_ssh_timeout
-      - fetch_drush_aliases
+      - ddev_install_run
+      #- run: echo 'export PATH=/tmp/code/vendor/bin:/tmp/code/node_modules/.bin:$PATH' >> $BASH_ENV
+      #- *no_host_check
+      #- *no_ssh_timeout
+      #- fetch_drush_aliases
       - run:
           name: Backstop reference
-          command: backstop --config=/src/backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+          command: ddev exec --service backstop backstop --config=/src/backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
           no_output_timeout: 300m
       - run:
           name: Backstop test
-          command: backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+          command: ddev exec --service backstop backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
           no_output_timeout: 300m
+      - run:
+          command: ddev logs -s backstop
+          when: always
       - store_test_results:
           path: /tmp/code/backstop/report
       - store_artifacts:
