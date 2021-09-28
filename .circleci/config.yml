@@ -50,10 +50,15 @@ executors:
 
 commands:
   ddev_install_run:
+    parameters:
+      omit_containers:
+        description: "Any containers that should not start"
+        default: db
+        type: string
     steps:
       - run: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
       - run: echo $DOCKER_API_KEY | docker login -u $DOCKER_USER --password-stdin
-      - run: ddev start -y
+      - run: ddev start --omit-containers=<< parameters.omit-containers >>
       - run: ddev describe
   git_configure_user:
     steps:
@@ -393,11 +398,8 @@ jobs:
       - image: cimg/php:7.4-node
     steps:
       - attach_workspace: { at: /tmp }
-      - ddev_install_run
-      #- run: echo 'export PATH=/tmp/code/vendor/bin:/tmp/code/node_modules/.bin:$PATH' >> $BASH_ENV
-      #- *no_host_check
-      #- *no_ssh_timeout
-      #- fetch_drush_aliases
+      - ddev_install_run:
+          omit_containers: dbmass,db
       - run:
           name: Backstop reference
           command: ddev exec --service backstop backstop --config=/src/backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
