@@ -1,5 +1,19 @@
 
 
+## [0.297.0] - September 28, 2021
+
+### Added
+  - DP-22994: Allow DB swap via personal DDEV config.
+  
+### Fixed
+  - DP-23002: Fixed backstop on local dev.
+  - DP-23002: Update http://mass.local to https://mass.local.
+  
+### Changed
+  - DP-23020: Move release trigger to noon from 1pm for Tuesday release branch.
+  
+
+
 ## [0.296.0] - September 21, 2021
 
 ### Changed
