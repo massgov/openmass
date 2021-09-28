@@ -3,4 +3,18 @@
  # a template for a theme implementation, or to provide Drupal
  # specific behavior for a Mayflower template.
  #}
-{% extends '@organisms/by-author/callout-links.twig' %}
+{% if useWrapper %}
+  {% include "@organisms/by-author/action-finder.twig" with {
+    "actionFinder": {
+      "compact": TRUE,
+      "featuredLinks": calloutLinks
+    }
+  } %}
+{% else %}
+  {% include '@organisms/by-author/callout-links.twig' %}
+{% endif %}
+
+
+
+
+
