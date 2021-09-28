@@ -400,7 +400,7 @@ jobs:
     steps:
       - attach_workspace: { at: /tmp }
       - ddev_install_run:
-          omit_containers: dbmass,db
+          omit-containers: dbmass,db
       - run:
           name: Backstop reference
           command: ddev exec --service backstop backstop --config=/src/backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
