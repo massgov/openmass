@@ -19,10 +19,7 @@ services:
       init:
         # Install opcache and imagemagick.
         - docker-php-ext-install opcache
-        # Install imagick
-        - apt-get install -y libmagickwand-dev --no-install-recommends
-        - pecl install imagick-beta -y
-        - docker-php-ext-enable imagick
+        # Needed for image styles.
         - a2enmod headers rewrite
         - apache2ctl graceful
 
