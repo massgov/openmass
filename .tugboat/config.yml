@@ -21,6 +21,7 @@ services:
         #- docker-php-ext-install opcache
         #- a2enmod headers rewrite
         #- sudo service apache2 restart
+        - echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/my-php.ini
 
         # Link the document root to the expected path. This example links /web
         # to the docroot.
