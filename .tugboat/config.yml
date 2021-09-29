@@ -17,10 +17,13 @@ services:
     commands:
       # Commands that set up the basic preview infrastructure
       init:
-        # Install opcache and mod-rewrite.
-        #- docker-php-ext-install opcache
-        #- a2enmod headers rewrite
-        #- sudo service apache2 restart
+        # Install opcache and imagemagick.
+        - docker-php-ext-install opcache
+#        - apt-get install -y libmagickwand-dev --no-install-recommends && rm -rf /var/lib/apt/lists/*
+#        - printf "\n" | pecl install imagick
+#        - docker-php-ext-enable imagick
+        - sudo service apache2 restart
+
         - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
         # https://linuxize.com/post/how-to-install-yarn-on-ubuntu-20-04/
         - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
@@ -40,7 +43,7 @@ services:
 
         # Create the Drupal private and public files directories if they aren't
         # already present.
-        - mkdir -p "${DOCROOT}/sites/default/files"
+        - mkdir -p "${DOCROOT}/sites/default/files/private"
 
       # Commands that import files, databases, or other assets. When an
       # existing preview is refreshed, the build workflow starts here,
