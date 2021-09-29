@@ -19,6 +19,10 @@ services:
       init:
         # Install opcache and imagemagick.
         - docker-php-ext-install opcache
+        # Install imagick
+        - apt-get install -y libmagickwand-dev --no-install-recommends
+        - pecl install imagick-beta -y
+        - docker-php-ext-enable imagick
 #        - apt-get install -y libmagickwand-dev --no-install-recommends && rm -rf /var/lib/apt/lists/*
 #        - printf "\n" | pecl install imagick
 #        - docker-php-ext-enable imagick
@@ -70,6 +74,8 @@ services:
       # from the base preview.
       build:
         - composer install --no-interaction --optimize-autoloader
+        - yarn install
+        - PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-refresh-local --skip-db-prep
 
   # This 'mysql' key acts as the hostname to access the service by from the php service.
   mysql:
@@ -83,3 +89,6 @@ services:
         - mysql -h localhost -e "SET GLOBAL max_allowed_packet=536870912;"
         # Ensure this packet size persists even if MySQL restarts.
         - echo "max_allowed_packet=536870912" >> /etc/mysql/conf.d/tugboat.cnf
+
+#  memcached:
+#    image: tugboatqa/memcached
