@@ -34,7 +34,7 @@ services:
         # Prep secrets file
         # https://www.baeldung.com/linux/insert-new-line-script-output#using-printf
         - printf "<?php \n\n" >> "${DOCROOT}/sites/default/secrets.settings.php"
-        - echo "${SECRETS_MASS_FEEDBACK_LOOP}" >> "${DOCROOT}/sites/default/secrets.settings.php"
+        - echo "${SECRETS_GLOBAL}" >> "${DOCROOT}/sites/default/secrets.settings.php"
         - echo "${SECRETS_GOOGLE_MAPS}" >> "${DOCROOT}/sites/default/secrets.settings.php"
         - echo "${SECRETS_MASS_FEEDBACK_LOOP}" >> "${DOCROOT}/sites/default/secrets.settings.php"
 
@@ -49,6 +49,7 @@ services:
       update:
         # Install/update packages that may have changed since the build stage.
         - composer install --optimize-autoloader
+        - yarn install
         - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
         - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
         - PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-import-backup /tmp/database.sql.gz
@@ -66,7 +67,6 @@ services:
       # from the base preview.
       build:
         - composer install --no-interaction --optimize-autoloader
-        - yarn install
 
   # This 'mysql' key acts as the hostname to access the service by from the php service.
   mysql:
