@@ -49,7 +49,7 @@ services:
         - composer install --optimize-autoloader
         - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
         - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
-        - PATH=vendor/bin:$PATH scripts/ma-import-backup /tmp/database.sql.gz
+        - PATH=vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-import-backup /tmp/database.sql.gz
         - rm -f /tmp/database.sql.gz
         # Set file permissions such that Drupal will not complain.
         - chgrp -R www-data "${DOCROOT}/sites/default/files"
