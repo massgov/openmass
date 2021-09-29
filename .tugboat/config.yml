@@ -22,7 +22,7 @@ services:
 #        - apt-get install -y libmagickwand-dev --no-install-recommends && rm -rf /var/lib/apt/lists/*
 #        - printf "\n" | pecl install imagick
 #        - docker-php-ext-enable imagick
-        - sudo service apache2 restart
+        - apache2ctl graceful
 
         - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
         # https://linuxize.com/post/how-to-install-yarn-on-ubuntu-20-04/
