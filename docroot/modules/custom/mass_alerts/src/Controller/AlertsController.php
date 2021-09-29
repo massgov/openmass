@@ -56,8 +56,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
     // Load sitewide.
     $query = $nodeStorage->getQuery();
-    $query->condition('field_alert_display.value', 'site_wide');
-    $query->condition('type', 'alert');
+    $query->condition('type', 'sitewide_alert');
     $query->condition('status', 1);
 
     $sitewide = $query->execute();
