@@ -28,13 +28,13 @@ services:
         - sudo apt install yarn
         - echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/my-php.ini
 
+        # Link the document root to the expected path.
+        - ln -snf "${TUGBOAT_ROOT}/docroot" "${DOCROOT}"
+
         # Prep secrets file
         - echo "${SECRETS_MASS_FEEDBACK_LOOP}" >> "${DOCROOT}/sites/default/secrets.settings.php"
         - echo "${SECRETS_GOOGLE_MAPS}" >> "${DOCROOT}/sites/default/secrets.settings.php"
         - echo "${SECRETS_MASS_FEEDBACK_LOOP}" >> "${DOCROOT}/sites/default/secrets.settings.php"
-
-        # Link the document root to the expected path.
-        - ln -snf "${TUGBOAT_ROOT}/docroot" "${DOCROOT}"
 
         # Create the Drupal private and public files directories if they aren't
         # already present.
