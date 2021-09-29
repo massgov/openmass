@@ -28,6 +28,11 @@ services:
         - sudo apt install yarn
         - echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/my-php.ini
 
+        # Prep secrets file
+        - echo "${SECRETS_MASS_FEEDBACK_LOOP}" >> "${DOCROOT}/sites/default/secrets.settings.php"
+        - echo "${SECRETS_GOOGLE_MAPS}" >> "${DOCROOT}/sites/default/secrets.settings.php"
+        - echo "${SECRETS_MASS_FEEDBACK_LOOP}" >> "${DOCROOT}/sites/default/secrets.settings.php"
+
         # Link the document root to the expected path.
         - ln -snf "${TUGBOAT_ROOT}/docroot" "${DOCROOT}"
 
@@ -45,7 +50,7 @@ services:
         - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
         - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
         - PATH=vendor/bin:$PATH scripts/ma-import-backup /tmp/database.sql.gz
-
+        - rm -f /tmp/database.sql.gz
         # Set file permissions such that Drupal will not complain.
         - chgrp -R www-data "${DOCROOT}/sites/default/files"
         - find "${DOCROOT}/sites/default/files" -type d -exec chmod 2775 {} \;
