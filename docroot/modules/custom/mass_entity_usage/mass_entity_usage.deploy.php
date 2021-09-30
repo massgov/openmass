@@ -13,5 +13,5 @@
 function mass_entity_usage_deploy_run_entity_usage_command() {
   ini_set('memory_limit', '1024M');
   $command = \Drupal::service('entity_usage.commands');
-  $command->recreate();
+  $command->recreate(['use-queue' => TRUE]);
 }
