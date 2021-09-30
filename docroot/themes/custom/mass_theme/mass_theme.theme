@@ -6831,6 +6831,8 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
  * Break out url pieces for callout link paragraphs.
  */
 function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
+  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau'];
+  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping'];
   $components = [];
   $container = $variables['paragraph'];
   $paragraphs = Helper::getReferencedEntitiesFromField($container, "field_section_long_form_content");
@@ -6838,22 +6840,38 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
   for ($i = 0; $i < count($paragraphs); $i++) {
     $component = [];
     // If the current component has the "wrapping" field, group it with the following component and move the loop pointer.
-    if ($paragraphs[$i]->hasField('field_image_wrapping') && $paragraphs[$i]->get('field_image_wrapping')->getValue()) {
+    if (mass_theme_org_section_long_form_check_wrapping_field ($paragraphs[$i], $wrap_fields)) {
       $items = [];
       do {
         $items[] = $paragraphs[$i];
         $i++;
-      } while (isset($paragraphs[$i]) && $paragraphs[$i]->hasField('field_image_wrapping') && $paragraphs[$i]->get('field_image_wrapping')->getValue());
+      } while (mass_theme_org_section_long_form_check_wrapping_field ($paragraphs[$i], $wrap_fields));
       $items[] = $paragraphs[$i];
 
-      $component = $items;
+      $component = ['group' => TRUE, 'items' => $items];
     }
+    // Otherwise, if it's one of the following, wrap it as well.
+    elseif(in_array($paragraphs[$i]->getType(), $wrap_paragraphs) !== false) {
+      $component = ['group' => TRUE, 'items' => [$paragraphs[$i]]];
+    }
+
     else {
-      // Otherwise, create a group of a single element.
+      // Otherwise, just return it as it is.
       $component[] = $paragraphs[$i];
     }
     $components[] = $component;
   }
   $variables["org_components"] = $components;
 
+}
+
+
+function mass_theme_org_section_long_form_check_wrapping_field ($paragraph, $fields) {
+  foreach ($fields as $field) {
+    if(isset($paragraph) && $paragraph->hasField($field) && $paragraph->get($field)->getValue()) {
+      return true;
+    }
+  }
+
+  return false;
 }

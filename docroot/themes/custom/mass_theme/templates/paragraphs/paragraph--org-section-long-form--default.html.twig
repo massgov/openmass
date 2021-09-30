@@ -16,10 +16,10 @@
 } %}
   {% block stackedRowContentOverride %}
     {% for org_component in org_components %}
-      {% if org_component|length > 1 %}
+      {% if org_component.group %}
         {% embed "@organisms/by-author/rich-text.twig"%}
           {% block rteElements %}
-            {% for c in org_component %}
+            {% for c in org_component.items %}
               {{ c|view }}
             {% endfor %}
           {% endblock %}
