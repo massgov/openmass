@@ -40,8 +40,7 @@ services:
         - echo "${SECRETS_GOOGLE_MAPS}" >> "${DOCROOT}/sites/default/secrets.settings.php"
         - echo "${SECRETS_MASS_FEEDBACK_LOOP}" >> "${DOCROOT}/sites/default/secrets.settings.php"
 
-        # Create the Drupal private and public files directories if they aren't
-        # already present.
+        # Create the Drupal private and public files directories.
         - mkdir -p "${DOCROOT}/sites/default/files/private"
 
       # Commands that import files, databases, or other assets. When an
