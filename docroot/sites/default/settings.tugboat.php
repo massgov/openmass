@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Password protect non-prod environments.
+ * Password protect Tugboat environments.
  *
  * @see https://docs.acquia.com/articles/password-protect-your-non-production-environments-acquia-hosting#phpfpm
  */
-if (!php_sapi_name() == 'cli') {
+if (php_sapi_name() !== 'cli') {
   $username = getenv('LOWER_ENVIR_AUTH_USER');
   $password = getenv('LOWER_ENVIR_AUTH_PASS');
   $is_oauth = strpos($_SERVER['REQUEST_URI'], '/oauth/token') !== FALSE;
