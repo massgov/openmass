@@ -107,3 +107,7 @@ $secrets_file = $app_root . '/' . $site_path . '/secrets.settings.php';
 if (file_exists($secrets_file)) {
   require $secrets_file;
 }
+
+if (getenv('TUGBOAT_ROOT')) {
+  require __DIR__ . '/settings.tugboat.php';
+}
