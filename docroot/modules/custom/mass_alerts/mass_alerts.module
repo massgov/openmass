@@ -50,6 +50,17 @@ function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form
 /**
  * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
  */
+function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = 'mass_alerts_validate_alert_placement';
+  $form['#validate'][] = 'mass_alerts_validate_alert_content';
+
+  // @TODO Remove the code, since we are using new Sitewide Alerts content type.
+  unset($form['field_alert_display']['widget']['#options']['site_wide']);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
 function mass_alerts_form_node_sitewide_alert_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
 }
@@ -59,17 +70,6 @@ function mass_alerts_form_node_sitewide_alert_form_alter(&$form, FormStateInterf
  */
 function mass_alerts_form_node_sitewide_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
-}
-
-/**
- * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
- */
-function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $form['#validate'][] = 'mass_alerts_validate_alert_placement';
-  $form['#validate'][] = 'mass_alerts_validate_alert_content';
-
-  // @TODO Remove the code, since we are using new Sitewide Alerts content type.
-  unset($form['field_alert_display']['widget']['#options']['site_wide']);
 }
 
 /**
