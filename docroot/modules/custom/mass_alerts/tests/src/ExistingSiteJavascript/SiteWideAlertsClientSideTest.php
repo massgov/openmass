@@ -25,9 +25,8 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
   public function testSiteWideAlertDisplay() {
     // Unpublish any existing sitewide alerts so our slate is clean.
     $nids = \Drupal::entityQuery('node')
-      ->condition('type', 'alert')
+      ->condition('type', 'sitewide_alert')
       ->condition('status', 1)
-      ->condition('field_alert_display', 'site_wide')
       ->execute();
     $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     foreach ($nodes as $node) {
@@ -45,7 +44,6 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
       'title' => $this->randomMachineName(),
       'status' => 1,
       'moderation_state' => 'published',
-      'field_alert_display' => 'site_wide',
       // 'State 911 Department (6416)'.
       'field_alert_ref_contact' => ['target_id' => 6416],
       'field_alert_severity' => 'emergency_alert',
