@@ -144,7 +144,7 @@ function _mass_alerts_validate_site_wide_alert_creation(array &$form, FormStateI
       $entity = $form_state->getFormObject()->getEntity();
       $query = \Drupal::entityQuery('node')
         ->condition('status', NodeInterface::PUBLISHED)
-        ->condition('type', 'sitewide_alert')
+        ->condition('type', 'sitewide_alert');
       // Exclude the current node from our search if it's already been saved.
       if ($entity->id()) {
         $query->condition('nid', $entity->id(), '!=');
