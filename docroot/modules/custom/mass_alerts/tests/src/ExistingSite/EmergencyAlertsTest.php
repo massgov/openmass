@@ -68,7 +68,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     ]);
     $alert_message_text = $this->randomMachineName();
     $node = $this->createNode([
-      'type' => 'alert',
+      'type' => 'sitewide_alert',
       'title' => $this->randomMachineName(),
       'status' => 1,
       'moderation_state' => 'published',
@@ -205,8 +205,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
 
     // Save 1 sitewide alert to start with.
     $this->createNode([
-      'type' => 'alert',
-      'field_alert_display' => 'site_wide',
+      'type' => 'sitewide_alert',
       'moderation_state' => 'published',
       'status' => 1,
       'field_alert' => Paragraph::create([
@@ -215,9 +214,8 @@ class EmergencyAlertsTest extends ExistingSiteBase {
       ]),
     ]);
     $session = $this->getSession();
-    $session->visit('/node/add/alert');
+    $session->visit('/node/add/sitewide_alert');
     $page = $session->getPage();
-    $page->fillField('field_alert_display', 'site_wide');
     $page->selectFieldOption('moderation_state[0][state]', 'published');
     $page->findButton('Save')->press();
     $this->assertStringContainsString('This sitewide alert cannot be published because another sitewide alert is currently active:', $page->getText());

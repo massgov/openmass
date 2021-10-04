@@ -40,7 +40,7 @@ class SiteWideAlertsClientSideTest extends ExistingSiteWebDriverTestBase {
     ]);
     $alert_message_text = $this->randomMachineName();
     $node = $this->createNode([
-      'type' => 'alert',
+      'type' => 'sitewide_alert',
       'title' => $this->randomMachineName(),
       'status' => 1,
       'moderation_state' => 'published',
