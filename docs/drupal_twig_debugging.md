@@ -8,10 +8,9 @@
 
 ### For Mass.gov
 
-1. Uncomment the Twig debugging lines in the file `docroot/sites/default/services.local.yml`.
-2. Clear the cache by running `ddev drush cr`.
-
-**Note: Don't commit changes to the `services.local.yml` file.**
+1. Copy the `docroot/sites/default/example.services.local.yml` file to `docroot/sites/default/services.local.yml`.
+2. Uncomment the Twig debugging lines in the file `docroot/sites/default/services.local.yml`.
+3. Clear the cache by running `ddev drush cr`.
 
 ## Viewing variables
 
