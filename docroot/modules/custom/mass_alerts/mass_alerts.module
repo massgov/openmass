@@ -118,24 +118,6 @@ function mass_alerts_validate_alert_content(array &$form, FormStateInterface $fo
 }
 
 /**
- * Implements hook_entity_bundle_field_info_alter().
- */
-function mass_alerts_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
-  if ($entity_type->id() == 'node'  && !empty($fields['field_alert_display'])) {
-    $fields['field_alert_display']->addConstraint('SitewideAlert', []);
-  }
-}
-
-/**
- * Implements hook_entity_base_field_info_alter().
- */
-function mass_alerts_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
-  if ($entity_type->id() == 'node'  && !empty($fields['moderation_state'])) {
-    $fields['moderation_state']->addConstraint('SitewideAlert', []);
-  }
-}
-
-/**
  * Implements hook_node_update().
  */
 function mass_alerts_node_update(EntityInterface $node) {
