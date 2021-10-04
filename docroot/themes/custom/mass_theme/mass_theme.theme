@@ -6541,6 +6541,28 @@ function mass_theme_preprocess_paragraph__board_member(&$variables) {
  *
  * Prepares variables for the Alert pages.
  */
+function mass_theme_preprocess_node_sitewide_alert(&$variables) {
+
+  $node = $variables['node'];
+
+  // Build related links section, if field is populated.
+  if (Helper::isFieldPopulated($node, 'field_alert_related_links_5')) {
+    // Prepare the linkList data object.
+    $linkList_options = [
+      'heading' => [
+        'title' => t('Related Links'),
+        'type' => 'compHeading',
+      ],
+    ];
+    $variables['linkList'] = Organisms::preparelinkList($node, 'field_alert_related_links_5', $linkList_options);
+  }
+}
+
+/**
+ * Implements hook_preprocess_node().
+ *
+ * Prepares variables for the Alert pages.
+ */
 function mass_theme_preprocess_node_alert(&$variables) {
 
   $node = $variables['node'];
