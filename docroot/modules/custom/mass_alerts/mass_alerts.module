@@ -136,27 +136,26 @@ function mass_alerts_validate_alert_content(array &$form, FormStateInterface $fo
  */
 function _mass_alerts_validate_site_wide_alert_creation(array &$form, FormStateInterface $form_state) {
 
-    // A maximum of only 1 site wide alert should be publishable at any given time.
-    // Only prevent publishing, not drafting.
-    $moderationState = $form_state->getValue(['moderation_state', '0', 'value']);
-    if ($moderationState === 'published') {
-      $entity = $form_state->getFormObject()->getEntity();
-      $query = \Drupal::entityQuery('node')
-        ->condition('status', NodeInterface::PUBLISHED)
-        ->condition('type', 'sitewide_alert');
-      // Exclude the current node from our search if it's already been saved.
-      if ($entity->id()) {
-        $query->condition('nid', $entity->id(), '!=');
-      }
-      $existing = $query->execute();
-      if (count($existing) > 0) {
-        if ($existingNode = Node::load(reset($existing))) {
-          $link = $existingNode->toLink()->toString();
-          $form_state->setError($form, t('This sitewide alert cannot be published because another sitewide alert is currently active: %link. Only one sitewide alert can be active at a time. To publish this alert, please unpublish the existing one first.', ['%link' => $link]));
-        }
+  // A maximum of only 1 site wide alert should be publishable at any given time.
+  // Only prevent publishing, not drafting.
+  $moderationState = $form_state->getValue(['moderation_state', '0', 'value']);
+  if ($moderationState === 'published') {
+    $entity = $form_state->getFormObject()->getEntity();
+    $query = \Drupal::entityQuery('node')
+      ->condition('status', NodeInterface::PUBLISHED)
+      ->condition('type', 'sitewide_alert');
+    // Exclude the current node from our search if it's already been saved.
+    if ($entity->id()) {
+      $query->condition('nid', $entity->id(), '!=');
+    }
+    $existing = $query->execute();
+    if (count($existing) > 0) {
+      if ($existingNode = Node::load(reset($existing))) {
+        $link = $existingNode->toLink()->toString();
+        $form_state->setError($form, t('This sitewide alert cannot be published because another sitewide alert is currently active: %link. Only one sitewide alert can be active at a time. To publish this alert, please unpublish the existing one first.', ['%link' => $link]));
       }
     }
-
+  }
 }
 
 /**
@@ -179,6 +178,26 @@ function mass_alerts_node_insert(EntityInterface $node) {
     mass_alerts_sitewide_alert_send_notifications($node);
   }
   mass_alerts_invalidate_tags($node);
+}
+
+/**
+ * Implements hook_entity_operation_alter().
+ */
+function mass_alerts_entity_operation_alter(array &$operations, EntityInterface $entity) {
+  if ($entity->getEntityTypeId() === "node" && $entity->bundle() === "sitewide_alert") {
+    if (!\Drupal::currentUser()->hasPermission('create sitewide_alert content')) {
+      $operations = [];
+    }
+  }
+}
+
+/**
+ * Implements hook_node_access().
+ */
+function mass_alerts_node_access(NodeInterface $node, $operation, AccountInterface $account) {
+  if ($operation === "update" && $node->bundle() === "sitewide_alert") {
+    return AccessResult::forbiddenIf(!$account->hasPermission("create sitewide_alert content"));
+  }
 }
 
 /**
