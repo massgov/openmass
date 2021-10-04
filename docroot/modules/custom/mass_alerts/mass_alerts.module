@@ -50,6 +50,20 @@ function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form
 /**
  * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
  */
+function mass_alerts_form_node_sitewide_alert_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
+function mass_alerts_form_node_sitewide_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
+ */
 function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = 'mass_alerts_validate_alert_placement';
   $form['#validate'][] = 'mass_alerts_validate_alert_content';
@@ -115,6 +129,35 @@ function mass_alerts_validate_alert_content(array &$form, FormStateInterface $fo
       $form_state->setError($form, t('You must add an Alert message'));
     }
   }
+}
+
+
+/**
+ * Validates site wide alert creation.
+ */
+function _mass_alerts_validate_site_wide_alert_creation(array &$form, FormStateInterface $form_state) {
+
+    // A maximum of only 1 site wide alert should be publishable at any given time.
+    // Only prevent publishing, not drafting.
+    $moderationState = $form_state->getValue(['moderation_state', '0', 'value']);
+    if ($moderationState === 'published') {
+      $entity = $form_state->getFormObject()->getEntity();
+      $query = \Drupal::entityQuery('node')
+        ->condition('status', NodeInterface::PUBLISHED)
+        ->condition('type', 'sitewide_alert')
+      // Exclude the current node from our search if it's already been saved.
+      if ($entity->id()) {
+        $query->condition('nid', $entity->id(), '!=');
+      }
+      $existing = $query->execute();
+      if (count($existing) > 0) {
+        if ($existingNode = Node::load(reset($existing))) {
+          $link = $existingNode->toLink()->toString();
+          $form_state->setError($form, t('This sitewide alert cannot be published because another sitewide alert is currently active: %link. Only one sitewide alert can be active at a time. To publish this alert, please unpublish the existing one first.', ['%link' => $link]));
+        }
+      }
+    }
+
 }
 
 /**
