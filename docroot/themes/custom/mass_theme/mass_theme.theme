@@ -6835,7 +6835,7 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
  */
 function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
   // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
-  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau', 'image'];
+  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image'];
   $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping'];
 
   $components = [];
@@ -6855,9 +6855,9 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
 
       $component = ['group' => TRUE, 'items' => $items];
     }
-    // Otherwise, if it's one of the following, wrap it as well.
+    // Otherwise, if it's one of the following paragraphs, wrap it as well.
     elseif (in_array($paragraphs[$i]->getType(), $wrap_paragraphs) !== FALSE) {
-      $component = ['group' => TRUE, 'items' => [$paragraphs[$i]]];
+      $component = ['group' => TRUE, 'type' => 'full', 'items' => [$paragraphs[$i]]];
     }
 
     else {
