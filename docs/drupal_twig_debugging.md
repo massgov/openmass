@@ -16,19 +16,19 @@
 
 [Drupal.org: Viewing variables](https://www.drupal.org/docs/theming-drupal/twig-in-drupal/debugging-twig-templates#s-viewing-variables)
 
-### For Mass.gov using Xdebug
+### For Mass.gov using Xdebug and PhpStorm
 
 Initial setup:
 1. [Setup Xdebug](https://github.com/massgov/openmass#xdebug) for your IDE.
-2. Download and enable the [Xdebug helper](https://www.jetbrains.com/help/phpstorm/browser-debugging-extensions.html) browser extension.
+2. Under PHP > Debug > Templates > Twig Debug, set the Cache path (e.g. /Users/username/Projects/openmass/docroot/sites/default/files/php/twig).
+3. Download and enable the [Xdebug helper](https://www.jetbrains.com/help/phpstorm/browser-debugging-extensions.html) browser extension.
 
 Starting a debugging session:
 1. Enable the Devel module by running `ddev drush en devel`.
 2. Clear the cache by running `ddev drush cr`.
-3. Enable Xdebug listening in your IDE.
+3. Enable Xdebug listening.
 4. Enable `Debug` in the Xdebug helper browser extension for the page you are debugging.
-5. Add `{{ devel_breakpoint() }}` to the Twig template you are debugging where you want to see variable values.
-   1. This snippet can be added in multiple places and stepped through.
+5. Set a breakpoint.
 6. Load the page to hit the breakpoint.
    1. You may need to clear the cache as you make changes to the template file.
 
