@@ -6853,11 +6853,11 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
       } while (mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields));
       $items[] = $paragraphs[$i];
 
-      $component = ['group' => TRUE, 'items' => $items];
+      $component = ['group' => TRUE, 'type' => '', 'items' => $items];
     }
     // Otherwise, if it's one of the following paragraphs, wrap it as well.
     elseif (in_array($paragraphs[$i]->getType(), $wrap_paragraphs) !== FALSE) {
-      $component = ['group' => TRUE, 'type' => 'full', 'items' => [$paragraphs[$i]]];
+      $component = ['group' => TRUE, 'type' => $paragraphs[$i]->getType() == 'image'? null : 'full', 'items' => [$paragraphs[$i]]];
     }
 
     else {
