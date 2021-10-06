@@ -6857,7 +6857,7 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
     }
     // Otherwise, if it's one of the following paragraphs, wrap it as well.
     elseif (in_array($paragraphs[$i]->getType(), $wrap_paragraphs) !== FALSE) {
-      $component = ['group' => TRUE, 'type' => $paragraphs[$i]->getType() == 'image'? null : 'full', 'items' => [$paragraphs[$i]]];
+      $component = ['group' => TRUE, 'type' => $paragraphs[$i]->getType() == 'image' ? NULL : 'full', 'items' => [$paragraphs[$i]]];
     }
 
     else {
