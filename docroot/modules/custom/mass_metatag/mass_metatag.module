@@ -226,7 +226,22 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
 
         case 'mass_related_terms':
           $tags = [];
-          $term_ref_name = $data['node']->getType() == 'service_page' ? 'field_list_data_type' : 'field_details_data_type';
+
+          switch ($data['node']->getType()) {
+            case "curated_list":
+              $term_ref_name = 'field_list_data_type';
+              $term_default = "field_list_datatype_metatag";
+              break;
+            case "service_page":
+              $term_ref_name = 'field_list_data_type';
+              $term_default = "field_details_datatype_metatag";
+              break;
+            default:
+              $term_ref_name = 'field_details_data_type';
+              $term_default = "field_details_datatype_metatag";
+              break;
+          }
+
           if ($data['node']->hasField($term_ref_name) && $data_type = $data['node']->get($term_ref_name)) {
             $items = $data_type->referencedEntities();
             if (!empty($items)) {
@@ -237,11 +252,12 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
                   $tags[$k] = $resource->get('field_dataresource_metatag')->getString();
                 }
               }
-              elseif (!$items[0]->get('field_details_datatype_metatag')->isEmpty()) {
-                $tags[] = $items[0]->get('field_details_datatype_metatag')->getString();
+              elseif (!$items[0]->get($term_default)->isEmpty()) {
+                $tags[] = $items[0]->get($term_default)->getString();
               }
             }
           }
+          
           $replacements[$original] = implode(',', $tags);
           break;
 
