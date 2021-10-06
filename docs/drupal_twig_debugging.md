@@ -19,7 +19,7 @@
 ### For Mass.gov using Xdebug and PhpStorm
 
 Initial setup:
-1. [Setup Xdebug](https://github.com/massgov/openmass#xdebug) for your IDE.
+1. Enable xdebug in ddev by running `ddev xdebug on`.  See [PHP Step Debugging](https://ddev.readthedocs.io/en/stable/users/step-debugging/) for ddev specific setup instructions and how to configure your IDE
 2. Under PHP > Debug > Templates > Twig Debug, set the Cache path (e.g. /Users/username/Projects/openmass/docroot/sites/default/files/php/twig).
 3. Download and enable the [Xdebug helper](https://www.jetbrains.com/help/phpstorm/browser-debugging-extensions.html) browser extension.
 
