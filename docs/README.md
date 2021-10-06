@@ -41,4 +41,4 @@ Contributors should familiarize themselves with existing modules both custom and
 - [Mayflower Module](https://github.com/massgov/openmass/blob/develop/docroot/modules/custom/mayflower/README.md)
 - [Change the Mayflower version in Drupal](mayflower.md)
 - [Mayflower assets integration](mayflower_assets.md)
-- [Drupal Twig debugging](drupal_twig_debugging.md)
+- [Drupal Twig debugging](drupal_xdebug.md)

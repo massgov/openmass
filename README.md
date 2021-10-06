@@ -113,7 +113,7 @@ This usually happens if you go visit mass.local right after the containers are b
 
 ### Xdebug
 
-If you know where a problem is happening in your code, Xdebug is a useful tool that allows you set breakpoints to trace the problem back. See [How to setup Xdebug for PHP](./docs/drupal_twig_debugging.md)
+If you know where a problem is happening in your code, Xdebug is a useful tool that allows you set breakpoints to trace the problem back. See [How to setup Xdebug for PHP](./docs/drupal_xdebug.md)
 
 ### Windows troubleshooting
 
