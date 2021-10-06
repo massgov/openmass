@@ -12,5 +12,5 @@
  */
 function mass_entity_usage_deploy_run_entity_usage_command() {
   $command = \Drupal::service('entity_usage.commands');
-  $command->recreate(['use-queue' => TRUE, 'batch-limit' => 1000]);
+  $command->recreate(['use-queue' => TRUE, 'batch-limit' => 10000]);
 }
