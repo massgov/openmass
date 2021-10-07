@@ -1,5 +1,27 @@
 
 
+## [0.297.0] - October 5, 2021
+
+### Security
+  - DP-22767: Security updates of the JavaScript and Drupal packages and dependencies.
+  
+### Added
+  - DP-22895: PR previews powered by Tugboat.
+  - DP-22994: Allow DB swap via personal DDEV config.
+  - DP-23088: Add new languages to Mass.gov - Somali, traditional Chinese.
+  
+### Fixed
+  - DP-23002: Fixed backstop on local dev.
+  - DP-23049: Update Backstop in CI
+  - DP-23002: Update http://mass.local to https://mass.local.
+  
+### Changed
+  - DP-23020: Move release trigger to noon from 1pm for Tuesday release branch.
+  - DP-23092: Updated Mayflower version to 11.15.3.
+  - DP-22681: Replace the existing keyboard navigation function with the new common function, focusTrapping.js for desktop. (MF #1489)
+  
+
+
 ## [0.296.0] - September 21, 2021
 
 ### Changed
