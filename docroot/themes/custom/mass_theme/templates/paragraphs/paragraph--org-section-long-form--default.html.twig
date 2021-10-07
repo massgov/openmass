@@ -10,7 +10,8 @@
 {% embed "@organisms/by-author/stacked-row-section.twig" with {
   "stackedRowSection": heading,
   "stackedRow": {
-    "borderless": true
+    "borderless": true,
+    "modifier" : "no-sidebar"
   },
   "externalSidebar": true
 } %}
@@ -18,10 +19,6 @@
     {% for org_component in org_components %}
       {%  set noPadding = "" %}
       {% if org_component.group %}
-        {% if org_component.type == 'full' %}
-          {%  set noPadding = "om__rich-text--no-padding" %}
-        {% endif %}
-
         {% embed "@organisms/by-author/rich-text.twig" with {"headerIndent": noPadding}%}
           {% block rteElements %}
             {% for c in org_component.items %}
