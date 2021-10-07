@@ -16,8 +16,13 @@
 } %}
   {% block stackedRowContentOverride %}
     {% for org_component in org_components %}
+      {%  set noPadding = "" %}
       {% if org_component.group %}
-        {% embed "@organisms/by-author/rich-text.twig"%}
+        {% if org_component.type == 'full' %}
+          {%  set noPadding = "om__rich-text--no-padding" %}
+        {% endif %}
+
+        {% embed "@organisms/by-author/rich-text.twig" with {"headerIndent": noPadding}%}
           {% block rteElements %}
             {% for c in org_component.items %}
               {{ c|view }}
