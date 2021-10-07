@@ -6850,7 +6850,9 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
       do {
         $items[] = $paragraphs[$i];
         $i++;
+        // Keep grouping togheter while the next element has the check.
       } while (mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields));
+      // Once done, also group the following one.
       $items[] = $paragraphs[$i];
 
       $component = ['group' => TRUE, 'type' => '', 'items' => $items];
