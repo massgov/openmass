@@ -39,7 +39,7 @@ class HelpBlockForm extends ConfigFormBase {
     $link_url = \Drupal::state()->get('mass_admin_pages.help_block_settings.link_url');
 
     $form['text_field'] = [
-      '#type' => 'textarea',
+      '#type' => 'text_format',
       '#title' => $this->t('Main content'),
       '#description' => $this->t('Add content to provide help and support for content authors'),
       '#default_value' => isset($text_field) ? $text_field : '',
@@ -87,7 +87,7 @@ class HelpBlockForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    \Drupal::state()->set('mass_admin_pages.help_block_settings.text_field', $form_state->getValue('text_field'));
+    \Drupal::state()->set('mass_admin_pages.help_block_settings.text_field', $form_state->getValue('text_field')['value']);
     $link_field = $form_state->getValue(['link_field', 'link_subfields']);
     \Drupal::state()->set('mass_admin_pages.help_block_settings.link_title', $link_field['link_title']);
     \Drupal::state()->set('mass_admin_pages.help_block_settings.link_url', $link_field['link_url']);

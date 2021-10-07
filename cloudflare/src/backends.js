@@ -1,5 +1,5 @@
 
-const {isStaticUrl, isAlertsUrl, isCovidURL, isMediaDownloadUrl, isValidRedirect, isFileRedirect} = require('./util');
+const {isStaticUrl, isAlertsSiteUrl, isAlertsPageUrl, isCovidURL, isMediaDownloadUrl, isValidRedirect, isFileRedirect} = require('./util');
 // Used to ensure safe handling of content-disposition headers
 // for media download pre-resolution.
 const contentDisposition = require('content-disposition');
@@ -25,7 +25,7 @@ export function edit(token) {
     let browserTTL = 1800
 
     // Conditionally override browser TTLs based on what is being requested.
-    if(isAlertsUrl(url)) {
+    if(isAlertsSiteUrl(url)) {
       browserTTL = 60
     }
     else if(isMediaDownloadUrl(url)) {
@@ -90,9 +90,13 @@ export function www(token) {
     let edgeTTL = 1800
 
     // Conditionally override Edge/browser TTLs based on what is being requested.
-    if(isAlertsUrl(url)) {
+    if(isAlertsSiteUrl(url)) {
       edgeTTL = 60
       browserTTL = 60
+    }
+    else if(isAlertsPageUrl(url)) {
+      edgeTTL = 900
+      browserTTL = 900
     }
     else if(isMediaDownloadUrl(url)) {
       edgeTTL = RESPECT_ORIGIN

@@ -1,0 +1,39 @@
+name: mass
+type: drupal9
+docroot: docroot
+php_version: "7.4"
+webserver_type: apache-fpm
+dbimage: massgov/mysql-sanitized:super
+omit_containers:
+  - db
+disable_settings_management: true
+#Avoid conflict on port 80. This is rarely used anyway.
+router_http_port: "88"
+router_https_port: "443"
+xdebug_enabled: false
+project_tld: local
+use_dns_when_possible: true
+web_environment:
+  - DOCKER_ENV=devel
+  - MYSQL_USER=circle
+  - MYSQL_PASSWORD=circle
+  - MYSQL_DATABASE=circle
+  - MYSQL_HOST=dbmass
+  - MEMCACHED_HOST=memcached
+  - DRUSH_OPTIONS_URI=https://mass.local:$DDEV_ROUTER_HTTPS_PORT
+  - DTT_BASE_URL=http://mass-web
+  - DTT_API_URL=http://chromedriver:9515
+#  - BROWSERTEST_OUTPUT_DIRECTORY=/tmp
+  - BROWSERTEST_OUTPUT_BASE_URL=https://mass.local:$DDEV_ROUTER_HTTPS_PORT
+  # Acquia Cloud - v2
+  - AC_API2_KEY
+  - AC_API2_SECRET
+  # New Relic. Needed for deployments.
+  - MASS_NEWRELIC_APPLICATION
+  - MASS_NEWRELIC_KEY
+  # Acquia basic auth.  Needed for tests on Acquia environments.
+  - LOWER_ENVIR_AUTH_USER
+  - LOWER_ENVIR_AUTH_PASS
+  # For Cloudflare Terraform.
+  - CLOUDFLARE_EMAIL
+  - CLOUDFLARE_TOKEN

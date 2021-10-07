@@ -26,8 +26,7 @@ $settings['file_private_path'] = 'sites/default/files/private';
 
 // Allow media entity download to work with files from production.
 $config['media_entity_download.settings']['external_file_storage'] = 1;
-// Disable ClamAV in the VM to allow file uploads.
-$config['clamav.settings']['enabled'] = 0;
+
 // Disable autologout
 $config['autologout.settings']['timeout'] = 9999999;
 $config['autologout.settings']['max_timeout'] = 9999999;
@@ -107,4 +106,8 @@ if($memcached_host = getenv('MEMCACHED_HOST')) {
 $secrets_file = $app_root . '/' . $site_path . '/secrets.settings.php';
 if (file_exists($secrets_file)) {
   require $secrets_file;
+}
+
+if (getenv('TUGBOAT_ROOT')) {
+  require __DIR__ . '/settings.tugboat.php';
 }
