@@ -1,5 +1,122 @@
 
 
+## [0.297.0] - October 5, 2021
+
+### Security
+  - DP-22767: Security updates of the JavaScript and Drupal packages and dependencies.
+  
+### Added
+  - DP-22895: PR previews powered by Tugboat.
+  - DP-22994: Allow DB swap via personal DDEV config.
+  - DP-23088: Add new languages to Mass.gov - Somali, traditional Chinese.
+  
+### Fixed
+  - DP-23002: Fixed backstop on local dev.
+  - DP-23049: Update Backstop in CI
+  - DP-23002: Update http://mass.local to https://mass.local.
+  
+### Changed
+  - DP-23020: Move release trigger to noon from 1pm for Tuesday release branch.
+  - DP-23092: Updated Mayflower version to 11.15.3.
+  - DP-22681: Replace the existing keyboard navigation function with the new common function, focusTrapping.js for desktop. (MF #1489)
+  
+
+
+## [0.296.0] - September 21, 2021
+
+### Changed
+  - DP-15164: Update different links to use the new labelContext attibute for links.
+  - DP-22363: Introduce ddev for local development and CI.
+  - DP-22540: Updated Terraform from 0.12.3 to 0.12.31.
+  - DP-22646: Disable client IP restore in Cloudflare module
+  - DP-22776: Edit format settings for 'All content' view so that if someone clicks the pageviews to sort, it will sort descending.
+  - DP-22967: Updated Mayflower version to 11.15.0.
+  - DP-20436: Fix and optimize Noto Sans multi-language fonts. (MF #1322)
+  - DP-22263: Adjusted Picture, KeyMessage, MarketingCampaign to support responsive images. (MF #1484)
+  - DP-22971: Fix Behat URL under DDEV.
+  - DP-23001: Updated Mayflower version to 11.15.2.
+  - DP-22974: Adjusted it to fix regression issue. (MF #1503)
+  - DP-22979: Fix webfonts `woff2` and `woff` fallback order, to avoid duplicated loading. (MF #1501)
+  
+### Removed
+  - DP-19071: Remove person pages from xml sitemap.
+  
+### Fixed
+  - DP-22263: Enabling and implementing Drupal responsive images for key message paragraph.
+  - DP-22979: Fix preload fonts 404 errors.
+  
+### Added
+  - DP-22918: Make organization user filter persist in the All Content view.
+  
+
+
+## [0.295.0] - September 7, 2021
+
+### Removed
+  - DP-22608: Remove override for TOC overlay in the theming as the related feature is updated to cover the override in Mayflower.
+  
+### Added
+  - DP-22706: Make backstop test to verify that "Log in to" menu expands.
+  - DP-22773: Added Data Listing fields to the Guide content type.
+  
+### Fixed
+  - DP-22709: Fixed backstop false positives related to alert positioning.
+  - DP-22772: Fixing "unchecking the Data Flag doesn't remove a page from the data listing" bug.
+  - DP-22927: Patched core to fix CloudFlare Query String sorting issue with Batch API.
+  
+### Changed
+  - DP-22734: Added function to wait for table csv rendering on backstop test.
+  - DP-22740: Convert block for news and updates field to use rich text.
+  - DP-22899: Help text of alert message timestamp changed to emphasize that it is used only on sitewide alerts.
+  - DP-22924: Updated Mayflower version to 11.14.1.
+      - DP-22608: Fix keyboard accessibility and aria-controls. (MF #1482)
+      - DP-22608: Fix variable logic. (MF #1482)
+
+
+## [0.294.0] - August 31, 2021
+
+### Added
+  - DP-11358: Show CircleCI deployments in any associated Jira issue.
+  - DP-22771: Add collections pages to default backstop job.
+  - DP-22774: Added Data Administrator and Collection Administrator roles.
+  
+### Changed
+  - DP-21924: Upgraded Drupal Version to Drupal 9.2
+  - DP-22460: Use Drupal state to load google optimize differently and don't block page load
+  - DP-22560: Update GTM settings, remove unneded patches.
+  - DP-22572: Tweak alerts reponse headers - staleness and duration
+  - DP-22643: Add browser support banner to cover IE10.
+  - DP-22720: Add support to handle multiple messages on page and org alerts.
+  - DP-22775: Fixed help text for alert type field.
+  - DP-22792: Updated Drupal to 9.2.4.
+  - DP-22808: Rollback mysql version in Docker.
+  - DP-22814: Updated Mayflower version to 11.13.0.
+  - DP-22736: Add report icon to Patternlab. (MF #1469)
+  - DP-27720: Add content to ActionSteps to allow rendering multiple items in the content area of a HeaderAlerts accordion. (MF #1472)
+  - DP-22787: Fixed CircleCI job installing AWS CLI. (MF #1471)
+  - DP-22852: Lower browser version requirements for browser update banner display.
+  - DP-22859: Added an extra resize call after 300 ms to ensure the correct height on load.
+  - DP-22891: Updated Mayflower version to 11.14.0.
+  - DP-21342: Add text underline for all inline links. (MF #1468)
+  - DP-22857: Disable pointer-events to avoid colliding with other content. (MF #1483)
+  - DP-22859: Detect iframe in full width figure element, and post an update message to the iframe to update iframe dimension for the responsive iframe height javascript. (MF #1486)
+  
+### Fixed
+  - DP-22650: Fix js errors on safari.
+  - DP-22745: Fixed the sitewide alert header to correspond to the alert label selection.
+  - DP-22795: Fixed error thrown on feedback manager when filtering content.
+  - DP-22796: Invalidate alert responses based on old and new field values.
+  - DP-22798: Fixed autocomplete feature when adding links to a rich text editor.
+  - DP-22810: Removed duplicated library reference.
+  - DP-22817: Fixed errors and bugs with Collections URL term validation and breadcrumb logic.
+  - DP-22867: Added back library reference that went missing after merge.
+  - DP-22880: Migration script to populate the alert date field.
+  
+### Security
+  - DP-22863: Updated Admin Toolbar to 3.0.2 per https://www.drupal.org/sa-contrib-2021-025
+  
+
+
 ## [0.293.0] - August 10, 2021
 
 ### Changed

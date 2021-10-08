@@ -12,10 +12,11 @@ dependencies:
     - field.field.paragraph.key_message_section.field_section_text_overlay_color
     - field.field.paragraph.key_message_section.field_sub_heading
     - paragraphs.paragraphs_type.key_message_section
+    - responsive_image.styles.key_message
   module:
-    - image
     - link
     - options
+    - responsive_image
     - text
 id: paragraph.key_message_section.default
 targetEntityType: paragraph
@@ -43,12 +44,12 @@ content:
     region: content
   field_image:
     weight: 1
-    label: above
+    label: hidden
     settings:
-      image_style: ''
+      responsive_image_style: key_message
       image_link: ''
     third_party_settings: {  }
-    type: image
+    type: responsive_image
     region: content
   field_main_heading:
     weight: 8
