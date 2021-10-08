@@ -178,6 +178,10 @@ module.exports = async function(page, scenario, vp) {
     // in local environments.
     await page.waitForFunction('jQuery.active == 0');
 
+    // Wait for alerts to load
+    await page.waitForFunction("document.querySelector('.ma__emergency-alerts__content') !== null");
+    await page.waitFor(1000);
+
     if (scenario.label === 'InfoDetails1') {
       await page.waitForSelector('.cbFormErrorMarker', {visible: true})
     }
