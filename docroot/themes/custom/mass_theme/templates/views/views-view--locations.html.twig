@@ -85,14 +85,16 @@
         </div>
         <div class="ma__location-listing__columns">
           <div class="ma__location-listing__container">
-            <div class="ma__location-listing__map">
+            <div class="ma__location-listing__map" aria-label="{{leafletMap.title}}">
+              <a href="#location-listing-results" aria-describedby="sr-info">skip to the location listing</a>
+              <div id="sr-info" style="display: none;">For screen reader users, we suggest skip the map and go to the location listing for a better user experience.  Currently, the map is not accessible yet for a comprehensive experience.</div>
               <div class="ma__location-listing__sticky js-location-listing-map">
                 <script type="text/javascript">var ma = ma || {};ma.leafletMapData = [];</script>
                 {% set leafletMap = leafletMap %}
                 {% include "@molecules/map-leaflet.twig" %}
               </div>
             </div>
-            <div class="ma__location-listing__results js-location-listing-results">
+            <div id="location-listing-results" class="ma__location-listing__results js-location-listing-results">
               <div class="ma__results-heading js-results-heading">
                 <div class="ma__results-heading__container">
                   <h2 class="ma__results-heading__title">{{ header }}</h2>

@@ -6063,6 +6063,9 @@ function mass_theme_preprocess_views_view_locations_page(&$variables) {
     // Batch load contact entities all at once.
     $contact_entities = Node::loadMultiple($contact_ids);
     $variables['leafletMap'] = Molecules::prepareGoogleMapFromContacts($contact_entities, $contact_location_map);
+    if ($node_title) {
+      $variables['leafletMap']['title'] = t('Map for @title', ['@title' => $node_title]);
+    }
   }
 }
 
