@@ -4,7 +4,6 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
-    - field.field.node.sitewide_alert.field_alert
     - field.field.node.sitewide_alert.field_alert_hide_message
     - field.field.node.sitewide_alert.field_alert_ref_contact
     - field.field.node.sitewide_alert.field_alert_related_links_5
@@ -14,6 +13,7 @@ dependencies:
     - field.field.node.sitewide_alert.field_english_version
     - field.field.node.sitewide_alert.field_organizations
     - field.field.node.sitewide_alert.field_reusable_label
+    - field.field.node.sitewide_alert.field_sitewide_alert
     - field.field.node.sitewide_alert.field_state_organization_tax
     - node.type.sitewide_alert
   module:
@@ -23,13 +23,17 @@ targetEntityType: node
 bundle: sitewide_alert
 mode: teaser
 content:
+  content_moderation_control:
+    weight: -20
+    settings: {  }
+    third_party_settings: {  }
+    region: content
   links:
     weight: 100
     settings: {  }
     third_party_settings: {  }
     region: content
 hidden:
-  field_alert: true
   field_alert_hide_message: true
   field_alert_ref_contact: true
   field_alert_related_links_5: true
@@ -39,5 +43,6 @@ hidden:
   field_english_version: true
   field_organizations: true
   field_reusable_label: true
+  field_sitewide_alert: true
   field_state_organization_tax: true
   langcode: true

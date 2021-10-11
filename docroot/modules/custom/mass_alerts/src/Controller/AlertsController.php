@@ -82,19 +82,19 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $results['emergencyAlerts']['alerts'] = [];
 
       $alerts = [];
-      $alert_items = $node->get('field_alert')->referencedEntities();
+      $alert_items = $node->get('field_sitewide_alert')->referencedEntities();
       foreach ($alert_items as $item) {
         $item_id = $item->uuid() . '__' . $changed_date;
-        $timestamp_string = $item->get('field_emergency_alert_timestamp')->getString();
+        $timestamp_string = $item->get('field_sitewide_alert_timestamp')->getString();
         $unix_timestamp = strtotime($timestamp_string);
         $timestamp = Helper::getDate($timestamp_string)->format('M. j, Y, h:i a');
         $url = FALSE;
 
-        $link_type = $item->get('field_emergency_alert_link_type')->getString();
+        $link_type = $item->get('field_sitewide_alert_link_type')->getString();
         $url = FALSE;
 
         if ($link_type == '1') {
-          $uri = $item->get('field_emergency_alert_link')->getString();
+          $uri = $item->get('field_sitewide_alert_link')->getString();
           if ($uri) {
             $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
           }
@@ -104,7 +104,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           $url .= '#' . $item->id();
         }
 
-        $message = $item->get('field_emergency_alert_message')->getString();
+        $message = $item->get('field_sitewide_alert_message')->getString();
 
         if ($url) {
           $link = [

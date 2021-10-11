@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.node.sitewide_alert.field_alert
     - field.field.node.sitewide_alert.field_alert_hide_message
     - field.field.node.sitewide_alert.field_alert_ref_contact
     - field.field.node.sitewide_alert.field_alert_related_links_5
@@ -13,6 +12,7 @@ dependencies:
     - field.field.node.sitewide_alert.field_english_version
     - field.field.node.sitewide_alert.field_organizations
     - field.field.node.sitewide_alert.field_reusable_label
+    - field.field.node.sitewide_alert.field_sitewide_alert
     - field.field.node.sitewide_alert.field_state_organization_tax
     - node.type.sitewide_alert
   module:
@@ -25,14 +25,10 @@ targetEntityType: node
 bundle: sitewide_alert
 mode: default
 content:
-  field_alert:
-    weight: 101
-    label: above
-    settings:
-      view_mode: default
-      link: ''
+  content_moderation_control:
+    weight: -20
+    settings: {  }
     third_party_settings: {  }
-    type: entity_reference_revisions_entity_view
     region: content
   field_alert_hide_message:
     weight: 108
@@ -113,6 +109,15 @@ content:
       link: true
     third_party_settings: {  }
     type: entity_reference_label
+    region: content
+  field_sitewide_alert:
+    type: entity_reference_revisions_entity_view
+    weight: 112
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
     region: content
   field_state_organization_tax:
     weight: 107

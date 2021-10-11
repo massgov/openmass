@@ -62,14 +62,14 @@ function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface 
  * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
  */
 function mass_alerts_form_node_sitewide_alert_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
+  $form['#validate'][] = 'mass_alerts_validate_site_wide_alert_creation';
 }
 
 /**
  * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
  */
 function mass_alerts_form_node_sitewide_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $form['#validate'][] = '_mass_alerts_validate_site_wide_alert_creation';
+  $form['#validate'][] = 'mass_alerts_validate_site_wide_alert_creation';
 }
 
 /**
@@ -134,7 +134,7 @@ function mass_alerts_validate_alert_content(array &$form, FormStateInterface $fo
 /**
  * Validates site wide alert creation.
  */
-function _mass_alerts_validate_site_wide_alert_creation(array &$form, FormStateInterface $form_state) {
+function mass_alerts_validate_site_wide_alert_creation(array &$form, FormStateInterface $form_state) {
 
   // A maximum of only 1 site wide alert should be publishable at any given time.
   // Only prevent publishing, not drafting.
@@ -267,10 +267,10 @@ function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
     if (!empty($email_addresses)) {
       $message_body = 'A sitewide alert was added or updated on Mass.gov (https://www.mass.gov):' . "\r\n\r\n" . $node->title->value . "\r\n\r\n";
       if ($node->hasField('field_alert')) {
-        $paragraph = $node->get('field_alert')->referencedEntities();
+        $paragraph = $node->get('field_sitewide_alert')->referencedEntities();
         foreach ($paragraph as $p) {
-          if ($p->hasField('field_emergency_alert_message')) {
-            $value[] = $p->get('field_emergency_alert_message')->value;
+          if ($p->hasField('field_sitewide_alert_message')) {
+            $value[] = $p->get('field_sitewide_alert_message')->value;
           }
         }
         $message_body .= implode("\r\n", $value);
