@@ -103,6 +103,8 @@ function mass_alerts_deploy_sitewide_alerts(&$sandbox) {
       ];
     }
 
+    $original_values['field_sitewide_alert_severity'] = $original_values['field_alert_severity'];
+    unset($original_values['field_alert_severity']);
     $original_values['field_sitewide_alert'] = $new_paragraphs;
 
     $node_cloned = Node::create($original_values);

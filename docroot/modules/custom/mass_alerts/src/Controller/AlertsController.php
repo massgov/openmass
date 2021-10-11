@@ -127,7 +127,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       ksort($alerts);
       $results['emergencyAlerts']['alerts'] = array_values($alerts);
 
-      $severity = $node->get('field_alert_severity')->getString();
+      $severity = $node->get('field_sitewide_alert_severity')->getString();
       // The header prefix defaults to "Emergency Alerts" in the
       // emergency-header.twig molecule mayflower component.
       if ($severity == 'informational_notice') {

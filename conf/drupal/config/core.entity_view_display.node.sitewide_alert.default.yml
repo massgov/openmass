@@ -6,13 +6,13 @@ dependencies:
     - field.field.node.sitewide_alert.field_alert_hide_message
     - field.field.node.sitewide_alert.field_alert_ref_contact
     - field.field.node.sitewide_alert.field_alert_related_links_5
-    - field.field.node.sitewide_alert.field_alert_severity
     - field.field.node.sitewide_alert.field_alert_title_link
     - field.field.node.sitewide_alert.field_alert_title_link_target
     - field.field.node.sitewide_alert.field_english_version
     - field.field.node.sitewide_alert.field_organizations
     - field.field.node.sitewide_alert.field_reusable_label
     - field.field.node.sitewide_alert.field_sitewide_alert
+    - field.field.node.sitewide_alert.field_sitewide_alert_severity
     - field.field.node.sitewide_alert.field_state_organization_tax
     - node.type.sitewide_alert
   module:
@@ -59,13 +59,6 @@ content:
       target: ''
     third_party_settings: {  }
     type: link
-    region: content
-  field_alert_severity:
-    weight: 102
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-    type: list_default
     region: content
   field_alert_title_link:
     weight: 104
@@ -118,6 +111,13 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    region: content
+  field_sitewide_alert_severity:
+    weight: 113
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
     region: content
   field_state_organization_tax:
     weight: 107

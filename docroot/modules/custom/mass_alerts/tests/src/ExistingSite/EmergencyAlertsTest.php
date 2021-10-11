@@ -74,7 +74,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
       'moderation_state' => 'published',
       // 'State 911 Department (6416)'.
       'field_alert_ref_contact' => ['target_id' => 6416],
-      'field_alert_severity' => 'emergency_alert',
+      'field_sitewide_alert_severity' => 'emergency_alert',
       'field_sitewide_alert' => Paragraph::create([
         'type' => 'sitewide_alert_message',
         'field_sitewide_alert_message' => $alert_message_text,
