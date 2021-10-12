@@ -1,5 +1,14 @@
 
 
+## [0.298.0] - October 12, 2021
+
+### Changed
+  - DP-22714: Changed the keyword filter for Data Listings and Collections to search more fields.
+  - DP-22909: Modified curated list content type to support data resource type tagging.
+  - DP-23041: Update Term reference tree, IEF, Drush, composer-patches
+  
+
+
 ## [0.297.0] - October 5, 2021
 
 ### Security
