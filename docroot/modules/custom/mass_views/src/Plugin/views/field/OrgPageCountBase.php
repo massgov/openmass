@@ -85,7 +85,7 @@ class OrgPageCountBase extends NumericField {
   /**
    * {@inheritdoc}
    */
-  function clickSort($order) {
+  public function clickSort($order) {
     if (isset($this->field_alias)) {
       $params = $this->options['group_type'] != 'group' ? ['function' => $this->options['group_type']] : [];
       $this->query->addOrderBy(NULL, $this->pseudoFieldName, $order, $this->field_alias, $params);
