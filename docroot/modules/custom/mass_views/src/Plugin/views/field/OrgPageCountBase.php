@@ -32,6 +32,7 @@ class OrgPageCountBase extends NumericField {
   protected $paragraphBundle = '';
 
   /**
+   * Add a subquery to the main query for sorting purposes.
    * @{inheritdoc}
    */
   public function query() {
@@ -61,6 +62,7 @@ class OrgPageCountBase extends NumericField {
   }
 
   /**
+   * Render the field value.
    * @{inheritdoc}
    */
   public function render(ResultRow $values) {
