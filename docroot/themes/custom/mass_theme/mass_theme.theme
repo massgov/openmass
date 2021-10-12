@@ -6838,6 +6838,7 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
   // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
   $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image'];
   $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping'];
+  $contained = ['rich_text'];
 
   $components = [];
   $container = $variables['paragraph'];
@@ -6856,11 +6857,15 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
       // Once done, also group the following one.
       $items[] = $paragraphs[$i];
 
-      $component = ['group' => TRUE, 'type' => '', 'items' => $items];
+      $component = ['group' => 'default', 'items' => $items];
+    }
+    // There are some special paragraphs that should have a right margin.
+    elseif (in_array($paragraphs[$i]->getType(), $contained) !== FALSE) {
+      $component = ['group' => 'contained', 'items' => $paragraphs[$i]];
     }
     // Otherwise, if it's one of the following paragraphs, wrap it as well.
     elseif (in_array($paragraphs[$i]->getType(), $wrap_paragraphs) !== FALSE) {
-      $component = ['group' => TRUE, 'type' => $paragraphs[$i]->getType() == 'image' ? NULL : 'full', 'items' => [$paragraphs[$i]]];
+      $component = ['group' => 'default', 'items' => [$paragraphs[$i]]];
     }
 
     else {
