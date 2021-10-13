@@ -7,21 +7,13 @@ dependencies:
     - field.field.taxonomy_term.collections.field_landing_page
     - field.field.taxonomy_term.collections.field_url_name
     - taxonomy.vocabulary.collections
-  module:
-    - text
 id: taxonomy_term.collections.default
 targetEntityType: taxonomy_term
 bundle: collections
 mode: default
-content:
-  description:
-    label: hidden
-    type: text_default
-    weight: 0
-    region: content
-    settings: {  }
-    third_party_settings: {  }
+content: {  }
 hidden:
+  description: true
   field_all_collection_breadcrumb: true
   field_landing_page: true
   field_url_name: true

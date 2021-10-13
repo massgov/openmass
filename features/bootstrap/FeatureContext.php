@@ -1560,6 +1560,105 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
           ],
         ];
         break;
+      case "org_page":
+        $fields = [
+          [
+            'field' => 'field-subtype',
+            'tag' => 'select',
+            'type' => '',
+          ],
+          [
+            'field' => 'field-person-bio',
+            'tag' => 'input',
+            'type' => 'text',
+          ],
+          [
+            'field' => 'field-secondary-person-bio',
+            'tag' => 'input',
+            'type' => 'text',
+          ],
+          [
+            'field' => 'field-title-sub-text',
+            'tag' => 'input',
+            'type' => 'text',
+          ],
+          [
+            'field' => 'field-ref-contact-info-1',
+            'tag' => 'input',
+            'type' => 'text',
+          ],
+          [
+            'field' => 'field-bg-wide',
+            'tag' => 'input',
+            'type' => 'submit',
+          ],
+          [
+            'field' => 'field-bg-narrow',
+            'tag' => 'input',
+            'type' => 'submit',
+          ],
+          [
+            'field' => 'field-banner-image',
+            'tag' => 'input',
+            'type' => 'submit',
+          ],
+          [
+            'field' => 'field-image-credit',
+            'tag' => 'input',
+            'type' => 'text',
+          ],
+          [
+            'field' => 'field-organizations',
+            'tag' => 'input',
+            'type' => 'text',
+          ],
+          [
+            'field' => 'field-reusable-label',
+            'tag' => 'input',
+            'type' => 'text',
+          ],
+          [
+            'field' => 'field-sub-title',
+            'tag' => 'textarea',
+            'type' => '',
+          ],
+          [
+            'field' => 'field-hide-short-description',
+            'tag' => 'input',
+            'type' => 'checkbox',
+          ],
+          [
+            'field' => 'field-sub-brand',
+            'tag' => 'input',
+            'type' => 'submit',
+          ],
+          [
+            'field' => 'field-org-page-thumbnail',
+            'tag' => 'input',
+            'type' => 'submit',
+          ],
+          [
+            'field' => 'field-social-links',
+            'tag' => 'input',
+            'type' => 'text',
+          ],
+          [
+            'field' => 'field-intended-audience',
+            'tag' => 'input',
+            'type' => 'radio',
+          ],
+          [
+            'field' => 'field-organization-sections',
+            'tag' => 'paragraphs',
+            'type' => '',
+          ],
+          [
+            'field' => 'field-get-updates-links',
+            'tag' => 'input',
+            'type' => 'text',
+          ],
+        ];
+        break;
     }
     foreach ($fields as $row) {
       // Get all IDs that start with our field name. D8 prints fields

@@ -1,5 +1,74 @@
 
 
+## [0.298.0] - October 13, 2021
+
+### Added
+  - DP-22330: Added new sections field to the Organizations content type.
+  - DP-22483: Added featured topics paragraph and themed it.
+  - DP-22533: Added a checkbox to the Organization content type to hide the short description on page display.
+  - DP-22561: Added new What Would You Like To Do paragraph on Organizations.
+  - DP-22644: Added deploy function scaffolding to migrate org_page data to organization sections.
+  - DP-22652: Added new social bar paragraph for organizations.
+  - DP-22658: Migrate org page Featured Topics to sections.
+  - DP-22958: Added a checkbox to hide Organization Section paragraph headings on Organizations.
+  - DP-22961: Added ability to control Organization page section separators.
+  - DP-23040: Added a workaround for the org_page edit 500 error on local dev environments.
+  
+### Changed
+  - DP-22403: Added Featured Message, Featured Item Mosaic and Organization Grid to the Organization Section paragraph type.
+  - DP-22534: Converted Organization Page News fields into an Organization News paragraph.
+  - DP-22535: Converted Organization Page Events field into an Organization Events paragraph.
+  - DP-22536: Converted Organization Page Map fields into an Organization Locations paragraph.
+  - DP-22537: Converted Organization Page Related Organizations field into an Organization Related Organizations paragraph.
+  - DP-22538: Make paragraph for Board Members on org page.
+  - DP-22633: Migrate org page Board Members to sections.
+  - DP-22654: Migrated Feature Message data to sections for Organization pages.
+  - DP-22655: Migrated Featured Items data to sections for Organization pages.
+  - DP-22656: Migrated Our Organizations data to sections for Organization pages.
+  - DP-22657: Migrated "What would you like to do" data to sections for Organization pages.
+  - DP-22659: Migrated News data to sections for Organization pages.
+  - DP-22660: Migrated Events data to sections for Organization pages.
+  - DP-22661: Migrated Locations data to sections for Organization pages.
+  - DP-22662: Migrated Related Organizations data to sections for Organization pages.
+  - DP-22666: Contact and logo paragraph. It uses the current org fields instead of new ones.
+  - DP-22685: Migrated Who we serve data to sections for Organization pages.
+  - DP-22688: Migrated contact and logo data to sections for Organization pages.
+  - DP-22689: Updated the Organization Section paragraph to allow About paragraphs in the Content field.
+  - DP-22690: Migrated Our About data to sections for Organization pages.
+  - DP-22714: Changed the keyword filter for Data Listings and Collections to search more fields.
+  - DP-22909: Modified curated list content type to support data resource type tagging.
+  - DP-22947: Changes to the Organization Section paragraph and Organization content type form display.
+  - DP-22982: Modified the logic for outputing organization section components depending if it needs to be wrapped or not.
+  - DP-23023: Alphabetized the paragraph type options in the Organization Section Content field.
+  - DP-23041: Update Term reference tree, IEF, Drush, composer-patches
+  - DP-23093: Updated the Content Report for Organization Pages to show new section counts from the organization sections field.
+  - DP-23136: Updated Mayflower version to 11.16.0.
+  - [SectionsThreeUp] DP-22483: Adjusting section 3up to support a compact version. (MF #1452)
+  - [CollapsibleContent] DP-22561: Added modifier for background style and adjusted width. (MF #1460)
+  - [CollapsibleContent] DP-22657: Adjusted accordions to use a minus "-" for collapsing instead of a cross "x". (MF #1491)
+  - [AboutSection] DP-22689: Added a condition to only show the title if it is defined. (MF #1461)
+  - [Figure] DP-22981: Fixing image displaying when right aligned. (MF #1515)
+  - [StackedRowSection] DP-22982: Adding new modifier class option. (MF #1518)
+  - [RichText] DP-22982: Removing right padding if container has a `.no-sidebar` class. (MF #1518)
+  - [ActionFinder] DP-22983: Adjusting action finder to not render the heading if there isn't a title and adds a background option. (MF #1514)
+  - [SectionsThreeUp] DP-23128: Adjusting section 3up spacing top on mobile. (MF #1522)
+  - [SectionsLinks] DP-23128: Fix SectionLinks with icon overlapping issue. (MF #1522)
+  - [SocialLinksBar] DP-22652: Display an horizontal bar of links. (MF #1466)
+  - [CollapsibleContent] DP-22657: Added Collapsible Content Extended variant to allow expand/collapse all accordions. (MF #1491)
+  - [OrgContact] DP-22666: Added Org Contact organism. (MF #1467)
+  - [Sidebar] DP-22940: Fix the horizontal alignment on sidebar for locations. Fix small text-underline on locations. (MF #1513)
+  - [StackedRowSection] DP-23128: Adjust vertical spacing around the component. (MF #1525)
+  
+### Fixed
+  - DP-22746: Fixed Behat error failures due to Organization page changes.
+  - DP-22747: Organization page fixes discovered during Backstop testing.
+  - DP-22959: Refactored Organization page migrations for events and news to fix edge cases.
+  - DP-22960: Fixing the Organization sub navigation using organization section data.
+  - DP-22981: Adjusted the org long form paragraph to support wrapping sub elements.
+  - DP-23084: Updated the Featured Message paragraph template to conditionally show the callout link.
+  
+
+
 ## [0.297.0] - October 5, 2021
 
 ### Security
