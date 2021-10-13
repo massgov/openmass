@@ -366,6 +366,49 @@ class Helper {
   }
 
   /**
+   * Helper function to retrieve the entities referenced from a section field.
+   *
+   * @param object $entity
+   *   The entity which contains the nested reference field.
+   * @param array $reference_fields
+   *   An array of the nested entity reference field names.
+   *
+   * @return array
+   *   The array which contains the entities referenced by the field.
+   */
+  public static function getReferencedEntitiesFromSectionField($entity, array $reference_fields) {
+    // Get the sections field.
+    $sections_field = array_shift($reference_fields);
+    // Get the nested reference field.
+    $reference_field = array_pop($reference_fields);
+    // Get the sections field value.
+    $sections_field_value = $entity->get($sections_field);
+    // Loop through the sections to find one that contains the nested reference
+    // field.
+    foreach ($sections_field_value as $key => $value) {
+      // Get the current section entity.
+      $nested_entity = $entity->get($sections_field)[$key]->entity;
+      // Loop through the reference fields to get the nested entity.
+      foreach ($reference_fields as $field) {
+        // If the current entity doesn't have a reference field, try the next
+        // section.
+        if (!$nested_entity->hasField($field)) {
+          break;
+        }
+        // Save the current entity as the nested entity.
+        $nested_entity = $nested_entity->{$field}->entity;
+      }
+      // If the final nested entity has the reference field, use that as the
+      // value of field.
+      if ($nested_entity->hasField($reference_field)) {
+        return self::getReferencedEntitiesFromField($nested_entity, $reference_field);
+      }
+    }
+    // Return an empty array if the reference field was never found.
+    return [];
+  }
+
+  /**
    * Helper function to provide a value for a field.
    *
    * @param object $entity
@@ -1721,6 +1764,23 @@ class Helper {
     }
 
     return [];
+  }
+
+  /**
+   * Helper for retrieving parent node from nested paragraphs.
+   *
+   * @param \Drupal\paragraphs\Entity\Paragraph $paragraph
+   *   The paragraph entity.
+   *
+   * @return \Drupal\node\Entity\Node
+   *   The parent node.
+   */
+  public static function getParentNode(Paragraph $paragraph) {
+    $parent_entity = $paragraph->getParentEntity();
+    if ($parent_entity->getEntityTypeId() === 'paragraph') {
+      $parent_entity = self::getParentNode($parent_entity);
+    }
+    return $parent_entity;
   }
 
 }
