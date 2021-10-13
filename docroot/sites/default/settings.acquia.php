@@ -52,11 +52,6 @@ if (!$cli && ($is_prod || $is_mass_gov)) {
 $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.acquia.yml';
 
 /**
- * Temporarily disable ClamAV. See https://jira.mass.gov/browse/DP-19008.
- */
-$config['clamav.settings']['enabled'] = 0;
-
-/**
  * Configure file directory paths.
  */
 $settings['file_public_path'] = 'files';

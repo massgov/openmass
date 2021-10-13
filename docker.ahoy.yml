@@ -12,7 +12,7 @@ commands:
   stop:
     cmd: ddev pause "$@"
   pull:
-    cmd: ahoy down && docker-compose pull && ahoy up
+    cmd: ahoy down && docker-compose -f .ddev/.ddev-docker-compose-full.yaml pull && ahoy up
   refresh:
     cmd: ahoy exec "scripts/ma-refresh-local -dpo && vendor/bin/drush sql:sanitize -y"
   updatedb:
@@ -40,6 +40,6 @@ commands:
   blackfire:
     cmd: ahoy exec blackfire "$@"
   backstop:
-    cmd: ddev exec --service backstop backstop "$@"
+    cmd: ddev exec --service backstop backstop --config=/src/backstop.js "$@"
   nightcrawler:
     cmd: ahoy exec node_modules/.bin/nightcrawler --config=.circleci/nightcrawler/nightcrawler $@

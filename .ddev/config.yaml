@@ -3,10 +3,11 @@ type: drupal9
 docroot: docroot
 php_version: "7.4"
 webserver_type: apache-fpm
+dbimage: massgov/mysql-sanitized:super
 omit_containers:
   - db
 disable_settings_management: true
-#Avoid conflict on port 80. This is rarelyused anyway.
+#Avoid conflict on port 80. This is rarely used anyway.
 router_http_port: "88"
 router_https_port: "443"
 xdebug_enabled: false
@@ -36,11 +37,3 @@ web_environment:
   # For Cloudflare Terraform.
   - CLOUDFLARE_EMAIL
   - CLOUDFLARE_TOKEN
-
-# This config.yaml was created with ddev version v1.17.7
-# webimage: drud/ddev-webserver:v1.17.7
-# dbimage: drud/ddev-dbserver-mariadb-10.3:v1.17.7
-# dbaimage: phpmyadmin:5
-# However we do not recommend explicitly wiring these images into the
-# config.yaml as they may break future versions of ddev.
-# You can update this config.yaml using 'ddev config'.
