@@ -19,6 +19,7 @@ dependencies:
     - field.field.node.org_page.field_event_quantity
     - field.field.node.org_page.field_feedback_com_link
     - field.field.node.org_page.field_get_updates_links
+    - field.field.node.org_page.field_hide_short_description
     - field.field.node.org_page.field_image_credit
     - field.field.node.org_page.field_intended_audience
     - field.field.node.org_page.field_links_actions_3
@@ -37,6 +38,7 @@ dependencies:
     - field.field.node.org_page.field_org_ref_locations
     - field.field.node.org_page.field_org_sentence_phrasing
     - field.field.node.org_page.field_org_show_news_images
+    - field.field.node.org_page.field_organization_sections
     - field.field.node.org_page.field_organizations
     - field.field.node.org_page.field_parent
     - field.field.node.org_page.field_person_bio
@@ -71,19 +73,13 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
-    - text
 third_party_settings:
   field_group:
     group_node_edit_form:
       children:
         - group_banner
         - group_overview
-        - group_featured
-        - group_about_details
-        - group_actions
-        - group_map
-        - group_news
-        - group_boards
+        - group_content
         - group_feedback
         - group_other
       parent_name: ''
@@ -117,11 +113,9 @@ third_party_settings:
       label: 'Title Banner'
       region: content
     group_actions:
-      children:
-        - field_links_actions_3
-        - field_ref_actions_6
-      parent_name: group_node_edit_form
-      weight: 24
+      children: {  }
+      parent_name: ''
+      weight: 33
       format_type: tab
       format_settings:
         formatter: closed
@@ -130,41 +124,37 @@ third_party_settings:
         id: ''
         classes: ''
       label: 'Services Offered'
-      region: content
+      region: hidden
     group_other:
       children:
-        - field_ref_card_view_6
-        - field_org_our_orgs
-        - field_ref_orgs
         - field_more_about_agency_link
         - field_more_about_leadership
         - field_org_directory_page
         - field_career_opportunities
         - field_application_login_links
         - field_public_records_link
-        - field_parent
-        - field_event_quantity
-        - field_billing_organization
+        - field_get_updates_links
       parent_name: group_node_edit_form
-      weight: 30
+      weight: 25
       format_type: tab
       format_settings:
-        label: More
-        formatter: closed
         description: ''
+        formatter: closed
         required_fields: true
         id: ''
         classes: ''
-      label: More
+      label: 'Navigation menu'
       region: content
     group_overview:
       children:
         - field_sub_title
+        - field_hide_short_description
         - field_sub_brand
-        - body
         - field_org_page_thumbnail
         - field_social_links
         - field_intended_audience
+        - field_parent
+        - field_billing_organization
       parent_name: group_node_edit_form
       weight: 21
       format_type: tab
@@ -184,7 +174,7 @@ third_party_settings:
         - field_secondary_person_bio
         - field_title_sub_text
       parent_name: group_banner
-      weight: 20
+      weight: 7
       format_type: html_element
       format_settings:
         id: ''
@@ -198,100 +188,6 @@ third_party_settings:
         speed: fast
       label: 'Organization name'
       region: content
-    group_map:
-      children:
-        - field_org_ref_locations
-        - field_location_button_label
-        - field_location_button_short_desc
-        - field_related_organization_type
-      parent_name: group_node_edit_form
-      weight: 25
-      format_type: tab
-      format_settings:
-        id: ''
-        classes: ''
-        formatter: closed
-        description: ''
-        required_fields: true
-      label: Map
-      region: content
-    group_news:
-      children:
-        - field_org_featured_news_items
-        - field_number_of_news_items
-        - field_org_show_news_images
-        - field_get_updates_links
-      parent_name: group_node_edit_form
-      weight: 27
-      format_type: tab
-      format_settings:
-        id: ''
-        classes: ''
-        formatter: closed
-        description: ''
-        required_fields: true
-      label: News
-      region: content
-    group_featured:
-      children:
-        - field_org_featured_message
-        - field_org_featured_items
-      parent_name: group_node_edit_form
-      weight: 22
-      format_type: tab
-      format_settings:
-        label: Featured
-        formatter: closed
-        description: ''
-        required_fields: true
-        id: ''
-        classes: elected-only
-      label: Featured
-      region: content
-    group_about_details:
-      children:
-        - field_short_name
-        - group_about_summary
-      parent_name: group_node_edit_form
-      weight: 23
-      format_type: tab
-      format_settings:
-        label: 'About / Details'
-        formatter: closed
-        description: ''
-        id: about-details-tab
-        classes: elected-only
-        required_fields: false
-      label: 'About / Details'
-      region: content
-    group_about_summary:
-      children:
-        - field_about
-      parent_name: group_about_details
-      weight: 37
-      format_type: details
-      format_settings:
-        id: ''
-        classes: ''
-        open: true
-        required_fields: true
-      label: 'About Summary'
-      region: content
-    group_boards:
-      children:
-        - field_boards
-      parent_name: group_node_edit_form
-      weight: 28
-      format_type: tab
-      format_settings:
-        label: Boards
-        formatter: closed
-        description: ''
-        required_fields: true
-        id: boards-tab
-        classes: ''
-      label: Boards
-      region: content
     group_feedback:
       children:
         - field_constituent_communication
@@ -302,10 +198,9 @@ third_party_settings:
         - field_urgent_warning
         - field_org_sentence_phrasing
       parent_name: group_node_edit_form
-      weight: 29
+      weight: 24
       format_type: tab
       format_settings:
-        label: 'Setup Feedback'
         formatter: closed
         description: ''
         required_fields: true
@@ -313,36 +208,27 @@ third_party_settings:
         classes: ''
       label: 'Setup Feedback'
       region: content
+    group_content:
+      children:
+        - field_organization_sections
+      parent_name: group_node_edit_form
+      weight: 23
+      format_type: tab
+      region: content
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        formatter: closed
+        required_fields: true
+      label: Content
 id: node.org_page.default
 targetEntityType: node
 bundle: org_page
 mode: default
 content:
-  body:
-    type: text_textarea_with_summary
-    weight: 39
-    settings:
-      rows: 9
-      placeholder: ''
-      summary_rows: 3
-      show_summary: false
-    third_party_settings:
-      conditional_fields: {  }
-    region: content
-  field_about:
-    type: entity_reference_paragraphs
-    weight: 75
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings: {  }
-    region: content
   field_application_login_links:
-    weight: 98
+    weight: 123
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -350,7 +236,7 @@ content:
     type: link_default
     region: content
   field_approver:
-    weight: 49
+    weight: 106
     settings:
       size: 40
       placeholder: ''
@@ -380,7 +266,7 @@ content:
     type: string_textfield
     region: content
   field_banner_image:
-    weight: 24
+    weight: 12
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
@@ -406,7 +292,7 @@ content:
     type: image_image
     region: content
   field_bg_narrow:
-    weight: 23
+    weight: 11
     settings:
       preview_image_style: thumbnail
       progress_indicator: throbber
@@ -432,7 +318,7 @@ content:
     type: image_image
     region: content
   field_bg_wide:
-    weight: 22
+    weight: 10
     settings:
       preview_image_style: thumbnail
       progress_indicator: throbber
@@ -458,7 +344,7 @@ content:
     type: image_image
     region: content
   field_billing_organization:
-    weight: 102
+    weight: 133
     settings: {  }
     third_party_settings: {  }
     type: dynamic_entity_reference_options_select
@@ -475,20 +361,8 @@ content:
       default_paragraph_type: ''
     third_party_settings: {  }
     region: content
-  field_boards:
-    type: entity_reference_paragraphs
-    weight: 79
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: ''
-    third_party_settings: {  }
-    region: content
   field_career_opportunities:
-    weight: 97
+    weight: 122
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -496,19 +370,13 @@ content:
     type: link_default
     region: content
   field_constituent_communication:
-    weight: 47
-    settings: {  }
-    third_party_settings: {  }
-    type: options_select
-    region: content
-  field_event_quantity:
-    weight: 101
+    weight: 103
     settings: {  }
     third_party_settings: {  }
     type: options_select
     region: content
   field_feedback_com_link:
-    weight: 50
+    weight: 107
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -534,15 +402,22 @@ content:
     type: link_default
     region: content
   field_get_updates_links:
-    weight: 78
+    weight: 127
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
     type: link_default
     region: content
+  field_hide_short_description:
+    weight: 127
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
   field_image_credit:
-    weight: 25
+    weight: 13
     settings:
       size: 60
       placeholder: ''
@@ -550,34 +425,10 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 42
+    weight: 131
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
-    region: content
-  field_links_actions_3:
-    weight: 26
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
-    third_party_settings: {  }
-    type: link_default
-    region: content
-  field_location_button_label:
-    weight: 80
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
-    region: content
-  field_location_button_short_desc:
-    weight: 81
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
     region: content
   field_metatags:
     weight: 2
@@ -587,7 +438,7 @@ content:
     type: metatag_firehose
     region: content
   field_more_about_agency_link:
-    weight: 94
+    weight: 119
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -595,7 +446,7 @@ content:
     type: link_default
     region: content
   field_more_about_leadership:
-    weight: 95
+    weight: 120
     settings:
       match_operator: CONTAINS
       size: 60
@@ -604,102 +455,44 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_number_of_news_items:
-    weight: 76
-    settings: {  }
-    third_party_settings: {  }
-    type: options_select
-    region: content
   field_org_directory_page:
-    weight: 96
+    weight: 121
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
     type: link_default
     region: content
-  field_org_featured_items:
-    type: entity_reference_paragraphs
-    weight: 104
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings: {  }
-    region: content
-  field_org_featured_message:
-    type: entity_reference_paragraphs
-    weight: 103
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: button
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings: {  }
-    region: content
-  field_org_featured_news_items:
-    weight: 75
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
-  field_org_our_orgs:
-    type: entity_reference_paragraphs
-    weight: 92
-    settings:
-      title: Paragraph
-      title_plural: Paragraphs
-      edit_mode: open
-      add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings:
-      conditional_fields: {  }
-    region: content
   field_org_page_thumbnail:
-    weight: 40
+    weight: 129
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings: {  }
     type: image_image
     region: content
-  field_org_ref_locations:
-    weight: 79
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_org_sentence_phrasing:
-    weight: 53
+    weight: 110
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
     type: string_textfield
     region: content
-  field_org_show_news_images:
-    weight: 77
+  field_organization_sections:
+    type: entity_reference_paragraphs
+    weight: 16
     settings:
-      display_label: true
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: section_long_form
     third_party_settings: {  }
-    type: boolean_checkbox
     region: content
   field_organizations:
-    weight: 26
+    weight: 14
     settings:
       match_operator: CONTAINS
       size: 60
@@ -709,7 +502,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_parent:
-    weight: 100
+    weight: 132
     settings:
       match_operator: CONTAINS
       size: 60
@@ -747,62 +540,25 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_public_records_link:
-    weight: 99
+    weight: 124
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
     type: link_default
     region: content
-  field_ref_actions_6:
-    weight: 28
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
-  field_ref_card_view_6:
-    weight: 91
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_ref_contact_info_1:
     type: entity_reference_autocomplete_tags
-    weight: 21
+    weight: 8
     settings:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
       match_limit: 10
     third_party_settings: {  }
-    region: content
-  field_ref_orgs:
-    weight: 93
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
-  field_related_organization_type:
-    weight: 101
-    settings:
-      display_label: false
-    third_party_settings: {  }
-    type: boolean_checkbox
     region: content
   field_response_expectations:
-    weight: 51
+    weight: 108
     settings:
       rows: 5
       placeholder: ''
@@ -834,7 +590,7 @@ content:
     type: string_textarea
     region: content
   field_reusable_label:
-    weight: 27
+    weight: 15
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -871,16 +627,8 @@ content:
           bundle: org_page
     type: entity_reference_autocomplete
     region: content
-  field_short_name:
-    weight: 35
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_social_links:
-    weight: 41
+    weight: 130
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -888,7 +636,7 @@ content:
     type: link_default
     region: content
   field_state_organization_tax:
-    weight: 6
+    weight: 3
     settings:
       match_operator: CONTAINS
       size: 60
@@ -899,7 +647,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_sub_brand:
-    weight: 38
+    weight: 128
     settings:
       preview_image_style: thumbnail
       progress_indicator: throbber
@@ -907,7 +655,7 @@ content:
     type: image_image
     region: content
   field_sub_title:
-    weight: 37
+    weight: 126
     settings:
       rows: 5
       placeholder: ''
@@ -930,14 +678,14 @@ content:
     type: string_textfield
     region: content
   field_urgent_warning:
-    weight: 52
+    weight: 109
     settings:
       display_label: true
     third_party_settings: {  }
     type: boolean_checkbox
     region: content
   field_verification:
-    weight: 48
+    weight: 104
     settings:
       display_label: true
     third_party_settings:
@@ -963,7 +711,7 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 10
+    weight: 5
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -1019,14 +767,33 @@ content:
     type: options_select
     region: content
   url_redirects:
-    weight: 9
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
+  body: true
   created: true
+  field_about: true
   field_action_set__bg_narrow: true
   field_action_set__bg_wide: true
+  field_boards: true
+  field_event_quantity: true
+  field_links_actions_3: true
+  field_location_button_label: true
+  field_location_button_short_desc: true
+  field_number_of_news_items: true
+  field_org_featured_items: true
+  field_org_featured_message: true
+  field_org_featured_news_items: true
+  field_org_our_orgs: true
+  field_org_ref_locations: true
+  field_org_show_news_images: true
+  field_ref_actions_6: true
+  field_ref_card_view_6: true
+  field_ref_orgs: true
+  field_related_organization_type: true
+  field_short_name: true
   langcode: true
   path: true
   promote: true
