@@ -9,13 +9,13 @@ use Drupal\views\Plugin\views\display\DisplayPluginBase;
 use Drupal\views\ViewExecutable;
 
 /**
- * Custom view field to show number of Manual lists items.
+ * Custom view field to show number of Manual lists downloads.
  *
  * @ingroup views_field_handlers
  *
- * @ViewsField("cl_manual_lists_items")
+ * @ViewsField("cl_manual_lists_downloads")
  */
-class ManualListItemsField extends FieldPluginBase {
+class ManualListDownloadsField extends FieldPluginBase {
 
   /**
    * The current display.
@@ -64,8 +64,6 @@ class ManualListItemsField extends FieldPluginBase {
    */
   public function render(ResultRow $values) {
     $node = $values->_entity;
-    $links = [];
-    $n_link = 0;
     $n_download = 0;
     if ($node->hasField("field_curatedlist_list_section") && !$node->get("field_curatedlist_list_section")->isEmpty()) {
       $lists = $node->get('field_curatedlist_list_section')->getValue();
@@ -77,10 +75,7 @@ class ManualListItemsField extends FieldPluginBase {
             foreach ($items as $item) {
               $item_p = Paragraph::load($item['target_id']);
               if ($item_p instanceof Paragraph) {
-                if ($item_p->bundle() === 'list_item_link') {
-                  $n_link += 1;
-                }
-                elseif ($item_p->bundle() === 'list_item_document') {
+                if ($item_p->bundle() === 'list_item_document') {
                   $n_download += 1;
                 }
               }
@@ -90,27 +85,7 @@ class ManualListItemsField extends FieldPluginBase {
       }
     }
 
-    $links['links'] = [
-      '#markup' => $this->t('Links: @number', [
-        '@number' => $n_link,
-      ]),
-    ];
-    $links['downloads'] = [
-      '#markup' => $this->t('Downloads: @number', [
-        '@number' => $n_download,
-      ]),
-    ];
-
-    return [
-      [
-        '#theme' => 'item_list',
-        '#list_type' => 'ul',
-        '#title' => '',
-        '#items' => $links,
-        '#attributes' => ['class' => 'manual-lists-items'],
-        '#wrapper_attributes' => ['class' => 'container'],
-      ],
-    ];
+    return $n_download;
   }
 
 }

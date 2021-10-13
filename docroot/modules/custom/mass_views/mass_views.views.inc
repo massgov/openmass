@@ -25,11 +25,18 @@ function mass_views_views_data() {
       'id' => 'cl_manual_lists',
     ],
   ];
-  $data['views']['cl_manual_lists_items'] = [
-    'title' => t('Manual lists content (Curated list)'),
-    'help' => t('Number of Manual lists links/downloads in the Curated list'),
+  $data['views']['cl_manual_lists_links'] = [
+    'title' => t('Manual lists links (Curated list)'),
+    'help' => t('Number of Manual lists links in the Curated list'),
     'field' => [
-      'id' => 'cl_manual_lists_items',
+      'id' => 'cl_manual_lists_links',
+    ],
+  ];
+  $data['views']['cl_manual_lists_downloads'] = [
+    'title' => t('Manual lists downloads (Curated list)'),
+    'help' => t('Number of Manual lists downloads in the Curated list'),
+    'field' => [
+      'id' => 'cl_manual_lists_downloads',
     ],
   ];
   return $data;

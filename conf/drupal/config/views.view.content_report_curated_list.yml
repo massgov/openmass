@@ -6,9 +6,13 @@ dependencies:
     - field.storage.node.field_organizations
     - node.type.curated_list
   module:
+    - csv_serialization
     - mass_views
     - node
+    - rest
+    - serialization
     - user
+    - views_data_export
 id: content_report_curated_list
 label: 'Content report curated list'
 module: views
@@ -463,14 +467,14 @@ display:
           empty_zero: false
           hide_alter_empty: false
           plugin_id: cl_manual_lists
-        cl_manual_lists_items:
-          id: cl_manual_lists_items
+        cl_manual_lists_links:
+          id: cl_manual_lists_links
           table: views
-          field: cl_manual_lists_items
+          field: cl_manual_lists_links
           relationship: none
           group_type: group
           admin_label: ''
-          label: 'Manual lists content'
+          label: 'Manual lists links'
           exclude: false
           alter:
             alter_text: false
@@ -511,7 +515,56 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: false
-          plugin_id: cl_manual_lists_items
+          plugin_id: cl_manual_lists_links
+        cl_manual_lists_downloads:
+          id: cl_manual_lists_downloads
+          table: views
+          field: cl_manual_lists_downloads
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Manual lists downloads'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: false
+          plugin_id: cl_manual_lists_downloads
       filters:
         uid:
           id: uid
@@ -714,6 +767,50 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:field.storage.node.field_organizations'
+  data_export_1:
+    display_plugin: data_export
+    id: data_export_1
+    display_title: 'Data export'
+    position: 2
+    display_options:
+      display_extenders: {  }
+      path: admin/ma-dash/reports/curated-list/export
+      filename: 'massgov-curated-list-export-[date:html_datetime].csv'
+      automatic_download: false
+      store_in_public_file_directory: false
+      redirect_to_display: none
+      custom_redirect_path: false
+      include_query_params: false
+      displays:
+        page_curated_list: page_curated_list
+        default: '0'
+      style:
+        type: data_export
+        options:
+          formats:
+            csv: csv
+          csv_settings:
+            delimiter: ','
+            enclosure: '"'
+            escape_char: \
+            strip_tags: true
+            trim: true
+            encoding: utf8
+            utf8_bom: '0'
+            use_serializer_encode_only: false
+      export_method: batch
+      export_batch_size: 50
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - request_format
+        - url
         - 'user.node_grants:view'
         - user.permissions
       tags:
