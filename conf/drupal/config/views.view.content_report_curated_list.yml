@@ -8,7 +8,6 @@ dependencies:
   module:
     - mass_views
     - node
-    - paragraphs
     - user
 id: content_report_curated_list
 label: 'Content report curated list'
@@ -366,14 +365,14 @@ display:
           entity_type: node
           entity_field: changed
           plugin_id: field
-        field_curatedlist_list_section:
-          id: field_curatedlist_list_section
-          table: node__field_curatedlist_list_section
-          field: field_curatedlist_list_section
+        cl_automatic_lists:
+          id: cl_automatic_lists
+          table: views
+          field: cl_automatic_lists
           relationship: none
-          group_type: count_distinct
+          group_type: group
           admin_label: ''
-          label: 'List sections'
+          label: 'Automatic lists'
           exclude: false
           alter:
             alter_text: false
@@ -413,29 +412,106 @@ display:
           empty: ''
           hide_empty: false
           empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ', '
-          format_plural: 0
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
-          click_sort_column: target_id
-          type: entity_reference_revisions_entity_view
-          settings:
-            view_mode: default
-          group_column: entity_id
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 26
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          field_api_classes: false
-          plugin_id: field
+          hide_alter_empty: false
+          plugin_id: cl_automatic_lists
+        cl_manual_lists:
+          id: cl_manual_lists
+          table: views
+          field: cl_manual_lists
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Manual lists'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: false
+          plugin_id: cl_manual_lists
+        cl_manual_lists_items:
+          id: cl_manual_lists_items
+          table: views
+          field: cl_manual_lists_items
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Manual lists content'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: false
+          plugin_id: cl_manual_lists_items
       filters:
         uid:
           id: uid
@@ -623,23 +699,14 @@ display:
       header: {  }
       footer: {  }
       empty: {  }
-      relationships:
-        field_curatedlist_list_section:
-          id: field_curatedlist_list_section
-          table: node__field_curatedlist_list_section
-          field: field_curatedlist_list_section
-          relationship: none
-          group_type: group
-          admin_label: 'field_curatedlist_list_section: Paragraph'
-          required: false
-          plugin_id: standard
+      relationships: {  }
       arguments: {  }
       display_extenders: {  }
       filter_groups:
         operator: AND
         groups:
           1: AND
-      group_by: true
+      group_by: false
     cache_metadata:
       max-age: -1
       contexts:
