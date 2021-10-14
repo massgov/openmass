@@ -1,3 +1,8 @@
+## [0.298.1] - October 14, 2021
+
+### Fixed
+  - DP-23166: Hotfix binder accordion JS. Updated Mayflower version to 11.16.1.
+
 
 
 ## [0.298.0] - October 13, 2021
