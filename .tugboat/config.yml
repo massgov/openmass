@@ -13,7 +13,30 @@ services:
     # Wait until the mysql service is done building
     depends: mysql
 
-    # A set of commands to run while building this service
+    # Conduct Lighthouse audits of the these URLs using the default options
+    urls:
+      - /
+      - /media/1268726
+      - /audit/qag-binderaudit
+      - /qagcampaign-landing-with-image-key-message-header
+      - /lists/qag-curatedlist
+      - /order/qag-decisionorder
+      - /event/qag-eventgeneralfuture-2018-07-25t122000-0400-2050-07-25t122000-0500
+      - /forms/qag-formwithfileuploads
+      - /guides/qag-guide
+      - /how-to/qag-request-help-with-a-computer-problem
+      - /info-details/qag-information-details1
+      - /info-details/qag-info-detail-with-landing-page-features
+      - /news/qag-newspressrelease
+      - /orgs/qag-executive-office-of-technology-services-and-security
+      - /orgs/qag-test-elected-org-page
+      - /regulations/900-CMR-2-qag-regulation-title
+      - /service-details/qag-servicedetails
+      - /qag-service1
+      - /qag-service-page-with-grouped-links
+      - /topics/qag-topicpage1
+
+# A set of commands to run while building this service
     commands:
       # Commands that set up the basic preview infrastructure
       init:
