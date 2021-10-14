@@ -1,0 +1,41 @@
+uuid: d4ad158a-553f-43d6-88ce-c09e83ebebaf
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.org_locations.field_location_button_label
+    - field.field.paragraph.org_locations.field_location_button_short_desc
+    - field.field.paragraph.org_locations.field_org_ref_locations
+    - field.field.paragraph.org_locations.field_related_organization_type
+    - paragraphs.paragraphs_type.org_locations
+id: paragraph.org_locations.default
+targetEntityType: paragraph
+bundle: org_locations
+mode: default
+content:
+  field_location_button_label:
+    weight: 1
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_location_button_short_desc:
+    weight: 2
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_org_ref_locations:
+    weight: 0
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+hidden:
+  field_related_organization_type: true
