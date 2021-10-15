@@ -226,7 +226,24 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
 
         case 'mass_related_terms':
           $tags = [];
-          $term_ref_name = $data['node']->getType() == 'service_page' ? 'field_list_data_type' : 'field_details_data_type';
+
+          switch ($data['node']->getType()) {
+            case "curated_list":
+              $term_ref_name = 'field_list_data_type';
+              $term_default = "field_list_datatype_metatag";
+              break;
+
+            case "service_page":
+              $term_ref_name = 'field_list_data_type';
+              $term_default = "field_details_datatype_metatag";
+              break;
+
+            default:
+              $term_ref_name = 'field_details_data_type';
+              $term_default = "field_details_datatype_metatag";
+              break;
+          }
+
           if ($data['node']->hasField($term_ref_name) && $data_type = $data['node']->get($term_ref_name)) {
             $items = $data_type->referencedEntities();
             if (!empty($items)) {
@@ -237,11 +254,12 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
                   $tags[$k] = $resource->get('field_dataresource_metatag')->getString();
                 }
               }
-              elseif (!$items[0]->get('field_details_datatype_metatag')->isEmpty()) {
-                $tags[] = $items[0]->get('field_details_datatype_metatag')->getString();
+              elseif (!$items[0]->get($term_default)->isEmpty()) {
+                $tags[] = $items[0]->get($term_default)->getString();
               }
             }
           }
+
           $replacements[$original] = implode(',', $tags);
           break;
 
@@ -346,7 +364,7 @@ function mass_metatag_page_attachments(array &$attachments) {
     // - Creating metatags config entities like so
     //   Link: https://github.com/massgov/mass/blob/60a45018c31d9450d25a73c7f70f10bbbb2a7eb1/docroot/modules/custom/mass_metatag/src/Plugin/metatag/Tag/MassMetatagStakeholderOrg.php.
     // - And then setting their values here
-    //   Link: http://mass.local/admin/config/search/metatag
+    //   Link: https://mass.local/admin/config/search/metatag
     // Because when we tried that solution approach
     // - Extra work was needed to show those on admin pages at all,
     //   or admin pages only because of how metatag module is designed.

@@ -40,6 +40,15 @@
  * @ingroup themeable
  */
 #}
+{# Set the link value only if a link exists. #}
+{% set link = {} %}
+{% if content.field_featured_message_link[0] is defined %}
+  {% set link = {
+    "text": content.field_featured_message_link[0]['#title'],
+    "href": content.field_featured_message_link[0]['#url']
+  } %}
+{% endif %}
+
 {% include "@organisms/by-author/callout-message.twig" with {
   "calloutMessage": {
     "theme": "white",
@@ -58,9 +67,6 @@
         }
       }]
     },
-    "link": {
-      "text": content.field_featured_message_link[0]['#title'],
-      "href": content.field_featured_message_link[0]['#url']
-    }
+    "link": link
   }
 } %}

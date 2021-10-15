@@ -62,10 +62,13 @@
 } %}
 
 {% if items|length > 3 %}
+  {# When there are more than one "what would you like to do" paragraphs, the
+  current anchor link solution will need a refactor. This ID is currently
+  being set in paragraph--what-would-you-like-to-do.html.twig. #}
   {% set more = {
-    info: 'See all of services & tasks'|t,
-    href: path('entity.node.canonical', {'node': element['#object'].id }) ~ '/services',
-    text: 'See all services & tasks'|t,
+    info: 'See more actions & services'|t,
+    href: '#what-would-you-like-to-do',
+    text: 'See more actions & services'|t,
   } %}
   {% set linkList = linkList|merge({ more: more }) %}
 {% endif %}
