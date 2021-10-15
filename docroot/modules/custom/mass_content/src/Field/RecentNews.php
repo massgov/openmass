@@ -2,6 +2,8 @@
 
 namespace Drupal\mass_content\Field;
 
+use Drupal\mayflower\Helper;
+
 /**
  * Recent news field for organizations.
  */
@@ -15,9 +17,16 @@ class RecentNews extends QueryGeneratedEntityReferenceList {
   protected function query() {
     /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
     $entity = $this->getEntity();
+    if ($entity->getEntityTypeId() === 'paragraph') {
+      $node = Helper::getParentNode($entity);
+    }
+    else {
+      $node = $entity;
+    }
+
     $query = \Drupal::entityQuery('node');
     $query->condition('type', 'news');
-    $query->condition('field_news_signees.entity.field_state_org_ref_org.entity.nid', $entity->id());
+    $query->condition('field_news_signees.entity.field_state_org_ref_org.entity.nid', $node->id());
     $query->condition('status', 1);
     $query->sort('field_news_date', 'DESC');
 
