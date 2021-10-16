@@ -35,8 +35,9 @@ class MassLocalTaskUsageController extends LocalTaskUsageController {
    * {@inheritdoc}
    */
   public function listUsagePage($entity_type, $entity_id) {
-    $all_rows = $this->getRows($entity_type, $entity_id);
-    if (empty($all_rows)) {
+    $this->loadEntity($entity_type, $entity_id);
+    $total = $this->getRowsCount();
+    if (!$total) {
       return [
         '#markup' => $this->t('No pages link here.'),
       ];
@@ -50,10 +51,9 @@ class MassLocalTaskUsageController extends LocalTaskUsageController {
       $this->t('Status'),
     ];
 
-    $total = count($all_rows);
     $pager = $this->pagerManager->createPager($total, $this->itemsPerPage);
     $page = $pager->getCurrentPage();
-    $page_rows = $this->getPageRows($page, $this->itemsPerPage, $entity_type, $entity_id);
+    $page_rows = $this->getPageRows($page, $this->itemsPerPage);
 
     $build[] = [
       '#theme' => 'table',
@@ -73,20 +73,11 @@ class MassLocalTaskUsageController extends LocalTaskUsageController {
   /**
    * {@inheritdoc}
    */
-  protected function getRows($entity_type, $entity_id) {
-    // Copied and tweaked from the parent method.
-    if (!empty($this->allRows)) {
-      return $this->allRows;
-      // @todo Cache this based on the target entity, invalidating the cached
-      // results every time records are added/removed to the same target entity.
-    }
-    $rows = [];
-    $row_link_text = [];
-    $entity = $this->entityTypeManager->getStorage($entity_type)->load($entity_id);
-    if (!$entity) {
-      return $rows;
-    }
-    $all_usages = $this->entityUsage->listSources($entity);
+  protected function getPageRows($page, $num_per_page) {
+    $offset = $page * $num_per_page;
+    $entity_types = $this->entityTypeManager->getDefinitions();
+    $languages = $this->languageManager()->getLanguages(LanguageInterface::STATE_ALL);
+    $all_usages = $this->entityUsage->listSources($this->entity, TRUE, $offset);
     foreach ($all_usages as $source_type => $ids) {
       $type_storage = $this->entityTypeManager->getStorage($source_type);
       foreach ($ids as $source_id => $records) {
@@ -145,9 +136,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageController {
       }
     }
     // Sort the array by title text.
-    array_multisort($row_link_text, SORT_ASC, $rows);
-    $this->allRows = $rows;
-    return $this->allRows;
+    return $rows;
   }
 
   /**
