@@ -84,11 +84,14 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $alerts = [];
       $alert_items = $node->get('field_sitewide_alert')->referencedEntities();
       foreach ($alert_items as $item) {
+        $unix_timestamp = '';
+        $timestamp = '';
         $item_id = $item->uuid() . '__' . $changed_date;
-        $timestamp_string = $item->get('field_sitewide_alert_timestamp')->getString();
-        $unix_timestamp = strtotime($timestamp_string);
-        $timestamp = Helper::getDate($timestamp_string)->format('M. j, Y, h:i a');
-        $url = FALSE;
+        if ($item->get('field_sitewide_alert_timestamp')->getString()) {
+          $timestamp_string = $item->get('field_sitewide_alert_timestamp')->getString();
+          $unix_timestamp = strtotime($timestamp_string);
+          $timestamp = Helper::getDate($timestamp_string)->format('M. j, Y, h:i a');
+        }
 
         $link_type = $item->get('field_sitewide_alert_link_type')->getString();
         $url = FALSE;
