@@ -202,7 +202,7 @@
 
         if (!newOption.length) {
           input.focus();
-          $('.selected').removeClass('selected');
+          $('.selected', scope).removeClass('selected');
           input.val(input.data('realValue'));
           return;
         }
@@ -212,7 +212,7 @@
         $('.selected', scope).removeClass('selected');
         newOption.addClass('selected');
         $(this).attr('aria-activedescendant', newOption.attr('id'));
-        input.val($('.selected').text());
+        input.val($('.selected', scope).text());
       }
     });
 
@@ -233,7 +233,7 @@
 
       if (e.keyCode === 27) {
 
-        if (input.val() !== '' && ($('[role="listbox"]', scope).length === 0 || !$('[role="listbox"]').is(':visible'))) {
+        if (input.val() !== '' && ($('[role="listbox"]', scope).length === 0 || !$('[role="listbox"]', scope).is(':visible'))) {
           input.val('');
           input.data('realValue', '');
         }
@@ -248,8 +248,8 @@
         e.preventDefault();
         $('[role="listbox"] .selected', scope).removeClass('selected');
         $('[role="listbox"]', scope).attr('tabindex', '0').focus();
-        $('[role="listbox"]').attr('aria-activedescendant', $('[role="listbox"] [role="option"]:last-child', scope).attr('id'));
-        $('[role="listbox"] [role="option"]:last-child').addClass('selected');
+        $('[role="listbox"]', scope).attr('aria-activedescendant', $('[role="listbox"] [role="option"]:last-child', scope).attr('id'));
+        $('[role="listbox"] [role="option"]:last-child', scope).addClass('selected');
         return;
       }
 
@@ -265,7 +265,7 @@
           $('[role="listbox"]', scope).attr('aria-activedescendant', $('[role="listbox"] [role="option"]:first-child', scope).attr('id'));
           $('[role="listbox"] [role="option"]:first-child', scope).addClass('selected');
           input.data('realValue', input.val());
-          input.val($('.selected').text());
+          input.val($('.selected', scope).text());
         }
         return;
       }
