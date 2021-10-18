@@ -13,6 +13,13 @@ services:
     # Wait until the mysql service is done building
     depends: mysql
 
+    # Turn off screenshots for all of the defined service URLs.
+    # Visual Diffs depend on Screenshots being enabled. If Screenshots
+    # are disabled for this Service, Visual Diffs are also disabled.
+    # This overrides our defaults, and can also be overridden per-URL
+    screenshot:
+      enabled: false
+
     # Conduct Lighthouse audits of the these URLs using the default options
     urls:
       - /
