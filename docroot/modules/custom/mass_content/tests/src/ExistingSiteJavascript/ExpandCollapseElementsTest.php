@@ -43,7 +43,7 @@ class ExpandCollapseElementsTest extends ExistingSiteWebDriverTestBase {
     $this->drupalGet('node/' . $nid);
     $page = $session->getPage();
     $accordion_links = $page->findAll('css', '.js-accordion');
-    foreach ($accordion_links as => $accordion_link) {
+    foreach ($accordion_links as $accordion_link) {
       $this->testAccordion($accordion_link);
     }
   }
