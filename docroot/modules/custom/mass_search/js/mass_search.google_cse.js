@@ -222,7 +222,6 @@
     });
 
     $('[role="option"]', scope).on('click', function () {
-      console.log('clicking');
       input.data('realValue', $(this).text());
       $('[data-suggest]', scope).val($(this).text())
         .focus();
