@@ -186,11 +186,11 @@
       var newOption;
       if (e.keyCode === 40) {
         e.preventDefault();
-        newOption = $('.selected').next();
+        newOption = $('.selected', scope).next();
 
         if (!newOption.length) {
           input.focus();
-          $('.selected').removeClass('selected');
+          $('.selected', scope).removeClass('selected');
           input.val(input.data('realValue'));
           return;
         }
@@ -198,7 +198,7 @@
 
       if (e.keyCode === 38) {
         e.preventDefault();
-        newOption = $('.selected').prev();
+        newOption = $('.selected', scope).prev();
 
         if (!newOption.length) {
           input.focus();
@@ -209,7 +209,7 @@
       }
 
       if (newOption && newOption.length) {
-        $('.selected').removeClass('selected');
+        $('.selected', scope).removeClass('selected');
         newOption.addClass('selected');
         $(this).attr('aria-activedescendant', newOption.attr('id'));
         input.val($('.selected').text());
@@ -233,7 +233,7 @@
 
       if (e.keyCode === 27) {
 
-        if (input.val() !== '' && ($('[role="listbox"]').length === 0 || !$('[role="listbox"]').is(':visible'))) {
+        if (input.val() !== '' && ($('[role="listbox"]', scope).length === 0 || !$('[role="listbox"]').is(':visible'))) {
           input.val('');
           input.data('realValue', '');
         }
@@ -262,8 +262,8 @@
         }
         else {
           $('[role="listbox"]', scope).attr('tabindex', '0').focus();
-          $('[role="listbox"]').attr('aria-activedescendant', $('[role="listbox"] [role="option"]:first-child', scope).attr('id'));
-          $('[role="listbox"] [role="option"]:first-child').addClass('selected');
+          $('[role="listbox"]', scope).attr('aria-activedescendant', $('[role="listbox"] [role="option"]:first-child', scope).attr('id'));
+          $('[role="listbox"] [role="option"]:first-child', scope).addClass('selected');
           input.data('realValue', input.val());
           input.val($('.selected').text());
         }
