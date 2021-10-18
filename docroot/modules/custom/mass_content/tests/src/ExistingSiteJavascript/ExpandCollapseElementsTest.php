@@ -24,7 +24,7 @@ class ExpandCollapseElementsTest extends ExistingSiteWebDriverTestBase {
    */
   private function testAccordion(NodeElement $accordion) {
     $session = $this->getSession();
-    $accordion_link = $accordion->find('css','.js-accordion-link');
+    $accordion_link = $accordion->find('css',   '.js-accordion-link');
 
     // Get the accordion state, then click on it.
     $initial_state = $accordion->hasClass('is-open');
@@ -43,7 +43,7 @@ class ExpandCollapseElementsTest extends ExistingSiteWebDriverTestBase {
     $this->drupalGet('node/' . $nid);
     $page = $session->getPage();
     $accordion_links = $page->findAll('css', '.js-accordion');
-    foreach ($accordion_links as $i => $accordion_link) {
+    foreach ($accordion_links as => $accordion_link) {
       $this->testAccordion($accordion_link);
     }
   }
@@ -55,4 +55,5 @@ class ExpandCollapseElementsTest extends ExistingSiteWebDriverTestBase {
     $this->testAccordionsAtNode($this->getNidByTitle('_QAG Binder_Report'));
     $this->testAccordionsAtNode($this->getNidByTitle('_QAG Request Help with a Computer Problem '));
   }
+
 }
