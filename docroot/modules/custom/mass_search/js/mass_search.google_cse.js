@@ -229,6 +229,11 @@
       $listbox.remove();
     });
 
+    $(document).on('mouseenter mouseleave', '[role=option]', function () {
+      $(this).siblings().removeClass('selected');
+      $(this).addClass('selected');
+    });
+
     // To only attach events once.
     if (input.data('eventsAttached')) {
       return;
