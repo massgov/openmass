@@ -52,10 +52,6 @@
 
 {% embed "@organisms/by-author/about-section.twig" with {
   "about": {
-    "title": {
-      "title": "About the " ~ paragraph.computed_short_name.value,
-      "level": level
-    },
     "content": {
       "rteElements": [{
         "path": "@atoms/11-text/paragraph.twig",
@@ -91,5 +87,8 @@
     {{ content.computed_social_links }}
   {% endblock %}
 {% endembed %}
-{{ content | without ('computed_bio_page', 'computed_secondary_bio_page', 'computed_social_links', 'field_read_more_page') }}
+{{ content | without ('computed_bio_page', 'computed_secondary_bio_page', 'computed_social_links', 'field_read_more_page', 'field_component_add_separator') }}
 
+{% if content.field_component_add_separator|field_value|render == "True" %}
+  <div class="ma__divider ma__divider--thin"></div>
+{% endif %}

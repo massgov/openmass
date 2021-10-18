@@ -73,12 +73,32 @@ class Schemas {
     // Org page memberOf.id maps to global org set in html preprocess in .theme.
     $schema['governmentOrganization']['memberOf']['id'] = $hostname . "/#organization";
 
-    // Use first line of optional "who we serve" as disambiguating description.
-    if (!empty($variables['node']->body->value)) {
-      $schema['governmentOrganization']['disambiguatingDescription'] = Helper::getFirstParagraph($variables['node']->body->value);
-    }
-    elseif (isset($variables['node']->field_about->entity->field_summary->value)) {
-      $schema['governmentOrganization']['disambiguatingDescription'] = $variables['node']->field_about->entity->field_summary->value;
+    // Set the disambiguatingDescription with the "who we serve" or "about"
+    // summary. "Who we serve" is now in a generic rich_text paragraph, so this
+    // could need revisiting.
+    if ($variables['node']->hasField('field_organization_sections')
+      && !$variables['node']->get('field_organization_sections')->isEmpty()) {
+      $field_organization_sections = $variables['node']->get('field_organization_sections')->getValue();
+      // Loop through the organization sections to find the data we want.
+      foreach ($field_organization_sections as $key => $section) {
+        $section_content = $variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity;
+        // If it's a rich_text paragraph is found, use the first paragraph of
+        // the body field and break from the loop.
+        if ($section_content->bundle() === 'rich_text') {
+          if (isset($variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity->field_body->value)) {
+            $schema['governmentOrganization']['disambiguatingDescription'] = Helper::getFirstParagraph($variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity->field_body->value);
+            break;
+          }
+        }
+        // If it's an about paragraph is found, use the summary field value and
+        // break from the loop.
+        elseif ($section_content->bundle() === 'about') {
+          if (isset($variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity->field_about->entity->field_summary->value)) {
+            $schema['governmentOrganization']['disambiguatingDescription'] = $variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity->field_about->entity->field_summary->value;
+            break;
+          }
+        }
+      }
     }
 
     // Use the metatags module description value for the description property.
