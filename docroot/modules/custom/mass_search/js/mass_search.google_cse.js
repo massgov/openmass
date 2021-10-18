@@ -167,36 +167,47 @@
       }
     }
 
-    input.on('keydown', function (e) {
-      if (e.keyCode === 40) {
-        e.preventDefault();
-        $('[role="listbox"]', scope)
-          .attr('tabindex', '0')
-          .focus();
-        $('[role="listbox"]').attr('aria-activedescendant', $('[role="listbox"] [role="option"]:first-child', scope).attr('id'));
-        $('[role="listbox"] [role="option"]:first-child').addClass('selected');
-        input.val($('.selected').text());
-      }
-      if (e.keyCode === 9) {
-        $('[role="listbox"]', scope).remove();
-      }
-    });
-
     $('[role="listbox"]', scope).on('keydown', function (e) {
       if (e.keyCode === 13) {
         e.preventDefault();
         e.stopPropagation();
+        input.data('realValue', input.val());
         input.focus();
+        $('[role="listbox"]', scope).remove();
       }
+
+      if (e.keyCode === 27) {
+        input.val(input.data('realValue'));
+        input.focus();
+        $('[role="listbox"]', scope).hide();
+        return;
+      }
+
       var newOption;
       if (e.keyCode === 40) {
         e.preventDefault();
         newOption = $('.selected').next();
+
+        if (!newOption.length) {
+          input.focus();
+          $('.selected').removeClass('selected');
+          input.val(input.data('realValue'));
+          return;
+        }
       }
+
       if (e.keyCode === 38) {
         e.preventDefault();
         newOption = $('.selected').prev();
+
+        if (!newOption.length) {
+          input.focus();
+          $('.selected').removeClass('selected');
+          input.val(input.data('realValue'));
+          return;
+        }
       }
+
       if (newOption && newOption.length) {
         $('.selected').removeClass('selected');
         newOption.addClass('selected');
@@ -205,19 +216,67 @@
       }
     });
 
-    $('[role="listbox"]', scope).on('blur', function () {
-      $(this).children().remove();
-    });
-
     $('[role="option"]', scope).on('click', function () {
+      input.data('realValue', $(this).text());
       $('[data-suggest]', scope).val($(this).text())
         .focus();
       $('[role="listbox"]', scope).remove();
     });
 
+    // To only attach events once.
+    if (input.data('eventsAttached')) {
+      return;
+    }
+
+    // Events below this line...
+    input.on('keydown', function (e) {
+
+      if (e.keyCode === 27) {
+
+        if (input.val() !== '' && ($('[role="listbox"]').length === 0 || !$('[role="listbox"]').is(':visible'))) {
+          input.val('');
+          input.data('realValue', '');
+        }
+
+        e.preventDefault();
+        input.focus();
+        $('[role="listbox"]', scope).hide();
+        return;
+      }
+
+      if (e.keyCode === 38) {
+        e.preventDefault();
+        $('[role="listbox"] .selected', scope).removeClass('selected');
+        $('[role="listbox"]', scope).attr('tabindex', '0').focus();
+        $('[role="listbox"]').attr('aria-activedescendant', $('[role="listbox"] [role="option"]:last-child', scope).attr('id'));
+        $('[role="listbox"] [role="option"]:last-child').addClass('selected');
+        return;
+      }
+
+      if (e.keyCode === 40) {
+        e.preventDefault();
+        $('[role="listbox"] .selected', scope).removeClass('selected');
+
+        if (e.altKey) {
+          $('[role="listbox"]', scope).show();
+        }
+        else {
+          $('[role="listbox"]', scope).attr('tabindex', '0').focus();
+          $('[role="listbox"]').attr('aria-activedescendant', $('[role="listbox"] [role="option"]:first-child', scope).attr('id'));
+          $('[role="listbox"] [role="option"]:first-child').addClass('selected');
+          input.data('realValue', input.val());
+          input.val($('.selected').text());
+        }
+        return;
+      }
+
+      if (e.keyCode === 9) {
+        $('[role="listbox"]', scope).remove();
+        return;
+      }
+    });
+
+    input.data('eventsAttached', true);
   });
 
 })(jQuery);
-
-
-
