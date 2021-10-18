@@ -24,7 +24,7 @@ class ExpandCollapseElementsTest extends ExistingSiteWebDriverTestBase {
    */
   private function testAccordion(NodeElement $accordion) {
     $session = $this->getSession();
-    $accordion_link = $accordion->find('css',   '.js-accordion-link');
+    $accordion_link = $accordion->find('css', '.js-accordion-link');
 
     // Get the accordion state, then click on it.
     $initial_state = $accordion->hasClass('is-open');
