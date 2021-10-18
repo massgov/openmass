@@ -22,6 +22,16 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 1. [Install Docker](https://docs.docker.com/get-docker/).
 1. [Install DDEV](https://ddev.readthedocs.io/en/stable/). On Windows, use the WSL2 method.
 1. Inject your ssh keys into the container via `ddev auth ssh`. [Read more about ddev CLI](https://ddev.readthedocs.io/en/stable/users/cli-usage/).
+1. Start DDEV and install packages.
+    ```
+    ddev start
+    ddev composer install
+    ddev yarn
+    ```
+1. To get information about this project.
+    ```
+    ddev describe
+    ```
 
 ### Native (optional)
 If the Docker section above is unappealing, its easy to run mass.gov natively on any OS. You need to provide your own PHP, web server and DB server (and optional memcache). On OSX, [these install instructions](https://getgrav.org/blog/macos-bigsur-apache-multiple-php-versions) are good (stop at the section called _PHP Switcher Script_), along with this [mysql section](https://getgrav.org/blog/macos-bigsur-apache-mysql-vhost-apc). Point your web server at the /docroot directory.
