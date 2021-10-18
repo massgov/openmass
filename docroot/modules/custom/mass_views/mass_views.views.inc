@@ -102,6 +102,90 @@ function mass_views_views_data_alter(array &$data) {
       'id' => 'mass_views_media_org_filter',
     ],
   ];
+
+  // Adds a social media count field to the organization pages content report.
+  $data['paragraphs_item_field_data']['org_social_media_count'] = [
+    'title' => t('Organization social media count'),
+    'field' => [
+      'title' => t('Organization social media count'),
+      'help' => t('Number of socia media references by an organization.'),
+      'id' => 'org_social_media_count',
+    ],
+  ];
+
+  // Adds a featured messages count field to the organization pages content
+  // report.
+  $data['paragraphs_item_field_data']['org_featured_messages_count'] = [
+    'title' => t('Organization featured messages count'),
+    'field' => [
+      'title' => t('Organization featured messages count'),
+      'help' => t('Number of featured message references by an organization.'),
+      'id' => 'org_featured_messages_count',
+    ],
+  ];
+
+  // Adds a featured item mosaic count field to the organization pages content
+  // report.
+  $data['paragraphs_item_field_data']['org_featured_item_mosaic_count'] = [
+    'title' => t('Organization featured item mosaic count'),
+    'field' => [
+      'title' => t('Organization featured item mosaic count'),
+      'help' => t('Number of featured item mosaic references by an organization.'),
+      'id' => 'org_featured_item_mosaic_count',
+    ],
+  ];
+
+  // Adds a maps count field to the organization pages content report.
+  $data['paragraphs_item_field_data']['org_maps_count'] = [
+    'title' => t('Organization maps count'),
+    'field' => [
+      'title' => t('Organization maps count'),
+      'help' => t('Number of map references by an organization.'),
+      'id' => 'org_maps_count',
+    ],
+  ];
+
+  // Adds a wwyltd count field to the organization pages content report.
+  $data['paragraphs_item_field_data']['org_wwyltd_count'] = [
+    'title' => t('Organization "What would you like to do?" count'),
+    'field' => [
+      'title' => t('Organization "What would you like to do?" count'),
+      'help' => t('Number of "What would you like to do?" references by an organization.'),
+      'id' => 'org_wwyltd_count',
+    ],
+  ];
+
+  // Adds a news count field to the organization pages content report.
+  $data['paragraphs_item_field_data']['org_news_count'] = [
+    'title' => t('Organization news count'),
+    'field' => [
+      'title' => t('Organization news count'),
+      'help' => t('Number of news references by an organization.'),
+      'id' => 'org_news_count',
+    ],
+  ];
+
+  // Adds a featured topics count field to the organization pages content
+  // report.
+  $data['paragraphs_item_field_data']['org_featured_topics_count'] = [
+    'title' => t('Organization featured topics count'),
+    'field' => [
+      'title' => t('Organization featured topics count'),
+      'help' => t('Number of featured topic references by an organization.'),
+      'id' => 'org_featured_topics_count',
+    ],
+  ];
+
+  // Adds an organization grid count field to the organization pages content
+  // report.
+  $data['paragraphs_item_field_data']['org_grid_count'] = [
+    'title' => t('Organization grid count'),
+    'field' => [
+      'title' => t('Organization grid count'),
+      'help' => t('Number of grid references by an organization.'),
+      'id' => 'org_grid_count',
+    ],
+  ];
 }
 
 /**
