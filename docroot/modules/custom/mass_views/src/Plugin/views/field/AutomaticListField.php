@@ -65,7 +65,7 @@ class AutomaticListField extends FieldPluginBase {
   public function render(ResultRow $values) {
     $node = $values->_entity;
     $n_automatic = 0;
-    if ($node->hasField("field_curatedlist_list_section") && !$node->get("field_curatedlist_list_section")->isEmpty()) {
+    if ($node->hasField('field_curatedlist_list_section') && !$node->get('field_curatedlist_list_section')->isEmpty()) {
       $lists = $node->get('field_curatedlist_list_section')->getValue();
       foreach ($lists as $list) {
         $list_p = Paragraph::load($list['target_id']);
