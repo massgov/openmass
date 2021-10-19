@@ -229,8 +229,8 @@ module.exports = async function(page, scenario, vp) {
         await page.waitForFunction("document.readyState === 'complete'");
         await page.evaluate(async function () {
           jQuery(".js-accordion-link").click();
-          await page.waitFor(1000);
         });
+        await page.waitFor(1000);
         break;
     }
 
