@@ -224,6 +224,14 @@ module.exports = async function(page, scenario, vp) {
           await typeof window.L === Object;
         })
         break;
+      case "ExpansionOfAccordions1_toggle":
+      case "ExpansionOfAccordions2_toggle":
+        await page.waitForFunction("document.readyState === 'complete'");
+        await page.evaluate(async function () {
+          jQuery(".js-accordion-link").click();
+          await page.waitFor(1000);
+        });
+        break;
     }
 
 
