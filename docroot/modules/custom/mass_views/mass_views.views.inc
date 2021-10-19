@@ -8,6 +8,41 @@
 use Drupal\field\FieldStorageConfigInterface;
 
 /**
+ * Implements hook_views_data().
+ */
+function mass_views_views_data() {
+  $data['views']['cl_automatic_lists'] = [
+    'title' => t('Automatic lists (Curated list)'),
+    'help' => t('Number of Automatic lists in the Curated list'),
+    'field' => [
+      'id' => 'cl_automatic_lists',
+    ],
+  ];
+  $data['views']['cl_manual_lists'] = [
+    'title' => t('Manual lists (Curated list)'),
+    'help' => t('Number of Manual lists in the Curated list'),
+    'field' => [
+      'id' => 'cl_manual_lists',
+    ],
+  ];
+  $data['views']['cl_manual_lists_links'] = [
+    'title' => t('Manual lists links (Curated list)'),
+    'help' => t('Number of Manual lists links in the Curated list'),
+    'field' => [
+      'id' => 'cl_manual_lists_links',
+    ],
+  ];
+  $data['views']['cl_manual_lists_downloads'] = [
+    'title' => t('Manual lists downloads (Curated list)'),
+    'help' => t('Number of Manual lists downloads in the Curated list'),
+    'field' => [
+      'id' => 'cl_manual_lists_downloads',
+    ],
+  ];
+  return $data;
+}
+
+/**
  * Implements hook_views_data_alter().
  *
  * Adds a better content bundle filter.
