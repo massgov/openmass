@@ -22,13 +22,23 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 1. [Install Docker](https://docs.docker.com/get-docker/).
 1. [Install DDEV](https://ddev.readthedocs.io/en/stable/). On Windows, use the WSL2 method.
 1. Inject your ssh keys into the container via `ddev auth ssh`. [Read more about ddev CLI](https://ddev.readthedocs.io/en/stable/users/cli-usage/).
+1. Start DDEV and install packages.
+    ```
+    ddev start
+    ddev composer install
+    ddev yarn
+    ```
+1. To get information about this project.
+    ```
+    ddev describe
+    ```
 
 ### Native (optional)
 If the Docker section above is unappealing, its easy to run mass.gov natively on any OS. You need to provide your own PHP, web server and DB server (and optional memcache). On OSX, [these install instructions](https://getgrav.org/blog/macos-bigsur-apache-multiple-php-versions) are good (stop at the section called _PHP Switcher Script_), along with this [mysql section](https://getgrav.org/blog/macos-bigsur-apache-mysql-vhost-apc). Point your web server at the /docroot directory.
 
 ### Ahoy (optional)
 
-1. You may use `ddev` commands, our legacy Ahoy commands. In order for Ahoy to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
+1. You may use [DDEV commands](https://ddev.readthedocs.io/en/latest/users/cli-usage/), or our legacy Ahoy commands. In order for Ahoy to work, install [Ahoy](https://github.com/ahoy-cli/ahoy):
     ```bash
     sudo wget -q https://github.com/devinci-code/ahoy/releases/download/2.0.0/ahoy-bin-darwin-amd64 -O /usr/local/bin/ahoy && sudo chown $USER /usr/local/bin/ahoy && chmod +x /usr/local/bin/ahoy
     ```
@@ -39,7 +49,7 @@ If the Docker section above is unappealing, its easy to run mass.gov natively on
 ###### Notes
 - The site is browseable at https://mass.local
 - It takes a few minutes for the `dbmass` container start up.
-- [You may override ddev config locally](https://ddev.readthedocs.io/en/stable/users/extend/config_yaml/). Use .ddev/personal.config.yml since that is already in our .gitignore.
+- [You may override ddev config locally](https://ddev.readthedocs.io/en/stable/users/extend/config_yaml/). For example, create a `.ddev/config.personal.yml` file and add a line `dbimage: massgov/mysql-sanitized:latest` to use our less sanitized DB.
 - Since we use a custom `dbmass` service and not DDEV's usual `db`, some DDEV DB commands will not work here. @todo try to improve this.
 - Mass Digital team members: see additional information at [Mass Digital Developers](https://github.com/massgov/massgov-internal-docs/blob/master/development-massgov-team.md).
 

@@ -1,0 +1,47 @@
+uuid: ca2756f1-1661-400d-9266-e10ac67c67ee
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.what_would_you_like_to_do.field_wwyltd_heading
+    - field.field.paragraph.what_would_you_like_to_do.field_wwyltd_more_services
+    - field.field.paragraph.what_would_you_like_to_do.field_wwyltd_top_s_links
+    - paragraphs.paragraphs_type.what_would_you_like_to_do
+  module:
+    - entity_reference_revisions
+    - mass_content
+id: paragraph.what_would_you_like_to_do.default
+targetEntityType: paragraph
+bundle: what_would_you_like_to_do
+mode: default
+content:
+  field_wwyltd_heading:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_wwyltd_more_services:
+    type: entity_reference_revisions_entity_view
+    weight: 3
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_wwyltd_top_s_links:
+    weight: 2
+    label: above
+    settings:
+      url_only: false
+      url_plain: false
+      rel: 0
+      target: 0
+      trim_length: ''
+    third_party_settings: {  }
+    type: dynamic_link_separate
+    region: content
+hidden: {  }

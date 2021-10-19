@@ -50,9 +50,15 @@ executors:
 
 commands:
   ddev_install_run:
+    parameters:
+      omit-containers:
+        description: "Any containers that should not start"
+        default: db,dba
+        type: string
     steps:
       - run: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
       - run: echo $DOCKER_API_KEY | docker login -u $DOCKER_USER --password-stdin
+      - run: ddev config --omit-containers << parameters.omit-containers >>
       - run: ddev start -y
       - run: ddev describe
   git_configure_user:
@@ -388,24 +394,28 @@ jobs:
       viewport:
         type: string
         default: all
-    working_directory: /home/circleci/code
-    docker:
-      # Need to use docker image for these steps.
-      - image: circleci/python:2.7.14
+    working_directory: /tmp/code
+    executor:
+      name: base
     steps:
-      - checkout
-      - setup_remote_docker
-      - run: docker-compose up --no-start backstop
-      - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
-      - run: docker-compose run backstop reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
-      - run: docker-compose run backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+      - attach_workspace: { at: /tmp }
+      - run: rm -f /tmp/code/.ddev/docker-compose.dbmass.yaml
+      - ddev_install_run
       - run:
-          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
+          name: Backstop reference
+          command: ddev exec --service backstop backstop --config=/src/backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+          no_output_timeout: 300m
+      - run:
+          name: Backstop test
+          command: ddev exec --service backstop backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+          no_output_timeout: 300m
+      - run:
+          command: ddev logs -s backstop
           when: always
       - store_test_results:
-          path: /home/circleci/code/backstop/report
+          path: /tmp/code/backstop/report
       - store_artifacts:
-          path: /home/circleci/code/backstop
+          path: /tmp/code/backstop
 
   # If you make changes to this job, consider pushing to a tag that's not 'latest'
   # at Docker Hub. That way, your in-progress work does not interfere with build
@@ -627,7 +637,8 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "00 17 * * 2"
+          # UTC time-zone
+          cron: "00 16 * * 2"
           filters:
             branches:
               only:

@@ -58,11 +58,31 @@ class RelatedLocations extends EntityReferenceFieldItemList {
       if (!empty($parent_nids)) {
         $parent_nodes = Node::loadMultiple($parent_nids);
         foreach ($fields as $field) {
+          // Initialize these values for the current field.
+          $nested_fields = [];
+          $node_field = $field;
+          // If the reference field is nested, we will use a different helper
+          // method. Set the node field for the initial condition.
+          if (strpos($field, '>') !== FALSE) {
+            $nested_fields = explode('>', $field);
+            $node_field = $nested_fields[0];
+          }
           foreach ($parent_nodes as $parent_node) {
-            if ($parent_node->hasField($field)) {
-              // We check here to see if field has value to avoid broken links.
-              if (Helper::getReferencedEntitiesFromField($parent_node, $field)) {
-                $ref_count[$parent_node->id()] = count($parent_node->{$field});
+            if ($parent_node->hasField($node_field)) {
+              // Use the correct helper method based on the number of reference
+              // fields. This logic is specific for section fields.
+              if (empty($nested_fields)) {
+                // We check here to see if field has value to avoid broken links.
+                if ($referenced_items = Helper::getReferencedEntitiesFromField($parent_node, $field)) {
+                  $ref_count[$parent_node->id()] = count($referenced_items);
+                }
+              }
+              else {
+                // If the reference field is nested in a sections field, use a
+                // different helper method.
+                if ($referenced_items = Helper::getReferencedEntitiesFromSectionField($parent_node, $nested_fields)) {
+                  $ref_count[$parent_node->id()] = count($referenced_items);
+                }
               }
             }
           }

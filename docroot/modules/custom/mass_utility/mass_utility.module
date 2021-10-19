@@ -1300,11 +1300,11 @@ function mass_utility_path_alias_update(PathAliasInterface $path) {
     $params = Url::fromUserInput($path->getPath())->getRouteParameters();
     if (isset($params['media'])) {
       $og_document_alias = $path->original->getAlias() . '/download';
-      if (!redirect_repository()->findMatchingRedirect($og_document_alias, [], $path->original->getLangcode())) {
+      if (!redirect_repository()->findMatchingRedirect($og_document_alias, [], $path->original->language()->getId())) {
         $redirect = Redirect::create();
         $redirect->setSource($og_document_alias);
         $redirect->setRedirect($path->getPath() . '/download');
-        $redirect->setLanguage($path->original->getLangcode());
+        $redirect->setLanguage($path->original->language()->getId());
         $redirect->setStatusCode(\Drupal::config('redirect.settings')->get('default_status_code'));
         $redirect->save();
       }

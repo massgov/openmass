@@ -1,0 +1,33 @@
+uuid: 1822e579-e77a-431b-be1f-24b29f6efbbe
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.org_events.field_component_add_separator
+    - field.field.paragraph.org_events.field_event_quantity
+    - paragraphs.paragraphs_type.org_events
+  module:
+    - options
+id: paragraph.org_events.default
+targetEntityType: paragraph
+bundle: org_events
+mode: default
+content:
+  field_component_add_separator:
+    weight: 1
+    label: hidden
+    settings:
+      format: true-false
+      format_custom_true: ''
+      format_custom_false: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_event_quantity:
+    weight: 0
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+hidden: {  }

@@ -12,9 +12,11 @@ dependencies:
     - field.field.paragraph.key_message.field_sub_heading
     - field.field.paragraph.key_message.field_text_overlay_color
     - paragraphs.paragraphs_type.key_message
+    - responsive_image.styles.key_message
   module:
     - link
     - options
+    - responsive_image
     - text
 id: paragraph.key_message.default
 targetEntityType: paragraph
@@ -22,14 +24,14 @@ bundle: key_message
 mode: default
 content:
   field_background_color:
-    weight: 7
+    weight: 5
     label: above
     settings: {  }
     third_party_settings: {  }
     type: list_default
     region: content
   field_background_type:
-    weight: 5
+    weight: 4
     label: above
     settings: {  }
     third_party_settings: {  }
@@ -47,6 +49,15 @@ content:
     third_party_settings: {  }
     type: link
     region: content
+  field_image:
+    type: responsive_image
+    weight: 7
+    region: content
+    label: hidden
+    settings:
+      responsive_image_style: key_message
+      image_link: ''
+    third_party_settings: {  }
   field_main_heading:
     weight: 0
     label: above
@@ -71,12 +82,11 @@ content:
     type: string
     region: content
   field_text_overlay_color:
-    weight: 10
+    weight: 6
     label: above
     settings: {  }
     third_party_settings: {  }
     type: list_default
     region: content
 hidden:
-  field_image: true
   paragraphs_type_help__default: true
