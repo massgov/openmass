@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.regulation.field_intended_audience
     - field.field.node.regulation.field_organizations
+    - field.field.node.regulation.field_primary_parent
     - field.field.node.regulation.field_regluation_official_ver
     - field.field.node.regulation.field_regulation_agency_cmr
     - field.field.node.regulation.field_regulation_cmr_chapter
@@ -28,6 +29,7 @@ dependencies:
     - content_moderation
     - datetime
     - entity_browser_entity_form
+    - entity_hierarchy
     - field_group
     - inline_entity_form
     - link
@@ -49,6 +51,7 @@ third_party_settings:
         - field_regluation_official_ver
         - field_regulation_listing_desc
         - field_regulation_short_descr
+        - field_primary_parent
         - field_organizations
         - field_intended_audience
         - field_reusable_label
@@ -100,7 +103,6 @@ third_party_settings:
       weight: 9
       format_type: tab
       format_settings:
-        label: Content
         formatter: closed
         description: ''
         required_fields: true
@@ -114,13 +116,13 @@ bundle: regulation
 mode: default
 content:
   field_intended_audience:
-    weight: 19
+    weight: 20
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 18
+    weight: 19
     settings:
       match_operator: CONTAINS
       size: 60
@@ -128,6 +130,17 @@ content:
       match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
+    region: content
+  field_primary_parent:
+    weight: 18
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: false
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
     region: content
   field_regluation_official_ver:
     weight: 15
@@ -154,7 +167,7 @@ content:
     type: string_textfield
     region: content
   field_regulation_contact:
-    weight: 38
+    weight: 56
     settings:
       match_operator: CONTAINS
       size: 60
@@ -227,7 +240,7 @@ content:
     type: link_default
     region: content
   field_regulation_related:
-    weight: 39
+    weight: 57
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -267,7 +280,7 @@ content:
     type: string_textfield
     region: content
   field_reusable_label:
-    weight: 20
+    weight: 21
     settings:
       match_operator: CONTAINS
       size: 60

@@ -22,6 +22,7 @@ dependencies:
     - field.field.node.location.field_organizations
     - field.field.node.location.field_overview
     - field.field.node.location.field_parking
+    - field.field.node.location.field_primary_parent
     - field.field.node.location.field_ref_contact_info
     - field.field.node.location.field_ref_contact_info_1
     - field.field.node.location.field_related_locations
@@ -35,6 +36,7 @@ dependencies:
   module:
     - conditional_fields
     - content_moderation
+    - entity_hierarchy
     - field_group
     - image
     - link
@@ -71,6 +73,7 @@ third_party_settings:
         - field_iframe
         - field_bg_narrow
         - field_image_credit
+        - field_primary_parent
         - field_organizations
         - field_intended_audience
         - field_reusable_label
@@ -79,7 +82,6 @@ third_party_settings:
       weight: 2
       format_type: tab
       format_settings:
-        label: Header
         formatter: open
         description: '<p>The "Header" and "Features" tabs power the visual banner across the top of your location page. See <a href="http://mayflower.digital.mass.gov/?p=organisms-action-header" target="_blank">here</a> and <a href="http://mayflower.digital.mass.gov/?p=organisms-location-banner" target="_blank">here</a> for an example of what it will look like when completely filled out.</p> <p>Location page titles should be a clear and complete name for the location. Try to keep titles short and avoid abbreviations when possible. Use acronyms only when they are very familiar to the public (e.g. "RMV").</p>'
         required_fields: true
@@ -180,7 +182,7 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 11
+    weight: 12
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -229,7 +231,7 @@ content:
           bundle: location
     region: content
   field_location_all_activities:
-    weight: 10
+    weight: 9
     settings:
       match_operator: CONTAINS
       size: 60
@@ -296,7 +298,7 @@ content:
     type: options_buttons
     region: content
   field_location_metatags:
-    weight: 4
+    weight: 3
     settings:
       sidebar: true
     third_party_settings: {  }
@@ -325,7 +327,7 @@ content:
     type: options_select
     region: content
   field_organizations:
-    weight: 10
+    weight: 11
     settings:
       match_operator: CONTAINS
       size: 60
@@ -335,7 +337,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_overview:
-    weight: 10
+    weight: 12
     settings:
       rows: 5
       placeholder: ''
@@ -343,12 +345,23 @@ content:
     type: string_textarea
     region: content
   field_parking:
-    weight: 11
+    weight: 13
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
     type: text_textarea
+    region: content
+  field_primary_parent:
+    weight: 10
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: false
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
     region: content
   field_ref_contact_info:
     weight: 8
@@ -389,7 +402,7 @@ content:
     type: text_textarea
     region: content
   field_reusable_label:
-    weight: 12
+    weight: 13
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -399,7 +412,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_services:
-    weight: 11
+    weight: 10
     settings:
       rows: 5
       placeholder: ''
@@ -425,7 +438,7 @@ content:
     type: text_textarea
     region: content
   field_state_organization_tax:
-    weight: 6
+    weight: 4
     settings:
       match_operator: CONTAINS
       size: 60
@@ -436,7 +449,7 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 10
+    weight: 5
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -492,7 +505,7 @@ content:
     type: options_select
     region: content
   url_redirects:
-    weight: 50
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }

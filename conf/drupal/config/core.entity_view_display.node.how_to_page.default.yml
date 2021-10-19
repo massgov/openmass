@@ -33,7 +33,6 @@ dependencies:
     - field.field.node.how_to_page.field_what_you_need_header
     - node.type.how_to_page
   module:
-    - entity_hierarchy
     - entity_reference_revisions
     - link
     - metatag
@@ -251,15 +250,6 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-  field_primary_parent:
-    weight: 29
-    label: above
-    settings:
-      weight_output: attribute
-      link: true
-    third_party_settings: {  }
-    type: entity_reference_hierarchy_label
-    region: content
   field_what_you_need_header:
     weight: 6
     label: hidden
@@ -291,6 +281,7 @@ hidden:
   computed_log_in_links: true
   field_collections: true
   field_customize_header_text: true
+  field_primary_parent: true
   field_reusable_label: true
   field_state_organization_tax: true
   langcode: true

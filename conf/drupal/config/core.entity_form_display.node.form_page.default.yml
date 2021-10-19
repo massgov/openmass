@@ -12,12 +12,14 @@ dependencies:
     - field.field.node.form_page.field_intended_audience
     - field.field.node.form_page.field_metatags
     - field.field.node.form_page.field_organizations
+    - field.field.node.form_page.field_primary_parent
     - field.field.node.form_page.field_reusable_label
     - field.field.node.form_page.field_state_organization_tax
     - node.type.form_page
     - workflows.workflow.editorial
   module:
     - content_moderation
+    - entity_hierarchy
     - field_group
     - mass_fields
     - maxlength
@@ -45,11 +47,12 @@ third_party_settings:
         - field_form_you_will
         - field_form_ref_contacts_3
         - field_form_embed
+        - field_primary_parent
         - field_organizations
-        - langcode
-        - field_english_version
         - field_intended_audience
+        - langcode
         - field_reusable_label
+        - field_english_version
       parent_name: group_form_page_edit_form
       weight: 20
       format_type: tab
@@ -67,7 +70,7 @@ bundle: form_page
 mode: default
 content:
   field_english_version:
-    weight: 10
+    weight: 12
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -135,7 +138,7 @@ content:
     type: text_textarea
     region: content
   field_intended_audience:
-    weight: 8
+    weight: 9
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -148,7 +151,7 @@ content:
     type: metatag_firehose
     region: content
   field_organizations:
-    weight: 7
+    weight: 8
     settings:
       match_operator: CONTAINS
       size: 60
@@ -157,8 +160,19 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_primary_parent:
+    weight: 7
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: false
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
+    region: content
   field_reusable_label:
-    weight: 9
+    weight: 11
     settings:
       match_operator: CONTAINS
       size: 60
@@ -179,7 +193,7 @@ content:
     region: content
   langcode:
     type: language_select
-    weight: 9
+    weight: 10
     region: content
     settings:
       include_locked: false

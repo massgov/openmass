@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.decision_tree.field_description
     - field.field.node.decision_tree.field_disclaimer
     - field.field.node.decision_tree.field_organizations
+    - field.field.node.decision_tree.field_primary_parent
     - field.field.node.decision_tree.field_reusable_label
     - field.field.node.decision_tree.field_service_ref_services_6
     - field.field.node.decision_tree.field_start_button
@@ -19,6 +20,7 @@ dependencies:
     - workflows.workflow.editorial
   module:
     - content_moderation
+    - entity_hierarchy
     - field_group
     - image
     - maxlength
@@ -37,13 +39,13 @@ third_party_settings:
         - field_start_button
         - field_disclaimer
         - field_service_ref_services_6
+        - field_primary_parent
         - field_organizations
         - field_reusable_label
       parent_name: group_decision_tree_edit_form
       weight: 1
       format_type: tab
       format_settings:
-        label: 'Decision tree'
         formatter: open
         description: ''
         required_fields: true
@@ -116,7 +118,7 @@ content:
     type: string_textfield
     region: content
   field_organizations:
-    weight: 9
+    weight: 10
     settings:
       match_operator: CONTAINS
       size: 60
@@ -125,8 +127,19 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_primary_parent:
+    weight: 9
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: false
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
+    region: content
   field_reusable_label:
-    weight: 10
+    weight: 11
     settings:
       match_operator: CONTAINS
       match_limit: 10

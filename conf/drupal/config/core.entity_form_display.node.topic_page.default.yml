@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.topic_page.field_image_credit
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
+    - field.field.node.topic_page.field_primary_parent
     - field.field.node.topic_page.field_reusable_label
     - field.field.node.topic_page.field_state_organization_tax
     - field.field.node.topic_page.field_topic_bg_narrow
@@ -25,6 +26,7 @@ dependencies:
   module:
     - conditional_fields
     - content_moderation
+    - entity_hierarchy
     - field_group
     - image
     - maxlength
@@ -57,6 +59,7 @@ third_party_settings:
         - field_topic_section_bg_wide
         - field_topic_section_bg_narrow
         - field_image_credit
+        - field_primary_parent
         - field_organizations
         - field_intended_audience
         - field_reusable_label
@@ -114,13 +117,13 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 5
+    weight: 6
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 4
+    weight: 5
     settings:
       match_operator: CONTAINS
       size: 60
@@ -129,8 +132,19 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_primary_parent:
+    weight: 4
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: false
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
+    region: content
   field_reusable_label:
-    weight: 6
+    weight: 7
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -203,7 +217,7 @@ content:
     region: content
   field_topic_content_cards:
     type: entity_reference_paragraphs
-    weight: 38
+    weight: 39
     settings:
       title: 'Content card group'
       title_plural: 'Content card groups'
