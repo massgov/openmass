@@ -18,6 +18,7 @@ dependencies:
     - field.field.node.guide_page.field_organizations
     - field.field.node.guide_page.field_primary_parent
     - field.field.node.guide_page.field_reusable_label
+    - field.field.node.guide_page.field_short_title
     - field.field.node.guide_page.field_state_organization_tax
     - image.style.large
     - node.type.guide_page
@@ -50,6 +51,7 @@ third_party_settings:
       region: content
     group_overview:
       children:
+        - field_short_title
         - title
         - field_guide_page_lede
         - field_guide_page_bg_wide
@@ -115,13 +117,13 @@ bundle: guide_page
 mode: default
 content:
   field_data_flag:
-    weight: 1
+    weight: 3
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_data_format:
-    weight: 4
+    weight: 6
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -145,7 +147,7 @@ content:
     type: options_buttons
     region: content
   field_data_resource_type:
-    weight: 3
+    weight: 5
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -169,7 +171,7 @@ content:
     type: options_buttons
     region: content
   field_data_topic:
-    weight: 5
+    weight: 7
     settings:
       start_minimized: true
       cascading_selection: 0
@@ -198,7 +200,7 @@ content:
     type: term_reference_tree
     region: content
   field_details_data_type:
-    weight: 2
+    weight: 4
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -222,7 +224,7 @@ content:
     type: options_buttons
     region: content
   field_guide_page_bg_wide:
-    weight: -3
+    weight: -1
     settings:
       preview_image_style: large
       progress_indicator: throbber
@@ -232,7 +234,7 @@ content:
     type: image_focal_point
     region: content
   field_guide_page_lede:
-    weight: -4
+    weight: -2
     settings:
       rows: 5
       placeholder: ''
@@ -247,7 +249,7 @@ content:
     type: metatag_firehose
     region: content
   field_guide_page_related_guides:
-    weight: 34
+    weight: 56
     settings:
       match_operator: CONTAINS
       size: 60
@@ -269,7 +271,7 @@ content:
     third_party_settings: {  }
     region: content
   field_image_credit:
-    weight: -2
+    weight: 0
     settings:
       size: 60
       placeholder: ''
@@ -277,13 +279,13 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 6
+    weight: 8
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 0
+    weight: 2
     settings:
       match_operator: CONTAINS
       size: 60
@@ -293,7 +295,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_primary_parent:
-    weight: -1
+    weight: 1
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -304,7 +306,7 @@ content:
     type: entity_reference_hierarchy_autocomplete
     region: content
   field_reusable_label:
-    weight: 7
+    weight: 9
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -312,6 +314,14 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: entity_reference_autocomplete
+    region: content
+  field_short_title:
+    weight: -4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
     region: content
   field_state_organization_tax:
     weight: 6
@@ -348,7 +358,7 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: -5
+    weight: -3
     settings:
       size: 60
       placeholder: ''

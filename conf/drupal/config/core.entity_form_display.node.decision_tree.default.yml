@@ -13,6 +13,7 @@ dependencies:
     - field.field.node.decision_tree.field_primary_parent
     - field.field.node.decision_tree.field_reusable_label
     - field.field.node.decision_tree.field_service_ref_services_6
+    - field.field.node.decision_tree.field_short_title
     - field.field.node.decision_tree.field_start_button
     - field.field.node.decision_tree.field_state_organization_tax
     - image.style.thumbnail
@@ -31,6 +32,7 @@ third_party_settings:
   field_group:
     group_main:
       children:
+        - field_short_title
         - title
         - field_bg_wide
         - field_bg_narrow
@@ -71,7 +73,7 @@ bundle: decision_tree
 mode: default
 content:
   field_bg_narrow:
-    weight: 3
+    weight: 7
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
@@ -79,7 +81,7 @@ content:
     type: image_image
     region: content
   field_bg_wide:
-    weight: 2
+    weight: 6
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
@@ -87,7 +89,7 @@ content:
     type: image_image
     region: content
   field_campaign_logo:
-    weight: 4
+    weight: 8
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
@@ -102,7 +104,7 @@ content:
     type: metatag_firehose
     region: content
   field_description:
-    weight: 5
+    weight: 9
     settings:
       rows: 5
       placeholder: ''
@@ -110,7 +112,7 @@ content:
     type: text_textarea
     region: content
   field_disclaimer:
-    weight: 7
+    weight: 11
     settings:
       size: 60
       placeholder: ''
@@ -118,7 +120,7 @@ content:
     type: string_textfield
     region: content
   field_organizations:
-    weight: 10
+    weight: 14
     settings:
       match_operator: CONTAINS
       size: 60
@@ -128,7 +130,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_primary_parent:
-    weight: 9
+    weight: 13
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -139,7 +141,7 @@ content:
     type: entity_reference_hierarchy_autocomplete
     region: content
   field_reusable_label:
-    weight: 11
+    weight: 15
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -149,7 +151,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_service_ref_services_6:
-    weight: 8
+    weight: 12
     settings:
       match_operator: CONTAINS
       size: 60
@@ -158,9 +160,17 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_short_title:
+    weight: 4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
   field_start_button:
     type: entity_reference_paragraphs
-    weight: 6
+    weight: 10
     settings:
       title: 'Start button'
       title_plural: 'Start buttons'
@@ -205,7 +215,7 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: 1
+    weight: 5
     region: content
     settings:
       size: 60

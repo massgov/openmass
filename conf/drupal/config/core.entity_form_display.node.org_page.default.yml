@@ -52,6 +52,7 @@ dependencies:
     - field.field.node.org_page.field_reusable_label
     - field.field.node.org_page.field_secondary_person_bio
     - field.field.node.org_page.field_short_name
+    - field.field.node.org_page.field_short_title
     - field.field.node.org_page.field_social_links
     - field.field.node.org_page.field_state_organization_tax
     - field.field.node.org_page.field_sub_brand
@@ -168,6 +169,7 @@ third_party_settings:
       region: content
     group_organization_name:
       children:
+        - field_short_title
         - title
         - field_subtype
         - field_person_bio
@@ -512,7 +514,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_person_bio:
-    weight: 23
+    weight: 137
     settings:
       match_operator: CONTAINS
       size: 60
@@ -600,7 +602,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_secondary_person_bio:
-    weight: 24
+    weight: 138
     settings:
       match_operator: CONTAINS
       size: 60
@@ -626,6 +628,14 @@ content:
           entity_type: node
           bundle: org_page
     type: entity_reference_autocomplete
+    region: content
+  field_short_title:
+    weight: 134
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
     region: content
   field_social_links:
     weight: 130
@@ -664,13 +674,13 @@ content:
     type: string_textarea
     region: content
   field_subtype:
-    weight: 22
+    weight: 136
     settings: {  }
     third_party_settings: {  }
     type: options_select
     region: content
   field_title_sub_text:
-    weight: 25
+    weight: 139
     settings:
       size: 60
       placeholder: ''
@@ -734,7 +744,7 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: 21
+    weight: 135
     settings:
       size: 60
       placeholder: ''

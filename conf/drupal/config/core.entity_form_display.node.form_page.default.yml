@@ -14,6 +14,7 @@ dependencies:
     - field.field.node.form_page.field_organizations
     - field.field.node.form_page.field_primary_parent
     - field.field.node.form_page.field_reusable_label
+    - field.field.node.form_page.field_short_title
     - field.field.node.form_page.field_state_organization_tax
     - node.type.form_page
     - workflows.workflow.editorial
@@ -41,6 +42,7 @@ third_party_settings:
       region: content
     group_form_page:
       children:
+        - field_short_title
         - title
         - field_form_lede
         - field_form_listing_desc
@@ -70,7 +72,7 @@ bundle: form_page
 mode: default
 content:
   field_english_version:
-    weight: 12
+    weight: 18
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -98,13 +100,13 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_form_embed:
-    weight: 6
+    weight: 12
     settings: {  }
     third_party_settings: {  }
     type: form_embed
     region: content
   field_form_lede:
-    weight: 2
+    weight: 8
     settings:
       size: 60
       placeholder: ''
@@ -112,7 +114,7 @@ content:
     type: string_textfield
     region: content
   field_form_listing_desc:
-    weight: 3
+    weight: 9
     settings:
       size: 60
       placeholder: ''
@@ -120,7 +122,7 @@ content:
     type: string_textfield
     region: content
   field_form_ref_contacts_3:
-    weight: 5
+    weight: 11
     settings:
       match_operator: CONTAINS
       size: 60
@@ -130,7 +132,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_form_you_will:
-    weight: 4
+    weight: 10
     settings:
       rows: 5
       placeholder: ''
@@ -138,7 +140,7 @@ content:
     type: text_textarea
     region: content
   field_intended_audience:
-    weight: 9
+    weight: 15
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -151,7 +153,7 @@ content:
     type: metatag_firehose
     region: content
   field_organizations:
-    weight: 8
+    weight: 14
     settings:
       match_operator: CONTAINS
       size: 60
@@ -161,7 +163,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_primary_parent:
-    weight: 7
+    weight: 13
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -172,7 +174,7 @@ content:
     type: entity_reference_hierarchy_autocomplete
     region: content
   field_reusable_label:
-    weight: 11
+    weight: 17
     settings:
       match_operator: CONTAINS
       size: 60
@@ -180,6 +182,14 @@ content:
       match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
+    region: content
+  field_short_title:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
     region: content
   field_state_organization_tax:
     weight: 31
@@ -193,7 +203,7 @@ content:
     region: content
   langcode:
     type: language_select
-    weight: 10
+    weight: 16
     region: content
     settings:
       include_locked: false
@@ -223,7 +233,7 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: 1
+    weight: 7
     settings:
       size: 60
       placeholder: ''

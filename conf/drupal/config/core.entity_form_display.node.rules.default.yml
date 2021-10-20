@@ -25,6 +25,7 @@ dependencies:
     - field.field.node.rules.field_rules_subheading
     - field.field.node.rules.field_rules_type
     - field.field.node.rules.field_rules_updates
+    - field.field.node.rules.field_short_title
     - field.field.node.rules.field_state_organization_tax
     - node.type.rules
     - workflows.workflow.editorial
@@ -44,6 +45,7 @@ third_party_settings:
   field_group:
     group_rules_overview:
       children:
+        - field_short_title
         - title
         - field_rules_subheading
         - field_rules_type
@@ -149,13 +151,13 @@ bundle: rules
 mode: default
 content:
   field_intended_audience:
-    weight: 14
+    weight: 66
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 13
+    weight: 65
     settings:
       match_operator: CONTAINS
       size: 60
@@ -165,7 +167,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_primary_parent:
-    weight: 12
+    weight: 64
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -176,7 +178,7 @@ content:
     type: entity_reference_hierarchy_autocomplete
     region: content
   field_reusable_label:
-    weight: 15
+    weight: 67
     settings:
       match_operator: CONTAINS
       size: 60
@@ -192,7 +194,7 @@ content:
     type: datetime_default
     region: content
   field_rules_courts:
-    weight: 9
+    weight: 61
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -234,7 +236,7 @@ content:
     type: text_textarea
     region: content
   field_rules_listing_desc:
-    weight: 11
+    weight: 63
     settings:
       size: 60
       placeholder: ''
@@ -249,7 +251,7 @@ content:
     type: metatag_firehose
     region: content
   field_rules_overview:
-    weight: 10
+    weight: 62
     settings:
       rows: 5
       placeholder: ''
@@ -308,19 +310,19 @@ content:
     third_party_settings: {  }
     region: content
   field_rules_standing:
-    weight: 7
+    weight: 59
     settings: {  }
     third_party_settings: {  }
     type: options_select
     region: content
   field_rules_status:
-    weight: 8
+    weight: 60
     settings: {  }
     third_party_settings: {  }
     type: options_select
     region: content
   field_rules_subheading:
-    weight: 5
+    weight: 57
     settings:
       size: 60
       placeholder: ''
@@ -328,7 +330,7 @@ content:
     type: string_textfield
     region: content
   field_rules_type:
-    weight: 6
+    weight: 58
     settings: {  }
     third_party_settings: {  }
     type: options_select
@@ -344,6 +346,14 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
+    region: content
+  field_short_title:
+    weight: 55
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
     region: content
   field_state_organization_tax:
     weight: 6
@@ -380,7 +390,7 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: 4
+    weight: 56
     region: content
     settings:
       size: 60

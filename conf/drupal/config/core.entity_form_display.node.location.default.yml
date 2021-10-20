@@ -29,6 +29,7 @@ dependencies:
     - field.field.node.location.field_restrictions
     - field.field.node.location.field_reusable_label
     - field.field.node.location.field_services
+    - field.field.node.location.field_short_title
     - field.field.node.location.field_state_organization_tax
     - image.style.thumbnail
     - node.type.location
@@ -64,6 +65,7 @@ third_party_settings:
       region: content
     group_header:
       children:
+        - field_short_title
         - title
         - field_location_subtitle
         - field_location_type
@@ -154,7 +156,7 @@ content:
     type: text_textarea
     region: content
   field_bg_narrow:
-    weight: 8
+    weight: 11
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
@@ -163,7 +165,7 @@ content:
     region: content
   field_iframe:
     type: entity_reference_paragraphs
-    weight: 7
+    weight: 10
     settings:
       title: Widget
       title_plural: Widgets
@@ -174,7 +176,7 @@ content:
     third_party_settings: {  }
     region: content
   field_image_credit:
-    weight: 9
+    weight: 12
     settings:
       size: 60
       placeholder: ''
@@ -182,7 +184,7 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 12
+    weight: 15
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -267,14 +269,14 @@ content:
     type: text_textarea
     region: content
   field_location_icons:
-    weight: 5
+    weight: 8
     settings: {  }
     third_party_settings:
       conditional_fields: {  }
     type: options_buttons
     region: content
   field_location_icons_park:
-    weight: 6
+    weight: 9
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -313,7 +315,7 @@ content:
     type: text_textarea
     region: content
   field_location_subtitle:
-    weight: 2
+    weight: 5
     settings:
       size: 60
       placeholder: ''
@@ -321,13 +323,13 @@ content:
     type: string_textfield
     region: content
   field_location_type:
-    weight: 3
+    weight: 6
     settings: {  }
     third_party_settings: {  }
     type: options_select
     region: content
   field_organizations:
-    weight: 11
+    weight: 14
     settings:
       match_operator: CONTAINS
       size: 60
@@ -353,7 +355,7 @@ content:
     type: text_textarea
     region: content
   field_primary_parent:
-    weight: 10
+    weight: 13
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -374,7 +376,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_ref_contact_info_1:
-    weight: 4
+    weight: 7
     settings:
       match_operator: CONTAINS
       size: 60
@@ -402,7 +404,7 @@ content:
     type: text_textarea
     region: content
   field_reusable_label:
-    weight: 13
+    weight: 16
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -436,6 +438,14 @@ content:
           entity_type: node
           bundle: location
     type: text_textarea
+    region: content
+  field_short_title:
+    weight: 3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
     region: content
   field_state_organization_tax:
     weight: 4
@@ -472,7 +482,7 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: 1
+    weight: 4
     settings:
       size: 60
       placeholder: ''

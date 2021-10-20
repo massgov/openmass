@@ -46,6 +46,7 @@ dependencies:
     - field.field.node.service_page.field_service_ref_services_6
     - field.field.node.service_page.field_service_video
     - field.field.node.service_page.field_services_social_links
+    - field.field.node.service_page.field_short_title
     - field.field.node.service_page.field_state_organization_tax
     - field.field.node.service_page.field_template
     - image.style.thumbnail
@@ -85,6 +86,7 @@ third_party_settings:
       region: content
     group_banner:
       children:
+        - field_short_title
         - title
         - field_service_lede
         - field_template
@@ -250,13 +252,13 @@ bundle: service_page
 mode: default
 content:
   field_data_flag:
-    weight: 3
+    weight: 77
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_data_format:
-    weight: 6
+    weight: 80
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -280,7 +282,7 @@ content:
     type: options_buttons
     region: content
   field_data_resource_type:
-    weight: 5
+    weight: 79
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -304,7 +306,7 @@ content:
     type: options_buttons
     region: content
   field_data_topic:
-    weight: 7
+    weight: 81
     settings:
       start_minimized: true
       select_parents: true
@@ -339,7 +341,7 @@ content:
     type: options_select
     region: content
   field_image_credit:
-    weight: 0
+    weight: 74
     settings:
       size: 60
       placeholder: ''
@@ -347,7 +349,7 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 8
+    weight: 82
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -583,7 +585,7 @@ content:
           bundle: service_page
     region: content
   field_list_data_type:
-    weight: 4
+    weight: 78
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -646,7 +648,7 @@ content:
     type: link_default
     region: content
   field_organizations:
-    weight: 2
+    weight: 76
     settings:
       match_operator: CONTAINS
       size: 60
@@ -656,7 +658,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_primary_parent:
-    weight: 1
+    weight: 75
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -684,7 +686,7 @@ content:
     type: boolean_checkbox
     region: content
   field_reusable_label:
-    weight: 9
+    weight: 83
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -694,7 +696,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_service_bg_narrow:
-    weight: -1
+    weight: 73
     settings:
       preview_image_style: thumbnail
       progress_indicator: throbber
@@ -702,7 +704,7 @@ content:
     type: image_image
     region: content
   field_service_bg_wide:
-    weight: -2
+    weight: 72
     settings:
       preview_image_style: thumbnail
       progress_indicator: throbber
@@ -817,7 +819,7 @@ content:
     type: options_buttons
     region: content
   field_service_lede:
-    weight: -4
+    weight: 70
     settings:
       size: 60
       placeholder: ''
@@ -978,6 +980,14 @@ content:
       conditional_fields: {  }
     type: link_default
     region: content
+  field_short_title:
+    weight: 68
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
   field_state_organization_tax:
     weight: 6
     settings:
@@ -989,7 +999,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_template:
-    weight: -3
+    weight: 71
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -1019,7 +1029,7 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: -5
+    weight: 69
     settings:
       size: 60
       placeholder: ''

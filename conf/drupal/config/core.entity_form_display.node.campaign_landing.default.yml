@@ -17,6 +17,7 @@ dependencies:
     - field.field.node.campaign_landing.field_promotional_kpi_choice
     - field.field.node.campaign_landing.field_reusable_label
     - field.field.node.campaign_landing.field_sections
+    - field.field.node.campaign_landing.field_short_title
     - node.type.campaign_landing
     - workflows.workflow.campaign_landing_page
   module:
@@ -32,6 +33,7 @@ third_party_settings:
   field_group:
     group_overview:
       children:
+        - field_short_title
         - title
         - field_meta_description
         - field_primary_parent
@@ -111,7 +113,7 @@ content:
     type: metatag_firehose
     region: content
   field_english_version:
-    weight: 7
+    weight: 62
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -283,7 +285,7 @@ content:
     type: number
     region: content
   field_meta_description:
-    weight: 2
+    weight: 57
     settings:
       size: 60
       placeholder: ''
@@ -295,7 +297,7 @@ content:
     type: string_textfield
     region: content
   field_organizations:
-    weight: 4
+    weight: 59
     settings:
       match_operator: CONTAINS
       size: 60
@@ -305,7 +307,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_primary_parent:
-    weight: 3
+    weight: 58
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -322,7 +324,7 @@ content:
     type: options_buttons
     region: content
   field_reusable_label:
-    weight: 6
+    weight: 61
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -350,9 +352,17 @@ content:
         duplicate: duplicate
     third_party_settings: {  }
     region: content
+  field_short_title:
+    weight: 55
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
   langcode:
     type: language_select
-    weight: 5
+    weight: 60
     region: content
     settings:
       include_locked: false
@@ -388,7 +398,7 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: 1
+    weight: 56
     region: content
     settings:
       size: 60
