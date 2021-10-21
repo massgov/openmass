@@ -49,7 +49,8 @@ services:
       # already be present.
       update:
         # Install/update packages that may have changed since the build stage.
-        - composer install --optimize-autoloader --no-cache
+        - composer clear-cache
+        - composer install --optimize-autoloader
         - yarn install
         - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
         - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
@@ -67,7 +68,8 @@ services:
       # and update steps, because the results of those are inherited
       # from the base preview.
       build:
-        - composer install --no-interaction --optimize-autoloader --no-cache
+        - composer clear-cache
+        - composer install --no-interaction --optimize-autoloader
         - yarn install
         - PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-refresh-local --skip-db-prep
 
