@@ -457,8 +457,8 @@ jobs:
 
   pending_security:
     working_directory: /tmp/code
-    docker:
-      - image: cimg/php:7.4-node
+    executor:
+      name: base
     steps:
       - attach_workspace: {at: /tmp}
       - ddev_install_run
@@ -1102,7 +1102,7 @@ workflows:
               only:
                 - develop
 
-  # Nightly pm:security, runs at 2:00AM EST.
+  # Nightly pm:security and pm:security-php.
   nightly_pending_security:
     jobs:
       - build
@@ -1110,8 +1110,9 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "05 07 * * *"
+          cron: "05 13 * * *"
           filters:
               branches:
                   only:
                       - develop
+                      - feature/DP-23184_nightly-security-check
