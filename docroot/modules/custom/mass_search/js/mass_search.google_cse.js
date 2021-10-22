@@ -146,7 +146,7 @@
     var scope = input.parents('.js-suggestions-container');
 
     $('[role="listbox"]', scope).remove();
-    $('[data-suggestions]', scope).html('<div role="listbox"></div>');
+    $('[data-suggestions]', scope).html('<div role="listbox" id="suggestions-list"></div>');  
     $('.js-suggestions-help', scope).empty();
 
     var $listbox = $('[role="listbox"]', scope);
