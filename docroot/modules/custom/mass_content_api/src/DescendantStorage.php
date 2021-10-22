@@ -138,6 +138,10 @@ class DescendantStorage implements DescendantStorageInterface {
     $query->condition('destination_id', $entity_id);
     $query->condition('relationship', self::LINKS_TO);
 
+    // Added for easier comparison to entity_usage.
+    $query->orderBy('source_type');
+    $query->orderBy('source_id', 'DESC');
+
     return $query->execute()->fetchCol();
   }
 

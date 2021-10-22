@@ -3,7 +3,6 @@
 namespace Drupal\mass_entity_usage\Controller;
 
 use Drupal\Core\Entity\RevisionableInterface;
-use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\entity_usage\Controller\LocalTaskUsageSubQueryController;
 
@@ -37,10 +36,13 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
     $page_rows = $this->getSubQueryRows($page, $this->itemsPerPage);
 
     $build[] = [
+      '#markup' => $this->t($total . ' total records.'),
+    ];
+
+    $build[] = [
       '#theme' => 'table',
       '#rows' => $page_rows,
       '#header' => $header,
-      '#prefix' => $this->t($total . ' total records.'),
     ];
 
     $build[] = [
