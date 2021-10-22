@@ -75,9 +75,6 @@ class MediaLinkingPageController extends ControllerBase {
     $help_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/content-improvement-tools/pages-linking-here');
     $help_text = Link::fromTextAndUrl('Learn how to use Linking Pages.', $help_url)->toString();
     $output = [];
-    $output ['count'] = [
-      '#markup' => '',
-    ];
     $output['linking_nodes'] = [
       '#type' => 'table',
       '#caption' => $this->t('The list below shows pages that include a link to this document in structured and rich text fields. @help_text', ['@help_text' => $help_text]),
@@ -149,7 +146,7 @@ class MediaLinkingPageController extends ControllerBase {
       }
     }
     $total = count(array_filter($output['linking_nodes'], 'is_numeric', ARRAY_FILTER_USE_KEY));
-    $output['count']['#markup'] = $total . ' total records.';
+    $output['linking_nodes']['#prefix'] = $total . ' total records.';
     return $output;
   }
 

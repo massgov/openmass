@@ -3,7 +3,9 @@
 namespace Drupal\mass_entity_usage\Controller;
 
 use Drupal\Core\Entity\RevisionableInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
 use Drupal\entity_usage\Controller\LocalTaskUsageSubQueryController;
 
 /**
@@ -12,17 +14,28 @@ use Drupal\entity_usage\Controller\LocalTaskUsageSubQueryController;
 class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
 
   /**
+   * Lists the usage of a given entity.
+   *
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   A RouteMatch object.
+   *
+   * @return array
+   *   The page build to be rendered.
+   */
+  public function listUsageLocalTask(RouteMatchInterface $route_match) {
+    $entity = $this->getEntityFromRouteMatch($route_match);
+    return $this->listUsagePageSubQuery($entity->getEntityTypeId(), $entity->id());
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function listUsagePageSubQuery($entity_type, $entity_id) {
-    $this->loadEntity($entity_type, $entity_id);
-    $total = $this->getSubQueryRowsCount();
-    if (!$total) {
-      return [
-        '#markup' => $this->t('No pages link here.'),
-      ];
-    }
-
+    $build = [];
+    // Link needed for the caption.
+    $help_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/content-improvement-tools/pages-linking-here');
+    $help_text = Link::fromTextAndUrl('Learn how to use Linking Pages.', $help_url)->toString();
+    // Table headers.
     $header = [
       $this->t('Entity'),
       $this->t('ID'),
@@ -30,22 +43,28 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
       $this->t('Field name'),
       $this->t('Status'),
     ];
+    // Result table.
+    $build['results'] = [
+      '#theme' => 'table',
+      '#header' => $header,
+      '#caption' => $this->t('The list below shows pages that include a link to this page in structured and rich text fields. @help_text', ['@help_text' => $help_text]),
+      '#empty' => $this->t('No pages link here.'),
+    ];
+
+    $this->loadEntity($entity_type, $entity_id);
+    $total = $this->getSubQueryRowsCount();
+    if (!$total) {
+      return $build;
+    }
 
     $pager = $this->pagerManager->createPager($total, $this->itemsPerPage);
     $page = $pager->getCurrentPage();
     $page_rows = $this->getSubQueryRows($page, $this->itemsPerPage);
 
-    $build[] = [
-      '#markup' => $this->t($total . ' total records.'),
-    ];
+    $build['results']['#prefix'] = $this->t($total . ' total records.');
+    $build['results']['#rows'] = $page_rows;
 
-    $build[] = [
-      '#theme' => 'table',
-      '#rows' => $page_rows,
-      '#header' => $header,
-    ];
-
-    $build[] = [
+    $build['pager'] = [
       '#type' => 'pager',
       '#route_name' => '<current>',
     ];
