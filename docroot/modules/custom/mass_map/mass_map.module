@@ -167,27 +167,29 @@ function mass_map_views_query_alter(ViewExecutable $view, $query) {
       $nodeStorage = \Drupal::entityTypeManager()->getStorage('node');
       $node = $nodeStorage->load($nid);
       if ($node) {
-        // Possible location fields for each bundle (org, service page)
-        $map = [
-          'mappedLocations' => [
-            'field_related_locations',
-            'field_org_ref_locations',
-            'field_service_ref_locations',
-          ],
-        ];
+        // Gather location nodes.
+        $location_nodes = [];
 
-        // Determines which field names to use from the map.
-        $fields = Helper::getMappedFields($node, $map);
-        if (array_key_exists('mappedLocations', $fields) && Helper::isFieldPopulated($node, $fields['mappedLocations'])) {
-          foreach ($node->{$fields['mappedLocations']} as $entity) {
-            // Verify locations have addresses.
-            $location_id = $entity->target_id;
-            $location_node = $nodeStorage->load($location_id);
-            $contact_info_id = $location_node->field_ref_contact_info_1->target_id;
-            $contact_info_node = $nodeStorage->load($contact_info_id);
-            // Only display locations with addresses.
+        // Get Location nodes from Service and Location nodes.
+        $fields = ['field_related_locations', 'field_service_ref_locations'];
+        foreach ($fields as $field_name) {
+          if (Helper::isFieldPopulated($node, $field_name))  {
+            $location_nodes += Helper::getReferencedEntitiesFromField($node, $field_name);
+          }
+        }
+
+        // Get Location nodes from Organization nodes.
+        if (Helper::isFieldPopulated($node, 'field_organization_sections')) {
+          $location_nodes += Helper::getReferencedEntitiesFromSectionField($node, ['field_organization_sections', 'field_section_long_form_content', 'field_org_ref_locations']);
+        }
+
+        // Populate NIDs for location map.
+        if (!empty($location_nodes)) {
+          foreach ($location_nodes as $location_node) {
+            // Verify and only display locations that have addresses.
+            $contact_info_node = $location_node->field_ref_contact_info_1->entity;
             if (!$contact_info_node->field_ref_address->isEmpty()) {
-              $nids[] = $location_id;
+              $nids[] = $location_node->id();
             }
           }
         }
