@@ -1,3 +1,21 @@
+
+
+## [0.299.0] - October 19, 2021
+
+### Changed
+  - DP-21388: Updated Mayflower version to 11.16.2.
+  - DP-23034: Changed HTML semantic from dl``dt to ul``li for better screen reader experience. (MF#1516)
+  
+### Fixed
+  - DP-23011: Fixed radio buttons mobile styling when selected on mobile (Galaxy S10 with Chrome).
+  - DP-23066: Reduce 5xx errors on Mass.gov and edit.mass.gov
+  - DP-23165: Fixed the 500 error for Content Reports Organization Pages.
+  - DP-23192: Fixed fatal error on Person pages related to organization role logic.
+  - DP-23200: Fixed issue causing How To pages to fail Behat testing.
+  
+### Security
+  - DP-23160: update drupal/linkit to 6.0.0-beta3
+  
 ## [0.298.1] - October 14, 2021
 
 ### Fixed

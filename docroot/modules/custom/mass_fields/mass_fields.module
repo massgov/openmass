@@ -358,7 +358,7 @@ function _mass_fields_prepare_link_field_build(array &$field_build) {
 function mass_fields_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   $entityTypeManager = \Drupal::entityTypeManager();
 
-  if ($entity->getEntityTypeId() == 'node' && $entity->bundle() == 'org_page') {
+  if ($entity->getEntityTypeId() == 'node' && $entity->bundle() == 'org_page' && $view_mode == 'full') {
     $org_page_sections_data = _mass_fields_get_org_page_sections_data($entity);
   }
 
