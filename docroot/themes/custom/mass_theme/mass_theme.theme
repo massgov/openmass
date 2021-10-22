@@ -4322,12 +4322,10 @@ function mass_theme_preprocess_field__person_org_role(&$variables) {
     if (!empty($item['content']['#node'])) {
       $org_page_node = $item['content']['#node'];
       // Get the organization sections for the given org_page node.
-      $field_organization_sections = $org_page_node->get('field_organization_sections');
+      $field_organization_sections = $org_page_node->field_organization_sections->referencedEntities();
       // Loop through the organization sections to find list_board_members
       // content references.
-      foreach ($field_organization_sections as $org_section_key => $org_section_value) {
-        // Get the organization section paragraph.
-        $org_section = $org_page_node->field_organization_sections[$org_section_key]->entity;
+      foreach ($field_organization_sections as $org_section) {
         // Get the referenced paragraph in the content. This assumes there is
         // only one content item per section.
         $content_entity = $org_section->get('field_section_long_form_content')->entity;
@@ -4336,43 +4334,37 @@ function mass_theme_preprocess_field__person_org_role(&$variables) {
         if ($content_entity->bundle() == 'list_board_members') {
           // Get the field value, which will be a section_board_member
           // paragraph.
-          $board_members_sections = $content_entity->get('field_board_members');
+          $board_members_sections = $content_entity->field_board_members->referencedEntities();
           // Loop through the sections.
-          foreach ($board_members_sections as $board_member_section_key => $board_member_section_value) {
-            // Get the current section_board_member entity.
-            $board_members_section_entity = $content_entity->get('field_board_members')[$board_member_section_key]->entity;
+          foreach ($board_members_sections as $board_member_section) {
             // Get the field value, which will be a board_member paragraph.
-            $field_board_members = $board_members_section_entity->get('field_board_members');
+            $field_board_members = $board_member_section->field_board_members->referencedEntities();
             // Loop through the board members.
-            foreach ($field_board_members as $board_member_key => $board_member_value) {
-              // Get the current board_member entity.
-              $board_member_entity = $board_members_section_entity->get('field_board_members')[$board_member_key]->entity;
+            foreach ($field_board_members as $board_member) {
               // If there is a person referenced, let's check for a match.
-              if (!$board_member_entity->get('field_person')->isEmpty()) {
+              if (!$board_member->get('field_person')->isEmpty()) {
                 // Get the person node referenced.
-                $field_person_entity = $board_member_entity->get('field_person')->entity;
+                $field_person_entity = current($board_member->field_person->referencedEntities());
                 // If the referenced person node matches the currently viewed
                 // person node, add it to the person_roles array.
                 if ($field_person_entity->id() == $person_node->id()) {
-                  $person_roles[$org_page_node->id()] = $field_board_members->get('field_eyebrow')->value;
+                  $person_roles[$org_page_node->id()] = $board_member->get('field_eyebrow')->value;
                 }
               }
             }
           }
           // Get the field value, which will be a board_member paragraph.
-          $field_featured_board_members = $content_entity->get('field_featured_board_members');
+          $field_featured_board_members = $content_entity->field_featured_board_members->referencedEntities();
           // Loop through the featured board members.
-          foreach ($field_featured_board_members as $feat_board_member_key => $feat_board_member_value) {
-            // Get the current board_member entity.
-            $board_member_entity = $content_entity->get('field_featured_board_members')[$feat_board_member_key]->entity;
+          foreach ($field_featured_board_members as $feat_board_member) {
             // If there is a person referenced, let's check for a match.
-            if (!$board_member_entity->get('field_person')->isEmpty()) {
+            if (!$feat_board_member->get('field_person')->isEmpty()) {
               // Get the person node referenced.
-              $field_person_entity = $board_member_entity->get('field_person')->entity;
+              $field_person_entity = current($feat_board_member->field_person->referencedEntities());
               // If the referenced person node matches the currently viewed
               // person node, add it to the person_roles array.
               if ($field_person_entity->id() == $person_node->id()) {
-                $person_roles[$org_page_node->id()] = $board_member_entity->get('field_eyebrow')->value;
+                $person_roles[$org_page_node->id()] = $feat_board_member->get('field_eyebrow')->value;
               }
             }
           }
