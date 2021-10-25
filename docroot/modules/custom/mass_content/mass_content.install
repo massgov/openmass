@@ -988,7 +988,6 @@ function mass_content_update_8015(&$sandbox) {
     Drupal::logger('Mass Content')->info('Deleted !count legacy redirect nodes from !max.', ['!count' => $sandbox['progress'], '!max' => $sandbox['max']]);
   }
 
-
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
     return t('Deleted all nodes of Legacy redirects content.');
