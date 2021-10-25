@@ -136,7 +136,7 @@
     $input.trigger('autocomplete:suggestionsUpdated', [results]);
   });
   $input.on('keyup', function (event) {
-    if (event.keyCode !== 13 && event.keyCode !== 38 && event.keyCode !== 40) {
+    if (event.key !== 'Enter' && event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
       ac.update(event.target.value);
     }
   });
@@ -146,7 +146,7 @@
     var scope = input.parents('.js-suggestions-container');
 
     $('[role="listbox"]', scope).remove();
-    $('[data-suggestions]', scope).html('<div role="listbox" id="suggestions-list"></div>');  
+    $('[data-suggestions]', scope).html('<div role="listbox" id="suggestions-list"></div>');
     $('.js-suggestions-help', scope).empty();
 
     var $listbox = $('[role="listbox"]', scope);
@@ -172,7 +172,7 @@
 
     $listbox.on('keydown', function (e) {
 
-      if (e.keyCode === 13) {
+      if (e.key === 'Enter') {
         e.preventDefault();
         e.stopPropagation();
         input.data('realValue', input.val());
@@ -181,7 +181,7 @@
         return;
       }
 
-      if (e.keyCode === 27) {
+      if (e.key === 'Esc') {
         input.val(input.data('realValue'));
         input.focus();
         $listbox.hide();
@@ -189,7 +189,7 @@
       }
 
       var newOption;
-      if (e.keyCode === 40) {
+      if (e.key === 'ArrowDown') {
         e.preventDefault();
         newOption = $('.selected', scope).next();
 
@@ -201,7 +201,7 @@
         }
       }
 
-      if (e.keyCode === 38) {
+      if (e.key === 'ArrowUp') {
         e.preventDefault();
         newOption = $('.selected', scope).prev();
 
@@ -245,7 +245,7 @@
       // hence we need to update the reference.
       $listbox = $('[role="listbox"]', scope);
 
-      if (e.keyCode === 27) {
+      if (e.key === 'Escape') {
 
         if (input.val() !== '' && ($listbox.length === 0 || !$listbox.is(':visible'))) {
           input.val('');
@@ -258,7 +258,7 @@
         return;
       }
 
-      if (e.keyCode === 38) {
+      if (e.key === 'ArrowUp') {
         e.preventDefault();
         $listbox.find('.selected', scope).removeClass('selected');
         $listbox.attr('tabindex', '0').focus();
@@ -267,7 +267,7 @@
         return;
       }
 
-      if (e.keyCode === 40) {
+      if (e.key === 'ArrowDown') {
         e.preventDefault();
         $listbox.find('.selected', scope).removeClass('selected');
 
@@ -285,7 +285,7 @@
         return;
       }
 
-      if (e.keyCode === 9) {
+      if (e.key === 'Tab') {
         $listbox.remove();
         return;
       }
