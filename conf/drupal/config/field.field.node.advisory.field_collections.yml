@@ -1,0 +1,29 @@
+uuid: ac1cd1eb-b9f7-483b-9278-7db9e0efcf8b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_collections
+    - node.type.advisory
+    - taxonomy.vocabulary.collections
+id: node.advisory.field_collections
+field_name: field_collections
+entity_type: node
+bundle: advisory
+label: Collections
+description: 'Select the collections, topics, and sub topics for this content. Only content administrators can see this field.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      collections: collections
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference
