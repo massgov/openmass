@@ -22,7 +22,6 @@ dependencies:
     - node.type.how_to_page
     - node.type.info_details
     - node.type.interstitial
-    - node.type.legacy_redirects
     - node.type.location
     - node.type.location_details
     - node.type.news
@@ -1180,46 +1179,6 @@ display:
             group_items: {  }
           entity_type: node
           plugin_id: mass_views_node_org_filter
-        type_1:
-          id: type_1
-          table: node_field_data
-          field: type
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: 'not in'
-          value:
-            legacy_redirects: legacy_redirects
-          group: 2
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
       sorts: {  }
       header:
         area:

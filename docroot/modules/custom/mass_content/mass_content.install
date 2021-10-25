@@ -5,12 +5,12 @@
  * Uninstall config.
  */
 
+use Drupal\Core\Database\Database;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\pathauto\PathautoState;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
-use Drush\Drush;
 
 /**
  * Migrate action content from old contacts field to new contacts field.
@@ -992,5 +992,21 @@ function mass_content_update_8015(&$sandbox) {
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
     return t('Deleted all nodes of Legacy redirects content.');
+  }
+}
+
+/**
+ * Remove all legacy redirect tables.
+ */
+function mass_content_update_8016(&$sandbox) {
+  $tables = [
+    'redirect_replacements_onetoone',
+    'redirect_replacements_content',
+    'redirect_replacements_o2o_debug',
+  ];
+  foreach ($tables as $table) {
+    if (Database::getConnection()->schema()->tableExists($table)) {
+      Database::getConnection()->schema()->dropTable($table);
+    }
   }
 }
