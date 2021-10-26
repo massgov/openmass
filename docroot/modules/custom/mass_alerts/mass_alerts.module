@@ -266,7 +266,7 @@ function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
     $email_addresses = \Drupal::state()->get('mass_alerts.alert_emails');
     if (!empty($email_addresses)) {
       $message_body = 'A sitewide alert was added or updated on Mass.gov (https://www.mass.gov):' . "\r\n\r\n" . $node->title->value . "\r\n\r\n";
-      if ($node->hasField('field_alert')) {
+      if ($node->hasField('field_sitewide_alert')) {
         $paragraph = $node->get('field_sitewide_alert')->referencedEntities();
         foreach ($paragraph as $p) {
           if ($p->hasField('field_sitewide_alert_message')) {
