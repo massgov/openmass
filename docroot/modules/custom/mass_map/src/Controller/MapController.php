@@ -238,7 +238,7 @@ class MapController extends ControllerBase {
                 ->loadByProperties($content_properties));
               // If the content paragraph is an org_locations paragraph, get data
               // from that entity instead of the node.
-              if ($content_paragraph->bundle() == 'org_locations') {
+              if ($content_paragraph instanceof Paragraph && $content_paragraph->bundle() == 'org_locations') {
                 // Set the data source as the paragraph.
                 $source = $content_paragraph;
                 $fields = Helper::getMappedFields($source, $map);
