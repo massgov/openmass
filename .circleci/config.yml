@@ -1109,9 +1109,8 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "50 18 * * *"
+          cron: "05 07 * * *"
           filters:
               branches:
                   only:
                       - develop
-                      - feature/DP-23184_nightly-security-check
