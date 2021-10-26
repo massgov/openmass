@@ -51,6 +51,7 @@ dependencies:
     - field.field.node.service_page.field_template
     - node.type.service_page
   module:
+    - link
     - options
     - user
 id: node.service_page.listing
@@ -104,6 +105,18 @@ content:
     third_party_settings: {  }
     type: string
     region: content
+  field_service_ref_actions_2:
+    type: link
+    weight: 6
+    region: content
+    label: hidden
+    settings:
+      trim_length: null
+      url_only: false
+      url_plain: false
+      rel: '0'
+      target: '0'
+    third_party_settings: {  }
   workbench_moderation_control:
     weight: 0
     region: content
@@ -145,7 +158,6 @@ hidden:
   field_service_metatags: true
   field_service_offered_by: true
   field_service_ref_actions: true
-  field_service_ref_actions_2: true
   field_service_ref_guide_page_1: true
   field_service_ref_locations: true
   field_service_ref_services_6: true
