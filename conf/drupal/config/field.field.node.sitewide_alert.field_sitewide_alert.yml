@@ -13,7 +13,7 @@ field_name: field_sitewide_alert
 entity_type: node
 bundle: sitewide_alert
 label: 'Sitewide Alert message(s)'
-description: 'An Alert can have 1 or more Alert Messages. For example, a weather alert may have one message about roads and another about public transportation. Each Alert Message contains the brief text of the message, a timestamp, and a link. Most Alert Messages should link to an existing page, but a Message can link to the Alert Detail page, where you can add additional information.'
+description: "Be concise. Limit length to about 75 characters to keep alerts to 2-3 lines on a phone.<br>\r\nThe Alert Message text will appear if an alert title is clicked to open the accordion. It will be opened by default only on the <a href=\"https://www.mass.gov\" target=\"_blank\">Mass.gov</a> home page."
 required: false
 translatable: false
 default_value: {  }
@@ -157,6 +157,9 @@ settings:
       featured_message:
         weight: 161
         enabled: false
+      featured_topics:
+        weight: 171
+        enabled: false
       file_download:
         weight: 162
         enabled: false
@@ -213,6 +216,9 @@ settings:
         enabled: false
       link_group:
         weight: 182
+        enabled: false
+      link_group_accordion:
+        weight: 193
         enabled: false
       link_group_document:
         weight: 183
@@ -280,6 +286,24 @@ settings:
       online_email:
         weight: 202
         enabled: false
+      org_events:
+        weight: 216
+        enabled: false
+      org_locations:
+        weight: 217
+        enabled: false
+      org_news:
+        weight: 218
+        enabled: false
+      org_related_orgs:
+        weight: 219
+        enabled: false
+      org_section_long_form:
+        weight: 220
+        enabled: false
+      organization_contact_logo:
+        weight: 214
+        enabled: false
       organization_grid:
         weight: 203
         enabled: false
@@ -346,6 +370,9 @@ settings:
       slideshow:
         weight: 223
         enabled: false
+      social_media:
+        weight: 242
+        enabled: false
       stacked_band:
         weight: 224
         enabled: false
@@ -372,5 +399,8 @@ settings:
         enabled: false
       video_with_section:
         weight: 232
+        enabled: false
+      what_would_you_like_to_do:
+        weight: 252
         enabled: false
 field_type: entity_reference_revisions
