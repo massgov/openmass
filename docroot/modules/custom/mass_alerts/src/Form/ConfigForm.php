@@ -193,7 +193,7 @@ class ConfigForm extends ConfigFormBase {
         $form_state->setErrorByName('alert_emails_fieldset][alert_emails][' . $key, $this->t('Email must include valid domain.'));
       }
       // Check that email address matches a user in the system.
-      $query =  \Drupal::entityTypeManager()->getStorage('user')->getQuery();
+      $query = \Drupal::entityTypeManager()->getStorage('user')->getQuery();
       $uids = $query->condition('mail', $email)
         ->range(0, 1)
         ->execute();
