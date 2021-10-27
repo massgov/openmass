@@ -6630,6 +6630,9 @@ function mass_theme_build_key_message_component(array &$variables) {
     $variables['button']['text'] = $button['#title'];
     $variables['button']['href'] = $button['#url']->toString();
   }
+
+  $variables['halfImage'] = $paragraph->field_use_half_image->value ?? FALSE;
+
   if (!empty($paragraph->field_text_overlay_color->value)) {
     $variables['textOverlay'] = isset($colors[$paragraph->field_text_overlay_color->value]) ? $colors[$paragraph->field_text_overlay_color->value] : '';
   }
