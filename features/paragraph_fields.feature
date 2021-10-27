@@ -48,7 +48,6 @@ Feature: Paragraph type definitions
       | field-emergency-alert-content   | Paragraphs Classic |
       | field-emergency-alert-link      | Link               |
       | field-emergency-alert-message   | Textfield          |
-      | field-emergency-alert-timestamp | Date and Time      |
 
     Then the "file_download" paragraph has the fields:
       | field           | widget         |
