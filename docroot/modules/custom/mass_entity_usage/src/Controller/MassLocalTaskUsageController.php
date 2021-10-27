@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_entity_usage\Controller;
 
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -143,7 +144,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
    * @return \Drupal\Core\Entity\ContentEntityInterface
    *   The parent node.
    */
-  public function getParentNode($entity) {
+  public function getParentNode(ContentEntityInterface $entity) {
     if ($entity->getEntityTypeId() == 'paragraph') {
       /** @var \Drupal\paragraphs\ParagraphInterface $entity */
       return $this->getParentNode($entity);
