@@ -1,0 +1,80 @@
+uuid: 1a976845-a862-499f-b19f-a689bc211196
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.listing
+    - field.field.node.advisory.field_advisory_date
+    - field.field.node.advisory.field_advisory_download
+    - field.field.node.advisory.field_advisory_footnotes
+    - field.field.node.advisory.field_advisory_issuer
+    - field.field.node.advisory.field_advisory_links
+    - field.field.node.advisory.field_advisory_listing_desc
+    - field.field.node.advisory.field_advisory_metatags
+    - field.field.node.advisory.field_advisory_overview
+    - field.field.node.advisory.field_advisory_publish_state_tax
+    - field.field.node.advisory.field_advisory_ref_contact
+    - field.field.node.advisory.field_advisory_ref_sources
+    - field.field.node.advisory.field_advisory_section
+    - field.field.node.advisory.field_advisory_type_tax
+    - field.field.node.advisory.field_collections
+    - field.field.node.advisory.field_intended_audience
+    - field.field.node.advisory.field_organizations
+    - field.field.node.advisory.field_reusable_label
+    - field.field.node.advisory.field_state_organization_tax
+    - node.type.advisory
+  module:
+    - user
+id: node.advisory.listing
+targetEntityType: node
+bundle: advisory
+mode: listing
+content:
+  field_advisory_listing_desc:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  referencing_binders_page_flipper:
+    type: entity_reference_label
+    weight: 18
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  extra_node_pager: true
+  extra_org_feedback_form: true
+  field_advisory_date: true
+  field_advisory_download: true
+  field_advisory_footnotes: true
+  field_advisory_issuer: true
+  field_advisory_links: true
+  field_advisory_metatags: true
+  field_advisory_overview: true
+  field_advisory_publish_state_tax: true
+  field_advisory_ref_contact: true
+  field_advisory_ref_sources: true
+  field_advisory_section: true
+  field_advisory_type_tax: true
+  field_collections: true
+  field_intended_audience: true
+  field_organizations: true
+  field_reusable_label: true
+  field_state_organization_tax: true
+  langcode: true
+  links: true
+  page_next: true
+  page_previous: true
+  referencing_binders: true

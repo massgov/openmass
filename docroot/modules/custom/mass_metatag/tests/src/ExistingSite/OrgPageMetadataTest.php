@@ -5,6 +5,7 @@ namespace Drupal\Tests\mass_metatag\ExistingSite;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\mass_metatag\Traits\TestContentTrait;
 
@@ -28,6 +29,16 @@ class OrgPageMetadataTest extends MetadataTestCase {
       'title' => 'Test Location',
       'moderation_state' => 'published',
     ]);
+    $org_locations = Paragraph::create([
+      'type' => 'org_locations',
+      'field_org_ref_locations' => [$location],
+    ]);
+    $org_locations->save();
+    $location_org_section = Paragraph::create([
+      'type' => 'org_section_long_form',
+      'field_section_long_form_content' => [$org_locations],
+    ]);
+    $location_org_section->save();
     $image = File::create([
       'uri' => 'public://test.jpg',
     ]);
@@ -39,7 +50,7 @@ class OrgPageMetadataTest extends MetadataTestCase {
       'field_bg_wide' => $image,
       'field_sub_title' => 'Test Subtitle',
       'field_ref_contact_info_1' => [$this->createContact()],
-      'field_org_ref_locations' => [$location],
+      'field_organization_sections' => [$location_org_section],
       'field_sub_brand' => [$image],
       'field_state_organization_tax' => [$org_term],
       'moderation_state' => 'published',
