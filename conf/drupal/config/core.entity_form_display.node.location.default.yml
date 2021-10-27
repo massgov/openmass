@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.location.field_accessibility
     - field.field.node.location.field_bg_narrow
     - field.field.node.location.field_bg_wide
+    - field.field.node.location.field_collections
     - field.field.node.location.field_iframe
     - field.field.node.location.field_image_credit
     - field.field.node.location.field_intended_audience
@@ -42,6 +43,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -74,12 +76,12 @@ third_party_settings:
         - field_organizations
         - field_intended_audience
         - field_reusable_label
+        - field_collections
         - field_bg_wide
       parent_name: group_primary
       weight: 2
       format_type: tab
       format_settings:
-        label: Header
         formatter: open
         description: '<p>The "Header" and "Features" tabs power the visual banner across the top of your location page. See <a href="http://mayflower.digital.mass.gov/?p=organisms-action-header" target="_blank">here</a> and <a href="http://mayflower.digital.mass.gov/?p=organisms-location-banner" target="_blank">here</a> for an example of what it will look like when completely filled out.</p> <p>Location page titles should be a clear and complete name for the location. Try to keep titles short and avoid abbreviations when possible. Use acronyms only when they are very familiar to the public (e.g. "RMV").</p>'
         required_fields: true
@@ -158,6 +160,17 @@ content:
       preview_image_style: thumbnail
     third_party_settings: {  }
     type: image_image
+    region: content
+  field_collections:
+    weight: 13
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings: {  }
+    type: term_reference_tree
     region: content
   field_iframe:
     type: entity_reference_paragraphs
