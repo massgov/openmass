@@ -7,6 +7,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\entity_usage\Controller\LocalTaskUsageSubQueryController;
+use Drupal\node\Entity\Node;
 
 /**
  * Controller for our pages.
@@ -101,25 +102,51 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
             }
           }
         }
+        // If the source is a paragraph, get the parent node.
+        if ($source_entity->getEntityTypeId() == 'paragraph') {
+          /** @var \Drupal\paragraphs\ParagraphInterface $source_entity */
+          $source_entity = $this->getParentNode($source_entity);
+        }
         $link = $this->getSourceEntityLink($source_entity);
         // If the label is empty it means this usage shouldn't be shown
         // on the UI, just skip this row. Also, only show Default sources.
         if (empty($link) || !$used_in_default) {
           continue;
         }
-        $published = $this->getSourceEntityStatus($source_entity);
+        // Get the moderation state of the parent node.
+        $current_state = '';
+        if ($source_entity instanceof Node) {
+          $current_state = node_revision_load($source_entity->getRevisionId())->get('moderation_state')->getValue()[0]['value'];
+        }
+        // Get a field label.
         $field_label = isset($field_definitions[$records[$default_key]['field_name']]) ? $field_definitions[$records[$default_key]['field_name']]->getLabel() : $this->t('Unknown');
+        // Set the row values.
         $rows[] = [
           $link,
           $source_entity->id(),
           $source_entity->type->entity->label(),
           $field_label,
-          $published,
+          $current_state,
         ];
       }
     }
 
     return $rows;
+  }
+
+  /**
+   * @param $entity
+   *  An entity.
+   *
+   * @return \Drupal\node\Entity\Node
+   *  The parent node.
+   */
+  public function getParentNode($entity) {
+    if ($entity->getEntityTypeId() == 'paragraph') {
+      /** @var \Drupal\paragraphs\ParagraphInterface $entity */
+      return $this->getParentNode($entity);
+    }
+    return $entity;
   }
 
   /**
