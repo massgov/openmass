@@ -283,7 +283,6 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           $messages = [];
 
           foreach ($items as $item) {
-            $message_timestamp = $item->get('field_emergency_alert_timestamp')->getString();
 
             $link_type = $item->get('field_emergency_alert_link_type')->getString();
             $url = FALSE;
@@ -329,9 +328,6 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
           if (count($messages) == 1) {
             $alert = array_merge($alert, $messages[0]);
-            if (!$timestamp && $message_timestamp) {
-              $timestamp = $message_timestamp;
-            }
           }
           else {
             $alert['content'] = $messages;

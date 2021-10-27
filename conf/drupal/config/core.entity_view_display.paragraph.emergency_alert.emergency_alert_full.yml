@@ -8,10 +8,8 @@ dependencies:
     - field.field.paragraph.emergency_alert.field_emergency_alert_link
     - field.field.paragraph.emergency_alert.field_emergency_alert_link_type
     - field.field.paragraph.emergency_alert.field_emergency_alert_message
-    - field.field.paragraph.emergency_alert.field_emergency_alert_timestamp
     - paragraphs.paragraphs_type.emergency_alert
   module:
-    - datetime
     - entity_reference_revisions
 id: paragraph.emergency_alert.emergency_alert_full
 targetEntityType: paragraph
@@ -34,15 +32,6 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     type: string
-    region: content
-  field_emergency_alert_timestamp:
-    weight: 1
-    label: hidden
-    settings:
-      timezone_override: America/New_York
-      date_format: 'M. jS, Y, g:i a'
-    third_party_settings: {  }
-    type: datetime_custom
     region: content
 hidden:
   created: true
