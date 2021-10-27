@@ -135,11 +135,13 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
   }
 
   /**
-   * @param $entity
-   *  An entity.
+   * Recursive function to retrieve the parent node of a paragraph.
    *
-   * @return \Drupal\node\Entity\Node
-   *  The parent node.
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   An entity.
+   *
+   * @return \Drupal\Core\Entity\ContentEntityInterface
+   *   The parent node.
    */
   public function getParentNode($entity) {
     if ($entity->getEntityTypeId() == 'paragraph') {
