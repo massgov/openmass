@@ -2372,8 +2372,10 @@ function mass_theme_preprocess_node_rules(&$variables) {
   // Related To computed field.
   if (!empty($fields['related_to']) && Helper::isFieldPopulated($node, $fields['related_to'])) {
     if (!empty($fields['collections']) && Helper::isFieldPopulated($node, $fields['collections'])) {
-      $related_to_links = array_filter($variables['content'][$fields['related_to']], "is_numeric", ARRAY_FILTER_USE_KEY);
-      $variables['content'][$fields['collections']] = array_merge($variables['content'][$fields['collections']], $related_to_links);
+      if (isset($variables['content'][$fields['related_to']])) {
+        $related_to_links = array_filter($variables['content'][$fields['related_to']], "is_numeric", ARRAY_FILTER_USE_KEY);
+        $variables['content'][$fields['collections']] = array_merge($variables['content'][$fields['collections']], $related_to_links);
+      }
     }
     else {
       $variables['content'][$fields['collections']] = $variables['content'][$fields['related_to']];
