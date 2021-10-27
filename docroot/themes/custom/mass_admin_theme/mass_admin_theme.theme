@@ -71,7 +71,7 @@ function mass_admin_theme_preprocess_file_upload_help(&$variables) {
  * @param array $variables
  *   Contains the form element data from $element['entities'].
  */
-function mass_admin_theme_inline_entity_form_entity_table(array $variables) {
+function mass_admin_preprocess_inline_entity_form_entity_table(array $variables) {
   $renderer = \Drupal::service('renderer');
   $form = $variables['form'];
   $entity_type = $form['#entity_type'];
