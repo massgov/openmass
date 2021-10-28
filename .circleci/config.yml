@@ -93,6 +93,9 @@ parameters:
   reference:
     type: string
     default: ""
+  tugboat:
+    type: string
+    default: ""
   list:
     type: string
     default: "all"
@@ -394,6 +397,8 @@ jobs:
       viewport:
         type: string
         default: all
+      tugboat:
+        type: string
     working_directory: /tmp/code
     executor:
       name: base
@@ -407,7 +412,7 @@ jobs:
           no_output_timeout: 300m
       - run:
           name: Backstop test
-          command: ddev exec --service backstop backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+          command: ddev exec --service backstop backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
           no_output_timeout: 300m
       - run:
           command: ddev logs -s backstop

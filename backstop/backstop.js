@@ -40,6 +40,10 @@ const scenarios = pages.map(function(page) {
       base = 'https://massgovstg.prod.acquia-sites.com';
       auth = getAuth();
       break;
+    case 'tugboat':
+      const opts = process.argv.filter(arg => arg.match(/^--tugboat=/))
+      base = opts[0].replace('--tugboat=', '');
+      break;
     default:
       base = `https://massgov${target}.prod.acquia-sites.com`;
       auth = getAuth();

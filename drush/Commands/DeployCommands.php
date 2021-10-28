@@ -34,6 +34,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @param string $target Target environment.
    * @param string $reference Reference environment.
    * @option list The list you want to run. See backstop/backstop.js
+   * @option tugboat A Tugboat URL which should be used as target. Pass 'tugboat' as target.
    * @option viewport The viewport you want to run.  See backstop/backstop.js.
    * @option ci-branch The branch that CircleCI should check out at start.
    *
@@ -45,7 +46,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
-  public function backstop($target, $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all']) {
+  public function backstop($target, $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::REQ]) {
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
@@ -60,6 +61,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
           'reference' => $reference,
           'list' => $options['list'],
           'viewport' => $options['viewport'],
+          'tugboat' => $options['tugboat'],
         ],
       ],
     ];
