@@ -1,3 +1,20 @@
+
+
+## [0.300.0] - October 26, 2021
+
+### Added
+  - DP-22484: Added curated list details report.
+  - DP-23034: Add brand banner to OpenMass.
+  - DP-23135: Add urls for Lighthouse at Tugboat
+  - DP-23167: Tests for expand/collapse functionality on accordions
+  - DP-23254: Added banner to pages using the without-main page template.
+  
+### Changed
+  - DP-23257: Updated Mayflower version to 11.16.3.
+  - Update BrandBanner toggle button text (MF #1535)
+  - DP-3188: To make search comply with https://rawgit.com/w3c/aria-practices/master/aria-practices-DeletedSectionsArchive.html#autocomplete
+Accesibility improvements for screenreaders on search https://github.com/massgov/openmass/pull/1081#issuecomment-947854475
+  
 ## [0.299.1] - October 25, 2021
 
 ### Fixed
