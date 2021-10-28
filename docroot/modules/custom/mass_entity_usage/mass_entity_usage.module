@@ -5,6 +5,7 @@
  * Contains mass_entity_usage.module.
  */
 
+use Drupal\content_moderation\Entity\ContentModerationState;
 use Drupal\node\Entity\Node;
 
 /**
@@ -15,16 +16,15 @@ function mass_entity_usage_entity_usage_block_tracking($target_id, $target_type,
     // Load the node.
     $node = Node::load($source_id);
     // Get the moderation state.
-    $current_state = node_revision_load($node->getRevisionId())
-      ->get('moderation_state')
-      ->getValue()[0]['value'];
+    $content_moderation_state = ContentModerationState::loadFromModeratedEntity($node);
+    $state_name = $content_moderation_state->get('moderation_state')->value;
     // These states should be not be tracked.
     $skipped_states = [
       'unpublished',
       'trash',
     ];
     // Don't track sources that are in unpublished or trash state.
-    if (in_array($current_state, $skipped_states)) {
+    if (in_array($state_name, $skipped_states)) {
       return TRUE;
     }
   }
