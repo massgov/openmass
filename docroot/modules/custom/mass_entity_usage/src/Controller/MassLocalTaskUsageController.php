@@ -145,9 +145,12 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
    *   The parent node.
    */
   public function getParentNode(ContentEntityInterface $entity) {
+    /** @var \Drupal\paragraphs\ParagraphInterface $source_entity */
     if ($entity->getEntityTypeId() == 'paragraph') {
-      /** @var \Drupal\paragraphs\ParagraphInterface $entity */
-      return $this->getParentNode($entity);
+      $parent = $entity->getParentEntity();
+      if ($parent) {
+        return $this->getParentNode($parent);
+      }
     }
     return $entity;
   }
