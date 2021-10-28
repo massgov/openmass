@@ -39,16 +39,3 @@ mass_content_api.descendant_controller_media_linking_page:
     _admin_route: TRUE
   requirements:
     _permission: 'view pages linking here tab'
-mass_content_api.legacy_redirects_prod:
-  path: '/redirects-prod.json'
-  defaults:
-    _controller: 'Drupal\mass_content_api\Controller\LegacyRedirectsController::redirectsProd'
-  requirements:
-    _permission: 'access content'
-
-mass_content_api.legacy_redirects_staging:
-  path: '/redirects-staged.json'
-  defaults:
-    _controller: 'Drupal\mass_content_api\Controller\LegacyRedirectsController::redirectsStaged'
-  requirements:
-    _permission: 'access content'
