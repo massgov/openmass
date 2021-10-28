@@ -31,11 +31,11 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    *
    * @command ma:backstop
    *
-   * @param string $target Target environment.
-   * @param string $reference Reference environment.
-   * @option list The list you want to run. See backstop/backstop.js
-   * @option tugboat A Tugboat URL which should be used as target. Pass 'tugboat' as target.
-   * @option viewport The viewport you want to run.  See backstop/backstop.js.
+   * @param string $target Target environment. Recognized values: prod, test, local, tugboat, feature[N].
+   * @param string $reference Reference environment. Recognized values: prod, test, local, tugboat, feature[N].
+   * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
+   * @option tugboat A Tugboat URL which should be used as target. You must also pass 'tugboat' as target.
+   * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
    * @option ci-branch The branch that CircleCI should check out at start.
    *
    * @aliases ma-backstop
@@ -399,7 +399,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    */
   public function validate(CommandData $commandData) {
     $target = $commandData->input()->getArgument('target');
-    $available_targets = ['dev', 'cd', 'test', 'feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prod', 'ra', 'cf', 'global', 'stage'];
+    $available_targets = ['dev', 'cd', 'test', 'feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prod', 'ra', 'cf', 'global', 'stage', 'tugboat'];
     if (!in_array($target, $available_targets)) {
       throw new \Exception('Invalid argument: target. \nYou entered "' . $target . '". Target must be one of: ' . implode(', ', $available_targets));
     }
