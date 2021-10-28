@@ -98,7 +98,7 @@ class NewsController extends ControllerBase {
     // Add the node_list cache tag so the endpoint results will update when nodes are
     // updated.
     $cache_metadata = new CacheableMetadata();
-    $cache_metadata->setCacheTags(['handy_cache_tags:node:news']);
+    $cache_metadata->setCacheTags(['node_list:news']);
 
     // Create the JSON response object and add the cache metadata and urls.
     $response = new CacheableJsonResponse($response_array);
