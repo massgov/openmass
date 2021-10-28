@@ -186,10 +186,12 @@ module.exports = async function(page, scenario, vp) {
       // Wait for a selector to become visible.
       await page.waitForSelector('span.ma__emergency-alert__time-stamp', {visible: true, timeout: 0})
       await page.evaluate(async function () {
-        document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
-          // Force the content to be always same.
-          e.innerText = 'May. 24th, 2021, 5:00 pm';
-        });
+        document.querySelector('.ma__content-link.ma__content-link--chevron span').innerText =
+          "Lorem ipsum dolor sit amet, consectetur adipiscing elit." +
+          "Quisque semper aliquet arcu. Nullam eu vestibulum justo.";
+
+        document.querySelector('span.ma__emergency-alert__time-stamp').innerText =
+          'May. 24th, 2021, 5:00 pm';
       })
       await page.waitFor(1000);
     }
