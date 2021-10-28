@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_entity_usage\Controller;
 
+use Drupal\content_moderation\Entity\ContentModerationState;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Link;
@@ -114,10 +115,13 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
         if (empty($link) || !$used_in_default) {
           continue;
         }
-        // Get the moderation state of the parent node.
-        $current_state = '';
+        // Get the moderation state label of the parent node.
+        $state_label = '';
         if ($source_entity instanceof Node) {
-          $current_state = node_revision_load($source_entity->getRevisionId())->get('moderation_state')->getValue()[0]['value'];
+          $content_moderation_state = ContentModerationState::loadFromModeratedEntity($source_entity);
+          $state_name = $content_moderation_state->get('moderation_state')->value;
+          $workflow = $content_moderation_state->get('workflow')->entity;
+          $state_label = $workflow->get('type_settings')['states'][$state_name]['label'];
         }
         // Get a field label.
         $field_label = isset($field_definitions[$records[$default_key]['field_name']]) ? $field_definitions[$records[$default_key]['field_name']]->getLabel() : $this->t('Unknown');
@@ -127,7 +131,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
           $source_entity->id(),
           $source_entity->type->entity->label(),
           $field_label,
-          $current_state,
+          $state_label,
         ];
       }
     }
