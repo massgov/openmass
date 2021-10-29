@@ -411,10 +411,20 @@ jobs:
           name: Backstop reference
           command: ddev exec --service backstop backstop --config=/src/backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
           no_output_timeout: 300m
-      - run:
-          name: Backstop test
-          command: ddev exec --service backstop backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
-          no_output_timeout: 300m
+      - when:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Backstop test
+                command: ddev exec --service backstop backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
+                no_output_timeout: 300m
+      - unless:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Backstop test
+                command: ddev exec --service backstop backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+                no_output_timeout: 300m
       - run:
           command: ddev logs -s backstop
           when: always
