@@ -5,13 +5,12 @@
  * Uninstall config.
  */
 
+use Drupal\Core\Database\Database;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\pathauto\PathautoState;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
-use Drupal\Core\Database\Database;
-use Drupal\node\Entity\Node;
 
 /**
  * Migrate action content from old contacts field to new contacts field.
@@ -953,4 +952,60 @@ function mass_content_update_8014() {
     ])
     ->condition('moderation_state', 'archived', '=')
     ->execute();
+}
+
+/**
+ * Remove all legacy redirect content types.
+ */
+function mass_content_update_8015(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+  $query = \Drupal::entityQuery('node');
+  $query->condition('type', 'legacy_redirects');
+  $query->accessCheck(FALSE);
+  if (empty($sandbox)) {
+    // Initialize other variables.
+    $sandbox['current'] = 0;
+    $sandbox['progress'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 500;
+
+  $nids = $query->condition('nid', $sandbox['current'], '>')
+    ->sort('nid')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $storage_handler = \Drupal::entityTypeManager()->getStorage('node');
+  $entities = $storage_handler->loadMultiple($nids);
+  if (!empty($entities)) {
+    foreach ($entities as $entity) {
+      $sandbox['current'] = $entity->id();
+      $entity->delete();
+      $sandbox['progress']++;
+    }
+    Drupal::logger('Mass Content')->info('Deleted !count legacy redirect nodes from !max.', ['!count' => $sandbox['progress'], '!max' => $sandbox['max']]);
+  }
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('Deleted all nodes of Legacy redirects content.');
+  }
+}
+
+/**
+ * Remove all legacy redirect tables.
+ */
+function mass_content_update_8016(&$sandbox) {
+  $tables = [
+    'redirect_replacements_onetoone',
+    'redirect_replacements_content',
+    'redirect_replacements_o2o_debug',
+  ];
+  foreach ($tables as $table) {
+    if (Database::getConnection()->schema()->tableExists($table)) {
+      Database::getConnection()->schema()->dropTable($table);
+    }
+  }
 }
