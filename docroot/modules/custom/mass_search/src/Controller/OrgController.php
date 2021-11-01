@@ -189,9 +189,9 @@ class OrgController extends ControllerBase {
    *   The formatted JSON response.
    */
   private function completeResponse(array $response_content, Request $request) {
-    // Add handy_cache_tags so the endpoint results will update when nodes are
+    // Add cache tags so the endpoint results will update when nodes are
     // updated.
-    $cache_tags = ['handy_cache_tags:node:news', 'handy_cache_tags:node:org_page'];
+    $cache_tags = ['node_list:news', 'node_list:org_page'];
     $cache_metadata = new CacheableMetadata();
     $cache_metadata->setCacheTags($cache_tags);
 
