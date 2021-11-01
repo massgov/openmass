@@ -258,11 +258,6 @@ class MassUtilityCommands extends DrushCommands {
     }
     $d8massgov_url_regex = '/^\/(' . implode('|', $d8massgov_url_segments) . ')(?=\/|$)/';
 
-    // Create a regex to check legacy urls.
-    // Example from v.0.106.0 - https://github.com/massgov/mass/blob/e503b9f1f968e9c409757af4914f3a472f45ca63/docroot/modules/custom/mass_validation/mass_validation.module#L781
-    $legacy_site_names = \Drupal::getContainer()->getParameter('mass_validation.field_legacy_redirects_legacyurl.legacy_site_names');
-    $legacy_site_names_regex = '/^\/(' . implode('|', $legacy_site_names) . ')(?=\/|$)/';
-
     // Iterate through the 404 report and classify each url there
     // with what is causing that 404 page.
     $ga_404_csv_file = new \SplFileObject($fullpath_ga_404_csv_file);
@@ -274,9 +269,6 @@ class MassUtilityCommands extends DrushCommands {
       $event_404_count = intval(str_replace(",", "", $event_404_count));
       if ($event_404_action != "Page 404") {
         continue;
-      }
-      if (preg_match($legacy_site_names_regex, parse_url($event_404_url, PHP_URL_PATH))) {
-        printf("MISSING LEGACY REDIRECT, %d, %s\n", $event_404_count, $event_404_url);
       }
       elseif (preg_match($d8massgov_url_regex, parse_url($event_404_url, PHP_URL_PATH))) {
         printf("MISSING INTERNAL REDIRECT, %d, %s\n", $event_404_count, $event_404_url);
@@ -398,121 +390,6 @@ class MassUtilityCommands extends DrushCommands {
     $batch['progressive'] = FALSE;
     drush_backend_batch_process();
 
-  }
-
-  /**
-   * Copy D2D nodes into redirect entities.
-   *
-   * @command copyd2d
-   * @option limit
-   *   This option is only to be used during development. Don't use it on Prod.
-   * @option min-hits
-   */
-  public function copyD2dRedirects($options = ['limit' => self::REQ, 'min-hits' => 50]) {
-    $query = $this->database->select('node__field_legacy_redirects_legacyurl', 'source')
-      ->fields('source', ['entity_id', 'delta'])
-      ->condition('nfd.status', NodeInterface::PUBLISHED)
-      ->condition('ndlre.field_legacy_redirect_env_value', 0);
-    $query->addField('source', 'field_legacy_redirects_legacyurl_value', 'source');
-    $query->addField('target', 'field_legacy_redirects_ref_conte_target_id', 'target');
-    if ($options['limit']) {
-      $query->range(0, $options['limit']);
-    }
-    $query->innerJoin('node__field_legacy_redirects_ref_conte', 'target', 'source.entity_id = target.entity_id');
-    $query->innerJoin('node_field_data', 'nfd', 'source.entity_id = nfd.nid');
-    $query->innerJoin('node__field_legacy_redirect_env', 'ndlre', 'source.entity_id = ndlre.entity_id');
-    $records = $query->execute()->fetchAll();
-    foreach ($records as $record) {
-      $record->source = rtrim(parse_url($record->source, PHP_URL_PATH), '/');
-      $record->target = '/node/' . $record->target;
-      if ($this->isActive($record->source, $options)) {
-        $this->saveRedirect($record);
-      }
-    }
-  }
-
-  /**
-   * Copy Legacy redirects into redirect entities.
-   *
-   * @command copyLegacy
-   * @option limit
-   * @option min-hits
-   */
-  public function copyLegacyRedirects($options = ['limit' => self::REQ, 'min-hits' => 50]) {
-    // Get full set.
-    $handle = fopen('modules/custom/mass_utility/data/legacy_docs_redirects.txt', 'r');
-    while (($record = fgetcsv($handle, 9000, ' ')) !== FALSE) {
-      $values->source = $record[0];
-      $values->target = rtrim(parse_url($record[1], PHP_URL_PATH), '/');
-      if ($this->isActive($values->source, $options)) {
-        $this->saveRedirect($values);
-      }
-    }
-    fclose($handle);
-  }
-
-  /**
-   * Create a Redirect content entity.
-   *
-   * @param object $record
-   *   A stdClass with entity values.
-   */
-  protected function saveRedirect(\stdClass $record) {
-    /** @var \Drupal\redirect\Entity\Redirect $entity */
-    $entity = Redirect::create();
-    $entity->setSource($record->source);
-    $entity->setRedirect($record->target);
-    $entity->setStatusCode(301);
-    try {
-      if ($entity->save()) {
-        $this->logger()->success('Saved ' . $record->source . ' as Redirect ' . $entity->id());
-      }
-    }
-    catch (EntityStorageException $e) {
-      // Keep going because during testing, duplicate redirect saves happen a lot.
-      $this->logger()->debug($e->getMessage());
-    }
-  }
-
-  /**
-   * Check if an URL is active enough to merit creating a redirect.
-   *
-   * @param string $source
-   *   A source URL to check.
-   * @param array $options
-   *   The command option values.
-   *
-   * @return bool
-   *   Success or Failure.
-   */
-  private function isActive($source, array $options) {
-    static $activity;
-    if (empty($activity)) {
-      $handle = fopen('modules/custom/mass_utility/data/Redirect-Analysis-2-25-2020.csv', 'r');
-      while (($record = fgetcsv($handle, 90000, ',')) !== FALSE) {
-        // This check omits the first row.
-        if ($record[0] !== 'URL') {
-          $record[0] = rtrim($record[0], '/');
-          $activity[$record[0]] = $record;
-        }
-      }
-      fclose($handle);
-    }
-
-    if (!isset($activity[strtolower($source)])) {
-      $this->logger()->notice('Activity missing for ' . $source);
-      return FALSE;
-    }
-
-    $return = $activity[strtolower($source)][1] > $options['min-hits'];
-    if ($return) {
-      $this->logger()->notice('Starting save for ' . $source);
-    }
-    else {
-      $this->logger()->notice('Skipping due to insufficient activity ' . $source);
-    }
-
-    return $return;
   }
 
 }

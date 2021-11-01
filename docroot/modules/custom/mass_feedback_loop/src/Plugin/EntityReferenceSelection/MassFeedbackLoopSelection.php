@@ -29,7 +29,6 @@ class MassFeedbackLoopSelection extends DefaultSelection {
    * Content types not accessible by constituents for providing feedback.
    */
   const FEEDBACK_INELIGIBLE_BUNDLES = [
-    'legacy_redirects',
     'contact_information',
     'person',
     'fee',

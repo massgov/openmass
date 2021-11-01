@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.service_page.field_collections
     - field.field.node.service_page.field_data_flag
     - field.field.node.service_page.field_data_format
     - field.field.node.service_page.field_data_resource_type
@@ -95,14 +96,13 @@ third_party_settings:
         - field_data_resource_type
         - field_data_format
         - field_data_topic
-        - field_data_sub_topic
         - field_intended_audience
         - field_reusable_label
+        - field_collections
       parent_name: group_service_edit_form
       weight: 20
       format_type: tab
       format_settings:
-        label: Banner
         formatter: open
         description: 'Service pages bring together related actions and information that your organization provides constituents, businesses, or other state organizations. <a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/services-and-info/service-page" target="_blank">Learn about authoring Service pages.</a>'
         required_fields: true
@@ -188,7 +188,6 @@ third_party_settings:
       weight: 42
       format_type: fieldset
       format_settings:
-        label: 'What would you like to do?'
         description: 'This section provides links to all transactions related to this service.'
         required_fields: true
         id: what-would-you-like-to-do
@@ -202,7 +201,6 @@ third_party_settings:
       weight: 44
       format_type: fieldset
       format_settings:
-        label: 'What you need to know'
         description: 'This section provides links to key information needed to use this service.'
         required_fields: true
         id: what-you-need-to-know
@@ -217,7 +215,6 @@ third_party_settings:
       weight: 50
       format_type: fieldset
       format_settings:
-        label: 'Additional resources'
         description: 'Optional. If there are additional resources that contain helpful information, add them here. A maximum of 6 links and downloads (combined) will appear on the service page. Work is underway to allow all Additional Resources to appear on a ''more'' page'
         required_fields: true
         id: additional-resources
@@ -239,7 +236,6 @@ third_party_settings:
       weight: 25
       format_type: tab
       format_settings:
-        label: 'Service Family Key Indicators'
         formatter: closed
         description: 'Key indicators are the most important metrics you need to track.'
         required_fields: true
@@ -252,6 +248,17 @@ targetEntityType: node
 bundle: service_page
 mode: default
 content:
+  field_collections:
+    weight: 9
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings: {  }
+    type: term_reference_tree
+    region: content
   field_data_flag:
     weight: 2
     settings: {  }
@@ -350,7 +357,7 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 8
+    weight: 7
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -676,7 +683,7 @@ content:
     type: boolean_checkbox
     region: content
   field_reusable_label:
-    weight: 9
+    weight: 8
     settings:
       match_operator: CONTAINS
       match_limit: 10

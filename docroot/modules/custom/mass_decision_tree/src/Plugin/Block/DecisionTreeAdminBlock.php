@@ -54,9 +54,9 @@ class DecisionTreeAdminBlock extends BlockBase implements ContainerFactoryPlugin
    */
   public function getCacheTags() {
     $tags = [
-      'handy_cache_tags:node:decision_tree',
-      'handy_cache_tags:node:decision_tree_branch',
-      'handy_cache_tags:node:decision_tree_conclusion',
+      'node_list:decision_tree',
+      'node_list:decision_tree_branch',
+      'node_list:decision_tree_conclusion',
     ];
     $cacheTags = Cache::mergeTags(parent::getCacheTags(), $tags);
 
