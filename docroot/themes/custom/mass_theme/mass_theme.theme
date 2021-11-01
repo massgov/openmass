@@ -514,11 +514,7 @@ function mass_theme_preprocess_node_form_page(&$variables) {
     $sideContent = [];
 
     if (Helper::isFieldPopulated($node, 'field_form_you_will')) {
-      $formRequirements = [
-        'rteTitle' => [
-          'text' => t('You will need:'),
-        ],
-      ];
+      $formRequirements = [];
       // Set up rich text elements for what you need.
       $youWillNeed['rteElements'] = [
         Atoms::prepareTextField($node, 'field_form_you_will'),
