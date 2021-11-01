@@ -57,7 +57,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   public function backstop($target, $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::OPT]) {
     if ($target == 'tugboat' && empty($options['tugboat'])) {
       $branch = $options['ci-branch'];
-      if (empty($branch)) {
+      if ($branch == 'develop') {
         $process = $this->processManager()->shell('git rev-parse --abbrev-ref HEAD');
         $branch = trim($process->mustRun()->getOutput());
         if (empty($branch)) {
