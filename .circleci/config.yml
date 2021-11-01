@@ -293,7 +293,7 @@ jobs:
       - run: "cd cloudflare && yarn install"
       - run: "cd cloudflare && npm test"
 
-  # Cut the release branch for Wednesday release only
+  # Cut the release branch for weekly release
   cut_release_branch:
     working_directory: /tmp/code
     docker:
@@ -702,6 +702,12 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
+      - hold - QA approval:
+          name: hold-qa-approval
+          type: approval
+          filters:
+            branches:
+              only: /^release\/.*$/
 
   # This is to automate the hotfix branch only.
   hotfix:
@@ -761,6 +767,12 @@ workflows:
             filters:
               branches:
                 only: /^hotfix\/.*$/
+      - hold - QA approval:
+          name: hold-qa-approval
+          type: approval
+          filters:
+            branches:
+              only: /^hotfix\/.*$/
 
   # This is to automate the mayflower branch only.
   mayflower:
