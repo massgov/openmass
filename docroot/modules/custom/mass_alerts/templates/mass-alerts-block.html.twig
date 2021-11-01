@@ -1,4 +1,5 @@
 {% if path %}
   {{ attach_library('mass_alerts/behaviors') }}
-  <div class="mass-alerts-block" data-alerts-path="{{ path }}"></div>
+  <div class="mass-alerts-block"></div>
+  <script type="text/javascript">alerts("{{ path }}", "{{ node_type }}")</script>
 {% endif %}
