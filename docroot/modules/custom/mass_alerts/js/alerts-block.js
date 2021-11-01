@@ -69,8 +69,9 @@ function alerts(path, nodeType, $alertsBlock) {
       if (removeContainer) {
         $alertsBlock.querySelector('.ma__page-banner__container').classList.remove('ma__page-banner__container');
       }
-      // At the moment of fetch, we already have jQuery.
-      jQuery(document).trigger('ma:AjaxPattern:Render', [{el: jQuery($alertsBlock)}]);
+      var event = new Event('ma:AjaxPattern:Render');
+      event.el = $alertsBlock;
+      document.dispatchEvent(event);
     });
   }
 }
