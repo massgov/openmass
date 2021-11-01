@@ -1065,13 +1065,13 @@ workflows:
     jobs:
       - ma-cf-deploy:
           name: view-plan
-      - hold:
+      - holdhold - Release manager only:
           type: approval
           requires:
             - view-plan
       - ma-cf-deploy:
           name: apply-plan
-          requires: [hold]
+          requires: [hold - Release manager only]
           auto-approve: true
 
 
