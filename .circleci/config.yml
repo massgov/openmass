@@ -669,7 +669,7 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - hold:
+      - hold - Release manager only:
           type: approval
           requires:
             - build
@@ -680,7 +680,7 @@ workflows:
       - deploy:
           name: deploy-test-refresh-db
           requires:
-            - hold
+            - hold - Release manager only
           target: test
           refresh-db: "--refresh-db"
           filters:
@@ -729,7 +729,7 @@ workflows:
           filters:
             branches:
               only: /^hotfix\/.*$/
-      - hold:
+      - hold - Release manager only:
             type: approval
             requires:
               - build
@@ -740,7 +740,7 @@ workflows:
       - deploy:
           name: deploy-test-no-refresh-db
           requires:
-            - hold
+            - hold - Release manager only
           target: test
           filters:
             branches:
@@ -798,7 +798,7 @@ workflows:
           filters:
             branches:
               only: /^mayflower\/.*$/
-      - hold:
+      - hold - Release manager only:
           type: approval
           requires:
             - build
@@ -809,7 +809,7 @@ workflows:
       - deploy:
           name: deploy-test-refresh-db
           requires:
-            - hold
+            - hold - Release manager only
           target: test
           refresh-db: "--refresh-db"
           filters:
@@ -863,7 +863,7 @@ workflows:
           filters:
             branches:
               only: master
-      - hold:
+      - hold - Release manager only:
           type: approval
           requires:
             - build
@@ -873,7 +873,7 @@ workflows:
               only: master
       - tagging_github:
           requires:
-              - hold
+              - hold - Release manager only
           filters:
             branches:
               only: master
@@ -895,7 +895,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold_for_stage:
+      - hold_for_stage Release manager only:
           type: approval
           requires:
             - build
@@ -910,7 +910,7 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - hold_for_stage
+            - hold_for_stage Release manager only
           gitRef: tags/$CIRCLE_TAG
           target: test
           filters:
@@ -918,7 +918,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold_for_prod_maint:
+      - hold_for_prod_maint Release manager only:
           type: approval
           requires:
             - build
@@ -933,7 +933,7 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - hold_for_prod_maint
+            - hold_for_prod_maint Release manager only
           target: prod
           gitRef: tags/$CIRCLE_TAG
           filters:
@@ -941,7 +941,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold_for_prod_no_maint:
+      - hold_for_prod_no_maint Release manager only:
           type: approval
           requires:
             - build
@@ -956,7 +956,7 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - hold_for_prod_no_maint
+            - hold_for_prod_no_maint Release manager only
           target: prod
           gitRef: tags/$CIRCLE_TAG
           skip-maint: --skip-maint
