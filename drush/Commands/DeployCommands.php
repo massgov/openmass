@@ -24,6 +24,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
   var $site = 'prod:massgov';
 
+  const TUGBOAT_REPO = '612e50fcbaa70da92493eef8';
   const CIRCLE_URI = 'https://circleci.com/api/v2/project/github/massgov/openmass/pipeline';
 
   /**
@@ -34,10 +35,17 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @param string $target Target environment. Recognized values: prod, test, local, tugboat, feature[N].
    * @param string $reference Reference environment. Recognized values: prod, test, local, tugboat, feature[N].
    * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
-   * @option tugboat A Tugboat URL which should be used as target. You must also pass 'tugboat' as target.
+   * @option tugboat A Tugboat URL which should be used as target. You must also pass 'tugboat' as target. When omitted, the most recent Preview for the current branch is assumed.
    * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
    * @option ci-branch The branch that CircleCI should check out at start.
-   *
+   * @usage drush ma:backstop feature5 prod
+   *   Run backstop against feature5 and compare against Production.
+   * @usage drush ma:backstop tugboat prod
+   *   Run backstop against the current's branch's preview at Tugboat and compare against Production.
+   * @usage drush ma:backstop tugboat prod --ci-branch=feature/XYZ
+   *   Run backstop against feature/XYZ's preview at Tugboat and compare against Production.
+   * @usage drush ma:backstop tugboat prod --tugboat=https://pr1111-zswa06zr1auucl5hkruj76bdcprszykl.tugboat.qa/
+   *   Run backstop against the the sepcified preview at Tugboat and compare against Production.
    * @aliases ma-backstop
    * @validate-circleci-token
    *
@@ -46,7 +54,31 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
-  public function backstop($target, $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::REQ]) {
+  public function backstop($target, $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::OPT]) {
+    if ($target == 'tugboat' && empty($options['tugboat'])) {
+      $branch = $options['ci-branch'];
+      if (empty($branch)) {
+        $process = $this->processManager()->shell('git rev-parse --abbrev-ref HEAD');
+        $branch = trim($process->mustRun()->getOutput());
+        if (empty($branch)) {
+          throw new \RuntimeException('Unable to determine current branch. Pass --tugboat option.');
+        }
+      }
+      // Lookup the Preview corresponding to the specified or current branch.
+      $cmd = sprintf('tugboat --json --api-token %s list previews %s', getenv('TUGBOAT_ACCESS_TOKEN'), '' . self::TUGBOAT_REPO . '');
+      $process = $this->processManager()->shell($cmd);
+      $output = $process->mustRun()->getOutput();
+      $previews = json_decode($output);
+      foreach ($previews as $preview) {
+        if ($preview->provider_ref->head->ref == $branch) {
+          $options['tugboat'] = $preview->url;
+          break;
+        }
+      }
+      if (empty($options['tugboat'])) {
+        throw new \RuntimeException('Unable to find a matching Tugboat preview. Pass --tugboat option.');
+      }
+    }
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
