@@ -95,7 +95,7 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
     }
     else if ($node) {
       $nid = $node->id();
-      $path = Url::fromRoute('mass_alerts.page_alerts', ['nid' => $nid])->toString();      
+      $path = Url::fromRoute('mass_alerts.page_alerts', ['nid' => $nid])->toString();
     }
 
     return [
