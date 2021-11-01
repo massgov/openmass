@@ -1,94 +1,78 @@
-/**
- * @file
- */
-
-(function ($, Drupal, drupalSettings) {
+/* eslint-disable no-unused-vars */
+function alerts(path, nodeType) {
   'use strict';
-  Drupal.behaviors.massAlertBlocks = {
 
-    /**
-     * Drupal behavior.
-     *
-     * @param {HTMLDocument|HTMLElement} context
-     * The context argument for Drupal.attachBehaviors()/detachBehaviors().
-     * @param {object} settings
-     * The settings argument for Drupal.attachBehaviors()/detachBehaviors().
-     */
-    attach: function (context, settings) {
+  var $this = document.querySelector('.mass-alerts-block');
+  var removeContainer = false;
 
-      $('.mass-alerts-block', context).each(function () {
-        var $this = $(this);
-        var path = $this.data('alerts-path');
-        var removeContainer = false;
+  function insertBefore(nodeA, nodeBselector) {
+    var nodeB = document.querySelector(nodeBselector);
+    document.getElementById(nodeA).insertAdjacentElement('beforebegin', nodeB);
+  }
 
-        if (path !== '/alerts/sitewide') {
+  function insertAfter(nodeA, nodeBselector) {
+    var nodeB = document.querySelector(nodeBselector);
+    document.getElementById(nodeA).insertAdjacentElement('afterend', nodeB);
+  }
 
-          if (settings.mass_alerts) {
-            var nodeType = settings.mass_alerts.node.type;
-            var positioned = false;
+  if (path !== '/alerts/sitewide') {
+    if (nodeType) {
+      var positioned = false;
 
-            if (nodeType === 'how_to_page') {
-              if ($('.ma__page-header__optional-content').length) {
-                $this.insertBefore('.ma__page-header__optional-content');
-                removeContainer = true;
-                positioned = true;
-              }
-            }
-            else if (nodeType === 'person') {
-              if ($('.ma__page-intro').length) {
-                $this.insertAfter('.ma__page-intro');
-                removeContainer = true;
-                positioned = true;
-              }
-            }
-
-            if (!positioned) {
-
-              if ($('.ma__illustrated-header').length) {
-                $this.insertAfter('.ma__illustrated-header');
-              }
-              else if ($('.ma__page-header').length) {
-                $this.insertAfter('.ma__page-header');
-              }
-              else if ($('.ma__organization-navigation').length) {
-                $this.insertAfter('.ma__organization-navigation');
-              }
-              else if ($('.ma__page-banner').length) {
-                $this.insertAfter('.ma__page-banner');
-              }
-              else if ($('.pre-content').length) {
-                $this.insertAfter('.pre-content');
-              }
-            }
-          }
-          else {
-            // Not a node page.
-            path = false;
-          }
+      if (nodeType === 'how_to_page') {
+        if (document.querySelector('.mdocument.querySelector__page-header__optional-content') != null) {
+          insertBefore($this, '.ma__page-header__optional-content');
+          removeContainer = true;
+          positioned = true;
         }
-
-
-        if (path) {
-          $.ajax({
-            type: 'GET',
-            url: path,
-            cache: true,
-            success: function (content) {
-              if (!content) {
-                $this.hide();
-                return;
-              }
-
-              $this.html(content);
-              if (removeContainer) {
-                $this.find('.ma__page-banner__container').removeClass('ma__page-banner__container');
-              }
-              $(document).trigger('ma:AjaxPattern:Render', [{el: $this}]);
-            }
-          });
+      }
+      else if (nodeType === 'person') {
+        if (document.querySelector('.ma__page-intro') != null) {
+          insertAfter($this, '.ma__page-intro');
+          removeContainer = true;
+          positioned = true;
         }
-      });
+      }
+
+      if (!positioned) {
+
+        if (document.querySelector('.ma__illustrated-header') != null) {
+          insertAfter($this, '.ma__illustrated-header');
+        }
+        else if (document.querySelector('.ma__page-header') != null) {
+          insertAfter($this, '.ma__page-header');
+        }
+        else if (document.querySelector('.ma__organization-navigation') != null) {
+          insertAfter($this, '.ma__organization-navigation');
+        }
+        else if (document.querySelector('.ma__page-banner') != null) {
+          insertAfter($this, '.ma__page-banner');
+        }
+        else if (document.querySelector('.pre-content') != null) {
+          insertAfter($this, '.pre-content');
+        }
+      }
     }
+    else {
+      // Not a node page.
+      path = false;
+    }
+  }
 
-  };
-})(jQuery, Drupal, drupalSettings);
+  if (path) {
+    fetch(path).then(function (response) {
+      return response.text();
+    }).then(function (content) {
+      if (!content) {
+        $this.setAttribute('style', 'display: none');
+        return;
+      }
+      $this.innerHTML = content;
+      if (removeContainer) {
+        $this.querySelector('.ma__page-banner__container').classList.remove('ma__page-banner__container');
+      }
+      // At the moment of fetch, we already have jQuery.
+      jQuery(document).trigger('ma:AjaxPattern:Render', [{el: jQuery($this)}]);
+    });
+  }
+}

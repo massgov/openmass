@@ -8,7 +8,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\node\NodeInterface;
 use Drupal\Core\Url;
 
 /**
@@ -88,21 +87,21 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
 
     $config = $this->getConfiguration();
     $path = FALSE;
+    $node = $this->routeMatch->getParameter('node');
+    $node_type = $node ? $node->bundle() : '';
 
     if ($config['alerts_block_type'] == 'sitewide') {
       $path = Url::fromRoute('mass_alerts.site_alerts')->toString();
     }
-    else {
-      $node = $this->routeMatch->getParameter('node');
-      if ($node instanceof NodeInterface) {
-        $nid = $node->id();
-        $path = Url::fromRoute('mass_alerts.page_alerts', ['nid' => $nid])->toString();
-      }
+    else if ($node) {
+      $nid = $node->id();
+      $path = Url::fromRoute('mass_alerts.page_alerts', ['nid' => $nid])->toString();      
     }
 
     return [
       '#theme' => 'mass_alerts_block',
       '#path' => $path,
+      '#node_type' => $node_type,
       '#cache' => [
         'contexts' => ['url'],
       ],
