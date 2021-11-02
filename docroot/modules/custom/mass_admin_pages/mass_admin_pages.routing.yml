@@ -24,3 +24,39 @@ mass_admin_pages.updates_block_form:
     _title: 'Updates and Alert messages'
   requirements:
     _permission: 'administer form for updates block'
+
+mass_admin_pages.mass_nodes_archive:
+  path: '/node/{node}/archive'
+  defaults:
+    _controller: '\Drupal\mass_admin_pages\Controller\MassNodeArchiveController::build'
+    _title: 'Archived versions of this page '
+  options:
+    parameters:
+      node:
+        type: entity:node
+        bundle:
+          - advisory
+          - binder
+          - curated_list
+          - form_page
+          - guide_page
+          - how_to_page
+          - info_details
+          - service_page
+          - service_details
+          - location
+          - topic_page
+          - location_details
+          - org_page
+          - person
+          - news
+          - event
+          - decision
+          - decision_tree
+          - executive_order
+          - regulation
+          - rules
+          - campaign_landing
+    _node_operation_route: TRUE
+  requirements:
+    _permission: 'use mass dashboard'
