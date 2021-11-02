@@ -57,21 +57,35 @@ function alerts(path, nodeType, $alertsBlock) {
     }
   }
 
-  if (path) {
-    fetch(path).then(function (response) {
-      return response.text();
-    }).then(function (content) {
-      if (!content) {
-        $alertsBlock.setAttribute('style', 'display: none');
-        return;
-      }
-      $alertsBlock.innerHTML = content;
-      if (removeContainer) {
-        $alertsBlock.querySelector('.ma__page-banner__container').classList.remove('ma__page-banner__container');
-      }
-      var event = new Event('ma:AjaxPattern:Render');
-      event.el = $alertsBlock;
-      document.dispatchEvent(event);
-    });
+  function processData(content) {
+    if (!content) {
+      $alertsBlock.setAttribute('style', 'display: none');
+      return;
+    }
+    $alertsBlock.innerHTML = content;
+    if (removeContainer) {
+      $alertsBlock.querySelector('.ma__page-banner__container').classList.remove('ma__page-banner__container');
+    }
+    var event = new Event('ma:AjaxPattern:Render');
+    event.el = $alertsBlock;
+    document.dispatchEvent(event);
   }
+
+  function checkData() {
+    if (typeof document.prefetchAlertsData[path] === 'undefined') {
+      return false;
+    }
+    processData(document.prefetchAlertsData[path]);
+    return true;
+  }
+
+  if (typeof document.prefetchAlertsData === 'undefined') {
+    debugger;
+    return;
+  }
+
+  if (!checkData()) {
+    document.addEventListener('mass_alerts_data_ready', checkData, false);
+  }
+
 }
