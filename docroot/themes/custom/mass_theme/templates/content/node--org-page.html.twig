@@ -181,6 +181,7 @@
               {% if content.extra_org_nav_featured_services|render %}
                 <div class="ma__org-nav-i-want-to-section ma__org-nav-i-want-to__findService">
                   {% if content.extra_org_nav_featured_services|render is not empty %}
+                    <h3 class="ma__comp-heading--mobile"><button>Find a service or task</button></h3>
                     {# Display the links from "Featured Services". #}
                     {{ content.extra_org_nav_featured_services }}
                   {% endif %}
@@ -191,6 +192,7 @@
             {% block learnAbout %}
               {% if content.extra_org_nav_featured_topics|render %}
                 <div class="ma__org-nav-i-want-to-section ma__org-nav-i-want-to__learnAbout">
+                  <h3 class="ma__comp-heading--mobile"><button>{{'Learn more about'|t ~ '...'}}</button></h3>
                   {% include '@atoms/04-headings/comp-heading.twig' with {
                     compHeading: {
                       title: 'Learn more about'|t ~ '...',
@@ -209,6 +211,7 @@
             {% block login %}
               {% if node.field_application_login_links is not empty %}
                 <div class="ma__org-nav-i-want-to-section ma__org-nav-i-want-to__login">
+                  <h3 class="ma__comp-heading--mobile"><button>Log in to...</button></h3>
                   {{ content.extra_org_nav_application_login_links }}
                 </div>
               {% endif %}
