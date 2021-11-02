@@ -81,21 +81,23 @@ class Schemas {
       $field_organization_sections = $variables['node']->get('field_organization_sections')->getValue();
       // Loop through the organization sections to find the data we want.
       foreach ($field_organization_sections as $key => $section) {
-        $section_content = $variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity;
-        // If it's a rich_text paragraph is found, use the first paragraph of
-        // the body field and break from the loop.
-        if ($section_content->bundle() === 'rich_text') {
-          if (isset($variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity->field_body->value)) {
-            $schema['governmentOrganization']['disambiguatingDescription'] = Helper::getFirstParagraph($variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity->field_body->value);
-            break;
+        if (isset($variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity)) {
+          $section_content = $variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity;
+          // If it's a rich_text paragraph is found, use the first paragraph of
+          // the body field and break from the loop.
+          if ($section_content->bundle() === 'rich_text') {
+            if (isset($variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity->field_body->value)) {
+              $schema['governmentOrganization']['disambiguatingDescription'] = Helper::getFirstParagraph($variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity->field_body->value);
+              break;
+            }
           }
-        }
-        // If it's an about paragraph is found, use the summary field value and
-        // break from the loop.
-        elseif ($section_content->bundle() === 'about') {
-          if (isset($variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity->field_about->entity->field_summary->value)) {
-            $schema['governmentOrganization']['disambiguatingDescription'] = $variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity->field_about->entity->field_summary->value;
-            break;
+          // If it's an about paragraph is found, use the summary field value
+          // and break from the loop.
+          elseif ($section_content->bundle() === 'about') {
+            if (isset($variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity->field_about->entity->field_summary->value)) {
+              $schema['governmentOrganization']['disambiguatingDescription'] = $variables['node']->field_organization_sections[$key]->entity->field_section_long_form_content->entity->field_about->entity->field_summary->value;
+              break;
+            }
           }
         }
       }

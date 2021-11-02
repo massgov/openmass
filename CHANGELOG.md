@@ -1,21 +1,41 @@
 
 
+## [0.300.0] - October 26, 2021
+
+### Added
+  - DP-22484: Added curated list details report.
+  - DP-23034: Add brand banner to OpenMass.
+  - DP-23135: Add urls for Lighthouse at Tugboat
+  - DP-23167: Tests for expand/collapse functionality on accordions
+  - DP-23254: Added banner to pages using the without-main page template.
+  
+### Changed
+  - DP-23257: Updated Mayflower version to 11.16.3.
+  - Update BrandBanner toggle button text (MF #1535)
+  - DP-3188: To make search comply with https://rawgit.com/w3c/aria-practices/master/aria-practices-DeletedSectionsArchive.html#autocomplete
+Accesibility improvements for screenreaders on search https://github.com/massgov/openmass/pull/1081#issuecomment-947854475
+  
+## [0.299.1] - October 25, 2021
+
+### Fixed
+  - DP-23248: Fix production failures Advisory nodes and Locations pages.
+
 ## [0.299.0] - October 19, 2021
 
 ### Changed
   - DP-21388: Updated Mayflower version to 11.16.2.
   - DP-23034: Changed HTML semantic from dl``dt to ul``li for better screen reader experience. (MF#1516)
-  
+
 ### Fixed
   - DP-23011: Fixed radio buttons mobile styling when selected on mobile (Galaxy S10 with Chrome).
   - DP-23066: Reduce 5xx errors on Mass.gov and edit.mass.gov
   - DP-23165: Fixed the 500 error for Content Reports Organization Pages.
   - DP-23192: Fixed fatal error on Person pages related to organization role logic.
   - DP-23200: Fixed issue causing How To pages to fail Behat testing.
-  
+
 ### Security
   - DP-23160: update drupal/linkit to 6.0.0-beta3
-  
+
 ## [0.298.1] - October 14, 2021
 
 ### Fixed
@@ -36,7 +56,7 @@
   - DP-22958: Added a checkbox to hide Organization Section paragraph headings on Organizations.
   - DP-22961: Added ability to control Organization page section separators.
   - DP-23040: Added a workaround for the org_page edit 500 error on local dev environments.
-  
+
 ### Changed
   - DP-22403: Added Featured Message, Featured Item Mosaic and Organization Grid to the Organization Section paragraph type.
   - DP-22534: Converted Organization Page News fields into an Organization News paragraph.
@@ -81,7 +101,7 @@
   - [OrgContact] DP-22666: Added Org Contact organism. (MF #1467)
   - [Sidebar] DP-22940: Fix the horizontal alignment on sidebar for locations. Fix small text-underline on locations. (MF #1513)
   - [StackedRowSection] DP-23128: Adjust vertical spacing around the component. (MF #1525)
-  
+
 ### Fixed
   - DP-22746: Fixed Behat error failures due to Organization page changes.
   - DP-22747: Organization page fixes discovered during Backstop testing.
@@ -89,29 +109,29 @@
   - DP-22960: Fixing the Organization sub navigation using organization section data.
   - DP-22981: Adjusted the org long form paragraph to support wrapping sub elements.
   - DP-23084: Updated the Featured Message paragraph template to conditionally show the callout link.
-  
+
 
 
 ## [0.297.0] - October 5, 2021
 
 ### Security
   - DP-22767: Security updates of the JavaScript and Drupal packages and dependencies.
-  
+
 ### Added
   - DP-22895: PR previews powered by Tugboat.
   - DP-22994: Allow DB swap via personal DDEV config.
   - DP-23088: Add new languages to Mass.gov - Somali, traditional Chinese.
-  
+
 ### Fixed
   - DP-23002: Fixed backstop on local dev.
   - DP-23049: Update Backstop in CI
   - DP-23002: Update http://mass.local to https://mass.local.
-  
+
 ### Changed
   - DP-23020: Move release trigger to noon from 1pm for Tuesday release branch.
   - DP-23092: Updated Mayflower version to 11.15.3.
   - DP-22681: Replace the existing keyboard navigation function with the new common function, focusTrapping.js for desktop. (MF #1489)
-  
+
 
 
 ## [0.296.0] - September 21, 2021
@@ -129,33 +149,33 @@
   - DP-23001: Updated Mayflower version to 11.15.2.
   - DP-22974: Adjusted it to fix regression issue. (MF #1503)
   - DP-22979: Fix webfonts `woff2` and `woff` fallback order, to avoid duplicated loading. (MF #1501)
-  
+
 ### Removed
   - DP-19071: Remove person pages from xml sitemap.
-  
+
 ### Fixed
   - DP-22263: Enabling and implementing Drupal responsive images for key message paragraph.
   - DP-22979: Fix preload fonts 404 errors.
-  
+
 ### Added
   - DP-22918: Make organization user filter persist in the All Content view.
-  
+
 
 
 ## [0.295.0] - September 7, 2021
 
 ### Removed
   - DP-22608: Remove override for TOC overlay in the theming as the related feature is updated to cover the override in Mayflower.
-  
+
 ### Added
   - DP-22706: Make backstop test to verify that "Log in to" menu expands.
   - DP-22773: Added Data Listing fields to the Guide content type.
-  
+
 ### Fixed
   - DP-22709: Fixed backstop false positives related to alert positioning.
   - DP-22772: Fixing "unchecking the Data Flag doesn't remove a page from the data listing" bug.
   - DP-22927: Patched core to fix CloudFlare Query String sorting issue with Batch API.
-  
+
 ### Changed
   - DP-22734: Added function to wait for table csv rendering on backstop test.
   - DP-22740: Convert block for news and updates field to use rich text.
@@ -171,7 +191,7 @@
   - DP-11358: Show CircleCI deployments in any associated Jira issue.
   - DP-22771: Add collections pages to default backstop job.
   - DP-22774: Added Data Administrator and Collection Administrator roles.
-  
+
 ### Changed
   - DP-21924: Upgraded Drupal Version to Drupal 9.2
   - DP-22460: Use Drupal state to load google optimize differently and don't block page load
@@ -192,7 +212,7 @@
   - DP-21342: Add text underline for all inline links. (MF #1468)
   - DP-22857: Disable pointer-events to avoid colliding with other content. (MF #1483)
   - DP-22859: Detect iframe in full width figure element, and post an update message to the iframe to update iframe dimension for the responsive iframe height javascript. (MF #1486)
-  
+
 ### Fixed
   - DP-22650: Fix js errors on safari.
   - DP-22745: Fixed the sitewide alert header to correspond to the alert label selection.
@@ -203,24 +223,24 @@
   - DP-22817: Fixed errors and bugs with Collections URL term validation and breadcrumb logic.
   - DP-22867: Added back library reference that went missing after merge.
   - DP-22880: Migration script to populate the alert date field.
-  
+
 ### Security
   - DP-22863: Updated Admin Toolbar to 3.0.2 per https://www.drupal.org/sa-contrib-2021-025
-  
+
 
 
 ## [0.293.0] - August 10, 2021
 
 ### Changed
   - DP-22550: Allow the updates block configuration form to use CKEditor.
-  
+
 ### Added
   - DP-22551: Drush ma:backstop can now send custom --list and --viewport params.
-  
+
 ### Fixed
   - DP-22703: Fixed bugs related to the Data Listing and Collections features.
   - DP-22715: More robust queue worker for unpublished email reminders.
-  
+
 
 
 ## [0.292.0] - August 3, 2021

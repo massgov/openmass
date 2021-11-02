@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.form_page.field_collections
     - field.field.node.form_page.field_english_version
     - field.field.node.form_page.field_form_embed
     - field.field.node.form_page.field_form_lede
@@ -22,6 +23,7 @@ dependencies:
     - mass_fields
     - maxlength
     - metatag
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -46,10 +48,11 @@ third_party_settings:
         - field_form_ref_contacts_3
         - field_form_embed
         - field_organizations
-        - langcode
-        - field_english_version
         - field_intended_audience
+        - langcode
         - field_reusable_label
+        - field_english_version
+        - field_collections
       parent_name: group_form_page_edit_form
       weight: 20
       format_type: tab
@@ -66,8 +69,19 @@ targetEntityType: node
 bundle: form_page
 mode: default
 content:
+  field_collections:
+    weight: 12
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings: {  }
+    type: term_reference_tree
+    region: content
   field_english_version:
-    weight: 10
+    weight: 11
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -158,7 +172,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_reusable_label:
-    weight: 9
+    weight: 10
     settings:
       match_operator: CONTAINS
       size: 60
