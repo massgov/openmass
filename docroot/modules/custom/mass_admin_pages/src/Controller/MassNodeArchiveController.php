@@ -19,7 +19,7 @@ class MassNodeArchiveController extends ControllerBase {
 
     $link = $node->toUrl()->toString();
     return [
-    '#theme' => 'mass__nodes_archive',
+      '#theme' => 'mass__nodes_archive',
       '#link' => $link,
     ];
   }
