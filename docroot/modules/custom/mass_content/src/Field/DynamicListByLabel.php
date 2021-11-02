@@ -19,14 +19,30 @@ class DynamicListByLabel extends QueryGeneratedDynamicEntityReferenceList {
     foreach ($entity->field_listdynamic_label->referencedEntities() as $term) {
       $term_ids[] = $term->id();
     }
+
     $types = [
       'advisory',
       'binder',
+      'campaign_landing',
+      'curated_list',
       'decision',
+      'decision_tree',
+      'event',
       'executive_order',
+      'form_page',
+      'guide_page',
+      'how_to_page',
       'info_details',
+      'location',
+      'location_details',
+      'news',
+      'org_page',
+      'person',
       'regulation',
       'rules',
+      'service_page',
+      'service_details',
+      'topic_page',
     ];
     $queries = [];
     $queries['node'] = \Drupal::entityQuery('node')

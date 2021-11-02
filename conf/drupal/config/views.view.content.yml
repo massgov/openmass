@@ -25,7 +25,6 @@ dependencies:
     - node.type.how_to_page
     - node.type.info_details
     - node.type.interstitial
-    - node.type.legacy_redirects
     - node.type.location
     - node.type.location_details
     - node.type.news
@@ -1213,48 +1212,6 @@ display:
           entity_type: node
           entity_field: nid
           plugin_id: numeric
-        type:
-          id: type
-          table: node_field_data
-          field: type
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          operator: 'not in'
-          value:
-            legacy_redirects: legacy_redirects
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
         status:
           id: status
           table: node_field_revision
@@ -2511,48 +2468,6 @@ display:
           entity_type: node
           entity_field: nid
           plugin_id: numeric
-        type:
-          id: type
-          table: node_field_data
-          field: type
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          operator: 'not in'
-          value:
-            legacy_redirects: legacy_redirects
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
         status:
           id: status
           table: node_field_revision
@@ -3952,48 +3867,6 @@ display:
             group_items: {  }
           entity_type: node
           plugin_id: latest_revision
-        type:
-          id: type
-          table: node_field_data
-          field: type
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          operator: 'not in'
-          value:
-            legacy_redirects: legacy_redirects
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
         moderation_state:
           id: moderation_state
           table: node_field_revision
