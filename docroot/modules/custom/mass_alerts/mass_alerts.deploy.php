@@ -91,6 +91,10 @@ function mass_alerts_deploy_sitewide_alerts(&$sandbox) {
         $new_p_values['field_sitewide_alert_message'] = $old_p->get('field_emergency_alert_message')->getValue();
       }
 
+      if (!empty($old_p->get('field_emergency_alert_timestamp')->getValue())) {
+        $new_p_values['field_sitewide_alert_timestamp'] = $old_p->get('field_emergency_alert_timestamp')->getValue();
+      }
+
       $new_p = Paragraph::create($new_p_values);
       $new_p->save();
       $new_paragraphs[] = [
