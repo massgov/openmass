@@ -106,7 +106,7 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
     $current_path = \Drupal::service('path.current')->getPath();
     $cid = 'mass_alerts_blocks' . ':' . $current_path;
     $data = \Drupal::cache('render')->get($cid);
-    $data[$path] = ['#path' => $path];
+    $data->$path = ['#path' => $path];
     \Drupal::cache('render')->set($cid, $data);
 
     return [
