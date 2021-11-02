@@ -457,8 +457,8 @@ jobs:
 
   pending_security:
     working_directory: /tmp/code
-    docker:
-      - image: cimg/php:7.4-node
+    executor:
+      name: base
     steps:
       - attach_workspace: {at: /tmp}
       - ddev_install_run
@@ -638,7 +638,7 @@ workflows:
     triggers:
       - schedule:
           # UTC time-zone
-          cron: "00 16 * * 2"
+          cron: "25 18 * * 2"
           filters:
             branches:
               only:
@@ -1034,7 +1034,6 @@ workflows:
             branches:
               only:
                 - develop
-                - rollback-mysql-upgrade
 
   # Usually triggered by drush ma:backstop.
   backstop_ad_hoc:
@@ -1102,7 +1101,7 @@ workflows:
               only:
                 - develop
 
-  # Nightly pm:security, runs at 2:00AM EST.
+  # Nightly pm:security and pm:security-php.
   nightly_pending_security:
     jobs:
       - build

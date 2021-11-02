@@ -1,0 +1,61 @@
+uuid: a47e2fa7-611e-4cb5-b676-5518135031f2
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.listing
+    - field.field.node.form_page.field_collections
+    - field.field.node.form_page.field_english_version
+    - field.field.node.form_page.field_form_embed
+    - field.field.node.form_page.field_form_lede
+    - field.field.node.form_page.field_form_listing_desc
+    - field.field.node.form_page.field_form_ref_contacts_3
+    - field.field.node.form_page.field_form_you_will
+    - field.field.node.form_page.field_intended_audience
+    - field.field.node.form_page.field_metatags
+    - field.field.node.form_page.field_organizations
+    - field.field.node.form_page.field_reusable_label
+    - field.field.node.form_page.field_state_organization_tax
+    - node.type.form_page
+  module:
+    - user
+id: node.form_page.listing
+targetEntityType: node
+bundle: form_page
+mode: listing
+content:
+  field_form_lede:
+    weight: 0
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  workbench_moderation_control:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  computed_log_in_links: true
+  computed_related_to: true
+  content_moderation_control: true
+  extra_node_pager: true
+  extra_org_feedback_form: true
+  field_collections: true
+  field_english_version: true
+  field_form_embed: true
+  field_form_listing_desc: true
+  field_form_ref_contacts_3: true
+  field_form_you_will: true
+  field_intended_audience: true
+  field_metatags: true
+  field_organizations: true
+  field_reusable_label: true
+  field_state_organization_tax: true
+  langcode: true
+  links: true
+  page_next: true
+  page_previous: true
+  referencing_binders: true
