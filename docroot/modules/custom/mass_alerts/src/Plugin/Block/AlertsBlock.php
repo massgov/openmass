@@ -10,6 +10,7 @@ use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
+use stdClass;
 
 /**
  * Provides a mayflower Block for @organisms/by-template/ajax-pattern.
@@ -104,8 +105,9 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
     /** @see docroot/themes/custom/mass_theme/templates/layout/html.html.twig */
     /** @see mass_theme_preprocess_html() */
     $current_path = \Drupal::service('path.current')->getPath();
-    $cid = 'mass_alerts_blocks' . ':' . $current_path;
-    $data = \Drupal::cache('render')->get($cid);
+    $cid = 'mass_alerts_blocks:' . $current_path;
+    $cache_entry = \Drupal::cache('render')->get($cid);
+    $data = $cache_entry->data ?? new stdClass();
     $data->$path = ['#path' => $path];
     \Drupal::cache('render')->set($cid, $data);
 

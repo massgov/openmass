@@ -35,10 +35,10 @@
           document.prefetchAlertsData = {};
           function prefetch_alerts(data) {
             data.forEach(function (dataRow) {
-              fetch(dataRow).then(function (response) {
+              fetch(dataRow['#path']).then(function (response) {
                 return response.text();
               }).then(function (content) {
-                document.prefetchAlertsData[dataRow] = content;
+                document.prefetchAlertsData[dataRow['#path']] = content;
                 document.dispatchEvent(new Event('mass_alerts_data_ready'));
               });
             });

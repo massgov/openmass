@@ -80,7 +80,6 @@ function alerts(path, nodeType, $alertsBlock) {
   }
 
   if (typeof document.prefetchAlertsData === 'undefined') {
-    debugger;
     return;
   }
 
