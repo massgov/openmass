@@ -15,13 +15,7 @@ function alerts(path, nodeType, $alertsBlock) {
     nodeB.insertAdjacentElement('afterend', nodeA);
   }
 
-
-  function positionAlert() {
-    if (!nodeType) {
-      path = false;
-      return;
-    }
-
+  function setPositionByNodeType() {
     if (nodeType === 'how_to_page') {
       if (document.querySelector('.mdocument.querySelector__page-header__optional-content') != null) {
         insertBefore($alertsBlock, '.ma__page-header__optional-content');
@@ -36,36 +30,45 @@ function alerts(path, nodeType, $alertsBlock) {
         positioned = true;
       }
     }
+  }
 
-    if (positioned) {
+  function positionAlert() {
+    if (!nodeType) {
+      path = false;
       return;
     }
 
-    if (document.querySelector('.ma__illustrated-header') != null) {
-      insertAfter($alertsBlock, '.ma__illustrated-header');
-      positioned = true;
+    setPositionByNodeType();
+
+    if (positioned) {
+      $alertsBlock.setAttribute('style', null);
+      return;
     }
-    else if (document.querySelector('.ma__page-header') != null) {
-      insertAfter($alertsBlock, '.ma__page-header');
+
+    var areasToMoveAlerts = [
+      '.ma__illustrated-header',
+      '.ma__page-header',
+      '.ma__organization-navigation',
+      '.ma__page-banner',
+      '.pre-content'
+    ];
+
+    areasToMoveAlerts.forEach(function (areaSelector) {
+      insertAfter($alertsBlock, areaSelector);
       positioned = true;
-    }
-    else if (document.querySelector('.ma__organization-navigation') != null) {
-      insertAfter($alertsBlock, '.ma__organization-navigation');
-      positioned = true;
-    }
-    else if (document.querySelector('.ma__page-banner') != null) {
-      insertAfter($alertsBlock, '.ma__page-banner');
-      positioned = true;
-    }
-    else if (document.querySelector('.pre-content') != null) {
-      insertAfter($alertsBlock, '.pre-content');
-      positioned = true;
+    });
+
+    if (positioned) {
+      $alertsBlock.setAttribute('style', null);
+      return;
     }
   }
 
   var alertPositionIntervalMs = 100;
 
   if (path !== '/alerts/sitewide') {
+    $alertsBlock.setAttribute('style', 'display: none');
+
     // This is faster than listen DOMContentLoaded.
     alertPositionInterval = setInterval(function () {
       positionAlert();
