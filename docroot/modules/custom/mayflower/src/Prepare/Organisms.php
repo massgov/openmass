@@ -1877,12 +1877,12 @@ class Organisms {
             $topic_heading = [
               'text' => $entity->label(),
             ];
+            $link_items = [];
             // Loop through the Topic Link Groups.
             foreach ($entity->field_topic_content_cards as $topic_group) {
               // Initialize the heading and link arrays for this Link Group.
               $topic_category_heading = [];
               $topic_links = [];
-              $link_items = [];
               // If a category is set, create a heading.
               $topic_title = Helper::fieldFullView($topic_group->entity, 'field_content_card_category');
               if (!empty($topic_title)) {
