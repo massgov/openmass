@@ -18,7 +18,9 @@ dependencies:
     - field.field.node.executive_order.field_executive_title
     - field.field.node.executive_order.field_intended_audience
     - field.field.node.executive_order.field_organizations
+    - field.field.node.executive_order.field_primary_parent
     - field.field.node.executive_order.field_reusable_label
+    - field.field.node.executive_order.field_short_title
     - field.field.node.executive_order.field_state_organization_tax
     - node.type.executive_order
     - workflows.workflow.editorial
@@ -26,10 +28,10 @@ dependencies:
     - content_moderation
     - datetime
     - entity_browser_entity_form
+    - entity_hierarchy
     - field_group
     - inline_entity_form
     - link
-    - maxlength
     - metatag
     - paragraphs
     - text
@@ -52,12 +54,14 @@ third_party_settings:
     group_overview:
       children:
         - field_executive_title
+        - field_short_title
         - field_executive_order_number
         - field_executive_order_date
         - field_executive_order_issuer
         - field_executive_order_mass_regis
         - field_executive_order_adjustment
         - field_exec_order_listing_desc
+        - field_primary_parent
         - field_organizations
         - field_intended_audience
         - field_reusable_label
@@ -110,7 +114,7 @@ mode: default
 content:
   body:
     type: text_textarea_with_summary
-    weight: 13
+    weight: 36
     settings:
       rows: 9
       placeholder: ''
@@ -119,7 +123,7 @@ content:
     third_party_settings: {  }
     region: content
   field_exec_order_listing_desc:
-    weight: 9
+    weight: 15
     settings:
       size: 60
       placeholder: ''
@@ -128,7 +132,7 @@ content:
     region: content
   field_executive_order_adjustment:
     type: entity_reference_paragraphs
-    weight: 8
+    weight: 14
     settings:
       title: 'Adjustment Type'
       title_plural: 'Adjustment Types'
@@ -149,13 +153,13 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_executive_order_date:
-    weight: 5
+    weight: 11
     settings: {  }
     third_party_settings: {  }
     type: datetime_default
     region: content
   field_executive_order_downloads:
-    weight: 14
+    weight: 37
     settings:
       form_mode: default
       label_singular: ''
@@ -176,7 +180,7 @@ content:
     region: content
   field_executive_order_issuer:
     type: entity_reference_paragraphs
-    weight: 6
+    weight: 12
     settings:
       title: Issuer
       title_plural: Issuers
@@ -187,7 +191,7 @@ content:
     third_party_settings: {  }
     region: content
   field_executive_order_mass_regis:
-    weight: 7
+    weight: 13
     settings:
       placeholder: ''
     third_party_settings: {  }
@@ -201,14 +205,14 @@ content:
     type: metatag_firehose
     region: content
   field_executive_order_number:
-    weight: 4
+    weight: 10
     settings:
       placeholder: ''
     third_party_settings: {  }
     type: number
     region: content
   field_executive_order_overview:
-    weight: 12
+    weight: 35
     settings:
       rows: 2
       placeholder: ''
@@ -216,7 +220,7 @@ content:
     type: text_textarea
     region: content
   field_executive_order_related:
-    weight: 34
+    weight: 35
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -224,7 +228,7 @@ content:
     type: link_default
     region: content
   field_executive_title:
-    weight: 3
+    weight: 8
     settings:
       size: 60
       placeholder: ''
@@ -236,13 +240,13 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 11
+    weight: 18
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 10
+    weight: 17
     settings:
       match_operator: CONTAINS
       size: 60
@@ -251,8 +255,19 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_primary_parent:
+    weight: 16
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
+    region: content
   field_reusable_label:
-    weight: 12
+    weight: 19
     settings:
       match_operator: CONTAINS
       size: 60
@@ -260,6 +275,14 @@ content:
       match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
+    region: content
+  field_short_title:
+    weight: 9
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
     region: content
   field_state_organization_tax:
     weight: 8

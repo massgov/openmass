@@ -34,7 +34,9 @@ dependencies:
     - field.field.node.event.field_event_you_will_need
     - field.field.node.event.field_intended_audience
     - field.field.node.event.field_organizations
+    - field.field.node.event.field_primary_parent
     - field.field.node.event.field_reusable_label
+    - field.field.node.event.field_short_title
     - field.field.node.event.field_state_organization_tax
     - node.type.event
   module:
@@ -56,9 +58,9 @@ content:
     third_party_settings: {  }
   extra_org_feedback_form:
     weight: 100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
   field_event_agenda_download:
     type: entity_reference_entity_view
     weight: 3
@@ -152,6 +154,8 @@ hidden:
   field_event_type_list: true
   field_event_you_will_need: true
   field_intended_audience: true
+  field_primary_parent: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true

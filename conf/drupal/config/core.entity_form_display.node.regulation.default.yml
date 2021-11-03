@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.regulation.field_intended_audience
     - field.field.node.regulation.field_organizations
+    - field.field.node.regulation.field_primary_parent
     - field.field.node.regulation.field_regluation_official_ver
     - field.field.node.regulation.field_regulation_agency_cmr
     - field.field.node.regulation.field_regulation_cmr_chapter
@@ -21,6 +22,7 @@ dependencies:
     - field.field.node.regulation.field_regulation_short_descr
     - field.field.node.regulation.field_regulation_title
     - field.field.node.regulation.field_reusable_label
+    - field.field.node.regulation.field_short_title
     - field.field.node.regulation.field_state_organization_tax
     - node.type.regulation
     - workflows.workflow.editorial
@@ -28,10 +30,10 @@ dependencies:
     - content_moderation
     - datetime
     - entity_browser_entity_form
+    - entity_hierarchy
     - field_group
     - inline_entity_form
     - link
-    - maxlength
     - metatag
     - paragraphs
     - text
@@ -43,12 +45,14 @@ third_party_settings:
         - field_regulation_agency_cmr
         - field_regulation_cmr_chapter
         - field_regulation_title
+        - field_short_title
         - field_regulation_last_updated
         - field_regulation_link_org
         - field_regulation_reg_authority
         - field_regluation_official_ver
         - field_regulation_listing_desc
         - field_regulation_short_descr
+        - field_primary_parent
         - field_organizations
         - field_intended_audience
         - field_reusable_label
@@ -100,7 +104,6 @@ third_party_settings:
       weight: 9
       format_type: tab
       format_settings:
-        label: Content
         formatter: closed
         description: ''
         required_fields: true
@@ -114,13 +117,13 @@ bundle: regulation
 mode: default
 content:
   field_intended_audience:
-    weight: 19
+    weight: 21
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 18
+    weight: 20
     settings:
       match_operator: CONTAINS
       size: 60
@@ -129,8 +132,19 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_primary_parent:
+    weight: 19
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
+    region: content
   field_regluation_official_ver:
-    weight: 15
+    weight: 16
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -154,7 +168,7 @@ content:
     type: string_textfield
     region: content
   field_regulation_contact:
-    weight: 38
+    weight: 56
     settings:
       match_operator: CONTAINS
       size: 60
@@ -184,13 +198,13 @@ content:
     type: inline_entity_form_complex
     region: content
   field_regulation_last_updated:
-    weight: 12
+    weight: 13
     settings: {  }
     third_party_settings: {  }
     type: datetime_default
     region: content
   field_regulation_link_org:
-    weight: 13
+    weight: 14
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -198,7 +212,7 @@ content:
     type: link_default
     region: content
   field_regulation_listing_desc:
-    weight: 16
+    weight: 17
     settings:
       size: 60
       placeholder: ''
@@ -219,7 +233,7 @@ content:
     type: options_select
     region: content
   field_regulation_reg_authority:
-    weight: 14
+    weight: 15
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -227,7 +241,7 @@ content:
     type: link_default
     region: content
   field_regulation_related:
-    weight: 39
+    weight: 57
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -247,7 +261,7 @@ content:
     third_party_settings: {  }
     region: content
   field_regulation_short_descr:
-    weight: 17
+    weight: 18
     settings:
       rows: 5
       placeholder: ''
@@ -267,7 +281,7 @@ content:
     type: string_textfield
     region: content
   field_reusable_label:
-    weight: 20
+    weight: 22
     settings:
       match_operator: CONTAINS
       size: 60
@@ -275,6 +289,14 @@ content:
       match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
+    region: content
+  field_short_title:
+    weight: 12
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
     region: content
   field_state_organization_tax:
     weight: 6

@@ -1,0 +1,57 @@
+uuid: eae91fe9-42a7-4df7-9714-4e13af97eb9a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_primary_parent
+    - node.type.binder
+    - node.type.campaign_landing
+    - node.type.curated_list
+    - node.type.decision_tree
+    - node.type.guide_page
+    - node.type.how_to_page
+    - node.type.info_details
+    - node.type.org_page
+    - node.type.service_details
+    - node.type.service_page
+    - node.type.topic_page
+  module:
+    - entity_hierarchy
+    - require_on_publish
+third_party_settings:
+  require_on_publish:
+    require_on_publish: true
+id: node.curated_list.field_primary_parent
+field_name: field_primary_parent
+entity_type: node
+bundle: curated_list
+label: 'Parent page'
+description: 'Choose the parent for the current page. Parents are higher-level pages that link to child pages that contain more detailed content. A link to the parent will display in the bread crumb element once it''s fully implemented. Normally, you will want to make sure that you have a link on the parent to this page.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      binder: binder
+      curated_list: curated_list
+      decision_tree: decision_tree
+      guide_page: guide_page
+      how_to_page: how_to_page
+      info_details: info_details
+      org_page: org_page
+      campaign_landing: campaign_landing
+      service_page: service_page
+      service_details: service_details
+      topic_page: topic_page
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: binder
+  weight_min: -50
+  weight_max: 50
+  weight_label: Weight
+field_type: entity_reference_hierarchy

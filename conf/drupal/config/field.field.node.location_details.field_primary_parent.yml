@@ -1,0 +1,38 @@
+uuid: 0be7db11-0302-45a3-91e8-d3997f77d2fb
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_primary_parent
+    - node.type.location
+    - node.type.location_details
+  module:
+    - entity_hierarchy
+    - require_on_publish
+third_party_settings:
+  require_on_publish:
+    require_on_publish: true
+id: node.location_details.field_primary_parent
+field_name: field_primary_parent
+entity_type: node
+bundle: location_details
+label: 'Parent page'
+description: 'Choose the parent for the current page. Parents are higher-level pages that link to child pages that contain more detailed content. A link to the parent will display in the bread crumb element once it''s fully implemented. Normally, you will want to make sure that you have a link on the parent to this page.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      location: location
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+  weight_min: -50
+  weight_max: 50
+  weight_label: Weight
+field_type: entity_reference_hierarchy

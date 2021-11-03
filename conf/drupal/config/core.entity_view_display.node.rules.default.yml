@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.rules.field_intended_audience
     - field.field.node.rules.field_organizations
+    - field.field.node.rules.field_primary_parent
     - field.field.node.rules.field_reusable_label
     - field.field.node.rules.field_rules_adopted_date
     - field.field.node.rules.field_rules_courts
@@ -24,6 +25,7 @@ dependencies:
     - field.field.node.rules.field_rules_subheading
     - field.field.node.rules.field_rules_type
     - field.field.node.rules.field_rules_updates
+    - field.field.node.rules.field_short_title
     - field.field.node.rules.field_state_organization_tax
     - node.type.rules
   module:
@@ -268,7 +270,9 @@ content:
     settings: {  }
     third_party_settings: {  }
 hidden:
+  field_primary_parent: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true
   page_next: true
