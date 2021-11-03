@@ -7,7 +7,7 @@ function alerts(path, nodeType, $alertsBlock) {
 
   function insertBefore(nodeA, nodeBselector) {
     var nodeB = document.querySelector(nodeBselector);
-    document.getElementById(nodeA).insertAdjacentElement('beforebegin', nodeB);
+    document.getElementById(nodeB).insertAdjacentElement('beforebegin', nodeA);
   }
 
   function insertAfter(nodeA, nodeBselector) {
@@ -54,6 +54,9 @@ function alerts(path, nodeType, $alertsBlock) {
     ];
 
     areasToMoveAlerts.forEach(function (areaSelector) {
+      if (!positioned && document.querySelector(areaSelector) === null) {
+        return;
+      }
       insertAfter($alertsBlock, areaSelector);
       positioned = true;
     });
