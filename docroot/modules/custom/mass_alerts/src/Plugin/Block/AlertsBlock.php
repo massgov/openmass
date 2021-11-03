@@ -102,8 +102,8 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
 
     // Data to fetch the alerts as soon as possible.
     // Needs to be cached, as rendering a block happens once.
-    /** @see docroot/themes/custom/mass_theme/templates/layout/html.html.twig */
-    /** @see mass_theme_preprocess_html() */
+    // @see docroot/themes/custom/mass_theme/templates/layout/html.html.twig */
+    // @see mass_theme_preprocess_html()
     $current_path = \Drupal::service('path.current')->getPath();
     $cid = 'mass_alerts_blocks:' . $current_path;
     $cache_entry = \Drupal::cache('render')->get($cid);
