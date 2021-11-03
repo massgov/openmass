@@ -1899,7 +1899,7 @@ class Organisms {
                 ];
               }
               // Create the subItems array if there is a topic category heading.
-              if (!empty($topic_category_heading)){
+              if (!empty($topic_category_heading)) {
                 $link_items[] = array_merge($topic_category_heading, ['subItems' => $topic_links]);
               }
               else {
