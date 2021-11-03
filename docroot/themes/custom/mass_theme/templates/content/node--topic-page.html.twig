@@ -88,9 +88,18 @@
   {% set level = level + 1 %}
 
   {% for i in range(1, numOfSections) %}
-    {% if pageContent[i]['collapsibleContent'] %}
-      {% set collapsibleContent = pageContent[i]['collapsibleContent'] %}
-      {% include "@organisms/by-author/collapsible-content.twig" %}
+    {% if pageContent[i]['expandableContent'] %}
+      {% embed "@organisms/by-author/stacked-row-section.twig" with {
+        "stackedRowSection": {
+          "title" : pageContent[i]['expandableContent']['categoryTitle'],
+          "stackedRowModifier": "ma__stacked-row__section--restricted"
+        }
+      } %}
+        {% block stackedRowContentOverride %}
+          {% set tableOfContentsHierarchy = pageContent[i]['expandableContent']['content'] %}
+          {% include "@organisms/by-template/table-of-contents-hierarchy.twig" %}
+        {% endblock %}
+      {% endembed %}
     {% endif %}
   {% endfor %}
 

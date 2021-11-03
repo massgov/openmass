@@ -1831,7 +1831,7 @@ class Organisms {
   }
 
   /**
-   * Returns the variables structure required to render Collapsible Content.
+   * Returns the variables structure required to render Expandable Content.
    *
    * @param object $entities
    *   The object that contains the fields.
@@ -1842,14 +1842,14 @@ class Organisms {
    * @param array $cache_tags
    *   The array of cache_tags sent in the node render array.
    *
-   * @see @organsms/by-author/collapsible-content
+   * @see @organsms/by-template/table-of-contents-hierarchy.twig
    *
    * @return array
    *   Returns structured array.
    */
-  public static function prepareCollapsibleContent($entities, array $options = [], array $field_map = NULL, array &$cache_tags = []) {
+  public static function prepareExpandableContent($entities, array $options = [], array $field_map = NULL, array &$cache_tags = []) {
     $renderer = \Drupal::service('renderer');
-    $items = [];
+    $sections = [];
     $fields = [];
 
     if ($field_map) {
@@ -1863,16 +1863,9 @@ class Organisms {
         $url = $item->getUrl();
         $link = Helper::separatedLink($item);
         // Create an item link.
-        $items[$key] = [
-          'expanded' => FALSE,
-          'collapsibleHeader' => [
-            "title" => $link['text'],
-          ],
-          'more' => [
-            "href" => $link['url'],
-            "text" => $link['text'],
-            "info" => '',
-          ],
+        $sections[$key] = [
+          "text" => $link['text'],
+          "href" => $link['url'],
         ];
         // Load up our entity if internal.
         if ($url->isExternal() == FALSE && $url->isRouted() == TRUE && method_exists($url, 'getRouteParameters')) {
@@ -1881,53 +1874,55 @@ class Organisms {
           $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($params[$entity_type]);
           // If the entity is a topic_page, include Link Groups and links.
           if (!empty($entity) && $entity->bundle() == 'topic_page') {
-            // Initalize a topic includes array.
-            $topic_includes = [];
+            $topic_heading = [
+              'text' => $entity->label(),
+            ];
             // Loop through the Topic Link Groups.
             foreach ($entity->field_topic_content_cards as $topic_group) {
               // Initialize the heading and link arrays for this Link Group.
-              $topic_heading = [];
+              $topic_category_heading = [];
               $topic_links = [];
+              $link_items = [];
               // If a category is set, create a heading.
               $topic_title = Helper::fieldFullView($topic_group->entity, 'field_content_card_category');
               if (!empty($topic_title)) {
-                $topic_heading = [
-                  'compHeading' => [
-                    'title' => $renderer->renderRoot($topic_title),
-                  ],
+                $topic_category_heading = [
+                  'title' => $renderer->renderRoot($topic_title)->__toString(),
                 ];
               }
               // Loop through the links and create an array of link data.
               foreach ($topic_group->entity->{$fields['topic_cards']} as $topic_group_item) {
                 $topic_link = Helper::separatedLink($topic_group_item);
                 $topic_links[] = [
-                  "href" => $topic_link['url'],
                   "text" => $topic_link['text'],
-                  "info" => '',
+                  "href" => $topic_link['url'],
                 ];
               }
-              // Create the link-list component data array.
-              $topic_data = array_merge($topic_heading, ['links' => $topic_links]);
-              // Create the include data for the Topic Link Group.
-              $topic_includes[] = [
-                'path' => '@organisms/by-author/link-list.twig',
-                'data' => [
-                  'linkList' => $topic_data,
-                ],
-              ];
+              // Create the subItems array if there is a topic category heading.
+              if (!empty($topic_category_heading)){
+                $link_items[] = array_merge($topic_category_heading, ['subItems' => $topic_links]);
+              }
+              else {
+                $link_items = $topic_links;
+              }
             }
-            // Add the topic link includes to the topic item.
-            if (!empty($topic_includes)) {
-              $items[$key]['includes'] = $topic_includes;
+            // Add the section with topic heading and linkItems.
+            if (!empty($link_items)) {
+              $sections[$key] = array_merge($topic_heading, ['linkItems' => $link_items]);
             }
           }
         }
       }
     }
     // Set the section heading.
-    $heading = isset($options['compHeading']) ? Helper::buildHeading($options['compHeading']) : [];
-    // Return the link group array.
-    return array_merge($heading, ['items' => $items]);
+    $heading = $options['categoryTitle'] ?? '';
+    // Return the section content array.
+    return [
+      'categoryTitle' => $heading,
+      'content' => [
+        'sections' => $sections,
+      ],
+    ];
   }
 
 }
