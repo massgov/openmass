@@ -10,7 +10,7 @@ Following release, we smoke test by checking the same production URLS to ensure 
 > We are expecting to see changes in some instances.  Pages may change from the "reference" screenshots based on either code level changes or content level changes.  It's up to you to use your judgment on whether these changes are expected/acceptable or not.
 
 #### Before the first time you use this tool:
-1. If testing an Acquia environment, Make sure the `LOWER_ENVIR_AUTH_USER` and `LOWER_ENVIR_AUTH_PASS` environment variables are set up in your `.env` file.
+1. If testing an Acquia environment, make sure the `LOWER_ENVIR_AUTH_USER` and `LOWER_ENVIR_AUTH_PASS` environment variables are set up in your `.env` file.
 
 #### Target and list flags
 
