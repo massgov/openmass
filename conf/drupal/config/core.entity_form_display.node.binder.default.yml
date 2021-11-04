@@ -17,6 +17,7 @@ dependencies:
     - field.field.node.binder.field_binder_serial_number
     - field.field.node.binder.field_binder_short_desc
     - field.field.node.binder.field_binder_volume
+    - field.field.node.binder.field_collections
     - field.field.node.binder.field_contact
     - field.field.node.binder.field_data_flag
     - field.field.node.binder.field_data_format
@@ -85,6 +86,7 @@ third_party_settings:
         - field_data_topic
         - field_reusable_label
         - field_intended_audience
+        - field_collections
       parent_name: group_binder_node_edit_form
       weight: 1
       format_type: tab
@@ -243,7 +245,6 @@ content:
         internal_link_content_type_blacklist:
           - contact_information
           - fee
-          - legacy_redirects
     type: link_default
     region: content
   field_binder_serial_number:
@@ -269,6 +270,17 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: string_textfield
+    region: content
+  field_collections:
+    weight: 29
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings: {  }
+    type: term_reference_tree
     region: content
   field_contact:
     weight: 27

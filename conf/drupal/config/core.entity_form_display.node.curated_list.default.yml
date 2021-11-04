@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.curated_list.field_collections
     - field.field.node.curated_list.field_contact
     - field.field.node.curated_list.field_curatedlist_lede
     - field.field.node.curated_list.field_curatedlist_list_section
@@ -70,6 +71,7 @@ third_party_settings:
         - field_english_version
         - field_intended_audience
         - field_reusable_label
+        - field_collections
       parent_name: group_curated_list_edit_form
       weight: 8
       format_type: tab
@@ -116,6 +118,17 @@ targetEntityType: node
 bundle: curated_list
 mode: default
 content:
+  field_collections:
+    weight: 19
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings: {  }
+    type: term_reference_tree
+    region: content
   field_contact:
     weight: 109
     settings:
@@ -322,7 +335,7 @@ content:
     region: content
   field_list_directory_section:
     type: entity_reference_paragraphs
-    weight: 3
+    weight: 4
     settings:
       title: 'List section'
       title_plural: 'List sections'

@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.service_page.field_collections
     - field.field.node.service_page.field_data_flag
     - field.field.node.service_page.field_data_format
     - field.field.node.service_page.field_data_resource_type
@@ -102,6 +103,7 @@ third_party_settings:
         - field_data_topic
         - field_intended_audience
         - field_reusable_label
+        - field_collections
       parent_name: group_service_edit_form
       weight: 20
       format_type: tab
@@ -251,6 +253,17 @@ targetEntityType: node
 bundle: service_page
 mode: default
 content:
+  field_collections:
+    weight: 46
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings: {  }
+    type: term_reference_tree
+    region: content
   field_data_flag:
     weight: 78
     settings: {  }
