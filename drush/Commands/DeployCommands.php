@@ -196,6 +196,51 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
+   * Fetch latest DB snapshot from CircleCI.
+   *
+   * @command ma:pulldb
+   *
+   * @param string $type Recognized values: super, regular.
+   * @param array $options The options list.
+   * @option ci-branch The branch that CircleCI should check out at start.
+   *
+   * @aliases ma-pulldb
+   * @validate-circleci-token
+   *
+   * @throws \Exception
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   *
+   */
+  public function pulldb($type, array $options = ['ci-branch' => 'develop']) {
+    // Use our logger - https://stackoverflow.com/questions/32681165/how-do-you-log-all-api-calls-using-guzzle-6.
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'auth' => [$this->getTokenCircle()],
+      'json' => [
+        'branch' => $options['ci-branch'],
+        'parameters' => [
+          'post-trigger' => FALSE,
+          'webhook' => FALSE,
+          'ma-release' => TRUE,
+          'instance' => $type,
+          'git-ref' => $git_ref,
+          'skip-maint' => $options['skip-maint'] ? '--skip-maint' : '',
+          'refresh-db' => $options['refresh-db'] ? '--refresh-db' : '',
+        ],
+      ],
+    ];
+    $response = $client->request('POST', $this::CIRCLE_URI, $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('CircleCI API response was a ' . $code . 'Use -v for more Guzzle information.');
+    }
+
+    $body = json_decode((string)$response->getBody(), TRUE);
+    $this->logger()->success('Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.');
+  }
+
+  /**
    * Run `ma:deploy` at CircleCI, for better reliability and logging.
    *
    * @command ma:release

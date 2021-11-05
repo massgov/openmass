@@ -454,7 +454,7 @@ jobs:
       - run:
           command: ddev exec scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
-      - run: ddev snapshot create << parameters.instance >>
+      - run: ddev snapshot --name << parameters.instance >>
       - store_artifacts:
           path: .ddev/db-snapshots
 
@@ -1044,7 +1044,7 @@ workflows:
           instance: super
     triggers:
       - schedule:
-          cron: "01 18 * * *"
+          cron: "37 23 * * *"
           filters:
             branches:
               only:
