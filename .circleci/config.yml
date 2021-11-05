@@ -53,7 +53,7 @@ commands:
     parameters:
       omit-containers:
         description: "Any containers that should not start"
-        default: db,dba
+        default: dba
         type: string
     steps:
       - run: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
@@ -405,7 +405,6 @@ jobs:
       name: base
     steps:
       - attach_workspace: { at: /tmp }
-      - run: rm -f /tmp/code/.ddev/docker-compose.dbmass.yaml
       - ddev_install_run
       - run:
           name: Backstop reference
@@ -433,43 +432,29 @@ jobs:
       - store_artifacts:
           path: /tmp/code/backstop
 
-  # If you make changes to this job, consider pushing to a tag that's not 'latest'
-  # at Docker Hub. That way, your in-progress work does not interfere with build
-  # happening in the build_test workflow.
   populate:
-    description: "Sanitize a mysql database and push to Docker Hub"
+    description: "Sanitize a mysql database and save an artifact"
     parameters:
       sanitizeOption:
         type: string
         default: --sanitize
       instance:
         type: string
-    working_directory: /home/circleci/code/.circleci/mysql-rebuild
-    docker:
-      # Use Python since that's needed for docker tools anyway.
-      - image: circleci/python:2.7.14
+    working_directory: /tmp/code
+    executor:
+      name: base
     steps:
-      - attach_workspace: {at: /home/circleci}
-      - setup_remote_docker
-      - fetch_drush_aliases:
-          destination: /home/circleci/code/drush/sites/self.site.yml
-      - run: docker-compose up -d
-      - run: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www
-      # @todo Actually perform health check.
+      - attach_workspace: { at: /tmp }
+      - ddev_install_run
       - run:
-          name: Wait for mysql
-          command: sleep 60
-      - run:
-          command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
+          command: ddev exec scripts/ma-refresh-local --db-prep-only
           no_output_timeout: 60m
-      - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
       - run:
-          command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
+          command: ddev exec scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
-      - run: docker-compose exec drupal drush cr
-      - run: docker-compose stop --timeout 60 mysql
-      - run: docker commit $(docker-compose ps -q mysql) << parameters.instance >>
-      - run: docker push << parameters.instance >>
+      - run: ddev snapshot create
+      - store_artifacts:
+          path: .ddev/db-snapshots
 
   pending_security:
     working_directory: /tmp/code
@@ -1049,12 +1034,12 @@ workflows:
           name: massgov.populate --sanitize
           requires: [build]
           sanitizeOption: --sanitize
-          instance: massgov/mysql-sanitized:latest
+          instance: regular
       - populate:
           name: massgov.populate --super-sanitize
           requires: [build]
           sanitizeOption: --super-sanitize
-          instance: massgov/mysql-sanitized:super
+          instance: super
     triggers:
       - schedule:
           cron: "55 18 * * *"
@@ -1062,6 +1047,7 @@ workflows:
             branches:
               only:
                 - develop
+                - new-db-image
 
   # Usually triggered by drush ma:backstop.
   backstop_ad_hoc:
