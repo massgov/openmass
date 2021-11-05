@@ -455,8 +455,9 @@ jobs:
           command: ddev exec scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
       - run: ddev snapshot --name << parameters.instance >>
+      - run: tar -zcvf << parameters.instance >>.tar.gz
       - store_artifacts:
-          path: .ddev/db-snapshots
+          path: .ddev/db-snapshots/<< parameters.instance >>.tar.gz
 
   pending_security:
     working_directory: /tmp/code
@@ -1044,7 +1045,7 @@ workflows:
           instance: super
     triggers:
       - schedule:
-          cron: "37 23 * * *"
+          cron: "41 23 * * *"
           filters:
             branches:
               only:
