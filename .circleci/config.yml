@@ -445,6 +445,8 @@ jobs:
       name: base
     steps:
       - attach_workspace: { at: /tmp }
+      - fetch_drush_aliases:
+          destination: /tmp/code/drush/sites/self.site.yml
       - ddev_install_run
       - run:
           command: ddev exec scripts/ma-refresh-local --db-prep-only
@@ -452,7 +454,7 @@ jobs:
       - run:
           command: ddev exec scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
-      - run: ddev snapshot create
+      - run: ddev snapshot create << parameters.instance >>
       - store_artifacts:
           path: .ddev/db-snapshots
 

@@ -3,6 +3,8 @@ type: drupal9
 docroot: docroot
 php_version: "7.4"
 webserver_type: apache-fpm
+omit_containers:
+  - dbmass
 mariadb_version: 10.5
 disable_settings_management: true
 #Avoid conflict on port 80. This is rarely used anyway.
