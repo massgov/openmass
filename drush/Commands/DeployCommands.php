@@ -26,6 +26,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
   const TUGBOAT_REPO = '612e50fcbaa70da92493eef8';
   const CIRCLE_URI = 'https://circleci.com/api/v2/project/github/massgov/openmass/pipeline';
+  const CIRCLE_URI_V1 = 'https://circleci.com/api/v1.1/project/github/massgov/openmass';
 
   /**
    * Run Backstop at CircleCI, for better reliability and logging.
@@ -83,21 +84,12 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
       'auth' => [$this->getTokenCircle()],
-      'json' => [
-        'branch' => $options['ci-branch'],
-        'parameters' => [
-          'post-trigger' => FALSE,
-          'webhook' => FALSE,
-          'ma-backstop' => TRUE,
-          'target' => $target,
-          'reference' => $reference,
-          'list' => $options['list'],
-          'viewport' => $options['viewport'],
-          'tugboat' => $options['tugboat'],
-        ],
-      ],
     ];
-    $response = $client->request('POST', self::CIRCLE_URI, $options);
+    $params = [
+      'limit' => 100,
+      'filter' => 'successful',
+    ];
+    $response = $client->request('GET', self::CIRCLE_URI_V1 . '/tree/develop?' . http_build_query($params), $options);
     $code = $response->getStatusCode();
     if ($code >= 400) {
       throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
