@@ -456,9 +456,9 @@ jobs:
           no_output_timeout: 30m
       #- run: ddev drush sqlq "OPTIMIZE TABLE key_value, paragraph_revision__field_body;"
       - run: ddev snapshot --name << parameters.instance >>
-      - run: tar -zcvf .ddev/db-snapshots/<< parameters.instance >>
+      - run: tar -zcvf .ddev/db_snapshots/<< parameters.instance >>
       - store_artifacts:
-          path: .ddev/db-snapshots/<< parameters.instance >>.tar.gz
+          path: .ddev/db_snapshots/<< parameters.instance >>.tar.gz
 
   pending_security:
     working_directory: /tmp/code
@@ -1046,7 +1046,7 @@ workflows:
           instance: super
     triggers:
       - schedule:
-          cron: "07 02 * * *"
+          cron: "31 02 * * *"
           filters:
             branches:
               only:
