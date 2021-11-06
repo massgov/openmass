@@ -454,7 +454,7 @@ jobs:
       - run:
           command: ddev exec scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
-      - run: ddev drush sqlq "OPTIMIZE TABLE key_value, paragraph_revision__field_body;"
+      #- run: ddev drush sqlq "OPTIMIZE TABLE key_value, paragraph_revision__field_body;"
       - run: ddev snapshot --name << parameters.instance >>
       - run: tar -zcvf .ddev/db-snapshots/<< parameters.instance >>
       - store_artifacts:
@@ -1046,7 +1046,7 @@ workflows:
           instance: super
     triggers:
       - schedule:
-          cron: "47 01 * * *"
+          cron: "07 02 * * *"
           filters:
             branches:
               only:
