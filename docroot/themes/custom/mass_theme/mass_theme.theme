@@ -7042,6 +7042,7 @@ function mass_theme_preprocess_paragraph__featured_topics(&$variables) {
     if ($count) {
       for ($i = 0; $i < $count; $i++) {
         $field_topics[$i]['#view_mode'] = 'card_compact';
+        unset($field_topics[$i]['#cache']['keys']);
       }
     }
 
