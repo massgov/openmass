@@ -1,5 +1,12 @@
 
 
+## [0.301.1] - November 4, 2021
+
+### Fixed
+  - DP-23374: Fix search on locations pages.
+
+
+
 ## [0.301.0] - November 2, 2021
 
 ### Added
@@ -9,7 +16,7 @@
   - DP-23210: Restore OrgBoards
   - DP-23218: Added Collections field to Advisory, Binder, Curated List, Decision, Executive Order, Form, Guide, Location, Service, Service Details, Regulation, and Rules of Court.
   - DP-23241: Advanced search feature.
-  
+
 ### Changed
   - DP-22423: Disable and remove handy cache tags module in favor of core's bundle list tags
   - DP-23291: \"You will need\" header removed from CT Form on viewmode full.
@@ -21,16 +28,16 @@
   - DP-22679: Add a feature to close Google Translate option container with ESC key. (MF #1479)
   - DP-22680: Add focus trap to the global menu dropdown. (MF #1479)
   - DP-23268: Fix main nav overlay positioning. (MF #1539)
-  
+
 ### Fixed
   - DP-23070: Fixed error message related to inline entity form table deprecated theme function usage.
   - DP-23184: Fix nightly security check
   - DP-23227: Fix "false" text included in release note message on authoring home page.
   - DP-23329: Fix issue with the missing 'Content type' filter on the content views.
-  
+
 ### Removed
   - DP-23071: Removed Legacy redirects content type.
-  
+
 
 
 ## [0.300.0] - October 26, 2021
@@ -41,13 +48,13 @@
   - DP-23135: Add urls for Lighthouse at Tugboat
   - DP-23167: Tests for expand/collapse functionality on accordions
   - DP-23254: Added banner to pages using the without-main page template.
-  
+
 ### Changed
   - DP-23257: Updated Mayflower version to 11.16.3.
   - Update BrandBanner toggle button text (MF #1535)
   - DP-3188: To make search comply with https://rawgit.com/w3c/aria-practices/master/aria-practices-DeletedSectionsArchive.html#autocomplete
 Accesibility improvements for screenreaders on search https://github.com/massgov/openmass/pull/1081#issuecomment-947854475
-  
+
 ## [0.299.1] - October 25, 2021
 
 ### Fixed

@@ -1,0 +1,67 @@
+uuid: f599e619-8c76-4f1b-b8f8-7fd0a8dbaeda
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.sitewide_alert_message.field_sitewide_alert_content
+    - field.field.paragraph.sitewide_alert_message.field_sitewide_alert_link
+    - field.field.paragraph.sitewide_alert_message.field_sitewide_alert_link_type
+    - field.field.paragraph.sitewide_alert_message.field_sitewide_alert_message
+    - field.field.paragraph.sitewide_alert_message.field_sitewide_alert_timestamp
+    - paragraphs.paragraphs_type.sitewide_alert_message
+  module:
+    - datetime
+    - entity_reference_revisions
+    - link
+    - options
+id: paragraph.sitewide_alert_message.default
+targetEntityType: paragraph
+bundle: sitewide_alert_message
+mode: default
+content:
+  field_sitewide_alert_content:
+    type: entity_reference_revisions_entity_view
+    weight: 3
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_sitewide_alert_link:
+    weight: 2
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  field_sitewide_alert_link_type:
+    weight: 4
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_sitewide_alert_message:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_sitewide_alert_timestamp:
+    weight: 1
+    label: hidden
+    settings:
+      timezone_override: ''
+      date_format: 'M. jS, Y, g:i a'
+    third_party_settings: {  }
+    type: datetime_custom
+    region: content
+hidden: {  }
