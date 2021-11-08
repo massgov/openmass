@@ -1226,21 +1226,19 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
 
     // Make pageBanner data structure available in twig template.
     $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
-    // Make collapsibleContent data structure available in twig template.
+    // Make expandableContent data structure available in twig template.
     $renderer = \Drupal::service('renderer');
     foreach ($node->field_topic_content_cards as $index => $section) {
       $variables['numOfSections'] = ++$index;
-      $collapsibleContent_options = [];
+      $expandableContent_options = [];
       $title_field = Helper::fieldFullView($section->entity, 'field_content_card_category');
       if (!empty($title_field)) {
-        $collapsibleContent_options += [
-          'compHeading' => [
-            'title' => $renderer->renderRoot($title_field),
-          ],
+        $expandableContent_options += [
+          'categoryTitle' => $renderer->renderRoot($title_field),
         ];
       }
 
-      $variables['pageContent'][$index]['collapsibleContent'] = Organisms::prepareCollapsibleContent($section->entity, $collapsibleContent_options, ['topic_cards' => ['field_content_card_link_cards']], $cache_tags);
+      $variables['pageContent'][$index]['expandableContent'] = Organisms::prepareExpandableContent($section->entity, $expandableContent_options, ['topic_cards' => ['field_content_card_link_cards']], $cache_tags);
     }
 
     $linkList_options = [
