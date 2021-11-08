@@ -25,8 +25,23 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   var $site = 'prod:massgov';
 
   const TUGBOAT_REPO = '612e50fcbaa70da92493eef8';
-  const CIRCLE_URI = 'https://circleci.com/api/v2/project/github/massgov/openmass/pipeline';
-  const CIRCLE_URI_V1 = 'https://circleci.com/api/v1.1/project/github/massgov/openmass';
+  const CIRCLE_URI_BASE = 'https://circleci.com/api';
+  const SLUG = 'github/massgov/openmass';
+  const CIRCLE_URI_PROJECT = self::CIRCLE_URI_BASE . '/v2/project/' . self::SLUG;
+  const CIRCLE_URI_INSIGHTS = self::CIRCLE_URI_BASE . '/v2/insights/' . self::SLUG;
+
+  /**
+   * @param \Psr\Http\Message\ResponseInterface $response
+   * @throws \Exception
+   */
+  public static function exceptionIfFailed(\Psr\Http\Message\ResponseInterface $response): void
+  {
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('CircleCI API response was a ' . $code . 'Use -v for more Guzzle information.');
+    }
+  }
+
 
   /**
    * Run Backstop at CircleCI, for better reliability and logging.
@@ -84,12 +99,21 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
       'auth' => [$this->getTokenCircle()],
+      'json' => [
+        'branch' => $options['ci-branch'],
+        'parameters' => [
+          'post-trigger' => FALSE,
+          'webhook' => FALSE,
+          'ma-backstop' => TRUE,
+          'target' => $target,
+          'reference' => $reference,
+          'list' => $options['list'],
+          'viewport' => $options['viewport'],
+          'tugboat' => $options['tugboat'],
+        ],
+      ],
     ];
-    $params = [
-      'limit' => 100,
-      'filter' => 'successful',
-    ];
-    $response = $client->request('GET', self::CIRCLE_URI_V1 . '/tree/develop?' . http_build_query($params), $options);
+    $response = $client->request('POST', self::CIRCLE_URI_PROJECT . '/pipeline', $options);
     $code = $response->getStatusCode();
     if ($code >= 400) {
       throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
@@ -135,7 +159,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
         ],
       ],
     ];
-    $response = $client->request('POST', self::CIRCLE_URI, $options);
+    $response = $client->request('POST', self::CIRCLE_URI_PROJECT . '/pipeline', $options);
     $code = $response->getStatusCode();
     if ($code >= 400) {
       throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
@@ -188,51 +212,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
-   * Fetch latest DB snapshot from CircleCI.
-   *
-   * @command ma:pulldb
-   *
-   * @param string $type Recognized values: super, regular.
-   * @param array $options The options list.
-   * @option ci-branch The branch that CircleCI should check out at start.
-   *
-   * @aliases ma-pulldb
-   * @validate-circleci-token
-   *
-   * @throws \Exception
-   * @throws \GuzzleHttp\Exception\GuzzleException
-   *
-   */
-  public function pulldb($type, array $options = ['ci-branch' => 'develop']) {
-    // Use our logger - https://stackoverflow.com/questions/32681165/how-do-you-log-all-api-calls-using-guzzle-6.
-    $stack = $this->getStack();
-    $client = new \GuzzleHttp\Client(['handler' => $stack]);
-    $options = [
-      'auth' => [$this->getTokenCircle()],
-      'json' => [
-        'branch' => $options['ci-branch'],
-        'parameters' => [
-          'post-trigger' => FALSE,
-          'webhook' => FALSE,
-          'ma-release' => TRUE,
-          'instance' => $type,
-          'git-ref' => $git_ref,
-          'skip-maint' => $options['skip-maint'] ? '--skip-maint' : '',
-          'refresh-db' => $options['refresh-db'] ? '--refresh-db' : '',
-        ],
-      ],
-    ];
-    $response = $client->request('POST', $this::CIRCLE_URI, $options);
-    $code = $response->getStatusCode();
-    if ($code >= 400) {
-      throw new \Exception('CircleCI API response was a ' . $code . 'Use -v for more Guzzle information.');
-    }
-
-    $body = json_decode((string)$response->getBody(), TRUE);
-    $this->logger()->success('Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.');
-  }
-
-  /**
    * Run `ma:deploy` at CircleCI, for better reliability and logging.
    *
    * @command ma:release
@@ -278,7 +257,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
         ],
       ],
     ];
-    $response = $client->request('POST', $this::CIRCLE_URI, $options);
+    $response = $client->request('POST', $this::CIRCLE_URI_PROJECT . '/pipeline', $options);
     $code = $response->getStatusCode();
     if ($code >= 400) {
       throw new \Exception('CircleCI API response was a ' . $code . 'Use -v for more Guzzle information.');
@@ -467,6 +446,10 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    */
   public function validate(CommandData $commandData) {
+    if (!$commandData->input()->hasArgument('target')) {
+      return;
+    }
+
     $target = $commandData->input()->getArgument('target');
     $available_targets = ['dev', 'cd', 'test', 'feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prod', 'ra', 'cf', 'global', 'stage', 'tugboat'];
     if (!in_array($target, $available_targets)) {
@@ -576,20 +559,9 @@ EOT;
   }
 
   /**
-   * Use our logger - https://stackoverflow.com/questions/32681165/how-do-you-log-all-api-calls-using-guzzle-6.
-   *
-   * @return \GuzzleHttp\HandlerStack
-   */
-  protected function getStack(): \GuzzleHttp\HandlerStack {
-    $stack = HandlerStack::create();
-    $stack->push(Middleware::log($this->logger(), new MessageFormatter(Drush::verbose() ? MessageFormatter::DEBUG : MessageFormatter::SHORT)));
-    return $stack;
-  }
-
-  /**
    * @return array|false|string
    */
-  protected function getTokenCircle() {
+  public static function getTokenCircle() {
     return getenv('CIRCLECI_PERSONAL_API_TOKEN');
   }
 

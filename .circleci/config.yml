@@ -245,14 +245,11 @@ jobs:
       instance: << parameters.instance >>
     steps:
       - attach_workspace: {at: /tmp}
-      - run:
-          command: curl -L https://github.com/jwilder/dockerize/releases/download/v0.6.0/dockerize-linux-amd64-v0.6.0.tar.gz | tar -C . -xzv && chmod +x ./dockerize
-          name: Install Dockerize
       - run: rm -f docker-compose.backstop.yml docker-compose.portainer.yml
       - ddev_install_run
       - run:
-          name: Wait for mysql
-          command: ddev exec ./dockerize -wait tcp://dbmass:3306 -timeout 5m
+          name: Fetch and resture DB snapshot
+          command: vendor/bin/drush -v pulldb --type=super
       # Run drush updatedb and cim.
       - run: ddev drush deploy -vvv
       # Get an overview
