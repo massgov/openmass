@@ -64,10 +64,7 @@ class PullDbCommands extends DrushCommands {
     $this->logger()->notice('Start artifact download and decompress.');
     $cmd = 'curl -L -o - ' . $artifact_url . ' | tar -xvz';
     $this->processManager()->shell($cmd)->mustRun();
-    $this->logger()->notice('Start ddev snapshot restore.');
-    $cmd = 'ddev snapshot restore ' . $type;
-    $this->processManager()->shell($cmd)->mustRun();
 
-    $this->logger()->success('Snapshot has been restored.');
+    $this->logger()->success('Snapshot is ready to be restored.');
   }
 }

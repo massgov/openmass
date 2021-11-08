@@ -1,0 +1,11 @@
+#!/bin/bash
+set -e
+
+## Description: Fetch and restore a DB snapshot. Gets a super sanitized by default
+## Usage: pulldb [--type|regular]
+## Example: "ddev pulldb" or "ddev pulldb --type=regular" (not yet implemented)
+
+ddev drush ma:pulldb -v
+ls -al .ddev/db_snapshots
+ddev snapshot --list
+ddev snapshot restore super

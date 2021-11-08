@@ -249,7 +249,7 @@ jobs:
       - ddev_install_run
       - run:
           name: Fetch and resture DB snapshot
-          command: vendor/bin/drush -v pulldb --type=super
+          command: ddev pulldb
       # Run drush updatedb and cim.
       - run: ddev drush deploy -vvv
       # Get an overview
