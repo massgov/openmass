@@ -1206,26 +1206,17 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
     // Set static pageBanner properties to pass to prepare function.
     $pageBanner_options = [
       'icon' => $icon,
-      'color' => '',
+      'color' => 'white',
     ];
 
-    if (Helper::isFieldPopulated($node, 'field_topic_type')) {
-      $type = Helper::fieldValue($node, 'field_topic_type');
-      if ($type == 'section landing') {
-        $pageBanner_options = array_merge($pageBanner_options, ['size' => 'hero1600x400']);
-      }
-      else {
-        $pageBanner_options = array_merge($pageBanner_options, ['size' => 'columns']);
-      }
-      $pageBanner_options = array_merge($pageBanner_options, ['type' => $type]);
-    }
-    else {
-      $pageBanner_options = array_merge($pageBanner_options, ['size' => 'columns']);
-      $pageBanner_options = array_merge($pageBanner_options, ['type' => 'topic']);
-    }
-
+    $pageBanner_options = array_merge($pageBanner_options, ['size' => 'full']);
+    $pageBanner_options = array_merge($pageBanner_options, ['type' => 'topic']);
     // Make pageBanner data structure available in twig template.
     $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
+    // Make sure images aren't visible in the page banner.
+    unset($variables['pageBanner']['bgWide']);
+    unset($variables['pageBanner']['bgNarrow']);
+
     // Make expandableContent data structure available in twig template.
     $renderer = \Drupal::service('renderer');
     foreach ($node->field_topic_content_cards as $index => $section) {

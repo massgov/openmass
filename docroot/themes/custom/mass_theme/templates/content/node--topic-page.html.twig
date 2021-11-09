@@ -92,9 +92,19 @@
       {% embed "@organisms/by-author/stacked-row-section.twig" with {
         "stackedRowSection": {
           "title" : pageContent[i]['expandableContent']['categoryTitle'],
-          "stackedRowModifier": "ma__stacked-row__section--restricted"
+          "stackedRowModifier": "ma__stacked-row__section--restricted",
         }
       } %}
+        {% block stackRowTitle %}
+          <div class="ma__stacked-row__container">
+            <div class="ma__stacked-row__title">
+              {% include "@atoms/04-headings/heading-3.twig" with {
+                "heading3": {"text": pageContent[i]['expandableContent']['categoryTitle']}
+                }
+              %}
+            </div>
+          </div>
+        {% endblock %}
         {% block stackedRowContentOverride %}
           {% set tableOfContentsHierarchy = pageContent[i]['expandableContent']['content'] %}
           {% include "@organisms/by-template/table-of-contents-hierarchy.twig" %}
