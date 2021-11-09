@@ -668,3 +668,15 @@ function mass_content_field_widget_entity_reference_paragraphs_form_alter(&$elem
     $element['#suffix'] = "<br/><span class='mass_content__custom-notice'>Contact is required and must be added on the “Title Banner” tab. Logo is optional and is defined on the “Overview” tab.</span>" . $element['#suffix'];
   }
 }
+
+/**
+ * Implements hook_entity_view_mode_alter().
+ */
+function mass_content_entity_view_mode_alter(&$view_mode, Drupal\Core\Entity\EntityInterface $entity, $context) {
+
+  if ($entity->getEntityTypeId() == 'paragraph' && $entity->bundle() == 'featured_topics' && $view_mode == 'default') {
+    if ($entity->field_topic_name_only->value == 1) {
+      $view_mode = 'card_compact';
+    }
+  }
+}
