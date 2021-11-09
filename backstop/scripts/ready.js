@@ -197,6 +197,15 @@ module.exports = async function(page, scenario, vp) {
     }
 
     switch (scenario.label) {
+      case "Homepage Login link (Large sizes)":
+        await page.waitForFunction("document.readyState === 'complete'");
+        await page.evaluate(async function () {
+          let selector = ".ma__header__hamburger__utility-nav .ma__utility-nav__items li.ma__utility-nav__item:last-child button.ma__utility-nav__link";
+          jQuery(selector).click();
+        })
+        await page.waitFor(3000);
+        break;
+
       case "InfoDetailsImageWrapLeft":
       case "InfoDetailsImageWrapRight":
       case "InfoDetailsImageNoWrapLeft":
