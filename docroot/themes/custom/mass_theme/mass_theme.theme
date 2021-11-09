@@ -6811,6 +6811,28 @@ function mass_theme_preprocess_paragraph__board_member(&$variables) {
  *
  * Prepares variables for the Alert pages.
  */
+function mass_theme_preprocess_node_sitewide_alert(&$variables) {
+
+  $node = $variables['node'];
+
+  // Build related links section, if field is populated.
+  if (Helper::isFieldPopulated($node, 'field_alert_related_links_5')) {
+    // Prepare the linkList data object.
+    $linkList_options = [
+      'heading' => [
+        'title' => t('Related Links'),
+        'type' => 'compHeading',
+      ],
+    ];
+    $variables['linkList'] = Organisms::preparelinkList($node, 'field_alert_related_links_5', $linkList_options);
+  }
+}
+
+/**
+ * Implements hook_preprocess_node().
+ *
+ * Prepares variables for the Alert pages.
+ */
 function mass_theme_preprocess_node_alert(&$variables) {
 
   $node = $variables['node'];
@@ -7028,25 +7050,6 @@ function mass_theme_featured_content_cards(&$variables) {
 function mass_theme_preprocess_paragraph__featured_content_single_item(&$variables) {
   mass_theme_campaign_landing_paragraph_set_header_level($variables);
   mass_theme_featured_content_cards($variables);
-}
-
-/**
- * Display cards or compact cards depending on the settings.
- */
-function mass_theme_preprocess_paragraph__featured_topics(&$variables) {
-  $paragraph = $variables['paragraph'];
-  // If the checkbox is selected, change display mode to card compact.
-  if ($paragraph->field_topic_name_only->value == TRUE) {
-    $field_topics = $variables['content']['field_featured_topics_topics'];
-    $count = $field_topics['#items']->count();
-    if ($count) {
-      for ($i = 0; $i < $count; $i++) {
-        $field_topics[$i]['#view_mode'] = 'card_compact';
-      }
-    }
-
-    $variables['content']['field_featured_topics_topics'] = $field_topics;
-  }
 }
 
 /**
