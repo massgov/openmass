@@ -676,7 +676,7 @@ function mass_content_entity_view_mode_alter(&$view_mode, $entity, $context) {
 
   // Display cards or compact cards depending on the settings.
   if ($entity->getEntityTypeId() == 'paragraph' && $entity->bundle() == 'featured_topics' && $view_mode == 'default') {
-    if ($entity->field_topic_name_only->value == 1) {
+    if ($entity->hasField('field_topic_name_only') && $entity->field_topic_name_only->value == 1) {
       $view_mode = 'card_compact';
     }
   }
