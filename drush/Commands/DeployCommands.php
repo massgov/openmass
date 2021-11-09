@@ -31,19 +31,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   const CIRCLE_URI_INSIGHTS = self::CIRCLE_URI_BASE . '/v2/insights/' . self::SLUG;
 
   /**
-   * @param \Psr\Http\Message\ResponseInterface $response
-   * @throws \Exception
-   */
-  public static function exceptionIfFailed(\Psr\Http\Message\ResponseInterface $response): void
-  {
-    $code = $response->getStatusCode();
-    if ($code >= 400) {
-      throw new \Exception('CircleCI API response was a ' . $code . 'Use -v for more Guzzle information.');
-    }
-  }
-
-
-  /**
    * Run Backstop at CircleCI, for better reliability and logging.
    *
    * @command ma:backstop
@@ -563,6 +550,18 @@ EOT;
    */
   public static function getTokenCircle() {
     return getenv('CIRCLECI_PERSONAL_API_TOKEN');
+  }
+
+  /**
+   * @param \Psr\Http\Message\ResponseInterface $response
+   * @throws \Exception
+   */
+  public static function exceptionIfFailed(\Psr\Http\Message\ResponseInterface $response): void
+  {
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('CircleCI API response was a ' . $code . 'Use -v for more Guzzle information.');
+    }
   }
 
   /**

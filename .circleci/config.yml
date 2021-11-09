@@ -57,7 +57,6 @@ commands:
         type: string
     steps:
       - run: curl -LO https://raw.githubusercontent.com/drud/ddev/master/scripts/install_ddev.sh && bash install_ddev.sh
-      - run: echo $DOCKER_API_KEY | docker login -u $DOCKER_USER --password-stdin
       - run: ddev config --omit-containers << parameters.omit-containers >>
       - run: ddev start -y
       - run: ddev describe
