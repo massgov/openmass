@@ -1,5 +1,21 @@
 
 
+## [0.302.0] - November 9, 2021
+
+### Added
+  - DP-22906: Create sitewide alert content type.
+  - DP-23171: Allow Tugboat as Backstop target
+  
+### Fixed
+  - DP-23183: Adjusting rich text optional divider for info detail pages.
+  
+### Changed
+  - DP-23238: In CI, more descriptive 'Hold' text and explicit QA approvals for release and hotfix.
+  - DP-23386: Updated Mayflower version to 11.18.0.
+  - DP-23183: Adds divider as a component, adds variant for thin, converts it to hr. (MF #1541)
+  
+
+
 ## [0.301.1] - November 4, 2021
 
 ### Fixed
