@@ -204,7 +204,6 @@
       $('.field--name-field-details-enable-fields', context).change(function () {
         var enabledDetails = $(this).find('input').prop('checked') !== false;
         var $infoDetails = $('.field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content');
-        $(this).siblings('.field--name-field-banner-image').toggle(enabledDetails);
         $infoDetails.find("input[id$='-subform-field-section-long-form-content-add-more-add-more-button-callout-link']").toggle(enabledDetails);
         $infoDetails.find("input[id$='-subform-field-section-long-form-content-add-more-add-more-button-info-details-card-group']").toggle(enabledDetails);
       }).change();
