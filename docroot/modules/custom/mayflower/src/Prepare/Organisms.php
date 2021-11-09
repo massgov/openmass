@@ -1918,8 +1918,12 @@ class Organisms {
     $heading = $options['categoryTitle'] ?? '';
     // Return the section content array.
     return [
-      'categoryTitle' => $heading,
       'content' => [
+        'title' => [
+          'text' => $heading,
+          'colored'=> false,
+          ],
+        'background' => 'none',
         'sections' => $sections,
       ],
     ];
