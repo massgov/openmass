@@ -191,7 +191,7 @@ module.exports = async function(page, scenario, vp) {
           "Quisque semper aliquet arcu. Nullam eu vestibulum justo.";
 
         document.querySelector('span.ma__emergency-alert__time-stamp').innerText =
-          'May. 24th, 2021, 5:00 pm';
+          ' May. 24th, 2021, 5:00 pm';
       })
       await page.waitFor(1000);
     }
