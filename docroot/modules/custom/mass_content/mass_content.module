@@ -672,8 +672,9 @@ function mass_content_field_widget_entity_reference_paragraphs_form_alter(&$elem
 /**
  * Implements hook_entity_view_mode_alter().
  */
-function mass_content_entity_view_mode_alter(&$view_mode, Drupal\Core\Entity\EntityInterface $entity, $context) {
+function mass_content_entity_view_mode_alter(&$view_mode, $entity, $context) {
 
+  // Display cards or compact cards depending on the settings.
   if ($entity->getEntityTypeId() == 'paragraph' && $entity->bundle() == 'featured_topics' && $view_mode == 'default') {
     if ($entity->field_topic_name_only->value == 1) {
       $view_mode = 'card_compact';
