@@ -33,12 +33,14 @@ dependencies:
     - field.field.node.location.field_short_title
     - field.field.node.location.field_state_organization_tax
     - node.type.location
+    - responsive_image.styles.location_banner
   module:
     - entity_reference_revisions
     - image
     - link
     - metatag
     - options
+    - responsive_image
     - text
     - user
 id: node.location.default
@@ -87,12 +89,12 @@ content:
     region: content
   field_bg_narrow:
     weight: 4
-    label: above
+    label: visually_hidden
     settings:
-      image_style: ''
+      responsive_image_style: location_banner
       image_link: ''
     third_party_settings: {  }
-    type: image
+    type: responsive_image
     region: content
   field_bg_wide:
     weight: 3
