@@ -1,0 +1,517 @@
+uuid: bb4f6f2a-1129-450a-9c2e-c5be6842143f
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.node.bulk_edit
+    - field.field.node.info_details.field_banner_image
+    - field.field.node.info_details.field_collections
+    - field.field.node.info_details.field_contact
+    - field.field.node.info_details.field_data_flag
+    - field.field.node.info_details.field_data_format
+    - field.field.node.info_details.field_data_resource_type
+    - field.field.node.info_details.field_data_topic
+    - field.field.node.info_details.field_details_data_type
+    - field.field.node.info_details.field_details_enable_fields
+    - field.field.node.info_details.field_english_version
+    - field.field.node.info_details.field_footnotes
+    - field.field.node.info_details.field_image_credit
+    - field.field.node.info_details.field_info_detail_overview
+    - field.field.node.info_details.field_info_details_date_publishe
+    - field.field.node.info_details.field_info_details_header_media
+    - field.field.node.info_details.field_info_details_last_updated
+    - field.field.node.info_details.field_info_details_related
+    - field.field.node.info_details.field_info_details_sections
+    - field.field.node.info_details.field_infodetails_metatags
+    - field.field.node.info_details.field_intended_audience
+    - field.field.node.info_details.field_organizations
+    - field.field.node.info_details.field_page_template
+    - field.field.node.info_details.field_reusable_label
+    - field.field.node.info_details.field_short_desc
+    - field.field.node.info_details.field_state_organization_tax
+    - image.style.thumbnail
+    - node.type.info_details
+    - workflows.workflow.editorial
+  module:
+    - conditional_fields
+    - content_moderation
+    - datetime
+    - field_group
+    - image
+    - link
+    - mass_validation
+    - maxlength
+    - metatag
+    - paragraphs
+    - term_reference_tree
+    - text
+third_party_settings:
+  field_group:
+    group_information_details_edit_f:
+      children:
+        - group_overview
+        - group_info_details_related
+        - group_additional_info
+      parent_name: ''
+      weight: 0
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Information Details Edit Form'
+      region: content
+    group_overview:
+      children:
+        - title
+        - field_short_desc
+        - field_details_enable_fields
+        - field_banner_image
+        - field_info_detail_overview
+        - group_header_media
+        - field_info_details_date_publishe
+        - field_info_details_last_updated
+        - field_page_template
+        - field_organizations
+        - field_data_flag
+        - field_details_data_type
+        - field_data_resource_type
+        - field_data_format
+        - field_data_topic
+        - langcode
+        - field_english_version
+        - field_intended_audience
+        - field_reusable_label
+        - field_collections
+      parent_name: group_information_details_edit_f
+      weight: 7
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: true
+      label: Overview
+      region: content
+    group_content:
+      children:
+        - field_info_details_sections
+      parent_name: ''
+      weight: 7
+      format_type: tab
+      format_settings:
+        description: ''
+        formatter: closed
+        required_fields: true
+        id: ''
+        classes: ''
+      label: Content
+      region: hidden
+    group_info_details_related:
+      children:
+        - field_contact
+        - field_info_details_related
+      parent_name: group_information_details_edit_f
+      weight: 10
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Related
+      region: content
+    group_header_media:
+      children:
+        - field_info_details_header_media
+      parent_name: group_overview
+      weight: 6
+      format_type: fieldset
+      format_settings:
+        description: 'Only one item is allowed. To change from one type (iframe, image, video) to another, first click the remove button to the right.'
+        required_fields: true
+        id: header-media
+        classes: ''
+      label: 'Header Media'
+      region: content
+    group_additional_info:
+      children:
+        - field_footnotes
+        - field_image_credit
+      parent_name: group_information_details_edit_f
+      weight: 11
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: 'Additional Info'
+      region: content
+id: node.info_details.bulk_edit
+targetEntityType: node
+bundle: info_details
+mode: bulk_edit
+content:
+  field_banner_image:
+    weight: 4
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_collections:
+    weight: 20
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings: {  }
+    type: term_reference_tree
+    region: content
+  field_contact:
+    weight: 27
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_data_flag:
+    weight: 11
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_data_format:
+    weight: 14
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        bc614656-a820-4566-bf8c-869891eb1000:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: info_details
+    type: options_buttons
+    region: content
+  field_data_resource_type:
+    weight: 13
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        d6eed0b6-1eff-44f0-86a4-2c8fddd7e0f0:
+          dependee: field_details_data_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                target_id: '77936'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: info_details
+    type: options_buttons
+    region: content
+  field_data_topic:
+    weight: 15
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings:
+      conditional_fields:
+        110b5e6b-b85b-43ae-8e1a-80cd609c35ee:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: info_details
+    type: term_reference_tree
+    region: content
+  field_details_data_type:
+    weight: 12
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        4f0e4818-a7ba-4e4d-9d77-55d5f647919a:
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: info_details
+    type: options_buttons
+    region: content
+  field_details_enable_fields:
+    weight: 3
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_english_version:
+    weight: 17
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        02672ac6-949c-49a0-aa62-d386fcf45dd1:
+          dependee: langcode
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: English
+            value_form:
+              -
+                value: en
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: info_details
+    type: entity_reference_autocomplete
+    region: content
+  field_footnotes:
+    weight: 9
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_image_credit:
+    weight: 10
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_info_detail_overview:
+    weight: 5
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_info_details_date_publishe:
+    weight: 7
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_info_details_header_media:
+    type: entity_reference_paragraphs
+    weight: 3
+    settings:
+      title: 'Header media'
+      title_plural: 'Header media'
+      edit_mode: open
+      add_mode: button
+      form_display_mode: media_caption
+      default_paragraph_type: _none
+    third_party_settings: {  }
+    region: content
+  field_info_details_last_updated:
+    weight: 8
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_info_details_related:
+    weight: 29
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      mass_validation:
+        internal_link_content_type_blacklist:
+          - contact_information
+          - fee
+    type: link_default
+    region: content
+  field_infodetails_metatags:
+    weight: 2
+    settings:
+      sidebar: true
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_intended_audience:
+    weight: 18
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_organizations:
+    weight: 10
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_page_template:
+    weight: 9
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_reusable_label:
+    type: entity_reference_autocomplete
+    weight: 19
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    third_party_settings: {  }
+  field_short_desc:
+    weight: 2
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+  field_state_organization_tax:
+    weight: 3
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  langcode:
+    type: language_select
+    weight: 16
+    region: content
+    settings:
+      include_locked: false
+    third_party_settings: {  }
+  moderation_state:
+    type: moderation_state_default
+    weight: 4
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    weight: 32
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
+  publish_state:
+    weight: 30
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  title:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: 70
+        maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
+        maxlength_js_enforce_attribute: false
+  uid:
+    type: entity_reference_autocomplete
+    weight: 1
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    third_party_settings: {  }
+  unpublish_on:
+    weight: 33
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
+  unpublish_state:
+    weight: 31
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  url_redirects:
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  field_info_details_sections: true
+  path: true
+  promote: true
+  status: true
+  sticky: true
