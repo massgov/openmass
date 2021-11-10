@@ -1921,8 +1921,8 @@ class Organisms {
       'content' => [
         'title' => [
           'text' => $heading,
-          'colored'=> false,
-          ],
+          'colored' => FALSE,
+        ],
         'background' => 'none',
         'sections' => $sections,
       ],
