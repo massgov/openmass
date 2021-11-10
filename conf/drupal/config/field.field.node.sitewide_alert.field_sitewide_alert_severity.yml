@@ -1,0 +1,23 @@
+uuid: 67f96a21-b188-4e4c-b0b0-49d239bab058
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_sitewide_alert_severity
+    - node.type.sitewide_alert
+  module:
+    - options
+id: node.sitewide_alert.field_sitewide_alert_severity
+field_name: field_sitewide_alert_severity
+entity_type: node
+bundle: sitewide_alert
+label: 'Alert severity label'
+description: 'Severity label will appear just before the alert title.'
+required: true
+translatable: false
+default_value:
+  -
+    value: informational_notice
+default_value_callback: ''
+settings: {  }
+field_type: list_string
