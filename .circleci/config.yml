@@ -93,6 +93,9 @@ parameters:
   reference:
     type: string
     default: ""
+  tugboat:
+    type: string
+    default: ""
   list:
     type: string
     default: "all"
@@ -394,6 +397,9 @@ jobs:
       viewport:
         type: string
         default: all
+      tugboat:
+        type: string
+        default: ""
     working_directory: /tmp/code
     executor:
       name: base
@@ -405,10 +411,20 @@ jobs:
           name: Backstop reference
           command: ddev exec --service backstop backstop --config=/src/backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
           no_output_timeout: 300m
-      - run:
-          name: Backstop test
-          command: ddev exec --service backstop backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
-          no_output_timeout: 300m
+      - when:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Backstop test
+                command: ddev exec --service backstop backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
+                no_output_timeout: 300m
+      - unless:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Backstop test
+                command: ddev exec --service backstop backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+                no_output_timeout: 300m
       - run:
           command: ddev logs -s backstop
           when: always
@@ -638,7 +654,7 @@ workflows:
     triggers:
       - schedule:
           # UTC time-zone
-          cron: "00 16 * * 2"
+          cron: "31 16 * * 3"
           filters:
             branches:
               only:
@@ -1058,6 +1074,7 @@ workflows:
           reference: << pipeline.parameters.reference >>
           list: << pipeline.parameters.list >>
           viewport: << pipeline.parameters.viewport >>
+          tugboat: << pipeline.parameters.tugboat >>
 
   # Usually triggered by drush ma:release.
   deploy_ad_hoc:
