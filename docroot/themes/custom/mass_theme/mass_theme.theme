@@ -4414,7 +4414,7 @@ function mass_theme_build_alert_blocks_sooner() {
  * @see docroot/themes/custom/mass_theme/templates/layout/html.html.twig
  * @see Drupal\mass_alerts\Plugin\Block:build()
  */
-function mass_theme_fetch_alerts_sooner(&$variables) {
+function mass_theme_build_data_from_alert_blocks(&$variables) {
   $current_path = \Drupal::service('path.current')->getPath();
   $cid = 'mass_alerts_blocks:' . $current_path;
 
@@ -4440,7 +4440,7 @@ function mass_theme_preprocess_html(&$variables) {
     $node_type = $variables['node_type'];
   }
 
-  mass_theme_fetch_alerts_sooner($variables);
+  mass_theme_build_data_from_alert_blocks($variables);
   $variables['optimize_hiding_snippet'] = \Drupal::state()->get('optimize_hiding_snippet', FALSE);
 
   // Add Schema.org markup for body.
