@@ -281,6 +281,19 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
   }
 
   /**
+   * Creates one unpublished node.
+   */
+  private function createUnpublishedNode() {
+    $unpublished_page = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 0,
+      'moderation_state' => MassModeration::UNPUBLISHED,
+    ]);
+    $unpublished_page->save();
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function setUp() {
@@ -298,6 +311,10 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
     // Visiting the view.
     $this->drupalGet('admin/content');
     $this->view = $this->page->find('css', '.view.view-content');
+
+    // Ensure we have at least one unpublished page,
+    // so we can also test the Unpublished nodes filter.
+    $this->createUnpublishedNode();
   }
 
   /**
@@ -321,15 +338,6 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
     $this->checkTextboxFilteredByNodePropertyWorks('ID');
     $this->checkTextboxFilteredByUserWorks('Author', 'Authored by');
     $this->checkTextboxFilteredByUserWorks('Last revised by');
-
-    // Ensure we have at least one unpublished page.
-    $unpublished_page = $this->createNode([
-      'type' => 'page',
-      'title' => $this->randomMachineName(),
-      'status' => 0,
-      'moderation_state' => MassModeration::UNPUBLISHED,
-    ]);
-    $unpublished_page->save();
 
     // Check status filter.
     $this->checkSelectFilterWorks('Publication status', 'Published');
