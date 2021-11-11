@@ -223,7 +223,8 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
     $this->reset();
     if ($value) {
       $this->view->findField($description)->selectOption($value);
-    } else {
+    }
+    else {
       $value = $this->selectSetAnyValue($description);
     }
     $this->view->pressButton('Apply');
@@ -268,7 +269,7 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
       'node_save_action' => 'Save content',
     ];
 
-    foreach ($actions as $action_value => $action_label) {
+    foreach ($actions as $action_label) {
       $this->reset();
       $num = \random_int(5, 10);
       $this->selectRows($num);
