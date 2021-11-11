@@ -3498,7 +3498,7 @@ function mass_theme_preprocess_node_news_full(&$variables) {
       if (count($body_array) > 1) {
         $body_array[1] = $location . $body_array[1];
       }
-      $body_string = implode($body_array, '<p>');
+      $body_string = implode('<p>', $body_array);
     }
     if (Helper::fieldValue($node, $field['news_type']) == 'press_release') {
       $ap_conformity = TRUE;
