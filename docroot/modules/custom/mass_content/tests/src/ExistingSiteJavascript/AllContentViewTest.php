@@ -34,16 +34,22 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
    * Asserts a random row has a specific text value.
    */
   private function checkRandomRowHasValue($value) {
-    // return;
-    dump($value);
     $table = $this->view->find('css', '.views-view-table');
+
+    // Zero results scenario.
+    if (!$table) {
+      return;
+    }
+
     $rows = $table->findAll('css', 'tbody > tr');
     $randomRow = $rows[\random_int(0, count($rows) - 1)];
     $text = $randomRow->getText();
-    // dump($text);
     $this->assertStringContainsString($value, $text);
   }
 
+  /**
+   * Returns the node types machine names and labels.
+   */
   private function nodeTypeFilterOptions() {
     return [
       'advisory' => 'Advisory',
@@ -213,9 +219,13 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
   /**
    * Asserts a select filter works.
    */
-  private function checkSelectFilterWorks($description) {
+  private function checkSelectFilterWorks($description, $value = NULL) {
     $this->reset();
-    $value = $this->selectSetAnyValue($description);
+    if ($value) {
+      $this->view->findField($description)->selectOption($value);
+    } else {
+      $value = $this->selectSetAnyValue($description);
+    }
     $this->view->pressButton('Apply');
     $this->checkRandomRowHasValue($value);
   }
@@ -252,56 +262,21 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
    * Checks status messages when actions are applied.
    */
   private function checkActions() {
-    $this->reset();
-    $num = \random_int(5, 10);
-    $this->selectRows($num);
-
     $actions = [
       'flag_action.watch_content_flag' => 'Watch',
       'flag_action.unwatch_content_flag' => 'Unwatch',
       'node_save_action' => 'Save content',
     ];
 
-    $action_value = \array_rand($actions);
-    $action_label = $actions[$action_value];
-    $this->view->findField('Action')->selectOption($action_label);
+    foreach ($actions as $action_value => $action_label) {
+      $this->reset();
+      $num = \random_int(5, 10);
+      $this->selectRows($num);
 
-    $this->view->pressButton('Apply to selected items');
-    $message = $this->page->find('css', '.messages--status')->getText();
-    $this->assertStringContainsString($action_label . ' was applied to ' . $num, $message);
-  }
-
-  private function createNodesForAllContentTypes() {
-
-    $moderation_state_options = [
-      MassModeration::PUBLISHED,
-      MassModeration::UNPUBLISHED
-    ];
-
-    // Ensure at least first node is unpublished
-    // to avoid fails on filtering by unpublished state.
-    $status = 0;
-    $moderation_state = MassModeration::UNPUBLISHED;
-
-    foreach ($this->nodeTypeFilterOptions() as $machine_name => $label) {
-      $node = $this->createNode([
-        'type' => $machine_name,
-        'title' => $this->randomMachineName(12),
-        'status' => $status,
-        'moderation_state' => $moderation_state,
-      ]);
-
-      // Special case for persons
-
-      dump($machine_name . ' - ' . $this->randomMachineName(12) . ' ' . $node->getTitle());
-
-
-
-
-      $node->save();
-
-      $status = \random_int(0, 1);
-      $moderation_state = $moderation_state_options[$status];
+      $this->view->findField('Action')->selectOption($action_label);
+      $this->view->pressButton('Apply to selected items');
+      $message = $this->page->find('css', '.messages--status')->getText();
+      $this->assertStringContainsString($action_label . ' was applied to ' . $num, $message);
     }
   }
 
@@ -323,70 +298,48 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
     // Visiting the view.
     $this->drupalGet('admin/content');
     $this->view = $this->page->find('css', '.view.view-content');
-
-    $this->createNodesForAllContentTypes();
   }
 
   /**
    * Tests a few things for the "All content" view at admin/content.
    */
   public function testView() {
-    // $this->checkSelectFilterOptions('Action',
-    //   ['Watch', 'Unwatch', 'Save content']
-    // );
-    // $this->checkSelectFilterOptions('Publication status',
-    //   ['- Any -', 'Published', 'Unpublished']
-    // );
-    // $this->checkSelectFilterOptions('Snoozed',
-    //   ['All', 'Yes', 'No']
-    // );
+    // Checking select filter options.
+    $this->checkSelectFilterOptions('Action',
+      ['Watch', 'Unwatch', 'Save content']
+    );
+    $this->checkSelectFilterOptions('Publication status',
+      ['- Any -', 'Published', 'Unpublished']
+    );
+    $this->checkSelectFilterOptions('Snoozed',
+      ['All', 'Yes', 'No']
+    );
+    $this->checkSelectFilterOptions('Content type', $this->nodeTypeFilterOptions());
 
-    // $this->checkTextboxFilteredByNodePropertyWorks('Title');
-    // $this->checkTextboxFilteredByNodePropertyWorks('ID');
+    // Checking textbox filters.
+    $this->checkTextboxFilteredByNodePropertyWorks('Title');
+    $this->checkTextboxFilteredByNodePropertyWorks('ID');
+    $this->checkTextboxFilteredByUserWorks('Author', 'Authored by');
+    $this->checkTextboxFilteredByUserWorks('Last revised by');
 
-    // $this->checkTextboxFilteredByUserWorks('Author', 'Authored by');
-    // $this->checkTextboxFilteredByUserWorks('Last revised by');
+    // Ensure we have at least one unpublished page.
+    $unpublished_page = $this->createNode([
+      'type' => 'page',
+      'title' => $this->randomMachineName(),
+      'status' => 0,
+      'moderation_state' => MassModeration::UNPUBLISHED,
+    ]);
+    $unpublished_page->save();
 
-    // $this->checkSelectFilterOptions('Content type', $this->nodeTypeFilterOptions());
-    $this->checkSelectFilterWorks('Content type');
-    $this->checkSelectFilterWorks('Content type');
-    $this->checkSelectFilterWorks('Content type');
-    $this->checkSelectFilterWorks('Content type');
-    $this->checkSelectFilterWorks('Content type');
-    $this->checkSelectFilterWorks('Content type');
-    $this->checkSelectFilterWorks('Content type');
-    $this->checkSelectFilterWorks('Content type');
-    $this->checkSelectFilterWorks('Content type');
-    $this->checkSelectFilterWorks('Content type');
-    $this->checkSelectFilterWorks('Content type');
-    $this->checkSelectFilterWorks('Content type');
+    // Check status filter.
+    $this->checkSelectFilterWorks('Publication status', 'Published');
+    $this->checkSelectFilterWorks('Publication status', 'Unpublished');
 
+    // Check randomly the content type filter 10 times.
+    for ($i = 0; $i++ < 10; $this->checkSelectFilterWorks('Content type'));
 
-    // $this->checkSelectFilterWorks('Publication status');
-
-
-  }
-
-  function _test5() {
-    $this->checkSelectFilterWorks('Publication status');
-    $this->assertTrue(true, ':D');
-    $this->checkSelectFilterWorks('Publication status');
-    $this->assertTrue(true, ':D');
-    $this->checkSelectFilterWorks('Publication status');
-    $this->assertTrue(true, ':D');
-    $this->checkSelectFilterWorks('Publication status');
-
-  }
-
-  function _test3() {
+    // Check actions.
     $this->checkActions();
-
   }
-
-  function _test2() {
-
-
-  }
-
 
 }
