@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
+use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
 use Exception;
@@ -33,11 +34,53 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
    * Asserts a random row has a specific text value.
    */
   private function checkRandomRowHasValue($value) {
+    // return;
+    dump($value);
     $table = $this->view->find('css', '.views-view-table');
     $rows = $table->findAll('css', 'tbody > tr');
     $randomRow = $rows[\random_int(0, count($rows) - 1)];
     $text = $randomRow->getText();
+    // dump($text);
     $this->assertStringContainsString($value, $text);
+  }
+
+  private function nodeTypeFilterOptions() {
+    return [
+      'advisory' => 'Advisory',
+      'alert' => 'Alert (Page-level and Organization)',
+      'page' => 'Basic page (prototype)',
+      'binder' => 'Binder',
+      'contact_information' => 'Contact Information',
+      'curated_list' => 'Curated List',
+      'decision' => 'Decision',
+      'decision_tree' => 'Decision Tree',
+      'decision_tree_branch' => 'Decision Tree Branch',
+      'decision_tree_conclusion' => 'Decision Tree Conclusion',
+      'error_page' => 'Error',
+      'event' => 'Event',
+      'executive_order' => 'Executive Order',
+      'external_data_resource' => 'External data resource',
+      'fee' => 'Fee',
+      'form_page' => 'Form',
+      'guide_page' => 'Guide',
+      'how_to_page' => 'How-to',
+      'info_details' => 'Information Details',
+      'interstitial' => 'Interstitial',
+      'location' => 'Location',
+      'location_details' => 'Location Detail',
+      'news' => 'News',
+      'org_page' => 'Organization',
+      'person' => 'Person',
+      'campaign_landing' => 'Promotional page',
+      'regulation' => 'Regulation',
+      'action' => 'Right-rail (prototype)',
+      'rules' => 'Rules of Court',
+      'service_page' => 'Service',
+      'service_details' => 'Service Details',
+      'stacked_layout' => 'Stacked layout (prototype)',
+      'topic_page' => 'Topic Page',
+      'utility_drawer' => 'Utility Drawer',
+    ];
   }
 
   /**
@@ -158,15 +201,13 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
     // Get select.
     $selectElem = $this->view->findField($description);
     // All options, except the "All option".
-    $options = $selectElem->findAll('css', 'option');
-    array_shift($options);
+    $options = $selectElem->findAll('css', 'option:not([value=All])');
     // Pick a random option.
-    $randomOption = $options[\random_int(0, count($options) - 1)];
-    $randomValue = $randomOption->getAttribute('value');
-    $randomValueLabel = $randomOption->getText();
+    $randomOption = $options[\array_rand($options)];
+    $randomOptionLabel = $randomOption->getText();
     // Fill the select option.
-    $selectElem->setValue($randomValue);
-    return $randomValueLabel;
+    $selectElem->selectOption($randomOptionLabel);
+    return $randomOptionLabel;
   }
 
   /**
@@ -214,10 +255,54 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
     $this->reset();
     $num = \random_int(5, 10);
     $this->selectRows($num);
-    $value = $this->selectSetAnyValue('Action');
+
+    $actions = [
+      'flag_action.watch_content_flag' => 'Watch',
+      'flag_action.unwatch_content_flag' => 'Unwatch',
+      'node_save_action' => 'Save content',
+    ];
+
+    $action_value = \array_rand($actions);
+    $action_label = $actions[$action_value];
+    $this->view->findField('Action')->selectOption($action_label);
+
     $this->view->pressButton('Apply to selected items');
     $message = $this->page->find('css', '.messages--status')->getText();
-    $this->assertStringContainsString($value . ' was applied to ' . $num, $message);
+    $this->assertStringContainsString($action_label . ' was applied to ' . $num, $message);
+  }
+
+  private function createNodesForAllContentTypes() {
+
+    $moderation_state_options = [
+      MassModeration::PUBLISHED,
+      MassModeration::UNPUBLISHED
+    ];
+
+    // Ensure at least first node is unpublished
+    // to avoid fails on filtering by unpublished state.
+    $status = 0;
+    $moderation_state = MassModeration::UNPUBLISHED;
+
+    foreach ($this->nodeTypeFilterOptions() as $machine_name => $label) {
+      $node = $this->createNode([
+        'type' => $machine_name,
+        'title' => $this->randomMachineName(12),
+        'status' => $status,
+        'moderation_state' => $moderation_state,
+      ]);
+
+      // Special case for persons
+
+      dump($machine_name . ' - ' . $this->randomMachineName(12) . ' ' . $node->getTitle());
+
+
+
+
+      $node->save();
+
+      $status = \random_int(0, 1);
+      $moderation_state = $moderation_state_options[$status];
+    }
   }
 
   /**
@@ -238,31 +323,70 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
     // Visiting the view.
     $this->drupalGet('admin/content');
     $this->view = $this->page->find('css', '.view.view-content');
+
+    $this->createNodesForAllContentTypes();
   }
 
   /**
    * Tests a few things for the "All content" view at admin/content.
    */
   public function testView() {
-    $this->checkSelectFilterOptions('Action',
-      ['Watch', 'Unwatch', 'Save content']
-    );
-    $this->checkSelectFilterOptions('Publication status',
-      ['- Any -', 'Published', 'Unpublished']
-    );
-    $this->checkSelectFilterOptions('Snoozed',
-      ['All', 'Yes', 'No']
-    );
+    // $this->checkSelectFilterOptions('Action',
+    //   ['Watch', 'Unwatch', 'Save content']
+    // );
+    // $this->checkSelectFilterOptions('Publication status',
+    //   ['- Any -', 'Published', 'Unpublished']
+    // );
+    // $this->checkSelectFilterOptions('Snoozed',
+    //   ['All', 'Yes', 'No']
+    // );
 
-    $this->checkTextboxFilteredByNodePropertyWorks('Title');
-    $this->checkTextboxFilteredByNodePropertyWorks('ID');
+    // $this->checkTextboxFilteredByNodePropertyWorks('Title');
+    // $this->checkTextboxFilteredByNodePropertyWorks('ID');
+
+    // $this->checkTextboxFilteredByUserWorks('Author', 'Authored by');
+    // $this->checkTextboxFilteredByUserWorks('Last revised by');
+
+    // $this->checkSelectFilterOptions('Content type', $this->nodeTypeFilterOptions());
+    $this->checkSelectFilterWorks('Content type');
+    $this->checkSelectFilterWorks('Content type');
+    $this->checkSelectFilterWorks('Content type');
+    $this->checkSelectFilterWorks('Content type');
+    $this->checkSelectFilterWorks('Content type');
+    $this->checkSelectFilterWorks('Content type');
+    $this->checkSelectFilterWorks('Content type');
+    $this->checkSelectFilterWorks('Content type');
+    $this->checkSelectFilterWorks('Content type');
+    $this->checkSelectFilterWorks('Content type');
+    $this->checkSelectFilterWorks('Content type');
+    $this->checkSelectFilterWorks('Content type');
+
+
+    // $this->checkSelectFilterWorks('Publication status');
+
+
+  }
+
+  function _test5() {
+    $this->checkSelectFilterWorks('Publication status');
+    $this->assertTrue(true, ':D');
+    $this->checkSelectFilterWorks('Publication status');
+    $this->assertTrue(true, ':D');
+    $this->checkSelectFilterWorks('Publication status');
+    $this->assertTrue(true, ':D');
     $this->checkSelectFilterWorks('Publication status');
 
-    $this->checkTextboxFilteredByUserWorks('Author', 'Authored by');
-    $this->checkTextboxFilteredByUserWorks('Last revised by');
+  }
 
+  function _test3() {
     $this->checkActions();
 
   }
+
+  function _test2() {
+
+
+  }
+
 
 }
