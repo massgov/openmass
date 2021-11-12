@@ -264,9 +264,9 @@ jobs:
           name: Wait for mysql
           command: dockerize -wait tcp://localhost:3306 -timeout 2m
       # Run drush updatedb and cim.
-      - run: drush deploy
+      - run: vendor/bin/drush deploy
       # Get an overview
-      - run: drush status
+      - run: vendor/bin/drush status
       - run: cat /proc/cpuinfo
       - run: cat /proc/meminfo
         # Ensure files and DTT directories are writable by www-data
@@ -278,13 +278,13 @@ jobs:
             and:
               - equal: [ behat, << parameters.command >> ]
           steps:
-            run: behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+            run: vendor/bin/behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - when:
           condition:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
+            run: 'su -s /bin/bash root -c "vendor/bin/phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
           path: /tmp/test-results
       - store_test_results:
@@ -467,7 +467,7 @@ jobs:
           name: Wait for mysql
           command: sleep 60
       - run:
-          command: drush deploy
+          command: docker-compose exec drupal drush deploy
           no_output_timeout: 60m
       - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
       - run:
