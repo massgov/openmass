@@ -52,46 +52,40 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   private function nodeTypeFilterOptions() {
 
     return [
-      // 'advisory' => 'Advisory',
-      // 'alert' => 'Alert (Page-level and Organization)',
-      // 'page' => 'Basic page (prototype)',
-      // 'binder' => 'Binder',
-      // 'contact_information' => 'Contact Information',
-      // 'curated_list' => 'Curated List',
-      // 'decision' => 'Decision',
-      // 'decision_tree' => 'Decision Tree',
-      // 'decision_tree_branch' => 'Decision Tree Branch',
-      // 'decision_tree_conclusion' => 'Decision Tree Conclusion',
-      // 'error_page' => 'Error', // Skipped.
-      // 'event' => 'Event',
-      // 'executive_order' => 'Executive Order',
-
-      // 'external_data_resource' => 'External data resource',
-      // 'fee' => 'Fee',
-      // 'form_page' => 'Form',
-      // 'guide_page' => 'Guide',
-      // 'how_to_page' => 'How-to',
-      // 'info_details' => 'Information Details',
-      // 'interstitial' => 'Interstitial', // Skipped.
-      // 'location' => 'Location',
-      // 'location_details' => 'Location Detail',
-      // 'news' => 'News',
-
+      'advisory' => 'Advisory',
+      'alert' => 'Alert (Page-level and Organization)',
+      'page' => 'Basic page (prototype)',
+      'binder' => 'Binder',
+      'contact_information' => 'Contact Information',
+      'curated_list' => 'Curated List',
+      'decision' => 'Decision',
+      'decision_tree' => 'Decision Tree',
+      'decision_tree_branch' => 'Decision Tree Branch',
+      'decision_tree_conclusion' => 'Decision Tree Conclusion',
+      'error_page' => 'Error',
+      'event' => 'Event',
+      'executive_order' => 'Executive Order',
+      'external_data_resource' => 'External data resource',
+      'fee' => 'Fee',
+      'form_page' => 'Form',
+      'guide_page' => 'Guide',
+      'how_to_page' => 'How-to',
+      'info_details' => 'Information Details',
+      'interstitial' => 'Interstitial',
+      'location' => 'Location',
+      'location_details' => 'Location Detail',
+      'news' => 'News',
       'org_page' => 'Organization',
-
-      // 'person' => 'Person',
-      // 'campaign_landing' => 'Promotional page',
-
-      // 'regulation' => 'Regulation', // ERROR, probably doesn't have title
-
-      // 'action' => 'Right-rail (prototype)',
-      // 'rules' => 'Rules of Court',
-      // 'service_page' => 'Service',
-      // 'service_details' => 'Service Details',
-      // 'stacked_layout' => 'Stacked layout (prototype)',
-      // 'topic_page' => 'Topic Page',
-
-      // 'utility_drawer' => 'Utility Drawer', // ERROR, probably no title.
+      'person' => 'Person',
+      'campaign_landing' => 'Promotional page',
+      'regulation' => 'Regulation',
+      'action' => 'Right-rail (prototype)',
+      'rules' => 'Rules of Court',
+      'service_page' => 'Service',
+      'service_details' => 'Service Details',
+      'stacked_layout' => 'Stacked layout (prototype)',
+      'topic_page' => 'Topic Page',
+      'utility_drawer' => 'Utility Drawer',
     ];
   }
 
@@ -115,10 +109,39 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $this->newNode($executive_order_data);
     $this->newNode($executive_order_data);
 
+    $regulation_data = $node_data + [
+      'type' => 'regulation',
+      'field_regulation_title' => $this->randomMachineName(20),
+    ];
+    $this->newNode($regulation_data);
+    $this->newNode($regulation_data);
+
+    // Create 2 persons.
+    // A Person's title is built from its first_name and last_name.
+    $person_data = $node_data + [
+      'type' => 'person',
+      'field_person_first_name' => $this->randomMachineName(5),
+      'field_person_last_name' => $this->randomMachineName(5),
+    ];
+    $this->newNode($person_data);
+    $this->newNode($person_data);
+
     $types = $this->nodeTypeFilterOptions();
-    unset($types['error_page']);
-    unset($types['interstitial']);
-    unset($types['executive_order']);
+
+    $admin_use_only_types = [
+      'error_page',
+      'interstitial',
+      'executive_order',
+      'regulation',
+      'utility_drawer',
+    ];
+
+    foreach ($admin_use_only_types as $admin_use_only_type) {
+      unset($types[$admin_use_only_type]);
+    }
+
+    unset($types['person']);
+
     $type_machine_names = array_keys($types);
 
     $title = $this->randomMachineName(20);
@@ -375,7 +398,14 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
       $autoEntityLabelEnabled = $this->getCurrentPage()->findField('Disabled')->isChecked();
 
-      if (!$autoEntityLabelEnabled && $type != 'executive_order') {
+      $typesWithoutTitleFieldOnFormDisplay = [
+        'executive_order',
+        'regulation',
+      ];
+
+      $typeHasTitleField = !in_array($type, $typesWithoutTitleFieldOnFormDisplay);
+
+      if (!$autoEntityLabelEnabled && $typeHasTitleField) {
         $this->getCurrentPage()->find('css', '#edit-status-0')->click();
         $this->getCurrentPage()->pressButton('Save configuration');
       }
@@ -423,6 +453,12 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
           $title_input_id = '#edit-node-executive-order-field-executive-title-0-value';
           $append_option_id = '#edit-node-executive-order-field-executive-title-change-method-append';
           break;
+        case 'regulation':
+          $title_check_id = '#edit-node-regulation-field-selector-field-regulation-title';
+          $title_input_id = '#edit-node-regulation-field-regulation-title-0-value';
+          $append_option_id = '#edit-node-regulation-field-regulation-title-change-method-append';
+          break;
+
       }
 
       $this->getCurrentPage()->find('css', $title_check_id)->check();
@@ -457,7 +493,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
 
       $this->assertNotNull($this->view->find('css', '.views-view-table'));
 
-      if ($autoEntityLabelEnabled && $type != 'executive_order') {
+      if ($autoEntityLabelEnabled && $typeHasTitleField) {
         $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
         $this->getCurrentPage()->find('css', '#edit-status-1')->click();
         $this->getCurrentPage()->pressButton('Save configuration');
