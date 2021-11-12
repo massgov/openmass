@@ -255,6 +255,7 @@ jobs:
       name: base
       instance: << parameters.instance >>
     steps:
+      - attach_workspace: {at: /var/www}
       - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
       - run: { name: 'Start Apache', command: '/usr/local/bin/apache2-foreground-enhanced', background: true }
       - run:
@@ -264,9 +265,9 @@ jobs:
           name: Wait for mysql
           command: dockerize -wait tcp://localhost:3306 -timeout 2m
       # Run drush updatedb and cim.
-      - run: vendor/bin/drush deploy
+      - run: drush deploy
       # Get an overview
-      - run: vendor/bin/drush status
+      - run: drush status
       - run: cat /proc/cpuinfo
       - run: cat /proc/meminfo
         # Ensure files and DTT directories are writable by www-data
@@ -278,13 +279,13 @@ jobs:
             and:
               - equal: [ behat, << parameters.command >> ]
           steps:
-            run: vendor/bin/behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+            run: behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
       - when:
           condition:
             and:
               - equal: [ phpunit, << parameters.command >> ]
           steps:
-            run: 'su -s /bin/bash root -c "vendor/bin/phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
+            run: 'su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"'
       - store_test_results:
           path: /tmp/test-results
       - store_test_results:
