@@ -1,0 +1,789 @@
+uuid: b76c8d97-663a-4df2-a511-5ce69ae598ab
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.node.bulk_edit
+    - field.field.node.org_page.body
+    - field.field.node.org_page.field_about
+    - field.field.node.org_page.field_action_set__bg_narrow
+    - field.field.node.org_page.field_action_set__bg_wide
+    - field.field.node.org_page.field_application_login_links
+    - field.field.node.org_page.field_approver
+    - field.field.node.org_page.field_banner_image
+    - field.field.node.org_page.field_bg_narrow
+    - field.field.node.org_page.field_bg_wide
+    - field.field.node.org_page.field_billing_organization
+    - field.field.node.org_page.field_boards
+    - field.field.node.org_page.field_career_opportunities
+    - field.field.node.org_page.field_constituent_communication
+    - field.field.node.org_page.field_event_quantity
+    - field.field.node.org_page.field_feedback_com_link
+    - field.field.node.org_page.field_get_updates_links
+    - field.field.node.org_page.field_hide_short_description
+    - field.field.node.org_page.field_image_credit
+    - field.field.node.org_page.field_intended_audience
+    - field.field.node.org_page.field_links_actions_3
+    - field.field.node.org_page.field_location_button_label
+    - field.field.node.org_page.field_location_button_short_desc
+    - field.field.node.org_page.field_metatags
+    - field.field.node.org_page.field_more_about_agency_link
+    - field.field.node.org_page.field_more_about_leadership
+    - field.field.node.org_page.field_number_of_news_items
+    - field.field.node.org_page.field_org_directory_page
+    - field.field.node.org_page.field_org_featured_items
+    - field.field.node.org_page.field_org_featured_message
+    - field.field.node.org_page.field_org_featured_news_items
+    - field.field.node.org_page.field_org_our_orgs
+    - field.field.node.org_page.field_org_page_thumbnail
+    - field.field.node.org_page.field_org_ref_locations
+    - field.field.node.org_page.field_org_sentence_phrasing
+    - field.field.node.org_page.field_org_show_news_images
+    - field.field.node.org_page.field_organization_sections
+    - field.field.node.org_page.field_organizations
+    - field.field.node.org_page.field_parent
+    - field.field.node.org_page.field_person_bio
+    - field.field.node.org_page.field_public_records_link
+    - field.field.node.org_page.field_ref_actions_6
+    - field.field.node.org_page.field_ref_card_view_6
+    - field.field.node.org_page.field_ref_contact_info_1
+    - field.field.node.org_page.field_ref_orgs
+    - field.field.node.org_page.field_related_organization_type
+    - field.field.node.org_page.field_response_expectations
+    - field.field.node.org_page.field_reusable_label
+    - field.field.node.org_page.field_secondary_person_bio
+    - field.field.node.org_page.field_short_name
+    - field.field.node.org_page.field_social_links
+    - field.field.node.org_page.field_state_organization_tax
+    - field.field.node.org_page.field_sub_brand
+    - field.field.node.org_page.field_sub_title
+    - field.field.node.org_page.field_subtype
+    - field.field.node.org_page.field_title_sub_text
+    - field.field.node.org_page.field_urgent_warning
+    - field.field.node.org_page.field_verification
+    - image.style.thumbnail
+    - node.type.org_page
+    - workflows.workflow.editorial
+  module:
+    - conditional_fields
+    - content_moderation
+    - dynamic_entity_reference
+    - field_group
+    - image
+    - link
+    - maxlength
+    - metatag
+third_party_settings:
+  field_group:
+    group_node_edit_form:
+      children:
+        - group_banner
+        - group_overview
+        - group_content
+        - group_feedback
+        - group_other
+      parent_name: ''
+      weight: 1
+      format_type: tabs
+      format_settings:
+        id: ''
+        classes: ''
+        direction: horizontal
+      label: 'Node Edit Form'
+      region: content
+    group_banner:
+      children:
+        - group_organization_name
+        - field_ref_contact_info_1
+        - field_bg_wide
+        - field_bg_narrow
+        - field_banner_image
+        - field_image_credit
+        - field_organizations
+        - field_reusable_label
+      parent_name: group_node_edit_form
+      weight: 20
+      format_type: tab
+      format_settings:
+        formatter: closed
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+      label: 'Title Banner'
+      region: content
+    group_actions:
+      children: {  }
+      parent_name: ''
+      weight: 34
+      format_type: tab
+      format_settings:
+        formatter: closed
+        description: 'This large, visual element will help call attention to top services that constituents may need. You can feature up to 3 and list a total of 6 others.'
+        required_fields: true
+        id: ''
+        classes: ''
+      label: 'Services Offered'
+      region: hidden
+    group_other:
+      children:
+        - field_more_about_agency_link
+        - field_more_about_leadership
+        - field_org_directory_page
+        - field_career_opportunities
+        - field_application_login_links
+        - field_public_records_link
+        - field_get_updates_links
+      parent_name: group_node_edit_form
+      weight: 25
+      format_type: tab
+      format_settings:
+        description: ''
+        formatter: closed
+        required_fields: true
+        id: ''
+        classes: ''
+      label: 'Navigation menu'
+      region: content
+    group_overview:
+      children:
+        - field_sub_title
+        - field_hide_short_description
+        - field_sub_brand
+        - field_org_page_thumbnail
+        - field_social_links
+        - field_intended_audience
+        - field_parent
+        - field_billing_organization
+      parent_name: group_node_edit_form
+      weight: 21
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: closed
+        description: ''
+        required_fields: true
+      label: Overview
+      region: content
+    group_organization_name:
+      children:
+        - title
+        - field_subtype
+        - field_person_bio
+        - field_secondary_person_bio
+        - field_title_sub_text
+      parent_name: group_banner
+      weight: 7
+      format_type: html_element
+      format_settings:
+        id: ''
+        classes: ''
+        element: div
+        show_label: true
+        label_element: h3
+        required_fields: true
+        attributes: ''
+        effect: none
+        speed: fast
+      label: 'Organization name'
+      region: content
+    group_feedback:
+      children:
+        - field_constituent_communication
+        - field_verification
+        - field_approver
+        - field_feedback_com_link
+        - field_response_expectations
+        - field_urgent_warning
+        - field_org_sentence_phrasing
+      parent_name: group_node_edit_form
+      weight: 24
+      format_type: tab
+      format_settings:
+        formatter: closed
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+      label: 'Setup Feedback'
+      region: content
+    group_content:
+      children: {  }
+      parent_name: group_node_edit_form
+      weight: 23
+      format_type: tab
+      region: content
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        formatter: closed
+        required_fields: true
+      label: Content
+id: node.org_page.bulk_edit
+targetEntityType: node
+bundle: org_page
+mode: bulk_edit
+content:
+  field_application_login_links:
+    weight: 124
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_approver:
+    weight: 106
+    settings:
+      size: 40
+      placeholder: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: null
+        maxlength_js_enforce_attribute: true
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+      conditional_fields:
+        aa815e94-ef9e-4e1f-a826-6d0361ccded8:
+          dependee: field_constituent_communication
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: contact
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: org_page
+    type: string_textfield
+    region: content
+  field_banner_image:
+    weight: 12
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings:
+      conditional_fields:
+        69ea8f14-56d8-4b66-986e-1dc6102de0d9:
+          dependee: field_subtype
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: 'Elected Official'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: org_page
+    type: image_image
+    region: content
+  field_bg_narrow:
+    weight: 11
+    settings:
+      preview_image_style: thumbnail
+      progress_indicator: throbber
+    third_party_settings:
+      conditional_fields:
+        e5e75831-d61d-4cfe-8926-e269364d6f34:
+          dependee: field_subtype
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: 'Elected Official'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: org_page
+    type: image_image
+    region: content
+  field_bg_wide:
+    weight: 10
+    settings:
+      preview_image_style: thumbnail
+      progress_indicator: throbber
+    third_party_settings:
+      conditional_fields:
+        14d3d7ee-bc6e-491e-9134-bc1bcb861bb9:
+          dependee: field_subtype
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: 'Elected Official'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: org_page
+    type: image_image
+    region: content
+  field_billing_organization:
+    weight: 133
+    settings: {  }
+    third_party_settings: {  }
+    type: dynamic_entity_reference_options_select
+    region: content
+  field_board_members:
+    type: entity_reference_paragraphs
+    weight: 56
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+    third_party_settings: {  }
+    region: content
+  field_career_opportunities:
+    weight: 123
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_constituent_communication:
+    weight: 103
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_feedback_com_link:
+    weight: 107
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      conditional_fields:
+        12a8c118-4973-4bd9-be23-4fcc282b5b66:
+          dependee: field_constituent_communication
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: link
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: org_page
+    type: link_default
+    region: content
+  field_get_updates_links:
+    weight: 126
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_hide_short_description:
+    weight: 127
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_image_credit:
+    weight: 13
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_intended_audience:
+    weight: 131
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_metatags:
+    weight: 2
+    settings:
+      sidebar: true
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_more_about_agency_link:
+    weight: 119
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_more_about_leadership:
+    weight: 121
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_org_directory_page:
+    weight: 122
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_org_page_thumbnail:
+    weight: 129
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_org_sentence_phrasing:
+    weight: 110
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_organizations:
+    weight: 14
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_parent:
+    weight: 132
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_person_bio:
+    weight: 23
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    third_party_settings:
+      conditional_fields:
+        20271695-42df-4ce9-87ba-e0d90e432e07:
+          dependee: field_subtype
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: 'Elected Official'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: org_page
+    type: entity_reference_autocomplete
+    region: content
+  field_public_records_link:
+    weight: 125
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_ref_contact_info_1:
+    type: entity_reference_autocomplete_tags
+    weight: 8
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    third_party_settings: {  }
+    region: content
+  field_response_expectations:
+    weight: 108
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: 300
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce_attribute: true
+        maxlength_js_enforce: false
+        maxlength_js_truncate_html: false
+      conditional_fields:
+        42d24a46-72e8-4134-8f68-0cb40e52d942:
+          dependee: field_constituent_communication
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: contact
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: org_page
+    type: string_textarea
+    region: content
+  field_reusable_label:
+    weight: 15
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_secondary_person_bio:
+    weight: 24
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    third_party_settings:
+      conditional_fields:
+        cd049f71-6b54-48ff-84e6-810858c53cb9:
+          dependee: field_subtype
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: 'Elected Official'
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: org_page
+    type: entity_reference_autocomplete
+    region: content
+  field_social_links:
+    weight: 130
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_state_organization_tax:
+    weight: 3
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    third_party_settings:
+      conditional_fields: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_sub_brand:
+    weight: 128
+    settings:
+      preview_image_style: thumbnail
+      progress_indicator: throbber
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_sub_title:
+    weight: 126
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings:
+      conditional_fields: {  }
+    type: string_textarea
+    region: content
+  field_subtype:
+    weight: 22
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_title_sub_text:
+    weight: 25
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_urgent_warning:
+    weight: 109
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_verification:
+    weight: 104
+    settings:
+      display_label: true
+    third_party_settings:
+      conditional_fields:
+        a290caf4-d898-4217-a93c-e99235b4ea6f:
+          dependee: field_constituent_communication
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: contact
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: org_page
+    type: boolean_checkbox
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 5
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    weight: 107
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
+  publish_state:
+    weight: 105
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  scheduler_settings:
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 21
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: 70
+        maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
+        maxlength_js_enforce_attribute: false
+    region: content
+  uid:
+    type: entity_reference_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    third_party_settings: {  }
+  unpublish_on:
+    weight: 108
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_timestamp
+    region: content
+  unpublish_state:
+    weight: 106
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  url_redirects:
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  body: true
+  created: true
+  field_about: true
+  field_action_set__bg_narrow: true
+  field_action_set__bg_wide: true
+  field_boards: true
+  field_event_quantity: true
+  field_links_actions_3: true
+  field_location_button_label: true
+  field_location_button_short_desc: true
+  field_number_of_news_items: true
+  field_org_featured_items: true
+  field_org_featured_message: true
+  field_org_featured_news_items: true
+  field_org_our_orgs: true
+  field_org_ref_locations: true
+  field_org_show_news_images: true
+  field_organization_sections: true
+  field_ref_actions_6: true
+  field_ref_card_view_6: true
+  field_ref_orgs: true
+  field_related_organization_type: true
+  field_short_name: true
+  langcode: true
+  path: true
+  promote: true
+  status: true
+  sticky: true
