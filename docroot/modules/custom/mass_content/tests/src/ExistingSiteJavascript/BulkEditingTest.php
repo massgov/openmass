@@ -52,19 +52,22 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   private function nodeTypeFilterOptions() {
 
     return [
-      // 'advisory' => 'Advisory',
-      // 'alert' => 'Alert (Page-level and Organization)',
-      // 'page' => 'Basic page (prototype)',
-      // 'binder' => 'Binder',
-      // 'contact_information' => 'Contact Information',
-      // 'curated_list' => 'Curated List',
-      // 'decision' => 'Decision',
-      // 'decision_tree' => 'Decision Tree',
-      // 'decision_tree_branch' => 'Decision Tree Branch',
-      // 'decision_tree_conclusion' => 'Decision Tree Conclusion',
+      'advisory' => 'Advisory',
+      'alert' => 'Alert (Page-level and Organization)',
+      'page' => 'Basic page (prototype)',
+      'binder' => 'Binder',
+      'contact_information' => 'Contact Information',
+      'curated_list' => 'Curated List',
+      'decision' => 'Decision',
+      'decision_tree' => 'Decision Tree',
+      'decision_tree_branch' => 'Decision Tree Branch',
+      'decision_tree_conclusion' => 'Decision Tree Conclusion',
       // 'error_page' => 'Error', // ERROR
       // 'event' => 'Event',
-      'executive_order' => 'Executive Order', // ERROR
+
+
+      // 'executive_order' => 'Executive Order', // ERROR
+
       // 'external_data_resource' => 'External data resource', // ERROR
 
       // 'fee' => 'Fee',
@@ -77,7 +80,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       // 'location_details' => 'Location Detail',
       // 'news' => 'News',
       // 'org_page' => 'Organization', // ERROR
-      // 'person' => 'Person', // ERROR
+      'person' => 'Person', // ERROR
       // 'campaign_landing' => 'Promotional page',
       // 'regulation' => 'Regulation', // ERROR
       // 'action' => 'Right-rail (prototype)',
@@ -113,9 +116,18 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     // $this->newNode($person_data);
     // $this->newNode($person_data);
 
+    // $executive_order_data = $node_data + [
+    //   'type' => 'executive_order',
+    //   'field_executive_title' => $this->randomMachineName(20),
+    //   'field_executive_order_number' => 777,
+    // ];
+    // $this->newNode($executive_order_data);
+    // $this->newNode($executive_order_data);
+
     $types = $this->nodeTypeFilterOptions();
     // 2 persons were already created above.
-    unset($types['person']);
+    // unset($types['person']);
+    // unset($types['executive_order']);
     $type_machine_names = array_keys($types);
 
     $title = $this->randomMachineName(20);
@@ -323,6 +335,9 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
    */
   public function setUp() {
     parent::setUp();
+
+    \Drupal::service('module_installer')->uninstall(['auto_entitylabel']);
+
     /** @var \Drupal\Tests\DocumentElement */
     $this->page = $this->getSession()->getPage();
 
@@ -396,38 +411,24 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
 
       $this->bulkEditForm = $this->page->find('css', '#bulk-edit-form');
 
-      // eRRORdit-node-contact-information-field-selector-title
       $title_check_id = '#' . HTML::getId('edit-node-' . $type . '-field-selector-title');
-
-
-      // eRRORdit-node-contact-information-title-0-value
       $title_input_id = '#' . HTML::getId('edit-node-' . $type . '-title-0-value');
+      $append_option_id = '#' . HTML::getId('edit-node-' . $type . '-title-change-method-append');
 
-      dump($title_check_id);
-      dump($this->page->find('css',$title_check_id)->isChecked());
-
+      switch ($type) {
+        case 'executive_order':
+          $title_check_id = '#edit-node-executive-order-field-selector-field-executive-title';
+          $title_input_id = '#edit-node-executive-order-field-executive-title-0-value';
+          $append_option_id = '#edit-node-executive-order-field-executive-title-change-method-append';
+          break;
+      }
 
       $this->getCurrentPage()->find('css', $title_check_id)->check();
-
-      dump($this->page->find('css',$title_check_id)->isChecked());
-
-
       $this->htmlOutput('after selecting title');
       $this->htmlOutput();
 
-
       $this->getCurrentPage()->find('css', $title_input_id)->setValue($suffix);
-
-
-      $this->getCurrentPage()->selectFieldOption('Append to the current value', 'append');
-
-      $append_option_id = '#' . HTML::getId('edit-node-' . $type . '-title-change-method-append');
-
-      // $this->getCurrentPage()->find('css', 'edit-node-contact-information-title-change-method-append')->click();
       $this->getCurrentPage()->find('css', $append_option_id)->click();
-
-      // $this->getCurrentPage()->findField('Append to the current value')->click();
-
 
       $this->htmlOutput('before confirm');
       $this->htmlOutput();
