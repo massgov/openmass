@@ -411,6 +411,7 @@ jobs:
       - image: circleci/python:2.7.14
     steps:
       - checkout
+      - cp .circleci/backstop/docker-compose.yml .
       - setup_remote_docker
       - run: docker-compose up --no-start backstop
       - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
