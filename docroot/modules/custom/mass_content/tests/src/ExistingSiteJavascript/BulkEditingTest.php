@@ -52,45 +52,44 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   private function nodeTypeFilterOptions() {
 
     return [
-      'advisory' => 'Advisory',
-      'alert' => 'Alert (Page-level and Organization)',
-      'page' => 'Basic page (prototype)',
-      'binder' => 'Binder',
-      'contact_information' => 'Contact Information',
-      'curated_list' => 'Curated List',
-      'decision' => 'Decision',
-      'decision_tree' => 'Decision Tree',
-      'decision_tree_branch' => 'Decision Tree Branch',
-      'decision_tree_conclusion' => 'Decision Tree Conclusion',
-      'error_page' => 'Error', // Skipped.
-      'event' => 'Event',
+      // 'advisory' => 'Advisory',
+      // 'alert' => 'Alert (Page-level and Organization)',
+      // 'page' => 'Basic page (prototype)',
+      // 'binder' => 'Binder',
+      // 'contact_information' => 'Contact Information',
+      // 'curated_list' => 'Curated List',
+      // 'decision' => 'Decision',
+      // 'decision_tree' => 'Decision Tree',
+      // 'decision_tree_branch' => 'Decision Tree Branch',
+      // 'decision_tree_conclusion' => 'Decision Tree Conclusion',
+      // 'error_page' => 'Error', // Skipped.
+      // 'event' => 'Event',
+      // 'executive_order' => 'Executive Order',
 
-      // 'executive_order' => 'Executive Order', // ERROR, LATER
+      // 'external_data_resource' => 'External data resource',
+      // 'fee' => 'Fee',
+      // 'form_page' => 'Form',
+      // 'guide_page' => 'Guide',
+      // 'how_to_page' => 'How-to',
+      // 'info_details' => 'Information Details',
+      // 'interstitial' => 'Interstitial', // Skipped.
+      // 'location' => 'Location',
+      // 'location_details' => 'Location Detail',
+      // 'news' => 'News',
 
-      'external_data_resource' => 'External data resource',
-      'fee' => 'Fee',
-      'form_page' => 'Form',
-      'guide_page' => 'Guide',
-      'how_to_page' => 'How-to',
-      'info_details' => 'Information Details',
-      'interstitial' => 'Interstitial', // Skipped.
-      'location' => 'Location',
-      'location_details' => 'Location Detail',
-      'news' => 'News',
+      'org_page' => 'Organization',
 
-      // 'org_page' => 'Organization', // ERROR.
-
-      'person' => 'Person',
-      'campaign_landing' => 'Promotional page',
+      // 'person' => 'Person',
+      // 'campaign_landing' => 'Promotional page',
 
       // 'regulation' => 'Regulation', // ERROR, probably doesn't have title
 
-      'action' => 'Right-rail (prototype)',
-      'rules' => 'Rules of Court',
-      'service_page' => 'Service',
-      'service_details' => 'Service Details',
-      'stacked_layout' => 'Stacked layout (prototype)',
-      'topic_page' => 'Topic Page',
+      // 'action' => 'Right-rail (prototype)',
+      // 'rules' => 'Rules of Court',
+      // 'service_page' => 'Service',
+      // 'service_details' => 'Service Details',
+      // 'stacked_layout' => 'Stacked layout (prototype)',
+      // 'topic_page' => 'Topic Page',
 
       // 'utility_drawer' => 'Utility Drawer', // ERROR, probably no title.
     ];
@@ -108,17 +107,18 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       'status' => 1,
     ];
 
-    // $executive_order_data = $node_data + [
-    //   'type' => 'executive_order',
-    //   'field_executive_title' => $this->randomMachineName(20),
-    //   'field_executive_order_number' => 777,
-    // ];
-    // $this->newNode($executive_order_data);
-    // $this->newNode($executive_order_data);
+    $executive_order_data = $node_data + [
+      'type' => 'executive_order',
+      'field_executive_title' => $this->randomMachineName(20),
+      'field_executive_order_number' => 777,
+    ];
+    $this->newNode($executive_order_data);
+    $this->newNode($executive_order_data);
 
     $types = $this->nodeTypeFilterOptions();
     unset($types['error_page']);
     unset($types['interstitial']);
+    unset($types['executive_order']);
     $type_machine_names = array_keys($types);
 
     $title = $this->randomMachineName(20);
@@ -327,8 +327,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   public function setUp() {
     parent::setUp();
 
-    \Drupal::service('module_installer')->uninstall(['auto_entitylabel']);
-
     /** @var \Drupal\Tests\DocumentElement */
     $this->page = $this->getSession()->getPage();
 
@@ -363,11 +361,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   }
 
 
-  public function tearDown() {
-    \Drupal::service('module_installer')->install(['auto_entitylabel']);
-    parent::tearDown();
-  }
-
   /**
    * Tests a few things for the "All content" view at admin/content.
    */
@@ -378,6 +371,15 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
 
 
     foreach ($this->newNodesByType as $type => $newNodes) {
+
+      $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
+      $autoEntityLabelEnabled = $this->getCurrentPage()->findField('Disabled')->isChecked();
+
+      if (!$autoEntityLabelEnabled && $type != 'executive_order') {
+        $this->getCurrentPage()->find('css', '#edit-status-0')->click();
+        $this->getCurrentPage()->pressButton('Save configuration');
+      }
+
       $this->drupalGet('admin/content');
       $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
       $this->reset();
@@ -455,7 +457,11 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
 
       $this->assertNotNull($this->view->find('css', '.views-view-table'));
 
-
+      if ($autoEntityLabelEnabled && $type != 'executive_order') {
+        $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
+        $this->getCurrentPage()->find('css', '#edit-status-1')->click();
+        $this->getCurrentPage()->pressButton('Save configuration');
+      }
 
     }
 
