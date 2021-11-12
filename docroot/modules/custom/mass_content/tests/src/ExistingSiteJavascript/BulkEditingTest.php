@@ -128,6 +128,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     // 2 persons were already created above.
     // unset($types['person']);
     // unset($types['executive_order']);
+    unset($types['error_page']);
     $type_machine_names = array_keys($types);
 
     $title = $this->randomMachineName(20);
