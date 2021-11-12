@@ -88,7 +88,7 @@ commands:
     parameters:
       destination:
         type: string
-        default: "/var/www/drush/sites/self.site.yml"
+        default: "/var/www/code/drush/sites/self.site.yml"
     steps:
       - run: "curl -f -o << parameters.destination >> -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml"
 
@@ -264,7 +264,7 @@ jobs:
           name: Wait for mysql
           command: dockerize -wait tcp://localhost:3306 -timeout 2m
       # Run drush updatedb and cim.
-      - run: cripts/ma-refresh-local --skip-db-prep
+      - run: scripts/ma-refresh-local --skip-db-prep
       # Get an overview
       - run: drush status
       - run: cat /proc/cpuinfo
