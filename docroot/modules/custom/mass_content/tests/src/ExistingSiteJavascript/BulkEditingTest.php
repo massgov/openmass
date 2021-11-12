@@ -62,34 +62,37 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       'decision_tree' => 'Decision Tree',
       'decision_tree_branch' => 'Decision Tree Branch',
       'decision_tree_conclusion' => 'Decision Tree Conclusion',
-      // 'error_page' => 'Error', // ERROR
-      // 'event' => 'Event',
+      'error_page' => 'Error', // Skipped.
+      'event' => 'Event',
 
+      // 'executive_order' => 'Executive Order', // ERROR, LATER
 
-      // 'executive_order' => 'Executive Order', // ERROR
+      'external_data_resource' => 'External data resource',
+      'fee' => 'Fee',
+      'form_page' => 'Form',
+      'guide_page' => 'Guide',
+      'how_to_page' => 'How-to',
+      'info_details' => 'Information Details',
+      'interstitial' => 'Interstitial', // Skipped.
+      'location' => 'Location',
+      'location_details' => 'Location Detail',
+      'news' => 'News',
 
-      // 'external_data_resource' => 'External data resource', // ERROR
+      // 'org_page' => 'Organization', // ERROR.
 
-      // 'fee' => 'Fee',
-      // 'form_page' => 'Form',
-      // 'guide_page' => 'Guide',
-      // 'how_to_page' => 'How-to',
-      // 'info_details' => 'Information Details',
-      // 'interstitial' => 'Interstitial', // ERROR
-      // 'location' => 'Location',
-      // 'location_details' => 'Location Detail',
-      // 'news' => 'News',
-      // 'org_page' => 'Organization', // ERROR
-      // 'person' => 'Person',
-      // 'campaign_landing' => 'Promotional page',
-      // 'regulation' => 'Regulation', // ERROR
-      // 'action' => 'Right-rail (prototype)',
-      // 'rules' => 'Rules of Court',
-      // 'service_page' => 'Service',
-      // 'service_details' => 'Service Details', // ERROR
-      // 'stacked_layout' => 'Stacked layout (prototype)', // ERROR
-      // 'topic_page' => 'Topic Page',
-      // 'utility_drawer' => 'Utility Drawer', // ERROR
+      'person' => 'Person',
+      'campaign_landing' => 'Promotional page',
+
+      // 'regulation' => 'Regulation', // ERROR, probably doesn't have title
+
+      'action' => 'Right-rail (prototype)',
+      'rules' => 'Rules of Court',
+      'service_page' => 'Service',
+      'service_details' => 'Service Details',
+      'stacked_layout' => 'Stacked layout (prototype)',
+      'topic_page' => 'Topic Page',
+
+      // 'utility_drawer' => 'Utility Drawer', // ERROR, probably no title.
     ];
   }
 
@@ -115,6 +118,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
 
     $types = $this->nodeTypeFilterOptions();
     unset($types['error_page']);
+    unset($types['interstitial']);
     $type_machine_names = array_keys($types);
 
     $title = $this->randomMachineName(20);
@@ -359,11 +363,16 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   }
 
 
+  public function tearDown() {
+    \Drupal::service('module_installer')->install(['auto_entitylabel']);
+    parent::tearDown();
+  }
 
   /**
    * Tests a few things for the "All content" view at admin/content.
    */
   public function testBulkEditingOnAllContentTypes() {
+
 
     dump($this->newNodesByType);
 
@@ -375,6 +384,10 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
 
       /** @var Node[] $newNodes */
       $title = current($newNodes);
+
+      $this->htmlOutput('inicio');
+      $this->htmlOutput();
+
 
       dump($title);
 
