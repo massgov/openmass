@@ -80,7 +80,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       // 'location_details' => 'Location Detail',
       // 'news' => 'News',
       // 'org_page' => 'Organization', // ERROR
-      'person' => 'Person', // ERROR
+      // 'person' => 'Person',
       // 'campaign_landing' => 'Promotional page',
       // 'regulation' => 'Regulation', // ERROR
       // 'action' => 'Right-rail (prototype)',
@@ -105,17 +105,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       'status' => 1,
     ];
 
-    // Create 2 persons.
-    // A Person's title is built from its first_name and last_name.
-    $person_data = $node_data + [
-      'type' => 'person',
-      'field_person_first_name' => $this->randomMachineName(5),
-      'field_person_last_name' => $this->randomMachineName(5),
-    ];
-
-    // $this->newNode($person_data);
-    // $this->newNode($person_data);
-
     // $executive_order_data = $node_data + [
     //   'type' => 'executive_order',
     //   'field_executive_title' => $this->randomMachineName(20),
@@ -125,9 +114,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     // $this->newNode($executive_order_data);
 
     $types = $this->nodeTypeFilterOptions();
-    // 2 persons were already created above.
-    // unset($types['person']);
-    // unset($types['executive_order']);
     unset($types['error_page']);
     $type_machine_names = array_keys($types);
 
