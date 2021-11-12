@@ -264,7 +264,7 @@ jobs:
           name: Wait for mysql
           command: dockerize -wait tcp://localhost:3306 -timeout 2m
       # Run drush updatedb and cim.
-      - run: scripts/ma-refresh-local --skip-db-prep
+      - run: drush deploy
       # Get an overview
       - run: drush status
       - run: cat /proc/cpuinfo
@@ -467,7 +467,7 @@ jobs:
           name: Wait for mysql
           command: sleep 60
       - run:
-          command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
+          command: drush deploy
           no_output_timeout: 60m
       - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
       - run:
