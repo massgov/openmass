@@ -727,6 +727,7 @@ workflows:
               only: /^release\/.*$/
       - hold - QA approval:
           name: hold-qa-approval
+          requires: [deploy]
           type: approval
           filters:
             branches:
@@ -792,6 +793,7 @@ workflows:
                 only: /^hotfix\/.*$/
       - hold - QA approval:
           name: hold-qa-approval
+          requires: [`push_acquia]
           type: approval
           filters:
             branches:
