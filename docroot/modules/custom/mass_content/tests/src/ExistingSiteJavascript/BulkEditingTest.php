@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
+use Drupal\Component\Utility\Html;
+use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
 use Exception;
@@ -25,21 +27,105 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   /**
    * The All Content view.
    *
-   * @var \Behat\Mink\Element\DocumentElement
+   * @var \Behat\Mink\Element\NodeElement
    */
   protected $view;
 
   /**
-   * The index for the content type currently being tested.
+   * The All Content view.
+   *
+   * @var \Behat\Mink\Element\NodeElement
    */
-  protected int $contentTypeIndex = 0;
+  protected $bulkEditForm;
+
 
   /**
-   * The content type select options in the "All Content view".
+   * The nodes created for bulk editing.
    *
    * @var array
    */
-  protected array $contentTypeOptions;
+  protected array $newNodesByType;
+
+  /**
+   * Returns the node types machine names and labels.
+   */
+  private function nodeTypeFilterOptions() {
+
+    return [
+      // 'advisory' => 'Advisory',
+      // 'alert' => 'Alert (Page-level and Organization)',
+      // 'page' => 'Basic page (prototype)',
+      // 'binder' => 'Binder',
+      // 'contact_information' => 'Contact Information',
+      // 'curated_list' => 'Curated List',
+      // 'decision' => 'Decision',
+      // 'decision_tree' => 'Decision Tree',
+      // 'decision_tree_branch' => 'Decision Tree Branch',
+      // 'decision_tree_conclusion' => 'Decision Tree Conclusion',
+      // 'error_page' => 'Error', // ERROR
+      // 'event' => 'Event',
+      'executive_order' => 'Executive Order', // ERROR
+      // 'external_data_resource' => 'External data resource', // ERROR
+
+      // 'fee' => 'Fee',
+      // 'form_page' => 'Form',
+      // 'guide_page' => 'Guide',
+      // 'how_to_page' => 'How-to',
+      // 'info_details' => 'Information Details',
+      // 'interstitial' => 'Interstitial', // ERROR
+      // 'location' => 'Location',
+      // 'location_details' => 'Location Detail',
+      // 'news' => 'News',
+      // 'org_page' => 'Organization', // ERROR
+      // 'person' => 'Person', // ERROR
+      // 'campaign_landing' => 'Promotional page',
+      // 'regulation' => 'Regulation', // ERROR
+      // 'action' => 'Right-rail (prototype)',
+      // 'rules' => 'Rules of Court',
+      // 'service_page' => 'Service',
+      // 'service_details' => 'Service Details', // ERROR
+      // 'stacked_layout' => 'Stacked layout (prototype)', // ERROR
+      // 'topic_page' => 'Topic Page',
+      // 'utility_drawer' => 'Utility Drawer', // ERROR
+    ];
+  }
+
+  private function newNode($data) {
+    $node = $this->createNode($data);
+    $node->save();
+    $this->newNodesByType[$data['type']][$node->id()] = $node->getTitle();
+  }
+
+  private function createEveryNodeType() {
+    $node_data = [
+      'moderation_state' => MassModeration::PUBLISHED,
+      'status' => 1,
+    ];
+
+    // Create 2 persons.
+    // A Person's title is built from its first_name and last_name.
+    $person_data = $node_data + [
+      'type' => 'person',
+      'field_person_first_name' => $this->randomMachineName(5),
+      'field_person_last_name' => $this->randomMachineName(5),
+    ];
+
+    // $this->newNode($person_data);
+    // $this->newNode($person_data);
+
+    $types = $this->nodeTypeFilterOptions();
+    // 2 persons were already created above.
+    unset($types['person']);
+    $type_machine_names = array_keys($types);
+
+    $title = $this->randomMachineName(20);
+    foreach ($type_machine_names as $type_machine_name) {
+      $node_data['title'] = $title . '_' . $type_machine_name;
+      $node_data['type'] = $type_machine_name;
+      $this->newNode($node_data);
+      $this->newNode($node_data);
+    }
+  }
 
   /**
    * Asserts a random row has a specific text value.
@@ -251,10 +337,11 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $this->drupalGet('admin/content');
     $this->view = $this->page->find('css', '.view.view-content');
 
+    $this->createEveryNodeType();
   }
 
   private function filterByContentType(string $type) {
-
+    $this->view->selectFieldOption('Content type', 'type');
   }
 
   private function selectNodes() {
@@ -270,50 +357,105 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   }
 
 
-  private function testContentType($type) {
-
-    $this->filterByContentType($type);
-
-    $num = \random_int(2, 5);
-    $this->selectRows($num);
-
-    $this->view->fillField('Action', 'node_edit_action');
-    $this->view->pressButton('Apply to selected items');
-
-    $this->editBulkForm();
-
-    $this->checkBulkEditWorked();
-
-    $this->reset();
-
-  }
-
-  private function getContentTypeToTest() {
-    $options = $this->view->findAll('css', '#edit-type-1 option');
-    $option = $options[$this->contentTypeIndex];
-    $this->contentTypeIndex++;
-    return $option->getAttribute('value');
-  }
 
   /**
    * Tests a few things for the "All content" view at admin/content.
    */
   public function testBulkEditingOnAllContentTypes() {
 
-
-    // filter by content type
-
-    // select 2 nodes
-
-    // append something to the title, a unique string
-
-    // check the unique strings are there
-    // reset the view
-    // get next content type
+    dump($this->newNodesByType);
 
 
-    while ($type = $this->getContentTypeToTest()) {
-      $this->testContentType($type);
+    foreach ($this->newNodesByType as $type => $newNodes) {
+      $this->drupalGet('admin/content');
+      $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
+      $this->reset();
+
+      /** @var Node[] $newNodes */
+      $title = current($newNodes);
+
+      dump($title);
+
+      $this->view->fillField('Title', $title);
+
+      $this->view->pressButton('Apply');
+      $this->htmlOutput();
+
+      $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
+      $this->selectRows(2);
+
+      $this->view->selectFieldOption('Action', 'Edit content');
+      $this->view->pressButton('Apply to selected items');
+
+      $this->htmlOutput('After apply');
+      $this->htmlOutput();
+
+      $suffix = '_' . $this->randomMachineName(20);
+
+      $this->page = $this->getCurrentPage();
+
+      $this->bulkEditForm = $this->page->find('css', '#bulk-edit-form');
+
+      // eRRORdit-node-contact-information-field-selector-title
+      $title_check_id = '#' . HTML::getId('edit-node-' . $type . '-field-selector-title');
+
+
+      // eRRORdit-node-contact-information-title-0-value
+      $title_input_id = '#' . HTML::getId('edit-node-' . $type . '-title-0-value');
+
+      dump($title_check_id);
+      dump($this->page->find('css',$title_check_id)->isChecked());
+
+
+      $this->getCurrentPage()->find('css', $title_check_id)->check();
+
+      dump($this->page->find('css',$title_check_id)->isChecked());
+
+
+      $this->htmlOutput('after selecting title');
+      $this->htmlOutput();
+
+
+      $this->getCurrentPage()->find('css', $title_input_id)->setValue($suffix);
+
+
+      $this->getCurrentPage()->selectFieldOption('Append to the current value', 'append');
+
+      $append_option_id = '#' . HTML::getId('edit-node-' . $type . '-title-change-method-append');
+
+      // $this->getCurrentPage()->find('css', 'edit-node-contact-information-title-change-method-append')->click();
+      $this->getCurrentPage()->find('css', $append_option_id)->click();
+
+      // $this->getCurrentPage()->findField('Append to the current value')->click();
+
+
+      $this->htmlOutput('before confirm');
+      $this->htmlOutput();
+
+      $this->getCurrentPage()->pressButton('Confirm');
+
+      $this->htmlOutput('After confirm');
+      $this->htmlOutput();
+
+      // return;
+
+      $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
+
+      $this->reset();
+      $this->htmlOutput('After reset');
+      $this->htmlOutput();
+
+
+      $this->view->fillField('Title', $title . ' '.$suffix);
+      $this->view->pressButton('Apply');
+
+      $this->htmlOutput('Final results');
+      $this->htmlOutput();
+
+      $this->assertNotNull($this->view->find('css', '.views-view-table'));
+
+
+
     }
 
 
