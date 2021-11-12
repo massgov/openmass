@@ -22,6 +22,9 @@ references:
   no_ssh_timeout: &no_ssh_timeout
     run: {name: 'Disable SSH timeout', command: 'echo "ServerAliveInterval 30" >> ~/.ssh/config'}
 
+  vendor_bin_add_path: &vendor_bin_add_path
+    run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
+
   restore_composer_cache: &restore_composer_cache
     restore_cache:
       name: Restore Composer Cache
@@ -233,7 +236,7 @@ jobs:
     <<: *container_config
     steps:
       - attach_workspace: { at: /var/www }
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - *vendor_bin_add_path
       # Validate .json and check if it is in sync with the .lock file
       - run: composer validate
       # Make sure changelogs are parseable by PHP (since build-changelog.php requires that).
@@ -256,7 +259,7 @@ jobs:
       instance: << parameters.instance >>
     steps:
       - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - *vendor_bin_add_path
       - run: { name: 'Start Apache', command: '/usr/local/bin/apache2-foreground-enhanced', background: true }
       - run:
           name: Update host file
@@ -310,7 +313,7 @@ jobs:
     <<: *container_config
     steps:
       - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - *vendor_bin_add_path
       - *no_host_check
       - checkout
       # Identify the committer i.e. CircleCI deployment bot
@@ -324,7 +327,7 @@ jobs:
     <<: *container_config
     steps:
       - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - *vendor_bin_add_path
       - *no_host_check
       - checkout
       # Identify the committer i.e. CircleCI deployment bot
@@ -353,6 +356,7 @@ jobs:
       - attach_workspace: {at: /var/www}
       - *no_host_check
       - *no_ssh_timeout
+      - *vendor_bin_add_path
       - fetch_drush_aliases
       - run:
           command: "drush ma:deploy -v -y << parameters.skip-maint >> << parameters.refresh-db >> << parameters.target >> << parameters.gitRef >>"
@@ -372,7 +376,7 @@ jobs:
     <<: *container_config
     steps:
       - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
+      - *vendor_bin_add_path
       - *no_host_check
       - *no_ssh_timeout
       - fetch_drush_aliases
@@ -481,7 +485,7 @@ jobs:
     <<: *container_config
     steps:
       - attach_workspace: {at: /var/www}
-      - run: echo 'export PATH=/var/www/code/vendor/bin:$PATH' >> $BASH_ENV
+      - *vendor_bin_add_path
       - run: "drush pm:security"
       - run: "drush pm:security-php"
 
@@ -502,7 +506,7 @@ jobs:
           mv /tmp/terraform/terraform .
           chmod +x ./terraform
           rm -rf /tmp/terraform
-      - run: echo 'export PATH=/var/www/code:$PATH' >> $BASH_ENV
+      - *vendor_bin_add_path
       - when:
           condition: << parameters.auto-approve >>
           steps:
