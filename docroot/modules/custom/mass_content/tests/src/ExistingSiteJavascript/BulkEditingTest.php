@@ -262,17 +262,12 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       $append_option_id = '#' . $edit_node_type . '-' . $title_field . '-change-method-append';
 
       $this->getCurrentPage()->find('css', $title_check_id)->check();
-
       $this->getCurrentPage()->find('css', $title_input_id)->setValue($suffix);
       $this->getCurrentPage()->find('css', $append_option_id)->click();
-
 
       $this->getCurrentPage()->pressButton('Confirm');
 
       $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
-
-      $this->reset();
-
       $this->view->fillField('Title', $title . ' '.$suffix);
       $this->view->pressButton('Apply');
 
