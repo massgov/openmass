@@ -208,7 +208,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     foreach ($this->newNodesByType as $type => $newNodes) {
 
       $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
-      $autoEntityLabelEnabled = $this->getCurrentPage()->findField('Disabled')->isChecked();
+      $autoEntityLabelEnabled = !$this->getCurrentPage()->findField('Disabled')->isChecked();
 
       $typesWithoutTitleFieldOnFormDisplay = [
         'executive_order',
@@ -217,7 +217,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
 
       $typeHasTitleField = !in_array($type, $typesWithoutTitleFieldOnFormDisplay);
 
-      if (!$autoEntityLabelEnabled && $typeHasTitleField) {
+      if ($autoEntityLabelEnabled && $typeHasTitleField) {
         $this->getCurrentPage()->find('css', '#edit-status-0')->click();
         $this->getCurrentPage()->pressButton('Save configuration');
       }
@@ -245,22 +245,21 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
 
       $this->bulkEditForm = $this->page->find('css', '#bulk-edit-form');
 
-      $title_check_id = '#' . HTML::getId('edit-node-' . $type . '-field-selector-title');
-      $title_input_id = '#' . HTML::getId('edit-node-' . $type . '-title-0-value');
-      $append_option_id = '#' . HTML::getId('edit-node-' . $type . '-title-change-method-append');
+      $edit_node_type = HTML::getId('edit-node-' . $type);
+      $title_field = 'title';
 
       switch ($type) {
         case 'executive_order':
-          $title_check_id = '#edit-node-executive-order-field-selector-field-executive-title';
-          $title_input_id = '#edit-node-executive-order-field-executive-title-0-value';
-          $append_option_id = '#edit-node-executive-order-field-executive-title-change-method-append';
+          $title_field = 'field-executive-title';
           break;
         case 'regulation':
-          $title_check_id = '#edit-node-regulation-field-selector-field-regulation-title';
-          $title_input_id = '#edit-node-regulation-field-regulation-title-0-value';
-          $append_option_id = '#edit-node-regulation-field-regulation-title-change-method-append';
+          $title_field = 'field-regulation-title';
           break;
       }
+
+      $title_check_id = '#' . $edit_node_type . '-field-selector-' . $title_field;
+      $title_input_id = '#' . $edit_node_type . '-' . $title_field . '-0-value';
+      $append_option_id = '#' . $edit_node_type . '-' . $title_field . '-change-method-append';
 
       $this->getCurrentPage()->find('css', $title_check_id)->check();
 
