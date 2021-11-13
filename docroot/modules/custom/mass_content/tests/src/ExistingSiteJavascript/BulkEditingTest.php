@@ -192,6 +192,34 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $this->createEveryNodeType();
   }
 
+  private function doBulkEdit($type, $suffix) {
+    $this->page = $this->getCurrentPage();
+    $edit_node_type = HTML::getId('edit-node-' . $type);
+    $title_field = 'title';
+
+    switch ($type) {
+      case 'executive_order':
+        $title_field = 'field-executive-title';
+        break;
+      case 'regulation':
+        $title_field = 'field-regulation-title';
+        break;
+    }
+
+    $title_check_id = '#' . $edit_node_type . '-field-selector-' . $title_field;
+    $title_input_id = '#' . $edit_node_type . '-' . $title_field . '-0-value';
+    $append_option_id = '#' . $edit_node_type . '-' . $title_field . '-change-method-append';
+
+    // Select to modify title.
+    $this->getCurrentPage()->find('css', $title_check_id)->check();
+    // Modify title value.
+    $this->getCurrentPage()->find('css', $title_input_id)->setValue($suffix);
+    // Select to append $suffix to the title.
+    $this->getCurrentPage()->find('css', $append_option_id)->click();
+    // Submit the bulk edit form.
+    $this->getCurrentPage()->pressButton('Confirm');
+  }
+
   /**
    * Tests a few things for the "All content" view at admin/content.
    */
@@ -221,41 +249,20 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       /** @var Node[] $newNodes */
       $title = current($newNodes);
 
+      // Filter nodes using its unique titles.
       $this->view->fillField('Title', $title);
-
       $this->view->pressButton('Apply');
-
+      // Select the only 2 rows available.
       $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
       $this->selectRows(2);
-
+      // Bulk edit those 2 items.
       $this->view->selectFieldOption('Action', 'Edit content');
       $this->view->pressButton('Apply to selected items');
 
+      // Value to be appended to the title, using bulk editing.
       $suffix = '_' . $this->randomMachineName(20);
 
-      $this->page = $this->getCurrentPage();
-
-      $edit_node_type = HTML::getId('edit-node-' . $type);
-      $title_field = 'title';
-
-      switch ($type) {
-        case 'executive_order':
-          $title_field = 'field-executive-title';
-          break;
-        case 'regulation':
-          $title_field = 'field-regulation-title';
-          break;
-      }
-
-      $title_check_id = '#' . $edit_node_type . '-field-selector-' . $title_field;
-      $title_input_id = '#' . $edit_node_type . '-' . $title_field . '-0-value';
-      $append_option_id = '#' . $edit_node_type . '-' . $title_field . '-change-method-append';
-
-      $this->getCurrentPage()->find('css', $title_check_id)->check();
-      $this->getCurrentPage()->find('css', $title_input_id)->setValue($suffix);
-      $this->getCurrentPage()->find('css', $append_option_id)->click();
-
-      $this->getCurrentPage()->pressButton('Confirm');
+      $this->doBulkEdit($type, $suffix);
 
       $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
       $this->view->fillField('Title', $title . ' '.$suffix);
