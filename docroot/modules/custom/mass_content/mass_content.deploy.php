@@ -6,8 +6,6 @@
  */
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Database\Database;
-use Drupal\Core\Utility\UpdateException;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 
@@ -635,84 +633,5 @@ function mass_content_deploy_org_page_section_migration(&$sandbox) {
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
     return t('All Organization node data has migrated to Organization Sections.');
-  }
-}
-
-/**
- * Assign parent relationships automatically from custom table.
- */
-function mass_content_deploy_parent_relationships(&$sandbox) {
-  // Don't spam all the users with content update emails.
-  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
-  // This deploy function requires that you import the relationships_setup.sql
-  // file in the mass_content/includes directory prior to deployment.
-  if (!Database::getConnection()->schema()->tableExists('relationships')) {
-    throw new UpdateException('The "relationships" custom table does not exist. Run "drush sqlq --file=modules/custom/mass_content/includes/relationships_setup.sql" and try again.');
-  }
-
-  $query = \Drupal::database()->select('relationships', 'r');
-  $query->fields('r', ['parent_nid', 'child_nid', 'parent_type']);
-  // Filter rows with child_type value that shouldn't have a parent.
-  $query->condition('child_type', ['page', 'contact_information'], 'NOT IN');
-  // Filter rows with child_nid same as parent_nid.
-  $query->where('child_nid <> parent_nid');
-
-  if (empty($sandbox)) {
-    // Get a list of all nodes of type org_page.
-    $sandbox['progress'] = 0;
-    $sandbox['current'] = 0;
-    $count = clone $query;
-    $sandbox['max'] = (int) $count->countQuery()->execute()->fetchField();
-  }
-
-  $batch_size = 50;
-
-  $results = $query->condition('child_nid', $sandbox['current'], '>')
-    ->orderBy('child_nid')
-    ->range(0, $batch_size)
-    ->execute()->fetchAllAssoc('child_nid');
-
-  $memory_cache = \Drupal::service('entity.memory_cache');
-
-  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
-
-  $nids = array_keys($results);
-  $nodes = $node_storage->loadMultiple($nids);
-
-  foreach ($nodes as $node) {
-    $child_nid = $node->id();
-    $sandbox['current'] = $child_nid;
-
-    // Skip if the child is an org_page and the parent is not.
-    if ($node->bundle() === 'org_page' && $results[$child_nid]->parent_type !== 'org_page') {
-      $sandbox['progress']++;
-      continue;
-    }
-
-    if (!$node->get('field_primary_parent')->isEmpty()) {
-      $sandbox['progress']++;
-      continue;
-    }
-
-    $parent_nid = $results[$child_nid]->parent_nid;
-    $field_value = [
-      'target_id' => $parent_nid,
-      'weight' => 0,
-    ];
-    $node->set('field_primary_parent', $field_value);
-    // Save the node.
-    // Save without updating the last modified date. This requires a core patch
-    // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
-    $node->setSyncing(TRUE);
-    $node->save();
-
-    $sandbox['progress']++;
-  }
-
-  $memory_cache->deleteAll();
-
-  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
-  if ($sandbox['#finished'] >= 1) {
-    return t('All automatic parent relationships have been added.');
   }
 }

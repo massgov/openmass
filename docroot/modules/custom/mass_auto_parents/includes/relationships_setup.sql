@@ -1,32 +1,12 @@
-# Create table indicators
+# Truncate table indicators
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `indicators`;
+TRUNCATE `indicators`;
 
-CREATE TABLE `indicators` (
-  `parent_nid` int(11) unsigned NOT NULL,
-  `child_nid` int(11) NOT NULL,
-  `source_field` varchar(255) DEFAULT NULL,
-  `parent_type` varchar(255) DEFAULT NULL,
-  `child_type` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`parent_nid`,`child_nid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
-
-# Dump of table relationships
+# Truncate table relationships
 # ------------------------------------------------------------
 
-DROP TABLE IF EXISTS `relationships`;
-
-CREATE TABLE `relationships` (
-  `parent_nid` int(11) unsigned NOT NULL,
-  `child_nid` int(11) NOT NULL,
-  `source_field` varchar(255) DEFAULT NULL,
-  `parent_type` varchar(255) DEFAULT NULL,
-  `child_type` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`parent_nid`,`child_nid`),
-  UNIQUE KEY `child` (`child_nid`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+TRUNCATE `relationships`;
 
 LOCK TABLES `relationships` WRITE;
 /*!40000 ALTER TABLE `relationships` DISABLE KEYS */;

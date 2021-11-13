@@ -1,0 +1,85 @@
+<?php
+
+/**
+ * @file
+ * Requirements and update functions for the mass_auto_parents module.
+ */
+
+use Drupal\Core\Entity\Entity\EntityFormDisplay;
+use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
+use Drupal\Core\Entity\Sql\SqlContentEntityStorageException;
+use Drupal\Core\Utility\UpdateException;
+use Drupal\field\Entity\FieldConfig;
+
+/**
+ * Implements hook_schema().
+ */
+function mass_auto_parents_schema() {
+  $schema['indicators'] = [
+    'description' => 'Indicators table used to determine parent relationships.',
+    'fields' => [
+      'parent_nid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'child_nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'source_field' => [
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'default' => NULL,
+      ],
+      'parent_type' => [
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'default' => NULL,
+      ],
+      'child_type' => [
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'default' => NULL,
+      ],
+    ],
+    'primary key' => [
+      'parent_nid',
+      'child_nid',
+    ],
+  ];
+  $schema['relationships'] = [
+    'description' => 'Relationships table used to determine parent relationships.',
+    'fields' => [
+      'parent_nid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'child_nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'source_field' => [
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'default' => NULL,
+      ],
+      'parent_type' => [
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'default' => NULL,
+      ],
+      'child_type' => [
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'default' => NULL,
+      ],
+    ],
+    'primary key' => [
+      'parent_nid',
+      'child_nid',
+    ],
+  ];
+  return $schema;
+}
