@@ -87,12 +87,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $this->newNodesByType[$data['type']][$node->id()] = $node->getTitle();
   }
 
-  private function createEveryNodeType() {
-    $node_data = [
-      'moderation_state' => MassModeration::PUBLISHED,
-      'status' => 1,
-    ];
-
+  private function createNodesExecutiveOrder($node_data) {
     $executive_order_data = $node_data + [
       'type' => 'executive_order',
       'field_executive_title' => $this->randomMachineName(20),
@@ -100,14 +95,18 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     ];
     $this->newNode($executive_order_data);
     $this->newNode($executive_order_data);
+  }
 
+  private function createNodesRegulation($node_data) {
     $regulation_data = $node_data + [
       'type' => 'regulation',
       'field_regulation_title' => $this->randomMachineName(20),
     ];
     $this->newNode($regulation_data);
     $this->newNode($regulation_data);
+  }
 
+  private function createNodesPerson($node_data) {
     // Create 2 persons.
     // A Person's title is built from its first_name and last_name.
     $person_data = $node_data + [
@@ -117,6 +116,17 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     ];
     $this->newNode($person_data);
     $this->newNode($person_data);
+  }
+
+  private function createEveryNodeType() {
+    $node_data = [
+      'moderation_state' => MassModeration::PUBLISHED,
+      'status' => 1,
+    ];
+
+    $this->createNodesExecutiveOrder($node_data);
+    $this->createNodesRegulation($node_data);
+    $this->createNodesPerson($node_data);
 
     $types = $this->nodeTypeFilterOptions();
 
