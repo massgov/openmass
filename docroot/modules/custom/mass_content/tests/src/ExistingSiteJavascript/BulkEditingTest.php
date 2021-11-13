@@ -32,14 +32,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   protected $view;
 
   /**
-   * The All Content view.
-   *
-   * @var \Behat\Mink\Element\NodeElement
-   */
-  protected $bulkEditForm;
-
-
-  /**
    * The nodes created for bulk editing.
    *
    * @var array
@@ -154,16 +146,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   }
 
   /**
-   * Returns a node not in the trash.
-   */
-  private function getRandomNode() {
-    $nidsTds = $this->view->findAll('css', 'td.views-field-nid');
-    $randomNidTd = $nidsTds[\array_rand($nidsTds)];
-    $nid = trim($randomNidTd->getText());
-    return Node::load($nid);
-  }
-
-  /**
    * Resets a view exposed form.
    */
   private function reset() {
@@ -242,8 +224,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       $suffix = '_' . $this->randomMachineName(20);
 
       $this->page = $this->getCurrentPage();
-
-      $this->bulkEditForm = $this->page->find('css', '#bulk-edit-form');
 
       $edit_node_type = HTML::getId('edit-node-' . $type);
       $title_field = 'title';
