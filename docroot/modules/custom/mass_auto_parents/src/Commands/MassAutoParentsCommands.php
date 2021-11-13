@@ -18,7 +18,6 @@ class MassAutoParentsCommands extends DrushCommands {
    */
   protected $batchManager;
 
-
   /**
    * {@inheritdoc}
    */
