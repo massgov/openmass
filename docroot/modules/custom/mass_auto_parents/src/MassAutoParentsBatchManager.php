@@ -66,14 +66,13 @@ class MassAutoParentsBatchManager implements ContainerInjectionInterface {
     // Filter rows with child_nid same as parent_nid.
     $query->where('child_nid <> parent_nid');
     $query->orderBy('child_nid');
-    $count = clone $query;
-    $total = (int) $count->countQuery()->execute()->fetchField();
+    $results = $query->execute()->fetchAllAssoc('child_nid');
+    $total = (int) count($results);
     if ($total == 0) {
       // This drush command requires that you import the relationships_setup.sql
       // file in the mass_auto_parents/includes directory prior to run.
       throw new UpdateException('The "relationships" custom table is empty. Run "drush sqlq --file=modules/custom/mass_auto_parents/includes/relationships_setup.sql" and try again.');
     }
-    $results = $query->execute()->fetchAllAssoc('child_nid');
     $batched_results = array_chunk($results, self::BATCH_SIZE, TRUE);
     $progress_count = 0;
     foreach ($batched_results as $batch_group) {
