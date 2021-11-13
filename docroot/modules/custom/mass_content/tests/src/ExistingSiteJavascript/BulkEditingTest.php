@@ -47,20 +47,20 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       'advisory' => 'Advisory',
       // 'alert' => 'Alert (Page-level and Organization)',
       // 'page' => 'Basic page (prototype)',
-      // 'binder' => 'Binder',
+      'binder' => 'Binder',
       // 'contact_information' => 'Contact Information',
       // 'curated_list' => 'Curated List',
       // 'decision' => 'Decision',
       // 'decision_tree' => 'Decision Tree',
-      // 'decision_tree_branch' => 'Decision Tree Branch',
+      'decision_tree_branch' => 'Decision Tree Branch',
       // 'decision_tree_conclusion' => 'Decision Tree Conclusion',
       // 'error_page' => 'Error',
       // 'event' => 'Event',
-      // 'executive_order' => 'Executive Order',
+      'executive_order' => 'Executive Order',
       // 'external_data_resource' => 'External data resource',
       // 'fee' => 'Fee',
       // 'form_page' => 'Form',
-      // 'guide_page' => 'Guide',
+      'guide_page' => 'Guide',
       // 'how_to_page' => 'How-to',
       // 'info_details' => 'Information Details',
       // 'interstitial' => 'Interstitial',
@@ -226,63 +226,66 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $this->view->pressButton('Apply');
   }
 
+  function selectNodesForBulkEdit($title) {
+    // Filter nodes using its unique titles.
+    $this->view->fillField('Title', $title);
+    $this->view->pressButton('Apply');
+    // Select the only 2 rows available.
+    $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
+    $this->selectRows(2);
+    // Bulk edit those 2 items.
+    $this->view->selectFieldOption('Action', 'Edit content');
+    $this->view->pressButton('Apply to selected items');
+  }
+
+  private function testBulkEditingOnContentType($type, $newNodes) {
+    $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
+    $autoEntityLabelEnabled = !$this->getCurrentPage()->findField('Disabled')->isChecked();
+
+    $typesWithoutTitleFieldOnFormDisplay = [
+      'executive_order',
+      'regulation',
+    ];
+
+    $typeHasTitleField = !in_array($type, $typesWithoutTitleFieldOnFormDisplay);
+
+    if ($autoEntityLabelEnabled && $typeHasTitleField) {
+      $this->getCurrentPage()->find('css', '#edit-status-0')->click();
+      $this->getCurrentPage()->pressButton('Save configuration');
+    }
+
+    $this->drupalGet('admin/content');
+    $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
+    $this->reset();
+
+    /** @var Node[] $newNodes */
+    $title = current($newNodes);
+
+    $this->selectNodesForBulkEdit($title);
+
+    // Value to be appended to the title, using bulk editing.
+    $suffix = '_' . $this->randomMachineName(20);
+
+    $this->doBulkEdit($type, $suffix);
+
+    $this->filterViewContentByNewTitle($title . ' '.$suffix);
+
+    $this->assertNotNull($this->view->find('css', '.views-view-table'));
+
+    if ($autoEntityLabelEnabled && $typeHasTitleField) {
+      $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
+      $this->getCurrentPage()->find('css', '#edit-status-1')->click();
+      $this->getCurrentPage()->pressButton('Save configuration');
+    }
+  }
+
   /**
    * Tests a few things for the "All content" view at admin/content.
    */
   public function testBulkEditingOnAllContentTypes() {
-
     foreach ($this->newNodesByType as $type => $newNodes) {
-
-      $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
-      $autoEntityLabelEnabled = !$this->getCurrentPage()->findField('Disabled')->isChecked();
-
-      $typesWithoutTitleFieldOnFormDisplay = [
-        'executive_order',
-        'regulation',
-      ];
-
-      $typeHasTitleField = !in_array($type, $typesWithoutTitleFieldOnFormDisplay);
-
-      if ($autoEntityLabelEnabled && $typeHasTitleField) {
-        $this->getCurrentPage()->find('css', '#edit-status-0')->click();
-        $this->getCurrentPage()->pressButton('Save configuration');
-      }
-
-      $this->drupalGet('admin/content');
-      $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
-      $this->reset();
-
-      /** @var Node[] $newNodes */
-      $title = current($newNodes);
-
-      // Filter nodes using its unique titles.
-      $this->view->fillField('Title', $title);
-      $this->view->pressButton('Apply');
-      // Select the only 2 rows available.
-      $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
-      $this->selectRows(2);
-      // Bulk edit those 2 items.
-      $this->view->selectFieldOption('Action', 'Edit content');
-      $this->view->pressButton('Apply to selected items');
-
-      // Value to be appended to the title, using bulk editing.
-      $suffix = '_' . $this->randomMachineName(20);
-
-      $this->doBulkEdit($type, $suffix);
-
-      $this->filterViewContentByNewTitle($title . ' '.$suffix);
-
-      $this->assertNotNull($this->view->find('css', '.views-view-table'));
-
-      if ($autoEntityLabelEnabled && $typeHasTitleField) {
-        $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
-        $this->getCurrentPage()->find('css', '#edit-status-1')->click();
-        $this->getCurrentPage()->pressButton('Save configuration');
-      }
-
+      $this->testBulkEditingOnContentType($type, $newNodes);
     }
-
-
   }
 
 }
