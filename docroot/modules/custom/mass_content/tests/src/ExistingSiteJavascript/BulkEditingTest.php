@@ -254,10 +254,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       $this->getCurrentPage()->pressButton('Save configuration');
     }
 
-    $this->drupalGet('admin/content');
-    $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
-    $this->reset();
-
     /** @var Node[] $newNodes */
     $title = current($newNodes);
 
