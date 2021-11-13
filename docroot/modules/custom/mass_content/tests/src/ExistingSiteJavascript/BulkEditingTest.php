@@ -154,156 +154,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   }
 
   /**
-   * Asserts a random row has a specific text value.
-   */
-  private function checkRandomRowHasValue($value) {
-    $table = $this->view->find('css', '.views-view-table');
-    $rows = $table->findAll('css', 'tbody > tr');
-    $randomRow = $rows[\random_int(0, count($rows) - 1)];
-    $text = $randomRow->getText();
-    $this->assertStringContainsString($value, $text);
-  }
-
-  /**
-   * Gets the index of a result column based on the description.
-   */
-  private function getColumnIndexFromResultsView($description) {
-    $columns = $this->view->findAll('css', 'th');
-    foreach ($columns as $index => $column) {
-      if ($column->getText() == $description) {
-        return $index + 1;
-      }
-    }
-    throw new Exception("Column not found on results table: " . $description);
-  }
-
-  /**
-   * Gets any username from a results' user column with a specific description.
-   */
-  private function getAnyUserFromResultsColumn($description) {
-    $columnIndex = $this->getColumnIndexFromResultsView($description);
-    $usernamesTds = $this->view->findAll('css', ".views-table > tbody td:nth-child($columnIndex)");
-    $randomUsernameTd = $usernamesTds[\random_int(0, count($usernamesTds) - 1)];
-    $randomUsername = trim($randomUsernameTd->getText());
-    return $randomUsername;
-  }
-
-  /**
-   * Asserts a textbox filtering users works.
-   */
-  private function checkTextboxFilteredByUserWorks($description, $descriptionTr = '') {
-    $this->reset();
-    $descriptionTr = $descriptionTr ?: $description;
-    $username = $this->getAnyUserFromResultsColumn($descriptionTr);
-    $this->view->findField($description)->setValue($username);
-    $this->getSession()->wait(1000);
-    $this->view->pressButton('Apply');
-    $this->checkRandomRowHasValue($username);
-  }
-
-  /**
-   * Asserts a textfilter filtering node property works.
-   */
-  private function checkTextboxFilteredByNodePropertyWorks($description) {
-    $this->reset();
-
-    // Gets random content.
-    $node = $this->getRandomNode();
-
-    // Maps value from content to the filter value.
-    $mapping = [
-      'Title' => 'mapTitle',
-      'ID' => 'mapId',
-    ];
-
-    if (!isset($mapping[$description])) {
-      throw new Exception("Mapping method for " . $description . " does not exists");
-    }
-    else {
-      $value = $this->{$mapping[$description]}($node);
-    }
-
-    // Sets value for the filter.
-    $this->view->findField($description)->setValue($value);
-
-    // Submits the exposed form.
-    $this->view->pressButton('Apply');
-
-    // Checks results.
-    $this->checkRandomRowHasValue($value);
-  }
-
-  /**
-   * Mapper private function to get the label value of a node.
-   *
-   * @phpcs:disable
-   */
-  private function mapTitle($node) {
-
-    return $node->label();
-  }
-  // @phpcs:enable
-
-  /**
-   * Mapper private function to get the Id value of a node.
-   *
-   * @phpcs:disable
-   */
-  private function mapId($node) {
-    return $node->id();
-  }
-  // @phpcs:enable
-
-  /**
-   * Asserts an array of options exists on for a select filter.
-   */
-  private function checkSelectFilterOptions($description, $optionsToCheck) {
-    // Get select.
-    $selectElem = $this->view->findField($description);
-
-    // Get options.
-    $selectOptions = [];
-    $optionsInPage = $selectElem->findAll('css', 'option');
-    foreach ($optionsInPage as $option) {
-      $selectOptions[] = $option->getText();
-    }
-
-    // Check the optionsToCheck are options in the select.
-    $selectOptions = array_flip($selectOptions);
-    foreach ($optionsToCheck as $option) {
-      $this->assertArrayHasKey($option, $selectOptions);
-    }
-  }
-
-  /**
-   * Selects a random value from a select filter. Returns its label.
-   */
-  private function selectSetAnyValue($description) {
-    // Get select.
-    $selectElem = $this->view->findField($description);
-    // All options, except the "All option".
-    $options = $selectElem->findAll('css', 'option');
-    array_shift($options);
-    // Pick a random option.
-    $randomOption = $options[\random_int(0, count($options) - 1)];
-    $randomValue = $randomOption->getAttribute('value');
-    $randomValueLabel = $randomOption->getText();
-    // Fill the select option.
-    $selectElem->setValue($randomValue);
-    return $randomValueLabel;
-  }
-
-  /**
-   * Asserts a select filter works.
-   */
-  private function checkSelectFilterWorks($description) {
-    $this->reset();
-    $value = $this->selectSetAnyValue($description);
-    $this->view->pressButton('Apply');
-    $this->checkRandomRowHasValue($value);
-  }
-
-  /**
    * Returns a node not in the trash.
    */
   private function getRandomNode() {
@@ -332,19 +182,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   }
 
   /**
-   * Checks status messages when actions are applied.
-   */
-  private function checkActions() {
-    $this->reset();
-    $num = \random_int(5, 10);
-    $this->selectRows($num);
-    $value = $this->selectSetAnyValue('Action');
-    $this->view->pressButton('Apply to selected items');
-    $message = $this->page->find('css', '.messages--status')->getText();
-    $this->assertStringContainsString($value . ' was applied to ' . $num, $message);
-  }
-
-  /**
    * {@inheritdoc}
    */
   public function setUp() {
@@ -360,38 +197,13 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $admin->save();
     $this->drupalLogin($admin);
 
-    // Visiting the view.
-    $this->drupalGet('admin/content');
-    $this->view = $this->page->find('css', '.view.view-content');
-
     $this->createEveryNodeType();
   }
-
-  private function filterByContentType(string $type) {
-    $this->view->selectFieldOption('Content type', 'type');
-  }
-
-  private function selectNodes() {
-
-  }
-
-  private function editBulkForm() {
-
-  }
-
-  private function checkBulkEditWorked() {
-
-  }
-
 
   /**
    * Tests a few things for the "All content" view at admin/content.
    */
   public function testBulkEditingOnAllContentTypes() {
-
-
-    dump($this->newNodesByType);
-
 
     foreach ($this->newNodesByType as $type => $newNodes) {
 
@@ -417,25 +229,15 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       /** @var Node[] $newNodes */
       $title = current($newNodes);
 
-      $this->htmlOutput('inicio');
-      $this->htmlOutput();
-
-
-      dump($title);
-
       $this->view->fillField('Title', $title);
 
       $this->view->pressButton('Apply');
-      $this->htmlOutput();
 
       $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
       $this->selectRows(2);
 
       $this->view->selectFieldOption('Action', 'Edit content');
       $this->view->pressButton('Apply to selected items');
-
-      $this->htmlOutput('After apply');
-      $this->htmlOutput();
 
       $suffix = '_' . $this->randomMachineName(20);
 
@@ -458,38 +260,22 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
           $title_input_id = '#edit-node-regulation-field-regulation-title-0-value';
           $append_option_id = '#edit-node-regulation-field-regulation-title-change-method-append';
           break;
-
       }
 
       $this->getCurrentPage()->find('css', $title_check_id)->check();
-      $this->htmlOutput('after selecting title');
-      $this->htmlOutput();
 
       $this->getCurrentPage()->find('css', $title_input_id)->setValue($suffix);
       $this->getCurrentPage()->find('css', $append_option_id)->click();
 
-      $this->htmlOutput('before confirm');
-      $this->htmlOutput();
 
       $this->getCurrentPage()->pressButton('Confirm');
-
-      $this->htmlOutput('After confirm');
-      $this->htmlOutput();
-
-      // return;
 
       $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
 
       $this->reset();
-      $this->htmlOutput('After reset');
-      $this->htmlOutput();
-
 
       $this->view->fillField('Title', $title . ' '.$suffix);
       $this->view->pressButton('Apply');
-
-      $this->htmlOutput('Final results');
-      $this->htmlOutput();
 
       $this->assertNotNull($this->view->find('css', '.views-view-table'));
 
