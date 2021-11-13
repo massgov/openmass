@@ -227,6 +227,8 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   }
 
   function selectNodesForBulkEdit($title) {
+    $this->drupalGet('admin/content');
+    $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
     // Filter nodes using its unique titles.
     $this->view->fillField('Title', $title);
     $this->view->pressButton('Apply');
@@ -238,7 +240,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $this->view->pressButton('Apply to selected items');
   }
 
-  private function testBulkEditingOnContentType($type, $newNodes) {
+  private function disableAutoEntityLabelIfNecessary($type) {
     $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
     $autoEntityLabelEnabled = !$this->getCurrentPage()->findField('Disabled')->isChecked();
 
@@ -249,30 +251,38 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
 
     $typeHasTitleField = !in_array($type, $typesWithoutTitleFieldOnFormDisplay);
 
-    if ($autoEntityLabelEnabled && $typeHasTitleField) {
+    $needsToBeDisabled = $autoEntityLabelEnabled && $typeHasTitleField;
+    if ($needsToBeDisabled) {
       $this->getCurrentPage()->find('css', '#edit-status-0')->click();
       $this->getCurrentPage()->pressButton('Save configuration');
     }
+    return $needsToBeDisabled;
+  }
+
+  private function reEnableAutoEntityLabel($type) {
+    $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
+    $this->getCurrentPage()->find('css', '#edit-status-1')->click();
+    $this->getCurrentPage()->pressButton('Save configuration');
+  }
+
+  private function checkBulkEditingOnContentType($type, $newNodes) {
+    $autoEntityLabelWasDisabled = $this->disableAutoEntityLabelIfNecessary($type);
 
     /** @var Node[] $newNodes */
     $title = current($newNodes);
-
+    // Select 2 nodes (with the same title) and trigger bulk editing.
     $this->selectNodesForBulkEdit($title);
-
     // Value to be appended to the title, using bulk editing.
     $suffix = '_' . $this->randomMachineName(20);
-
+    // Edit the title of the 2 chosen nodes, which are the same type.
     $this->doBulkEdit($type, $suffix);
-
+    // On the "All Content" view, search the bulk edited nodes, by their
+    // new title.
     $this->filterViewContentByNewTitle($title . ' '.$suffix);
-
+    // Ensure we have results.
     $this->assertNotNull($this->view->find('css', '.views-view-table'));
-
-    if ($autoEntityLabelEnabled && $typeHasTitleField) {
-      $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
-      $this->getCurrentPage()->find('css', '#edit-status-1')->click();
-      $this->getCurrentPage()->pressButton('Save configuration');
-    }
+    // Re-enable auto_entitylabel if it was disabled.
+    $autoEntityLabelWasDisabled ? $this->reEnableAutoEntityLabel($type) : NULL;
   }
 
   /**
@@ -280,7 +290,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
    */
   public function testBulkEditingOnAllContentTypes() {
     foreach ($this->newNodesByType as $type => $newNodes) {
-      $this->testBulkEditingOnContentType($type, $newNodes);
+      $this->checkBulkEditingOnContentType($type, $newNodes);
     }
   }
 
