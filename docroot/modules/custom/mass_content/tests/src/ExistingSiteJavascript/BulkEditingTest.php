@@ -4,14 +4,20 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\Component\Utility\Html;
 use Drupal\mass_content_moderation\MassModeration;
-use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
-use Exception;
 use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
- * Tests "All Content" view at admin/content.
+ * Tests Bulk editing for all content types, except the "admin only" ones.
+ *
+ * Creates 2 nodes of each type, with unique title names.
+ * Filters by title the 2 nodes, and edits it in bulk.
+ * In the bulk edit, it appends to the title another unique string.
+ * Searches on the "All Content" view the unique string just appended.
+ * If there are results, it means the bulk editing worked.
+ * For most content types, auto_entitylabel will be disabled, to simplify
+ * the title generation.
  */
 class BulkEditingTest extends ExistingSiteWebDriverTestBase {
 
@@ -81,12 +87,18 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     ];
   }
 
+  /**
+   * Creates a new node using the $data and stores it on newNodesByType.
+   */
   private function newNode($data) {
     $node = $this->createNode($data);
     $node->save();
     $this->newNodesByType[$data['type']][$node->id()] = $node->getTitle();
   }
 
+  /**
+   * Creates 2 executive_order nodes.
+   */
   private function createNodesExecutiveOrder($node_data) {
     $executive_order_data = $node_data + [
       'type' => 'executive_order',
@@ -97,6 +109,9 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $this->newNode($executive_order_data);
   }
 
+  /**
+   * Creates 2 regulation nodes.
+   */
   private function createNodesRegulation($node_data) {
     $regulation_data = $node_data + [
       'type' => 'regulation',
@@ -106,6 +121,9 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $this->newNode($regulation_data);
   }
 
+  /**
+   * Creates 2 person nodes.
+   */
   private function createNodesPerson($node_data) {
     // Create 2 persons.
     // A Person's title is built from its first_name and last_name.
@@ -118,34 +136,37 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $this->newNode($person_data);
   }
 
+  /**
+   * Creates 2 nodes of every node type (except admin-only ones).
+   */
   private function createEveryNodeType() {
+
+    $types = $this->nodeTypeFilterOptions();
+    $admin_use_only_types = ['error_page', 'interstitial', 'utility_drawer'];
+    $special_types = ['person', 'executive_order', 'regulation'];
+
+    foreach (array_merge($admin_use_only_types, $special_types) as $type) {
+      unset($types[$type]);
+    }
+
     $node_data = [
       'moderation_state' => MassModeration::PUBLISHED,
       'status' => 1,
     ];
 
+    // Types executive_order and regulation have no title field
+    // on its default form display, and its title is generated based
+    // on other fields with auto_entitylabel.
     $this->createNodesExecutiveOrder($node_data);
     $this->createNodesRegulation($node_data);
+
+    // Person type have the title field in its node creation form,
+    // although it is hidden with auto entity_label.
     $this->createNodesPerson($node_data);
 
-    $types = $this->nodeTypeFilterOptions();
-
-    $admin_use_only_types = [
-      'error_page',
-      'interstitial',
-      'executive_order',
-      'regulation',
-      'utility_drawer',
-    ];
-
-    foreach ($admin_use_only_types as $admin_use_only_type) {
-      unset($types[$admin_use_only_type]);
-    }
-
-    unset($types['person']);
-
+    // For the rest of content types, we are going to rely on the title field
+    // to generate the label.
     $type_machine_names = array_keys($types);
-
     $title = $this->randomMachineName(20);
     foreach ($type_machine_names as $type_machine_name) {
       $node_data['title'] = $title . '_' . $type_machine_name;
@@ -153,13 +174,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       $this->newNode($node_data);
       $this->newNode($node_data);
     }
-  }
-
-  /**
-   * Resets a view exposed form.
-   */
-  private function reset() {
-    $this->view->hasButton('Reset') ? $this->view->pressButton('Reset') : NULL;
   }
 
   /**
@@ -189,9 +203,13 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $admin->save();
     $this->drupalLogin($admin);
 
+    // To test bulk editing, we will create 2 nodes per content type.
     $this->createEveryNodeType();
   }
 
+  /**
+   * Bulk edit the nodes, appending a "unique string" to the title.
+   */
   private function doBulkEdit($type, $suffix) {
     $this->page = $this->getCurrentPage();
     $edit_node_type = HTML::getId('edit-node-' . $type);
@@ -201,6 +219,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
       case 'executive_order':
         $title_field = 'field-executive-title';
         break;
+
       case 'regulation':
         $title_field = 'field-regulation-title';
         break;
@@ -220,18 +239,22 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $this->getCurrentPage()->pressButton('Confirm');
   }
 
-  private function filterViewContentByNewTitle($new_title) {
+  /**
+   * Filter view by title.
+   */
+  private function filterViewContentByTitle($title) {
     $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
-    $this->view->fillField('Title', $new_title);
+    $this->view->fillField('Title', $title);
     $this->view->pressButton('Apply');
   }
 
-  function selectNodesForBulkEdit($title) {
+  /**
+   * Selects nodes from the content view, previously filtered by title.
+   */
+  private function selectNodesForBulkEdit($title) {
     $this->drupalGet('admin/content');
-    $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
     // Filter nodes using its unique titles.
-    $this->view->fillField('Title', $title);
-    $this->view->pressButton('Apply');
+    $this->filterViewContentByTitle($title);
     // Select the only 2 rows available.
     $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
     $this->selectRows(2);
@@ -240,9 +263,13 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $this->view->pressButton('Apply to selected items');
   }
 
+  /**
+   * Disables auto_entitylabel for $type with generated label & no title field.
+   */
   private function disableAutoEntityLabelIfNecessary($type) {
     $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
-    $autoEntityLabelEnabled = !$this->getCurrentPage()->findField('Disabled')->isChecked();
+    $autoEntityLabelEnabled =
+      !$this->getCurrentPage()->findField('Disabled')->isChecked();
 
     $typesWithoutTitleFieldOnFormDisplay = [
       'executive_order',
@@ -259,13 +286,22 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     return $needsToBeDisabled;
   }
 
+  /**
+   * Enables auto_entitylabel for a specific content type.
+   */
   private function reEnableAutoEntityLabel($type) {
     $this->drupalGet('admin/structure/types/manage/' . $type . '/auto-label');
     $this->getCurrentPage()->find('css', '#edit-status-1')->click();
     $this->getCurrentPage()->pressButton('Save configuration');
   }
 
+  /**
+   * Test bulk editing with 2 nodes of a specific content type.
+   */
   private function checkBulkEditingOnContentType($type, $newNodes) {
+    // Is easier to test bulk editing by appending something to the title,
+    // hence we need to disable auto entity_label in most of the node types
+    // where it is enabled.
     $autoEntityLabelWasDisabled = $this->disableAutoEntityLabelIfNecessary($type);
 
     /** @var Node[] $newNodes */
@@ -273,12 +309,14 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     // Select 2 nodes (with the same title) and trigger bulk editing.
     $this->selectNodesForBulkEdit($title);
     // Value to be appended to the title, using bulk editing.
+    // This acts as a unique identifier to later filter by type using this
+    // suffix, and ensure the bulk editing worked.
     $suffix = '_' . $this->randomMachineName(20);
     // Edit the title of the 2 chosen nodes, which are the same type.
     $this->doBulkEdit($type, $suffix);
     // On the "All Content" view, search the bulk edited nodes, by their
     // new title.
-    $this->filterViewContentByNewTitle($title . ' '.$suffix);
+    $this->filterViewContentByTitle($title . ' ' . $suffix);
     // Ensure we have results.
     $this->assertNotNull($this->view->find('css', '.views-view-table'));
     // Re-enable auto_entitylabel if it was disabled.
@@ -286,7 +324,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   }
 
   /**
-   * Tests a few things for the "All content" view at admin/content.
+   * Tests bulk editing on all content types.
    */
   public function testBulkEditingOnAllContentTypes() {
     foreach ($this->newNodesByType as $type => $newNodes) {
