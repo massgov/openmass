@@ -201,7 +201,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   /**
    * Bulk edit the nodes, appending a "unique string" to the title.
    */
-  private function doBulkEdit($type, $suffix) {
+  private function doBulkEdit($type, $unique) {
     $edit_node_type = HTML::getId('edit-node-' . $type);
     $title_field = 'title';
 
@@ -222,8 +222,8 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     // Select to modify title.
     $this->getCurrentPage()->find('css', $title_check_id)->check();
     // Modify title value.
-    $this->getCurrentPage()->find('css', $title_input_id)->setValue($suffix);
-    // Select to append $suffix to the title.
+    $this->getCurrentPage()->find('css', $title_input_id)->setValue($unique);
+    // Select to append $unique to the title.
     $this->getCurrentPage()->find('css', $append_option_id)->click();
     // Submit the bulk edit form.
     $this->getCurrentPage()->pressButton('Confirm');
@@ -300,13 +300,13 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $this->selectNodesForBulkEdit($title);
     // Value to be appended to the title, using bulk editing.
     // This acts as a unique identifier to later filter by type using this
-    // suffix, and ensure the bulk editing worked.
-    $suffix = '_' . $this->randomMachineName(20);
+    // unique, and ensure the bulk editing worked.
+    $unique = '_' . $this->randomMachineName(20);
     // Edit the title of the 2 chosen nodes, which are the same type.
-    $this->doBulkEdit($type, $suffix);
+    $this->doBulkEdit($type, $unique);
     // On the "All Content" view, search the bulk edited nodes, by their
     // new title.
-    $this->filterViewContentByTitle($title . ' ' . $suffix);
+    $this->filterViewContentByTitle($title . ' ' . $unique);
     // Ensure we have results.
     $this->assertNotNull($this->view->find('css', '.views-view-table'));
     // Re-enable auto_entitylabel if it was disabled.
