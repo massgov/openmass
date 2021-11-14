@@ -24,13 +24,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   use LoginTrait;
 
   /**
-   * The element for the entire document.
-   *
-   * @var \Behat\Mink\Element\DocumentElement
-   */
-  protected $page;
-
-  /**
    * The All Content view.
    *
    * @var \Behat\Mink\Element\NodeElement
@@ -179,8 +172,9 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
   /**
    * Selects N numbers of row in the view results table.
    */
-  private function selectRows($num) {
-    $checkboxes = $this->view->findAll('css', '.views-table > tbody > tr .views-field-node-bulk-form input');
+  private function selectRowsFromView($num) {
+    $selector = '.views-table > tbody > tr .views-field-node-bulk-form input';
+    $checkboxes = $this->view->findAll('css', $selector);
     $checkboxes = \array_slice($checkboxes, 0, $num);
     foreach ($checkboxes as $checkbox) {
       $checkbox->click();
@@ -192,9 +186,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
    */
   public function setUp() {
     parent::setUp();
-
-    /** @var \Drupal\Tests\DocumentElement */
-    $this->page = $this->getSession()->getPage();
 
     // An admin is needed.
     $admin = User::create(['name' => $this->randomMachineName()]);
@@ -211,7 +202,6 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
    * Bulk edit the nodes, appending a "unique string" to the title.
    */
   private function doBulkEdit($type, $suffix) {
-    $this->page = $this->getCurrentPage();
     $edit_node_type = HTML::getId('edit-node-' . $type);
     $title_field = 'title';
 
@@ -257,7 +247,7 @@ class BulkEditingTest extends ExistingSiteWebDriverTestBase {
     $this->filterViewContentByTitle($title);
     // Select the only 2 rows available.
     $this->view = $this->getCurrentPage()->find('css', '.view.view-content');
-    $this->selectRows(2);
+    $this->selectRowsFromView(2);
     // Bulk edit those 2 items.
     $this->view->selectFieldOption('Action', 'Edit content');
     $this->view->pressButton('Apply to selected items');
