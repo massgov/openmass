@@ -536,7 +536,9 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
                 if ($item['title'] !== '' && $item['title'] !== $node->title->value) {
                   $node->set('title', $item['title']);
                 }
-                $build['extra_node_all_actions'][] = $view_builder->view($node, 'title_short_desc');
+                $render_arr = $view_builder->view($node, 'title_short_desc');
+                $render_arr['#cache']['contexts'] = ['url'];
+                $build['extra_node_all_actions'][] = $render_arr;
               }
             }
             else {
@@ -561,7 +563,9 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
                 if ($item['title'] !== '' && $item['title'] !== $node->title->value) {
                   $node->set('title', $item['title']);
                 }
-                $build['extra_node_all_actions'][] = $view_builder->view($node, 'title_short_desc');
+                $render_arr = $view_builder->view($node, 'title_short_desc');
+                $render_arr['#cache']['contexts'] = ['url'];
+                $build['extra_node_all_actions'][] = $render_arr;
               }
             }
             else {
