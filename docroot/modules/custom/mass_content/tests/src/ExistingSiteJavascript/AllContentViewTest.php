@@ -54,6 +54,7 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
     return [
       'advisory' => 'Advisory',
       'alert' => 'Alert (Page-level and Organization)',
+      'sitewide_alert' => 'Alert (Sitewide)',
       'page' => 'Basic page (prototype)',
       'binder' => 'Binder',
       'contact_information' => 'Contact Information',
