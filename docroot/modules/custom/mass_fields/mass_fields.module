@@ -784,10 +784,6 @@ function _mass_fields_form_node_topic_page_edit_restrict_fields(&$form, FormStat
   // Setting allowed fields based on the restriction.
   $restricted = $node->field_restrict_link_management->value ?? FALSE;
   $allowed_fields = $restricted ? [] : [
-    // These fields are necessary for submission.
-    'form_build_id',
-    'form_token',
-    'form_id',
     // We want revisions as well.
     'revision_log',
     // These fields are the ones we want to allow.
@@ -807,8 +803,17 @@ function _mass_fields_form_node_topic_page_edit_restrict_fields(&$form, FormStat
       continue;
     }
 
-    is_array($element) && (isset($element['#access']) || isset($element['#type'])) ?
-      $element['#disabled'] = TRUE : NULL;
+    // Only disabling form elements.
+    if (!is_array($element) || !isset($element['#type'])) {
+      continue;
+    }
+
+    // Token & hidden types are necessary for submission.
+    if (in_array($element['#type'], ['token', 'hidden'])) {
+      continue;
+    }
+
+    $element['#disabled'] = TRUE;
   }
 }
 
