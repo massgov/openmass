@@ -225,6 +225,7 @@ jobs:
       # Identify the committer i.e. CircleCI deployment bot
       - git_configure_user
       # Push this build to Acquia's master branch, and tag it there.
+      # @todo When needed, switch to https://circleci.com/developer/orbs/orb/circleci/github-cli
       - run: scripts/tag-release-deploy
 
   validate:
