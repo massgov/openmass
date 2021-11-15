@@ -93,6 +93,9 @@ parameters:
   reference:
     type: string
     default: ""
+  tugboat:
+    type: string
+    default: ""
   list:
     type: string
     default: "all"
@@ -293,7 +296,7 @@ jobs:
       - run: "cd cloudflare && yarn install"
       - run: "cd cloudflare && npm test"
 
-  # Cut the release branch for Wednesday release only
+  # Cut the release branch for weekly release
   cut_release_branch:
     working_directory: /tmp/code
     docker:
@@ -394,6 +397,9 @@ jobs:
       viewport:
         type: string
         default: all
+      tugboat:
+        type: string
+        default: ""
     working_directory: /tmp/code
     executor:
       name: base
@@ -405,10 +411,20 @@ jobs:
           name: Backstop reference
           command: ddev exec --service backstop backstop --config=/src/backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
           no_output_timeout: 300m
-      - run:
-          name: Backstop test
-          command: ddev exec --service backstop backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
-          no_output_timeout: 300m
+      - when:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Backstop test
+                command: ddev exec --service backstop backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
+                no_output_timeout: 300m
+      - unless:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Backstop test
+                command: ddev exec --service backstop backstop --config=/src/backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+                no_output_timeout: 300m
       - run:
           command: ddev logs -s backstop
           when: always
@@ -638,7 +654,7 @@ workflows:
     triggers:
       - schedule:
           # UTC time-zone
-          cron: "00 16 * * 2"
+          cron: "31 16 * * 3"
           filters:
             branches:
               only:
@@ -669,7 +685,7 @@ workflows:
           filters:
             branches:
               only: /^release\/.*$/
-      - hold:
+      - hold - Release manager only:
           type: approval
           requires:
             - build
@@ -680,7 +696,7 @@ workflows:
       - deploy:
           name: deploy-test-refresh-db
           requires:
-            - hold
+            - hold - Release manager only
           target: test
           refresh-db: "--refresh-db"
           filters:
@@ -699,6 +715,12 @@ workflows:
           requires: [deploy-test-refresh-db]
           target: test
           reference: prod
+          filters:
+            branches:
+              only: /^release\/.*$/
+      - hold - QA approval:
+          name: hold-qa-approval
+          type: approval
           filters:
             branches:
               only: /^release\/.*$/
@@ -729,7 +751,7 @@ workflows:
           filters:
             branches:
               only: /^hotfix\/.*$/
-      - hold:
+      - hold - Release manager only:
             type: approval
             requires:
               - build
@@ -740,7 +762,7 @@ workflows:
       - deploy:
           name: deploy-test-no-refresh-db
           requires:
-            - hold
+            - hold - Release manager only
           target: test
           filters:
             branches:
@@ -761,6 +783,12 @@ workflows:
             filters:
               branches:
                 only: /^hotfix\/.*$/
+      - hold - QA approval:
+          name: hold-qa-approval
+          type: approval
+          filters:
+            branches:
+              only: /^hotfix\/.*$/
 
   # This is to automate the mayflower branch only.
   mayflower:
@@ -798,7 +826,7 @@ workflows:
           filters:
             branches:
               only: /^mayflower\/.*$/
-      - hold:
+      - hold - Release manager only:
           type: approval
           requires:
             - build
@@ -809,7 +837,7 @@ workflows:
       - deploy:
           name: deploy-test-refresh-db
           requires:
-            - hold
+            - hold - Release manager only
           target: test
           refresh-db: "--refresh-db"
           filters:
@@ -863,7 +891,7 @@ workflows:
           filters:
             branches:
               only: master
-      - hold:
+      - hold - Release manager only:
           type: approval
           requires:
             - build
@@ -873,7 +901,7 @@ workflows:
               only: master
       - tagging_github:
           requires:
-              - hold
+              - hold - Release manager only
           filters:
             branches:
               only: master
@@ -895,7 +923,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold_for_stage:
+      - hold_for_stage Release manager only:
           type: approval
           requires:
             - build
@@ -910,7 +938,7 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - hold_for_stage
+            - hold_for_stage Release manager only
           gitRef: tags/$CIRCLE_TAG
           target: test
           filters:
@@ -918,7 +946,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold_for_prod_maint:
+      - hold_for_prod_maint Release manager only:
           type: approval
           requires:
             - build
@@ -933,7 +961,7 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - hold_for_prod_maint
+            - hold_for_prod_maint Release manager only
           target: prod
           gitRef: tags/$CIRCLE_TAG
           filters:
@@ -941,7 +969,7 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - hold_for_prod_no_maint:
+      - hold_for_prod_no_maint Release manager only:
           type: approval
           requires:
             - build
@@ -956,7 +984,7 @@ workflows:
           requires:
             - build
             - tagging_acquia
-            - hold_for_prod_no_maint
+            - hold_for_prod_no_maint Release manager only
           target: prod
           gitRef: tags/$CIRCLE_TAG
           skip-maint: --skip-maint
@@ -1046,6 +1074,7 @@ workflows:
           reference: << pipeline.parameters.reference >>
           list: << pipeline.parameters.list >>
           viewport: << pipeline.parameters.viewport >>
+          tugboat: << pipeline.parameters.tugboat >>
 
   # Usually triggered by drush ma:release.
   deploy_ad_hoc:
@@ -1065,13 +1094,13 @@ workflows:
     jobs:
       - ma-cf-deploy:
           name: view-plan
-      - hold:
+      - hold - Release manager only:
           type: approval
           requires:
             - view-plan
       - ma-cf-deploy:
           name: apply-plan
-          requires: [hold]
+          requires: [hold - Release manager only]
           auto-approve: true
 
 
