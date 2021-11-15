@@ -365,9 +365,11 @@ jobs:
         type: enum
         enum: ["", "--refresh-db"]
         default: ""
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: {at: /var/www}
+      - attach_workspace: {at: /tmp}
       - *no_host_check
       - *no_ssh_timeout
       - *vendor_bin_add_path
@@ -387,9 +389,11 @@ jobs:
         type: integer
       target:
         type: string
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: {at: /var/www}
+      - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
       - *no_host_check
       - *no_ssh_timeout
@@ -497,9 +501,11 @@ jobs:
       - run: docker push << parameters.instance >>
 
   pending_security:
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: {at: /var/www}
+      - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
       - run: "drush pm:security"
       - run: "drush pm:security-php"
@@ -509,7 +515,9 @@ jobs:
       auto-approve:
         type: boolean
         default: false
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
       - checkout
       - run: curl -L -f -o chamber https://github.com/segmentio/chamber/releases/download/v2.7.5/chamber-v2.7.5-linux-amd64
