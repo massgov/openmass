@@ -1,0 +1,63 @@
+uuid: 92571f42-ddf1-4b00-a1ae-16f2efd11724
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.collection_search.field_collection
+    - field.field.paragraph.collection_search.field_search_heading
+    - field.field.paragraph.collection_search.field_secondary_heading
+    - field.field.paragraph.collection_search.field_secondary_link
+    - field.field.paragraph.collection_search.field_see_all_items_link_text
+    - paragraphs.paragraphs_type.collection_search
+  module:
+    - link
+id: paragraph.collection_search.default
+targetEntityType: paragraph
+bundle: collection_search
+mode: default
+content:
+  field_collection:
+    weight: 0
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_search_heading:
+    weight: 1
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_secondary_heading:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_secondary_link:
+    weight: 4
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+    type: link_default
+    region: content
+  field_see_all_items_link_text:
+    weight: 3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+hidden:
+  created: true
+  status: true
