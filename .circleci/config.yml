@@ -23,7 +23,7 @@ references:
     run: {name: 'Disable SSH timeout', command: 'echo "ServerAliveInterval 30" >> ~/.ssh/config'}
 
   vendor_bin_add_path: &vendor_bin_add_path
-    run: echo 'export PATH=/var/www/code/vendor/bin:/var/www/code/node_modules/.bin:$PATH' >> $BASH_ENV
+    run: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
 
   restore_composer_cache: &restore_composer_cache
     restore_cache:
@@ -310,17 +310,21 @@ jobs:
           path: /tmp/test-results
 
   cloudflare:
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: {at: /var/www}
+      - attach_workspace: {at: /tmp}
       - run: "cd cloudflare && yarn install"
       - run: "cd cloudflare && npm test"
 
   # Cut the release branch for weekly release
   cut_release_branch:
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: {at: /var/www}
+      - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
       - *no_host_check
       - checkout
