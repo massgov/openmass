@@ -1,0 +1,23 @@
+uuid: 521c5020-182e-4ddf-9a0b-675189ea619c
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_sitewide_alert_link_type
+    - paragraphs.paragraphs_type.sitewide_alert_message
+  module:
+    - options
+id: paragraph.sitewide_alert_message.field_sitewide_alert_link_type
+field_name: field_sitewide_alert_link_type
+entity_type: paragraph
+bundle: sitewide_alert_message
+label: 'Message link'
+description: 'Choose what page the Alert Message will link to. If you have an existing page on Mass.gov that explains the Alert in more detail, this is usually the best choice. If you do not have an existing page to link to, choose the Alert Detail page and add content below. '
+required: true
+translatable: false
+default_value:
+  -
+    value: '1'
+default_value_callback: ''
+settings: {  }
+field_type: list_string

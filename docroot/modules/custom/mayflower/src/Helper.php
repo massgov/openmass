@@ -1777,7 +1777,7 @@ class Helper {
    */
   public static function getParentNode(Paragraph $paragraph) {
     $parent_entity = $paragraph->getParentEntity();
-    if ($parent_entity->getEntityTypeId() === 'paragraph') {
+    if ($parent_entity && $parent_entity->getEntityTypeId() === 'paragraph') {
       $parent_entity = self::getParentNode($parent_entity);
     }
     return $parent_entity;
