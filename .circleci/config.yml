@@ -180,13 +180,16 @@ jobs:
           paths: [code]
 
   push_acquia:
-    <<: *container_config
+    working_directory: ~/project/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
       - *no_host_check
       - *no_ssh_timeout
       - checkout
-      - fetch_drush_aliases
-      - run: git add -f /var/www/code/drush/sites/self.site.yml
+      - fetch_drush_aliases:
+          destination: ./drush/sites/self.site.yml
+      - run: git add -f ./drush/sites/self.site.yml
       - *restore_composer_cache
       - run: { name: 'Composer install', command: 'composer install --no-dev --no-interaction --optimize-autoloader' }
       # Identify the committer i.e. CircleCI deployment bot
@@ -194,7 +197,7 @@ jobs:
       - run: git config --global user.name "CircleCI Deployment Bot"
       # Prep for push to Acquia Git. Do so while we have a clean build.
       - run: ( find docroot -type d -name .git && find docroot -type f -name .gitmodules ) | xargs rm -rf
-      - run: git add -A -f /var/www/code
+      - run: git add -A -f .
       - run: git commit -m "Add vendor code and drush alias."
       # Add a deployment identifier file and push current branch to Acquia's Git repo.
       - run: scripts/stamp-and-deploy
@@ -727,7 +730,7 @@ workflows:
               only: /^release\/.*$/
       - hold - QA approval:
           name: hold-qa-approval
-          requires: [deploy]
+          requires: [deploy-test-refresh-db]
           type: approval
           filters:
             branches:
@@ -793,7 +796,7 @@ workflows:
                 only: /^hotfix\/.*$/
       - hold - QA approval:
           name: hold-qa-approval
-          requires: [`push_acquia]
+          requires: [push_acquia]
           type: approval
           filters:
             branches:
