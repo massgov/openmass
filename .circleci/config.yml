@@ -163,7 +163,9 @@ jobs:
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - *save_composer_cache
       # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
-      - node/install-packages
+      - node/install-packages:
+          pkg-manager: yarn
+          cache-version: v1
       - persist_to_workspace:
           root: ..
           paths: [code]
@@ -303,7 +305,9 @@ jobs:
     steps:
       - attach_workspace: {at: /tmp}
       # https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages
-      - node/install-packages
+      - node/install-packages:
+          pkg-manager: yarn
+          cache-version: v1
       - run: "npm test"
 
   # Cut the release branch for weekly release
