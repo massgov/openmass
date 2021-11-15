@@ -416,7 +416,7 @@ function mass_utility_help($route_name, RouteMatchInterface $route_match) {
       ];
       if (in_array($node->bundle(), $content_types)) {
         $url = $node->toUrl()->toString();
-        return '<p>' . t('You also may be able to view an <a href="https://wayback.archive-it.org/1101/*/https://www.mass.gov@url" target="_blank">archived version of this page</a>. Published pages are archived weekly through a service that crawls pages on <a href="https://www.mass.gov/" target="_blank">Mass.gov</a>.', ['@url' => $url]) . '</p>';
+        return '<p>' . t('You also may be able to view an <a href="https://wayback.archive-it.org/1101/*/https://www.mass.gov@url" target="_blank">archived version of this page</a>. Published pages are archived weekly through a service that crawls pages on Mass.gov.', ['@url' => $url]) . '</p>';
       }
     }
   }
