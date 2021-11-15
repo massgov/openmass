@@ -153,7 +153,9 @@ jobs:
           command: .circleci/circle_trigger.sh
 
   build:
-    <<: *container_config
+    working_directory: ~/project/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
       - checkout
       - *restore_composer_cache
@@ -176,7 +178,7 @@ jobs:
           paths:
             - node_modules/
       - persist_to_workspace:
-          root: /var/www
+          root: ..
           paths: [code]
 
   push_acquia:
