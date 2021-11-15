@@ -162,13 +162,13 @@ jobs:
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - *save_composer_cache
       # Same for yarn - https://circleci.com/docs/2.0/yarn/#caching
-      - restore_cache:
-          name: Restore Yarn Package Cache
-          keys:
-            - yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
-            - yarn-packages-{{ .Branch }}
-            - yarn-packages-master
-            - yarn-packages-
+#      - restore_cache:
+#          name: Restore Yarn Package Cache
+#          keys:
+#            - yarn-packages-{{ .Branch }}-{{ checksum "yarn.lock" }}
+#            - yarn-packages-{{ .Branch }}
+#            - yarn-packages-master
+#            - yarn-packages-
       - run:
           name: Install Dependencies
           command: yarn install
@@ -216,9 +216,11 @@ jobs:
 
   # Automate the tagging process in GitHub
   tagging_github:
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: {at: /var/www}
+      - attach_workspace: {at: /tmp}
       - *no_host_check
       # Identify the committer i.e. CircleCI deployment bot
       - git_configure_user
@@ -226,8 +228,8 @@ jobs:
 
   # Automate the tagging process by using the GitHub then pushing to Acquia repository.
   tagging_acquia:
-    <<: *container_config
-    working_directory: /var/www/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
       - *no_host_check
       - checkout
@@ -237,9 +239,11 @@ jobs:
       - run: scripts/tag-release-deploy
 
   validate:
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: { at: /var/www }
+      - attach_workspace: { at: /tmp }
       - *vendor_bin_add_path
       # Validate .json and check if it is in sync with the .lock file
       - run: composer validate
