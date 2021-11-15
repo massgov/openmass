@@ -66,7 +66,7 @@ class MassAutoParentsBatchManager implements ContainerInjectionInterface {
     // Filter rows with child_nid same as parent_nid.
     $query->where('child_nid <> parent_nid');
     $query->orderBy('child_nid');
-    $results = $query->execute()->fetchAllAssoc('child_nid');
+    $results = $query->execute()->fetchAll();
     $total = (int) count($results);
     if ($total == 0) {
       // This drush command requires that you import the relationships_setup.sql
@@ -109,14 +109,14 @@ class MassAutoParentsBatchManager implements ContainerInjectionInterface {
       $context['sandbox']['progress'] = 0;
       $context['sandbox']['total'] = (int) count($batch_group);
     }
-    $nids = array_keys($batch_group);
-    foreach ($nids as $child_nid) {
-      $parent_nid = $batch_group[$child_nid]->parent_nid;
+    foreach ($batch_group as $row) {
+      $child_nid = $row->child_nid;
+      $parent_nid = $row->parent_nid;
       // Add to queue.
       $queue->createItem([
         'child_nid' => $child_nid,
-        'parent_nid' => $batch_group[$child_nid]->parent_nid,
-        'parent_type' => $batch_group[$child_nid]->parent_type,
+        'parent_nid' => $parent_nid,
+        'parent_type' => $row->parent_type,
       ]);
       $context['sandbox']['progress']++;
       $context['results'][] = $child_nid . ':' . $parent_nid;
