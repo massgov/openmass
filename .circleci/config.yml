@@ -190,11 +190,10 @@ jobs:
       - fetch_drush_aliases:
           destination: ./drush/sites/self.site.yml
       - run: git add -f ./drush/sites/self.site.yml
-      - *restore_composer_cache
+      #- *restore_composer_cache
       - run: { name: 'Composer install', command: 'composer install --no-dev --no-interaction --optimize-autoloader' }
       # Identify the committer i.e. CircleCI deployment bot
-      - run: git config --global user.email "circleci@example.com"
-      - run: git config --global user.name "CircleCI Deployment Bot"
+      - git_configure_user
       # Prep for push to Acquia Git. Do so while we have a clean build.
       - run: ( find docroot -type d -name .git && find docroot -type f -name .gitmodules ) | xargs rm -rf
       - run: git add -A -f .
