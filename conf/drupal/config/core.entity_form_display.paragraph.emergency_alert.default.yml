@@ -7,10 +7,8 @@ dependencies:
     - field.field.paragraph.emergency_alert.field_emergency_alert_link
     - field.field.paragraph.emergency_alert.field_emergency_alert_link_type
     - field.field.paragraph.emergency_alert.field_emergency_alert_message
-    - field.field.paragraph.emergency_alert.field_emergency_alert_timestamp
     - paragraphs.paragraphs_type.emergency_alert
   module:
-    - datetime
     - link
     - maxlength
     - paragraphs
@@ -57,12 +55,6 @@ content:
         maxlength_js_enforce_attribute: true
     type: string_textfield
     region: content
-  field_emergency_alert_timestamp:
-    weight: 1
-    settings: {  }
-    third_party_settings: {  }
-    type: datetime_default
-    region: content
   paragraphs_type_help__default:
     weight: -100
     settings: {  }
@@ -70,5 +62,6 @@ content:
     region: content
 hidden:
   created: true
+  field_emergency_alert_timestamp: true
   status: true
   uid: true
