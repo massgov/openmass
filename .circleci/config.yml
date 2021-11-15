@@ -336,9 +336,11 @@ jobs:
 
   # Create the mayflower branch for testing the develop branch.
   mayflower_develop_branch:
-    <<: *container_config
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: {at: /var/www}
+      - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
       - *no_host_check
       - checkout
