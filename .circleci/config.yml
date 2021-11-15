@@ -29,12 +29,12 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v11-{{ checksum "composer.lock" }}
+        - site-composer-v12-{{ checksum "composer.lock" }}
 
   save_composer_cache: &save_composer_cache
     save_cache:
       name: Save Composer cache
-      key: site-composer-v11-{{ checksum "composer.lock" }}
+      key: site-composer-v12-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
   branch_ignore: &branch_ignore
@@ -192,7 +192,7 @@ jobs:
       - fetch_drush_aliases:
           destination: ./drush/sites/self.site.yml
       - run: git add -f ./drush/sites/self.site.yml
-      #- *restore_composer_cache
+      - *restore_composer_cache
       - run: { name: 'Composer install', command: 'composer install --no-dev --no-interaction --optimize-autoloader' }
       # Identify the committer i.e. CircleCI deployment bot
       - git_configure_user
