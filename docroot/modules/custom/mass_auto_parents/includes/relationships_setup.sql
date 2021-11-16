@@ -1,12 +1,32 @@
-# Truncate table indicators
+# Create table indicators
+  # ------------------------------------------------------------
+
+DROP TABLE IF EXISTS `indicators`;
+
+CREATE TABLE `indicators` (
+  `parent_nid` int(11) unsigned NOT NULL,
+  `child_nid` int(11) NOT NULL,
+  `source_field` varchar(255) DEFAULT NULL,
+  `parent_type` varchar(255) DEFAULT NULL,
+  `child_type` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`parent_nid`,`child_nid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+
+# Dump of table relationships
 # ------------------------------------------------------------
 
-TRUNCATE `indicators`;
+DROP TABLE IF EXISTS `relationships`;
 
-# Truncate table relationships
-# ------------------------------------------------------------
-
-TRUNCATE `relationships`;
+CREATE TABLE `relationships` (
+   `parent_nid` int(11) unsigned NULL,
+   `child_nid` int(11) NOT NULL,
+   `source_field` varchar(255) DEFAULT NULL,
+   `parent_type` varchar(255) DEFAULT NULL,
+   `child_type` varchar(255) DEFAULT NULL,
+   UNIQUE KEY (`parent_nid`,`child_nid`),
+   UNIQUE KEY `child` (`child_nid`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `relationships` (`parent_nid`, `child_nid`, `source_field`, `parent_type`, `child_type`)
 VALUES

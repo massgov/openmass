@@ -74,15 +74,6 @@ function mass_auto_parents_schema() {
       'parent_nid',
       'child_nid',
     ],
-    'unique_keys' => [
-      'parent_child' => [
-        'parent_nid',
-        'child_nid',
-      ],
-      'child' => [
-        'child_nid',
-      ],
-    ],
   ];
   return $schema;
 }
