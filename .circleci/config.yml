@@ -233,7 +233,7 @@ jobs:
     docker:
       - image: cimg/php:7.4-node
     steps:
-      - attach_workspace: { at: /tmp }
+      - attach_workspace: {at: /tmp }
       - *vendor_bin_add_path
       # Validate .json and check if it is in sync with the .lock file
       - run: composer validate
