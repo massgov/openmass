@@ -6773,10 +6773,15 @@ function mass_theme_preprocess_paragraph__collection_search(&$variables) {
   $variables['searchBoxWithLinks']['secondary']['firstLink']['href'] = $collection_url;
   $variables['searchBoxWithLinks']['secondary']['firstLink']['text'] = $p->field_see_all_items_link_text->value;
 
-  if ($p->field_secondary_link[0]->uri) {
-    $variables['searchBoxWithLinks']['secondary']['secondLink']['href'] = $p->field_secondary_link[0]->uri;
-    $variables['searchBoxWithLinks']['secondary']['secondLink']['text'] = $p->field_secondary_link[0]->title;
+  $uri = $p->field_secondary_link[0]->uri;
+  if (!$uri) {
+    return;
   }
+  $uri_is_external = UrlHelper::isExternal($uri);
+  $variables['searchBoxWithLinks']['secondary']['secondLink']['href'] =  $uri_is_external ?
+    $p->field_secondary_link[0]->uri : Url::fromUri($uri);
+  $variables['searchBoxWithLinks']['secondary']['secondLink']['text'] = $uri_is_external ?
+    $p->field_secondary_link[0]->title : $p->field_secondary_link[0]->computed_title;
 }
 
 /**
