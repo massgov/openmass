@@ -11,7 +11,6 @@ dependencies:
     - field.field.paragraph.key_message.field_rich_text_description
     - field.field.paragraph.key_message.field_sub_heading
     - field.field.paragraph.key_message.field_text_overlay_color
-    - field.field.paragraph.key_message.field_use_half_image
     - image.style.embedded_half_width
     - paragraphs.paragraphs_type.key_message
   module:
@@ -29,12 +28,12 @@ third_party_settings:
       children:
         - field_background_type
         - field_image
-        - field_use_half_image
         - field_background_color
       parent_name: ''
       weight: 5
       format_type: fieldset
       format_settings:
+        label: Background
         description: 'Either a solid block of color or a primary image that sits at the top of page.'
         required_fields: true
         id: ''
@@ -47,7 +46,7 @@ bundle: key_message
 mode: default
 content:
   field_background_color:
-    weight: 8
+    weight: 7
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -209,13 +208,6 @@ content:
           entity_type: paragraph
           bundle: key_message
     type: options_buttons
-    region: content
-  field_use_half_image:
-    weight: 7
-    settings:
-      display_label: true
-    third_party_settings: {  }
-    type: boolean_checkbox
     region: content
   paragraphs_type_help__default:
     weight: 0
