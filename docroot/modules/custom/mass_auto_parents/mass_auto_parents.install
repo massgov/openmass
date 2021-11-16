@@ -5,12 +5,6 @@
  * Requirements and update functions for the mass_auto_parents module.
  */
 
-use Drupal\Core\Entity\Entity\EntityFormDisplay;
-use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
-use Drupal\Core\Entity\Sql\SqlContentEntityStorageException;
-use Drupal\Core\Utility\UpdateException;
-use Drupal\field\Entity\FieldConfig;
-
 /**
  * Implements hook_schema().
  */
@@ -79,6 +73,11 @@ function mass_auto_parents_schema() {
     'primary key' => [
       'parent_nid',
       'child_nid',
+    ],
+    'unique_keys' => [
+      'child_nid' => [
+        'child_nid',
+      ],
     ],
   ];
   return $schema;
