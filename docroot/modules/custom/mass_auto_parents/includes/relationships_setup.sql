@@ -8,9 +8,6 @@ TRUNCATE `indicators`;
 
 TRUNCATE `relationships`;
 
-LOCK TABLES `relationships` WRITE;
-/*!40000 ALTER TABLE `relationships` DISABLE KEYS */;
-
 INSERT INTO `relationships` (`parent_nid`, `child_nid`, `source_field`, `parent_type`, `child_type`)
 VALUES
   (14636,14506,'topics','topic_page','topic_page'),
@@ -273,7 +270,7 @@ VALUES
   (60741,53711,'topics','topic_page','topic_page'),
   (60741,53881,'topics','topic_page','topic_page'),
   (62856,218676,'topics','topic_page','topic_page'),
-  (71166,71166,'topics','topic_page','topic_page'),
+  (72206,71166,'topics','topic_page','topic_page'),
   (71166,71196,'topics','topic_page','topic_page'),
   (71166,71231,'topics','topic_page','topic_page'),
   (71166,111791,'topics','topic_page','topic_page'),
@@ -302,17 +299,13 @@ VALUES
   (402571,403381,'topics','topic_page','topic_page'),
   (430541,430401,'topics','topic_page','topic_page'),
   (471431,404931,'topics','topic_page','topic_page'),
+  (null,14636,'topics',null,'topic_page'),
+  (null,22431,'topics',null,'topic_page'),
+  (null,22446,'topics',null,'topic_page'),
+  (null,22536,'topics',null,'topic_page'),
+  (null,22551,'topics',null,'topic_page'),
   (585526,458866,'topics','topic_page','topic_page');
 
-/*!40000 ALTER TABLE `relationships` ENABLE KEYS */;
-UNLOCK TABLES;
-
-/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
-/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
-/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
 SELECT DISTINCT
