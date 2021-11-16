@@ -6756,6 +6756,32 @@ function media_file_changed_time(MediaInterface $entity, $field_name) {
 /**
  * Implements hook_preprocess_HOOK().
  *
+ * Prepare collection_search values for template.
+ */
+function mass_theme_preprocess_paragraph__collection_search(&$variables) {
+  $variables['searchBoxWithLinks'] = [];
+  $variables['searchBoxWithLinks']['form'] = [];
+
+  $p = $variables['paragraph'];
+  $variables['searchBoxWithLinks']['form']['headingText'] = $p->field_search_heading->value;
+  $variables['searchBoxWithLinks']['form']['submitText'] = t('SEARCH');
+
+  $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
+  $variables['searchBoxWithLinks']['form']['actionUrl'] =  $collection_url;
+
+  $variables['searchBoxWithLinks']['secondary']['heading'] = $p->field_secondary_heading->value;
+  $variables['searchBoxWithLinks']['secondary']['firstLink']['href'] = $collection_url;
+  $variables['searchBoxWithLinks']['secondary']['firstLink']['text'] = $p->field_see_all_items_link_text->value;
+
+  if ($p->field_secondary_link[0]->uri) {
+    $variables['searchBoxWithLinks']['secondary']['secondLink']['href'] = $p->field_secondary_link[0]->uri;
+    $variables['searchBoxWithLinks']['secondary']['secondLink']['text'] = $p->field_secondary_link[0]->title;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
  * Prepare video values for template.
  */
 function mass_theme_preprocess_paragraph__video(&$variables) {
