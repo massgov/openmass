@@ -92,7 +92,7 @@ commands:
     parameters:
       destination:
         type: string
-        default: "/var/www/code/drush/sites/self.site.yml"
+        default: "./drush/sites/self.site.yml"
     steps:
       - run: "curl -f -o << parameters.destination >> -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml"
 
@@ -178,8 +178,7 @@ jobs:
       - *no_host_check
       - *no_ssh_timeout
       - checkout
-      - fetch_drush_aliases:
-          destination: ./drush/sites/self.site.yml
+      - fetch_drush_aliases
       - run: git add -f ./drush/sites/self.site.yml
       - *restore_composer_cache
       - run: { name: 'Composer install', command: 'composer install --no-dev --no-interaction --optimize-autoloader' }
@@ -473,8 +472,7 @@ jobs:
     steps:
       - attach_workspace: {at: /home/circleci}
       - setup_remote_docker
-      - fetch_drush_aliases:
-          destination: /home/circleci/code/drush/sites/self.site.yml
+      - fetch_drush_aliases
       - run: docker-compose up -d
       - run: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www
       # @todo Actually perform health check.
