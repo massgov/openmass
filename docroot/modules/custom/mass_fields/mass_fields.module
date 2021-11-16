@@ -536,9 +536,7 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
                 if ($item['title'] !== '' && $item['title'] !== $node->title->value) {
                   $node->set('title', $item['title']);
                 }
-                $render_arr = $view_builder->view($node, 'title_short_desc');
-                $render_arr['#cache']['contexts'] = ['url'];
-                $build['extra_node_all_actions'][] = $render_arr;
+                $build['extra_node_all_actions'][] = $view_builder->view($node, 'title_short_desc');
               }
             }
             else {
@@ -563,9 +561,7 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
                 if ($item['title'] !== '' && $item['title'] !== $node->title->value) {
                   $node->set('title', $item['title']);
                 }
-                $render_arr = $view_builder->view($node, 'title_short_desc');
-                $render_arr['#cache']['contexts'] = ['url'];
-                $build['extra_node_all_actions'][] = $render_arr;
+                $build['extra_node_all_actions'][] = $view_builder->view($node, 'title_short_desc');
               }
             }
             else {
@@ -770,7 +766,9 @@ function _mass_fields_info_details_enable_flag(&$form, FormStateInterface $form_
   if (!$user->hasPermission('enable info details fields')) {
     $form['field_details_enable_fields']['#access'] = FALSE;
   }
-
+  else {
+    $form['field_banner_image']['#attributes']['class'][] = 'js-hide';
+  }
   if (isset($form['field_info_details_sections']) && isset($form['field_info_details_sections']['widget'])) {
     // Load the node and get field value form here
     // to avoid loading it inside loop multiple times.
@@ -792,11 +790,13 @@ function _mass_fields_info_details_enable_flag(&$form, FormStateInterface $form_
               $result = $result->andIf($add_more_container['#access']);
             }
             if ($result->isAllowed()) {
+              $form['field_banner_image']['#access'] = $result;
               $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $result;
             }
             elseif (isset($enabled_status)) {
               // Return field value as a result to determine
               // access to the other fields.
+              $form['field_banner_image']['#access'] = $enabled_status;
               $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $enabled_status;
             }
           }
