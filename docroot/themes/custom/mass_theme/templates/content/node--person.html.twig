@@ -31,7 +31,9 @@
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "label": "offered by"
+      "icon": "building",
+      "label": "offered by",
+      "groupAfter": 3
     } %}
   {% endif %}
   {% embed "@molecules/relationship-indicators.twig" with {
