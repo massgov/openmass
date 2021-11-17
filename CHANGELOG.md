@@ -1,4 +1,4 @@
-## [0.304.0] - November 17, 2021
+## [0.303.1] - November 17, 2021
 
 ### Fixed
   - DP-23441: Remove old validation code on Alerts content type.
