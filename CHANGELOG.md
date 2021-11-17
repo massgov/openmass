@@ -1,5 +1,27 @@
 
 
+## [0.303.0] - November 16, 2021
+
+### Changed
+  - DP-23082: Promotion pages BG images half-height option.
+  - DP-23317: Change sitewide alerts header prefix.
+  - DP-23353: Avoids field_banner_image to be editable or not based on the field_info_details_sections flag, on an info_details form.
+  - DP-23427: Updated Mayflower version to 11.19.1.
+  - DP-22939: Implmenting responsive images. (MF#1545)
+  - DP-23082: Add half image option for Key messages. (MF#1538)
+  - DP-23317: Adjusted vertical spacing, prevent alert header to wrap on smaller screensizes. (MF#1547)
+  - DP-23427: Add a style variant to allow wrapping on mobile. (MF#1557)
+  
+### Added
+  - DP-23228: Added link to the archived versions of page from Drupal edit page.
+  - DP-23351: Tests for "All content" view at admin/content.
+  
+### Fixed
+  - DP-23381: All content view CSV export is not including all filters.
+  - DP-23388: Fix caching issues with link labels on service overflow page.
+  
+
+
 ## [0.302.0] - November 10, 2021
 
 ### Added
