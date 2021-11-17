@@ -28,16 +28,6 @@ define('MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_DEFAULT_DURATION', '180 days
 define('MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION', '14 days');
 
 /**
- * Implements hook_entity_type_alter().
- *
- * @param iterable $entity_types
- *   A list of types.
- */
-function mass_scheduled_transitions_entity_type_alter(iterable &$entity_types) {
-  $entity_types['scheduled_transition']->addConstraint('MassScheduledTransitionsAlertSitewide');
-}
-
-/**
  * Implements hook__entity_base_field_info_alter().
  */
 function mass_scheduled_transitions_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
