@@ -1,4 +1,7 @@
+## [0.304.0] - November 17, 2021
 
+### Fixed
+  - DP-23441: Remove old validation code on Alerts content type.
 
 ## [0.303.0] - November 16, 2021
 
@@ -11,15 +14,15 @@
   - DP-23082: Add half image option for Key messages. (MF#1538)
   - DP-23317: Adjusted vertical spacing, prevent alert header to wrap on smaller screensizes. (MF#1547)
   - DP-23427: Add a style variant to allow wrapping on mobile. (MF#1557)
-  
+
 ### Added
   - DP-23228: Added link to the archived versions of page from Drupal edit page.
   - DP-23351: Tests for "All content" view at admin/content.
-  
+
 ### Fixed
   - DP-23381: All content view CSV export is not including all filters.
   - DP-23388: Fix caching issues with link labels on service overflow page.
-  
+
 
 
 ## [0.302.0] - November 10, 2021
@@ -27,14 +30,14 @@
 ### Added
   - DP-22906: Create sitewide alert content type.
   - DP-23171: Allow Tugboat as Backstop target
-  
+
 ### Changed
   - DP-22939: Implementing responsive images in location pages.
   - DP-23238: In CI, more descriptive 'Hold' text and explicit QA approvals for release and hotfix.
   - DP-23386: Use develop from Mayflower artifacts.
   - DP-23386: Updated Mayflower version to 11.18.0.
   - DP-23183: Adds divider as a component, adds variant for thin, converts it to hr. (MF #1541)
-  
+
 ### Fixed
   - DP-23183: Adjusting rich text optional divider for info detail pages.
   - DP-23350: Avoid 500 errors reported on new Relic.
@@ -42,7 +45,7 @@ Noticed exception 'Error' with message
 'Call to a member function getEntityTypeId() on null' in
 /mnt/www/html/massgov/docroot/modules/custom/mayflower/src/Helper.php:1780,
   - DP-23387: Correct issue with topic cards on org pages.
-  
+
 
 
 ## [0.301.1] - November 4, 2021
