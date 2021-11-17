@@ -433,14 +433,14 @@ jobs:
           condition: << parameters.tugboat >>
           steps:
             - run:
-                name: Backstop test (non Tugboat)
+                name: Backstop test (Tugboat target)
                 command: docker-compose run backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
                 no_output_timeout: 300m
       - unless:
           condition: << parameters.tugboat >>
           steps:
             - run:
-                name: Backstop test (Tugboat)
+                name: Backstop test (non Tugboat target)
                 command: docker-compose run backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
                 no_output_timeout: 300m
       - run:
