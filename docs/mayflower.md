@@ -28,13 +28,6 @@ By default, The Openmass `develop` branch and `master` branch always point to th
 ```
 If a new change has been merged into the `develop` branch of Mayflower, running `composer require massgov/mayflower-artifacts:dev-develop --update-with-dependencies` in openmass will bring in the latest change from Mayflower and update the composer.lock in openmass to "lock" to the specifc version.
 
-All openmass feature development PRs that require Mayflower changes must check off the following steps before merging into develop:
-- [] PR approval 
-- [] Corresponding Mayflower PR merged into develop
-- [] Mayflower package link to the latest Mayflower develop branch (point to the `dev-develop` version of mayflower-artifacts in composer.json)
-- [] Up-to-date with latest openmass develop branch (resolve any composer.lock conflicts with the develop branch)
-- [] All circleCI tests pass on the openmass feature branch with mayflower artifacts dev-develop
-
 ### Mayflower integration for feature development and testing
 
 #### Local Development Workflow
@@ -53,19 +46,20 @@ If you're working on a ticket that requires Mayflower changes that you want to p
 If you're working on a ticket that requires Mayflower changes and the Mayflower PR hasn't been merged into develop, you can _temporarily_ pull in a remote feature branch of mayflower-artifacts to Drupal for testing.
 
 1. From your terminal, within Docker, update and download your new mayflower version by running 
-```composer require massgov/mayflower-artifacts:dev-<your-branch-name> --update-with-dependencies```
+```composer require massgov/mayflower-artifacts:dev-<your-mayflower-branch-name> --update-with-dependencies```
 > For example, if your Mayflower branch name is `DP-8411-test-branch`, after the branch has been deployed by circleCI, you can run `composer require massgov/mayflower-artifacts:dev-DP-8411-test-branch --update-with-dependencies` in openmass to pull it in.
 1. Commit the composer.json and composer.lock changes which correspond to updating mayflower-artifacts
 1. You should now have Mayflower updated in your feature branch. Remember to rebuild your cache!
 1. To deploy the Mayflower changes in openmass to a feature environment for external review, you just push your composer commit to Github
     1. Tugboat will automatically build your branch with the mayflower artifacts version that you specified (Note: you will need to resolve any conflicts on the branch with develop or the deployment will fail)
-    2. To deploy to an Acquia feature environment, run 
+    2. To deploy to an Acquia feature environment, run `drush ma:deploy <feature-environment> <your-openmass-branch-name>` inside the SSH shell. 
 
-#### Use a branch of mayflower-artifacts to...
+If you have committed your change to point to a feature branch of mayflower artifacts instead of the develop branch, make sure you change it back to point to `dev-develop` before merging into develop. 
 
-- Facilitate local development on a feature or fix that integrates Mayflower and Drupal code updates
-- Enable internal and/or external reviews of a branch _before_ it is merged into develop
-
-#### Do not use a branch of mayflower-artifacts to...
-
-- Update the version of Mayflower used in Mass.gov production!
+#### Merging a feature PR with Mayflower changes:
+All openmass feature development PRs that require Mayflower changes must check off the following steps before squashing and merging into develop:
+- [] PR approval 
+- [] Corresponding Mayflower PR merged into develop
+- [] Mayflower package link to the latest Mayflower develop branch (point to the `dev-develop` version of mayflower-artifacts in composer.json)
+- [] Up-to-date with latest openmass develop branch (resolve any composer.lock conflicts with the develop branch)
+- [] All circleCI tests pass on the openmass feature branch with mayflower artifacts dev-develop
