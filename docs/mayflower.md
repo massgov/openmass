@@ -1,14 +1,14 @@
 # Mayflower
 
-[Mayflower](https://github.com/massgov/mayflower) is an open source Design System built in [Pattern Lab](http://patternlab.io/) (PHP) and maintained by Mass Digital.
+[Mayflower](https://github.com/massgov/mayflower) is an opensource design system for the state government of Massachussets. It contains a [PatternLab (Twig)](http://patternlab.io/) component library that's used as a frontend dependency for Mass.gov (Openmass).
 
 ## Mayflower and Mass.gov's Drupal theme
 
-Mass.gov uses a custom Drupal theme called [mass_theme](../docroot/themes/custom/mass_theme), which uses Mayflower build artifacts as a project dependency for static assets (css, js, and image) as well as twig templates.
+Openmass has a custom Drupal theme called [mass_theme](../docroot/themes/custom/mass_theme), which uses Mayflower build artifacts as a project dependency for static assets (css, js, and image) as well as twig templates.
 
 This relationship is managed alongside other project dependencies through composer. Learn more about this relationship in the [Mayflower Artifacts](#mayflower-artifacts) section below.
 
-Mass.gov also uses a custom Drupal module, called [mayflower](../docroot/modules/custom/mayflower), which acts as "glue code" to get `mass_theme` working with Mayflower. Learn more in the [mass_theme](../docroot/themes/custom/mass_theme) and [mayflower module](../docroot/modules/custom/mayflower) readme's.
+Mass.gov also uses a custom Drupal module, called [mayflower](../docroot/modules/custom/mayflower), which acts as "glue code" to get `mass_theme` working with Mayflower. Learn more in the [mass_theme](../docroot/themes/custom/mass_theme) and [mayflower module](../docroot/modules/custom/mayflower).
 
 ### A visual flow from Mayflower to Drupal
 
@@ -16,7 +16,7 @@ Mass.gov also uses a custom Drupal module, called [mayflower](../docroot/modules
 
 ## Mayflower Artifacts
 
-[Mayflower Artifacts](https://github.com/massgov/mayflower-artifacts) is a repository containing versioned build artifacts of Mayflower. All branches and tags from Mayflower are deployed automatically via CircleCI to Mayflower Artifacts.
+[Mayflower Artifacts](https://github.com/massgov/mayflower-artifacts) is a repository containing versioned build artifacts of Mayflower Patternlab. All branches and tags from Mayflower are deployed automatically via CircleCI to Mayflower Artifacts.
 
 ### Feature testing Mayflower changes in Drupal
 
