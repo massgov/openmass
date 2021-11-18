@@ -4,13 +4,11 @@ namespace Drupal\mass_alerts\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\BlockPluginInterface;
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
-use stdClass;
 
 /**
  * Provides a mayflower Block for @organisms/by-template/ajax-pattern.
@@ -99,17 +97,6 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
       $nid = $node->id();
       $path = Url::fromRoute('mass_alerts.page_alerts', ['nid' => $nid])->toString();
     }
-
-    // Data to fetch the alerts as soon as possible.
-    // Needs to be cached, as rendering a block happens once.
-    // @see docroot/themes/custom/mass_theme/templates/layout/html.html.twig */
-    // @see mass_theme_preprocess_html()
-    $current_path = \Drupal::service('path.current')->getPath();
-    $cid = 'mass_alerts_blocks:' . $current_path;
-    $cache_entry = \Drupal::cache('render')->get($cid);
-    $data = $cache_entry->data ?? new stdClass();
-    $data->$path = ['#path' => $path];
-    \Drupal::cache('render')->set($cid, $data);
 
     return [
       '#theme' => 'mass_alerts_block',
