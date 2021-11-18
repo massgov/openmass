@@ -159,6 +159,25 @@ jobs:
           root: ..
           paths: [code]
 
+  build_with_latest_mayflower:
+    working_directory: ~/project/code
+    docker:
+      - image: cimg/php:7.4-node
+    steps:
+      - checkout
+      - *restore_composer_cache
+      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
+      - run:
+          name: Update Mayflower to latest develop
+          command: composer require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
+      - *save_composer_cache
+      - run:
+          name: Install node modules
+          command: yarn install
+      - persist_to_workspace:
+          root: ..
+          paths: [code]
+
   push_acquia:
     working_directory: ~/project/code
     docker:
@@ -1038,13 +1057,13 @@ workflows:
           auto-approve: true
 
 
-# Nightly deploy develop branch to the CD environment, runs at 11:00PM EST.
+# Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
   deploy_cd:
     jobs:
-      - build
+      - build_with_latest_mayflower
       - deploy:
           name: deploy-cd-refresh-db
-          requires: [build]
+          requires: [build_with_latest_mayflower]
           target: cd
           refresh-db: "--refresh-db"
       - crawl:
