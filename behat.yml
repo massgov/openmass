@@ -92,7 +92,13 @@ default:
 # https://docs.behat.org/en/latest/user_guide/configuration.html#overriding-default-params
 ci:
   extensions:
+    Imbo\BehatApiExtension:
+      apiClient:
+        base_uri: "http://mass.local"
+    Behat\MinkExtension:
+      base_url: "http://mass.local"
     FriendsOfBehat\MinkDebugExtension:
       directory: "%paths.base%/output"
+
 
 
