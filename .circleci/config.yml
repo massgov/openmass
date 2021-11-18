@@ -577,72 +577,6 @@ workflows:
             branches:
               <<: *branch_ignore
 
-  # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_develop_branch.
-  # This only happens on Thursday night 11 p.m. ETS to allow us to review Mayflower in Drupal on Mondays.
-  mayflower_dev_branch:
-    jobs:
-      - build
-      - mayflower_develop_branch:
-          requires: [build]
-    triggers:
-      - schedule:
-          cron: "00 04 * * 5"
-          filters:
-            branches:
-              only:
-                - develop
-
-  # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_dev branch only.
-  deploy_mayflower_cd:
-    jobs:
-      - build:
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
-      - push_acquia:
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
-      - test:
-          name: test-phpunit
-          command: phpunit
-          requires: [build]
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
-      - deploy:
-          name: deploy-cd-refresh-db
-          requires:
-            - build
-            - push_acquia
-          refresh-db: "--refresh-db"
-          target: cd
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
-      - crawl:
-          name: crawl-cd-900
-          requires: [deploy-cd-refresh-db]
-          samples: 900
-          target: cd
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
-      - backstop:
-          name: backstop-cd
-          requires: [deploy-cd-refresh-db]
-          target: cd
-          reference: prod
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
 
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
@@ -1104,7 +1038,7 @@ workflows:
           auto-approve: true
 
 
-# Daily deploy to the CD environment, runs at 11:00PM EST. Except for Thursday night the deploy_mayflower_cd uses the CD environment instead.
+# Nightly deploy develop branch to the CD environment, runs at 11:00PM EST.
   deploy_cd:
     jobs:
       - build
@@ -1124,7 +1058,7 @@ workflows:
           reference: prod
     triggers:
       - schedule:
-          cron: "00 04 * * 0,1,2,3,4,6"
+          cron: "00 04 * * *"
           filters:
             branches:
               only:
