@@ -58,8 +58,8 @@ If you have committed your change to point to a feature branch of mayflower arti
 
 #### Merging a feature PR with Mayflower changes:
 All openmass feature development PRs that require Mayflower changes must check off the following steps before squashing and merging into develop:
-- [] PR approval 
-- [] Corresponding Mayflower PR merged into develop
-- [] Mayflower package link to the latest Mayflower develop branch (point to the `dev-develop` version of mayflower-artifacts in composer.json)
-- [] Up-to-date with latest openmass develop branch (resolve any composer.lock conflicts with the develop branch)
-- [] All circleCI tests pass on the openmass feature branch with mayflower artifacts dev-develop
+- [ ] PR approval 
+- [ ] Corresponding Mayflower PR merged into develop
+- [ ] Mayflower package link to the latest Mayflower develop branch (point to the `dev-develop` version of mayflower-artifacts in composer.json)
+- [ ] Up-to-date with latest openmass develop branch (resolve any composer.lock conflicts with the develop branch)
+- [ ] All circleCI tests pass on the openmass feature branch with mayflower artifacts dev-develop
