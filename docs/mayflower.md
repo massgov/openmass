@@ -18,6 +18,16 @@ Mass.gov also uses a custom Drupal module, called [mayflower](../docroot/modules
 
 [Mayflower Artifacts](https://github.com/massgov/mayflower-artifacts) is a repository containing versioned build artifacts of Mayflower Patternlab. All branches and tags from Mayflower are deployed automatically via CircleCI to Mayflower Artifacts.
 
+Openmass can point to a specific version of Mayflower Artifacts built from a Mayflower branch (e.g. `patternlab/DP-1234`) by pointing to a branch alias prefixed by `dev-` (e.g. `dev-patternlab/DP-1234`) using composer. 
+
+By default, The Openmass `develop` branch and `master` branch always point to the `develop` branch of Mayflower. 
+```
+// In composer.json
+"massgov/mayflower-artifacts": "dev-develop"
+```
+If a new change has been merged into the `develop` branch of Mayflower, running `composer require massgov/mayflower-artifacts:dev-develop --update-with-dependencies` in openmass will bring in the latest change from Mayflower and update the composer.lock in openmass to "lock" to the specifc version.
+
+
 ### Feature testing Mayflower changes in Drupal
 
 If you're working on a ticket that requires updates in Mayflower that have not yet been released, you can _temporarily_ pull in a development branch of mayflower-artifacts to Drupal for testing.
