@@ -41,9 +41,10 @@ If you're working on a ticket that requires updates in Mayflower that have not y
 
 If you're working on a ticket that requires updates in Mayflower that you want to preview locally before committing, you can also build Mayflower artifacts locally.
 
-1. Clone [massgov/mayflower](https://github.com/massgov/mayflower) and follow the setup instructions, or use an already cloned copy.
-2. Inside your local Mayflower installation, copy `patternlab/styleguide/.env.example` to `patternlab/styleguide/.env`, and set the `MAYFLOWER_DIST` environment variable so it points at `libraries/mayflower-dev` in your Drupal root (eg: `MAYFLOWER_DIST=~/Sites/mass/docroot/libraries/mayflower-dev`).
-3. Start Mayflower compilation by running `gulp`.
-4. Run `ahoy drush cr` on the Drupal site to have the development artifacts picked up.
+1. Clone [massgov/mayflower](https://github.com/massgov/mayflower) and follow the [setup instructions](https://github.com/massgov/mayflower#getting-started-on-development).
+2. Inside your local Mayflower installation, copy `packages/patternlab/styleguide/.env.example` to `packages/patternlab/styleguide/.env`, and set the `MAYFLOWER_DIST` environment variable so it points at `libraries/mayflower-dev` in your Drupal root (eg: `MAYFLOWER_DIST=~/Sites/openmass/docroot/libraries/mayflower-dev`).
+3. Build the artifacts from Mayflower Patternlab by running `rush build:patternlab`.
+4. Check to see if the mayflower artifacts generated from the previous step exists in the your local openmass repo at openmass/docroot/libraries/mayflower-dev
+5. Run `ahoy drush cr` on the Drupal site to have the development artifacts picked up.
 
 Note that you will want to remove the `mayflower-dev` folder when you are finished development, since it will override whatever version of Mayflower is otherwise specified.
