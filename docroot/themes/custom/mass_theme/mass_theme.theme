@@ -4387,7 +4387,7 @@ function mass_theme_build_data_from_alert_blocks(&$variables) {
   /** @var Drupal\Core\Routing\CurrentRouteMatch */
   $current_route_match_service = Drupal::service('current_route_match');
   /** @var \Drupal\node\Entity\Node */
-  $node = $is_front_page ?: $current_route_match_service->getParameter('node');
+  $node = $current_route_match_service->getParameter('node');
   // Defining paths to fetch alerts.
   $paths = [];
   $paths[] = ['#path' => '/alerts/sitewide'];
