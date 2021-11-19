@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;
+use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -86,6 +87,32 @@ class MassAutoParentsQueueWorker extends QueueWorkerBase implements ContainerFac
           'weight' => 0,
         ];
         $node->set('field_primary_parent', $field_value);
+        // If there is a label, set it.
+        if (!is_null($data['label'])) {
+          // Load the label term.
+          $terms = $this->entityTypeManager->getStorage('taxonomy_term')
+            ->loadByProperties(['name' => $data['label']]);
+          // If the term doesn't exist create it.
+          if (empty($terms)) {
+            $term = Term::create([
+              'name' => $data['label'],
+              'vid' => 'label',
+            ]);
+            $term->save();
+          }
+          else {
+            // Use the loaded term.
+            $term = current($terms);
+          }
+          // Get the label field value.
+          $field_reusable_label = $node->get('field_reusable_label')->getValue();
+          // Add the new term label.
+          $field_reusable_label[] = [
+            'target_id' => $term->id(),
+          ];
+          // Update the label field value.
+          $node->set('field_reusable_label', $field_reusable_label);
+        }
         // Save the node.
         // Save without updating the last modified date. This requires a core patch
         // from the issue: https://www.drupal.org/project/drupal/issues/2329253.

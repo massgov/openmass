@@ -19,13 +19,15 @@ CREATE TABLE `indicators` (
 DROP TABLE IF EXISTS `relationships`;
 
 CREATE TABLE `relationships` (
-   `parent_nid` int(11) unsigned NULL,
-   `child_nid` int(11) NOT NULL,
-   `source_field` varchar(255) DEFAULT NULL,
-   `parent_type` varchar(255) DEFAULT NULL,
-   `child_type` varchar(255) DEFAULT NULL,
-   UNIQUE KEY (`parent_nid`,`child_nid`),
-   UNIQUE KEY `child` (`child_nid`)
+ `parent_nid` int unsigned DEFAULT NULL,
+ `child_nid` int NOT NULL,
+ `source_field` varchar(255) DEFAULT NULL,
+ `parent_type` varchar(255) DEFAULT NULL,
+ `child_type` varchar(255) DEFAULT NULL,
+ `label` varchar(255) DEFAULT NULL,
+ UNIQUE KEY `child` (`child_nid`),
+ UNIQUE KEY `parent_nid` (`parent_nid`,`child_nid`),
+ CONSTRAINT `parent_cannot_be_equal_to_child_CHK` CHECK ((`parent_nid` <> `child_nid`))
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `relationships` (`parent_nid`, `child_nid`, `source_field`, `parent_type`, `child_type`)
@@ -294,6 +296,7 @@ VALUES
   (71166,71196,'topics','topic_page','topic_page'),
   (71166,71231,'topics','topic_page','topic_page'),
   (71166,111791,'topics','topic_page','topic_page'),
+  (22446,72206,'topics','topic_page','topic_page'),
   (72206,71186,'topics','topic_page','topic_page'),
   (165226,301796,'topics','topic_page','topic_page'),
   (165261,476706,'topics','topic_page','topic_page'),
@@ -396,7 +399,7 @@ WHERE
     fld.entity_id = nfd_child.nid AND
     fld.field_service_ref_services_6_target_id = nfd_parent.nid AND
     nfd_parent.status = 1 AND
-    nfd_child.type <> 'topic_page' AND
+    nfd_child.type = 'decision_tree' AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -453,7 +456,7 @@ where
     nfd_parent.nid = fld.entity_id and
     nfd_child.nid = substring(field_service_links_uri, 13) and
     nfd_parent.status = 1 and
-    nfd_child.type <> 'topic_page' AND
+    nfd_child.type not in ('topic_page', 'org_page') AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -472,7 +475,7 @@ where
     nfd_parent.nid = fld.entity_id and
     nfd_child.nid = substring(field_service_ref_actions_2_uri, 13) and
     nfd_parent.status = 1 and
-    nfd_child.type <> 'topic_page' AND
+    nfd_child.type not in ('topic_page', 'org_page') AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -513,7 +516,7 @@ where
     nfd_child.nid = substring(field_guide_section_links_4_uri, 13) and
     nfd_parent.status = 1 and
     nfd_child.status = 1 and
-    nfd_child.type NOT IN ('org_page', 'topic_page');
+    nfd_child.type NOT IN ('org_page', 'topic_page', 'service_page');
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
 SELECT DISTINCT
@@ -533,7 +536,7 @@ where
     nfd_parent.nid = pfd_parent.parent_id and
     nfd_child.nid = substring(field_content_card_link_cards_uri, 13) and
     nfd_parent.status = 1 and
-    nfd_child.type <> 'topic_page' and
+    nfd_child.type not in ('topic_page', 'org_page') and
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -768,6 +771,20 @@ WHERE
     n.nid = o.entity_id AND
     o.delta = 0;
 # ------------------------------------------------------------
+INSERT IGNORE INTO relationships (parent_nid, child_nid, source_field, parent_type, child_type)
+SELECT DISTINCT
+  null AS parent_nid,
+  n.nid AS child_nid,
+  'organization' as source_field,
+  null as parent_type,
+  n.type as child_type
+FROM
+  node_field_data n
+WHERE
+    n.status = 1 AND
+    n.type = 'org_page' AND
+    n.nid not in (select child_nid from relationships);
+# ------------------------------------------------------------
 INSERT INTO `relationships` (`parent_nid`, `child_nid`, `source_field`, `parent_type`, `child_type`)
 VALUES
 	(239401,214511,'rules_relationships','guide_page','rules'),
@@ -881,3 +898,66 @@ VALUES
 	(515026,514536,'rules_relationships','rules','rules'),
 	(515086,514576,'rules_relationships','rules','rules'),
 	(239401,517681,'rules_relationships','guide_page','rules');
+# ------------------------------------------------------------
+# -- Assign QA Content
+  INSERT IGNORE INTO relationships (parent_nid, child_nid, source_field, parent_type, child_type)
+SELECT DISTINCT
+  6011 AS parent_nid,
+  n.nid AS child_nid,
+  'QA_content' as source_field,
+  'org_page' as parent_type,
+  n.type as child_type
+FROM
+  node_field_data n
+WHERE
+    n.status = 1 AND
+    n.title like '%_QA%' AND
+    n.nid not in (select child_nid from relationships);
+# ------------------------------------------------------------
+# -- Services which use field_service_ref_services_6 don't create a relationship indicator but could still be valuable. We place them low to give other things a chance first.
+INSERT IGNORE INTO relationships (parent_nid, child_nid, source_field, parent_type, child_type,label)
+SELECT DISTINCT
+  fld.field_service_ref_services_6_target_id as parent_nid,
+  fld.entity_id AS child_nid,
+  'field_service_ref_services_6' as source_field,
+  nfd_parent.type as parent_type,
+  nfd_child.type as child_type,
+  'review'
+FROM
+  node__field_service_ref_services_6 fld,
+  node_field_data nfd_parent,
+  node_field_data nfd_child
+WHERE
+    fld.entity_id = nfd_child.nid AND
+    fld.field_service_ref_services_6_target_id = nfd_parent.nid AND
+    nfd_parent.status = 1 AND
+    nfd_child.type <> 'decision_tree' AND
+    nfd_child.status = 1;
+# ------------------------------------------------------------
+# -- Manual updates to fix looping structures
+update relationships set parent_nid = 17566	where child_nid = 487771;
+update relationships set parent_nid = 17566	where child_nid = 235896;
+update relationships set parent_nid = 51071	where child_nid = 126101;
+update relationships set parent_nid = 17576	where child_nid = 77091;
+update relationships set parent_nid = 5826	where child_nid = 41221;
+update relationships set parent_nid = 34321	where child_nid = 332361;
+update relationships set parent_nid = 27491	where child_nid = 235791;
+update relationships set parent_nid = 16056	where child_nid = 36171;
+update relationships set parent_nid = 5981 where child_nid = 34506;
+update relationships set parent_nid = 5471 where child_nid = 30951;
+update relationships set parent_nid = 9876 where child_nid = 403976;
+update relationships set parent_nid = 299866 where child_nid = 299991;
+update relationships set parent_nid = 23356	where child_nid = 489526;
+update relationships set parent_nid = 17036	where child_nid = 401426;
+update relationships set parent_nid = 5836	where child_nid = 32351;
+update relationships set parent_nid = 13661	where child_nid = 161686;
+update relationships set parent_nid = 172121 where child_nid = 445411;
+update relationships set parent_nid = 63511	where child_nid = 119161;
+update relationships set parent_nid = 114636 where child_nid = 155676;
+update relationships set parent_nid = 144466 where child_nid = 114636;
+update relationships set parent_nid = 17036	where child_nid = 375811;
+update relationships set parent_nid = 32161	where child_nid = 373771;
+update relationships set parent_nid = 16466	where child_nid = 378156;
+update relationships set parent_nid = 6661 where child_nid = 224736;
+update relationships set parent_nid = 5456 where child_nid = 305071;
+update relationships set parent_nid = 13651 where child_nid = 110026;

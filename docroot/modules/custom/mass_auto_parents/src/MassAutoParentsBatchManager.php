@@ -60,7 +60,7 @@ class MassAutoParentsBatchManager implements ContainerInjectionInterface {
   public function generateBatch() {
     $operations = [];
     $query = \Drupal::database()->select('relationships', 'r');
-    $query->fields('r', ['parent_nid', 'child_nid', 'parent_type']);
+    $query->fields('r', ['parent_nid', 'child_nid', 'parent_type', 'label']);
     // Filter rows with child_type value that shouldn't have a parent.
     $query->condition('child_type', ['page', 'contact_information'], 'NOT IN');
     // Filter rows with child_nid same as parent_nid.
@@ -117,6 +117,7 @@ class MassAutoParentsBatchManager implements ContainerInjectionInterface {
         'child_nid' => $child_nid,
         'parent_nid' => $parent_nid,
         'parent_type' => $row->parent_type,
+        'label' => $row->label,
       ]);
       $context['sandbox']['progress']++;
       $context['results'][] = $child_nid . ':' . $parent_nid;
