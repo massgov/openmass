@@ -5172,7 +5172,7 @@ function mass_theme_preprocess_paragraph__org_locations(&$variables) {
     $mappedLocations_options['aside'] = [
       'button' => $paragraph->field_location_button_label->value,
       'paragraph' => [
-        'text' => $paragraph->field_location_button_short_desc->value,
+        'text' => Helper::fieldFullView($paragraph, 'field_location_button_short_desc'),
       ],
     ];
 
