@@ -2,11 +2,8 @@
 
 namespace Drupal\Tests\mass_entity_usage\ExistingSite;
 
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\mass_content_moderation\MassModeration;
-use Drupal\node\NodeInterface;
 use Drupal\user\Entity\User;
-use Drupal\workflows\Entity\Workflow;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
@@ -97,6 +94,20 @@ class EntityUsageTest extends ExistingSiteBase {
     // Verify the usage tab is reachable.
     $this->assertEquals($this->getSession()->getStatusCode(), 200);
     // Verify the usage tab contents.
+    $page = $this->getSession()->getPage()->getContent();
+    $this->assertStringContainsString('Test Curated List', $page, 'Test Curated List not found on usage page.');
+    $table_caption = '<caption>The list below shows pages that include a link to this page in structured and rich text fields. <a href="https://massgovdigital.gitbook.io/knowledge-base/content-improvement-tools/pages-linking-here">Learn how to use Linking Pages.</a></caption>';
+    $this->assertStringContainsString($table_caption, $page, 'Table caption not found on usage page.');
+    $table_headers = '<thead>
+      <tr>
+                            <th>Entity</th>
+                            <th>ID</th>
+                            <th>Content Type</th>
+                            <th>Field name</th>
+                            <th>Status</th>
+              </tr>
+    </thead>';
+    $this->assertStringContainsString($table_headers, $page, 'Usage page table headers are not found.');
   }
 
 }
