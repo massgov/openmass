@@ -32,14 +32,14 @@ CREATE TABLE `relationships` (
 
 INSERT INTO `relationships` (`parent_nid`, `child_nid`, `source_field`, `parent_type`, `child_type`)
 VALUES
-  (14636,14506,'topics','topic_page','topic_page'),
-  (14636,32736,'topics','topic_page','topic_page'),
-  (14636,53196,'topics','topic_page','topic_page'),
-  (14636,57366,'topics','topic_page','topic_page'),
-  (14636,64061,'topics','topic_page','topic_page'),
-  (14636,98121,'topics','topic_page','topic_page'),
-  (14636,272411,'topics','topic_page','topic_page'),
-  (14636,471431,'topics','topic_page','topic_page'),
+  (NULL,14506,'topics','topic_page','topic_page'),
+  (NULL,32736,'topics','topic_page','topic_page'),
+  (NULL,53196,'topics','topic_page','topic_page'),
+  (NULL,57366,'topics','topic_page','topic_page'),
+  (NULL,64061,'topics','topic_page','topic_page'),
+  (NULL,98121,'topics','topic_page','topic_page'),
+  (NULL,272411,'topics','topic_page','topic_page'),
+  (NULL,471431,'topics','topic_page','topic_page'),
   (16056,16016,'topics','topic_page','topic_page'),
   (16056,16171,'topics','topic_page','topic_page'),
   (16056,16741,'topics','topic_page','topic_page'),
@@ -222,37 +222,37 @@ VALUES
   (21186,16506,'topics','topic_page','topic_page'),
   (21186,374956,'topics','topic_page','topic_page'),
   (21186,428891,'topics','topic_page','topic_page'),
-  (22431,17116,'topics','topic_page','topic_page'),
-  (22431,17216,'topics','topic_page','topic_page'),
-  (22431,17451,'topics','topic_page','topic_page'),
-  (22431,17566,'topics','topic_page','topic_page'),
-  (22431,17571,'topics','topic_page','topic_page'),
-  (22431,17576,'topics','topic_page','topic_page'),
-  (22431,17601,'topics','topic_page','topic_page'),
-  (22431,17631,'topics','topic_page','topic_page'),
-  (22431,17651,'topics','topic_page','topic_page'),
-  (22431,17656,'topics','topic_page','topic_page'),
-  (22431,19711,'topics','topic_page','topic_page'),
-  (22431,30511,'topics','topic_page','topic_page'),
-  (22446,16466,'topics','topic_page','topic_page'),
-  (22446,16751,'topics','topic_page','topic_page'),
-  (22446,16956,'topics','topic_page','topic_page'),
-  (22446,17061,'topics','topic_page','topic_page'),
-  (22446,17316,'topics','topic_page','topic_page'),
-  (22446,21166,'topics','topic_page','topic_page'),
-  (22446,21186,'topics','topic_page','topic_page'),
-  (22536,16056,'topics','topic_page','topic_page'),
-  (22536,16121,'topics','topic_page','topic_page'),
-  (22536,16136,'topics','topic_page','topic_page'),
-  (22536,16146,'topics','topic_page','topic_page'),
-  (22536,16156,'topics','topic_page','topic_page'),
-  (22536,17261,'topics','topic_page','topic_page'),
-  (22551,17211,'topics','topic_page','topic_page'),
-  (22551,17256,'topics','topic_page','topic_page'),
-  (22551,17276,'topics','topic_page','topic_page'),
-  (22551,17286,'topics','topic_page','topic_page'),
-  (22551,17296,'topics','topic_page','topic_page'),
-  (22551,507221,'topics','topic_page','topic_page'),
+  (NULL,17116,'topics','topic_page','topic_page'),
+  (NULL,17216,'topics','topic_page','topic_page'),
+  (NULL,17451,'topics','topic_page','topic_page'),
+  (NULL,17566,'topics','topic_page','topic_page'),
+  (NULL,17571,'topics','topic_page','topic_page'),
+  (NULL,17576,'topics','topic_page','topic_page'),
+  (NULL,17601,'topics','topic_page','topic_page'),
+  (NULL,17631,'topics','topic_page','topic_page'),
+  (NULL,17651,'topics','topic_page','topic_page'),
+  (NULL,17656,'topics','topic_page','topic_page'),
+  (NULL,19711,'topics','topic_page','topic_page'),
+  (NULL,30511,'topics','topic_page','topic_page'),
+  (NULL,16466,'topics','topic_page','topic_page'),
+  (NULL,16751,'topics','topic_page','topic_page'),
+  (NULL,16956,'topics','topic_page','topic_page'),
+  (NULL,17061,'topics','topic_page','topic_page'),
+  (NULL,17316,'topics','topic_page','topic_page'),
+  (NULL,21166,'topics','topic_page','topic_page'),
+  (NULL,21186,'topics','topic_page','topic_page'),
+  (NULL,16056,'topics','topic_page','topic_page'),
+  (NULL,16121,'topics','topic_page','topic_page'),
+  (NULL,16136,'topics','topic_page','topic_page'),
+  (NULL,16146,'topics','topic_page','topic_page'),
+  (NULL,16156,'topics','topic_page','topic_page'),
+  (NULL,17261,'topics','topic_page','topic_page'),
+  (NULL,17211,'topics','topic_page','topic_page'),
+  (NULL,17256,'topics','topic_page','topic_page'),
+  (NULL,17276,'topics','topic_page','topic_page'),
+  (NULL,17286,'topics','topic_page','topic_page'),
+  (NULL,17296,'topics','topic_page','topic_page'),
+  (NULL,507221,'topics','topic_page','topic_page'),
   (23461,183706,'topics','topic_page','topic_page'),
   (23461,201466,'topics','topic_page','topic_page'),
   (32736,14331,'topics','topic_page','topic_page'),
@@ -296,7 +296,7 @@ VALUES
   (71166,71196,'topics','topic_page','topic_page'),
   (71166,71231,'topics','topic_page','topic_page'),
   (71166,111791,'topics','topic_page','topic_page'),
-  (22446,72206,'topics','topic_page','topic_page'),
+  (NULL,72206,'topics','topic_page','topic_page'),
   (72206,71186,'topics','topic_page','topic_page'),
   (165226,301796,'topics','topic_page','topic_page'),
   (165261,476706,'topics','topic_page','topic_page'),
@@ -328,8 +328,26 @@ VALUES
   (null,22536,'topics',null,'topic_page'),
   (null,22551,'topics',null,'topic_page'),
   (585526,458866,'topics','topic_page','topic_page');
-
-
+# ------------------------------------------------------------
+# -- Around 50 topics had no relationships indicators and were assigned by hand. Mark these for review here.
+update relationships set label = 'review_topic_no_parent' where child_type = 'topic_page' and child_nid not in (
+  SELECT DISTINCT
+    cast(substring(field_content_card_link_cards_uri, 13) as UNSIGNED) as child_nid
+  FROM
+    paragraph__field_content_card_link_cards fld,
+    node_field_data nfd_parent,
+    node_field_data nfd_child,
+    paragraphs_item_field_data pfd_parent
+  where
+      fld.field_content_card_link_cards_uri like 'entity:node%' and
+      pfd_parent.id = fld.entity_id and
+      nfd_parent.nid = pfd_parent.parent_id and
+      nfd_child.nid = substring(field_content_card_link_cards_uri, 13) and
+      nfd_parent.status = 1 and
+      nfd_child.status = 1 and
+      nfd_child.type in ('topic_page')
+)
+  # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
 SELECT DISTINCT
   fld.entity_id as parent_nid,
@@ -586,13 +604,14 @@ where
     nfd_child.status = 1 and
     nfd_child.type not in ('org_page', 'topic_page');
 # ------------------------------------------------------------
-INSERT IGNORE INTO relationships (parent_nid, child_nid, source_field, parent_type, child_type)
+INSERT IGNORE INTO relationships (parent_nid, child_nid, source_field, parent_type, child_type, label)
 SELECT
   s.nid,
   r.child_nid,
   r.source_field,
   n_parent.type,
-  n_child.type
+  n_child.type,
+  'review_multiple_parents'
 FROM indicators r
        JOIN mass_superset_data s ON r.parent_nid = s.nid
        JOIN node_field_data n_parent ON s.nid = n_parent.nid
@@ -922,7 +941,7 @@ SELECT DISTINCT
   'field_service_ref_services_6' as source_field,
   nfd_parent.type as parent_type,
   nfd_child.type as child_type,
-  'review'
+  'review_services_reference'
 FROM
   node__field_service_ref_services_6 fld,
   node_field_data nfd_parent,
@@ -961,3 +980,8 @@ update relationships set parent_nid = 16466	where child_nid = 378156;
 update relationships set parent_nid = 6661 where child_nid = 224736;
 update relationships set parent_nid = 5456 where child_nid = 305071;
 update relationships set parent_nid = 13651 where child_nid = 110026;
+
+
+
+#-- Code to detect loops
+#-- select * from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships))))))))))
