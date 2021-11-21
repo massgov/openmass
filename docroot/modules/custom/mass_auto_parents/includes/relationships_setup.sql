@@ -346,7 +346,7 @@ update relationships set label = 'review_topic_no_parent' where child_type = 'to
       nfd_parent.status = 1 and
       nfd_child.status = 1 and
       nfd_child.type in ('topic_page')
-)
+);
   # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
 SELECT DISTINCT
