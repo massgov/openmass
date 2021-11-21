@@ -21,6 +21,6 @@ class UnpublishParentConstraint extends Constraint {
    *
    * @var string
    */
-  public $message = 'This content cannot be unpublished because it is a parent.';
+  public $message = 'This content cannot be unpublished or trashed because it is a parent of ';
 
 }
