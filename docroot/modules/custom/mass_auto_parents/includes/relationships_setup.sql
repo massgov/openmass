@@ -19,15 +19,15 @@ CREATE TABLE `indicators` (
 DROP TABLE IF EXISTS `relationships`;
 
 CREATE TABLE `relationships` (
- `parent_nid` int unsigned DEFAULT NULL,
- `child_nid` int NOT NULL,
- `source_field` varchar(255) DEFAULT NULL,
- `parent_type` varchar(255) DEFAULT NULL,
- `child_type` varchar(255) DEFAULT NULL,
- `label` varchar(255) DEFAULT NULL,
- UNIQUE KEY `child` (`child_nid`),
- UNIQUE KEY `parent_nid` (`parent_nid`,`child_nid`),
- CONSTRAINT `parent_cannot_be_equal_to_child_CHK` CHECK ((`parent_nid` <> `child_nid`))
+  `parent_nid` int unsigned DEFAULT NULL,
+  `child_nid` int NOT NULL,
+  `source_field` varchar(255) DEFAULT NULL,
+  `parent_type` varchar(255) DEFAULT NULL,
+  `child_type` varchar(255) DEFAULT NULL,
+  `label` varchar(255) DEFAULT NULL,
+  UNIQUE KEY `child` (`child_nid`),
+  UNIQUE KEY `parent_nid` (`parent_nid`,`child_nid`),
+  CONSTRAINT `parent_cannot_be_equal_to_child_CHK` CHECK ((`parent_nid` <> `child_nid`))
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 INSERT INTO `relationships` (`parent_nid`, `child_nid`, `source_field`, `parent_type`, `child_type`)
@@ -347,7 +347,7 @@ update relationships set label = 'review_topic_no_parent' where child_type = 'to
       nfd_child.status = 1 and
       nfd_child.type in ('topic_page')
 );
-  # ------------------------------------------------------------
+# ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
 SELECT DISTINCT
   fld.entity_id as parent_nid,
@@ -363,7 +363,7 @@ WHERE
     fld.entity_id = nfd_parent.nid AND
     fld.field_service_ref_guide_page_1_target_id = nfd_child.nid AND
     nfd_parent.status = 1 AND
-    nfd_child.type <> 'topic_page' AND
+    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page') AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -381,7 +381,7 @@ WHERE
     fld.entity_id = nfd_parent.nid AND
     fld.field_service_eligibility_info_target_id = nfd_child.nid AND
     nfd_parent.status = 1 AND
-    nfd_child.type <> 'topic_page' AND
+    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page')  AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -399,7 +399,7 @@ WHERE
     fld.entity_id = nfd_parent.nid AND
     fld.field_service_ref_locations_target_id = nfd_child.nid AND
     nfd_parent.status = 1 AND
-    nfd_child.type <> 'topic_page' AND
+    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page') AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -455,7 +455,7 @@ where
     nfd_parent.nid = fld.entity_id and
     nfd_child.nid = substring(field_service_ref_actions_uri, 13) and
     nfd_parent.status = 1 and
-    nfd_child.type <> 'topic_page' AND
+    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page')  AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -474,7 +474,7 @@ where
     nfd_parent.nid = fld.entity_id and
     nfd_child.nid = substring(field_service_links_uri, 13) and
     nfd_parent.status = 1 and
-    nfd_child.type not in ('topic_page', 'org_page') AND
+    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page')  AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -493,7 +493,7 @@ where
     nfd_parent.nid = fld.entity_id and
     nfd_child.nid = substring(field_service_ref_actions_2_uri, 13) and
     nfd_parent.status = 1 and
-    nfd_child.type not in ('topic_page', 'org_page') AND
+    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page') AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -512,7 +512,7 @@ where
     nfd_parent.nid = fld.entity_id and
     nfd_child.nid = substring(field_service_key_info_links_6_uri, 13) and
     nfd_parent.status = 1 and
-    nfd_child.type <> 'topic_page' AND
+    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page') AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -534,7 +534,7 @@ where
     nfd_child.nid = substring(field_guide_section_links_4_uri, 13) and
     nfd_parent.status = 1 and
     nfd_child.status = 1 and
-    nfd_child.type NOT IN ('org_page', 'topic_page', 'service_page');
+    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page', 'service_page');
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
 SELECT DISTINCT
@@ -554,7 +554,7 @@ where
     nfd_parent.nid = pfd_parent.parent_id and
     nfd_child.nid = substring(field_content_card_link_cards_uri, 13) and
     nfd_parent.status = 1 and
-    nfd_child.type not in ('topic_page', 'org_page') and
+    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page') and
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -578,7 +578,7 @@ where
     nfd_child.nid = substring(field_link_group_link_uri, 13) and
     nfd_parent.status = 1 and
     nfd_child.status = 1 and
-    nfd_child.type not in ('org_page', 'topic_page');
+    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page');
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field,
 parent_type, child_type)
@@ -602,7 +602,7 @@ where
     nfd_child.nid = substring(field_link_uri, 13) and
     nfd_parent.status = 1 and
     nfd_child.status = 1 and
-    nfd_child.type not in ('org_page', 'topic_page');
+    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page');
 # ------------------------------------------------------------
 INSERT IGNORE INTO relationships (parent_nid, child_nid, source_field, parent_type, child_type, label)
 SELECT
@@ -918,6 +918,28 @@ VALUES
 	(515086,514576,'rules_relationships','rules','rules'),
 	(239401,517681,'rules_relationships','guide_page','rules');
 # ------------------------------------------------------------
+# -- Relationships we were able to derive from the entity relationships table
+-- INSERT IGNORE INTO relationships (parent_nid, child_nid, source_field, parent_type, child_type)
+-- select source_id, target_id, 'entity_relationships', source_type, target_type from(
+-- Select distinct e.source_id, nfdsource.type as "source_type", nfdsource.title as "source title", e.target_id,  nfdtarget.type as "target_type", nfdtarget.title as "target title" from entity_usage e
+-- inner join node_field_data nfdsource on (e.source_id = nfdsource.nid)
+-- inner join node_field_data nfdtarget on (e.target_id = nfdtarget.nid)
+-- where e.target_type = 'node'
+-- and e.source_type = 'node'
+-- and nfdsource.status = 1
+-- and nfdtarget.status = 1
+-- and nfdtarget.type not in('org_page','contact_information','alert','event','news','service_page')
+-- and nfdsource.type not in('org_page','contact_information','alert','advisory','news','event','decision')
+-- and nfdtarget.type != nfdsource.type
+-- and e.target_id  in(select nid from node_field_data where nid not in (select child_nid from relationships) and status = 1 and type not in ('alert', 'error_page', 'utilty_drawer', 'contact_information', 'fee', 'external_data_resource', 'stacked_layout', 'utility_drawer', 'action', 'org_page'))
+-- ) as t1
+-- where
+-- (t1.source_type in ('service_page') and t1.target_type!='service_page')
+-- or (t1.source_type in ('curated_list') and t1.target_type not in('service_page','curated_list','binder'))
+-- or (t1.source_type in ('binder') and t1.target_type not in('service_page','curated_list','binder'))
+-- or (t1.source_type in ('guide_page') and t1.target_type not in('service_page','curated_list','binder','guide_page'))
+-- or (t1.source_type in ('location') and t1.target_type in('location_details'))
+# ------------------------------------------------------------
 # -- Assign QA Content
   INSERT IGNORE INTO relationships (parent_nid, child_nid, source_field, parent_type, child_type)
 SELECT DISTINCT
@@ -931,7 +953,8 @@ FROM
 WHERE
     n.status = 1 AND
     n.title like '%_QA%' AND
-    n.nid not in (select child_nid from relationships);
+    n.nid not in (select child_nid from relationships) AND
+    n.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion');
 # ------------------------------------------------------------
 # -- Services which use field_service_ref_services_6 don't create a relationship indicator but could still be valuable. We place them low to give other things a chance first.
 INSERT IGNORE INTO relationships (parent_nid, child_nid, source_field, parent_type, child_type,label)
