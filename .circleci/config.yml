@@ -484,11 +484,11 @@ jobs:
           command: sleep 5
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
-          no_output_timeout: 30m
+          no_output_timeout: 60m
       - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
-          no_output_timeout: 60m
+          no_output_timeout: 30m
       - run: docker-compose exec drupal drush cr
       - run: docker-compose stop --timeout 60 mysql
       - run: docker commit $(docker-compose ps -q mysql) << parameters.instance >>
@@ -1063,7 +1063,7 @@ workflows:
           requires: [build]
     triggers:
       - schedule:
-          cron: "10 22 * * *"
+          cron: "49 20 * * *"
           filters:
             branches:
               only:
@@ -1098,7 +1098,7 @@ workflows:
           resource_class: arm.medium
     triggers:
       - schedule:
-          cron: "47 21 * * *"
+          cron: "15 22 * * *"
           filters:
             branches:
               only:
