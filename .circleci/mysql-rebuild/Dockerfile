@@ -52,7 +52,10 @@ RUN set -ex; \
 		tzdata \
 		xz-utils \
 	; \
-	rm -rf /var/lib/apt/lists/*
+	rm -rf /var/lib/apt/lists/* \
+
+# MW https://unix.stackexchange.com/a/632238
+RUN gpgconf --kill dirmngr
 
 ENV GPG_KEYS \
 # pub   rsa4096 2016-03-30 [SC]
