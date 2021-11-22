@@ -477,7 +477,7 @@ jobs:
       - fetch_drush_aliases:
           destination: /home/circleci/code/drush/sites/self.site.yml
       - run: docker-compose up -d
-      - run: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www
+      - run: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www/html
       # @todo Actually perform health check.
       - run:
           name: Wait for mysql
@@ -1098,7 +1098,7 @@ workflows:
           resource_class: arm.medium
     triggers:
       - schedule:
-          cron: "24 23 * * *"
+          cron: "30 23 * * *"
           filters:
             branches:
               only:
