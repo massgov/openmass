@@ -24,7 +24,8 @@ services:
     working_dir: /var/www
 
   mysql:
-    image: juampynr/mariadb-no-volume:latest
+    # See https://github.com/juampynr/mariadb-no-volume
+    build: .
     environment:
       MYSQL_USER: circle
       MYSQL_PASSWORD: circle

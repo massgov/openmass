@@ -486,7 +486,7 @@ jobs:
       - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
-          no_output_timeout: 30m
+          no_output_timeout: 60m
       - run: docker-compose exec drupal drush cr
       - run: docker-compose stop --timeout 60 mysql
       - run: docker commit $(docker-compose ps -q mysql) << parameters.instance >>
@@ -1084,12 +1084,11 @@ workflows:
           instance: massgov/mysql-sanitized:super
     triggers:
       - schedule:
-          cron: "05 17 * * *"
+          cron: "45 17 * * *"
           filters:
             branches:
               only:
                 - develop
-                - feature/DP-23172_mariadb-with-data
 
   # Usually triggered by drush ma:backstop.
   backstop_ad_hoc:
