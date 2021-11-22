@@ -19,11 +19,12 @@ RUN set -ex; \
 
 # add gosu for easy step-down from root
 # https://github.com/tianon/gosu/releases
-ENV GOSU_VERSION 1.12
+ENV GOSU_VERSION 1.14
 RUN set -eux; \
-	savedAptMark="$(apt-mark showmanual)"; \
 	apt-get update; \
-	apt-get install -y --no-install-recommends ca-certificates wget; \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends ca-certificates; \
+	savedAptMark="$(apt-mark showmanual)"; \
+	apt-get install -y --no-install-recommends wget; \
 	rm -rf /var/lib/apt/lists/*; \
 	dpkgArch="$(dpkg --print-architecture | awk -F- '{ print $NF }')"; \
 	wget -O /usr/local/bin/gosu "https://github.com/tianon/gosu/releases/download/$GOSU_VERSION/gosu-$dpkgArch"; \
@@ -42,24 +43,28 @@ RUN set -eux; \
 
 RUN mkdir /docker-entrypoint-initdb.d
 
+# install "libjemalloc2" as it offers better performance in some cases. Use with LD_PRELOAD
 # install "pwgen" for randomizing passwords
 # install "tzdata" for /usr/share/zoneinfo/
 # install "xz-utils" for .sql.xz docker-entrypoint-initdb.d files
+# install "zstd" for .sql.zst docker-entrypoint-initdb.d files
 RUN set -ex; \
 	apt-get update; \
-	apt-get install -y --no-install-recommends \
+	DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
+		libjemalloc2 \
 		pwgen \
 		tzdata \
 		xz-utils \
+		zstd \
 	; \
 	rm -rf /var/lib/apt/lists/*
 
-ENV GPG_KEYS \
+ARG GPG_KEYS=177F4010FE56CA3336300305F1656F24C74CD1D8
 # pub   rsa4096 2016-03-30 [SC]
 #         177F 4010 FE56 CA33 3630  0305 F165 6F24 C74C D1D8
 # uid           [ unknown] MariaDB Signing Key <signing-key@mariadb.org>
 # sub   rsa4096 2016-03-30 [E]
-	177F4010FE56CA3336300305F1656F24C74CD1D8
+
 RUN set -ex; \
 	export GNUPGHOME="$(mktemp -d)"; \
 	for key in $GPG_KEYS; do \
@@ -67,17 +72,22 @@ RUN set -ex; \
 	done; \
 	gpg --batch --export $GPG_KEYS > /etc/apt/trusted.gpg.d/mariadb.gpg; \
 	command -v gpgconf > /dev/null && gpgconf --kill all || :; \
-	rm -r "$GNUPGHOME"; \
+	rm -fr "$GNUPGHOME"; \
 	apt-key list
 
-# bashbrew-architectures: amd64 arm64v8 ppc64le
-ENV MARIADB_MAJOR 10.5
-ENV MARIADB_VERSION 1:10.5.4+maria~focal
+# bashbrew-architectures: amd64 arm64v8 ppc64le s390x
+ARG MARIADB_MAJOR=10.5
+ENV MARIADB_MAJOR $MARIADB_MAJOR
+ARG MARIADB_VERSION=1:10.5.13+maria~focal
+ENV MARIADB_VERSION $MARIADB_VERSION
 # release-status:Stable
 # (https://downloads.mariadb.org/mariadb/+releases/)
 
+# Allowing overriding of REPOSITORY, a URL that includes suite and component for testing and Enterprise Versions
+ARG REPOSITORY="http://archive.mariadb.org/mariadb-10.5.13/repo/ubuntu/ focal main"
+
 RUN set -e;\
-	echo "deb http://ftp.osuosl.org/pub/mariadb/repo/$MARIADB_MAJOR/ubuntu focal main" > /etc/apt/sources.list.d/mariadb.list; \
+	echo "deb ${REPOSITORY}" > /etc/apt/sources.list.d/mariadb.list; \
 	{ \
 		echo 'Package: *'; \
 		echo 'Pin: release o=MariaDB'; \
@@ -112,7 +122,15 @@ RUN set -ex; \
 		| xargs -0 grep -lZE '^(bind-address|log|user\s)' \
 		| xargs -rt -0 sed -Ei 's/^(bind-address|log|user\s)/#&/'; \
 # don't reverse lookup hostnames, they are usually another container
-	echo '[mysqld]\nskip-host-cache\nskip-name-resolve' > /etc/mysql/conf.d/docker.cnf
+# Issue #327 Correct order of reading directories /etc/mysql/mariadb.conf.d before /etc/mysql/conf.d (mount-point per documentation)
+	if [ ! -L /etc/mysql/my.cnf ]; then sed -i -e '/includedir/i[mariadb]\nskip-host-cache\nskip-name-resolve\n' /etc/mysql/my.cnf; \
+# 10.5+
+	else sed -i -e '/includedir/ {N;s/\(.*\)\n\(.*\)/[mariadbd]\nskip-host-cache\nskip-name-resolve\n\n\2\n\1/}' \
+                /etc/mysql/mariadb.cnf; fi
+
+
+# MW: Removed
+# VOLUME /var/lib/mysql
 
 COPY docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
