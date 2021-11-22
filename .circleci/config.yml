@@ -482,11 +482,11 @@ jobs:
       - run:
           name: Wait for mysql
           command: sleep 5
+      - run: docker-compose exec drupal sudo apk add --no-cache --upgrade grep
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
           no_output_timeout: 60m
       - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
-      - run: docker-compose exec drupal sudo apk add --no-cache --upgrade grep
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
@@ -1099,7 +1099,7 @@ workflows:
           resource_class: arm.medium
     triggers:
       - schedule:
-          cron: "50 23 * * *"
+          cron: "58 23 * * *"
           filters:
             branches:
               only:
