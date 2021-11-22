@@ -466,12 +466,10 @@ jobs:
       instance:
         type: string
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
-    docker:
-      # Use Python since that's needed for docker tools anyway.
-      - image: cimg/ruby:2.7.1-node
+    machine:
+      image: ubuntu-1604:202007-01
     steps:
       - attach_workspace: {at: /home/circleci}
-      - setup_remote_docker
       - fetch_drush_aliases:
           destination: /home/circleci/code/drush/sites/self.site.yml
       - run: docker-compose up -d
@@ -479,7 +477,7 @@ jobs:
       # @todo Actually perform health check.
       - run:
           name: Wait for mysql
-          command: sleep 60
+          command: sleep 5
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
           no_output_timeout: 30m
@@ -1084,7 +1082,7 @@ workflows:
           instance: massgov/mysql-sanitized:super
     triggers:
       - schedule:
-          cron: "21 18 * * *"
+          cron: "05 19 * * *"
           filters:
             branches:
               only:
