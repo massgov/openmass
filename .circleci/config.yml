@@ -471,7 +471,7 @@ jobs:
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
     resource_class: << parameters.resource_class >>
     docker:
-      image: cimg/python:3.10.0
+      - image: cimg/python:3.10.0
     steps:
       - attach_workspace: {at: /home/circleci}
       - fetch_drush_aliases:
@@ -1098,7 +1098,7 @@ workflows:
           resource_class: arm.medium
     triggers:
       - schedule:
-          cron: "37 21 * * *"
+          cron: "39 21 * * *"
           filters:
             branches:
               only:
