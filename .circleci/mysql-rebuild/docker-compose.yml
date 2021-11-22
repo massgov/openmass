@@ -4,10 +4,9 @@ services:
   drupal:
     image: "wodby/php:7.4"
     volumes:
-      - .:/var/www:${VOLUME_FLAGS-rw}
+      - .:/var/www/html:${VOLUME_FLAGS-rw}
     environment:
       DOCKER_ENV: ci
-      APP_ROOT: /var/www/code
       APACHE_DOCROOT: /var/www/docroot
       MYSQL_USER: circle
       MYSQL_PASSWORD: circle
