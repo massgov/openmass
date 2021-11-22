@@ -1003,8 +1003,28 @@ update relationships set parent_nid = 16466	where child_nid = 378156;
 update relationships set parent_nid = 6661 where child_nid = 224736;
 update relationships set parent_nid = 5456 where child_nid = 305071;
 update relationships set parent_nid = 13651 where child_nid = 110026;
-
-
+# ------------------------------------------------------------
+# -- Everything remaining gets assigned to their primary org
+INSERT IGNORE INTO relationships (parent_nid, child_nid, source_field, parent_type, child_type,label)
+SELECT DISTINCT
+  o.field_organizations_target_id,
+  n.nid,
+  'field_organizations',
+  'org_page',
+  n.type,
+  'review_org_last_resort'
+FROM
+  node_field_data n,
+  node__field_organizations o
+WHERE
+    n.nid NOT IN (
+    SELECT child_nid FROM relationships
+  ) AND
+    n.status = 1 AND
+    n.nid not in (select child_nid from relationships) AND
+    n.type not in ('alert', 'contact_information', 'fee', 'stacked_layout', 'utility_drawer', 'error_page', 'external_data_resource', 'decision_tree_branch', 'decision_tree_conclusion') AND
+    n.nid = o.entity_id AND
+    o.delta = 0;
 
 #-- Code to detect loops
 #-- select * from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships))))))))))
