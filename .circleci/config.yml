@@ -1083,11 +1083,12 @@ workflows:
           instance: massgov/mysql-sanitized:super
     triggers:
       - schedule:
-          cron: "55 18 * * *"
+          cron: "55 13 * * *"
           filters:
             branches:
               only:
                 - develop
+                - mariadb-with-data
 
   # Usually triggered by drush ma:backstop.
   backstop_ad_hoc:
