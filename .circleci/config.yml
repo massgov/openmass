@@ -468,7 +468,7 @@ jobs:
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
     docker:
       # Use Python since that's needed for docker tools anyway.
-      - image: cimg/python:3.10.0
+      - image: cimg/ruby:2.7.1-node
     steps:
       - attach_workspace: {at: /home/circleci}
       - setup_remote_docker
@@ -1084,7 +1084,7 @@ workflows:
           instance: massgov/mysql-sanitized:super
     triggers:
       - schedule:
-          cron: "05 18 * * *"
+          cron: "21 18 * * *"
           filters:
             branches:
               only:
