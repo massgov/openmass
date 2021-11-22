@@ -470,11 +470,10 @@ jobs:
         default: medium
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
     resource_class: << parameters.resource_class >>
-    docker:
-      - image: cimg/python:3.10.0
+    machine:
+      image: ubuntu-2004:202101-01
     steps:
       - attach_workspace: {at: /home/circleci}
-      - setup_remote_docker
       - fetch_drush_aliases:
           destination: /home/circleci/code/drush/sites/self.site.yml
       - run: docker-compose up -d
@@ -1099,7 +1098,7 @@ workflows:
           resource_class: arm.medium
     triggers:
       - schedule:
-          cron: "44 21 * * *"
+          cron: "47 21 * * *"
           filters:
             branches:
               only:
