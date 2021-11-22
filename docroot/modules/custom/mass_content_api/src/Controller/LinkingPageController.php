@@ -147,6 +147,8 @@ class LinkingPageController extends ControllerBase {
         }
       }
     }
+    $total = count(array_filter($output['linking_nodes'], 'is_numeric', ARRAY_FILTER_USE_KEY));
+    $output['linking_nodes']['#prefix'] = $total . ' total records.';
     return $output;
   }
 
