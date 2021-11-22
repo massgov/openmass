@@ -5,7 +5,6 @@ dependencies:
   config:
     - field.storage.paragraph.field_collection
     - paragraphs.paragraphs_type.collection_search
-    - taxonomy.vocabulary.collections
 id: paragraph.collection_search.field_collection
 field_name: field_collection
 entity_type: paragraph
@@ -17,13 +16,10 @@ translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:
-  handler: 'default:taxonomy_term'
+  handler: views
   handler_settings:
-    target_bundles:
-      collections: collections
-    sort:
-      field: name
-      direction: asc
-    auto_create: false
-    auto_create_bundle: ''
+    view:
+      view_name: collection_top_level_terms
+      display_name: entity_reference
+      arguments: {  }
 field_type: entity_reference
