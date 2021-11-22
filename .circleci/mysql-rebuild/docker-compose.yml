@@ -7,6 +7,7 @@ services:
       - .:/var/www:${VOLUME_FLAGS-rw}
     environment:
       DOCKER_ENV: ci
+      APP_ROOT: /var/www/code
       APACHE_DOCROOT: /var/www/docroot
       MYSQL_USER: circle
       MYSQL_PASSWORD: circle
