@@ -480,9 +480,9 @@ jobs:
       - run:
           name: Wait for mysql
           command: sleep 60
-#      - run:
-#          command: docker-compose exec drupal drush deploy
-#          no_output_timeout: 60m
+      - run:
+          command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
+          no_output_timeout: 30m
       - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
