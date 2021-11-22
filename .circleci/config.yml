@@ -465,9 +465,13 @@ jobs:
         default: --sanitize
       instance:
         type: string
+      resource_class:
+        type: string
+        default: medium
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
-    machine:
-      image: ubuntu-1604:202007-01
+    resource_class: << parameters.resource_class >>
+    docker:
+      image: cimg/python:3.10.0
     steps:
       - attach_workspace: {at: /home/circleci}
       - fetch_drush_aliases:
@@ -1080,9 +1084,21 @@ workflows:
           requires: [build]
           sanitizeOption: --super-sanitize
           instance: massgov/mysql-sanitized:super
+      - populate:
+          name: massgov.populate.arm --sanitize
+          requires: [ build ]
+          sanitizeOption: --sanitize
+          instance: massgov/mysql-sanitized:latest.arm
+          resource_class: arm.medium
+      - populate:
+          name: massgov.populate.arm --super-sanitize
+          requires: [ build ]
+          sanitizeOption: --super-sanitize
+          instance: massgov/mysql-sanitized:super.arm
+          resource_class: arm.medium
     triggers:
       - schedule:
-          cron: "10 21 * * *"
+          cron: "37 21 * * *"
           filters:
             branches:
               only:
