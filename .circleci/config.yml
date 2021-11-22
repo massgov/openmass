@@ -472,7 +472,8 @@ jobs:
     steps:
       - attach_workspace: {at: /home/circleci}
       - setup_remote_docker
-      - fetch_drush_aliases
+      - fetch_drush_aliases:
+          destination: /home/circleci/code/drush/sites/self.site.yml
       - run: docker-compose up -d
       - run: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www
       # @todo Actually perform health check.
