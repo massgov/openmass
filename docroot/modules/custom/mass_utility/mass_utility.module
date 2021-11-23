@@ -438,18 +438,12 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
   }
   elseif ($type == 'entity_reference_hierarchy') {
     if ($field_name == 'field_primary_parent') {
-      $help_text = t("The breadcrumb that this field will generate is shown below. If you change the parent, save this page to see the updated breadcrumb.  The breadcrumb will be shown on the published page in the near future.");
       $rendered_block = BlockViewBuilder::lazyBuilder('breadcrumbs', 'default');
 
       $element['breadcrumb'] = [
         '#type' => 'container',
         '#weight' => 100,
         "#attributes" => ["class" => "form-item"]
-      ];
-      $element['breadcrumb']['help_text'] = [
-        "#type" => "markup",
-        "#markup" => $help_text,
-        "#weight" => -100
       ];
       $element['breadcrumb']['block'] = $rendered_block;
     }
