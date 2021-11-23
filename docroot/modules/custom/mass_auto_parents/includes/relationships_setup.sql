@@ -363,7 +363,7 @@ WHERE
     fld.entity_id = nfd_parent.nid AND
     fld.field_service_ref_guide_page_1_target_id = nfd_child.nid AND
     nfd_parent.status = 1 AND
-    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page') AND
+    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'sitewide_alert') AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -381,7 +381,7 @@ WHERE
     fld.entity_id = nfd_parent.nid AND
     fld.field_service_eligibility_info_target_id = nfd_child.nid AND
     nfd_parent.status = 1 AND
-    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page')  AND
+    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'sitewide_alert')  AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -399,7 +399,7 @@ WHERE
     fld.entity_id = nfd_parent.nid AND
     fld.field_service_ref_locations_target_id = nfd_child.nid AND
     nfd_parent.status = 1 AND
-    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page') AND
+    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'sitewide_alert') AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -455,7 +455,7 @@ where
     nfd_parent.nid = fld.entity_id and
     nfd_child.nid = substring(field_service_ref_actions_uri, 13) and
     nfd_parent.status = 1 and
-    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page')  AND
+    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'sitewide_alert')  AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -474,7 +474,7 @@ where
     nfd_parent.nid = fld.entity_id and
     nfd_child.nid = substring(field_service_links_uri, 13) and
     nfd_parent.status = 1 and
-    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page')  AND
+    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page', 'sitewide_alert')  AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -493,7 +493,7 @@ where
     nfd_parent.nid = fld.entity_id and
     nfd_child.nid = substring(field_service_ref_actions_2_uri, 13) and
     nfd_parent.status = 1 and
-    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page') AND
+    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page', 'sitewide_alert') AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -512,7 +512,7 @@ where
     nfd_parent.nid = fld.entity_id and
     nfd_child.nid = substring(field_service_key_info_links_6_uri, 13) and
     nfd_parent.status = 1 and
-    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page') AND
+    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'sitewide_alert') AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -534,7 +534,7 @@ where
     nfd_child.nid = substring(field_guide_section_links_4_uri, 13) and
     nfd_parent.status = 1 and
     nfd_child.status = 1 and
-    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page', 'service_page');
+    nfd_child.type NOT IN ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page', 'service_page', 'sitewide_alert');
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
 SELECT DISTINCT
@@ -554,7 +554,7 @@ where
     nfd_parent.nid = pfd_parent.parent_id and
     nfd_child.nid = substring(field_content_card_link_cards_uri, 13) and
     nfd_parent.status = 1 and
-    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page') and
+    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page', 'sitewide_alert') and
     nfd_child.status = 1;
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field, parent_type, child_type)
@@ -578,7 +578,7 @@ where
     nfd_child.nid = substring(field_link_group_link_uri, 13) and
     nfd_parent.status = 1 and
     nfd_child.status = 1 and
-    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page');
+    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page', 'sitewide_alert');
 # ------------------------------------------------------------
 INSERT IGNORE INTO indicators (parent_nid, child_nid, source_field,
 parent_type, child_type)
@@ -602,7 +602,7 @@ where
     nfd_child.nid = substring(field_link_uri, 13) and
     nfd_parent.status = 1 and
     nfd_child.status = 1 and
-    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page');
+    nfd_child.type not in ('fee', 'decision_tree_branch', 'decision_tree_conclusion', 'topic_page', 'org_page', 'sitewide_alert');
 # ------------------------------------------------------------
 INSERT IGNORE INTO relationships (parent_nid, child_nid, source_field, parent_type, child_type, label)
 SELECT
@@ -976,6 +976,11 @@ WHERE
     nfd_child.type <> 'decision_tree' AND
     nfd_child.status = 1;
 # ------------------------------------------------------------
+# -- Manual updates to excessively long hierarchies
+update relationships set parent_nid = 418446	where child_nid = 184851;
+update relationships set parent_nid = 48896	where child_nid = 49886;
+
+# ------------------------------------------------------------
 # -- Manual updates to fix looping structures
 update relationships set parent_nid = 17566	where child_nid = 487771;
 update relationships set parent_nid = 17566	where child_nid = 235896;
@@ -1009,7 +1014,7 @@ INSERT IGNORE INTO relationships (parent_nid, child_nid, source_field, parent_ty
 SELECT DISTINCT
   o.field_organizations_target_id,
   n.nid,
-  'field_organizations',
+  'final_org',
   'org_page',
   n.type,
   'review_org_last_resort'
@@ -1022,9 +1027,13 @@ WHERE
   ) AND
     n.status = 1 AND
     n.nid not in (select child_nid from relationships) AND
-    n.type not in ('alert', 'contact_information', 'fee', 'stacked_layout', 'utility_drawer', 'error_page', 'external_data_resource', 'decision_tree_branch', 'decision_tree_conclusion') AND
+    n.type not in ('alert', 'contact_information', 'fee', 'stacked_layout', 'utility_drawer', 'error_page', 'external_data_resource', 'decision_tree_branch', 'decision_tree_conclusion', 'sitewide_alert') AND
     n.nid = o.entity_id AND
     o.delta = 0;
 
 #-- Code to detect loops
 #-- select * from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships where parent_nid in (select child_nid from relationships))))))))))
+
+-- Code to retrieve nodes that are not in relationships
+-- select * from node_field_data where nid not in (select child_nid from relationships) and status = 1 and type not in ('alert', 'contact_information', 'fee', 'stacked_layout', 'utility_drawer', 'error_poge', 'external_data_resource', 'sitewide_alert', 'decision_tree_branch', 'decision_tree_conclusion')
+-- select type, count(type) as total from node_field_data where nid not in (select child_nid from relationships) and status = 1 and type not in ('alert', 'contact_information', 'fee', 'stacked_layout', 'utility_drawer', 'error_page', 'external_data_resource', 'decision_tree_branch', 'decision_tree_conclusion') group by type order by total desc
