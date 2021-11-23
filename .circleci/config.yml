@@ -467,7 +467,7 @@ jobs:
         type: string
       resource_class:
         type: string
-        default: medium
+        default: large
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
     resource_class: << parameters.resource_class >>
     machine:
@@ -1090,21 +1090,20 @@ workflows:
           requires: [ build ]
           sanitizeOption: --sanitize
           instance: massgov/mysql-sanitized:latest.arm
-          resource_class: arm.medium
+          resource_class: arm.large
       - populate:
           name: massgov.populate.arm --super-sanitize
           requires: [ build ]
           sanitizeOption: --super-sanitize
           instance: massgov/mysql-sanitized:super.arm
-          resource_class: arm.medium
+          resource_class: arm.large
     triggers:
       - schedule:
-          cron: "58 23 * * *"
+          cron: "20 00 * * *"
           filters:
             branches:
               only:
                 - develop
-                - feature/DP-23172_mariadb-with-data
 
   # Usually triggered by drush ma:backstop.
   backstop_ad_hoc:
