@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @QueueWorker(
  *   id = "mass_auto_parents_queue",
  *   title = @Translation("Mass Auto Parents Queue"),
- *   cron = {"time" = 60}
+ *   cron = {"time" = 300}
  * )
  */
 class MassAutoParentsQueueWorker extends QueueWorkerBase implements ContainerFactoryPluginInterface {
