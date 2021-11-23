@@ -1,3 +1,16 @@
+
+
+## [0.304.0] - November 23, 2021
+
+### Added
+  - DP-22007: Added the Entity Usage module.
+  
+### Changed
+  - DP-23292: Revert DDEV usage from CI
+  
+### Fixed
+  - DP-23444: Fixed issue with Organization Locations paragraphs causing Behat errors.
+  
 ## [0.303.1] - November 17, 2021
 
 ### Fixed
