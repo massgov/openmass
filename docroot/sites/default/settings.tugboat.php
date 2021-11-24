@@ -5,7 +5,8 @@
  *
  * @see https://docs.acquia.com/articles/password-protect-your-non-production-environments-acquia-hosting#phpfpm
  */
-if (php_sapi_name() !== 'cli' && strpos($_SERVER['HTTP_USER_AGENT'], 'Chrome-Lighthouse') === FALSE) {
+$agent = $_SERVER['HTTP_USER_AGENT'];
+if (php_sapi_name() !== 'cli' && !str_contains($agent, 'Chrome-Lighthouse') && !str_contains($agent, 'HeadlessChrome')) {
   $username = getenv('LOWER_ENVIR_AUTH_USER');
   $password = getenv('LOWER_ENVIR_AUTH_PASS');
   $is_oauth = strpos($_SERVER['REQUEST_URI'], '/oauth/token') !== FALSE;

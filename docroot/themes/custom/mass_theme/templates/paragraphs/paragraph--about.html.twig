@@ -90,5 +90,9 @@
 {{ content | without ('computed_bio_page', 'computed_secondary_bio_page', 'computed_social_links', 'field_read_more_page', 'field_component_add_separator') }}
 
 {% if content.field_component_add_separator|field_value|render == "True" %}
-  <div class="ma__divider ma__divider--thin"></div>
+  {% include "@atoms/divider.twig" with {
+    "divider": {
+      "thin": true
+    }
+  } %}
 {% endif %}
