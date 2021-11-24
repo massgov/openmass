@@ -97,7 +97,7 @@ services:
       # from the base preview.
       build:
         # Hopefully more robust when these dirs are created from scratch.
-        - rm -rf vendor docroot/modules/contrib
+        - rm -rf vendor docroot/modules/contrib docroot/libraries
         - composer install --no-interaction --optimize-autoloader --no-cache
         - yarn install
         - PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-refresh-local --skip-db-prep
