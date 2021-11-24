@@ -78,7 +78,6 @@ services:
       # skipping the init step, because the results of that step will
       # already be present.
       update:
-        # Install/update packages that may have changed since the build stage.
         - composer install --optimize-autoloader --no-cache
         - yarn install
         - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
@@ -97,6 +96,8 @@ services:
       # and update steps, because the results of those are inherited
       # from the base preview.
       build:
+        # Hopefully more robust when these dirs are created from scratch.
+        - rm -rf vendor docroot/modules/contrib
         - composer install --no-interaction --optimize-autoloader --no-cache
         - yarn install
         - PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-refresh-local --skip-db-prep
