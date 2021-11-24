@@ -93,7 +93,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
           'reference' => $reference,
           'list' => $options['list'],
           'viewport' => $options['viewport'],
-          'tugboat' => $options['tugboat'],
+          'tugboat' => $options['tugboat'] ?: '',
         ],
       ],
     ];
