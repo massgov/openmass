@@ -66,10 +66,15 @@ jQuery(document).ready(function ($) {
     // The link tells us the route to fetch its children.
     let href = $control.closest('td').find('a.menu-item__link').attr('href');
     let childrenHref = href + '/children';
-
+    // Loading message.
+    $control.closest('td').append('<div class="hierarchy-row--loading">LOADING</div>');
+    // Temporary div to load content.
     let $temp = $("<div></div>");
     // Get the children of the TR.
     $temp.load(childrenHref + ' #edit-children tbody tr.hierarchy-row', function () {
+      // Remove loading.
+      $tr.find('.hierarchy-row--loading').remove();
+
       let level = $tr.find('.indentation').length;
       let indentationHTML = '<div class="js-indentation indentation">&nbsp;</div>';
       let childrenIndentation = indentationHTML.repeat(level + 1);
