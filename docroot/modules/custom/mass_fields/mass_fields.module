@@ -759,6 +759,62 @@ function mass_fields_form_node_info_details_form_alter(&$form, FormStateInterfac
 }
 
 /**
+ * Restricts fields on topic pages based on field_restrict_link_management.
+ *
+ * Users with create topic page permission will not be restricted.
+ * For users with "edit any topic page" permission
+ * and without "create topic page" permission...
+ * - If the restriction is checked, they wont be able to edit any field.
+ * - If the restriction is unchecked, they will be able to use $allowed_fields:
+ *   - Intended audience
+ *   - Organizations
+ *   - Labels
+ *   - Link groups
+ *   - Workflow states.
+ *   - Action (save/preview)
+ */
+function _mass_fields_form_node_topic_page_edit_restrict_fields(&$form, FormStateInterface $form_state) {
+  $user = \Drupal::currentUser();
+  $user_can_create_topic_page = $user->hasPermission('create topic page');
+  if ($user_can_create_topic_page) {
+    return;
+  }
+
+  /** @var \Drupal\node\NodeForm */
+  $form_object = $form_state->getFormObject();
+  /** @var \Drupal\node\Entity\Node */
+  $node = $form_object->getEntity();
+
+  // Setting allowed fields based on the restriction.
+  $restricted = $node->field_restrict_link_management->value ?? FALSE;
+  $allowed_fields = $restricted ? [] : [
+    'field_intended_audience',
+    'field_organizations',
+    'field_reusable_label',
+    'field_topic_content_cards',
+    'moderation_state', // workflow.
+    'actions', // save & preview.
+  ];
+
+  foreach ($form as $key => &$element) {
+    if (in_array($key, $allowed_fields)) {
+      $element['#disabled'] = FALSE;
+      continue;
+    }
+
+    is_array($element) && (isset($element['#access']) || isset($element['#type'])) ?
+      $element['#disabled'] = TRUE : NULL;
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_fields_form_node_topic_page_edit_form_alter(&$form, FormStateInterface $form_state) {
+  _mass_fields_form_node_topic_page_edit_restrict_fields($form, $form_state);
+}
+
+/**
  * Helper function to avoid duplicate codes.
  */
 function _mass_fields_info_details_enable_flag(&$form, FormStateInterface $form_state) {
