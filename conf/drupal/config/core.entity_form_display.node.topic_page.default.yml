@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.topic_page.field_image_credit
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
+    - field.field.node.topic_page.field_restrict_link_management
     - field.field.node.topic_page.field_reusable_label
     - field.field.node.topic_page.field_state_organization_tax
     - field.field.node.topic_page.field_topic_bg_narrow
@@ -49,6 +50,7 @@ third_party_settings:
         - title
         - field_topic_lede
         - field_display_short_description
+        - field_restrict_link_management
         - field_topic_ref_icon
         - field_organizations
         - field_intended_audience
@@ -105,13 +107,13 @@ content:
     type: boolean_checkbox
     region: content
   field_intended_audience:
-    weight: 2
+    weight: 1
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 1
+    weight: 0
     settings:
       match_operator: CONTAINS
       size: 60
@@ -120,8 +122,15 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_restrict_link_management:
+    weight: -2
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
   field_reusable_label:
-    weight: 3
+    weight: 2
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -169,7 +178,7 @@ content:
     type: metatag_firehose
     region: content
   field_topic_ref_icon:
-    weight: -2
+    weight: -1
     settings: {  }
     third_party_settings: {  }
     type: options_select
