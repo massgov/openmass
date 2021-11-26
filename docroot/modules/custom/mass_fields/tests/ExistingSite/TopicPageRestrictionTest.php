@@ -46,35 +46,39 @@ class TopicPageRestrictionTest extends ExistingSiteBase {
    * Provides data to test with testTopicPageEditForm.
    */
   public function provider() {
-    return [
-      [
-        [
-          'role' => 'editor',
-          'unlocked_fields' => $this->unlockedFields(),
-          'locked_fields' => $this->lockedFields(),
-          'available_states' => ['draft', 'needs_review', 'published'],
-        ],
 
-        [
-          'role' => 'author',
-          'unlocked_fields' => $this->unlockedFields(),
-          'locked_fields' => $this->lockedFields(),
-          'available_states' => ['draft', 'needs_review'],
-        ],
+    $editor = [
+      'role' => 'editor',
+      'unlocked_fields' => $this->unlockedFields(),
+      'locked_fields' => $this->lockedFields(),
+      'available_states' => ['draft', 'needs_review', 'published'],
+    ];
 
-        [
-          'role' => 'content_team',
-          'unlocked_fields' => array_merge($this->unlockedFields(), $this->lockedFields()),
-          'locked_fields' => [],
-          'available_states' => [
-            'draft',
-            'needs_review',
-            'published',
-            'trash',
-            'unpublished',
-          ],
-        ],
+    $author = [
+      'role' => 'author',
+      'unlocked_fields' => $this->unlockedFields(),
+      'locked_fields' => $this->lockedFields(),
+      'available_states' => ['draft', 'needs_review'],
+    ];
+
+    $content_administrator = [
+      'role' => 'content_team',
+      // This role hasn't any locked fields.
+      'unlocked_fields' => array_merge($this->unlockedFields(), $this->lockedFields()),
+      'locked_fields' => [],
+      'available_states' => [
+        'draft',
+        'needs_review',
+        'published',
+        'trash',
+        'unpublished',
       ],
+    ];
+
+    return [
+      [$editor],
+      [$author],
+      [$content_administrator],
     ];
   }
 
