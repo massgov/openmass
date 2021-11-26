@@ -64,4 +64,4 @@ All openmass feature development PRs that require Mayflower changes must pass al
 - [ ] Up-to-date with latest openmass develop branch (resolve any composer.lock conflicts with the develop branch)
 - [ ] All circleCI tests are green on your branch
 
-Because we are no longer compiling Mayflower changelogs for each Openmass release, we expect you to follow the PR naming conventions, include the ticket number in the branch names so they appear in JIRA. Please also link to the corresponding Mayflower PR in the Openmass PR description. Doing so will help others review the PRs together and find the related PRs quickly in case where a hotfix is needed.
+Because we are no longer compiling Mayflower changelogs for each Openmass release, we expect you to follow the branch naming conventions, include the ticket number in the branch names so they appear in JIRA. Please also link to the corresponding Mayflower PR in the Openmass PR description. Doing so will help others review the PRs together and find the related PRs quickly in case where a hotfix is needed.
