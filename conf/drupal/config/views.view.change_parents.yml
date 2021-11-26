@@ -204,7 +204,7 @@ display:
           id: title
           table: node_field_data
           field: title
-          relationship: reverse__node__field_primary_parent
+          relationship: none
           group_type: group
           admin_label: ''
           label: Title
@@ -269,7 +269,7 @@ display:
           id: nid
           table: node_field_data
           field: nid
-          relationship: reverse__node__field_primary_parent
+          relationship: none
           group_type: group
           admin_label: ''
           label: ID
@@ -335,7 +335,7 @@ display:
           id: type
           table: node_field_data
           field: type
-          relationship: reverse__node__field_primary_parent
+          relationship: none
           group_type: group
           admin_label: ''
           label: 'Content type'
@@ -400,7 +400,7 @@ display:
           id: moderation_state
           table: node_field_data
           field: moderation_state
-          relationship: reverse__node__field_primary_parent
+          relationship: none
           group_type: group
           admin_label: ''
           label: 'Publication status'
@@ -463,7 +463,7 @@ display:
           id: changed
           table: node_field_revision
           field: changed
-          relationship: reverse__node__field_primary_parent
+          relationship: none
           group_type: group
           admin_label: ''
           label: 'Last revised'
@@ -530,7 +530,7 @@ display:
           id: pageviews
           table: mass_superset_data
           field: pageviews
-          relationship: reverse__node__field_primary_parent
+          relationship: none
           group_type: group
           admin_label: ''
           label: 'Page views'
@@ -588,7 +588,7 @@ display:
           id: node_org_filter
           table: node_field_data
           field: node_org_filter
-          relationship: reverse__node__field_primary_parent
+          relationship: none
           group_type: group
           admin_label: ''
           operator: '='
@@ -643,7 +643,7 @@ display:
           id: type
           table: node_field_data
           field: type
-          relationship: reverse__node__field_primary_parent
+          relationship: none
           group_type: group
           admin_label: ''
           operator: in
@@ -700,7 +700,7 @@ display:
           id: moderation_state
           table: node_field_data
           field: moderation_state
-          relationship: reverse__node__field_primary_parent
+          relationship: none
           group_type: group
           admin_label: ''
           operator: in
@@ -757,7 +757,7 @@ display:
           id: type
           table: node_field_data
           field: type
-          relationship: reverse__node__field_primary_parent
+          relationship: none
           group_type: group
           admin_label: ''
           order: ASC
@@ -771,7 +771,7 @@ display:
           id: status
           table: node_field_data
           field: status
-          relationship: reverse__node__field_primary_parent
+          relationship: none
           group_type: group
           admin_label: ''
           order: ASC
@@ -785,7 +785,7 @@ display:
           id: title
           table: node_field_data
           field: title
-          relationship: reverse__node__field_primary_parent
+          relationship: none
           group_type: group
           admin_label: ''
           order: ASC
@@ -799,22 +799,21 @@ display:
       footer: {  }
       empty: {  }
       relationships:
-        reverse__node__field_primary_parent:
-          id: reverse__node__field_primary_parent
-          table: node_field_data
-          field: reverse__node__field_primary_parent
+        node__field_primary_parent:
+          id: node__field_primary_parent
+          table: node__field_primary_parent
+          field: node__field_primary_parent
           relationship: none
           group_type: group
-          admin_label: Children
+          admin_label: Parent
           required: true
-          entity_type: node
-          plugin_id: entity_reverse
+          plugin_id: standard
       arguments:
         nid:
           id: nid
           table: node_field_data
           field: nid
-          relationship: none
+          relationship: node__field_primary_parent
           group_type: group
           admin_label: ''
           default_action: 'not found'
