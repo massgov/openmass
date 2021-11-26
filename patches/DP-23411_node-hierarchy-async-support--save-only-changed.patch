@@ -1,5 +1,5 @@
 diff --git a/src/Form/HierarchyChildrenForm.php b/src/Form/HierarchyChildrenForm.php
-index fc94005..f11eb8d 100644
+index fc94005..87419e8 100644
 --- a/src/Form/HierarchyChildrenForm.php
 +++ b/src/Form/HierarchyChildrenForm.php
 @@ -4,14 +4,9 @@ namespace Drupal\entity_hierarchy\Form;
@@ -171,7 +171,27 @@ index fc94005..f11eb8d 100644
  
      return $form;
    }
-@@ -264,30 +329,26 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -210,7 +275,7 @@ class HierarchyChildrenForm extends ContentEntityForm {
+    */
+   protected function actions(array $form, FormStateInterface $form_state) {
+     $actions = parent::actions($form, $form_state);
+-    $actions['submit']['#value'] = $this->t('Update child order');
++    $actions['submit']['#value'] = $this->t('Update children');
+     // Don't perform field validation.
+     $actions['submit']['#limit_validation_errors'] = [['children'], ['fieldname']];
+     unset($actions['delete']);
+@@ -221,7 +286,9 @@ class HierarchyChildrenForm extends ContentEntityForm {
+     $fields = $this->parentCandidate->getCandidateFields($this->entity);
+     $fieldName = $form_state->getValue('fieldname') ?: reset($fields);
+     $entityType = $this->entity->getEntityType();
+-    if ($entityType->hasHandlerClass('entity_hierarchy') && ($childBundles = $this->parentCandidate->getCandidateBundles($this->entity)) && isset($childBundles[$fieldName])) {
++
++    // Add children buttons not needed.
++    if (FALSE && $entityType->hasHandlerClass('entity_hierarchy') && ($childBundles = $this->parentCandidate->getCandidateBundles($this->entity)) && isset($childBundles[$fieldName])) {
+       $handlerClass = $entityType->getHandlerClass('entity_hierarchy');
+       /** @var \Drupal\entity_hierarchy\Handler\EntityHierarchyHandlerInterface $handler */
+       $handler = new $handlerClass();
+@@ -264,30 +331,26 @@ class HierarchyChildrenForm extends ContentEntityForm {
     */
    public function save(array $form, FormStateInterface $form_state) {
      $children = $form_state->getValue('children');
@@ -210,7 +230,7 @@ index fc94005..f11eb8d 100644
     *
     * @param string $fieldName
     *   Field name.
-@@ -296,9 +357,13 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -296,9 +359,13 @@ class HierarchyChildrenForm extends ContentEntityForm {
     * @param int $weight
     *   New weight.
     */
@@ -227,3 +247,16 @@ index fc94005..f11eb8d 100644
    }
  
    /**
+diff --git a/src/Routing/EntityHierarchyRouteProvider.php b/src/Routing/EntityHierarchyRouteProvider.php
+index c2174e1..e1b7b43 100644
+--- a/src/Routing/EntityHierarchyRouteProvider.php
++++ b/src/Routing/EntityHierarchyRouteProvider.php
+@@ -73,7 +73,7 @@ class EntityHierarchyRouteProvider implements EntityRouteProviderInterface, Enti
+       $route
+         ->setPath($entity_type->getLinkTemplate('canonical') . '/children')
+         ->addDefaults([
+-          '_title' => 'Reorder children',
++          '_title' => 'Children',
+           '_entity_form' => "$entity_type_id.entity_hierarchy_reorder",
+         ])
+         ->setRequirement('_entity_access', "{$entity_type_id}.view")
