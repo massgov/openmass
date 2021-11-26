@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\mass_validation\ExistingSite;
+namespace Drupal\Tests\mass_fields\ExistingSite;
 
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
