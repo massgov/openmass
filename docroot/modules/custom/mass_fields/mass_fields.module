@@ -775,7 +775,7 @@ function mass_fields_form_node_info_details_form_alter(&$form, FormStateInterfac
  */
 function _mass_fields_form_node_topic_page_edit_restrict_fields(&$form, FormStateInterface $form_state) {
   $user = \Drupal::currentUser();
-  $user_can_create_topic_page = $user->hasPermission('create topic page');
+  $user_can_create_topic_page = $user->hasPermission('create topic_page content');
   if ($user_can_create_topic_page) {
     return;
   }
