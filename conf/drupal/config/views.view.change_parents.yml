@@ -26,7 +26,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'access content'
+          perm: 'view the administration theme'
       cache:
         type: tag
         options: {  }
@@ -189,15 +189,14 @@ display:
           batch: true
           batch_size: 10
           form_step: true
-          buttons: false
-          clear_on_exposed: true
+          buttons: true
+          clear_on_exposed: false
           action_title: Action
           selected_actions:
-            8:
-              action_id: views_bulk_edit
+            2:
+              action_id: mass_hierarchy_change_parent
               preconfiguration:
-                add_confirmation: 1
-                get_bundles_from_results: 1
+                add_confirmation: 0
           force_selection_info: 0
           plugin_id: views_bulk_operations_bulk_form
         title:
@@ -795,7 +794,20 @@ display:
           entity_type: node
           entity_field: title
           plugin_id: standard
-      header: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: false
+          tokenize: false
+          content:
+            value: 'Select the children below to assign them a new parent. '
+            format: basic_html
+          plugin_id: text
       footer: {  }
       empty: {  }
       relationships:
@@ -852,6 +864,7 @@ display:
           entity_field: nid
           plugin_id: node_nid
       display_extenders: {  }
+      title: 'Move children'
     cache_metadata:
       max-age: 0
       contexts:
