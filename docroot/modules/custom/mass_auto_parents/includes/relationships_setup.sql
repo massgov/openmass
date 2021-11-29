@@ -1068,7 +1068,6 @@ INSERT INTO `relationships` (`parent_nid`, `child_nid`, `source_field`, `parent_
   (17566,67906,'manual_service_parent','topic_page','service_page'),
   (14831,416711,'manual_service_parent','org_page','service_page'),
   (86736,196411,'manual_service_parent','org_page','service_page'),
-  (16956,159961,'manual_service_parent','topic_page','service_page'),
   (17531,44231,'manual_service_parent','topic_page','service_page'),
   (511121,524801,'manual_service_parent','org_page','service_page'),
   (13701,57696,'manual_service_parent','org_page','service_page'),
