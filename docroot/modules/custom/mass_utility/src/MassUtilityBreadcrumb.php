@@ -91,5 +91,5 @@ class MassUtilityBreadcrumb extends HierarchyBasedBreadcrumbBuilder {
     $breadcrumb->setLinks($links);
     return $breadcrumb;
   }
-  
+
 }
