@@ -20,6 +20,12 @@ class MassUtilityServiceProvider extends ServiceProviderBase {
       $processors[] = 'backtrace_removal';
       $container->setParameter('monolog.processors', $processors);
     }
+
+    // Override entity_hierarchy.breadcrumb service.
+    if ($container->hasDefinition('entity_hierarchy.breadcrumb')) {
+      $definition = $container->getDefinition('entity_hierarchy.breadcrumb');
+      $definition->setClass('Drupal\mass_utility\MassUtilityBreadcrumb');
+    }
   }
 
 }
