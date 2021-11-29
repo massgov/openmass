@@ -19,7 +19,11 @@ use Drupal\node\Entity\Node;
  * Entity hierarchy breadcrumb alterations for Mass Utility.
  */
 class MassUtilityBreadcrumb extends HierarchyBasedBreadcrumbBuilder {
-  public function __construct(
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct (
     NestedSetStorageFactory $storage_factory,
     NestedSetNodeKeyFactory $node_key_factory,
     EntityTreeNodeMapperInterface $mapper,
@@ -87,4 +91,5 @@ class MassUtilityBreadcrumb extends HierarchyBasedBreadcrumbBuilder {
     $breadcrumb->setLinks($links);
     return $breadcrumb;
   }
+  
 }
