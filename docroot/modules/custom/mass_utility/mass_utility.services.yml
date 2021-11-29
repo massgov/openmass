@@ -13,10 +13,3 @@ services:
     arguments: ['@current_route_match']
   monolog.processor.backtrace_removal:
     class: Drupal\mass_utility\Logger\Processor\BacktraceRemovalProcessor
-
-#  # Override entity_hierarchy.breadcrumb service
-#  entity_hierarchy.breadcrumb:
-#    class: Drupal\mass_utility\MassUtilityBreadcrumb
-#    arguments: [ '@entity_hierarchy.nested_set_storage_factory', '@entity_hierarchy.nested_set_node_factory', '@entity_hierarchy.entity_tree_node_mapper', '@entity_field.manager', '@router.admin_context' ]
-#    tags:
-#      - { name: breadcrumb_builder, priority: 11 }
