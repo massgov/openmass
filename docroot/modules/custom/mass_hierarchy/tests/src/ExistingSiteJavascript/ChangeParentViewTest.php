@@ -54,9 +54,9 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     $child1Node = $this->createNode($child1);
 
     $childOfChild1 = [
-        'title' => 'child-of-child1-' . $this->randomMachineName(16),
-        'field_primary_parent' => $child1Node->id(),
-      ] + $parent1;
+      'title' => 'child-of-child1-' . $this->randomMachineName(16),
+      'field_primary_parent' => $child1Node->id(),
+    ] + $parent1;
 
     $childOfChild1Node = $this->createNode($childOfChild1);
 
