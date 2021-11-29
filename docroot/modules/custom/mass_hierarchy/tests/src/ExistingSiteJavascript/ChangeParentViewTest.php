@@ -46,14 +46,21 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     $parent3Node = $this->createNode($parent3);
 
     $child1 = [
-      'title' => $this->randomMachineName(16),
+      'title' => 'child1-' . $this->randomMachineName(16),
       'field_primary_parent' => $parent1Node->id(),
     ] + $parent1;
 
-    $this->createNode($child1);
+    $child1Node = $this->createNode($child1);
+
+    $childOfChild1 = [
+        'title' => 'child-of-child1-' . $this->randomMachineName(16),
+        'field_primary_parent' => $child1Node->id(),
+      ] + $parent1;
+
+    $childOfChild1Node = $this->createNode($childOfChild1);
 
     $child2 = [
-      'title' => $this->randomMachineName(16),
+      'title' => 'child2-' . $this->randomMachineName(16),
       'field_primary_parent' => $parent1Node->id(),
     ] + $parent1;
 
@@ -79,6 +86,11 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     $this->getCurrentPage()->fillField('New parent', $parent3Node->label());
     $this->getCurrentPage()->pressButton('Change parent');
     $this->assertSession()->pageTextContains('1 error has been found');
+
+    // Select a wrong parent (descendant).
+    $this->getCurrentPage()->fillField('New parent', $childOfChild1Node->label());
+    $this->getCurrentPage()->pressButton('Change parent');
+    $this->assertSession()->pageTextContains('The new parent is a descendant of');
 
     // Select a correct parent.
     $this->getCurrentPage()->fillField('New parent', $parent2Node->label());
