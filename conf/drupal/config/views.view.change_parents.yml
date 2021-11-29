@@ -2,11 +2,13 @@ uuid: cf647317-82d6-401c-9a22-608c439657ee
 langcode: en
 status: true
 dependencies:
+  config:
+    - taxonomy.vocabulary.label
   module:
     - content_moderation
     - mass_superset
-    - mass_views
     - node
+    - taxonomy
     - user
     - views_bulk_operations
 id: change_parents
@@ -75,10 +77,11 @@ display:
           default_row_class: true
           override: true
           sticky: false
-          caption: ''
+          caption: 'Select the children that you want to assign a new parent.'
           summary: ''
           description: ''
           columns:
+            views_bulk_operations_bulk_form: views_bulk_operations_bulk_form
             title: title
             nid: nid
             type: type
@@ -86,6 +89,11 @@ display:
             changed: changed
             pageviews: pageviews
           info:
+            views_bulk_operations_bulk_form:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
             title:
               sortable: true
               default_sort_order: asc
@@ -129,7 +137,7 @@ display:
               empty_column: false
               responsive: ''
           default: '-1'
-          empty_table: false
+          empty_table: true
       row:
         type: fields
         options:
@@ -583,26 +591,26 @@ display:
           suffix: ''
           plugin_id: numeric
       filters:
-        node_org_filter:
-          id: node_org_filter
-          table: node_field_data
-          field: node_org_filter
+        field_reusable_label_target_id:
+          id: field_reusable_label_target_id
+          table: node__field_reusable_label
+          field: field_reusable_label_target_id
           relationship: none
           group_type: group
           admin_label: ''
-          operator: '='
-          value: null
+          operator: or
+          value: {  }
           group: 1
           exposed: true
           expose:
-            operator_id: ''
-            label: 'Organization Filter'
+            operator_id: field_reusable_label_target_id_op
+            label: Label(s)
             description: ''
             use_operator: false
-            operator: node_org_filter_op
+            operator: field_reusable_label_target_id_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: node_org_filter
+            identifier: field_reusable_label_target_id
             required: false
             remember: false
             multiple: false
@@ -624,6 +632,7 @@ display:
               external_data_resource_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
+            reduce: false
           is_grouped: false
           group_info:
             label: ''
@@ -636,8 +645,13 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          plugin_id: mass_views_node_org_filter
+          reduce_duplicates: true
+          type: textfield
+          limit: true
+          vid: label
+          hierarchy: false
+          error_message: true
+          plugin_id: taxonomy_index_tid
         type:
           id: type
           table: node_field_data
@@ -695,27 +709,27 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
-        moderation_state:
-          id: moderation_state
+        status:
+          id: status
           table: node_field_data
-          field: moderation_state
+          field: status
           relationship: none
           group_type: group
           admin_label: ''
-          operator: in
-          value: {  }
+          operator: '='
+          value: '1'
           group: 1
           exposed: true
           expose:
-            operator_id: moderation_state_op
-            label: 'Moderation state'
+            operator_id: ''
+            label: Published
             description: ''
             use_operator: false
-            operator: moderation_state_op
+            operator: status_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: moderation_state
-            required: false
+            identifier: Published
+            required: true
             remember: false
             multiple: false
             remember_roles:
@@ -736,7 +750,6 @@ display:
               external_data_resource_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
-            reduce: false
           is_grouped: false
           group_info:
             label: ''
@@ -750,7 +763,8 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           entity_type: node
-          plugin_id: moderation_state_filter
+          entity_field: status
+          plugin_id: boolean
       sorts:
         type:
           id: type
@@ -805,8 +819,8 @@ display:
           empty: false
           tokenize: false
           content:
-            value: 'Select the children below to assign them a new parent. '
-            format: basic_html
+            value: '<div class="block-help-block"><p>If there are many children, you can use these filters to see only specific children.</p></div>'
+            format: full_html
           plugin_id: text
       footer: {  }
       empty: {  }
@@ -865,6 +879,10 @@ display:
           plugin_id: node_nid
       display_extenders: {  }
       title: 'Move children'
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
     cache_metadata:
       max-age: 0
       contexts:
@@ -872,10 +890,10 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user
         - 'user.node_grants:view'
         - user.permissions
-      tags:
-        - 'config:workflow_list'
+      tags: {  }
   page_1:
     display_plugin: page
     id: page_1
@@ -891,7 +909,7 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user
         - 'user.node_grants:view'
         - user.permissions
-      tags:
-        - 'config:workflow_list'
+      tags: {  }
