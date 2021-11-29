@@ -18,6 +18,7 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
    *
    * Creates a parent with 2 children.
    * Attemps to move the children to an incompatible parent.
+   * Attemps to move the children to a descendant.
    * Finally moves the children to compatible parent.
    */
   public function testMoveChildren() {
