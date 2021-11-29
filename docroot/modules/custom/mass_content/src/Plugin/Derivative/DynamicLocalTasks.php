@@ -5,13 +5,13 @@ namespace Drupal\mass_content\Plugin\Derivative;
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 
 /**
-  * Defines dynamic local tasks.
-  */
+ * Defines dynamic local tasks.
+ */
 class DynamicLocalTasks extends DeriverBase {
 
-  /**
-  * {@inheritdoc}
-  */
+/**
+ * {@inheritdoc}
+ */
   public function getDerivativeDefinitions($base_plugin_definition) {
     // Implement dynamic logic to provide values for the same keys as in example.links.task.yml.
     $this->derivatives['mass_content.change_parents'] = $base_plugin_definition;
