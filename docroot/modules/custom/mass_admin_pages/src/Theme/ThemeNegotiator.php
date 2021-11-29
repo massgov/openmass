@@ -33,4 +33,5 @@ class ThemeNegotiator implements ThemeNegotiatorInterface {
   public function determineActiveTheme(RouteMatchInterface $route_match) {
     return 'mass_admin_theme';
   }
+
 }
