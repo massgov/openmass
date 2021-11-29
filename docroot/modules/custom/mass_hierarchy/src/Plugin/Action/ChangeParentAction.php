@@ -9,6 +9,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Changes a parent field with another, checking allowed parent types first.
+ *
  * @see https://www.drupal.org/docs/contributed-modules/views-bulk-operations-vbo/creating-a-new-action#s-2-action-class
  *
  * @Action(
@@ -32,7 +33,7 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
     $entity->field_primary_parent = $new_parent_id;
     $entity->save();
 
-    return $this->t('Updated parent for '). $entity->label() . ' - ' . $entity->id();
+    return $this->t('Updated parent for') . ' ' . $entity->label() . ' - ' . $entity->id();
   }
 
   /**
@@ -99,7 +100,7 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
 
       // Ensure the new parent is not one of the selected nodes.
       if ($new_parent == $nid) {
-        $form_state->setError($form['new_parent'], $this->t('The new parent can\'t be one of the selected items.'));
+        $form_state->setError($form['new_parent'], $this->t("The new parent can't be one of the selected items."));
       }
 
       foreach ($descendants as $descendant) {
@@ -145,9 +146,9 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
         'match_operator' => 'CONTAINS',
         'match_limit' => 10,
       ],
-      '#title' => t('New parent'),
+      '#title' => $this->t('New parent'),
       '#required' => TRUE,
-      '#description' => t('Choose a new parent (%types) for the selected items.', ['%types' => implode(', ', $target_bundles)]),
+      '#description' => $this->t('Choose a new parent (%types) for the selected items.', ['%types' => implode(', ', $target_bundles)]),
     ];
     return $form;
   }
