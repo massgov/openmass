@@ -86,10 +86,18 @@ class TopicPageRestrictionTest extends ExistingSiteBase {
    * Creates a restricted/unrestricted topic page.
    */
   public function createTopicPage($restricted) {
+    // Test a new Topic page can be saved.
+    $newOrgNode = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+    ]);
+
     $data = [
       'type' => 'topic_page',
       'title' => $this->randomMachineName(),
       'field_restrict_link_management' => $restricted,
+      'field_organizations' => $newOrgNode->id(),
+      'field_topic_lede' => $this->randomString(20),
       'status' => 1,
       'moderation_state' => 'published',
     ];
@@ -155,6 +163,10 @@ class TopicPageRestrictionTest extends ExistingSiteBase {
     $this->drupalGet('/node/' . $topic_page->id() . '/edit');
 
     $this->checkTopicPageEditForm($data['locked_fields'], $data['unlocked_fields']);
+
+    $this->getCurrentPage()->findButton('Save')->click();
+    $this->htmlOutput();
+    $this->assertSession()->pageTextContains('Topic Page ' . $topic_page->label() . ' has been updated.');
 
     // Create topic page restricted to content administrators.
     $topic_page = $this->createTopicPage(self::RESTRICTED);
