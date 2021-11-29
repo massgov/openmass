@@ -775,7 +775,7 @@ function mass_fields_form_node_info_details_form_alter(&$form, FormStateInterfac
  */
 function _mass_fields_form_node_topic_page_edit_restrict_fields(&$form, FormStateInterface $form_state) {
   $user = \Drupal::currentUser();
-  $user_can_create_topic_page = $user->hasPermission('create topic_page content');
+  $user_can_create_topic_page = $user->hasPermission('create topic page');
   if ($user_can_create_topic_page) {
     return;
   }
@@ -788,6 +788,9 @@ function _mass_fields_form_node_topic_page_edit_restrict_fields(&$form, FormStat
   // Setting allowed fields based on the restriction.
   $restricted = $node->field_restrict_link_management->value ?? FALSE;
   $allowed_fields = $restricted ? [] : [
+    // We want revisions as well.
+    'revision_log',
+    // These fields are the ones we want to allow.
     'field_intended_audience',
     'field_organizations',
     'field_reusable_label',
@@ -804,8 +807,17 @@ function _mass_fields_form_node_topic_page_edit_restrict_fields(&$form, FormStat
       continue;
     }
 
-    is_array($element) && (isset($element['#access']) || isset($element['#type'])) ?
-      $element['#disabled'] = TRUE : NULL;
+    // Only disabling form elements.
+    if (!is_array($element) || !isset($element['#type'])) {
+      continue;
+    }
+
+    // Token & hidden types are necessary for submission.
+    if (in_array($element['#type'], ['token', 'hidden'])) {
+      continue;
+    }
+
+    $element['#disabled'] = TRUE;
   }
 }
 
