@@ -23,7 +23,7 @@ class MassUtilityBreadcrumb extends HierarchyBasedBreadcrumbBuilder {
   /**
    * {@inheritdoc}
    */
-  public function __construct (
+  public function __construct(
     NestedSetStorageFactory $storage_factory,
     NestedSetNodeKeyFactory $node_key_factory,
     EntityTreeNodeMapperInterface $mapper,
