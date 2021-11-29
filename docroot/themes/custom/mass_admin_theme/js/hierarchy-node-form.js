@@ -2,7 +2,7 @@
 jQuery(document).ready(function ($) {
   'use strict';
   // Caching elements and setting vars.
-  var $form = $('form#node-topic-page-entity-hierarchy-reorder-form');
+  var $form = $('form[id^=node][id$="-entity-hierarchy-reorder-form"]');
   var $table = $('#edit-children', $form);
   var parentId = jQuery('tr.hierarchy-row', $table).eq(0).find('.child-parent').val();
 
