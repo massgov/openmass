@@ -32,10 +32,7 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
     $entity->field_primary_parent = $new_parent_id;
     $entity->save();
 
-    return t('Updated parent for %label (%nid).', [
-      '%label' => $entity->label(),
-      '%nid' => $entity->id(),
-    ]);
+    return $this->t('Updated parent for '). $entity->label() . ' - ' . $entity->id();
   }
 
   /**
