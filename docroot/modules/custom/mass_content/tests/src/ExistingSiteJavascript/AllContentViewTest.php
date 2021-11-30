@@ -299,6 +299,9 @@ class AllContentViewTest extends ExistingSiteWebDriverTestBase {
    * {@inheritdoc}
    */
   public function setUp() {
+    // @todo Restore this test.
+    $this->markTestSkipped('Disabled in https://github.com/massgov/openmass/pull/1153');
+
     parent::setUp();
     /** @var \Drupal\Tests\DocumentElement */
     $this->page = $this->getSession()->getPage();

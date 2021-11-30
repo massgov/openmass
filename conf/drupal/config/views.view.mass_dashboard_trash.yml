@@ -39,6 +39,7 @@ dependencies:
     - taxonomy.vocabulary.label
     - workflows.workflow.campaign_landing_page
     - workflows.workflow.editorial
+    - workflows.workflow.topic_page
   module:
     - content_moderation
     - mass_superset
@@ -942,6 +943,7 @@ display:
           value:
             campaign_landing_page-trash: campaign_landing_page-trash
             editorial-trash: editorial-trash
+            topic_page-trash: topic_page-trash
           group: 1
           exposed: false
           expose:
@@ -950,6 +952,8 @@ display:
             description: ''
             use_operator: false
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: ''
             required: false
             remember: false
@@ -957,8 +961,6 @@ display:
             remember_roles:
               authenticated: authenticated
             reduce: false
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
