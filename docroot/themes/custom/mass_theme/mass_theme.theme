@@ -5182,7 +5182,7 @@ function mass_theme_preprocess_paragraph__org_locations(&$variables) {
     $mappedLocations_options['aside'] = [
       'button' => $paragraph->field_location_button_label->value,
       'paragraph' => [
-        'text' => $paragraph->field_location_button_short_desc->value,
+        'text' => Helper::fieldFullView($paragraph, 'field_location_button_short_desc'),
       ],
     ];
 
@@ -6897,6 +6897,9 @@ function mass_theme_build_key_message_component(array &$variables) {
     $variables['button']['text'] = $button['#title'];
     $variables['button']['href'] = $button['#url']->toString();
   }
+
+  $variables['halfImage'] = $paragraph->field_use_half_image->value ?? FALSE;
+
   if (!empty($paragraph->field_text_overlay_color->value)) {
     $variables['textOverlay'] = isset($colors[$paragraph->field_text_overlay_color->value]) ? $colors[$paragraph->field_text_overlay_color->value] : '';
   }
