@@ -2,9 +2,9 @@ version: '3'
 
 services:
   drupal:
-    image: "massgov/drupal-container:1.0.19-ci"
+    image: "wodby/php:7.4-dev"
     volumes:
-      - .:/var/www:${VOLUME_FLAGS-rw}
+      - .:/var/www/html:${VOLUME_FLAGS-rw}
     environment:
       DOCKER_ENV: ci
       APACHE_DOCROOT: /var/www/docroot
@@ -21,9 +21,10 @@ services:
       AC_API2_SECRET: $AC_API2_SECRET
     links:
       - mysql
-    working_dir: /var/www
+    working_dir: /var/www/html
 
   mysql:
+    # See https://github.com/juampynr/mariadb-no-volume
     build: .
     environment:
       MYSQL_USER: circle
