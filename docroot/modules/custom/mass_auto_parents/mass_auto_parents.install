@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * @file
+ * Requirements and update functions for the mass_auto_parents module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function mass_auto_parents_schema() {
+  $schema['indicators'] = [
+    'description' => 'Indicators table used to determine parent relationships.',
+    'fields' => [
+      'parent_nid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'child_nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'source_field' => [
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'default' => NULL,
+      ],
+      'parent_type' => [
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'default' => NULL,
+      ],
+      'child_type' => [
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'default' => NULL,
+      ],
+    ],
+    'primary key' => [
+      'parent_nid',
+      'child_nid',
+    ],
+  ];
+  $schema['relationships'] = [
+    'description' => 'Relationships table used to determine parent relationships.',
+    'fields' => [
+      'parent_nid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'child_nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+      ],
+      'source_field' => [
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'default' => NULL,
+      ],
+      'parent_type' => [
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'default' => NULL,
+      ],
+      'child_type' => [
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'default' => NULL,
+      ],
+    ],
+    'primary key' => [
+      'parent_nid',
+      'child_nid',
+    ],
+  ];
+  return $schema;
+}
