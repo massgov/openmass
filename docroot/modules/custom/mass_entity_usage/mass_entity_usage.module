@@ -13,9 +13,15 @@ use Drupal\node\Entity\Node;
  * Implements hook_entity_usage_block_tracking().
  */
 function mass_entity_usage_entity_usage_block_tracking($target_id, $target_type, $source_id, $source_type, $source_langcode, $source_vid, $method, $field_name, $count) {
-  if ($source_type == 'node') {
+  // Block tracking of paragraph revisions that are not publicly accessible.
+  if ($source_type === 'paragraph') {
+    if (!_mass_entity_usage_is_default($source_type, $source_id, $source_vid)) {
+      return TRUE;
+    }
+  }
+  elseif ($source_type === 'node') {
     // Load the node.
-    $node = Node::load($source_id);
+    $node = \Drupal::entityTypeManager()->getStorage('node')->loadRevision($source_vid);
     // Get the moderation state.
     $content_moderation_state = ContentModerationState::loadFromModeratedEntity($node);
     if ($content_moderation_state instanceof ContentModerationStateInterface
@@ -33,4 +39,40 @@ function mass_entity_usage_entity_usage_block_tracking($target_id, $target_type,
     }
   }
   return FALSE;
+}
+
+/**
+ * Find an id/revision_id record in the default field data table.
+ *
+ * @param string $entity_type
+ *   The entity type.
+ * @param integer $id
+ *   The entity id.
+ * @param integer $vid
+ *   The entity revision id.
+ *
+ * @return bool
+ */
+function _mass_entity_usage_is_default($entity_type, $id, $vid) {
+  if ($entity_type === 'paragraph') {
+    $query = \Drupal::database()->select('paragraphs_item_field_data', 'pifd');
+    $query->fields('pifd', ['id', 'revision_id']);
+    $query->condition('id', $id);
+    $query->condition('revision_id', $vid);
+    $results = $query->execute()->fetchAll();
+    if (empty($results)) {
+      return FALSE;
+    }
+  }
+  elseif ($entity_type === 'node') {
+    $query = \Drupal::database()->select('node_field_data', 'nfd');
+    $query->fields('nfd', ['nid', 'vid']);
+    $query->condition('nid', $id);
+    $query->condition('vid', $vid);
+    $results = $query->execute()->fetchAll();
+    if (empty($results)) {
+      return FALSE;
+    }
+  }
+  return TRUE;
 }
