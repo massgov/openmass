@@ -18,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @QueueWorker(
  *   id = "mass_auto_parents_queue",
  *   title = @Translation("Mass Auto Parents Queue"),
- *   cron = {"time" = 60}
+ *   cron = {"time" = 300}
  * )
  */
 class MassAutoParentsQueueWorker extends QueueWorkerBase implements ContainerFactoryPluginInterface {
@@ -65,6 +65,8 @@ class MassAutoParentsQueueWorker extends QueueWorkerBase implements ContainerFac
   public function processItem($data) {
     // Don't spam all the users with content update emails.
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+    // Turn off entity_hierarchy writes while processing the item.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
     $memory_cache = \Drupal::service('entity.memory_cache');
     // $data here is expected to contain child_nid and parent_nid.
     if (empty($data['child_nid']) && empty($data['parent_nid'])) {
@@ -119,6 +121,8 @@ class MassAutoParentsQueueWorker extends QueueWorkerBase implements ContainerFac
         $node->setSyncing(TRUE);
         $node->save();
         $memory_cache->deleteAll();
+        // Turn on entity_hierarchy writes while processing the item.
+        \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
       }
       catch (\Exception $e) {
         $this->logger->warning("An error occurred when assigning parent relationship for entity with data: @data. Error message: {$e->getMessage()}", ['@data' => json_encode($data)]);
