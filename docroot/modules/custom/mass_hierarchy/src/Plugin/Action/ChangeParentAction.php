@@ -29,9 +29,20 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
     $config = $this->getConfiguration();
     $new_parent_id = $config['new_parent'];
 
-    /** @var \Drupal\node\Entity\Node $entity */
+    /** @var \Drupal\Node\NodeStorage */
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $vid = $node_storage->getLatestRevisionId($entity->id());
+    $node_latest = $node_storage->loadRevision($vid);
+
+    // /** @var \Drupal\node\Entity\Node $entity */
     $entity->field_primary_parent = $new_parent_id;
     $entity->save();
+
+    // Was the current version different from the latest version?
+    if ($vid != $entity->vid) {
+      $node_latest->field_primary_parent = $new_parent_id;
+      $node_latest->save();
+    }
 
     return $this->t('Updated parent for') . ' ' . $entity->label() . ' - ' . $entity->id();
   }
