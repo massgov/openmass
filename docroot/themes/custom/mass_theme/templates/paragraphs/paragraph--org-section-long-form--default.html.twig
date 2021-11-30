@@ -16,14 +16,6 @@
   "externalSidebar": true
 } %}
   {% block stackedRowContentOverride %}
-    {# Add a wrapper for stat component to align with other components. #}
-    {% set statComponent = "" %}
-    {% for org_component in org_components %}
-      {% set statComponent = org_component[0].field_stat ? "true" : "false" %}
-    {% endfor %}
-    {% if statComponent %}
-      <div class="ma__stacked-row__section__stat-wrapper">
-    {% endif %}
     {% for org_component in org_components %}
       {% if org_component.group == 'default' %}
         {% embed "@organisms/by-author/rich-text.twig" %}
@@ -49,9 +41,6 @@
         {{ org_component[0]|view }}
       {% endif %}
     {% endfor %}
-    {% if statComponent %}
-      <div class="ma__stacked-row__section__stat-wrapper">
-    {% endif %}
   {% endblock %}
 {% endembed %}
 
