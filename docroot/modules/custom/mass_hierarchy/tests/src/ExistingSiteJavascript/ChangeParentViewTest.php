@@ -14,6 +14,15 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
   use LoginTrait;
 
   /**
+   * Loads the admin and logs in.
+   */
+  private function adminLogin() {
+    $user = User::load(1)->set('status', 1);
+    $user->save();
+    $this->drupalLogin($user);
+  }
+
+  /**
    * Tests move children action in the change_parents views.
    *
    * Creates a parent with 2 children.
@@ -22,6 +31,8 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
    * Finally moves the children to compatible parent.
    */
   public function testMoveChildren() {
+    $this->adminLogin();
+
     $parent1 = [
       'type' => 'topic_page',
       'title' => 'first-parent-' . $this->randomMachineName(16),
@@ -67,11 +78,6 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
 
     $this->createNode($child2);
 
-    // Create new user and login.
-    $user = User::load(1)->set('status', 1);
-    $user->save();
-    $this->drupalLogin($user);
-
     // Visit move children tab.
     $this->drupalGet('node/' . $parent1Node->id() . '/move-children');
 
@@ -113,6 +119,70 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     $this->drupalGet('node/' . $parent2Node->id() . '/move-children');
     $this->assertSession()->pageTextContains($child1['title']);
     $this->assertSession()->pageTextContains($child2['title']);
+  }
+
+  /**
+   * Tests parent bulk update when the current revision is not the latest.
+   */
+  public function testMoveChildrenWhenItsDraft() {
+
+    $this->adminLogin();
+
+    // Create a node to be the fist parent of $child1.
+    $parent1 = [
+      'type' => 'topic_page',
+      'title' => 'first-parent-' . $this->randomMachineName(16),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ];
+    $parent1Node = $this->createNode($parent1);
+
+    // Create a child for parent1.
+    $child1 = [
+      'title' => 'child1-' . $this->randomMachineName(16),
+      'field_primary_parent' => $parent1Node->id(),
+    ] + $parent1;
+    $child1Node = $this->createNode($child1);
+
+    // Create draft revision of the child.
+    $child1Node->moderation_state = 'draft';
+    $child1Node->status = 0;
+    $child1Node->save();
+
+    // Create a second parent node.
+    $parent2 = [
+      'type' => 'topic_page',
+      'title' => 'second-parent-' . $this->randomMachineName(16),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ];
+    $parent2Node = $this->createNode($parent2);
+
+    // Selecting the node to change the parent.
+    $this->drupalGet('node/' . $parent1Node->id() . '/move-children');
+    $this->assertSession()->pageTextContains($child1['title']);
+    $this->getCurrentPage()->find('css', '.vbo-table .select-all input:nth-child(1)')->check();
+    $this->getCurrentPage()->pressButton('Change parent');
+
+    // Bulk updating to the new parent.
+    $this->getCurrentPage()->fillField('New parent', $parent2Node->label());
+    $this->getCurrentPage()->pressButton('Change parent');
+    $this->getSession()->wait(2000);
+
+    /** @var \Drupal\Core\Entity\ContentEntityStorageBase */
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+
+    // Reloading the node to see changes.
+    $child1Node = $node_storage->load($child1Node->id());
+
+    // See the revisions and make the latests draft the current revision.
+    $this->drupalGet('node/' . $child1Node->id() . '/revisions');
+    $this->getCurrentPage()->clickLink('Set as current revision');
+    $this->getCurrentPage()->pressButton('Revert');
+
+    // Edit the node and check it has the second parent.
+    $this->getCurrentPage()->clickLink('Edit');
+    $this->assertSession()->fieldValueEquals('Parent page', $parent2Node->label() . ' (' . $parent2Node->id() . ')');
   }
 
 }
