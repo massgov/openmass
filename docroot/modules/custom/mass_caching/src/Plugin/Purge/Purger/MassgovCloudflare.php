@@ -27,7 +27,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @PurgePurger(
  *   id = "massgov_cloudflare",
- *   label = @Translation("Mass.gov Cloudflare"),
+ *   label = @Translation("9Mass.gov Cloudflare"),
  *   description = @Translation("Purger for CloudFlare."),
  *   types = {"url", "tag"},
  *   multi_instance = FALSE,
