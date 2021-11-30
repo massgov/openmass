@@ -67,6 +67,8 @@ class MassAutoParentsBatchManager implements ContainerInjectionInterface {
     // Query the relationships table.
     $query = \Drupal::database()->select('relationships', 'r');
     $query->fields('r', ['parent_nid', 'child_nid', 'parent_type', 'label']);
+    // todo: remove line below before merge!
+    $query->condition('child_nid', [527256], "IN");
     // Filter rows with child_type value that shouldn't have a parent.
     $query->condition('child_type', ['page', 'contact_information'], 'NOT IN');
     // Filter children who have parents assigned from the query.
