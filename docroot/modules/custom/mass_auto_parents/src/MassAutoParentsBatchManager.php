@@ -59,10 +59,21 @@ class MassAutoParentsBatchManager implements ContainerInjectionInterface {
    */
   public function generateBatch() {
     $operations = [];
+    // Query for child nodes that have parents assigned.
+    $subquery = \Drupal::database()->select('node__field_primary_parent', 'nfpp');
+    $subquery->fields('nfpp', ['entity_id', 'field_primary_parent_target_id']);
+    $subquery->isNotNull('field_primary_parent_target_id');
+    $sub_query_results = $subquery->execute()->fetchAllAssoc('entity_id');
+    // Query the relationships table.
     $query = \Drupal::database()->select('relationships', 'r');
-    $query->fields('r', ['parent_nid', 'child_nid', 'parent_type']);
+    $query->fields('r', ['parent_nid', 'child_nid', 'parent_type', 'label']);
     // Filter rows with child_type value that shouldn't have a parent.
     $query->condition('child_type', ['page', 'contact_information'], 'NOT IN');
+    // Filter children who have parents assigned from the query.
+    if (!empty($sub_query_results)) {
+      $sub_query_keys = array_keys($sub_query_results);
+      $query->condition('child_nid', $sub_query_keys, "NOT IN");
+    }
     // Filter rows with child_nid same as parent_nid.
     $query->where('child_nid <> parent_nid');
     $query->orderBy('child_nid');
@@ -117,6 +128,7 @@ class MassAutoParentsBatchManager implements ContainerInjectionInterface {
         'child_nid' => $child_nid,
         'parent_nid' => $parent_nid,
         'parent_type' => $row->parent_type,
+        'label' => $row->label,
       ]);
       $context['sandbox']['progress']++;
       $context['results'][] = $child_nid . ':' . $parent_nid;

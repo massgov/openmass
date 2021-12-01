@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Queue\QueueWorkerBase;
+use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -17,7 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * @QueueWorker(
  *   id = "mass_auto_parents_queue",
  *   title = @Translation("Mass Auto Parents Queue"),
- *   cron = {"time" = 60}
+ *   cron = {"time" = 300}
  * )
  */
 class MassAutoParentsQueueWorker extends QueueWorkerBase implements ContainerFactoryPluginInterface {
@@ -64,6 +65,8 @@ class MassAutoParentsQueueWorker extends QueueWorkerBase implements ContainerFac
   public function processItem($data) {
     // Don't spam all the users with content update emails.
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+    // Turn off entity_hierarchy writes while processing the item.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
     $memory_cache = \Drupal::service('entity.memory_cache');
     // $data here is expected to contain child_nid and parent_nid.
     if (empty($data['child_nid']) && empty($data['parent_nid'])) {
@@ -86,12 +89,40 @@ class MassAutoParentsQueueWorker extends QueueWorkerBase implements ContainerFac
           'weight' => 0,
         ];
         $node->set('field_primary_parent', $field_value);
+        // If there is a label, set it.
+        if (!is_null($data['label'])) {
+          // Load the label term.
+          $terms = $this->entityTypeManager->getStorage('taxonomy_term')
+            ->loadByProperties(['name' => $data['label']]);
+          // If the term doesn't exist create it.
+          if (empty($terms)) {
+            $term = Term::create([
+              'name' => $data['label'],
+              'vid' => 'label',
+            ]);
+            $term->save();
+          }
+          else {
+            // Use the loaded term.
+            $term = current($terms);
+          }
+          // Get the label field value.
+          $field_reusable_label = $node->get('field_reusable_label')->getValue();
+          // Add the new term label.
+          $field_reusable_label[] = [
+            'target_id' => $term->id(),
+          ];
+          // Update the label field value.
+          $node->set('field_reusable_label', $field_reusable_label);
+        }
         // Save the node.
         // Save without updating the last modified date. This requires a core patch
         // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
         $node->setSyncing(TRUE);
         $node->save();
         $memory_cache->deleteAll();
+        // Turn on entity_hierarchy writes while processing the item.
+        \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
       }
       catch (\Exception $e) {
         $this->logger->warning("An error occurred when assigning parent relationship for entity with data: @data. Error message: {$e->getMessage()}", ['@data' => json_encode($data)]);
