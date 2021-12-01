@@ -1,3 +1,20 @@
+
+
+## [0.304.0] - December 1, 2021
+
+### Changed
+  - DP-22990: Update circleCI to remove unused mayflower testing jobs and allow nightly deployment to CD with latest mayflower and openmass develop branches.
+  - DP-23172: Update Db container used for CI and local dev.
+  - DP-23246: Describe the change. If you need multiple lines, start the first line with the following "|-" characters.
+  - DP-23292: Revert DDEV usage from CI
+  
+### Fixed
+  - DP-23444: Fixed issue with Organization Locations paragraphs causing Behat errors.
+  - DP-23447: Fixed duplicate location listing item and location paragraph input fields styling.
+  
+### Security
+  - DP-23501: Drupal core update.
+  
 ## [0.303.1] - November 17, 2021
 
 ### Fixed
