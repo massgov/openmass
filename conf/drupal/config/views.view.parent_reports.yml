@@ -28,7 +28,10 @@ dependencies:
     - node.type.topic_page
     - taxonomy.vocabulary.label
   content:
-    - 'taxonomy_term:label:c831d60b-c6a6-41f3-8229-e7ee13097261'
+    - 'taxonomy_term:label:47053528-850d-4344-8715-416fccecca17'
+    - 'taxonomy_term:label:9ee75cd3-ea23-4242-9227-b6a1999db9c7'
+    - 'taxonomy_term:label:e7405856-923f-4df3-b1c1-14d96806cd0d'
+    - 'taxonomy_term:label:e83b247e-2322-48dd-959c-3df4711fe037'
   module:
     - entity_hierarchy
     - mass_superset
@@ -1033,9 +1036,9 @@ display:
           group_type: group
           admin_label: ''
           operator: '='
-          value: All
+          value: '1'
           group: 1
-          exposed: true
+          exposed: false
           expose:
             operator_id: ''
             label: 'Child Published?'
@@ -2655,7 +2658,10 @@ display:
           admin_label: ''
           operator: or
           value:
-            - 60806
+            85838: 85838
+            85837: 85837
+            85839: 85839
+            85840: 85840
           group: 1
           exposed: false
           expose:
@@ -2686,7 +2692,7 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           reduce_duplicates: false
-          type: textfield
+          type: select
           limit: true
           vid: label
           hierarchy: false
