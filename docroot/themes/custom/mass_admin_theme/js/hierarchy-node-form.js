@@ -102,6 +102,15 @@ jQuery(document).ready(function ($) {
         // The only to insert rows on a draggable table.
         // Requires patching tabledrag.js.
         Drupal.tableDrag.prototype.makeDraggable.bind(jQuery('#edit-children').data('tableDragObject'), elem)();
+
+        // Mocked up JS for how we would throw errors when dragging to ineligible parents.
+        var childBundle = $(elem).find('.bundle').val();
+        var parentTargetBundles = $(elem).find('.parent-target-bundles').val();
+
+        if (parentTargetBundles.includes(childBundle)) {
+          $(elem).find('td').addClass('error');
+        }
+        
         $(elem).find('td:nth-child(3)').addClass('tabledrag-hide');
         $(elem).find('td:nth-child(6)').addClass('tabledrag-hide');
         Drupal.attachBehaviors(elem, drupalSettings);
