@@ -49,15 +49,30 @@ jQuery(document).ready(function ($) {
 
     var $child = $tr.next();
     var level = $tr.find('.indentation').length;
+    var directChildrenShouldBeVisible = $tr.hasClass('hierarchy-row--expanded');
 
     while (true) { // eslint-disable-line
       var childLevel = $child.find('.indentation').length;
 
+      // Whether we are expanding or collapsing,
+      // the direct children should not be expanded,
+      // and deeper items should be hidden.
+      $child.removeClass('hierarchy-row--expanded');
+      if (childLevel - level > 1) {
+        $child.hide();
+      }
+
+      // Direct children should follow the parent expanded/collapsed state.
+      if (childLevel - level === 1) {
+        $child.toggle(directChildrenShouldBeVisible);
+      }
+
+      // Let's check the next one if it is a children.
       if (level < childLevel) {
-        $child.toggle();
         $child = $child.next();
       }
       else {
+        // Not a child? Bye.
         break;
       }
     }
