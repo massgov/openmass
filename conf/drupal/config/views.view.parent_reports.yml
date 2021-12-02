@@ -28,10 +28,8 @@ dependencies:
     - node.type.topic_page
     - taxonomy.vocabulary.label
   content:
-    - 'taxonomy_term:label:520cee6c-a522-48f9-b8ed-19c70da50059'
-    - 'taxonomy_term:label:db32f42f-9bfe-40e0-b344-4d79bc312d70'
-    - 'taxonomy_term:label:d3d9afd1-9504-4b19-b2d8-027dbf180cf2'
-    - 'taxonomy_term:label:484e388f-acea-4cf9-8b3c-9267e960cb31'
+    - 'taxonomy_term:label:4b9d463e-b077-4c40-b770-ed87cb9998f1'
+    - 'taxonomy_term:label:f50875c6-9edb-46df-b47c-8afbbd5aa7ff'
   module:
     - entity_hierarchy
     - mass_superset
@@ -116,7 +114,6 @@ display:
             type_1: type_1
             field_primary_parent: field_primary_parent
             pageviews: pageviews
-            field_reusable_label: field_reusable_label
           info:
             status:
               sortable: true
@@ -167,12 +164,7 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            field_reusable_label:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-          default: pageviews
+          default: '-1'
           empty_table: false
       row:
         type: fields
@@ -997,7 +989,12 @@ display:
             label: ''
           granularity: second
       title: 'Children and Parents'
-      header: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          plugin_id: text
       footer: {  }
       empty: {  }
       relationships:
@@ -1042,9 +1039,9 @@ display:
           group_type: group
           admin_label: ''
           operator: '='
-          value: '1'
+          value: All
           group: 1
-          exposed: false
+          exposed: true
           expose:
             operator_id: ''
             label: 'Child Published?'
@@ -1365,68 +1362,6 @@ display:
               external_data_resource_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
-            reduce: true
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
-        type_1:
-          id: type_1
-          table: node_field_data
-          field: type
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: in
-          value:
-            advisory: advisory
-            binder: binder
-            curated_list: curated_list
-            decision: decision
-            decision_tree: decision_tree
-            event: event
-            executive_order: executive_order
-            form_page: form_page
-            guide_page: guide_page
-            how_to_page: how_to_page
-            info_details: info_details
-            location: location
-            location_details: location_details
-            news: news
-            org_page: org_page
-            campaign_landing: campaign_landing
-            regulation: regulation
-            rules: rules
-            service_page: service_page
-            service_details: service_details
-            topic_page: topic_page
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
             reduce: false
           is_grouped: false
           group_info:
@@ -1953,6 +1888,56 @@ display:
           destination: true
           entity_type: node
           plugin_id: entity_operations
+        tree_summary:
+          id: tree_summary
+          table: nested_set_field_primary_parent_node
+          field: tree_summary
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Child summary'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          summary_type: child_counts
+          plugin_id: entity_hierarchy_tree_summary
     cache_metadata:
       max-age: -1
       contexts:
@@ -1980,7 +1965,7 @@ display:
         filters: false
         filter_groups: false
         group_by: false
-        fields: false
+        header: false
       filters:
         status:
           id: status
@@ -2156,84 +2141,6 @@ display:
           hierarchy: false
           error_message: true
           plugin_id: taxonomy_index_tid
-        type:
-          id: type
-          table: node_field_data
-          field: type
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: in
-          value:
-            advisory: advisory
-            binder: binder
-            curated_list: curated_list
-            decision: decision
-            decision_tree: decision_tree
-            event: event
-            executive_order: executive_order
-            form_page: form_page
-            guide_page: guide_page
-            how_to_page: how_to_page
-            info_details: info_details
-            location: location
-            location_details: location_details
-            news: news
-            org_page: org_page
-            campaign_landing: campaign_landing
-            regulation: regulation
-            rules: rules
-            service_page: service_page
-            service_details: service_details
-            topic_page: topic_page
-          group: 1
-          exposed: true
-          expose:
-            operator_id: type_op
-            label: 'Child Content Type'
-            description: ''
-            use_operator: false
-            operator: type_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: type
-            required: false
-            remember: true
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            reduce: true
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
         node_org_filter:
           id: node_org_filter
           table: node_field_data
@@ -2289,6 +2196,86 @@ display:
             group_items: {  }
           entity_type: node
           plugin_id: mass_views_node_org_filter
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: in
+          value:
+            advisory: advisory
+            binder: binder
+            curated_list: curated_list
+            decision: decision
+            decision_tree: decision_tree
+            event: event
+            executive_order: executive_order
+            form_page: form_page
+            guide_page: guide_page
+            how_to_page: how_to_page
+            info_details: info_details
+            location: location
+            location_details: location_details
+            news: news
+            org_page: org_page
+            campaign_landing: campaign_landing
+            regulation: regulation
+            rules: rules
+            service_page: service_page
+            service_details: service_details
+            topic_page: topic_page
+          group: 1
+          exposed: true
+          expose:
+            operator_id: type_op
+            label: 'Child Content Type'
+            description: ''
+            use_operator: true
+            operator: type_op
+            operator_limit_selection: true
+            operator_list:
+              in: in
+              'not in': 'not in'
+            identifier: type
+            required: false
+            remember: true
+            multiple: true
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            reduce: true
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
         status_1:
           id: status_1
           table: node_field_data
@@ -2375,576 +2362,26 @@ display:
           entity_type: node
           entity_field: nid
           plugin_id: numeric
-        type_1:
-          id: type_1
-          table: node_field_data
-          field: type
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: in
-          value:
-            advisory: advisory
-            binder: binder
-            curated_list: curated_list
-            decision: decision
-            decision_tree: decision_tree
-            event: event
-            executive_order: executive_order
-            form_page: form_page
-            guide_page: guide_page
-            how_to_page: how_to_page
-            info_details: info_details
-            location: location
-            location_details: location_details
-            news: news
-            org_page: org_page
-            campaign_landing: campaign_landing
-            regulation: regulation
-            rules: rules
-            service_page: service_page
-            service_details: service_details
-            topic_page: topic_page
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
       filter_groups:
         operator: AND
         groups:
           1: AND
           2: OR
       group_by: false
-      fields:
-        status:
-          id: status
-          table: node_field_data
-          field: status
+      header:
+        area:
+          id: area
+          table: views
+          field: area
           relationship: none
           group_type: group
           admin_label: ''
-          label: 'Child Published?'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: boolean
-          settings:
-            format: yes-no
-            format_custom_true: ''
-            format_custom_false: ''
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          entity_type: node
-          entity_field: status
-          plugin_id: field
-        type:
-          id: type
-          table: node_field_data
-          field: type
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Child Content type'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: target_id
-          type: entity_reference_label
-          settings:
-            link: false
-          group_column: target_id
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          entity_type: node
-          entity_field: type
-          plugin_id: field
-        title:
-          id: title
-          table: node_field_data
-          field: title
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Child Page Title'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: false
-            ellipsis: false
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: string
-          settings:
-            link_to_entity: true
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          entity_type: node
-          entity_field: title
-          plugin_id: field
-        status_1:
-          id: status_1
-          table: node_field_data
-          field: status
-          relationship: node__field_primary_parent
-          group_type: group
-          admin_label: ''
-          label: 'Parent Published?'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: boolean
-          settings:
-            format: yes-no
-            format_custom_true: ''
-            format_custom_false: ''
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          entity_type: node
-          entity_field: status
-          plugin_id: field
-        type_1:
-          id: type_1
-          table: node_field_data
-          field: type
-          relationship: node__field_primary_parent
-          group_type: group
-          admin_label: ''
-          label: 'Parent Content Type'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: target_id
-          type: entity_reference_label
-          settings:
-            link: false
-          group_column: target_id
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          entity_type: node
-          entity_field: type
-          plugin_id: field
-        field_primary_parent:
-          id: field_primary_parent
-          table: node__field_primary_parent
-          field: field_primary_parent
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Parent Page Title'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: target_id
-          type: entity_reference_hierarchy_label
-          settings:
-            link: true
-            weight_output: attribute
-          group_column: ''
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          plugin_id: field
-        pageviews:
-          id: pageviews
-          table: mass_superset_data
-          field: pageviews
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Child Page Views'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
-          plugin_id: numeric
-        operations:
-          id: operations
-          table: node
-          field: operations
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: Actions
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          destination: true
-          entity_type: node
-          plugin_id: entity_operations
+          empty: false
+          tokenize: false
+          content:
+            value: 'Parents are required for all published pages except organizations and topic pages.  Organizations parents are optional.  Topics should have a parent unless they are top level parents that are directly under the home page.'
+            format: basic_html
+          plugin_id: text
     cache_metadata:
       max-age: -1
       contexts:
@@ -3151,9 +2588,11 @@ display:
           group_type: group
           admin_label: ''
           operator: or
-          value: {  }
+          value:
+            - 85879
+            - 85880
           group: 1
-          exposed: true
+          exposed: false
           expose:
             operator_id: field_reusable_label_target_id_op
             label: 'Child Label(s)'
@@ -3282,121 +2721,10 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
-        type_1:
-          id: type_1
-          table: node_field_data
-          field: type
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: in
-          value:
-            advisory: advisory
-            binder: binder
-            curated_list: curated_list
-            decision: decision
-            decision_tree: decision_tree
-            event: event
-            executive_order: executive_order
-            form_page: form_page
-            guide_page: guide_page
-            how_to_page: how_to_page
-            info_details: info_details
-            location: location
-            location_details: location_details
-            news: news
-            org_page: org_page
-            campaign_landing: campaign_landing
-            regulation: regulation
-            rules: rules
-            service_page: service_page
-            service_details: service_details
-            topic_page: topic_page
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
-        field_reusable_label_target_id_1:
-          id: field_reusable_label_target_id_1
-          table: node__field_reusable_label
-          field: field_reusable_label_target_id
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: or
-          value:
-            85838: 85838
-            85837: 85837
-            85839: 85839
-            85840: 85840
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          type: select
-          limit: true
-          vid: label
-          hierarchy: false
-          error_message: true
-          plugin_id: taxonomy_index_tid
       filter_groups:
         operator: AND
         groups:
-          1: AND
+          1: OR
       group_by: false
       fields:
         status:
@@ -3856,7 +3184,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: 'Child Label(s)'
+          label: Label(s)
           exclude: false
           alter:
             alter_text: false
@@ -3912,57 +3240,6 @@ display:
           separator: ', '
           field_api_classes: false
           plugin_id: field
-        operations:
-          id: operations
-          table: node
-          field: operations
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: Actions
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          destination: true
-          entity_type: node
-          plugin_id: entity_operations
       header:
         area:
           id: area
