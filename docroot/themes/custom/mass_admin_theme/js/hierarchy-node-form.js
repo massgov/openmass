@@ -143,14 +143,89 @@ jQuery(document).ready(function ($) {
     loadTrChildren($control, $tr);
   }
 
-  $('tr .hierarchy-row-controls div', $table).click(toggleRowClickEvent);
+  // Iterates to find the parent (if any) for a given row.
+  function getParentFromRow($row) {
+    var level = $row.find('.js-indentation').length;
 
-  $(document).on('touchend mouseup pointerup', function (event) {
+    do {
+      var $rowAbove = $row.prev();
+      if (!$rowAbove.length) {
+        return true;
+      }
+      var rowAboveLevel = $rowAbove.find('.js-indentation').length;
+      if (rowAboveLevel >= level) {
+        $row = $row.prev();
+        continue;
+      }
+
+      return $rowAbove;
+    } while (true);  // eslint-disable-line
+  }
+
+  // Checks if row can be a child for parentRow.
+  function isParentCorrect($row, $parentRow) {
+    var parentBundle = $parentRow.find('td [data-bundle]').data('bundle');
+    var rowBundle = $row.find('td [data-bundle]').data('bundle');
+    var allowedBundles = drupalSettings.mass_hierarchy_parent_bundle_info[rowBundle];
+    return typeof allowedBundles[parentBundle] != 'undefined';
+  }
+
+  // Checks if there are rows with errors and toggles a warning message.
+  function parentChildRelationshipChecker() {
+    var rowsWithErrorsCount = $table.find('tr.hierarchy-row--is-wrong').length;
+
+    if (!rowsWithErrorsCount) {
+      $('#hierarchy-node-wrong-message').remove();
+      return true;
+    }
+
+    var messageBox =
+      '<div' +
+        'id="hierarchy-node-wrong-message"' +
+        'role="contentinfo"' +
+        'aria-label="Status message"' +
+        'class="messages messages--warning">' +
+          '<h2 class="visually-hidden">Status message</h2>' +
+          'One or more children have a parent with a content type that isn\'t allowed.' +
+          'Please choose a parent that has an allowed content type.' +
+          'For content type limits see our' +
+          '<a href="/">knowledge base article</a>.' +
+      '</div>';
+
+    if ($('#hierarchy-node-wrong-message').length === 0) {
+      $('.region-highlighted').append(messageBox);
+    }
+
+    return false;
+  }
+
+  // Things do on drag events.
+  function doOnDrag(event) {
     var $rowHandle = $(event.target, $table);
+    var $row = $($rowHandle).closest('tr');
+    var $parentRow = getParentFromRow($row);
+
+    var ok = true;
+    if ($parentRow !== true) {
+      ok = isParentCorrect($row, $parentRow);
+    }
+    $row.toggleClass('hierarchy-row--is-wrong', !ok);
+    parentChildRelationshipChecker();
+
     if ($rowHandle.hasClass('tabledrag-handle') || $rowHandle.hasClass('handle')) {
       checkParents();
     }
-  });
+  }
 
-  $form.submit(setParentOnFirstLevel);
+  // Things to do on submit (and before submit).
+  function doOnSubmit() {
+    if (!parentChildRelationshipChecker()) {
+      return false;
+    }
+    setParentOnFirstLevel();
+  }
+
+  $('tr .hierarchy-row-controls div', $table).click(toggleRowClickEvent);
+  $(document).on('touchend mouseup pointerup', doOnDrag);
+  $form.submit(doOnSubmit);
 });

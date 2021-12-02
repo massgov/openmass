@@ -1,5 +1,5 @@
 diff --git a/src/Form/HierarchyChildrenForm.php b/src/Form/HierarchyChildrenForm.php
-index fc94005..87419e8 100644
+index fc94005..efacf1b 100644
 --- a/src/Form/HierarchyChildrenForm.php
 +++ b/src/Form/HierarchyChildrenForm.php
 @@ -4,14 +4,9 @@ namespace Drupal\entity_hierarchy\Form;
@@ -35,7 +35,7 @@ index fc94005..87419e8 100644
      /** @var \Drupal\Core\Field\FieldDefinitionInterface[] $fields */
      $fields = $this->parentCandidate->getCandidateFields($this->entity);
      if (!$fields) {
-@@ -118,22 +113,47 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -118,28 +113,55 @@ class HierarchyChildrenForm extends ContentEntityForm {
          '#submit' => ['::updateField'],
        ];
      }
@@ -88,7 +88,15 @@ index fc94005..87419e8 100644
        ],
        '#empty' => $this->t('There are no children to reorder'),
      ];
-@@ -152,14 +172,49 @@ class HierarchyChildrenForm extends ContentEntityForm {
+ 
+     $bundles = FALSE;
+ 
++    // ksm(array_keys($children));
++
+     foreach ($children as $weight => $node) {
+       if (!$childEntities->contains($node)) {
+         // Doesn't exist or is access hidden.
+@@ -152,14 +174,53 @@ class HierarchyChildrenForm extends ContentEntityForm {
          continue;
        }
        $child = $node->getId();
@@ -135,12 +143,17 @@ index fc94005..87419e8 100644
        if (!$bundles) {
          $bundles = $this->entityTypeBundleInfo->getBundleInfo($childEntity->getEntityTypeId());
        }
-       $form['children'][$child]['type'] = ['#markup' => $bundles[$childEntity->bundle()]['label']];
+-      $form['children'][$child]['type'] = ['#markup' => $bundles[$childEntity->bundle()]['label']];
++
++      $form['children'][$child]['type']['#type'] = 'html_tag';
++      $form['children'][$child]['type']['#tag'] = 'div';
++      $form['children'][$child]['type']['#attributes']['data-bundle'] = $childEntity->bundle();
++      $form['children'][$child]['type']['#value'] = $bundles[$childEntity->bundle()]['label'];
 +
        $form['children'][$child]['weight'] = [
          '#type' => 'weight',
          '#delta' => 50,
-@@ -167,7 +222,7 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -167,7 +228,7 @@ class HierarchyChildrenForm extends ContentEntityForm {
          '#title_display' => 'invisible',
          '#default_value' => $childEntity->{$fieldName}->weight,
          // Classify the weight element for #tabledrag.
@@ -149,7 +162,7 @@ index fc94005..87419e8 100644
        ];
        // Operations column.
        $form['children'][$child]['operations'] = [
-@@ -186,9 +241,19 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -186,9 +247,19 @@ class HierarchyChildrenForm extends ContentEntityForm {
            'url' => $childEntity->toUrl('delete-form'),
          ];
        }
@@ -171,7 +184,7 @@ index fc94005..87419e8 100644
  
      return $form;
    }
-@@ -210,7 +275,7 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -210,7 +281,7 @@ class HierarchyChildrenForm extends ContentEntityForm {
     */
    protected function actions(array $form, FormStateInterface $form_state) {
      $actions = parent::actions($form, $form_state);
@@ -180,7 +193,7 @@ index fc94005..87419e8 100644
      // Don't perform field validation.
      $actions['submit']['#limit_validation_errors'] = [['children'], ['fieldname']];
      unset($actions['delete']);
-@@ -221,7 +286,9 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -221,7 +292,9 @@ class HierarchyChildrenForm extends ContentEntityForm {
      $fields = $this->parentCandidate->getCandidateFields($this->entity);
      $fieldName = $form_state->getValue('fieldname') ?: reset($fields);
      $entityType = $this->entity->getEntityType();
@@ -191,7 +204,7 @@ index fc94005..87419e8 100644
        $handlerClass = $entityType->getHandlerClass('entity_hierarchy');
        /** @var \Drupal\entity_hierarchy\Handler\EntityHierarchyHandlerInterface $handler */
        $handler = new $handlerClass();
-@@ -264,30 +331,26 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -264,30 +337,26 @@ class HierarchyChildrenForm extends ContentEntityForm {
     */
    public function save(array $form, FormStateInterface $form_state) {
      $children = $form_state->getValue('children');
@@ -230,7 +243,7 @@ index fc94005..87419e8 100644
     *
     * @param string $fieldName
     *   Field name.
-@@ -296,9 +359,13 @@ class HierarchyChildrenForm extends ContentEntityForm {
+@@ -296,9 +365,13 @@ class HierarchyChildrenForm extends ContentEntityForm {
     * @param int $weight
     *   New weight.
     */
@@ -247,6 +260,19 @@ index fc94005..87419e8 100644
    }
  
    /**
+diff --git a/src/Plugin/Derivative/DynamicLocalTasks.php b/src/Plugin/Derivative/DynamicLocalTasks.php
+index bc8bd8a..e065096 100644
+--- a/src/Plugin/Derivative/DynamicLocalTasks.php
++++ b/src/Plugin/Derivative/DynamicLocalTasks.php
+@@ -80,7 +80,7 @@ class DynamicLocalTasks extends DeriverBase implements ContainerDeriverInterface
+       }
+       $this->derivatives["$entity_type_id.entity_hierarchy_reorder"] = [
+         'route_name' => "entity.$entity_type_id.entity_hierarchy_reorder",
+-        'title' => $this->t('Children'),
++        'title' => $this->t('Hierarchy'),
+         'base_route' => "entity.$entity_type_id.canonical",
+         'weight' => 30,
+       ] + $base_plugin_definition;
 diff --git a/src/Routing/EntityHierarchyRouteProvider.php b/src/Routing/EntityHierarchyRouteProvider.php
 index c2174e1..e1b7b43 100644
 --- a/src/Routing/EntityHierarchyRouteProvider.php
