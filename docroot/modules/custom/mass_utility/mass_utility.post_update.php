@@ -1973,7 +1973,7 @@ function mass_utility_post_update_tfa_real_aes(array &$sandbox) {
 }
 
 /**
- * Remove unused DB tables
+ * Remove unused DB tables.
  */
 function mass_utility_post_update_drop_unused_tables(array &$sandbox) {
   $tables = ['old_e16344taxonomy_term_field_data', 'old_e16344taxonomy_term_data', 'old_5e4ddf_url_alias'];
