@@ -112,9 +112,7 @@ jQuery(document).ready(function ($) {
       var $rowsJustAppended = $('.' + justAppendedClass, $table);
       // Mark new parent rows as "children not loaded yet".
       $rowsJustAppended
-        .filter('.hierarchy-row--parent', $table).data('loaded', false)
-        // Attach events to new rows.
-        .find('.hierarchy-row-controls div').click(toggleRowClickEvent);
+        .filter('.hierarchy-row--parent', $table).data('loaded', false);
 
       // Attach behaviors to new rows.
       $('.' + justAppendedClass, $table).each(function (index, elem) {
