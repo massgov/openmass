@@ -16,7 +16,6 @@ class RouteSubscriber extends RouteSubscriberBase {
   public function alterRoutes(RouteCollection $collection) {
     if ($route = $collection->get('entity.node.entity_hierarchy_reorder')) {
       $route->setDefault('_title', 'Hierarchy');
-      $route->setDefault('title', 'Hierarchy');
     }
   }
 
