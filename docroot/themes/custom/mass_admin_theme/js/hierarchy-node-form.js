@@ -30,6 +30,7 @@ jQuery(document).ready(function ($) {
     $('.child-parent', $table).each(function (key, value) {
       var parentID = $(value).val();
       var $parent = $('[data-drupal-selector=edit-children-' + parentID + ']', $table);
+      $parent.toggleClass('hierarchy-row--expanded', $parent.next().filter(':visible').length > 0);
       $parent.addClass('hierarchy-row--parent');
     });
 
