@@ -184,16 +184,16 @@ jQuery(document).ready(function ($) {
     }
 
     var messageBox =
-      '<div' +
-        'id="hierarchy-node-wrong-message"' +
-        'role="contentinfo"' +
-        'aria-label="Status message"' +
-        'class="messages messages--warning">' +
-          '<h2 class="visually-hidden">Status message</h2>' +
-          'One or more children have a parent with a content type that isn\'t allowed.' +
-          'Please choose a parent that has an allowed content type.' +
-          'For content type limits see our' +
-          '<a href="/">knowledge base article</a>.' +
+      '<div ' +
+        ' id="hierarchy-node-wrong-message" ' +
+        ' role="contentinfo" ' +
+        ' aria-label="Status message" ' +
+        ' class="messages messages--warning"> ' +
+          ' <h2 class="visually-hidden">Status message</h2> ' +
+          ' One or more children have a parent with a content type that isn\'t allowed. ' +
+          ' Please choose a parent that has an allowed content type. ' +
+          ' For content type limits see our ' +
+          ' <a href="/allowedparents_for_contenttypes">knowledge base article</a>. ' +
       '</div>';
 
     if ($('#hierarchy-node-wrong-message').length === 0) {
