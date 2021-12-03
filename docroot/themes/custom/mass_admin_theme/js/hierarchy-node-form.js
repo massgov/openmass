@@ -32,6 +32,10 @@ jQuery(document).ready(function ($) {
       var $parent = $('[data-drupal-selector=edit-children-' + parentID + ']', $table);
       $parent.addClass('hierarchy-row--parent');
     });
+
+    // Likely, we have created expand/collapse controls,
+    // hence we need to attach events on them.
+    applyEventsToHierarchyControls();
   }
 
   // Hack to ensure the parent level is set correctly.
@@ -225,7 +229,16 @@ jQuery(document).ready(function ($) {
     setParentOnFirstLevel();
   }
 
-  $('tr .hierarchy-row-controls div', $table).click(toggleRowClickEvent);
+  // Centralized way to apply expand/collapse events once.
+  function applyEventsToHierarchyControls() {
+    $('tr.hierarchy-row', $table)
+      .once('hierarchy-expand-collapse')
+      .find('.hierarchy-row-controls')
+      .click(toggleRowClickEvent);
+  }
+
+  applyEventsToHierarchyControls();
+
   $(document).on('touchend mouseup pointerup', doOnDrag);
   $form.submit(doOnSubmit);
 });
