@@ -2192,14 +2192,16 @@ display:
             operator_id: type_op
             label: 'Child Content Type'
             description: ''
-            use_operator: false
+            use_operator: true
             operator: type_op
-            operator_limit_selection: false
-            operator_list: {  }
+            operator_limit_selection: true
+            operator_list:
+              in: in
+              'not in': 'not in'
             identifier: type
             required: false
             remember: true
-            multiple: false
+            multiple: true
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
