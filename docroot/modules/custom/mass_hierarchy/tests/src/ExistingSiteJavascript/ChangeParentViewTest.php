@@ -23,6 +23,17 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
   }
 
   /**
+   * Creates a random user.
+   */
+  private function createRandomUser() {
+    $user = User::create(['name' => $this->randomMachineName(20)]);
+    $user->addRole('administrator');
+    $user->activate();
+    $user->save();
+    return $user;
+  }
+
+  /**
    * Tests move children action in the change_parents views.
    *
    * Creates a parent with 2 children.
@@ -158,6 +169,9 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     ];
     $parent2Node = $this->createNode($parent2);
 
+    $randomUser = $this->createRandomUser();
+    $this->drupalLogin($randomUser);
+
     // Selecting the node to change the parent.
     $this->drupalGet('node/' . $parent1Node->id() . '/move-children');
     $this->assertSession()->pageTextContains($child1['title']);
@@ -177,6 +191,13 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
 
     // See the revisions and make the latests draft the current revision.
     $this->drupalGet('node/' . $child1Node->id() . '/revisions');
+
+    // Check revision author is the current user.
+    $this->assertSession()->pageTextContains('by ' . $randomUser->getAccountName());
+    // Check we have a custom message for this action on the revision log.
+    $this->assertSession()->pageTextContains('Revision created with "Move Children" feature. (Draft)');
+    $this->assertSession()->pageTextContains('Revision created with "Move Children" feature. (Published)');
+
     $this->getCurrentPage()->clickLink('Set as current revision');
     $this->getCurrentPage()->pressButton('Revert');
 
