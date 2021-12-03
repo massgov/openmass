@@ -34,10 +34,12 @@
   transform: rotate(180deg);
   line-height: 1rem;
   text-align: center;
+  margin-top: 1px;
 }
 
 .hierarchy-row--parent .hierarchy-row-controls .hierarchy-row-controls--collapse::after {
   transform: rotate(0deg);
+  margin-top: -3px;
 }
 
 .hierarchy-row--expanded .hierarchy-row-controls .hierarchy-row-controls--collapse {
@@ -66,4 +68,19 @@
 
 [id^="node-"][id$="-entity-hierarchy-reorder-form"] .tabledrag-changed-warning {
   display: none !important;
+}
+
+/* Hiding nid value */
+[id^="node-"][id$="-entity-hierarchy-reorder-form"] td:nth-child(4) {
+  display: none;
+}
+
+/* Not showing changed marker, it is confusing on this case */
+[id^="node-"][id$="-entity-hierarchy-reorder-form"] .tabledrag-changed {
+  display: none;
+}
+
+/* Default margin is 10rem, that is too much */
+[id^="node-"][id$="-entity-hierarchy-reorder-form"] .dropbutton-multiple {
+  padding-right: 2em;
 }
