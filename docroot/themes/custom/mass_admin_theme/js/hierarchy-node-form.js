@@ -125,6 +125,8 @@ jQuery(document).ready(function ($) {
         Drupal.attachBehaviors(elem, drupalSettings);
       }).removeClass(justAppendedClass);
 
+      applyEventsToHierarchyControls();
+
       Drupal.tableDrag.prototype.showColumns();
       Drupal.tableDrag.prototype.hideColumns();
     });
