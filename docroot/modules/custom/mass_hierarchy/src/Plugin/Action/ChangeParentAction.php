@@ -32,14 +32,19 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
     /** @var \Drupal\Node\NodeStorage */
     $node_storage = \Drupal::entityTypeManager()->getStorage('node');
     $vid = $node_storage->getLatestRevisionId($entity->id());
+    /** @var \Drupal\node\Entity\Node */
     $node_latest = $node_storage->loadRevision($vid);
 
-    // /** @var \Drupal\node\Entity\Node $entity */
+    /** @var \Drupal\node\Entity\Node */
     $entity->field_primary_parent = $new_parent_id;
+    $entity->setRevisionUserId(\Drupal::currentUser()->id());
+    $entity->revision_log = 'Revision created with "Move Children" feature.';
     $entity->save();
 
     // Was the current version different from the latest version?
-    if ($vid != $entity->vid) {
+    if ($vid != $entity->vid->value) {
+      $node_latest->setRevisionUserId(\Drupal::currentUser()->id());
+      $node_latest->revision_log = 'Revision created with "Move Children" feature.';
       $node_latest->field_primary_parent = $new_parent_id;
       $node_latest->save();
     }

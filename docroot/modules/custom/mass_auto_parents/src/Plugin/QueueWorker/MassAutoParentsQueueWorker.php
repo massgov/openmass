@@ -70,16 +70,18 @@ class MassAutoParentsQueueWorker extends QueueWorkerBase implements ContainerFac
     $memory_cache = \Drupal::service('entity.memory_cache');
     // $data here is expected to contain child_nid and parent_nid.
     if (empty($data['child_nid']) && empty($data['parent_nid'])) {
-      // Just skip this item.
+      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
       return;
     }
     $node_storage = $this->entityTypeManager->getStorage('node');
     if ($node = $node_storage->load($data['child_nid'])) {
       // Skip if the child is an org_page and the parent is not.
       if ($node->bundle() === 'org_page' && $data['parent_type'] !== 'org_page') {
+        \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
         return;
       }
       if (!$node->get('field_primary_parent')->isEmpty()) {
+        \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
         return;
       }
       try {
@@ -121,10 +123,11 @@ class MassAutoParentsQueueWorker extends QueueWorkerBase implements ContainerFac
         $node->setSyncing(TRUE);
         $node->save();
         $memory_cache->deleteAll();
-        // Turn on entity_hierarchy writes while processing the item.
+        // Turn on entity_hierarchy writes after processing the item.
         \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
       }
       catch (\Exception $e) {
+        \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
         $this->logger->warning("An error occurred when assigning parent relationship for entity with data: @data. Error message: {$e->getMessage()}", ['@data' => json_encode($data)]);
       }
     }
