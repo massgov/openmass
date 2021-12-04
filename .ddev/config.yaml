@@ -13,10 +13,10 @@ project_tld: local
 use_dns_when_possible: true
 web_environment:
   - DOCKER_ENV=devel
-  - MYSQL_USER=db
-  - MYSQL_PASSWORD=db
-  - MYSQL_DATABASE=db
-  - MYSQL_HOST=db
+  - MYSQL_USER=circle
+  - MYSQL_PASSWORD=circle
+  - MYSQL_DATABASE=circle
+  - MYSQL_HOST=ddev-mass-db
   - MEMCACHED_HOST=memcached
   - DRUSH_OPTIONS_URI=https://mass.local:$DDEV_ROUTER_HTTPS_PORT
   - DTT_BASE_URL=http://mass-web
