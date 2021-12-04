@@ -1,0 +1,68 @@
+.hierarchy-level--expanded {
+  display: table-row;
+}
+
+.hierarchy-row-controls {
+  display: none;
+}
+
+.hierarchy-row-controls .hierarchy-row-controls--collapse {
+  display: none;
+}
+
+.hierarchy-row--parent .hierarchy-row-controls {
+  display: inline-block;
+  position: relative;
+  width: 1.5rem;
+  height: 1rem;
+  vertical-align: middle;
+}
+
+.hierarchy-row--parent .hierarchy-row-controls div {
+  cursor: pointer;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.hierarchy-row--parent .hierarchy-row-controls div::after {
+  width: 100%;
+  height: 1rem;
+  content: '▴';
+  font-size: 20px;
+  position: absolute;
+  transform: rotate(180deg);
+  line-height: 1rem;
+  text-align: center;
+}
+
+.hierarchy-row--parent .hierarchy-row-controls .hierarchy-row-controls--collapse::after {
+  transform: rotate(0deg);
+}
+
+.hierarchy-row--expanded .hierarchy-row-controls .hierarchy-row-controls--collapse {
+  display: block;
+}
+
+.hierarchy-row--expanded .hierarchy-row-controls .hierarchy-row-controls--expand {
+  display: none;
+}
+
+.hierarchy-row--loading {
+  display: inline-block;
+  font-size: .75rem;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #777;
+}
+
+/* Temporary until we check for allowed bundle hierarchies  */
+[class^="node-"][class$="-entity-hierarchy-reorder-form"] .tabledrag-handle {
+  display: none;
+}
+
+/* Temporary until we check for allowed bundle hierarchies  */
+[class^="node-"][class$="-entity-hierarchy-reorder-form"] #edit-actions {
+  display: none;
+}
