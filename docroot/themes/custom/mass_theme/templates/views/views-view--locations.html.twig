@@ -61,7 +61,7 @@
               <div class="ma__location-filters__row">
                 <div class="ma__location-filters__by-location js-filter-by-location" data-ma-place-bounds-sw-lat="{{ swLat }}" data-ma-place-bounds-sw-lng="{{ swLng }}" data-ma-place-bounds-ne-lat="{{ neLat }}" data-ma-place-bounds-ne-lng="{{ neLng }}">
                   <label for="filter-by-location" class="ma__label ma__label--optional ">Search by city or zip code</label>
-                  <input class="ma__input pac-target-input" name="filter-by-location" id="filter-by-location" type="text" placeholder="City, town, or ZIP code" 
+                  <input class="ma__input pac-target-input" name="filter-by-location" id="filter-by-location" type="text" placeholder="City, town, or ZIP code"
                       data-type="text" autocomplete="off" value="{{ helper }}">
                 </div>
               </div>
@@ -89,7 +89,6 @@
               <a href="#location-listing-results" aria-describedby="sr-info">skip to the location listing</a>
               <div id="sr-info" style="display: none;">For screen reader users, we suggest skip the map and go to the location listing for a better user experience.  Currently, the map is not accessible yet for a comprehensive experience.</div>
               <div class="ma__location-listing__sticky js-location-listing-map">
-                <script type="text/javascript">var ma = ma || {};ma.leafletMapData = [];</script>
                 {% set leafletMap = leafletMap %}
                 {% include "@molecules/map-leaflet.twig" %}
               </div>
@@ -117,7 +116,7 @@
                 {{ empty }}
               </section>
               <div class="attachment">
-                <div class="views-summary"> 
+                <div class="views-summary">
                   {{ pager }}
                 </div>
               </div>
