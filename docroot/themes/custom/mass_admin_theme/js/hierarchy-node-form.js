@@ -9,34 +9,96 @@ jQuery(document).ready(function ($) {
   // Checks original table rows as not loaded yet.
   $('tr.hierarchy-row--parent', $table).data('loaded', false);
 
-  function checkParents() {
-    // Removes parent and expanded classes from rows
-    // that already had loaded its children, or from
-    // rows that became parent due to drag and drop of
-    // another row.
-    $('.hierarchy-row--parent', $table).each(function (i, e) {
-      var $tr = $(e);
+  // Loads children async on TRs that are getting a new
+  // element dragged as child to them.
+  function loadAsyncChildrenWhenChildIsDraggedInto($tr) {
+    var $parentRow = getParentFromRow($tr);
+
+    if (!$parentRow) {
+      return;
+    }
+
+    if ($parentRow.data('loaded') === false) {
+      loadTrChildren($parentRow);
+      return;
+    }
+    else if ($parentRow.data('loaded') === true) {
+      // If this TR has loaded its children already
+      // then we need to ensure that, when something is
+      // dragged as its child, its direct children are
+      // expanded as well.
+      $parentRow.addClass('hierarchy-row--expanded');
+      var children = getChildrenFromTr($parentRow);
+      children.forEach(function (tr) {
+        $(tr).show();
+      });
+    }
+  }
+
+  // Removes parent class on TRs without children
+  // that will not load async, or from TRs that already
+  // loaded its async elements and do not have children
+  // with the current ordering.
+  function removeParentClassIfRowIsNotParent() {
+    $('.hierarchy-row--parent', $table).each(function (i, tr) {
+      var $tr = $(tr);
+
+      if (!$tr.next().length) {
+        return;
+      }
+
+      var indentation = $tr.find('.indentation').length;
+      var nextIndentation = $tr.next().find('.indentation').length;
+
+      // Continue if next item is not a child.
+      if (nextIndentation > indentation) {
+        return;
+      }
+
+      // TR with data loaded false can have children if clicked.
+      // TR with undefined data loaded can't have children.
       if ($tr.data('loaded') === false) {
         return;
       }
-      else if ($tr.data('loaded') === true) {
-        $tr.addClass('hierarchy-row--expanded');
-      }
+
       $tr.removeClass('hierarchy-row--parent');
     });
 
+  }
+
+  // Gets the direct children from a TR.
+  function getChildrenFromTr($tr) {
+    var parentLevel = $tr.find('.indentation').length;
+    var $nextTr = $tr.next();
+    var nextLevel = $nextTr.find('.indentation').length;
+    var children = [];
+    do {
+
+      if (nextLevel - parentLevel === 1) {
+        children.push($nextTr);
+        $nextTr = $nextTr.next();
+        nextLevel = $nextTr.find('.indentation').length;
+      }
+      else {
+        return children;
+      }
+
+    } while (true);  // eslint-disable-line
+  }
+
+  // Children can be dragged into TRs that are not shown as parents,
+  // so we need to add the parent class when that happens.
+  function addParentClassOnRowsWithChildren() {
+    var $childIds = $('input.child-id', $table);
     // Defines parents that were created by drag and drop
     // or parents with already loaded children.
     $('.child-parent', $table).each(function (key, value) {
       var parentID = $(value).val();
-      var $parent = $('[data-drupal-selector=edit-children-' + parentID + ']', $table);
+      var $parentChildId = $childIds.filter('[data-drupal-selector=edit-children-' + parentID + '-id]');
+      var $parent = $parentChildId.closest('tr');
       $parent.toggleClass('hierarchy-row--expanded', $parent.next().filter(':visible').length > 0);
       $parent.addClass('hierarchy-row--parent');
     });
-
-    // Likely, we have created expand/collapse controls,
-    // hence we need to attach events on them.
-    applyEventsToHierarchyControls();
   }
 
   // Hack to ensure the parent level is set correctly.
@@ -49,6 +111,7 @@ jQuery(document).ready(function ($) {
     });
   }
 
+  // Expands or collapses TR's children.
   function toggleTrChildren($tr) {
     $tr.toggleClass('hierarchy-row--expanded');
 
@@ -83,8 +146,46 @@ jQuery(document).ready(function ($) {
     }
   }
 
-  function loadTrChildren($control, $tr) {
+  // Appends loaded children, attaches events, and massages its HTML.
+  function manageLoadedChildren($tr, $temp) {
+    // Remove loading.
+    $tr.find('.hierarchy-row--loading').remove();
+    var level = $tr.find('.indentation').length;
+    var indentationHTML = '<div class="js-indentation indentation">&nbsp;</div>';
+    var childrenIndentation = indentationHTML.repeat(level + 1);
+    var justAppendedClass = 'hierarchy-row--just-appended';
+
+    $temp.find('td:first-child').prepend(childrenIndentation);
+    // Mark just appended rows.
+    $temp.find('tr').addClass(justAppendedClass);
+
+    // Insert children on table.
+    $tr.after($temp.html());
+    var $rowsJustAppended = $('.' + justAppendedClass, $table);
+    // Mark new parent rows as "children not loaded yet".
+    $rowsJustAppended
+      .filter('.hierarchy-row--parent', $table).data('loaded', false);
+
+    // Attach behaviors to new rows.
+    $('.' + justAppendedClass, $table).each(function (index, elem) {
+      // The only to insert rows on a draggable table.
+      // Requires patching tabledrag.js.
+      Drupal.tableDrag.prototype.makeDraggable.bind(jQuery('#edit-children').data('tableDragObject'), elem)();
+      $(elem).find('td:nth-child(3)').addClass('tabledrag-hide');
+      $(elem).find('td:nth-child(6)').addClass('tabledrag-hide');
+      Drupal.attachBehaviors(elem, drupalSettings);
+    }).removeClass(justAppendedClass);
+
+    applyEventsToHierarchyControls();
+
+    Drupal.tableDrag.prototype.showColumns();
+    Drupal.tableDrag.prototype.hideColumns();
+  }
+
+  // Loads TR's children asynchronously and attaches events to them.
+  function loadTrChildren($tr) {
     // Mark this TR as it already loaded its children.
+    var $control = $tr.find('.hierarchy-row-controls');
     $tr.data('loaded', true);
     $tr.toggleClass('hierarchy-row--expanded');
     // The link tells us the route to fetch its children.
@@ -95,42 +196,7 @@ jQuery(document).ready(function ($) {
     // Temporary div to load content.
     var $temp = $('<div></div>');
     // Get the children of the TR.
-    $temp.load(childrenHref + ' #edit-children tbody tr.hierarchy-row', function () {
-      // Remove loading.
-      $tr.find('.hierarchy-row--loading').remove();
-
-      var level = $tr.find('.indentation').length;
-      var indentationHTML = '<div class="js-indentation indentation">&nbsp;</div>';
-      var childrenIndentation = indentationHTML.repeat(level + 1);
-      var justAppendedClass = 'hierarchy-row--just-appended';
-
-      $temp.find('td:first-child').prepend(childrenIndentation);
-      // Mark just appended rows.
-      $temp.find('tr').addClass(justAppendedClass);
-
-      // Insert children on table.
-      $tr.after($temp.html());
-      var $rowsJustAppended = $('.' + justAppendedClass, $table);
-      // Mark new parent rows as "children not loaded yet".
-      $rowsJustAppended
-        .filter('.hierarchy-row--parent', $table).data('loaded', false);
-
-      // Attach behaviors to new rows.
-      $('.' + justAppendedClass, $table).each(function (index, elem) {
-        // The only to insert rows on a draggable table.
-        // Requires patching tabledrag.js.
-        Drupal.tableDrag.prototype.makeDraggable.bind(jQuery('#edit-children').data('tableDragObject'), elem)();
-        $(elem).find('td:nth-child(3)').addClass('tabledrag-hide');
-        $(elem).find('td:nth-child(6)').addClass('tabledrag-hide');
-        Drupal.attachBehaviors(elem, drupalSettings);
-      }).removeClass(justAppendedClass);
-
-      applyEventsToHierarchyControls();
-
-      Drupal.tableDrag.prototype.showColumns();
-      Drupal.tableDrag.prototype.hideColumns();
-    });
-
+    $temp.load(childrenHref + ' #edit-children tbody tr.hierarchy-row', manageLoadedChildren.bind(this, $tr, $temp));
   }
 
   // Expands/collapses children in a row when clicked.
@@ -145,7 +211,7 @@ jQuery(document).ready(function ($) {
       return;
     }
     // Loading children asynchronously.
-    loadTrChildren($control, $tr);
+    loadTrChildren($tr);
   }
 
   // Iterates to find the parent (if any) for a given row.
@@ -155,14 +221,13 @@ jQuery(document).ready(function ($) {
     do {
       var $rowAbove = $row.prev();
       if (!$rowAbove.length) {
-        return true;
+        return false;
       }
       var rowAboveLevel = $rowAbove.find('.js-indentation').length;
       if (rowAboveLevel >= level) {
         $row = $row.prev();
         continue;
       }
-
       return $rowAbove;
     } while (true);  // eslint-disable-line
   }
@@ -175,10 +240,17 @@ jQuery(document).ready(function ($) {
     return typeof allowedBundles[parentBundle] != 'undefined';
   }
 
-  // Checks if there are rows with errors and toggles a warning message.
-  function parentChildRelationshipChecker() {
-    var rowsWithErrorsCount = $table.find('tr.hierarchy-row--is-wrong').length;
+  // Checks if there are unallowed parent/child relationships,
+  // if any, shows a warning message.
+  function parentChildRelationshipChecker($tr) {
+    var $parentRow = getParentFromRow($tr);
+    var ok = true;
+    if ($parentRow) {
+      ok = isParentCorrect($tr, $parentRow);
+    }
+    $tr.toggleClass('hierarchy-row--is-wrong', !ok);
 
+    var rowsWithErrorsCount = $table.find('tr.hierarchy-row--is-wrong').length;
     if (!rowsWithErrorsCount) {
       $('#hierarchy-node-wrong-message').remove();
       return true;
@@ -200,26 +272,17 @@ jQuery(document).ready(function ($) {
     if ($('#hierarchy-node-wrong-message').length === 0) {
       $('.region-highlighted').append(messageBox);
     }
-
     return false;
   }
 
   // Things do on drag events.
   function doOnDrag(event) {
-    var $rowHandle = $(event.target, $table);
-    var $row = $($rowHandle).closest('tr');
-    var $parentRow = getParentFromRow($row);
-
-    var ok = true;
-    if ($parentRow !== true) {
-      ok = isParentCorrect($row, $parentRow);
-    }
-    $row.toggleClass('hierarchy-row--is-wrong', !ok);
-    parentChildRelationshipChecker();
-
-    if ($rowHandle.hasClass('tabledrag-handle') || $rowHandle.hasClass('handle')) {
-      checkParents();
-    }
+    var $tr = $(event.target).closest('tr');
+    parentChildRelationshipChecker($tr);
+    loadAsyncChildrenWhenChildIsDraggedInto($tr);
+    removeParentClassIfRowIsNotParent();
+    addParentClassOnRowsWithChildren();
+    applyEventsToHierarchyControls();
   }
 
   // Things to do on submit (and before submit).
@@ -239,7 +302,6 @@ jQuery(document).ready(function ($) {
   }
 
   applyEventsToHierarchyControls();
-
   $(document).on('touchend mouseup pointerup', doOnDrag);
   $form.submit(doOnSubmit);
 });
