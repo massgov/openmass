@@ -34,10 +34,12 @@
   transform: rotate(180deg);
   line-height: 1rem;
   text-align: center;
+  margin-top: 1px;
 }
 
 .hierarchy-row--parent .hierarchy-row-controls .hierarchy-row-controls--collapse::after {
   transform: rotate(0deg);
+  margin-top: -3px;
 }
 
 .hierarchy-row--expanded .hierarchy-row-controls .hierarchy-row-controls--collapse {
@@ -57,12 +59,28 @@
   color: #777;
 }
 
-/* Temporary until we check for allowed bundle hierarchies  */
-[class^="node-"][class$="-entity-hierarchy-reorder-form"] .tabledrag-handle {
+.hierarchy-row--is-wrong.hover td,
+.hierarchy-row--is-wrong.hover .tabledrag-handle,
+.hierarchy-row--is-wrong td,
+.hierarchy-row--is-wrong .tabledrag-handle {
+  background-color: #f7e0e4 !important;
+}
+
+/* Hiding nid value */
+[id^="node-"][id$="-entity-hierarchy-reorder-form"] td:nth-child(4) {
   display: none;
 }
 
-/* Temporary until we check for allowed bundle hierarchies  */
-[class^="node-"][class$="-entity-hierarchy-reorder-form"] #edit-actions {
+/* Not showing changed marker, it is confusing on this case */
+[id^="node-"][id$="-entity-hierarchy-reorder-form"] .tabledrag-changed {
   display: none;
+}
+
+/* Default margin is 10rem, that is too much */
+[id^="node-"][id$="-entity-hierarchy-reorder-form"] .dropbutton-multiple {
+  padding-right: 2em;
+}
+
+tbody .hierarchy-row .tabledrag-handle {
+  padding-top: 0px;
 }
