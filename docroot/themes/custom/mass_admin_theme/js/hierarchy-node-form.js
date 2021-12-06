@@ -270,7 +270,7 @@ jQuery(document).ready(function ($) {
       '</div>';
 
     if ($('#hierarchy-node-wrong-message').length === 0) {
-      $('.region-highlighted').append(messageBox);
+      $($table).before(messageBox);
     }
     return false;
   }
