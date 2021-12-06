@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_hierarchy.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function mass_hierarchy_help($route_name, RouteMatchInterface $route_match) {
+  $output = '';
+  switch ($route_name) {
+    case 'view.change_parents.page_1':
+      $output .= '<p><strong>' . t('NOTE: Moving children in bulk is an experimental feature and is currently slow.') . '</strong>';
+      $output .= t(' It may take one minute or more before you see an indication that your move starts. In testing, we have seen it take two minutes to change the parent on 25 children. We will evaluate this after release to production to assess performance and to see if we can speed the process.') . '</p>';
+      break;
+
+    default:
+  }
+  return $output;
+}
