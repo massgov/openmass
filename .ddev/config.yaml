@@ -4,6 +4,8 @@ docroot: docroot
 php_version: "7.4"
 webserver_type: apache-fpm
 dbimage: massgov/mysql-sanitized:super
+omit_containers:
+  - db
 disable_settings_management: true
 #Avoid conflict on port 80. This is rarely used anyway.
 router_http_port: "88"
@@ -16,7 +18,7 @@ web_environment:
   - MYSQL_USER=circle
   - MYSQL_PASSWORD=circle
   - MYSQL_DATABASE=circle
-  - MYSQL_HOST=ddev-mass-db
+  - MYSQL_HOST=dbmass
   - MEMCACHED_HOST=memcached
   - DRUSH_OPTIONS_URI=https://mass.local:$DDEV_ROUTER_HTTPS_PORT
   - DTT_BASE_URL=http://mass-web
