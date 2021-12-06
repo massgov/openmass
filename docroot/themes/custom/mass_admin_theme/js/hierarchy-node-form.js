@@ -172,7 +172,7 @@ jQuery(document).ready(function ($) {
       // Requires patching tabledrag.js.
       Drupal.tableDrag.prototype.makeDraggable.bind(jQuery('#edit-children').data('tableDragObject'), elem)();
       $(elem).find('td:nth-child(3)').addClass('tabledrag-hide');
-      $(elem).find('td:nth-child(6)').addClass('tabledrag-hide');
+      $(elem).find('td:nth-child(7)').addClass('tabledrag-hide');
       Drupal.attachBehaviors(elem, drupalSettings);
     }).removeClass(justAppendedClass);
 
