@@ -5,6 +5,7 @@ jQuery(document).ready(function ($) {
   var $form = $('form[id^=node][id$="-entity-hierarchy-reorder-form"]');
   var $table = $('#edit-children', $form);
   var parentId = jQuery('tr.hierarchy-row', $table).eq(0).find('.child-parent').val();
+  var wrongMessageId = "hierarchy-node-wrong-message";
 
   // Checks original table rows as not loaded yet.
   $('tr.hierarchy-row--parent', $table).data('loaded', false);
@@ -248,17 +249,19 @@ jQuery(document).ready(function ($) {
     if ($parentRow) {
       ok = isParentCorrect($tr, $parentRow);
     }
+    $('#edit-submit', $form).attr('disabled', !ok);
+
     $tr.toggleClass('hierarchy-row--is-wrong', !ok);
 
     var rowsWithErrorsCount = $table.find('tr.hierarchy-row--is-wrong').length;
     if (!rowsWithErrorsCount) {
-      $('#hierarchy-node-wrong-message').remove();
+      $('#' + wrongMessageId).remove();
       return true;
     }
 
     var messageBox =
       '<div ' +
-        ' id="hierarchy-node-wrong-message" ' +
+        ' id="' + wrongMessageId + '" ' +
         ' role="contentinfo" ' +
         ' aria-label="Status message" ' +
         ' class="messages messages--warning"> ' +
@@ -269,8 +272,8 @@ jQuery(document).ready(function ($) {
           ' <a href="/allowedparents_for_contenttypes">knowledge base article</a>. ' +
       '</div>';
 
-    if ($('#hierarchy-node-wrong-message').length === 0) {
-      $($table).before(messageBox);
+    if ($('#' + wrongMessageId).length === 0) {
+      $table.before(messageBox);
     }
     return false;
   }
@@ -287,7 +290,7 @@ jQuery(document).ready(function ($) {
 
   // Things to do on submit (and before submit).
   function doOnSubmit() {
-    if (!parentChildRelationshipChecker()) {
+    if ($('#' + wrongMessageId).length > 0) {
       return false;
     }
     setParentOnFirstLevel();
