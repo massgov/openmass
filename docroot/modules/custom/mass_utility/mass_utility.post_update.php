@@ -1976,7 +1976,20 @@ function mass_utility_post_update_tfa_real_aes(array &$sandbox) {
  * Remove unused DB tables.
  */
 function mass_utility_post_update_drop_unused_tables(array &$sandbox) {
-  $tables = ['old_e16344taxonomy_term_field_data', 'old_e16344taxonomy_term_data', 'old_5e4ddf_url_alias'];
+  $tables = [
+    'old_5e4ddf_url_alias',
+    'old_8985c9menu_link_content',
+    'old_8985c9menu_link_content_data',
+    'old_e16344taxonomy_term__2780c8d622',
+    'old_e16344taxonomy_term__414527a523',
+    'old_e16344taxonomy_term__884e5f904c',
+    'old_e16344taxonomy_term__aa515d1f03',
+    'old_e16344taxonomy_term__field_sprite_name',
+    'old_e16344taxonomy_term__field_sprite_type',
+    'old_e16344taxonomy_term__parent',
+    'old_e16344taxonomy_term_data',
+    'old_e16344taxonomy_term_field_data',
+  ];
   foreach ($tables as $table) {
     Drupal::database()->schema()->dropTable($table);
   }
