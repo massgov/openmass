@@ -124,7 +124,7 @@ This usually happens if you go visit mass.local right after the containers are b
 
 ### Xdebug
 
-If you know where a problem is happening in your code, Xdebug is a useful tool that allows you set breakpoints to trace the problem back. See [PHP Step Debugging](https://ddev.readthedocs.io/en/stable/users/step-debugging/) for ddev specific setup instructions.
+If you know where a problem is happening in your code, Xdebug is a useful tool that allows you set breakpoints to trace the problem back. See [How to setup Xdebug for PHP](./docs/drupal_xdebug.md)
 
 ### Windows troubleshooting
 
