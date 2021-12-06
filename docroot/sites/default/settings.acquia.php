@@ -29,6 +29,7 @@ if (file_exists($secrets_file)) {
  * Loads global secrets.
  *
  * - Used by TFA's encryption profile'.
+ * - Used by Akamai module's Key module integration.
  */
 $secrets_file_global = '/home/massgov/.app/secrets.settings.php';
 if (file_exists($secrets_file_global)) {
@@ -104,6 +105,10 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
       $config['stage_file_proxy.settings']['origin'] = FALSE;
       $config['media_entity_download.settings']['external_file_storage'] = 0;
       $settings['mass_caching.hosts'] = ['edit.mass.gov', 'www.mass.gov'];
+
+      $config['akamai.settings']['disabled'] = FALSE;
+      $config['akamai.settings']['basepath'] = 'www.mass.gov';
+
       break;
     case 'test':
       $settings['mass_caching.hosts'] = [
