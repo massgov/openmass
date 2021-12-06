@@ -68,7 +68,7 @@ class EventsController extends ControllerBase {
         '#more_link' => $more_link,
       ];
       // Any time an event is added, updated, or deleted, recalculate this to see if it has changed.
-      $metadata->addCacheTags(['handy_cache_tags:node:event']);
+      $metadata->addCacheTags(['node_list:event']);
       $metadata->applyTo($build);
 
       return $build;
@@ -109,7 +109,7 @@ class EventsController extends ControllerBase {
         '#more_link' => $more_link,
       ];
       // Any time an event is added, updated, or deleted, recalculate this to see if it has changed.
-      $metadata->addCacheTags(['handy_cache_tags:node:event']);
+      $metadata->addCacheTags(['node_list:event']);
       $metadata->applyTo($build);
 
       return $build;

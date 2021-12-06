@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.curated_list.field_collections
     - field.field.node.curated_list.field_contact
     - field.field.node.curated_list.field_curatedlist_lede
     - field.field.node.curated_list.field_curatedlist_list_section
@@ -10,6 +11,7 @@ dependencies:
     - field.field.node.curated_list.field_curatedlist_overview
     - field.field.node.curated_list.field_data_flag
     - field.field.node.curated_list.field_data_format
+    - field.field.node.curated_list.field_data_resource_type
     - field.field.node.curated_list.field_data_topic
     - field.field.node.curated_list.field_english_version
     - field.field.node.curated_list.field_intended_audience
@@ -58,11 +60,13 @@ third_party_settings:
         - field_data_flag
         - field_data_topic
         - field_list_data_type
+        - field_data_resource_type
         - field_data_format
         - langcode
         - field_english_version
         - field_intended_audience
         - field_reusable_label
+        - field_collections
       parent_name: group_curated_list_edit_form
       weight: 8
       format_type: tab
@@ -94,7 +98,7 @@ third_party_settings:
         - field_contact
         - field_related_links
       parent_name: group_curated_list_edit_form
-      weight: 10
+      weight: 11
       format_type: tab
       format_settings:
         description: ''
@@ -109,6 +113,17 @@ targetEntityType: node
 bundle: curated_list
 mode: default
 content:
+  field_collections:
+    weight: 17
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings: {  }
+    type: term_reference_tree
+    region: content
   field_contact:
     weight: 102
     settings:
@@ -158,7 +173,7 @@ content:
           bundle: curated_list
     region: content
   field_curatedlist_metatags:
-    weight: 2
+    weight: 3
     settings:
       sidebar: true
     third_party_settings: {  }
@@ -179,7 +194,7 @@ content:
     type: options_buttons
     region: content
   field_data_format:
-    weight: 11
+    weight: 12
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -195,6 +210,30 @@ content:
             value_form:
               -
                 value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: curated_list
+    type: options_buttons
+    region: content
+  field_data_resource_type:
+    weight: 11
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        6ce39db9-237d-4d84-abd8-ea5520caf4fc:
+          dependee: field_list_data_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                target_id: '85296'
             effect: show
             effect_options: {  }
             selector: ''
@@ -232,7 +271,7 @@ content:
     type: term_reference_tree
     region: content
   field_english_version:
-    weight: 13
+    weight: 14
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -260,7 +299,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_intended_audience:
-    weight: 14
+    weight: 15
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -291,7 +330,7 @@ content:
     region: content
   field_list_directory_section:
     type: entity_reference_paragraphs
-    weight: 3
+    weight: 4
     settings:
       title: 'List section'
       title_plural: 'List sections'
@@ -336,7 +375,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_related_links:
-    weight: 103
+    weight: 104
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -344,7 +383,7 @@ content:
     type: link_default
     region: content
   field_reusable_label:
-    weight: 15
+    weight: 16
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -354,7 +393,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_state_organization_tax:
-    weight: 6
+    weight: 4
     settings:
       match_operator: CONTAINS
       size: 60
@@ -365,14 +404,14 @@ content:
     region: content
   langcode:
     type: language_select
-    weight: 12
+    weight: 13
     region: content
     settings:
       include_locked: false
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 11
+    weight: 6
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -428,7 +467,7 @@ content:
     type: options_select
     region: content
   url_redirects:
-    weight: 10
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }

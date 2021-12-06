@@ -1046,86 +1046,6 @@ function _mass_validation_form_node_topic_page_form_validate(array &$form, FormS
 /**
  * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
  */
-function mass_validation_form_node_legacy_redirects_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $form['#validate'][] = '_mass_validation_form_node_legacy_redirects_form_validate';
-}
-
-/**
- * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
- */
-function mass_validation_form_node_legacy_redirects_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $form['#validate'][] = '_mass_validation_form_node_legacy_redirects_form_validate';
-}
-
-/**
- * Validates submission values in the FORM_ID() form.
- */
-function _mass_validation_form_node_legacy_redirects_form_validate(array &$form, FormStateInterface $form_state) {
-  if ($form_state->hasValue('field_legacy_redirects_legacyurl')) {
-    $legacy_urls = $form_state->getValue('field_legacy_redirects_legacyurl');
-    // Passes each URL by reference to allow for permanent trimming.
-    foreach ($legacy_urls as $key => $legacy_url) {
-      if (is_array($legacy_url)) {
-        if (!empty($legacy_url['value'])) {
-          // Trim trailing slashes from URL during validation process.
-          $legacy_url['value'] = rtrim($legacy_url['value'], '/');
-
-          // Verify Legacy URL is mass.gov link and does not link to the portal.
-          $illegal_urls = [
-            'http://www.mass.gov/portal/',
-            'http://www.mass.gov/portal',
-            'http://www.mass.gov',
-            'http://www.mass.gov/',
-          ];
-          if (strpos($legacy_url['value'], "http://www.mass.gov") !== 0) {
-            $form_state->setErrorByName('field_legacy_redirects_legacyurl][' . $key, t('Legacy URL must start with "http://www.mass.gov".'));
-          }
-          elseif (in_array($legacy_url['value'], $illegal_urls)) {
-            $form_state->setErrorByName('field_legacy_redirects_legacyurl][' . $key, t('Legacy URL cannot be "http://www.mass.gov/portal" or "http://www.mass.gov".'));
-          }
-
-          // Verify Legacy URL contains a valid legacy site name.
-          try {
-            $legacy_site_names = \Drupal::getContainer()->getParameter('mass_validation.field_legacy_redirects_legacyurl.legacy_site_names');
-            $legacy_site_names_regex = '/^\/(' . implode('|', $legacy_site_names) . ')(?=\/|$)/';
-            // Checks URL path against list of possible legacy path beginnings.
-            if (!preg_match($legacy_site_names_regex, parse_url($legacy_url['value'], PHP_URL_PATH))) {
-              $form_state->setErrorByName('field_legacy_redirects_legacyurl][' . $key, t('Please enter a valid URL from the legacy Mass.gov system. URLs for pages on the new Mass.gov are not permitted here.'));
-            }
-          }
-          catch (\InvalidArgumentException $e) {
-            // Logs error if parameter containing legacy site names is missing.
-            $message = t('Parameter `mass_validation.field_legacy_redirects_legacyurl.legacy_site_names` has not been set in mass_validation.services.yml.');
-            \Drupal::logger('mass_validation')->error($message);
-          }
-
-          // Verify Legacy Urls are unique.
-          $query = \Drupal::entityQuery('node')
-            ->condition('type', 'legacy_redirects')
-            // Check for this redirect with or without a trailing slash.
-            ->condition('field_legacy_redirects_legacyurl', [$legacy_url['value'], "{$legacy_url['value']}/"], 'IN');
-          // If the node has been saved exclude current node.
-          if ($curr_id = $form_state->getFormObject()->getEntity()->id()) {
-            $query->condition('nid', $curr_id, '<>');
-          }
-          $duplicates = $query->execute();
-          if (!empty($duplicates)) {
-            $nid = reset($duplicates);
-            $form_state->setErrorByName('field_legacy_redirects_legacyurl][' . $key, t('The Legacy URL must be unique, this url is already being used at <a href=/node/@nid/edit >@nid</a>', ['@nid' => $nid]));
-          }
-
-          if (!UrlHelper::isValid($legacy_url['value'], TRUE)) {
-            $form_state->setErrorByName('field_legacy_redirects_legacyurl][' . $key, t('The Legacy URL must be in a valid format.'));
-          }
-        }
-      }
-    }
-  }
-}
-
-/**
- * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
- */
 function mass_validation_form_node_news_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_validation_form_node_news_form_validate';
 }
@@ -1199,26 +1119,41 @@ function mass_validation_org_page_alter_helper(array &$form) {
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_org_page_form_validate(array &$form, FormStateInterface $form_state) {
-  if ($form_state->hasValue('field_org_featured_items')) {
-    $featured_items_paragraphs = $form_state->getValue('field_org_featured_items');
-    if (isset($featured_items_paragraphs[0])) {
-      if (isset($featured_items_paragraphs[0]['subform']['field_featured_item_mosaic_items']['add_more'])) {
-        $form_state->setErrorByName('', t('You must provide 5 featured items.'));
-      }
-      // Find the item with the lowest weight.
-      foreach ($featured_items_paragraphs[0]['subform']['field_featured_item_mosaic_items'] as $mosaic_key => $mosaic_array) {
-        if (isset($mosaic_array['_weight'])) {
-          $weight = (int) $mosaic_array['_weight'];
-          if (!isset($lowest) || $weight < $lowest) {
-            $lowest = $weight;
-            $first = $mosaic_array;
+  if ($form_state->hasValue('field_organization_sections')) {
+    $sections = $form_state->getValue('field_organization_sections');
+    foreach ($sections as $section_key => $section) {
+      if (isset($section['subform']['field_section_long_form_content'])) {
+        $paragraphs = $section['subform']['field_section_long_form_content'];
+        foreach ($paragraphs as $paragraph_key => $paragraph) {
+          if (isset($paragraph['subform']['field_caspio_data_identifier'])) {
+            foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
+              if (!empty($caspioId)) {
+                if (!preg_match('/^http(s)?:\/\/\w+\.caspio\.(com)(\/.*|$)/', $caspioId['value'])) {
+                  $form_state->setErrorByName('field_organization_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform][field_caspio_data_identifier', t('Only caspio.com URL allowed. See help text for this field.'));
+                }
+              }
+            }
+          }
+          if (isset($paragraph['subform']['field_featured_item_mosaic_items'])) {
+            if (isset($paragraph['subform']['field_featured_item_mosaic_items']['add_more'])) {
+              $form_state->setErrorByName('', t('You must provide 5 featured items.'));
+            }
+            // Find the item with the lowest weight.
+            foreach ($paragraph['subform']['field_featured_item_mosaic_items'] as $mosaic_key => $mosaic_array) {
+              if (isset($mosaic_array['_weight'])) {
+                $weight = (int) $mosaic_array['_weight'];
+                if (!isset($lowest) || $weight < $lowest) {
+                  $lowest = $weight;
+                  $first = $mosaic_array;
+                }
+              }
+            }
+            if (isset($first) && empty($first['subform']['field_featured_item_highlight'][0]['fids'])) {
+              $form_state->setErrorByName('',
+                t('You must provide a value for the Highlight Image of the first Featured Item.'));
+            }
           }
         }
-      }
-
-      if (isset($first) && empty($first['subform']['field_featured_item_highlight'][0]['fids'])) {
-        $form_state->setErrorByName('',
-          t('You must provide a value for the Highlight Image of the first Featured Item.'));
       }
     }
   }
@@ -1238,11 +1173,6 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
       $banner = $form_state->getValue('field_bg_wide');
       if (empty($banner[0]['fids'])) {
         $form_state->setErrorByName('field_bg_wide', t('The Banner Image (Desktop) is required.'));
-      }
-      elseif ($subtype[0]['value'] == 'Boards') {
-        if (empty($form_state->getValue('field_boards')[0])) {
-          $form_state->setErrorByName('field_boards', t('Boards is required.'));
-        }
       }
     }
   }
@@ -1376,23 +1306,8 @@ function mass_validation_get_title_from_uri($uri) {
  * Implements hook_ENTITY_TYPE_presave().
  */
 function mass_validation_node_presave($node) {
-  /** @var Drupal\node\Entity\Node $node */
-  if ($node->bundle() == 'legacy_redirects') {
-    // Removes previous hashed values.
-    $node->set('field_legacy_redirect_hashed_url', NULL);
-    $urls = $node->field_legacy_redirects_legacyurl;
-    $hash_values = $node->field_legacy_redirect_hashed_url;
-    foreach ($urls as $key => $url) {
-      // Converts any `https` schemes to `http`.
-      // Legacy Redirect URLs should never require an `https` scheme.
-      $url->value = preg_replace('/^https(?=:\/{2})/', 'http', $url->value);
-      $urls->set($key, $url);
-      // Creates and sets hashed value.
-      $hash = md5($url->value);
-      $hash_values->set($key, $hash);
-    }
-  }
 
+  /** @var Drupal\node\Entity\Node $node */
   if ($node->getType() == 'org_page' && !empty($node->get('field_title_sub_text')->value)) {
     $acronym = $node->get('field_title_sub_text')->value;
     // Add parenthesis and remove any previously existing ones.

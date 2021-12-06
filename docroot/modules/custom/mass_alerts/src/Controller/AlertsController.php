@@ -56,8 +56,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
     // Load sitewide.
     $query = $nodeStorage->getQuery();
-    $query->condition('field_alert_display.value', 'site_wide');
-    $query->condition('type', 'alert');
+    $query->condition('type', 'sitewide_alert');
     $query->condition('status', 1);
 
     $sitewide = $query->execute();
@@ -83,19 +82,22 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $results['emergencyAlerts']['alerts'] = [];
 
       $alerts = [];
-      $alert_items = $node->get('field_alert')->referencedEntities();
+      $alert_items = $node->get('field_sitewide_alert')->referencedEntities();
       foreach ($alert_items as $item) {
+        $unix_timestamp = '';
+        $timestamp = '';
         $item_id = $item->uuid() . '__' . $changed_date;
-        $timestamp_string = $item->get('field_emergency_alert_timestamp')->getString();
-        $unix_timestamp = strtotime($timestamp_string);
-        $timestamp = Helper::getDate($timestamp_string)->format('M. j, Y, h:i a');
-        $url = FALSE;
+        if ($item->get('field_sitewide_alert_timestamp')->getString()) {
+          $timestamp_string = $item->get('field_sitewide_alert_timestamp')->getString();
+          $unix_timestamp = strtotime($timestamp_string);
+          $timestamp = Helper::getDate($timestamp_string)->format('M. j, Y, h:i a');
+        }
 
-        $link_type = $item->get('field_emergency_alert_link_type')->getString();
+        $link_type = $item->get('field_sitewide_alert_link_type')->getString();
         $url = FALSE;
 
         if ($link_type == '1') {
-          $uri = $item->get('field_emergency_alert_link')->getString();
+          $uri = $item->get('field_sitewide_alert_link')->getString();
           if ($uri) {
             $url = Url::fromUri($uri)->toString(TRUE)->getGeneratedUrl();
           }
@@ -105,7 +107,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           $url .= '#' . $item->id();
         }
 
-        $message = $item->get('field_emergency_alert_message')->getString();
+        $message = $item->get('field_sitewide_alert_message')->getString();
 
         if ($url) {
           $link = [
@@ -128,11 +130,11 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       ksort($alerts);
       $results['emergencyAlerts']['alerts'] = array_values($alerts);
 
-      $severity = $node->get('field_alert_severity')->getString();
-      // The header prefix defaults to "Emergency Alerts" in the
+      $severity = $node->get('field_sitewide_alert_severity')->getString();
+      // The header prefix defaults to "Alerts" in the
       // emergency-header.twig molecule mayflower component.
       if ($severity == 'informational_notice') {
-        $results['emergencyAlerts']['emergencyHeader']['prefix'] = "Informational Alerts";
+        $results['emergencyAlerts']['emergencyHeader']['prefix'] = "Notices";
       }
       $results['emergencyAlerts']['emergencyHeader']['title'] = $node->label();
     }
@@ -281,7 +283,6 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           $messages = [];
 
           foreach ($items as $item) {
-            $message_timestamp = $item->get('field_emergency_alert_timestamp')->getString();
 
             $link_type = $item->get('field_emergency_alert_link_type')->getString();
             $url = FALSE;
@@ -327,9 +328,6 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
           if (count($messages) == 1) {
             $alert = array_merge($alert, $messages[0]);
-            if (!$timestamp && $message_timestamp) {
-              $timestamp = $message_timestamp;
-            }
           }
           else {
             $alert['content'] = $messages;

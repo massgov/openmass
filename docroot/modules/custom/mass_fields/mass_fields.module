@@ -19,6 +19,7 @@ use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Implements hook_entity_insert().
@@ -209,6 +210,30 @@ function mass_fields_entity_extra_field_info() {
     'weight' => 100,
     'visible' => TRUE,
   ];
+  $extra['node']['org_page']['display']['extra_org_nav_events'] = [
+    'label' => t('Organization Navigation Events'),
+    'description' => t('The org_events paragraph referenced in an organization section.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+  $extra['node']['org_page']['display']['extra_org_nav_locations'] = [
+    'label' => t('Organization Navigation Locations'),
+    'description' => t('The org_locations paragraph referenced in an organization section.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+  $extra['node']['org_page']['display']['extra_org_nav_news'] = [
+    'label' => t('Organization Navigation News'),
+    'description' => t('The org_news paragraph referenced in an organization section.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
+  $extra['node']['org_page']['display']['extra_org_nav_our_organizations'] = [
+    'label' => t('Organization Navigation Our Organizations'),
+    'description' => t('The organization_grid paragraph referenced in an organization section.'),
+    'weight' => 100,
+    'visible' => TRUE,
+  ];
 
   // Add the extra_node_all_actions field to corresponding content types.
   $all_actions_types = [
@@ -228,10 +253,118 @@ function mass_fields_entity_extra_field_info() {
 }
 
 /**
+ * Get org_page section data for display fields used in SubNav.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ */
+function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
+  // Initalize the return array.
+  $org_page_field_data = [];
+  // If there no sections, return an empty array.
+  if ($entity->get('field_organization_sections')->isEmpty()) {
+    return $org_page_field_data;
+  }
+  // Get the sections field value.
+  $field_organization_sections = $entity->get('field_organization_sections')->getValue();
+  // Loop through the sections.
+  foreach ($field_organization_sections as $section_key => $section_value) {
+    // Get the section entity.
+    $section_entity = $entity->get('field_organization_sections')[$section_key]->entity;
+    // If the section content field is empty, continue to the next section.
+    if ($section_entity->get('field_section_long_form_content')->isEmpty()) {
+      continue;
+    }
+    // Get the section content field value.
+    $field_section_long_form_content = $section_entity->get('field_section_long_form_content')->getValue();
+    // Loop through the section content paragraphs.
+    foreach ($field_section_long_form_content as $content_key => $content_value) {
+      // Get the content paragraph entity.
+      $content_entity = $section_entity->get('field_section_long_form_content')[$content_key]->entity;
+      // Get the paragraph type.
+
+      $paragraph_type = $content_entity->bundle();
+      // For certain paragraph types, get field data and store in return array.
+      switch ($paragraph_type) {
+        case 'about':
+          $org_page_field_data['about']['entities'][] = $content_entity;
+          break;
+
+        case 'featured_topics':
+          $org_page_field_data['field_featured_topics_topics']['build'] = $content_entity->field_featured_topics_topics->view();
+          $org_page_field_data['field_featured_topics_topics']['entities'] = $content_entity->field_featured_topics_topics->referencedEntities();
+          break;
+
+        case 'org_events':
+          $org_page_field_data['org_events']['entities'][] = $content_entity;
+          break;
+
+        case 'org_locations':
+          $org_page_field_data['org_locations']['entities'][] = $content_entity;
+          break;
+
+        case 'org_news':
+          $org_page_field_data['org_news']['entities'][] = $content_entity;
+          break;
+
+        case 'organization_grid':
+          $org_page_field_data['organization_grid']['entities'][] = $content_entity;
+          break;
+
+        case 'what_would_you_like_to_do':
+          $org_page_field_data['field_wwyltd_top_s_links']['value'] = $content_entity->get('field_wwyltd_top_s_links')
+            ->getValue();
+          $org_page_field_data['field_wwyltd_top_s_links']['build'] = $content_entity->field_wwyltd_top_s_links->view();
+          $org_page_field_data['field_wwyltd_more_services']['value'] = $content_entity->get('field_wwyltd_more_services')
+            ->getValue();
+          $org_page_field_data['field_wwyltd_more_services']['build'] = $content_entity->field_wwyltd_more_services->view();
+          $org_page_field_data['field_wwyltd_more_services']['entities'] = $content_entity->field_wwyltd_more_services->referencedEntities();
+          break;
+      }
+    }
+  }
+  return $org_page_field_data;
+}
+
+/**
+ * Prepare a link field with node titles for missing node link titles.
+ *
+ * @param array $field_build
+ *   The link field value.
+ *
+ * @return array
+ *   Updated field value array.
+ */
+function _mass_fields_prepare_link_field_build(array &$field_build) {
+  $entityTypeManager = \Drupal::entityTypeManager();
+  // Ensure all links have titles.
+  foreach ($field_build['#items'] as $delta => $item) {
+    $test = $item->uri;
+    if (strpos($item->uri, 'entity:') !== FALSE) {
+      [$entity_type, $entity_id] = explode('/', str_replace('entity:', '', $item->uri));
+      $storage = $entityTypeManager->getStorage('node');
+      $node = $storage->load($entity_id);
+      if ($node !== NULL && $node->isPublished() === TRUE) {
+        // Override the node title with the link title.
+        if ($item->title !== '' && $item->title !== $node->title->value) {
+          $node->set('title', $item->title);
+        }
+        // Update the title value.
+        $field_build[$delta]['#title'] = $node->label();
+      }
+    }
+  }
+  return $field_build;
+}
+
+/**
  * Implements hook_ENTITY_TYPE_view().
  */
 function mass_fields_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   $entityTypeManager = \Drupal::entityTypeManager();
+
+  if ($entity->getEntityTypeId() == 'node' && $entity->bundle() == 'org_page' && $view_mode == 'full') {
+    $org_page_sections_data = _mass_fields_get_org_page_sections_data($entity);
+  }
 
   if ($display->getComponent('extra_sidebar_contact') && !empty($build['field_contact'])) {
     $build['extra_sidebar_contact'] = $build['field_contact'];
@@ -275,38 +408,34 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     }
   }
 
-  if ($display->getComponent('extra_org_nav_featured_services') && (!empty($build['field_links_actions_3'][0]) || !empty($build['field_ref_actions_6'][0]))) {
+  if ($display->getComponent('extra_org_nav_featured_services')
+    && (!empty($org_page_sections_data['field_wwyltd_top_s_links']['build'][0]) || !empty($org_page_sections_data['field_wwyltd_more_services']['build'][0]))) {
     // If there are featured services links, copy them.
-    if (!empty($build['field_links_actions_3'][0])) {
-      $build['extra_org_nav_featured_services'] = $build['field_links_actions_3'];
+    if (!empty($org_page_sections_data['field_wwyltd_top_s_links']['build'][0])) {
+      // Ensure all links have titles.
+      _mass_fields_prepare_link_field_build($org_page_sections_data['field_wwyltd_top_s_links']['build']);
+      $build['extra_org_nav_featured_services'] = $org_page_sections_data['field_wwyltd_top_s_links']['build'];
       // If there are "More services" links, add them to the render array.
-      if (!empty($build['field_ref_actions_6'][0])) {
-        foreach ($entity->field_ref_actions_6->referencedEntities() as $linked) {
-          $build['extra_org_nav_featured_services'][] = [
-            '#type' => 'link',
-            '#title' => $linked->title->value,
-            '#url' => $linked->toUrl(),
-            '#theme' => 'link_formatter_link_separate',
-            '#field_name' => 'extra_org_nav_featured_services',
-          ];
-        }
+      if (!empty($org_page_sections_data['field_wwyltd_more_services']['build'][0])) {
+        $build['extra_org_nav_featured_services'] = array_merge($build['extra_org_nav_featured_services'], $org_page_sections_data['field_wwyltd_more_services']['build']);
       }
     }
     else {
-      $build['extra_org_nav_featured_services'] = $build['field_ref_actions_6'];
+      $build['extra_org_nav_featured_services'] = $org_page_sections_data['field_wwyltd_more_services']['build'];
     }
 
     $build['extra_org_nav_featured_services']['#view_mode'] = 'org_nav_featured_services';
     $build['extra_org_nav_featured_services']['#field_name'] = 'extra_org_nav_featured_services';
   }
 
-  if ($display->getComponent('extra_org_nav_application_login_links') && (!empty($build['field_application_login_links']))) {
+  if ($display->getComponent('extra_org_nav_application_login_links')&& (!empty($build['field_application_login_links']))) {
     $build['extra_org_nav_application_login_links'] = $build['field_application_login_links'];
     $build['extra_org_nav_application_login_links']['#field_name'] = 'extra_org_nav_application_login_links';
   }
 
-  if ($display->getComponent('extra_org_nav_featured_topics') && !empty($build['field_ref_card_view_6'])) {
-    foreach ($entity->field_ref_card_view_6->referencedEntities() as $linked) {
+  if ($display->getComponent('extra_org_nav_featured_topics')
+    && !empty($org_page_sections_data['field_featured_topics_topics']['entities'])) {
+    foreach ($org_page_sections_data['field_featured_topics_topics']['entities'] as $linked) {
       $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
       $item = $builder->view($linked, 'org_nav_featured_topics');
       $item['#field_name'] = 'extra_org_nav_featured_topics';
@@ -333,13 +462,33 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     }
   }
 
-  if ($display->getComponent('extra_org_nav_more_agency_link') && !empty($build['field_about'])) {
-    foreach ($entity->field_about->referencedEntities() as $linked) {
+  if ($display->getComponent('extra_org_nav_more_agency_link') && !empty($org_page_sections_data['about'])) {
+    foreach ($org_page_sections_data['about']['entities'] as $linked) {
       $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
       $item = $builder->view($linked, 'organization_navigation');
       $item['#field_name'] = 'extra_org_nav_more_agency_link';
       $build['extra_org_nav_more_agency_link'][] = $item;
     }
+  }
+
+  // Provide a value that represents the presence of an organization events.
+  if ($display->getComponent('extra_org_nav_events') && !empty($org_page_sections_data['org_events'])) {
+    $build['extra_org_nav_events'] = $org_page_sections_data['org_events']['entities'];
+  }
+
+  // Provide a value that represents the presence of an organization locations.
+  if ($display->getComponent('extra_org_nav_locations') && !empty($org_page_sections_data['org_locations'])) {
+    $build['extra_org_nav_locations'] = $org_page_sections_data['org_locations']['entities'];
+  }
+
+  // Provide a value that represents the presence of an organization news.
+  if ($display->getComponent('extra_org_nav_news') && !empty($org_page_sections_data['org_news'])) {
+    $build['extra_org_nav_news'] = $org_page_sections_data['org_news']['entities'];
+  }
+
+  // Provide a value that represents the presence of an organization grid.
+  if ($display->getComponent('extra_org_nav_our_organizations') && !empty($org_page_sections_data['organization_grid'])) {
+    $build['extra_org_nav_our_organizations'] = $org_page_sections_data['organization_grid']['entities'];
   }
 
   if ($display->getComponent('extra_node_pager') && !empty($build['referencing_binders'][0])) {
@@ -387,7 +536,9 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
                 if ($item['title'] !== '' && $item['title'] !== $node->title->value) {
                   $node->set('title', $item['title']);
                 }
-                $build['extra_node_all_actions'][] = $view_builder->view($node, 'title_short_desc');
+                $render_arr = $view_builder->view($node, 'title_short_desc');
+                $render_arr['#cache']['contexts'] = ['url'];
+                $build['extra_node_all_actions'][] = $render_arr;
               }
             }
             else {
@@ -412,7 +563,9 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
                 if ($item['title'] !== '' && $item['title'] !== $node->title->value) {
                   $node->set('title', $item['title']);
                 }
-                $build['extra_node_all_actions'][] = $view_builder->view($node, 'title_short_desc');
+                $render_arr = $view_builder->view($node, 'title_short_desc');
+                $render_arr['#cache']['contexts'] = ['url'];
+                $build['extra_node_all_actions'][] = $render_arr;
               }
             }
             else {
@@ -431,9 +584,9 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     }
     elseif ($entity->bundle() === 'org_page') {
       // If there are featured services links, copy them.
-      if (!empty($build['field_links_actions_3'])) {
-        $build['extra_node_all_actions'] = $build['field_links_actions_3'];
-        foreach ($entity->field_links_actions_3->getValue() as $delta => $item) {
+      if (!empty($org_page_sections_data['field_wwyltd_top_s_links'])) {
+        $build['extra_node_all_actions'] = $org_page_sections_data['field_wwyltd_top_s_links']['build'];
+        foreach ($org_page_sections_data['field_wwyltd_top_s_links']['value'] as $delta => $item) {
           if (strpos($item['uri'], 'entity:') !== FALSE) {
             [$entity_type, $entity_id] = explode('/', str_replace('entity:', '', $item['uri']));
 
@@ -453,8 +606,8 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
         }
 
         // If there are "More services" links, add them to the render array.
-        if (!empty($build['field_ref_actions_6'])) {
-          foreach ($entity->field_ref_actions_6->referencedEntities() as $linked) {
+        if (!empty($org_page_sections_data['field_wwyltd_more_services'])) {
+          foreach ($org_page_sections_data['field_wwyltd_more_services']['entities'] as $linked) {
             $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
             $item = $builder->view($linked, 'title_short_desc');
             $item['#field_name'] = 'extra_node_all_actions';
@@ -462,8 +615,8 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
           }
         }
       }
-      elseif (!empty($build['field_ref_actions_6'])) {
-        $build['extra_node_all_actions'] = $build['field_ref_actions_6'];
+      elseif (!empty($org_page_sections_data['field_featured_topics_topics'])) {
+        $build['extra_node_all_actions'] = $org_page_sections_data['field_featured_topics_topics']['build'];
       }
       $build['extra_node_all_actions']['#view_mode'] = 'title_short_desc';
       $build['extra_node_all_actions']['#field_name'] = 'extra_node_all_actions';
@@ -617,9 +770,7 @@ function _mass_fields_info_details_enable_flag(&$form, FormStateInterface $form_
   if (!$user->hasPermission('enable info details fields')) {
     $form['field_details_enable_fields']['#access'] = FALSE;
   }
-  else {
-    $form['field_banner_image']['#attributes']['class'][] = 'js-hide';
-  }
+
   if (isset($form['field_info_details_sections']) && isset($form['field_info_details_sections']['widget'])) {
     // Load the node and get field value form here
     // to avoid loading it inside loop multiple times.
@@ -641,13 +792,11 @@ function _mass_fields_info_details_enable_flag(&$form, FormStateInterface $form_
               $result = $result->andIf($add_more_container['#access']);
             }
             if ($result->isAllowed()) {
-              $form['field_banner_image']['#access'] = $result;
               $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $result;
             }
             elseif (isset($enabled_status)) {
               // Return field value as a result to determine
               // access to the other fields.
-              $form['field_banner_image']['#access'] = $enabled_status;
               $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $enabled_status;
             }
           }

@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.curated_list.field_collections
     - field.field.node.curated_list.field_contact
     - field.field.node.curated_list.field_curatedlist_lede
     - field.field.node.curated_list.field_curatedlist_list_section
@@ -10,6 +11,7 @@ dependencies:
     - field.field.node.curated_list.field_curatedlist_overview
     - field.field.node.curated_list.field_data_flag
     - field.field.node.curated_list.field_data_format
+    - field.field.node.curated_list.field_data_resource_type
     - field.field.node.curated_list.field_data_topic
     - field.field.node.curated_list.field_english_version
     - field.field.node.curated_list.field_intended_audience
@@ -115,8 +117,16 @@ content:
     third_party_settings: {  }
     type: list_default
     region: content
+  field_data_resource_type:
+    weight: 22
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
   field_data_topic:
-    weight: 20
+    weight: 21
     label: above
     settings:
       link: true
@@ -203,6 +213,7 @@ content:
     third_party_settings: {  }
 hidden:
   computed_log_in_links: true
+  field_collections: true
   field_reusable_label: true
   field_state_organization_tax: true
   langcode: true

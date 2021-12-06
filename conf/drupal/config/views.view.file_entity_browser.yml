@@ -324,7 +324,11 @@ display:
           exclude: false
           alter:
             alter_text: true
-            text: "<div class=\"grid-item-info\">\n<div class=\"grid-item-info-left\" title=\"{{ filename }}\">{{ filename }}</div>\n<div class=\"grid-item-info-right\">{{ filesize }}</div>\n</div>"
+            text: |-
+              <div class="grid-item-info">
+              <div class="grid-item-info-left" title="{{ filename }}">{{ filename }}</div>
+              <div class="grid-item-info-right">{{ filesize }}</div>
+              </div>
             make_link: false
             path: ''
             absolute: false

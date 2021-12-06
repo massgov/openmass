@@ -16,7 +16,7 @@ mode: default
 content:
   field_board_members:
     type: entity_reference_paragraphs
-    weight: 2
+    weight: 1
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -28,7 +28,7 @@ content:
     region: content
   field_featured_board_members:
     type: entity_reference_paragraphs
-    weight: 1
+    weight: 0
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -38,14 +38,6 @@ content:
       default_paragraph_type: ''
     third_party_settings: {  }
     region: content
-  field_heading:
-    weight: 0
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
-    region: content
   paragraphs_type_help__default:
     weight: -100
     settings: {  }
@@ -53,5 +45,6 @@ content:
     region: content
 hidden:
   created: true
+  field_heading: true
   status: true
   uid: true

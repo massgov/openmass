@@ -16,6 +16,7 @@ dependencies:
     - field.field.node.advisory.field_advisory_ref_sources
     - field.field.node.advisory.field_advisory_section
     - field.field.node.advisory.field_advisory_type_tax
+    - field.field.node.advisory.field_collections
     - field.field.node.advisory.field_intended_audience
     - field.field.node.advisory.field_organizations
     - field.field.node.advisory.field_reusable_label
@@ -33,6 +34,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -63,6 +65,7 @@ third_party_settings:
         - field_organizations
         - field_intended_audience
         - field_reusable_label
+        - field_collections
       parent_name: group_advisory_page_edit_form
       weight: 12
       format_type: tab
@@ -83,7 +86,6 @@ third_party_settings:
       weight: 13
       format_type: tab
       format_settings:
-        label: Details
         formatter: closed
         description: ''
         required_fields: true
@@ -113,7 +115,6 @@ third_party_settings:
       weight: 11
       format_type: fieldset
       format_settings:
-        label: '  '
         description: ''
         id: ''
         classes: ''
@@ -228,7 +229,6 @@ content:
         internal_link_content_type_blacklist:
           - contact_information
           - fee
-          - legacy_redirects
     type: link_default
     region: content
   field_advisory_section:
@@ -248,6 +248,17 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: options_select
+    region: content
+  field_collections:
+    weight: 18
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings: {  }
+    type: term_reference_tree
     region: content
   field_intended_audience:
     weight: 16
