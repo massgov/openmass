@@ -1,3 +1,29 @@
+
+
+## [0.304.0] - December 7, 2021
+
+### Changed
+  - DP-22990: Update circleCI to remove unused mayflower testing jobs and allow nightly deployment to CD with latest mayflower and openmass develop branches.
+  - DP-23172: Update Db container used for CI and local dev.
+  - DP-23246: Describe the change. If you need multiple lines, start the first line with the following "|-" characters.
+  - DP-23272: Removes the category from guide pages and makes the image background field to be optional instead.
+  - DP-23292: Revert DDEV usage from CI
+  - DP-23487: Stop accumulating Tugboat binaries in local dev.
+  - DP-23552: Fix extra spacing on promotional pages.
+  
+### Removed
+  - DP-23406: Drop unused DB tables.
+  
+### Fixed
+  - DP-23444: Fixed issue with Organization Locations paragraphs causing Behat errors.
+  - DP-23447: Fixed duplicate location listing item and location paragraph input fields styling.
+  
+### Security
+  - DP-23501: Drupal core update.
+  
+### Added
+  - DP-23517: Add Akamai module
+  
 ## [0.303.1] - November 17, 2021
 
 ### Fixed
