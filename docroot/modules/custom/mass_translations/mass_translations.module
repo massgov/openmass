@@ -116,7 +116,7 @@ function mass_translations_pathauto_alias_alter(&$alias, array &$context) {
   if ($context['module'] == 'node' && $context['language'] != 'en') {
     $context['language'] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
   } else {
-    // Set default pathauto alias language to English to prevent duplicate aliases.
+    // Set the context pathauto alias language to English to prevent duplicate aliases. This is especially important for documents.
     $context['language'] = 'en';
   }
 }
