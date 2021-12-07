@@ -144,16 +144,6 @@ function mass_hierarchy_form_any_form_entity_hierarchy_reorder_form_alter(&$form
       continue;
     }
 
-    // Adding expand/collapse controls.
-    $child['title'][] = [
-      '#markup' => '
-        <div class="hierarchy-row-controls">
-          <div class="hierarchy-row-controls--expand"></div>
-          <div class="hierarchy-row-controls--collapse"></div>
-        </div>
-      ',
-    ];
-
     // Adding bundle machine name information.
     $child['type']['#type'] = 'html_tag';
     $child['type']['#tag'] = 'div';

@@ -142,6 +142,13 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
           '#size' => $node->getDepth() - $baseDepth - 1,
         ],
         $childEntity->toLink()->toRenderable(),
+        [
+          '#markup' => '
+            <div class="hierarchy-row-controls">
+              <div class="hierarchy-row-controls--expand"></div>
+              <div class="hierarchy-row-controls--collapse"></div>
+            </div>'
+        ],
       ];
 
       if (!$bundles) {
