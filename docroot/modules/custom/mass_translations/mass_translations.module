@@ -115,7 +115,8 @@ function mass_translations_pathauto_alias_alter(&$alias, array &$context) {
   // For nodes, set the context language to undefined to allow aliases to be used in canonical links.
   if ($context['module'] == 'node' && $context['language'] != 'en') {
     $context['language'] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
-  } else {
+  }
+  else {
     // Set the context pathauto alias language to English to prevent duplicate aliases. This is especially important for documents.
     $context['language'] = 'en';
   }
