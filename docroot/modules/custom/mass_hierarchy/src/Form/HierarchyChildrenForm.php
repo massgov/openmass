@@ -190,13 +190,10 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
       }
 
       // Adding bundle machine name information.
-      $form['children'][$child]['#type'] = 'html_tag';
-      $form['children'][$child]['#tag'] = 'div';
-      $form['children'][$child]['#attributes']['data-bundle'] = $childEntity->bundle();
-      $form['children'][$child]['#value'] = $bundles[$childEntity->bundle()]['label'];
-
-      $form['children'][$child]['type'] = ['#markup' => $bundles[$childEntity->bundle()]['label']];
-
+      $form['children'][$child]['type']['#type'] = 'html_tag';
+      $form['children'][$child]['type']['#tag'] = 'div';
+      $form['children'][$child]['type']['#attributes']['data-bundle'] = $childEntity->bundle();
+      $form['children'][$child]['type']['#value'] = $bundles[$childEntity->bundle()]['label'];
 
       $form['children'][$child]['weight'] = [
         '#type' => 'weight',
