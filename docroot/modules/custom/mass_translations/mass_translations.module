@@ -112,7 +112,7 @@ function mass_translations_element_info_alter(array &$info) {
  * Implements hook_pathauto_alias_alter().
  */
 function mass_translations_pathauto_alias_alter(&$alias, array &$context) {
-  // For nodes, set the default language to undefined to allow aliases to be used in canonical links.
+  // For nodes, set the context language to undefined to allow aliases to be used in canonical links.
   if ($context['module'] == 'node' && $context['language'] != 'en') {
     $context['language'] = LanguageInterface::LANGCODE_NOT_SPECIFIED;
   } else {
