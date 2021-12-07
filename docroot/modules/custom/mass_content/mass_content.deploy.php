@@ -645,7 +645,6 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 
   $query = \Drupal::entityQuery('node');
   $query->condition('type', 'event');
-  $query->condition('nid', 609571);
 
   if (empty($sandbox)) {
     // Get a list of all nodes of type event.
