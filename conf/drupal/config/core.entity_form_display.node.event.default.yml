@@ -37,6 +37,7 @@ dependencies:
     - field.field.node.event.field_reusable_label
     - field.field.node.event.field_short_title
     - field.field.node.event.field_state_organization_tax
+    - field.field.node.event.field_updated_date
     - image.style.thumbnail
     - node.type.event
     - workflows.workflow.editorial
@@ -107,6 +108,7 @@ third_party_settings:
         - field_event_time
         - field_event_date
         - field_event_posted_date
+        - field_updated_date
         - field_event_public_testimony
         - field_primary_parent
         - field_organizations
@@ -419,7 +421,7 @@ content:
     type: datetime_datelist
     region: content
   field_event_public_testimony:
-    weight: 127
+    weight: 128
     settings:
       size: 60
       placeholder: ''
@@ -591,13 +593,13 @@ content:
     type: text_textarea
     region: content
   field_intended_audience:
-    weight: 130
+    weight: 131
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 129
+    weight: 130
     settings:
       match_operator: CONTAINS
       size: 60
@@ -607,7 +609,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_primary_parent:
-    weight: 128
+    weight: 129
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -618,7 +620,7 @@ content:
     type: entity_reference_hierarchy_autocomplete
     region: content
   field_reusable_label:
-    weight: 131
+    weight: 132
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -644,6 +646,33 @@ content:
       match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
+    region: content
+  field_updated_date:
+    weight: 127
+    settings:
+      date_order: YMD
+      time_type: '12'
+      increment: 1
+    third_party_settings:
+      conditional_fields:
+        9d86eb40-59ba-4c31-b947-8400e07e0337:
+          dependee: field_event_type_list
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: public_meeting
+            effect: show
+            effect_options: {  }
+            selector: ''
+          entity_type: node
+          bundle: event
+    type: datetime_datelist
     region: content
   moderation_state:
     type: moderation_state_default
