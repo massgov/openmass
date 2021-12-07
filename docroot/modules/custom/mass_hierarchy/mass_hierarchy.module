@@ -7,6 +7,7 @@
 
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\mass_hierarchy\Form\HierarchyChildrenForm;
 use Drupal\node\Entity\Node;
 
 /**
@@ -104,6 +105,19 @@ function mass_hierarchy_form_add_pageviews_info(&$form, $nids) {
     $child['pageviews'] = [
       '#markup' => intval(array_shift($pageviews)->pageviews),
     ];
+  }
+}
+
+/**
+ * Implements @see hook_entity_type_build().
+ *
+ * @see entity_hierarchy_entity_type_build
+ */
+function mass_hierarchy_entity_type_build(array &$entity_types) {
+  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
+  foreach ($entity_types as $entity_type_id => $entity_type) {
+    $entity_types[$entity_type_id]
+      ->setFormClass('entity_hierarchy_reorder', HierarchyChildrenForm::class);
   }
 }
 
