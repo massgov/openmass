@@ -672,9 +672,9 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
     // Set the updated date for events.
     $timestamp = $node->getChangedTime();
     // Convert the timestamp to the proper date format including timezone.
-    $date_time = DrupalDatetime::createFromTimestamp((int)$timestamp);
+    $date_time = DrupalDatetime::createFromTimestamp((int) $timestamp);
     $date_time->setTimezone(new \Datetimezone('EST'));
-    $updated_date = \Drupal::service('date.formatter')->format($date_time->getTimestamp() , 'custom', 'Y-m-d\TH:i:s');
+    $updated_date = \Drupal::service('date.formatter')->format($date_time->getTimestamp(), 'custom', 'Y-m-d\TH:i:s');
     // Set the value of the new field.
     $node->set('field_updated_date', $updated_date);
     // Save the node.
