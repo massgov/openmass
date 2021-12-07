@@ -88,6 +88,12 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
     $form['#attached']['library'][] = 'entity_hierarchy/entity_hierarchy.nodetypeform';
     $form['#attached']['drupalSettings']['mass_hierarchy_parent_bundle_info'] = mass_hierarchy_get_parent_bundle_info();
 
+    // Using this class we remove pointer events to disallow dragging
+    // for topic pages if the user can't create one.
+    if (!\Drupal::currentUser()->hasPermission('create topic_page content')) {
+      $form['#attributes']['class'][] = 'mass_hierarchy_cant_drag_topic_page';
+    }
+
     $form['children'] = [
       '#type' => 'table',
       '#header' => [
@@ -118,7 +124,6 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
     ];
 
     $bundles = FALSE;
-
 
     $ids = [];
     foreach ($children as $node) {
@@ -166,6 +171,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         ?: $form['children'][$child]['#attributes']['class'][] = 'hierarchy-row--parent';
 
       $form['children'][$child]['#attributes']['class'][] = 'hierarchy-row';
+      $form['children'][$child]['#attributes']['class'][] = 'hierarchy-row--' . $childEntity->bundle();
 
       $form['children'][$child]['#attributes']['class'][] = 'draggable';
       $form['children'][$child]['#weight'] = $weight;
