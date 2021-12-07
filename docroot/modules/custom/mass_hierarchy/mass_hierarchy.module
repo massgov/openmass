@@ -5,10 +5,8 @@
  * Contains mass_hierarchy.module.
  */
 
-use Drupal\Core\Form\FormState;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\mass_hierarchy\Form\HierarchyChildrenForm;
-use Drupal\node\Entity\Node;
 
 /**
  * Implements hook_help().
@@ -64,15 +62,6 @@ function mass_hierarchy_get_parent_bundle_info() {
 }
 
 /**
- * Implements hook_form_alter().
- */
-function mass_hierarchy_form_alter(&$form, FormState $form_state, $form_id) {
-  if (strpos($form_id, '_entity_hierarchy_reorder_form') !== FALSE) {
-    mass_hierarchy_form_any_form_entity_hierarchy_reorder_form_alter($form, $form_state, $form_id);
-  }
-}
-
-/**
  * Implements @see hook_entity_type_build().
  *
  * @see entity_hierarchy_entity_type_build
@@ -82,38 +71,5 @@ function mass_hierarchy_entity_type_build(array &$entity_types) {
   foreach ($entity_types as $entity_type_id => $entity_type) {
     $entity_types[$entity_type_id]
       ->setFormClass('entity_hierarchy_reorder', HierarchyChildrenForm::class);
-  }
-}
-
-/**
- * To validate (front-end) parent/child relationships on the hierarchy form.
- */
-function mass_hierarchy_form_any_form_entity_hierarchy_reorder_form_alter(&$form, FormState $form_state, $form_id) {
-  $entity_type_bundle_info = \Drupal::service('entity_type.bundle.info');
-  $bundles = $entity_type_bundle_info->getBundleInfo('node');
-
-  $nids = [];
-  foreach ($form['children'] as $key => &$child) {
-
-    if (!is_int($key)) {
-      continue;
-    }
-
-    $nid = $child['id']['#value'];
-    $nids[] = $nid;
-    $child_entity = Node::load($nid);
-
-    if (!$child_entity) {
-      continue;
-    }
-
-    // // Re-ordering columns.
-    // $bkp_parent = $child['parent'];
-    // unset($child['parent']);
-    // $bkp_operations = $child['operations'];
-    // unset($child['operations']);
-    // $child['pageviews'] = ['#markup' => ''];
-    // $child['parent'] = $bkp_parent;
-    // $child['operations'] = $bkp_operations;
   }
 }
