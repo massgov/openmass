@@ -14,6 +14,21 @@ use Drupal\entity_hierarchy\Form\HierarchyChildrenForm as EntityHierachyHierarch
  * Defines a form for re-ordering children.
  */
 class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
+
+  /**
+   * Get the number of pageviews for the specified node ids.
+   */
+  function getPageviews($nids) {
+    /** @var \Drupal\Core\Database\Connection */
+    $database = \Drupal::service('database');
+    $query = $database->select('node_field_data', 'n');
+    $query->leftjoin('mass_superset_data', 'm', 'n.nid = m.nid');
+    $query->fields('n', ['nid']);
+    $query->fields('m', ['pageviews']);
+    $query->condition('n.nid', $nids, 'in');
+    return $query->execute()->fetchAllAssoc('nid');
+  }
+
   /**
    * {@inheritdoc}
    */
@@ -71,16 +86,17 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
     $childEntities = $this->entityTreeNodeMapper->loadAndAccessCheckEntitysForTreeNodes($this->entity->getEntityTypeId(), $children, $cache);
 
     $form['#attached']['library'][] = 'entity_hierarchy/entity_hierarchy.nodetypeform';
+    $form['#attached']['drupalSettings']['mass_hierarchy_parent_bundle_info'] = mass_hierarchy_get_parent_bundle_info();
+
     $form['children'] = [
       '#type' => 'table',
       '#header' => [
         t('Child'),
         t('Type'),
         t('Weight'),
-        [
-          'data' => t('Operations'),
-          'colspan' => 3,
-        ],
+        t('State'),
+        ['data' => t('Pageviews'), 'colspan' => 2],
+        ['data' => t('Operations'), 'colspan' => 2],
       ],
       '#tabledrag' => [
         [
@@ -102,6 +118,24 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
     ];
 
     $bundles = FALSE;
+
+
+    $ids = [];
+    foreach ($children as $node) {
+      if (!$childEntities->contains($node)) {
+        // Doesn't exist or is access hidden.
+        continue;
+      }
+      /** @var \Drupal\Core\Entity\ContentEntityInterface $childEntity */
+      $childEntity = $childEntities->offsetGet($node);
+      if (!$childEntity->isDefaultRevision()) {
+        // We only update default revisions here.
+        continue;
+      }
+      $ids[] = $node->getId();
+    }
+
+    $pageviews = $this->getPageviews($ids);
 
     foreach ($children as $weight => $node) {
       if (!$childEntities->contains($node)) {
@@ -163,6 +197,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
 
       $form['children'][$child]['type'] = ['#markup' => $bundles[$childEntity->bundle()]['label']];
 
+
       $form['children'][$child]['weight'] = [
         '#type' => 'weight',
         '#delta' => 50,
@@ -173,12 +208,31 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         '#attributes' => ['class' => ['child-weight']],
       ];
 
+      $form['children'][$child]['moderation-state']['#type'] = 'html_tag';
+      $form['children'][$child]['moderation-state']['#tag'] = 'div';
+      $form['children'][$child]['moderation-state']['#attributes']['data-state'] = $childEntity->get('moderation_state')->value;
+      $form['children'][$child]['moderation-state']['#value'] = $childEntity->get('moderation_state')->getString();
+
+      $form['children'][$child]['id'] = [
+        '#type' => 'hidden',
+        '#value' => $node->getNodeKey()->getId(),
+        '#attributes' => ['class' => ['child-id']],
+      ];
+
+      $form['children'][$child]['pageviews']['#markup'] = \intval($pageviews[$child]->pageviews);
+
+      $form['children'][$child]['parent'] = [
+        '#type' => 'hidden',
+        '#default_value' => $storage->findParent($node->getNodeKey())->getNodeKey()->getId(),
+        '#attributes' => ['class' => ['child-parent']],
+      ];
 
       // Operations column.
       $form['children'][$child]['operations'] = [
         '#type' => 'operations',
         '#links' => [],
       ];
+
       if ($childEntity->access('update') && $childEntity->hasLinkTemplate('edit-form')) {
         $form['children'][$child]['operations']['#links']['edit'] = [
           'title' => t('Edit'),
@@ -191,23 +245,6 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
           'url' => $childEntity->toUrl('delete-form'),
         ];
       }
-
-      $form['children'][$child]['id'] = [
-        '#type' => 'hidden',
-        '#value' => $node->getNodeKey()->getId(),
-        '#attributes' => ['class' => ['child-id']],
-      ];
-
-      $form['children'][$child]['moderation-state']['#type'] = 'html_tag';
-      $form['children'][$child]['moderation-state']['#tag'] = 'div';
-      $form['children'][$child]['moderation-state']['#attributes']['data-state'] = $childEntity->get('moderation_state')->value;
-      $form['children'][$child]['moderation-state']['#value'] = $childEntity->get('moderation_state')->getString();
-
-      $form['children'][$child]['parent'] = [
-        '#type' => 'hidden',
-        '#default_value' => $storage->findParent($node->getNodeKey())->getNodeKey()->getId(),
-        '#attributes' => ['class' => ['child-parent']],
-      ];
     }
 
     return $form;
