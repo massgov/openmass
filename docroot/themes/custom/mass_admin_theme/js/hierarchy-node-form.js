@@ -6,7 +6,6 @@ jQuery(document).ready(function ($) {
   var $table = $('#edit-children', $form);
   var parentId = jQuery('tr.hierarchy-row', $table).eq(0).find('.child-parent').val();
   var wrongBundleMessageId = "hierarchy-node-wrong-bundle-message";
-  var wrongStateMessageId = "hierarchy-node-wrong-state-message"
 
   // Checks original table rows as not loaded yet.
   $('tr.hierarchy-row--parent', $table).data('loaded', false);
