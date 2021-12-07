@@ -18,6 +18,7 @@ class DynamicLocalTasks extends DeriverBase {
     $this->derivatives['mass_content.change_parents']['title'] = "Move Children";
     $this->derivatives['mass_content.change_parents']['route_name'] = 'view.change_parents.page_1';
     $this->derivatives['mass_content.change_parents']['base_route'] = 'entity.node.canonical';
+    $this->derivatives['mass_content.change_parents']['weight'] = 50;
 
     return parent::getDerivativeDefinitions($base_plugin_definition);
   }
