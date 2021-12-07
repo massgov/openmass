@@ -159,6 +159,8 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         // Classify the weight element for #tabledrag.
         '#attributes' => ['class' => ['child-weight']],
       ];
+
+
       // Operations column.
       $form['children'][$child]['operations'] = [
         '#type' => 'operations',
@@ -182,6 +184,11 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         '#value' => $node->getNodeKey()->getId(),
         '#attributes' => ['class' => ['child-id']],
       ];
+
+      $form['children'][$child]['moderation-state']['#type'] = 'html_tag';
+      $form['children'][$child]['moderation-state']['#tag'] = 'div';
+      $form['children'][$child]['moderation-state']['#attributes']['data-state'] = $childEntity->get('moderation_state')->value;
+      $form['children'][$child]['moderation-state']['#value'] = $childEntity->get('moderation_state')->getString();
 
       $form['children'][$child]['parent'] = [
         '#type' => 'hidden',

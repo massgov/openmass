@@ -144,12 +144,6 @@ function mass_hierarchy_form_any_form_entity_hierarchy_reorder_form_alter(&$form
       continue;
     }
 
-    // $child['moderation-state']['#markup'] = $child_entity->get('moderation_state')->getString();
-    $child['moderation-state']['#type'] = 'html_tag';
-    $child['moderation-state']['#tag'] = 'div';
-    $child['moderation-state']['#attributes']['data-state'] = $child_entity->get('moderation_state')->value;
-    $child['moderation-state']['#value'] = $child_entity->get('moderation_state')->getString();
-
     // Adding expand/collapse controls.
     $child['title'][] = [
       '#markup' => '
