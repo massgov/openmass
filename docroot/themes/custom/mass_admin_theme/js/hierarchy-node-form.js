@@ -273,19 +273,19 @@ jQuery(document).ready(function ($) {
     return typeof allowedBundles[parentBundle] != 'undefined';
   }
 
-  function isntChildPublishedAndParentUnpublished($child, $parent) {
+  function ifPublishedChildThenItsParentShouldBePublished($child, $parent) {
     var childState = $child.find('[data-state]').data('state');
     var parentState = $parent.find('[data-state]').data('state');
-    return !(childState === 'published' && parentState == 'unpublished');
+    return childState != 'published' || (childState === 'published' && parentState == 'published');
   }
 
   function avoidPublishedItemToBeDraggedIntoUnpublishedParent($tr) {
     return checkForErrorsAndMessage(
       $tr,
-      isntChildPublishedAndParentUnpublished,
+      ifPublishedChildThenItsParentShouldBePublished,
       'hierarchy-row--state-is-wrong',
       wrongStateMessageId,
-      ' A published item can\'t be dragged into an unpubished one. '
+      ' A published item can\'t be a child of an non-pubished one. '
     );
   }
 
