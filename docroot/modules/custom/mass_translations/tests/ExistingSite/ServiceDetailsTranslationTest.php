@@ -111,6 +111,20 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
   }
 
   /**
+   * Check that the page has an aliased canonical URL.
+   */
+  public function testHasAliasedCanonicalLink() {
+    $this->drupalLogin($this->editor);
+    $entity = $this->getContent();
+    $translation = $this->getTranslation($entity);
+    $this->drupalGet($translation->toUrl());
+    $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Entity page was loadable');
+    $page = $this->getSession()->getPage();
+    $element = $page->find('css', 'link[rel="canonical"]')->getText();
+    $this->assertStringNotContainsString('/node/', $element, 'Unaliased canonical URL found on translated page');
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function tearDown() {
