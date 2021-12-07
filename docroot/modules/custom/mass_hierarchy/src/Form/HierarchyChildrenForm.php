@@ -18,7 +18,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
   /**
    * Get the number of pageviews for the specified node ids.
    */
-  function getPageviews($nids) {
+  private function getPageviews($nids) {
     /** @var \Drupal\Core\Database\Connection */
     $database = \Drupal::service('database');
     $query = $database->select('node_field_data', 'n');
@@ -288,13 +288,6 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
 
   /**
    * Batch callback to rebuild the tree.
-   *
-   * @param string $fieldName
-   *   Field name.
-   * @param \Drupal\Core\Entity\ContentEntityInterface $childEntity
-   *   Child entity being updated.
-   * @param int $weight
-   *   New weight.
    */
   public static function rebuildTree($fieldName, ContentEntityInterface $entity, $parent, $weight) {
     if ($entity->{$fieldName}->target_id == $parent) {
