@@ -645,6 +645,8 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 
   $query = \Drupal::entityQuery('node');
   $query->condition('type', 'event');
+  // Only update public meeting events.
+  $query->condition('field_event_type_list', 'public_meeting');
 
   if (empty($sandbox)) {
     // Get a list of all nodes of type event.
