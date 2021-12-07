@@ -7,36 +7,16 @@
 
 use Drupal\content_moderation\Entity\ContentModerationState;
 use Drupal\content_moderation\Entity\ContentModerationStateInterface;
+use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 
 /**
  * Implements hook_entity_usage_block_tracking().
  */
 function mass_entity_usage_entity_usage_block_tracking($target_id, $target_type, $source_id, $source_type, $source_langcode, $source_vid, $method, $field_name, $count) {
-  // Block tracking of paragraph revisions that are not publicly accessible.
-  if ($source_type === 'paragraph') {
-    if (!_mass_entity_usage_is_default($source_type, $source_id, $source_vid)) {
-      return TRUE;
-    }
-  }
-  elseif ($source_type === 'node') {
-    // Load the node.
-    $node = \Drupal::entityTypeManager()->getStorage('node')->loadRevision($source_vid);
-    // Get the moderation state.
-    $content_moderation_state = ContentModerationState::loadFromModeratedEntity($node);
-    if ($content_moderation_state instanceof ContentModerationStateInterface
-      && !$content_moderation_state->get('moderation_state')->isEmpty()) {
-      $state_name = $content_moderation_state->get('moderation_state')->value;
-      // These states should be not be tracked.
-      $skipped_states = [
-        'unpublished',
-        'trash',
-      ];
-      // Don't track sources that are in unpublished or trash state.
-      if (in_array($state_name, $skipped_states)) {
-        return TRUE;
-      }
-    }
+  // Block tracking of entities with a node source that is unpublished or trash.
+  if (!_mass_entity_usage_tracking_check($source_type, $source_id, $source_vid)) {
+    return TRUE;
   }
   return FALSE;
 }
@@ -53,8 +33,9 @@ function mass_entity_usage_entity_usage_block_tracking($target_id, $target_type,
  *
  * @return bool
  */
-function _mass_entity_usage_is_default($entity_type, $id, $vid) {
-  if ($entity_type === 'paragraph') {
+function _mass_entity_usage_tracking_check($entity_type, $id, $vid) {
+  if ($entity_type == 'paragraph') {
+    // Verify the paragraph revision is in the paragraphs_item_field_data table.
     $query = \Drupal::database()->select('paragraphs_item_field_data', 'pifd');
     $query->fields('pifd', ['id', 'revision_id']);
     $query->condition('id', $id);
@@ -63,15 +44,31 @@ function _mass_entity_usage_is_default($entity_type, $id, $vid) {
     if (empty($results)) {
       return FALSE;
     }
+    // Load the paragraph revision.
+    $paragraph = \Drupal::service('entity_type.manager')->getStorage('paragraph')
+      ->loadByProperties(['id' => $id, 'revision_id' => $vid]);
+    // Get the parent node of the paragraph.
+    $parent_node = Helper::getParentNode(current($paragraph));
+    // Check if the parent node should be tracked.
+    _mass_entity_usage_tracking_check('node', $parent_node->id(), $parent_node->getRevisionId());
   }
-  elseif ($entity_type === 'node') {
-    $query = \Drupal::database()->select('node_field_data', 'nfd');
-    $query->fields('nfd', ['nid', 'vid']);
-    $query->condition('nid', $id);
-    $query->condition('vid', $vid);
-    $results = $query->execute()->fetchAll();
-    if (empty($results)) {
-      return FALSE;
+  if ($entity_type == 'node') {
+    // Load the node.
+    $node = \Drupal::entityTypeManager()->getStorage('node')->loadRevision($vid);
+    // Get the moderation state.
+    $content_moderation_state = ContentModerationState::loadFromModeratedEntity($node);
+    if ($content_moderation_state instanceof ContentModerationStateInterface
+      && !$content_moderation_state->get('moderation_state')->isEmpty()) {
+      $state_name = $content_moderation_state->get('moderation_state')->value;
+      // These states should be not be tracked.
+      $skipped_states = [
+        'unpublished',
+        'trash',
+      ];
+      // Don't track sources that are in unpublished or trash state.
+      if (in_array($state_name, $skipped_states)) {
+        return FALSE;
+      }
     }
   }
   return TRUE;
