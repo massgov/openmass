@@ -22,6 +22,22 @@ function mass_hierarchy_help($route_name, RouteMatchInterface $route_match) {
 
     default:
   }
+
+  // Looking for entity.[bundle].entity_hierarchy_reorder.
+  if (
+    strpos($route_name, 'entity.') === 0 &&
+    strpos(strrev($route_name), strrev('.entity_hierarchy_reorder')) === 0
+  ) {
+    $output =
+      '<p><b>NOTE:</b> This new feature is experimental. ' .
+      'You may drag items to be part of a new parent. ' .
+      'You can drag items left and right to move them up or down in the hierarchy. ' .
+      'Please save often because if you navigate away from this tab, any changes will be lost. ' .
+      'Report any issues with ServiceNow.</p>' .
+      '<p>The order of the items on the page doesn’t matter and isn’t changed if you move them just up or down ' .
+      ' - it is only the parent/child relationships that are saved.</p>';
+  }
+
   return $output;
 }
 
@@ -98,18 +114,6 @@ function mass_hierarchy_form_any_form_entity_hierarchy_reorder_form_alter(&$form
   $form['#attached']['drupalSettings']['mass_hierarchy_parent_bundle_info'] = mass_hierarchy_get_parent_bundle_info();
   $entity_type_bundle_info = \Drupal::service('entity_type.bundle.info');
   $bundles = $entity_type_bundle_info->getBundleInfo('node');
-
-  $form['note-experimental'] = [
-    '#markup' =>
-    '<p><b>NOTE:</b> This new feature is experimental. ' .
-    'You may drag items to be part of a new parent. ' .
-    'You can drag items left and right to move them up or down in the hierarchy. ' .
-    'Please save often because if you navigate away from this tab, any changes will be lost. ' .
-    'Report any issues with ServiceNow.</p>' .
-    '<p>The order of the items on the page doesn’t matter and isn’t changed if you move them just up or down ' .
-    ' - it is only the parent/child relationships that are saved.</p>',
-    '#weight' => -1,
-  ];
 
   $nids = [];
   foreach ($form['children'] as $key => &$child) {
