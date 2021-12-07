@@ -26,12 +26,13 @@ function mass_entity_usage_entity_usage_block_tracking($target_id, $target_type,
  *
  * @param string $entity_type
  *   The entity type.
- * @param integer $id
+ * @param int $id
  *   The entity id.
- * @param integer $vid
+ * @param int $vid
  *   The entity revision id.
  *
  * @return bool
+ *   If true, the content should be tracked. If false, do not track.
  */
 function _mass_entity_usage_tracking_check($entity_type, $id, $vid) {
   if ($entity_type == 'paragraph') {
