@@ -155,6 +155,12 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         $bundles = $this->entityTypeBundleInfo->getBundleInfo($childEntity->getEntityTypeId());
       }
 
+      // Adding bundle machine name information.
+      $form['children'][$child]['#type'] = 'html_tag';
+      $form['children'][$child]['#tag'] = 'div';
+      $form['children'][$child]['#attributes']['data-bundle'] = $childEntity->bundle();
+      $form['children'][$child]['#value'] = $bundles[$childEntity->bundle()]['label'];
+
       $form['children'][$child]['type'] = ['#markup' => $bundles[$childEntity->bundle()]['label']];
 
       $form['children'][$child]['weight'] = [

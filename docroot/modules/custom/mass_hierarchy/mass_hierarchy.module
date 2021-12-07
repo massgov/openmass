@@ -144,12 +144,6 @@ function mass_hierarchy_form_any_form_entity_hierarchy_reorder_form_alter(&$form
       continue;
     }
 
-    // Adding bundle machine name information.
-    $child['type']['#type'] = 'html_tag';
-    $child['type']['#tag'] = 'div';
-    $child['type']['#attributes']['data-bundle'] = $child_entity->bundle();
-    $child['type']['#value'] = $bundles[$child_entity->bundle()]['label'];
-
     // Re-ordering columns.
     $bkp_parent = $child['parent'];
     unset($child['parent']);
