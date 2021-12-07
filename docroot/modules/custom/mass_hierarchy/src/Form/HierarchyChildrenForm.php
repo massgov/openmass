@@ -198,54 +198,8 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
    */
   protected function actions(array $form, FormStateInterface $form_state) {
     $actions = parent::actions($form, $form_state);
+    unset($actions['add_child']);
     $actions['submit']['#value'] = $this->t('Update children');
-    // Don't perform field validation.
-    $actions['submit']['#limit_validation_errors'] = [['children'], ['fieldname']];
-    unset($actions['delete']);
-    // Don't show the actions links if there are no children.
-    if (empty(Element::children($form['children']))) {
-      unset($actions['submit']);
-    }
-    $fields = $this->parentCandidate->getCandidateFields($this->entity);
-    $fieldName = $form_state->getValue('fieldname') ?: reset($fields);
-    $entityType = $this->entity->getEntityType();
-
-    // Add children buttons not needed.
-    if (FALSE && $entityType->hasHandlerClass('entity_hierarchy') && ($childBundles = $this->parentCandidate->getCandidateBundles($this->entity)) && isset($childBundles[$fieldName])) {
-      $handlerClass = $entityType->getHandlerClass('entity_hierarchy');
-      /** @var \Drupal\entity_hierarchy\Handler\EntityHierarchyHandlerInterface $handler */
-      $handler = new $handlerClass();
-
-      $links = [];
-      foreach($childBundles[$fieldName] as $id => $info) {
-        $url = $handler->getAddChildUrl($entityType, $this->entity, $id, $fieldName);
-        if($url->access()) {
-          $links[$id] = [
-            'title' => $this->t('Create new @bundle', ['@bundle' => $info['label']]),
-            'url' => $url
-          ];
-        }
-      }
-      if(count($links) > 1) {
-        $actions['add_child'] = [
-          '#type' => 'dropbutton',
-          '#links' => $links,
-        ];
-      }
-      else {
-        $link = reset($links);
-        $actions['add_child'] = [
-          '#type' => 'link',
-          '#title' => $link['title'],
-          '#url' => $link['url'],
-          '#attributes' => [
-            'class' => ['button', 'button--primary'],
-          ],
-          '#weight' => -100,
-        ];
-      }
-
-    }
     return $actions;
   }
 
