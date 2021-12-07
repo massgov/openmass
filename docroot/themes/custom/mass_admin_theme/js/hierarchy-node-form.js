@@ -5,7 +5,7 @@ jQuery(document).ready(function ($) {
   var $form = $('form[id^=node][id$="-entity-hierarchy-reorder-form"]');
   var $table = $('#edit-children', $form);
   var parentId = jQuery('tr.hierarchy-row', $table).eq(0).find('.child-parent').val();
-  var wrongBundleMessageId = "hierarchy-node-wrong-bundle-message";
+  var wrongBundleMessageId = 'hierarchy-node-wrong-bundle-message';
 
   // Checks original table rows as not loaded yet.
   $('tr.hierarchy-row--parent', $table).data('loaded', false);
@@ -300,9 +300,6 @@ jQuery(document).ready(function ($) {
   // Things to do on submit (and before submit).
   function doOnSubmit() {
     if ($('#' + wrongBundleMessageId).length > 0) {
-      return false;
-    }
-    if ($('#' + wrongStateMessageId).length > 0) {
       return false;
     }
     setParentOnFirstLevel();
