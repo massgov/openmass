@@ -100,8 +100,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         t('Child'),
         t('Type'),
         t('Weight'),
-        t('State'),
-        ['data' => t('Pageviews'), 'colspan' => 2],
+        ['data' => t('Pageviews'), 'colspan' => 1],
         ['data' => t('Operations'), 'colspan' => 2],
       ],
       '#tabledrag' => [
@@ -147,12 +146,18 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         // Doesn't exist or is access hidden.
         continue;
       }
-      /** @var \Drupal\Core\Entity\ContentEntityInterface $childEntity */
+
+      /** @var \Drupal\node\Entity\Node $childEntity */
       $childEntity = $childEntities->offsetGet($node);
       if (!$childEntity->isDefaultRevision()) {
         // We only update default revisions here.
         continue;
       }
+
+      if (!$childEntity->isPublished()) {
+        continue;
+      }
+
       $child = $node->getId();
 
       $level = $node->getDepth() - $baseDepth;
@@ -210,11 +215,6 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
         // Classify the weight element for #tabledrag.
         '#attributes' => ['class' => ['child-weight']],
       ];
-
-      $form['children'][$child]['moderation-state']['#type'] = 'html_tag';
-      $form['children'][$child]['moderation-state']['#tag'] = 'div';
-      $form['children'][$child]['moderation-state']['#attributes']['data-state'] = $childEntity->get('moderation_state')->value;
-      $form['children'][$child]['moderation-state']['#value'] = $childEntity->get('moderation_state')->getString();
 
       $form['children'][$child]['id'] = [
         '#type' => 'hidden',

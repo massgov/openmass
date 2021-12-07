@@ -174,7 +174,7 @@ jQuery(document).ready(function ($) {
       // Requires patching tabledrag.js.
       Drupal.tableDrag.prototype.makeDraggable.bind(jQuery('#edit-children').data('tableDragObject'), elem)();
       $(elem).find('td:nth-child(3)').addClass('tabledrag-hide');
-      $(elem).find('td:nth-child(7)').addClass('tabledrag-hide');
+      $(elem).find('td:nth-child(6)').addClass('tabledrag-hide');
       Drupal.attachBehaviors(elem, drupalSettings);
     }).removeClass(justAppendedClass);
 
@@ -273,22 +273,6 @@ jQuery(document).ready(function ($) {
     return typeof allowedBundles[parentBundle] != 'undefined';
   }
 
-  function ifPublishedChildThenItsParentShouldBePublished($child, $parent) {
-    var childState = $child.find('[data-state]').data('state');
-    var parentState = $parent.find('[data-state]').data('state');
-    return childState != 'published' || (childState === 'published' && parentState == 'published');
-  }
-
-  function avoidPublishedItemToBeDraggedIntoUnpublishedParent($tr) {
-    return checkForErrorsAndMessage(
-      $tr,
-      ifPublishedChildThenItsParentShouldBePublished,
-      'hierarchy-row--state-is-wrong',
-      wrongStateMessageId,
-      ' A published item can\'t be a child of an non-pubished one. '
-    );
-  }
-
   // Checks if there are unallowed parent/child relationships,
   // if any, shows a warning message.
   function parentChildRelationshipChecker($tr) {
@@ -312,7 +296,6 @@ jQuery(document).ready(function ($) {
     removeParentClassIfRowIsNotParent();
     addParentClassOnRowsWithChildren();
     applyEventsToHierarchyControls();
-    avoidPublishedItemToBeDraggedIntoUnpublishedParent($tr);
   }
 
   // Things to do on submit (and before submit).
