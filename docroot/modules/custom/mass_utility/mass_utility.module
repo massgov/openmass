@@ -423,8 +423,18 @@ function mass_utility_help($route_name, RouteMatchInterface $route_match) {
   }
 }
 
+/**
+ * Callback function for the primary parent field widget.
+ *
+ * @param $form
+ *   The form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state.
+ *
+ * @return mixed
+ *   The breadcrumb block.
+ */
 function _mass_utility_breadcrumb_ajax(&$form, FormStateInterface $form_state) {
-
   return $form['field_primary_parent']['breadcrumb'];
 }
 
@@ -433,7 +443,6 @@ function _mass_utility_breadcrumb_ajax(&$form, FormStateInterface $form_state) {
  */
 function mass_utility_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if (isset($form['field_primary_parent'])) {
-
     $form['field_primary_parent']['breadcrumb'] = [
       '#type' => 'container',
       '#weight' => 100,
@@ -449,17 +458,14 @@ function mass_utility_form_alter(&$form, FormStateInterface $form_state, $form_i
       $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->buildFromEntity($node)->toRenderable();
       $form['field_primary_parent']['breadcrumb']['block'] = $rendered_block;
     }
-    
+
     if (!empty($form_state->getValue('field_primary_parent'))) {
       $parent_id = $form_state->getValue('field_primary_parent')[0]['target_id']['target_id'];
       $node_loaded = Node::load($parent_id);
       $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->buildFromEntity($node_loaded)->toRenderable();
       $form['field_primary_parent']['breadcrumb']['block'] = $rendered_block;
-
     }
-
   }
-
 }
 
 /**
