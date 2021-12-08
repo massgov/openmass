@@ -1,3 +1,91 @@
+## [0.303.1] - November 17, 2021
+
+### Fixed
+  - DP-23441: Remove old validation code on Alert (Page-level and Organization) content type.
+
+## [0.303.0] - November 16, 2021
+
+### Changed
+  - DP-23082: Promotion pages BG images half-height option.
+  - DP-23317: Change sitewide alerts header prefix.
+  - DP-23353: Avoids field_banner_image to be editable or not based on the field_info_details_sections flag, on an info_details form.
+  - DP-23427: Updated Mayflower version to 11.19.1.
+  - DP-22939: Implmenting responsive images. (MF#1545)
+  - DP-23082: Add half image option for Key messages. (MF#1538)
+  - DP-23317: Adjusted vertical spacing, prevent alert header to wrap on smaller screensizes. (MF#1547)
+  - DP-23427: Add a style variant to allow wrapping on mobile. (MF#1557)
+
+### Added
+  - DP-23228: Added link to the archived versions of page from Drupal edit page.
+  - DP-23351: Tests for "All content" view at admin/content.
+
+### Fixed
+  - DP-23381: All content view CSV export is not including all filters.
+  - DP-23388: Fix caching issues with link labels on service overflow page.
+
+
+
+## [0.302.0] - November 10, 2021
+
+### Added
+  - DP-22906: Create sitewide alert content type.
+  - DP-23171: Allow Tugboat as Backstop target
+
+### Changed
+  - DP-22939: Implementing responsive images in location pages.
+  - DP-23238: In CI, more descriptive 'Hold' text and explicit QA approvals for release and hotfix.
+  - DP-23386: Use develop from Mayflower artifacts.
+  - DP-23386: Updated Mayflower version to 11.18.0.
+  - DP-23183: Adds divider as a component, adds variant for thin, converts it to hr. (MF #1541)
+
+### Fixed
+  - DP-23183: Adjusting rich text optional divider for info detail pages.
+  - DP-23350: Avoid 500 errors reported on new Relic.
+Noticed exception 'Error' with message
+'Call to a member function getEntityTypeId() on null' in
+/mnt/www/html/massgov/docroot/modules/custom/mayflower/src/Helper.php:1780,
+  - DP-23387: Correct issue with topic cards on org pages.
+
+
+
+## [0.301.1] - November 4, 2021
+
+### Fixed
+  - DP-23374: Fix search on locations pages.
+
+
+
+## [0.301.0] - November 2, 2021
+
+### Added
+  - DP-22210: New elements to handle accesibility issues on map.
+  - DP-22215: Added new locations page.
+  - DP-22941: Added more content types to Curated list automatic lists feature.
+  - DP-23210: Restore OrgBoards
+  - DP-23218: Added Collections field to Advisory, Binder, Curated List, Decision, Executive Order, Form, Guide, Location, Service, Service Details, Regulation, and Rules of Court.
+  - DP-23241: Advanced search feature.
+
+### Changed
+  - DP-22423: Disable and remove handy cache tags module in favor of core's bundle list tags
+  - DP-23291: \"You will need\" header removed from CT Form on viewmode full.
+  - DP-23320: Added language Amharic as an option for content pages and documents.
+  - DP-23328: Updated Mayflower version to 11.17.0.
+  - DP-22210: Fixing focus issues when navigating with keyboard. (MF #1490)
+  - DP-22215: Replace googlemaps with leaftlet map, remove filter logic. (MF #1430)
+  - DP-22679: Adjust focus order between the menu button and the menu container when the menu is open. (MF #1479)
+  - DP-22679: Add a feature to close Google Translate option container with ESC key. (MF #1479)
+  - DP-22680: Add focus trap to the global menu dropdown. (MF #1479)
+  - DP-23268: Fix main nav overlay positioning. (MF #1539)
+
+### Fixed
+  - DP-23070: Fixed error message related to inline entity form table deprecated theme function usage.
+  - DP-23184: Fix nightly security check
+  - DP-23227: Fix "false" text included in release note message on authoring home page.
+  - DP-23329: Fix issue with the missing 'Content type' filter on the content views.
+
+### Removed
+  - DP-23071: Removed Legacy redirects content type.
+
 
 
 ## [0.300.0] - October 26, 2021
@@ -8,13 +96,13 @@
   - DP-23135: Add urls for Lighthouse at Tugboat
   - DP-23167: Tests for expand/collapse functionality on accordions
   - DP-23254: Added banner to pages using the without-main page template.
-  
+
 ### Changed
   - DP-23257: Updated Mayflower version to 11.16.3.
   - Update BrandBanner toggle button text (MF #1535)
   - DP-3188: To make search comply with https://rawgit.com/w3c/aria-practices/master/aria-practices-DeletedSectionsArchive.html#autocomplete
 Accesibility improvements for screenreaders on search https://github.com/massgov/openmass/pull/1081#issuecomment-947854475
-  
+
 ## [0.299.1] - October 25, 2021
 
 ### Fixed

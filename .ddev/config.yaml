@@ -37,3 +37,16 @@ web_environment:
   # For Cloudflare Terraform.
   - CLOUDFLARE_EMAIL
   - CLOUDFLARE_TOKEN
+hooks:
+  post-start:
+    # Tugboat CLI
+    - exec: curl https://dashboard.tugboat.qa/cli/linux/tugboat.tar.gz > tugboat.tar.gz
+    - exec: tar -zxf tugboat.tar.gz -C /usr/local/bin/ && rm -f tugboat.tar.gz
+    # CicleCI CLI
+    - exec: curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | bash
+    # gh install is too slow to be enabled by default as we dont need it. Uncomment or copy to personal config if needed.
+    # - exec: curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo gpg --dearmor -o /usr/share/keyrings/githubcli-archive-keyring.gpg
+    # - exec: echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+    # - exec: sudo apt update
+    # - exec: sudo apt install gh
+

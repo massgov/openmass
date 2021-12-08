@@ -53,9 +53,8 @@ class EmergencyAlertsTest extends ExistingSiteBase {
    */
   public function testEmergencyAlertResponseSitewide() {
     $nids = \Drupal::entityQuery('node')
-      ->condition('type', 'alert')
+      ->condition('type', 'sitewide_alert')
       ->condition('status', 1)
-      ->condition('field_alert_display', 'site_wide')
       ->execute();
     $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     foreach ($nodes as $node) {
@@ -69,17 +68,16 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     ]);
     $alert_message_text = $this->randomMachineName();
     $node = $this->createNode([
-      'type' => 'alert',
+      'type' => 'sitewide_alert',
       'title' => $this->randomMachineName(),
       'status' => 1,
       'moderation_state' => 'published',
-      'field_alert_display' => 'site_wide',
       // 'State 911 Department (6416)'.
       'field_alert_ref_contact' => ['target_id' => 6416],
-      'field_alert_severity' => 'emergency_alert',
-      'field_alert' => Paragraph::create([
-        'type' => 'emergency_alert',
-        'field_emergency_alert_message' => $alert_message_text,
+      'field_sitewide_alert_severity' => 'emergency_alert',
+      'field_sitewide_alert' => Paragraph::create([
+        'type' => 'sitewide_alert_message',
+        'field_sitewide_alert_message' => $alert_message_text,
       ]),
       'field_alert_related_links_5' => [
         'uri' => 'entity:node/' . $related->id(),
@@ -207,19 +205,17 @@ class EmergencyAlertsTest extends ExistingSiteBase {
 
     // Save 1 sitewide alert to start with.
     $this->createNode([
-      'type' => 'alert',
-      'field_alert_display' => 'site_wide',
+      'type' => 'sitewide_alert',
       'moderation_state' => 'published',
       'status' => 1,
-      'field_alert' => Paragraph::create([
-        'type' => 'emergency_alert',
-        'field_emergency_alert_message' => 'test',
+      'field_sitewide_alert' => Paragraph::create([
+        'type' => 'sitewide_alert_message',
+        'field_sitewide_alert_message' => 'test',
       ]),
     ]);
     $session = $this->getSession();
-    $session->visit('/node/add/alert');
+    $session->visit('/node/add/sitewide_alert');
     $page = $session->getPage();
-    $page->fillField('field_alert_display', 'site_wide');
     $page->selectFieldOption('moderation_state[0][state]', 'published');
     $page->findButton('Save')->press();
     $this->assertStringContainsString('This sitewide alert cannot be published because another sitewide alert is currently active:', $page->getText());
@@ -252,9 +248,8 @@ class EmergencyAlertsTest extends ExistingSiteBase {
    */
   public function unPublishExistingSiteWideAlert() {
     $nids = \Drupal::entityQuery('node')
-      ->condition('type', 'alert')
+      ->condition('type', 'sitewide_alert')
       ->condition('status', 1)
-      ->condition('field_alert_display', 'site_wide')
       ->execute();
     $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
     foreach ($nodes as $node) {
