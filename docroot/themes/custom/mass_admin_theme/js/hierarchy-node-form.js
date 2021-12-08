@@ -6,6 +6,7 @@ jQuery(document).ready(function ($) {
   var $table = $('#edit-children', $form);
   var parentId = jQuery('tr.hierarchy-row', $table).eq(0).find('.child-parent').val();
   var wrongBundleMessageId = 'hierarchy-node-wrong-bundle-message';
+  var hierarchyMessagesClass = 'messages--hierarchy';
 
   // Checks original table rows as not loaded yet.
   $('tr.hierarchy-row--parent', $table).data('loaded', false);
@@ -253,7 +254,7 @@ jQuery(document).ready(function ($) {
       ' id="' + wrongMessageId + '" ' +
       ' role="contentinfo" ' +
       ' aria-label="Status message" ' +
-      ' class="messages messages--warning"> ' +
+      ' class="messages messages--warning ' + hierarchyMessagesClass + '"> ' +
         ' <h2 class="visually-hidden">Status message</h2> ' +
         message +
     '</div>';
@@ -287,6 +288,11 @@ jQuery(document).ready(function ($) {
     );
   }
 
+  // Enables or disables submit button state if hierarchy messages are found.
+  function updateSubmitButtonState() {
+    $form.find('#edit-submit').attr('disabled', $form.find('.' + hierarchyMessagesClass).length > 0);
+  }
+
   // Things do on drag events.
   function doOnDrag(event) {
     var $tr = $(event.target).closest('tr');
@@ -295,6 +301,7 @@ jQuery(document).ready(function ($) {
     removeParentClassIfRowIsNotParent();
     addParentClassOnRowsWithChildren();
     applyEventsToHierarchyControls();
+    updateSubmitButtonState();
   }
 
   // Things to do on submit (and before submit).
