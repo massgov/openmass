@@ -6767,7 +6767,7 @@ function mass_theme_preprocess_paragraph__collection_search(&$variables) {
   $variables['searchBoxWithLinks']['form']['submitText'] = t('SEARCH');
 
   $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
-  $variables['searchBoxWithLinks']['form']['actionUrl'] =  $collection_url;
+  $variables['searchBoxWithLinks']['form']['actionUrl'] = $collection_url;
 
   $variables['searchBoxWithLinks']['secondary']['heading'] = $p->field_secondary_heading->value;
   $variables['searchBoxWithLinks']['secondary']['firstLink']['href'] = $collection_url;
@@ -6778,7 +6778,7 @@ function mass_theme_preprocess_paragraph__collection_search(&$variables) {
     return;
   }
   $uri_is_external = UrlHelper::isExternal($uri);
-  $variables['searchBoxWithLinks']['secondary']['secondLink']['href'] =  $uri_is_external ?
+  $variables['searchBoxWithLinks']['secondary']['secondLink']['href'] = $uri_is_external ?
     $p->field_secondary_link[0]->uri : Url::fromUri($uri);
   $variables['searchBoxWithLinks']['secondary']['secondLink']['text'] = $uri_is_external ?
     $p->field_secondary_link[0]->title : $p->field_secondary_link[0]->computed_title;
