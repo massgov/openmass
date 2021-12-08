@@ -5,6 +5,7 @@ namespace Drupal\mass_utility;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Routing\AdminContext;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -14,6 +15,7 @@ use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
 use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
 use Drupal\entity_hierarchy_breadcrumb\HierarchyBasedBreadcrumbBuilder;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 
 /**
  * Entity hierarchy breadcrumb alterations for Mass Utility.
@@ -56,6 +58,40 @@ class MassUtilityBreadcrumb extends HierarchyBasedBreadcrumbBuilder {
     $breadcrumb->addCacheContexts(['route']);
     /** @var \Drupal\Core\Entity\ContentEntityInterface $route_entity */
     $route_entity = $this->getEntityFromRouteMatch($route_match);
+
+    $entity_type = $route_entity->getEntityTypeId();
+    $storage = $this->storageFactory->get($this->getHierarchyFieldFromEntity($route_entity), $entity_type);
+    $ancestors = $storage->findAncestors($this->nodeKeyFactory->fromEntity($route_entity));
+    // Pass in the breadcrumb object for caching.
+    $ancestor_entities = $this->mapper->loadAndAccessCheckEntitysForTreeNodes($entity_type, $ancestors, $breadcrumb);
+
+    $links = [];
+    foreach ($ancestor_entities as $ancestor_entity) {
+      if (!$ancestor_entities->contains($ancestor_entity)) {
+        // Doesn't exist or is access hidden.
+        continue;
+      }
+      $entity = $ancestor_entities->offsetGet($ancestor_entity);
+      if ($entity instanceof Node && $entity->hasField('field_short_title') && !empty($entity->field_short_title->value)) {
+        $links[] = Link::createFromRoute($entity->field_short_title->value, 'entity.node.canonical', ['node' => $entity->id()]);
+      }
+      else {
+        $links[] = $entity->toLink();
+      }
+    }
+
+    array_unshift($links, Link::createFromRoute(new TranslatableMarkup('Home'), '<front>'));
+    $breadcrumb->setLinks($links);
+    return $breadcrumb;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildFromEntity(NodeInterface $entity_passed) {
+    $breadcrumb = new Breadcrumb();
+    $breadcrumb->addCacheContexts(['route']);
+    $route_entity = $entity_passed;
 
     $entity_type = $route_entity->getEntityTypeId();
     $storage = $this->storageFactory->get($this->getHierarchyFieldFromEntity($route_entity), $entity_type);

@@ -423,6 +423,45 @@ function mass_utility_help($route_name, RouteMatchInterface $route_match) {
   }
 }
 
+function _mass_utility_breadcrumb_ajax(&$form, FormStateInterface $form_state) {
+
+  return $form['field_primary_parent']['breadcrumb'];
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function mass_utility_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (isset($form['field_primary_parent'])) {
+
+    $form['field_primary_parent']['breadcrumb'] = [
+      '#type' => 'container',
+      '#weight' => 100,
+      "#attributes" => ["class" => "form-item", "id" => "breadcrumb-preview-wrapper"]
+    ];
+    $form['field_primary_parent']['widget'][0]['target_id']['target_id']['#ajax'] = [
+      'callback' => '_mass_utility_breadcrumb_ajax',
+      'wrapper' => 'breadcrumb-preview-wrapper',
+      'event' => 'autocompleteclose',
+    ];
+    if (isset($form['field_primary_parent']['widget'][0]['target_id']['target_id']['#default_value'])) {
+      $node = $form['field_primary_parent']['widget'][0]['target_id']['target_id']['#default_value'];
+      $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->buildFromEntity($node)->toRenderable();
+      $form['field_primary_parent']['breadcrumb']['block'] = $rendered_block;
+    }
+    
+    if (!empty($form_state->getValue('field_primary_parent'))) {
+      $parent_id = $form_state->getValue('field_primary_parent')[0]['target_id']['target_id'];
+      $node_loaded = Node::load($parent_id);
+      $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->buildFromEntity($node_loaded)->toRenderable();
+      $form['field_primary_parent']['breadcrumb']['block'] = $rendered_block;
+
+    }
+
+  }
+
+}
+
 /**
  * Implements hook_field_widget_form_alter().
  */
@@ -434,18 +473,6 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
   if ($type == 'google_map_field') {
     if ($field_name == 'field_lat_long') {
       $element['name']['#type'] = 'hidden';
-    }
-  }
-  elseif ($type == 'entity_reference_hierarchy') {
-    if ($field_name == 'field_primary_parent') {
-      $rendered_block = BlockViewBuilder::lazyBuilder('breadcrumbs', 'default');
-
-      $element['breadcrumb'] = [
-        '#type' => 'container',
-        '#weight' => 100,
-        "#attributes" => ["class" => "form-item"]
-      ];
-      $element['breadcrumb']['block'] = $rendered_block;
     }
   }
   elseif ($type == 'link') {
