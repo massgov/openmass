@@ -37,6 +37,7 @@ dependencies:
     - field.field.node.event.field_reusable_label
     - field.field.node.event.field_short_title
     - field.field.node.event.field_state_organization_tax
+    - field.field.node.event.field_updated_date
     - node.type.event
   module:
     - datetime
@@ -334,6 +335,15 @@ content:
     settings:
       link: true
     third_party_settings: {  }
+  field_updated_date:
+    weight: 34
+    label: above
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
   links:
     weight: 1
     region: content
