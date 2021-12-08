@@ -426,15 +426,15 @@ function mass_utility_help($route_name, RouteMatchInterface $route_match) {
 /**
  * Callback function for the primary parent field widget.
  *
- * @param $form
- *   The form.
+ * @param array $form
+ *   The form nested array.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state.
  *
  * @return mixed
  *   The breadcrumb block.
  */
-function _mass_utility_breadcrumb_ajax(&$form, FormStateInterface $form_state) {
+function _mass_utility_breadcrumb_ajax(array &$form, FormStateInterface $form_state) {
   return $form['field_primary_parent']['breadcrumb'];
 }
 
