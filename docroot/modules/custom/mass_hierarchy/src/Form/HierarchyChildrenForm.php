@@ -142,7 +142,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
     if (!empty($ids)) {
       $pageviews = $this->getPageviews($ids);
     }
-    
+
     foreach ($children as $weight => $node) {
       if (!$childEntities->contains($node)) {
         // Doesn't exist or is access hidden.
