@@ -10,6 +10,7 @@ use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\entity_hierarchy_breadcrumb\HierarchyBasedBreadcrumbBuilder;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
+use SplObjectStorage;
 
 /**
  * Entity hierarchy based breadcrumb builder overrides.
@@ -71,7 +72,7 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
    * @return \Drupal\Core\Breadcrumb\Breadcrumb
    *   The updated breadcrumb.
    */
-  public function buildBreadcrumb($breadcrumb, ContentEntityInterface $route_entity, $ancestor_entities) {
+  public function buildBreadcrumb(Breadcrumb $breadcrumb, ContentEntityInterface $route_entity, SplObjectStorage $ancestor_entities) {
     $links = [];
     if ($ancestor_entities->count() > 0) {
       foreach ($ancestor_entities as $ancestor_entity) {
