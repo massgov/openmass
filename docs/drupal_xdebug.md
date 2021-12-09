@@ -10,7 +10,7 @@
 ### Quickest Debug Method: Twig Tweak Drupal Dump
 
 * Add `{{ drupal_dump() }}`, `{{ drupal_dump(variable-name) }}` or `{{ dd() }}` or `{{ dd(variable-name) }}` to a template file and refresh (May require a cache clear). See [Drupal.org: Twig Tweak Cheat sheet (Drupal Dump)](https://www.drupal.org/docs/contributed-modules/twig-tweak-2x/cheat-sheet#s-drupal-dump)
-* You can add this to multiple times to the same or different template files.
+* You can add this multiple times to the same or different template files.
 
 **Note: Remember to remove all calls to `drupal_dump()` or `dd()` from templates before committing.**
 
