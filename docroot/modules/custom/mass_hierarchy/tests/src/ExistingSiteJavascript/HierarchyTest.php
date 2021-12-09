@@ -58,21 +58,21 @@ class HierarchyTest extends ExistingSiteWebDriverTestBase {
 
     // Administrator tests.
     $this->drupalLogin($this->createRandomUser('content_team'));
-    $this->drupalGet('node/' .  $parent1Node->id() . '/children');
+    $this->drupalGet('node/' . $parent1Node->id() . '/children');
     $this->assertSession()->buttonExists('Update children');
     $this->assertSession()->elementNotExists('css', '.mass_hierarchy_cant_drag_topic_page');
     $this->assertSession()->elementNotExists('css', '.mass_hierarchy_cant_drag');
 
     // Editor tests.
     $this->drupalLogin($this->createRandomUser('editor'));
-    $this->drupalGet('node/' .  $parent1Node->id() . '/children');
+    $this->drupalGet('node/' . $parent1Node->id() . '/children');
     $this->assertSession()->buttonExists('Update children');
     $this->assertSession()->elementExists('css', '.mass_hierarchy_cant_drag_topic_page');
     $this->assertSession()->elementNotExists('css', '.mass_hierarchy_cant_drag');
 
     // Author tests.
     $this->drupalLogin($this->createRandomUser('author'));
-    $this->drupalGet('node/' .  $parent1Node->id() . '/children');
+    $this->drupalGet('node/' . $parent1Node->id() . '/children');
     $this->assertSession()->buttonNotExists('Update children');
     $this->assertSession()->elementExists('css', '.mass_hierarchy_cant_drag_topic_page');
     $this->assertSession()->elementExists('css', '.mass_hierarchy_cant_drag');
