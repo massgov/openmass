@@ -45,7 +45,8 @@ For more information, refer to [PHP frameworks and external tools/Drupal](https:
 5. Set a breakpoint by clicking to the right of a line number in a PHP file.
    ![set breakpoint](./assets/drupal-debug/set-bp.png)
 6. Refresh mass.local in the browser to hit the breakpoint.
-   1. You may need to clear the cache as you make changes to the template file.
+
+> Don't commit changes to the `core.extension` file enabling the `devel` module, or `devel` related config files.
 
 ### For Twig debugging, follow these additional steps:
 0. Comment out `cache: false` in `docroot/sites/default/services.local.yml`.
@@ -57,8 +58,6 @@ For more information, refer to [PHP frameworks and external tools/Drupal](https:
 
 > Please note: this method is not working consistently. Refer to the quickest debug method for Twig template logging for now. If you can get this the Twig debug working consistently with Xdebug, please suggest changes to these steps. 
 
-
-**Note: Don't commit changes to the `core.extension` file enabling the `devel` module, or `devel` related config files.**
 
 ## Additional Resources
 
