@@ -36,14 +36,14 @@
 
 For more information, refer to [PHP frameworks and external tools/Drupal](https://www.jetbrains.com/help/phpstorm/drupal-support.html)
 
-### Starting a debugging session:
+### Starting a PHP debugging session:
 1. Enable the Devel module by running `ddev drush en devel`.
 2. Clear the cache by running `ddev drush cr`.
 3. Enable Xdebug listening in PhpStorm.
    ![start listening](./assets/drupal-debug/start-listening.png)
 4. Enable `Debug` in the Xdebug helper browser extension for the page you are debugging.
-5. Set a breakpoint by clicking to the right of a line number.
-   ![set breakpoint](./assets/drupal-debug/set-breakpoint.png)
+5. Set a breakpoint by clicking to the right of a line number in a PHP file.
+   ![set breakpoint](./assets/drupal-debug/set-bp.png)
 6. Refresh mass.local in the browser to hit the breakpoint.
    1. You may need to clear the cache as you make changes to the template file.
 
@@ -51,7 +51,9 @@ For more information, refer to [PHP frameworks and external tools/Drupal](https:
 0. Comment out `cache: false` in `docroot/sites/default/services.local.yml`.
 0. Clear the cache by running `ddev drush cr`, and make sure openmass/docroot/sites/default/files/php/twig folder exists.
 0. In PhpStorm, under Preferences > PHP > Debug > Templates > Twig Debug, set the Cache path to `[you_local_path_to_openmass_parent_folder]/openmass/docroot/sites/default/files/php/twig`, or use the file locator to point to that folder.
-0. Set a breakpoint by clicking to the right of a line number.
+0. Set a breakpoint by clicking to the right of a line number in a Twig template file.
+
+   ![set breakpoint](./assets/drupal-debug/set-bp-twig.png)
 
 > Please note: this method is not working consistently. Refer to the quickest debug method for Twig template logging for now. If you can get this the Twig debug working consistently with Xdebug, please suggest changes to these steps. 
 
