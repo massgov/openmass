@@ -122,9 +122,9 @@ View `/etc/hosts` for Mac/Linux or `c:\windows\system32\drivers\etc\hosts` in Wi
 
 This usually happens if you go visit mass.local right after the containers are brought up. MySQL has not started yet. Open Portainer and go to _Containers > mass_mysql_1 > Logs_ and check for the message: _mysqld: ready for connections._ If you don't see this message, _mysqld_ has not started yet.
 
-### Xdebug
+### Debug
 
-If you know where a problem is happening in your code, Xdebug is a useful tool that allows you set breakpoints to trace the problem back. See [How to setup Xdebug for PHP](./docs/drupal_xdebug.md)
+If you know where a problem is happening in your code in Twig or PHP, refer to [these steps](./docs/drupal_debug.md).
 
 ### Windows troubleshooting
 
