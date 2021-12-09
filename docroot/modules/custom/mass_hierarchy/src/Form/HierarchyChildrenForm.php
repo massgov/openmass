@@ -99,7 +99,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
 
     // Using a class we remove pointer events to disallow dragging
     // topic pages if the user doesn't have the permission to change its parent.
-    if (!$currentUser->hasPermission('mass_hierarchy_change_topic_page_parent')) {
+    if (!$currentUser->hasPermission('mass_hierarchy - change topic page parent')) {
       $form['#attributes']['class'][] = 'mass_hierarchy_cant_drag_topic_page';
     }
 
@@ -268,6 +268,15 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
    * {@inheritdoc}
    */
   protected function actions(array $form, FormStateInterface $form_state) {
+
+    $currentUser = \Drupal::currentUser();
+
+    // Using a class we remove pointer events to disallow dragging
+    // for any item in the hierarchy.
+    if (!$currentUser->hasPermission('mass_hierarchy - move items in the hierarchy')) {
+      return [];
+    }
+
     $actions = parent::actions($form, $form_state);
     unset($actions['add_child']);
     $actions['submit']['#value'] = $this->t('Update children');
