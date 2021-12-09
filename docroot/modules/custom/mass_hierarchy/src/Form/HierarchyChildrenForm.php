@@ -85,12 +85,21 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
 
     $childEntities = $this->entityTreeNodeMapper->loadAndAccessCheckEntitysForTreeNodes($this->entity->getEntityTypeId(), $children, $cache);
 
+    $form['#attached']['library'][] = 'mass_hierarchy/hierarchy';
     $form['#attached']['library'][] = 'entity_hierarchy/entity_hierarchy.nodetypeform';
     $form['#attached']['drupalSettings']['mass_hierarchy_parent_bundle_info'] = mass_hierarchy_get_parent_bundle_info();
 
-    // Using this class we remove pointer events to disallow dragging
-    // for topic pages if the user can't create one.
-    if (!\Drupal::currentUser()->hasPermission('create topic_page content')) {
+    $currentUser = \Drupal::currentUser();
+
+    // Using a class we remove pointer events to disallow dragging
+    // for any item in the hierarchy.
+    if (!$currentUser->hasPermission('mass_hierarchy - move items in the hierarchy')) {
+      $form['#attributes']['class'][] = 'mass_hierarchy_cant_drag';
+    }
+
+    // Using a class we remove pointer events to disallow dragging
+    // topic pages if the user doesn't have the permission to change its parent.
+    if (!$currentUser->hasPermission('mass_hierarchy_change_topic_page_parent')) {
       $form['#attributes']['class'][] = 'mass_hierarchy_cant_drag_topic_page';
     }
 

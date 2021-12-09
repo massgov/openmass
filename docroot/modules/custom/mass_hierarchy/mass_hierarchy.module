@@ -7,6 +7,7 @@
 
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\mass_hierarchy\Form\HierarchyChildrenForm;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_help().
@@ -87,11 +88,28 @@ function mass_hierarchy_views_pre_view($view) {
     return;
   }
 
-  if (!\Drupal::currentUser()->hasPermission('create topic_page content')) {
+  if (!\Drupal::currentUser()->hasPermission('mass_hierarchy - change topic page parent')) {
     return;
   }
 
-  // Include topic pages on the view by removing the filter.
+  // Include topic pages on the view by unsetting a filter that removes them.
   unset($filters['type_1']);
   $view->display_handler->overrideOption('filters', $filters);
+}
+
+/**
+* Implements hook_views_pre_render().
+*/
+function mass_hierarchy_views_post_render(ViewExecutable $view) {
+  /** @var \Drupal\views\Entity\View $view */
+  if ($view->id() != 'change_parents') {
+    return;
+  }
+
+  if (\Drupal::currentUser()->hasPermission('mass_hierarchy - change parent on move children tab')) {
+    return;
+  }
+
+  // Remove the checkboxes and the ability to submit.
+  unset($view->field['views_bulk_operations_bulk_form']);
 }
