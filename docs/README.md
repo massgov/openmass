@@ -39,5 +39,4 @@ Contributors should familiarize themselves with existing modules both custom and
 ## Theme & Mayflower
 - [mass_theme](https://github.com/massgov/openmass/blob/develop/docroot/themes/custom/mass_theme/README.md)
 - [Mayflower Module](https://github.com/massgov/openmass/blob/develop/docroot/modules/custom/mayflower/README.md)
-- [Change the Mayflower version in Drupal](mayflower.md)
-- [Mayflower assets integration](mayflower_assets.md)
+- [Mayflower Integration](mayflower.md)
