@@ -2796,6 +2796,7 @@ function mass_theme_preprocess_node_event(&$variables) {
     'contact' => ['field_event_contact_general'],
     'type' => ['field_event_type_list'],
     'posted_date' => ['field_event_posted_date'],
+    'updated_date' => ['field_updated_date'],
   ];
 
   // Determines which field names to use from the map.
@@ -2823,8 +2824,14 @@ function mass_theme_preprocess_node_event(&$variables) {
 
   if (Helper::isFieldPopulated($node, $fields['posted_date']) && $is_public_meeting) {
     $postedDate = Helper::getMayflowerDate($node->{$fields['posted_date']}->value, ['date_format' => 'F j, Y']);
-    // Converting epoch to DateTime requires '@'.
-    $changedDate = Helper::getMayflowerDate('@' . $node->getChangedTime(), ['date_format' => 'F j, Y']);
+    // Use the value of field_updated_date as the changedDate value.
+    if (Helper::isFieldPopulated($node, $fields['posted_date'])) {
+      $changedDate = Helper::getMayflowerDate($node->{$fields['updated_date']}->value, ['date_format' => 'F j, Y']);
+    }
+    else {
+      // Otherwise, display the posted date as last modified.
+      $changedDate = $postedDate;
+    }
 
     array_shift($postedDate);
     array_shift($changedDate);

@@ -32,19 +32,24 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
     /** @var \Drupal\Node\NodeStorage */
     $node_storage = \Drupal::entityTypeManager()->getStorage('node');
     $vid = $node_storage->getLatestRevisionId($entity->id());
-    /** @var \Drupal\node\Entity\Node */
-    $node_latest = $node_storage->loadRevision($vid);
+    $create_draft = $vid != $entity->getRevisionId();
 
-    /** @var \Drupal\node\Entity\Node */
+    /** @var \Drupal\node\Entity\Node $entity */
     $entity->field_primary_parent = $new_parent_id;
+    $entity->setNewRevision(TRUE);
     $entity->setRevisionUserId(\Drupal::currentUser()->id());
-    $entity->revision_log = 'Revision created with "Move Children" feature.';
+    $entity->setRevisionLogMessage('Revision created with "Move Children" feature.');
+    $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
     $entity->save();
 
     // Was the current version different from the latest version?
-    if ($vid != $entity->vid->value) {
+    if ($create_draft) {
+      /** @var \Drupal\node\Entity\Node */
+      $node_latest = $node_storage->loadRevision($vid);
+      $node_latest->setNewRevision(TRUE);
       $node_latest->setRevisionUserId(\Drupal::currentUser()->id());
-      $node_latest->revision_log = 'Revision created with "Move Children" feature.';
+      $node_latest->setRevisionLogMessage('Revision created with "Move Children" feature.');
+      $node_latest->setRevisionCreationTime(\Drupal::time()->getRequestTime());
       $node_latest->field_primary_parent = $new_parent_id;
       $node_latest->save();
     }
