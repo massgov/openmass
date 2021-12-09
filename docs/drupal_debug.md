@@ -48,7 +48,7 @@ For more information, refer to [PHP frameworks and external tools/Drupal](https:
 
 > Don't commit changes to the `core.extension` file enabling the `devel` module, or `devel` related config files.
 
-### For Twig debugging, follow these additional steps:
+### For Twig debugging (not working consistently):
 0. Comment out `cache: false` in `docroot/sites/default/services.local.yml`.
 0. Clear the cache by running `ddev drush cr`, and make sure openmass/docroot/sites/default/files/php/twig folder exists.
 0. In PhpStorm, under Preferences > PHP > Debug > Templates > Twig Debug, set the Cache path to `[you_local_path_to_openmass_parent_folder]/openmass/docroot/sites/default/files/php/twig`, or use the file locator to point to that folder.
