@@ -19,6 +19,11 @@ class RouteSubscriber extends RouteSubscriberBase {
       $options = $route->getOptions();
       $options['parameters']['node']['type'] = 'entity:node';
       $route->setOptions($options);
+      $route->setRequirement('_access', 'FALSE');
+    }
+
+    if ($route = $collection->get('entity.node.entity_hierarchy_reorder')) {
+      $route->setRequirement('_access', 'FALSE');
     }
   }
 
