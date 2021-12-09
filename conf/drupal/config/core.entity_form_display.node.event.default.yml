@@ -47,7 +47,6 @@ dependencies:
     - datetime
     - datetime_range
     - entity_browser_entity_form
-    - entity_hierarchy
     - field_group
     - image
     - inline_entity_form
@@ -110,7 +109,6 @@ third_party_settings:
         - field_event_posted_date
         - field_updated_date
         - field_event_public_testimony
-        - field_primary_parent
         - field_organizations
         - field_intended_audience
         - field_reusable_label
@@ -608,17 +606,6 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_primary_parent:
-    weight: 129
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-      hide_weight: true
-    third_party_settings: {  }
-    type: entity_reference_hierarchy_autocomplete
-    region: content
   field_reusable_label:
     weight: 132
     settings:
@@ -638,7 +625,7 @@ content:
     type: string_textfield
     region: content
   field_state_organization_tax:
-    weight: 4
+    weight: 3
     settings:
       match_operator: CONTAINS
       size: 60
@@ -676,7 +663,7 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 10
+    weight: 4
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -732,12 +719,13 @@ content:
     type: options_select
     region: content
   url_redirects:
-    weight: 50
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_primary_parent: true
   langcode: true
   path: true
   promote: true

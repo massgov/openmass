@@ -35,7 +35,6 @@ dependencies:
   module:
     - conditional_fields
     - content_moderation
-    - entity_hierarchy
     - field_group
     - image
     - link
@@ -88,7 +87,6 @@ third_party_settings:
         - field_person_ref_org
         - field_publish_bio_page
         - field_short_bio
-        - field_primary_parent
         - field_organizations
         - field_reusable_label
       parent_name: group_node_edit_form
@@ -197,7 +195,7 @@ content:
     type: image_image
     region: content
   field_metatags:
-    weight: 4
+    weight: 1
     settings:
       sidebar: true
     third_party_settings: {  }
@@ -294,17 +292,6 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: string_textfield
-    region: content
-  field_primary_parent:
-    weight: 18
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-      hide_weight: true
-    third_party_settings: {  }
-    type: entity_reference_hierarchy_autocomplete
     region: content
   field_publish_bio_page:
     weight: 16
@@ -471,7 +458,7 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 9
+    weight: 3
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -502,7 +489,7 @@ content:
     region: content
   uid:
     type: entity_reference_autocomplete
-    weight: 5
+    weight: 2
     settings:
       match_operator: CONTAINS
       size: 60
@@ -523,7 +510,7 @@ content:
     type: options_select
     region: content
   url_redirects:
-    weight: 50
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -531,6 +518,7 @@ hidden:
   created: true
   field_person_email: true
   field_person_phone: true
+  field_primary_parent: true
   langcode: true
   path: true
   promote: true

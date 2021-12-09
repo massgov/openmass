@@ -57,7 +57,6 @@ dependencies:
     - conditional_fields
     - content_moderation
     - entity_browser_entity_form
-    - entity_hierarchy
     - field_group
     - image
     - inline_entity_form
@@ -87,6 +86,7 @@ third_party_settings:
       region: content
     group_banner:
       children:
+        - field_collections
         - title
         - field_short_title
         - field_service_lede
@@ -94,7 +94,6 @@ third_party_settings:
         - field_service_bg_wide
         - field_service_bg_narrow
         - field_image_credit
-        - field_primary_parent
         - field_organizations
         - field_data_flag
         - field_list_data_type
@@ -103,7 +102,6 @@ third_party_settings:
         - field_data_topic
         - field_intended_audience
         - field_reusable_label
-        - field_collections
       parent_name: group_service_edit_form
       weight: 20
       format_type: tab
@@ -670,17 +668,6 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_primary_parent:
-    weight: 76
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-      hide_weight: true
-    third_party_settings: {  }
-    type: entity_reference_hierarchy_autocomplete
-    region: content
   field_ref_contact_info:
     weight: 40
     settings:
@@ -866,7 +853,7 @@ content:
     type: link_default
     region: content
   field_service_metatags:
-    weight: 5
+    weight: 2
     settings:
       sidebar: true
     third_party_settings: {  }
@@ -1002,7 +989,7 @@ content:
     type: string_textfield
     region: content
   field_state_organization_tax:
-    weight: 6
+    weight: 3
     settings:
       match_operator: CONTAINS
       size: 60
@@ -1019,7 +1006,7 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 9
+    weight: 4
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -1075,12 +1062,13 @@ content:
     type: options_select
     region: content
   url_redirects:
-    weight: 10
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_primary_parent: true
   langcode: true
   path: true
   promote: true

@@ -37,7 +37,6 @@ dependencies:
     - conditional_fields
     - content_moderation
     - datetime
-    - entity_hierarchy
     - field_group
     - image
     - link
@@ -76,7 +75,6 @@ third_party_settings:
         - field_info_details_date_publishe
         - field_info_details_last_updated
         - field_page_template
-        - field_primary_parent
         - field_organizations
         - field_data_flag
         - field_details_data_type
@@ -405,7 +403,7 @@ content:
     third_party_settings: {  }
     region: content
   field_infodetails_metatags:
-    weight: 3
+    weight: 2
     settings:
       sidebar: true
     third_party_settings: {  }
@@ -432,17 +430,6 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: options_select
-    region: content
-  field_primary_parent:
-    weight: 15
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-      hide_weight: true
-    third_party_settings: {  }
-    type: entity_reference_hierarchy_autocomplete
     region: content
   field_reusable_label:
     type: entity_reference_autocomplete
@@ -471,7 +458,7 @@ content:
     type: string_textfield
     region: content
   field_state_organization_tax:
-    weight: 4
+    weight: 3
     settings:
       match_operator: CONTAINS
       size: 60
@@ -489,7 +476,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 5
+    weight: 4
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -519,7 +506,7 @@ content:
         maxlength_js_enforce_attribute: false
   uid:
     type: entity_reference_autocomplete
-    weight: 2
+    weight: 1
     region: content
     settings:
       match_operator: CONTAINS
@@ -540,12 +527,13 @@ content:
     type: options_select
     region: content
   url_redirects:
-    weight: 6
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_primary_parent: true
   path: true
   promote: true
   status: true

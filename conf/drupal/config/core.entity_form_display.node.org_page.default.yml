@@ -69,7 +69,6 @@ dependencies:
     - conditional_fields
     - content_moderation
     - dynamic_entity_reference
-    - entity_hierarchy
     - field_group
     - image
     - link
@@ -102,7 +101,6 @@ third_party_settings:
         - field_bg_narrow
         - field_banner_image
         - field_image_credit
-        - field_primary_parent
         - field_organizations
         - field_reusable_label
       parent_name: group_node_edit_form
@@ -119,7 +117,7 @@ third_party_settings:
     group_actions:
       children: {  }
       parent_name: ''
-      weight: 33
+      weight: 34
       format_type: tab
       format_settings:
         formatter: closed
@@ -544,17 +542,6 @@ content:
           bundle: org_page
     type: entity_reference_autocomplete
     region: content
-  field_primary_parent:
-    weight: 13
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-      hide_weight: true
-    third_party_settings: {  }
-    type: entity_reference_hierarchy_autocomplete
-    region: content
   field_public_records_link:
     weight: 124
     settings:
@@ -813,6 +800,7 @@ hidden:
   field_org_our_orgs: true
   field_org_ref_locations: true
   field_org_show_news_images: true
+  field_primary_parent: true
   field_ref_actions_6: true
   field_ref_card_view_6: true
   field_ref_orgs: true

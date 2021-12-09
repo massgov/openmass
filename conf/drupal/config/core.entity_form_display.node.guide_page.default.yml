@@ -27,7 +27,6 @@ dependencies:
   module:
     - conditional_fields
     - content_moderation
-    - entity_hierarchy
     - field_group
     - focal_point
     - maxlength
@@ -57,7 +56,6 @@ third_party_settings:
         - field_guide_page_lede
         - field_guide_page_bg_wide
         - field_image_credit
-        - field_primary_parent
         - field_organizations
         - field_data_flag
         - field_details_data_type
@@ -255,7 +253,7 @@ content:
     type: string_textarea
     region: content
   field_guide_page_metatags:
-    weight: 5
+    weight: 2
     settings:
       sidebar: true
     third_party_settings: {  }
@@ -307,17 +305,6 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_primary_parent:
-    weight: 2
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-      hide_weight: true
-    third_party_settings: {  }
-    type: entity_reference_hierarchy_autocomplete
-    region: content
   field_reusable_label:
     weight: 10
     settings:
@@ -337,7 +324,7 @@ content:
     type: string_textfield
     region: content
   field_state_organization_tax:
-    weight: 6
+    weight: 3
     settings:
       match_operator: CONTAINS
       size: 60
@@ -348,7 +335,7 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 10
+    weight: 4
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -404,12 +391,13 @@ content:
     type: options_select
     region: content
   url_redirects:
-    weight: 50
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_primary_parent: true
   langcode: true
   path: true
   promote: true

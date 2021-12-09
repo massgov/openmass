@@ -21,7 +21,6 @@ dependencies:
     - workflows.workflow.editorial
   module:
     - content_moderation
-    - entity_hierarchy
     - field_group
     - mass_fields
     - maxlength
@@ -34,7 +33,7 @@ third_party_settings:
       children:
         - group_form_page
       parent_name: ''
-      weight: 0
+      weight: 1
       format_type: tabs
       format_settings:
         id: ''
@@ -51,13 +50,12 @@ third_party_settings:
         - field_form_you_will
         - field_form_ref_contacts_3
         - field_form_embed
-        - field_primary_parent
         - field_organizations
         - field_intended_audience
         - langcode
         - field_reusable_label
-        - field_english_version
         - field_collections
+        - field_english_version
       parent_name: group_form_page_edit_form
       weight: 20
       format_type: tab
@@ -160,7 +158,7 @@ content:
     type: options_buttons
     region: content
   field_metatags:
-    weight: 8
+    weight: 2
     settings:
       sidebar: true
     third_party_settings: {  }
@@ -175,17 +173,6 @@ content:
       match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
-    region: content
-  field_primary_parent:
-    weight: 14
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-      hide_weight: true
-    third_party_settings: {  }
-    type: entity_reference_hierarchy_autocomplete
     region: content
   field_reusable_label:
     weight: 18
@@ -206,7 +193,7 @@ content:
     type: string_textfield
     region: content
   field_state_organization_tax:
-    weight: 31
+    weight: 3
     settings:
       match_operator: CONTAINS
       size: 60
@@ -224,7 +211,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 5
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -280,12 +267,13 @@ content:
     type: options_select
     region: content
   url_redirects:
-    weight: 50
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_primary_parent: true
   path: true
   promote: true
   status: true

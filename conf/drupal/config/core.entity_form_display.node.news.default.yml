@@ -29,7 +29,6 @@ dependencies:
   module:
     - content_moderation
     - datetime
-    - entity_hierarchy
     - field_group
     - image
     - link
@@ -47,7 +46,6 @@ third_party_settings:
         - field_news_date
         - field_news_lede
         - field_news_summary
-        - field_primary_parent
         - field_organizations
         - langcode
         - field_english_version
@@ -251,7 +249,7 @@ content:
     third_party_settings: {  }
     region: content
   field_news_metatags:
-    weight: 5
+    weight: 2
     settings:
       sidebar: true
     third_party_settings: {  }
@@ -338,17 +336,6 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_primary_parent:
-    weight: 7
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-      hide_weight: true
-    third_party_settings: {  }
-    type: entity_reference_hierarchy_autocomplete
-    region: content
   field_reusable_label:
     weight: 11
     settings:
@@ -360,7 +347,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_state_organization_tax:
-    weight: 6
+    weight: 3
     settings:
       match_operator: CONTAINS
       size: 60
@@ -378,7 +365,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 5
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -434,12 +421,13 @@ content:
     type: options_select
     region: content
   url_redirects:
-    weight: 50
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_primary_parent: true
   path: true
   promote: true
   status: true
