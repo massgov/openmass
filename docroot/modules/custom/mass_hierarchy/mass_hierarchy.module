@@ -5,7 +5,10 @@
  * Contains mass_hierarchy.module.
  */
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Form\FormState;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\node\Entity\Node;
 
@@ -53,6 +56,71 @@ function mass_hierarchy_form_alter(&$form, FormState $form_state, $form_id) {
   if (strpos($form_id, '_entity_hierarchy_reorder_form') !== FALSE) {
     mass_hierarchy_form_any_form_entity_hierarchy_reorder_form_alter($form, $form_state, $form_id);
   }
+
+  // Attach an AJAX controlled breadcrumb preview to field_primary_parent.
+  if (isset($form['field_primary_parent'])) {
+    // Add a container for the breadcrumb preview.
+    $form['field_primary_parent']['breadcrumb'] = [
+      '#type' => 'container',
+      '#weight' => 100,
+      "#attributes" => ["class" => "form-item", "id" => "breadcrumb-preview-wrapper"]
+    ];
+    // Add the #ajax property to the field widget.
+    $form['field_primary_parent']['widget'][0]['target_id']['target_id']['#ajax'] = [
+      'callback' => '_mass_utility_breadcrumb_ajax',
+      'wrapper' => 'breadcrumb-preview-wrapper',
+      'event' => 'autocompleteclose',
+      'progress' => [
+        'type' => 'throbber',
+        'message' => t("Rendering breadcrumb preview..."),
+      ],
+    ];
+    // If the field has a default value, render the breadcrumb preview.
+    if (isset($form['field_primary_parent']['widget'][0]['target_id']['target_id']['#default_value'])) {
+      $node = $form['field_primary_parent']['widget'][0]['target_id']['target_id']['#default_value'];
+      $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->buildFromEntity($node)->toRenderable();
+      $form['field_primary_parent']['breadcrumb']['block'] = $rendered_block;
+    }
+    // If the field has a new value, render the breadcrumb based on that value.
+    if (!empty($form_state->getValue('field_primary_parent'))) {
+      $parent_id = $form_state->getValue('field_primary_parent')[0]['target_id']['target_id'];
+      $node_loaded = Node::load($parent_id);
+      $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->buildFromEntity($node_loaded)->toRenderable();
+      $form['field_primary_parent']['breadcrumb']['block'] = $rendered_block;
+    }
+  }
+}
+
+/**
+ * Callback function for the primary parent field widget.
+ *
+ * @param array $form
+ *   The form nested array.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state.
+ *
+ * @return mixed
+ *   The breadcrumb block.
+ */
+function _mass_utility_breadcrumb_ajax(array &$form, FormStateInterface $form_state) {
+  // Get the field value.
+  $parent_id = $form_state->getValue('field_primary_parent')[0]['target_id']['target_id'];
+  // Load the referenced node from the field value.
+  $node_loaded = Node::load($parent_id);
+  // Create a render array replacement with the new breadcrumb preview block.
+  $rendered_block['field_primary_parent']['breadcrumb'] = [
+    '#type' => 'container',
+    '#weight' => 100,
+    "#attributes" => ["class" => "form-item", "id" => "breadcrumb-preview-wrapper"],
+    'block' => Drupal::service("entity_hierarchy.breadcrumb")->buildFromEntity($node_loaded)->toRenderable(),
+  ];
+
+  // Create a new response.
+  $response = new AjaxResponse();
+  // Replace the existing breadcrumb preview element with the new one.
+  $response->addCommand(new ReplaceCommand('#breadcrumb-preview-wrapper', $rendered_block));
+
+  return $response;
 }
 
 /**
