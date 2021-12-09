@@ -61,13 +61,15 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
   /**
    * Build the breadcrumb based on an entity.
    *
+   * @param \Drupal\Core\Breadcrumb\Breadcrumb $breadcrumb
+   *   The breadcrumb.
    * @param \Drupal\Core\Entity\ContentEntityInterface $route_entity
    *   The route entity.
-   * @param $ancestor_entities
+   * @param \SplObjectStorage $ancestor_entities
    *   The ancestor entities.
    *
    * @return \Drupal\Core\Breadcrumb\Breadcrumb
-   *   The breadcrumb.
+   *   The updated breadcrumb.
    */
   public function buildBreadcrumb($breadcrumb, ContentEntityInterface $route_entity, $ancestor_entities) {
     $links = [];
