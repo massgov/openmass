@@ -9,6 +9,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\entity_hierarchy_breadcrumb\HierarchyBasedBreadcrumbBuilder;
 use Drupal\node\Entity\Node;
+use SplObjectStorage;
 
 /**
  * Entity hierarchy based breadcrumb builder overrides.
@@ -36,15 +37,17 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
   /**
    * Build the breadcrumb based on an entity.
    *
+   * @param \Drupal\Core\Breadcrumb\Breadcrumb $breadcrumb
+   *   The breadcrumb.
    * @param \Drupal\Core\Entity\ContentEntityInterface $route_entity
    *   The route entity.
-   * @param $ancestor_entities
+   * @param \SplObjectStorage $ancestor_entities
    *   The ancestor entities.
    *
    * @return \Drupal\Core\Breadcrumb\Breadcrumb
-   *   The breadcrumb.
+   *   The updated breadcrumb.
    */
-  public function buildBreadcrumb($breadcrumb, ContentEntityInterface $route_entity, $ancestor_entities) {
+  public function buildBreadcrumb(Breadcrumb $breadcrumb, ContentEntityInterface $route_entity, SplObjectStorage $ancestor_entities) {
     $links = [];
     if ($ancestor_entities->count() > 0) {
       foreach ($ancestor_entities as $ancestor_entity) {
