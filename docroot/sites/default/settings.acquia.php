@@ -43,9 +43,16 @@ if (file_exists($secrets_file_global)) {
  */
 if (!$cli && ($is_prod || $is_mass_gov)) {
   if ($_SERVER['HTTP_MASS_CDN_FWD'] !== getenv('MASS_CDN_TOKEN')) {
-    throw new AccessDeniedHttpException('Only requests sent through Cloudflare CDN are allowed.');
+    throw new AccessDeniedHttpException('Only requests sent through the CDN are allowed.');
   }
 }
+
+/**
+ * Set the HTTP header name which stores real client IP. Harmless if not provided.
+ * See https://www.drupal.org/project/reverse_proxy_header.
+ */
+$settings['reverse_proxy_header'] = 'True-Client-IP';
+
 
 /**
  * Load Acquia-specific services.
