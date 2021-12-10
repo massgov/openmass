@@ -12,13 +12,12 @@ use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
 
 /**
- * // Acquia Purger has no other way to disable, so we use plugin alter.
+ * Acquia Purger has no other way to disable, so we use plugin alter.
  *
- * @param $definitions
- * @return void
- *
+ * @param array $definitions
+ *   All plugin definitions.
  */
-function mass_caching_purge_purgers_alter(&$definitions) {
+function mass_caching_purge_purgers_alter(array &$definitions): void {
   if (empty(getenv('AH_SITE_ENVIRONMENT'))) {
     // We are not in an Acquia env. Make their purgers capable of nothing.
     if (isset($definitions['acquia_purge'])) {
