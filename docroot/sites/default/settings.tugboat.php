@@ -1,8 +1,5 @@
 <?php
 
-// Turn on Akamai purger, for QA.
-$config['akamai.settings']['disabled'] = FALSE;
-
 /**
  * Password protect Tugboat environments.
  *
