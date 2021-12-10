@@ -96,7 +96,7 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     $this->adminLogin();
 
     $parent1 = [
-      'type' => 'topic_page',
+      'type' => 'service_page',
       'title' => 'first-parent-' . $this->randomMachineName(16),
       'status' => 1,
       'moderation_state' => 'published',
@@ -104,7 +104,7 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     $parent1Node = $this->createNode($parent1);
 
     $parent2 = [
-      'type' => 'topic_page',
+      'type' => 'service_page',
       'title' => 'second-parent-' . $this->randomMachineName(16),
       'status' => 1,
       'moderation_state' => 'published',
@@ -192,7 +192,7 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
 
     // Create a node to be the fist parent of $child1.
     $parent1 = [
-      'type' => 'topic_page',
+      'type' => 'service_page',
       'title' => 'first-parent-' . $this->randomMachineName(16),
       'status' => 1,
       'moderation_state' => 'published',
@@ -213,7 +213,7 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
 
     // Create a second parent node.
     $parent2 = [
-      'type' => 'topic_page',
+      'type' => 'service_page',
       'title' => 'second-parent-' . $this->randomMachineName(16),
       'status' => 1,
       'moderation_state' => 'published',
@@ -248,12 +248,18 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     // Check we have a custom message for this action on the revision log.
     $this->assertSession()->pageTextContains('Revision created with "Move Children" feature. (Draft)');
     $this->assertSession()->pageTextContains('Revision created with "Move Children" feature. (Published)');
+    $this->htmlOutput();
 
+    // Get the latest revision as the current and revert.
     $this->getCurrentPage()->clickLink('Set as current revision');
+    $this->htmlOutput();
     $this->getCurrentPage()->pressButton('Revert');
 
-    // Edit the node and check it has the second parent.
+    // Edit the node.
     $this->getCurrentPage()->clickLink('Edit');
+    $this->htmlOutput();
+
+    // Check it has the second parent.
     $this->assertSession()->fieldValueEquals('Parent page', $parent2Node->label() . ' (' . $parent2Node->id() . ')');
   }
 
