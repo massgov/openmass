@@ -115,6 +115,7 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
         'stage.mass.gov',
         'edit.stage.mass.gov',
       ];
+      $config['akamai.settings']['disabled'] = FALSE;
       break;
     case 'dev':
       $settings['mass_caching.hosts'] = [
@@ -133,3 +134,5 @@ if(function_exists('newrelic_add_custom_parameter') && !$cli) {
   newrelic_add_custom_parameter('backend_url', $_SERVER['REQUEST_URI']);
   newrelic_add_custom_parameter('request_id', $_SERVER['HTTP_X_REQUEST_ID']);
 }
+
+

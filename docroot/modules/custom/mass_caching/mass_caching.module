@@ -12,6 +12,22 @@ use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
 
 /**
+ * // Acquia Purger has no other way to disable, so we use plugin alter.
+ *
+ * @param $definitions
+ * @return void
+ *
+ */
+function mass_caching_purge_purgers_alter(&$definitions) {
+  if (empty(getenv('AH_SITE_ENVIRONMENT'))) {
+    // We are not in an Acquia env. Make their purgers capable of nothing.
+    if (isset($definitions['acquia_purge'])) {
+      $definitions['acquia_purge']['types'] = [];
+    }
+  }
+}
+
+/**
  * Implements hook_file_insert().
  *
  * Purge the file's path when a file is created.
