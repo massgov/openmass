@@ -50,6 +50,9 @@ function _mass_entity_usage_tracking_check($entity_type, $id, $vid) {
       ->loadByProperties(['id' => $id, 'revision_id' => $vid]);
     // Get the parent node of the paragraph.
     $parent_node = Helper::getParentNode(current($paragraph));
+    if (is_null($parent_node)) {
+      return FALSE;
+    }
     // Check if the parent node should be tracked.
     _mass_entity_usage_tracking_check('node', $parent_node->id(), $parent_node->getRevisionId());
   }
