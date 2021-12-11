@@ -200,22 +200,70 @@ display:
           id: redirect_redirect__uri
           table: redirect
           field: redirect_redirect__uri
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: To
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: uri
+          type: link
+          settings:
+            trim_length: null
+            url_only: false
+            url_plain: false
+            rel: '0'
+            target: '0'
+          group_column: ''
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
           entity_type: redirect
           entity_field: redirect_redirect
-          plugin_id: field
-        status_code:
-          id: status_code
-          table: redirect
-          field: status_code
-          entity_type: redirect
-          entity_field: status_code
-          plugin_id: field
-        language:
-          id: language
-          table: redirect
-          field: language
-          entity_type: redirect
-          entity_field: language
           plugin_id: field
         created:
           id: created
@@ -271,12 +319,72 @@ display:
           entity_type: redirect
           entity_field: created
           plugin_id: date
-        operations:
-          id: operations
+        rid:
+          id: rid
           table: redirect
-          field: operations
+          field: rid
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Redirect ID'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: number_integer
+          settings:
+            thousand_separator: ''
+            prefix_suffix: true
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
           entity_type: redirect
-          plugin_id: entity_operations
+          entity_field: rid
+          plugin_id: field
       filters:
         redirect_source__path:
           id: redirect_source__path
@@ -293,8 +401,19 @@ display:
             operator_id: redirect_source__path_op
             label: From
             description: ''
-            use_operator: false
+            use_operator: true
             operator: redirect_source__path_op
+            operator_limit_selection: true
+            operator_list:
+              '=': '='
+              '!=': '!='
+              contains: contains
+              word: word
+              allwords: allwords
+              starts: starts
+              not_starts: not_starts
+              ends: ends
+              not_ends: not_ends
             identifier: redirect_source__path
             required: false
             remember: false
@@ -302,10 +421,29 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
               administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
             placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
+            autocomplete_filter: 0
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
+            autocomplete_field: redirect_source__path
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
           is_grouped: false
           group_info:
             label: ''
@@ -336,8 +474,20 @@ display:
             operator_id: redirect_redirect__uri_op
             label: To
             description: ''
-            use_operator: false
+            use_operator: true
             operator: redirect_redirect__uri_op
+            operator_limit_selection: true
+            operator_list:
+              '=': '='
+              '!=': '!='
+              contains: contains
+              word: word
+              allwords: allwords
+              starts: starts
+              not_starts: not_starts
+              ends: ends
+              not_ends: not_ends
+              not: not
             identifier: redirect_redirect__uri
             required: false
             remember: false
@@ -345,10 +495,29 @@ display:
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
               administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
             placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
+            autocomplete_filter: 0
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
+            autocomplete_field: redirect_redirect__uri
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
           is_grouped: false
           group_info:
             label: ''
@@ -364,149 +533,22 @@ display:
           entity_type: redirect
           entity_field: redirect_redirect
           plugin_id: string
-        status_code:
-          id: status_code
-          table: redirect
-          field: status_code
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: status_code_op
-            label: 'Status code'
-            description: ''
-            use_operator: false
-            operator: status_code_op
-            identifier: status_code
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-            placeholder: ''
-            min_placeholder: ''
-            max_placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: true
-          group_info:
-            label: 'Status code'
-            description: ''
-            identifier: status_code
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: '300 Multiple Choices'
-                operator: '='
-                value:
-                  value: '300'
-                  min: ''
-                  max: ''
-              2:
-                title: '301 Moved Permanently'
-                operator: '='
-                value:
-                  value: '301'
-                  min: ''
-                  max: ''
-              3:
-                title: '302 Found'
-                operator: '='
-                value:
-                  value: '302'
-                  min: ''
-                  max: ''
-              4:
-                title: '303 See Other'
-                operator: '='
-                value:
-                  value: '303'
-                  min: ''
-                  max: ''
-              5:
-                title: '304 Not Modified'
-                operator: '='
-                value:
-                  value: '304'
-                  min: ''
-                  max: ''
-              6:
-                title: '305 Use Proxy'
-                operator: '='
-                value:
-                  value: '305'
-                  min: ''
-                  max: ''
-              7:
-                title: '307 Temporary Redirect'
-                operator: '='
-                value:
-                  value: '307'
-                  min: ''
-                  max: ''
-          entity_type: redirect
-          entity_field: status_code
-          plugin_id: numeric
-        language:
-          id: language
-          table: redirect
-          field: language
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: in
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: language_op
-            label: 'Original language'
-            description: ''
-            use_operator: false
-            operator: language_op
-            identifier: language
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              administrator: '0'
-            reduce: false
-            operator_limit_selection: false
-            operator_list: {  }
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: redirect
-          entity_field: language
-          plugin_id: language
       sorts: {  }
-      title: Redirect
-      header: {  }
+      title: Redirects
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content:
+            value: "<p>This report shows redirects that exist in Drupal.  Redirects may have been created manually by EOTSS, imported in bulk during the migration to Drupal, or created automatically when a page title change caused a URL change.</p>\r\n\r\n<p>To request a new redirect or a change to an existing redirect, please make a ServiceNow request. <strong>If you request a redirect change or removal, please include the redirect ID as shown in the far right column.</strong></p>"
+            format: basic_html
+          plugin_id: text
       footer: {  }
       empty:
         area_text_custom:
