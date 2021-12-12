@@ -27,6 +27,7 @@ dependencies:
     - node.type.topic_page
   module:
     - entity_hierarchy
+    - mass_superset
     - node
     - user
 id: breadcrumb_depth
@@ -101,6 +102,10 @@ display:
           columns:
             title: title
             depth: depth
+            type: type
+            field_organizations: field_organizations
+            pageviews: pageviews
+            operations: operations
           info:
             title:
               sortable: false
@@ -110,8 +115,32 @@ display:
               empty_column: false
               responsive: ''
             depth:
-              sortable: false
+              sortable: true
               default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            type:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_organizations:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            pageviews:
+              sortable: true
+              default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            operations:
               align: ''
               separator: ''
               empty_column: false
@@ -376,6 +405,63 @@ display:
           separator: ', '
           field_api_classes: false
           plugin_id: field
+        pageviews:
+          id: pageviews
+          table: mass_superset_data
+          field: pageviews
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Page views'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          set_precision: false
+          precision: 0
+          decimal: .
+          separator: ','
+          format_plural: false
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
+          plugin_id: numeric
         operations:
           id: operations
           table: node
@@ -576,21 +662,37 @@ display:
             max: ''
             value: '5'
           group: 1
-          exposed: false
+          exposed: true
           expose:
-            operator_id: ''
-            label: ''
+            operator_id: depth_op
+            label: 'Breadcrumb levels >='
             description: ''
             use_operator: false
-            operator: ''
+            operator: depth_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: ''
+            identifier: depth
             required: false
             remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
@@ -623,7 +725,7 @@ display:
           exposed: true
           expose:
             operator_id: field_organizations_target_id_op
-            label: 'Organization(s) (field_organizations)'
+            label: Organization(s)
             description: ''
             use_operator: false
             operator: field_organizations_target_id_op
@@ -700,6 +802,25 @@ display:
       arguments: {  }
       display_extenders: {  }
       title: 'Pages that have many breadcrumb levels'
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url
+        - url.query_args
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:field.storage.node.field_organizations'
+  page_1:
+    display_plugin: page
+    id: page_1
+    display_title: Page
+    position: 1
+    display_options:
+      display_extenders: {  }
+      path: admin/report/breadcrumbdepth
     cache_metadata:
       max-age: -1
       contexts:
