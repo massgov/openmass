@@ -16,7 +16,7 @@ Feature: Content Management
     And I should not see the link "Extend" in the admin_menu
     And I should not see the link "Configuration" in the admin_menu
     And I should see the link "People" in the admin_menu
-    And I should not see the link "Reports" in the admin_menu
+    And I should see the link "Reports" in the admin_menu
     #ToDo Find a way to add that content admins should not see the help link again.
     # The test is too crude for the current menu.
 
