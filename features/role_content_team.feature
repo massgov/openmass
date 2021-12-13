@@ -39,6 +39,7 @@ Feature: Content Management
     And I should have access to "/node/add/service_details"
     And I should have access to "/admin/structure/menu"
     And I should have access to "/admin/structure/taxonomy/manage/icons/overview"
+    And I should not have access to "/admin/reports"
     And I should not have access to "/node/add/error_page"
     And I should not have access to "/node/add/interstitial"
     And I should not have access to "/node/add/alert"
