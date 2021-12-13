@@ -59,10 +59,10 @@
   color: #777;
 }
 
-.hierarchy-row--is-wrong.hover td,
-.hierarchy-row--is-wrong.hover .tabledrag-handle,
-.hierarchy-row--is-wrong td,
-.hierarchy-row--is-wrong .tabledrag-handle {
+.hierarchy-row--parent-bundle-is-wrong.hover td,
+.hierarchy-row--parent-bundle-is-wrong.hover .tabledrag-handle,
+.hierarchy-row--parent-bundle-is-wrong td,
+.hierarchy-row--parent-bundle-is-wrong .tabledrag-handle {
   background-color: #f7e0e4 !important;
 }
 
@@ -83,4 +83,14 @@
 
 tbody .hierarchy-row .tabledrag-handle {
   padding-top: 0px;
+}
+
+.mass_hierarchy_cant_drag .tabledrag-handle,
+.mass_hierarchy_cant_drag_topic_page .hierarchy-row--topic_page .tabledrag-handle {
+  pointer-events: none;
+  color: #aaa;
+}
+
+.mass_hierarchy_cant_drag #edit-submit {
+  display: none;
 }

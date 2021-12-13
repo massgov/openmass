@@ -25,12 +25,63 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
   /**
    * Creates a random user.
    */
-  private function createRandomUser() {
+  private function createRandomUser($role) {
     $user = User::create(['name' => $this->randomMachineName(20)]);
-    $user->addRole('administrator');
+    $user->addRole($role);
     $user->activate();
     $user->save();
     return $user;
+  }
+
+  /**
+   * Creates parent and children to be able to test.
+   */
+  private function createParentAndChildren() {
+    $parent1 = [
+      'type' => 'topic_page',
+      'title' => 'first-parent-' . $this->randomMachineName(16),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ];
+    $parent1Node = $this->createNode($parent1);
+
+    $child1 = [
+      'title' => 'child1-' . $this->randomMachineName(16),
+      'field_primary_parent' => $parent1Node->id(),
+    ] + $parent1;
+    $this->createNode($child1);
+
+    $child2 = $child1;
+    $child2['title'] = 'child2-' . $this->randomMachineName(16);
+    $child2['type'] = 'how_to_page';
+    $this->createNode($child2);
+
+    return $parent1Node;
+  }
+
+  /**
+   * Tests access to change parent action on move-children, and topic pages.
+   */
+  public function testAccessFromDifferentRoles() {
+    $parent1Node = $this->createParentAndChildren();
+
+    // Administrator tests.
+    $this->drupalLogin($this->createRandomUser('content_team'));
+    $this->drupalGet('node/' . $parent1Node->id() . '/move-children');
+    $this->assertSession()->buttonExists('Change parent');
+    $this->assertSession()->pageTextContains('Topic Page Published');
+
+    // Editor tests.
+    $this->drupalLogin($this->createRandomUser('editor'));
+    $this->drupalGet('node/' . $parent1Node->id() . '/move-children');
+    $this->assertSession()->buttonExists('Change parent');
+    $this->assertSession()->pageTextNotContains('Topic Page Published');
+
+    // Author tests.
+    $this->drupalLogin($this->createRandomUser('author'));
+    $this->drupalGet('node/' . $parent1Node->id() . '/move-children');
+    $this->assertSession()->buttonNotExists('Change parent');
+    $this->assertSession()->pageTextNotContains('Topic Page Published');
   }
 
   /**
@@ -45,7 +96,7 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     $this->adminLogin();
 
     $parent1 = [
-      'type' => 'topic_page',
+      'type' => 'service_page',
       'title' => 'first-parent-' . $this->randomMachineName(16),
       'status' => 1,
       'moderation_state' => 'published',
@@ -53,7 +104,7 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     $parent1Node = $this->createNode($parent1);
 
     $parent2 = [
-      'type' => 'topic_page',
+      'type' => 'service_page',
       'title' => 'second-parent-' . $this->randomMachineName(16),
       'status' => 1,
       'moderation_state' => 'published',
@@ -141,7 +192,7 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
 
     // Create a node to be the fist parent of $child1.
     $parent1 = [
-      'type' => 'topic_page',
+      'type' => 'service_page',
       'title' => 'first-parent-' . $this->randomMachineName(16),
       'status' => 1,
       'moderation_state' => 'published',
@@ -162,14 +213,14 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
 
     // Create a second parent node.
     $parent2 = [
-      'type' => 'topic_page',
+      'type' => 'service_page',
       'title' => 'second-parent-' . $this->randomMachineName(16),
       'status' => 1,
       'moderation_state' => 'published',
     ];
     $parent2Node = $this->createNode($parent2);
 
-    $randomUser = $this->createRandomUser();
+    $randomUser = $this->createRandomUser('administrator');
     $this->drupalLogin($randomUser);
 
     // Selecting the node to change the parent.
@@ -197,12 +248,18 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     // Check we have a custom message for this action on the revision log.
     $this->assertSession()->pageTextContains('Revision created with "Move Children" feature. (Draft)');
     $this->assertSession()->pageTextContains('Revision created with "Move Children" feature. (Published)');
+    $this->htmlOutput();
 
+    // Get the latest revision as the current and revert.
     $this->getCurrentPage()->clickLink('Set as current revision');
+    $this->htmlOutput();
     $this->getCurrentPage()->pressButton('Revert');
 
-    // Edit the node and check it has the second parent.
+    // Edit the node.
     $this->getCurrentPage()->clickLink('Edit');
+    $this->htmlOutput();
+
+    // Check it has the second parent.
     $this->assertSession()->fieldValueEquals('Parent page', $parent2Node->label() . ' (' . $parent2Node->id() . ')');
   }
 

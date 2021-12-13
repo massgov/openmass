@@ -10,7 +10,9 @@ use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\mass_hierarchy\Form\HierarchyChildrenForm;
 use Drupal\node\Entity\Node;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_help().
@@ -25,6 +27,20 @@ function mass_hierarchy_help($route_name, RouteMatchInterface $route_match) {
 
     default:
   }
+
+  // Looking for entity.[bundle].entity_hierarchy_reorder.
+  if (
+    strpos($route_name, 'entity.') === 0 &&
+    strpos(strrev($route_name), strrev('.entity_hierarchy_reorder')) === 0
+  ) {
+    $sentences = [
+      '<b>NOTE:</b> This new feature is experimental. It shows children and descendents of the current page that are published. You can expand children that have children of their own, and you can drag pages to be children of a new parent. You can drag pages left and right to move them up or down in the hierarchy. Please save often because if you navigate away from this tab, any changes will be lost. Report any issues with ServiceNow.',
+      'The order of the pages in the hierarchy doesn’t matter and isn’t changed if you move them just up or down - it is only the parent/child relationships that are saved.',
+      'Moving a page to a new parent does NOT add a link on the parent to the child. If you need that, you will have to add it manually.',
+    ];
+    $output = '<p>' . implode('</p><p>', $sentences) . '</p>';
+  }
+
   return $output;
 }
 
@@ -50,13 +66,63 @@ function mass_hierarchy_get_parent_bundle_info() {
 }
 
 /**
+ * Implements @see hook_entity_type_build().
+ *
+ * @see entity_hierarchy_entity_type_build
+ */
+function mass_hierarchy_entity_type_build(array &$entity_types) {
+  /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
+  foreach ($entity_types as $entity_type_id => $entity_type) {
+    $entity_types[$entity_type_id]
+      ->setFormClass('entity_hierarchy_reorder', HierarchyChildrenForm::class);
+  }
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function mass_hierarchy_views_pre_view($view) {
+  /** @var \Drupal\views\Entity\View $view */
+  if ($view->id() != 'change_parents') {
+    return;
+  }
+
+  $filters = $view->display_handler->getOption('filters');
+
+  if (!isset($filters['type_1'])) {
+    return;
+  }
+
+  if (!\Drupal::currentUser()->hasPermission('mass_hierarchy - change topic page parent')) {
+    return;
+  }
+
+  // Include topic pages on the view by unsetting a filter that removes them.
+  unset($filters['type_1']);
+  $view->display_handler->overrideOption('filters', $filters);
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function mass_hierarchy_views_post_render(ViewExecutable $view) {
+  /** @var \Drupal\views\Entity\View $view */
+  if ($view->id() != 'change_parents') {
+    return;
+  }
+
+  if (\Drupal::currentUser()->hasPermission('mass_hierarchy - change parent on move children tab')) {
+    return;
+  }
+
+  // Remove the checkboxes and the ability to submit.
+  unset($view->field['views_bulk_operations_bulk_form']);
+}
+
+/**
  * Implements hook_form_alter().
  */
 function mass_hierarchy_form_alter(&$form, FormState $form_state, $form_id) {
-  if (strpos($form_id, '_entity_hierarchy_reorder_form') !== FALSE) {
-    mass_hierarchy_form_any_form_entity_hierarchy_reorder_form_alter($form, $form_state, $form_id);
-  }
-
   // Attach an AJAX controlled breadcrumb preview to field_primary_parent.
   if (isset($form['field_primary_parent'])) {
     // Add a container for the breadcrumb preview.
@@ -121,117 +187,4 @@ function _mass_utility_breadcrumb_ajax(array &$form, FormStateInterface $form_st
   $response->addCommand(new ReplaceCommand('#breadcrumb-preview-wrapper', $rendered_block));
 
   return $response;
-}
-
-/**
- * Get the number of pageviews for the specified node ids.
- */
-function mass_hierarchy_get_pageviews($nids) {
-  /** @var \Drupal\Core\Database\Connection */
-  $database = \Drupal::service('database');
-  $query = $database->select('node_field_data', 'n');
-  $query->leftjoin('mass_superset_data', 'm', 'n.nid = m.nid');
-  $query->fields('n', ['nid']);
-  $query->fields('m', ['pageviews']);
-  $query->condition('n.nid', $nids, 'in');
-  return $query->execute()->fetchAll();
-}
-
-/**
- * Adds pageviews information to the hierarchy form.
- */
-function mass_hierarchy_form_add_pageviews_info(&$form, $nids) {
-  if (!$nids) {
-    return;
-  }
-
-  // Adding pageviews information.
-  $pageviews = mass_hierarchy_get_pageviews($nids);
-  foreach ($form['children'] as $key => &$child) {
-
-    if (!is_int($key)) {
-      continue;
-    }
-
-    $child['pageviews'] = [
-      '#markup' => intval(array_shift($pageviews)->pageviews),
-    ];
-  }
-}
-
-/**
- * To validate (front-end) parent/child relationships on the hierarchy form.
- */
-function mass_hierarchy_form_any_form_entity_hierarchy_reorder_form_alter(&$form, FormState $form_state, $form_id) {
-  $form['#attached']['drupalSettings']['mass_hierarchy_parent_bundle_info'] = mass_hierarchy_get_parent_bundle_info();
-  $entity_type_bundle_info = \Drupal::service('entity_type.bundle.info');
-  $bundles = $entity_type_bundle_info->getBundleInfo('node');
-
-  $form['note-experimental'] = [
-    '#markup' =>
-    '<p><b>NOTE:</b> This new feature is experimental. ' .
-    'You may drag items to be part of a new parent. ' .
-    'You can drag items left and right to move them up or down in the hierarchy. ' .
-    'Please save often because if you navigate away from this tab, any changes will be lost. ' .
-    'Report any issues with ServiceNow.</p>' .
-    '<p>The order of the items on the page doesn’t matter and isn’t changed if you move them just up or down ' .
-    ' - it is only the parent/child relationships that are saved.</p>',
-    '#weight' => -1,
-  ];
-
-  $nids = [];
-  foreach ($form['children'] as $key => &$child) {
-
-    if (!is_int($key)) {
-      continue;
-    }
-
-    $nid = $child['id']['#value'];
-    $nids[] = $nid;
-    $child_entity = Node::load($nid);
-
-    if (!$child_entity) {
-      continue;
-    }
-
-    $child['moderation-state']['#markup'] = $child_entity->get('moderation_state')->getString();
-
-    // Adding expand/collapse controls.
-    $child['title'][] = [
-      '#markup' => '
-        <div class="hierarchy-row-controls">
-          <div class="hierarchy-row-controls--expand"></div>
-          <div class="hierarchy-row-controls--collapse"></div>
-        </div>
-      ',
-    ];
-
-    // Adding bundle machine name information.
-    $child['type']['#type'] = 'html_tag';
-    $child['type']['#tag'] = 'div';
-    $child['type']['#attributes']['data-bundle'] = $child_entity->bundle();
-    $child['type']['#value'] = $bundles[$child_entity->bundle()]['label'];
-
-    // Re-ordering columns.
-    $bkp_parent = $child['parent'];
-    unset($child['parent']);
-    $bkp_operations = $child['operations'];
-    unset($child['operations']);
-    $child['pageviews'] = ['#markup' => ''];
-    $child['parent'] = $bkp_parent;
-    $child['operations'] = $bkp_operations;
-  }
-
-  mass_hierarchy_form_add_pageviews_info($form, $nids);
-
-  // Reordering headers.
-  $form['children']['#header'] = [
-    t('Child'),
-    t('Type'),
-    t('Weight'),
-    t('State'),
-    ['data' => t('Pageviews'), 'colspan' => 2],
-    ['data' => t('Operations'), 'colspan' => 2],
-  ];
-
 }
