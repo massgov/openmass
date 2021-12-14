@@ -16,7 +16,8 @@ Feature: Content Management
     And I should not see the link "Extend" in the admin_menu
     And I should not see the link "Configuration" in the admin_menu
     And I should see the link "People" in the admin_menu
-    And I should not see the link "Reports" in the admin_menu
+    # The test is to verify "Reports Author" feature menu is visible.
+    And I should see the link "Reports" in the admin_menu
     #ToDo Find a way to add that content admins should not see the help link again.
     # The test is too crude for the current menu.
 
@@ -39,6 +40,7 @@ Feature: Content Management
     And I should have access to "/node/add/service_details"
     And I should have access to "/admin/structure/menu"
     And I should have access to "/admin/structure/taxonomy/manage/icons/overview"
+    And I should not have access to "/admin/reports"
     And I should not have access to "/node/add/error_page"
     And I should not have access to "/node/add/interstitial"
     And I should not have access to "/node/add/alert"

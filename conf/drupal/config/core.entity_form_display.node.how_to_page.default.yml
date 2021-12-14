@@ -28,7 +28,9 @@ dependencies:
     - field.field.node.how_to_page.field_more_info_header
     - field.field.node.how_to_page.field_next_steps_header
     - field.field.node.how_to_page.field_organizations
+    - field.field.node.how_to_page.field_primary_parent
     - field.field.node.how_to_page.field_reusable_label
+    - field.field.node.how_to_page.field_short_title
     - field.field.node.how_to_page.field_state_organization_tax
     - field.field.node.how_to_page.field_what_you_need_header
     - node.type.how_to_page
@@ -36,6 +38,7 @@ dependencies:
   module:
     - content_moderation
     - entity_browser_entity_form
+    - entity_hierarchy
     - field_group
     - inline_entity_form
     - link
@@ -66,10 +69,12 @@ third_party_settings:
       children:
         - field_how_to_taxo_action_type
         - title
+        - field_short_title
         - field_how_to_lede
         - field_how_to_time
         - field_how_to_link_1
         - field_customize_header_text
+        - field_primary_parent
         - field_organizations
         - field_intended_audience
         - field_reusable_label
@@ -159,7 +164,7 @@ bundle: how_to_page
 mode: default
 content:
   field_collections:
-    weight: 5
+    weight: 7
     settings:
       start_minimized: true
       select_parents: true
@@ -170,14 +175,14 @@ content:
     type: term_reference_tree
     region: content
   field_customize_header_text:
-    weight: 1
+    weight: 2
     settings:
       display_label: true
     third_party_settings: {  }
     type: boolean_checkbox
     region: content
   field_downloads_header:
-    weight: 58
+    weight: 65
     settings:
       size: 60
       placeholder: ''
@@ -245,7 +250,7 @@ content:
     type: text_textarea
     region: content
   field_how_to_files:
-    weight: 59
+    weight: 66
     settings:
       form_mode: default
       label_singular: ''
@@ -265,7 +270,7 @@ content:
     type: inline_entity_form_complex
     region: content
   field_how_to_lede:
-    weight: -2
+    weight: -1
     settings:
       size: 60
       placeholder: ''
@@ -273,7 +278,7 @@ content:
     type: string_textfield
     region: content
   field_how_to_link_1:
-    weight: 0
+    weight: 1
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -285,7 +290,7 @@ content:
     type: link_default
     region: content
   field_how_to_links_5:
-    weight: 60
+    weight: 67
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -316,7 +321,7 @@ content:
     third_party_settings: {  }
     region: content
   field_how_to_more_info:
-    weight: 54
+    weight: 62
     settings:
       rows: 5
       placeholder: ''
@@ -362,7 +367,7 @@ content:
     type: options_select
     region: content
   field_how_to_time:
-    weight: -1
+    weight: 0
     settings:
       size: 60
       placeholder: ''
@@ -378,14 +383,14 @@ content:
     type: text_textarea
     region: content
   field_intended_audience:
-    weight: 3
+    weight: 5
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_manage_your_account:
     type: entity_reference_paragraphs
-    weight: 57
+    weight: 64
     settings:
       title: 'Manage account link'
       title_plural: 'Manage account links'
@@ -396,7 +401,7 @@ content:
     third_party_settings: {  }
     region: content
   field_manage_your_account_header:
-    weight: 55
+    weight: 63
     settings:
       size: 60
       placeholder: ''
@@ -421,7 +426,7 @@ content:
     type: string_textfield
     region: content
   field_more_info_header:
-    weight: 53
+    weight: 61
     settings:
       size: 60
       placeholder: ''
@@ -471,7 +476,7 @@ content:
     type: string_textfield
     region: content
   field_organizations:
-    weight: 2
+    weight: 4
     settings:
       match_operator: CONTAINS
       size: 60
@@ -480,8 +485,19 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_primary_parent:
+    weight: 3
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
+    region: content
   field_reusable_label:
-    weight: 4
+    weight: 6
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -489,6 +505,14 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: entity_reference_autocomplete
+    region: content
+  field_short_title:
+    weight: -2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
     region: content
   field_state_organization_tax:
     type: entity_reference_autocomplete

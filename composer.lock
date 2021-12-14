@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bc5c5132416d5b4931adffc4a4042271",
+    "content-hash": "cb42f021fb50f86f20b398433cc77939",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -2432,6 +2432,158 @@
                 }
             ],
             "time": "2020-06-05T16:46:05+00:00"
+        },
+        {
+            "name": "doctrine/dbal",
+            "version": "2.13.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/dbal.git",
+                "reference": "67ef6d0327ccbab1202b39e0222977a47ed3ef2f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/67ef6d0327ccbab1202b39e0222977a47ed3ef2f",
+                "reference": "67ef6d0327ccbab1202b39e0222977a47ed3ef2f",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/cache": "^1.0|^2.0",
+                "doctrine/deprecations": "^0.5.3",
+                "doctrine/event-manager": "^1.0",
+                "ext-pdo": "*",
+                "php": "^7.1 || ^8"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "9.0.0",
+                "jetbrains/phpstorm-stubs": "2021.1",
+                "phpstan/phpstan": "1.2.0",
+                "phpunit/phpunit": "^7.5.20|^8.5|9.5.10",
+                "psalm/plugin-phpunit": "0.16.1",
+                "squizlabs/php_codesniffer": "3.6.1",
+                "symfony/cache": "^4.4",
+                "symfony/console": "^2.0.5|^3.0|^4.0|^5.0",
+                "vimeo/psalm": "4.13.0"
+            },
+            "suggest": {
+                "symfony/console": "For helpful console commands such as SQL execution and import of files."
+            },
+            "bin": [
+                "bin/doctrine-dbal"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\DBAL\\": "lib/Doctrine/DBAL"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com"
+                },
+                {
+                    "name": "Roman Borschel",
+                    "email": "roman@code-factory.org"
+                },
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                },
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com"
+                }
+            ],
+            "description": "Powerful PHP database abstraction layer (DBAL) with many features for database schema introspection and management.",
+            "homepage": "https://www.doctrine-project.org/projects/dbal.html",
+            "keywords": [
+                "abstraction",
+                "database",
+                "db2",
+                "dbal",
+                "mariadb",
+                "mssql",
+                "mysql",
+                "oci8",
+                "oracle",
+                "pdo",
+                "pgsql",
+                "postgresql",
+                "queryobject",
+                "sasql",
+                "sql",
+                "sqlanywhere",
+                "sqlite",
+                "sqlserver",
+                "sqlsrv"
+            ],
+            "support": {
+                "issues": "https://github.com/doctrine/dbal/issues",
+                "source": "https://github.com/doctrine/dbal/tree/2.13.6"
+            },
+            "funding": [
+                {
+                    "url": "https://www.doctrine-project.org/sponsorship.html",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.patreon.com/phpdoctrine",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/doctrine%2Fdbal",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2021-11-26T20:11:05+00:00"
+        },
+        {
+            "name": "doctrine/deprecations",
+            "version": "v0.5.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/deprecations.git",
+                "reference": "9504165960a1f83cc1480e2be1dd0a0478561314"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/9504165960a1f83cc1480e2be1dd0a0478561314",
+                "reference": "9504165960a1f83cc1480e2be1dd0a0478561314",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1|^8.0"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^6.0|^7.0|^8.0",
+                "phpunit/phpunit": "^7.0|^8.0|^9.0",
+                "psr/log": "^1.0"
+            },
+            "suggest": {
+                "psr/log": "Allows logging deprecations via PSR-3 logger implementation"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\Deprecations\\": "lib/Doctrine/Deprecations"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A small layer on top of trigger_error(E_USER_DEPRECATED) or PSR-3 logging with options to disable all deprecations or selectively for packages.",
+            "homepage": "https://www.doctrine-project.org/",
+            "support": {
+                "issues": "https://github.com/doctrine/deprecations/issues",
+                "source": "https://github.com/doctrine/deprecations/tree/v0.5.3"
+            },
+            "time": "2021-03-21T12:59:47+00:00"
         },
         {
             "name": "doctrine/event-manager",
@@ -5015,6 +5167,52 @@
             }
         },
         {
+            "name": "drupal/dbal",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/dbal.git",
+                "reference": "8.x-1.3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/dbal-8.x-1.3.zip",
+                "reference": "8.x-1.3",
+                "shasum": "42ef2bf39bac33676ef0ccfa4480c207407f4c0e"
+            },
+            "require": {
+                "doctrine/dbal": "^2.5",
+                "drupal/core": "^8.8 || ^9.0"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.3",
+                    "datestamp": "1607286563",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL2+"
+            ],
+            "authors": [
+                {
+                    "name": "Lee Rowlands",
+                    "homepage": "https://www.drupal.org/user/395439",
+                    "email": "lee.rowlands@previousnext.com.au"
+                }
+            ],
+            "description": "Provides a Doctrine/DBAL connection from your Database connection settings.",
+            "homepage": "https://www.drupal.org/project/dbal",
+            "support": {
+                "source": "https://git.drupalcode.org/project/dbal"
+            }
+        },
+        {
             "name": "drupal/devel",
             "version": "4.1.1",
             "source": {
@@ -5820,6 +6018,72 @@
             }
         },
         {
+            "name": "drupal/entity_hierarchy",
+            "version": "3.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/entity_hierarchy.git",
+                "reference": "3.0.4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/entity_hierarchy-3.0.4.zip",
+                "reference": "3.0.4",
+                "shasum": "547081731acf5ac36be119cd3e08b3913f7c2a28"
+            },
+            "require": {
+                "drupal/core": "^8.8 || ^9.0",
+                "drupal/dbal": "~1.0",
+                "previousnext/nested-set": "^0.1.1"
+            },
+            "require-dev": {
+                "drupal/workbench_access": "*"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "3.0.4",
+                    "datestamp": "1624593400",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                },
+                "drush": {
+                    "services": {
+                        "drush.services.yml": "^9"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL2+"
+            ],
+            "authors": [
+                {
+                    "name": "fenstrat",
+                    "homepage": "https://www.drupal.org/user/362649"
+                },
+                {
+                    "name": "jibran",
+                    "homepage": "https://www.drupal.org/user/1198144"
+                },
+                {
+                    "name": "larowlan",
+                    "homepage": "https://www.drupal.org/user/395439"
+                },
+                {
+                    "name": "webdrips",
+                    "homepage": "https://www.drupal.org/user/164950"
+                }
+            ],
+            "description": "A module to extend entity-reference fields so that a hierarchy is maintained.",
+            "homepage": "https://www.drupal.org/project/entity_hierarchy",
+            "support": {
+                "source": "https://git.drupalcode.org/project/entity_hierarchy"
+            }
+        },
+        {
             "name": "drupal/entity_reference_revisions",
             "version": "1.9.0",
             "source": {
@@ -5937,17 +6201,17 @@
         },
         {
             "name": "drupal/field_group",
-            "version": "3.1.0",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/field_group.git",
-                "reference": "8.x-3.1"
+                "reference": "8.x-3.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/field_group-8.x-3.1.zip",
-                "reference": "8.x-3.1",
-                "shasum": "8a719eaea594f0ba874172831cb28da93c66b77a"
+                "url": "https://ftp.drupal.org/files/projects/field_group-8.x-3.2.zip",
+                "reference": "8.x-3.2",
+                "shasum": "2020bbfe40f6ba43bc733ae7c8761632572433a0"
             },
             "require": {
                 "drupal/core": "^8.8 || ^9"
@@ -5958,8 +6222,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-3.1",
-                    "datestamp": "1591772567",
+                    "version": "8.x-3.2",
+                    "datestamp": "1628513585",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -6687,8 +6951,16 @@
             ],
             "authors": [
                 {
+                    "name": "mcdruid",
+                    "homepage": "https://www.drupal.org/user/255969"
+                },
+                {
                     "name": "minnur",
                     "homepage": "https://www.drupal.org/user/702026"
+                },
+                {
+                    "name": "mmcconnell",
+                    "homepage": "https://www.drupal.org/user/3559324"
                 },
                 {
                     "name": "vijaycs85",
@@ -6824,6 +7096,10 @@
                 {
                     "name": "oknate",
                     "homepage": "https://www.drupal.org/user/471638"
+                },
+                {
+                    "name": "ram4nd",
+                    "homepage": "https://www.drupal.org/user/601534"
                 },
                 {
                     "name": "rszrama",
@@ -7277,7 +7553,7 @@
             "extra": {
                 "drupal": {
                     "version": "6.0.0-beta3",
-                    "datestamp": "1632933683",
+                    "datestamp": "1632946984",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Beta releases are not covered by Drupal security advisories."
@@ -7423,6 +7699,10 @@
                     "homepage": "https://www.drupal.org/user/2210776"
                 },
                 {
+                    "name": "spncr",
+                    "homepage": "https://www.drupal.org/user/3664814"
+                },
+                {
                     "name": "tauno",
                     "homepage": "https://www.drupal.org/user/105595"
                 }
@@ -7467,10 +7747,6 @@
             ],
             "authors": [
                 {
-                    "name": "Aron Novak",
-                    "homepage": "https://www.drupal.org/user/61864"
-                },
-                {
                     "name": "cedewey",
                     "homepage": "https://www.drupal.org/user/38694"
                 },
@@ -7485,6 +7761,10 @@
                 {
                     "name": "mariuss",
                     "homepage": "https://www.drupal.org/user/28539"
+                },
+                {
+                    "name": "pmichelazzo",
+                    "homepage": "https://www.drupal.org/user/182237"
                 },
                 {
                     "name": "srdtwc",
@@ -8099,6 +8379,10 @@
                     "homepage": "https://www.drupal.org/user/1557710"
                 },
                 {
+                    "name": "paulocs",
+                    "homepage": "https://www.drupal.org/user/3640109"
+                },
+                {
                     "name": "shrop",
                     "homepage": "https://www.drupal.org/user/14767"
                 }
@@ -8148,20 +8432,12 @@
                     "homepage": "https://www.drupal.org/user/279352"
                 },
                 {
-                    "name": "kporras07",
-                    "homepage": "https://www.drupal.org/user/1349780"
-                },
-                {
-                    "name": "otrolopezmas",
-                    "homepage": "https://www.drupal.org/user/3516204"
+                    "name": "paulocs",
+                    "homepage": "https://www.drupal.org/user/3640109"
                 },
                 {
                     "name": "plopesc",
                     "homepage": "https://www.drupal.org/user/282415"
-                },
-                {
-                    "name": "tjwelde",
-                    "homepage": "https://www.drupal.org/user/3411453"
                 }
             ],
             "description": "Provides the ability to import redirects for the Redirect module",
@@ -8726,6 +9002,111 @@
             "homepage": "https://www.drupal.org/project/redirect",
             "support": {
                 "source": "https://git.drupalcode.org/project/redirect"
+            }
+        },
+        {
+            "name": "drupal/require_on_publish",
+            "version": "1.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/require_on_publish.git",
+                "reference": "8.x-1.6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/require_on_publish-8.x-1.6.zip",
+                "reference": "8.x-1.6",
+                "shasum": "e71817a3fc3d35cfd02fc333a0f18074f8074cfd"
+            },
+            "require": {
+                "drupal/core": "^8 || ^9"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.6",
+                    "datestamp": "1617046369",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Mike Priscella",
+                    "homepage": "https://drupal.org/u/mpriscella",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "pfunklange",
+                    "homepage": "https://www.drupal.org/user/566588"
+                }
+            ],
+            "description": "Adds ability to designate fields as required for publishing only.",
+            "homepage": "https://www.drupal.org/project/require_on_publish",
+            "keywords": [
+                "field",
+                "publish",
+                "require",
+                "require on publish",
+                "required field"
+            ],
+            "support": {
+                "source": "https://git.drupalcode.org/project/require_on_publish",
+                "issues": "https://www.drupal.org/project/issues/require_on_publish"
+            }
+        },
+        {
+            "name": "drupal/reverse_proxy_header",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/reverse_proxy_header.git",
+                "reference": "1.0.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/reverse_proxy_header-1.0.0.zip",
+                "reference": "1.0.0",
+                "shasum": "342d7ba62399880e7ff1a7e3134ee6e1f0faa78e"
+            },
+            "require": {
+                "drupal/core": "^9"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "1.0.0",
+                    "datestamp": "1612787235",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Lysenko",
+                    "homepage": "https://www.drupal.org/user/3648128"
+                },
+                {
+                    "name": "bohart",
+                    "homepage": "https://www.drupal.org/user/289861"
+                }
+            ],
+            "description": "Provides an ability to use the specific HTTP header name to determine the client IP.",
+            "homepage": "https://www.drupal.org/project/reverse_proxy_header",
+            "support": {
+                "source": "https://git.drupalcode.org/project/reverse_proxy_header"
             }
         },
         {
@@ -9869,6 +10250,61 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/views_autocomplete_filters",
                 "issues": "https://www.drupal.org/project/issues/views_autocomplete_filters"
+            }
+        },
+        {
+            "name": "drupal/views_bulk_edit",
+            "version": "2.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/views_bulk_edit.git",
+                "reference": "8.x-2.6"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/views_bulk_edit-8.x-2.6.zip",
+                "reference": "8.x-2.6",
+                "shasum": "0e0f1dab2fa0903cbe2656e754b0d9ed3a935fbb"
+            },
+            "require": {
+                "drupal/core": "^8 || ^9"
+            },
+            "require-dev": {
+                "drupal/views_bulk_operations": "~3.0"
+            },
+            "suggest": {
+                "drupal/views_bulk_operations": "Get VBO for all the views benefits like batching, ability to select all view results or persistent selection across pages"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-2.6",
+                    "datestamp": "1623748025",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Marcin Grabias",
+                    "homepage": "https://www.drupal.org/u/graber"
+                },
+                {
+                    "name": "benjy",
+                    "homepage": "https://www.drupal.org/user/1852732"
+                }
+            ],
+            "description": "Allows bulk edition of entity field values.",
+            "homepage": "https://www.drupal.org/project/views_bulk_edit",
+            "support": {
+                "source": "https://git.drupalcode.org/project/views_bulk_edit",
+                "issues": "https://www.drupal.org/project/issues/views_bulk_edit?version=8.x"
             }
         },
         {
@@ -11679,12 +12115,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/massgov/mayflower-artifacts.git",
-                "reference": "ac1a8566588e88cf2d4891b9d72578eb3786be27"
+                "reference": "d0594ec17343225ec2bfa6edccc64aee612be2bc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/massgov/mayflower-artifacts/zipball/ac1a8566588e88cf2d4891b9d72578eb3786be27",
-                "reference": "ac1a8566588e88cf2d4891b9d72578eb3786be27",
+                "url": "https://api.github.com/repos/massgov/mayflower-artifacts/zipball/d0594ec17343225ec2bfa6edccc64aee612be2bc",
+                "reference": "d0594ec17343225ec2bfa6edccc64aee612be2bc",
                 "shasum": ""
             },
             "require": {
@@ -11706,7 +12142,7 @@
                 "issues": "https://github.com/massgov/mayflower-artifacts/issues",
                 "source": "https://github.com/massgov/mayflower-artifacts/tree/develop"
             },
-            "time": "2021-12-08T19:29:41+00:00"
+            "time": "2021-12-13T21:37:32+00:00"
         },
         {
             "name": "masterminds/html5",
@@ -12911,6 +13347,51 @@
                 "source": "https://github.com/php-http/promise/tree/1.1.0"
             },
             "time": "2020-07-07T09:29:14+00:00"
+        },
+        {
+            "name": "previousnext/nested-set",
+            "version": "0.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/previousnext/nested-set.git",
+                "reference": "3406247013806d4401d753f0d01c464a65596c6d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/previousnext/nested-set/zipball/3406247013806d4401d753f0d01c464a65596c6d",
+                "reference": "3406247013806d4401d753f0d01c464a65596c6d",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": "~2.5"
+            },
+            "require-dev": {
+                "drupal/coder": "~8.0",
+                "pear/console_table": "^1.3",
+                "phpunit/phpunit": "~4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PNX\\NestedSet\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Kim Pepper",
+                    "email": "kim@pepper.id.au"
+                }
+            ],
+            "description": "A PHP Doctrine DBAL implementation for Nested Sets.",
+            "support": {
+                "issues": "https://github.com/previousnext/nested-set/issues",
+                "source": "https://github.com/previousnext/nested-set/tree/0.1.2"
+            },
+            "time": "2021-02-22T03:57:17+00:00"
         },
         {
             "name": "psr/cache",
@@ -16819,6 +17300,7 @@
                 "issues": "https://github.com/webmozart/path-util/issues",
                 "source": "https://github.com/webmozart/path-util/tree/2.3.0"
             },
+            "abandoned": "symfony/filesystem",
             "time": "2015-12-17T08:42:14+00:00"
         },
         {
