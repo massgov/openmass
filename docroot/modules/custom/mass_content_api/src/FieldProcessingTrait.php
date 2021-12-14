@@ -163,6 +163,97 @@ trait FieldProcessingTrait {
     return array_filter($this->collected);
   }
 
+
+  private function processEntityReferenceFieldItemListInterface(&$collected, $field_entity, $field_label, $field_name) {
+    // If we can extract entity type and ID without loading up the child,
+    // do it. If this results in deleted/unpublished entities ending up in the
+    // index, that's ok; we do our filtering on output.
+    if ($child_entity_type = $field_entity->getSetting('target_type')) {
+      foreach ($field_entity as $item) {
+        $child_id = $item->target_id;
+        $collected[$child_id] = [
+          'id' => $child_id,
+          'entity' => $child_entity_type .'hola',
+          'field_label' => $field_label . '888' ?? '111',
+          'field_name' => $field_name . '777' ?? '222',
+        ];
+      }
+    }
+    else {
+      foreach ($field_entity->referencedEntities() as $child) {
+        $collected[$child->id()] = [
+          'id' => $child->id(),
+          'entity' => $child->getEntityTypeId(),
+          'field_label' => $field_label .  '666' ?? '333',
+          'field_name' => $field_name . '555' ?? '444',
+        ];
+      }
+    }
+  }
+
+  function processLinkItemInterface(&$collected, $ref, $field_label, $field_name) {
+    if (!preg_match('~^entity:node/(\d+)$~', $ref->uri, $matches)) {
+      return;
+    }
+    $collected[$matches[1]] = [
+      'id' => $matches[1],
+      'entity' => 'node',
+      'field_label' => $field_label .' qqq' ?? ' ooo',
+      'field_name' => $field_name .' www' ?? ' eee',
+    ];
+  }
+
+  function processTextItemBase(&$collected, $ref, $field_label, $field_name) {
+    $body = $ref->getValue('value');
+    if (isset($body['value'])) {
+      $matches = [];
+      $pattern = '/<a\s[^>]*href=\"([^\"]*)\"[^>]*>(.*)<\/a>/siU';
+      preg_match_all($pattern, $body['value'], $matches);
+      // $matches[1] contains the array of urls in <a> in this textarea.
+      if (isset($matches[1])) {
+        foreach ($matches[1] as $match) {
+          $parsed_match = parse_url($match);
+          // Relative urls have no host set, external links need filtered.
+          if (isset($parsed_match['path']) && (!isset($parsed_match['host']) || str_contains($parsed_match['host'], 'mass.gov'))) {
+            $validator = $this->getPathValidator();
+            $url = $validator->getUrlIfValid($parsed_match['path']);
+            // Confirming the local link is a node, not media or other.
+            if ($url && $url->getRouteName() === 'entity.node.canonical') {
+              $params = $url->getRouteParameters();
+              $nid = $params['node'];
+              $collected[$nid] = [
+                'id' => $nid,
+                'entity' => 'node',
+                'field_label' => $field_label .' ppp' ?? 'xxx',
+                'field_name' => $field_name . 'ddd' ?? 'yyy',
+              ];
+            }
+            // Documents particularly are linked to, track those.
+            elseif ($url && $url->getRouteName() === 'media_entity_download.download') {
+              $params = $url->getRouteParameters();
+              $id = $params['media'];
+
+              if (!isset($params['node'])) {
+                continue;
+              } else {
+                ksm('hola!');
+              }
+
+              // $nid = $params['node'];
+
+              $collected[$nid] = [
+                'id' => $id,
+                'entity' => 'media',
+                'field_label' => $field_label ?? '',
+                'field_name' => $field_name ?? '',
+              ];
+            }
+          }
+        }
+      }
+    }
+  }
+
   /**
    * Collect field entity values based on their class.
    *
@@ -188,85 +279,16 @@ trait FieldProcessingTrait {
     }
     $field_name = $field_entity->getName();
     if ($field_entity instanceof EntityReferenceFieldItemListInterface) {
-      // If we can extract entity type and ID without loading up the child,
-      // do it. If this results in deleted/unpublished entities ending up in the
-      // index, that's ok; we do our filtering on output.
-      if ($child_entity_type = $field_entity->getSetting('target_type')) {
-        foreach ($field_entity as $item) {
-          $child_id = $item->target_id;
-          $collected[$child_id] = [
-            'id' => $child_id,
-            'entity' => $child_entity_type,
-            'field_label' => $field_label ?? '',
-            'field_name' => $field_name ?? '',
-          ];
-        }
-      }
-      else {
-        foreach ($field_entity->referencedEntities() as $child) {
-          $collected[$child->id()] = [
-            'id' => $child->id(),
-            'entity' => $child->getEntityTypeId(),
-            'field_label' => $field_label ?? '',
-            'field_name' => $field_name ?? '',
-          ];
-        }
-      }
-
+      $this->processEntityReferenceFieldItemListInterface($collected, $field_entity, $field_label, $field_name);
     }
     elseif ($field_entity instanceof FieldItemListInterface) {
       foreach ($field_entity as $ref) {
         if ($ref instanceof LinkItemInterface) {
-          if (preg_match('~^entity:node/(\d+)$~', $ref->uri, $matches)) {
-            $collected[$matches[1]] = [
-              'id' => $matches[1],
-              'entity' => 'node',
-              'field_label' => $field_label ?? '',
-              'field_name' => $field_name ?? '',
-            ];
-          }
+          $this->processLinkItemInterface($collected, $ref, $field_label, $field_name);
         }
         // Extract local linked content from text areas.
         elseif ($ref instanceof TextItemBase) {
-          $body = $ref->getValue('value');
-          if (isset($body['value'])) {
-            $matches = [];
-            $pattern = '/<a\s[^>]*href=\"([^\"]*)\"[^>]*>(.*)<\/a>/siU';
-            preg_match_all($pattern, $body['value'], $matches);
-            // $matches[1] contains the array of urls in <a> in this textarea.
-            if (isset($matches[1])) {
-              foreach ($matches[1] as $match) {
-                $parsed_match = parse_url($match);
-                // Relative urls have no host set, external links need filtered.
-                if (!isset($parsed_match['host']) || str_contains($parsed_match['host'], 'mass.gov')) {
-                  $validator = $this->getPathValidator();
-                  $url = $validator->getUrlIfValid($parsed_match['path']);
-                  // Confirming the local link is a node, not media or other.
-                  if ($url && $url->getRouteName() === 'entity.node.canonical') {
-                    $params = $url->getRouteParameters();
-                    $nid = $params['node'];
-                    $collected[$nid] = [
-                      'id' => $nid,
-                      'entity' => 'node',
-                      'field_label' => $field_label ?? '',
-                      'field_name' => $field_name ?? '',
-                    ];
-                  }
-                  // Documents particularly are linked to, track those.
-                  elseif ($url && $url->getRouteName() === 'media_entity_download.download') {
-                    $params = $url->getRouteParameters();
-                    $id = $params['media'];
-                    $collected[$nid] = [
-                      'id' => $id,
-                      'entity' => 'media',
-                      'field_label' => $field_label ?? '',
-                      'field_name' => $field_name ?? '',
-                    ];
-                  }
-                }
-              }
-            }
-          }
+          $this->processTextItemBase($collected, $ref, $field_label, $field_name);
         }
       }
     }
