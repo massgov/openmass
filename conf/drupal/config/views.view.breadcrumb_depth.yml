@@ -1,19 +1,38 @@
-uuid: cf647317-82d6-401c-9a22-608c439657ee
+uuid: 622b74e2-fd57-4149-a5d1-041bdca00a0e
 langcode: en
 status: true
 dependencies:
   config:
+    - field.storage.node.field_organizations
+    - node.type.advisory
+    - node.type.binder
+    - node.type.campaign_landing
+    - node.type.curated_list
+    - node.type.decision
+    - node.type.decision_tree
+    - node.type.event
+    - node.type.executive_order
+    - node.type.form_page
+    - node.type.guide_page
+    - node.type.how_to_page
+    - node.type.info_details
+    - node.type.location
+    - node.type.location_details
+    - node.type.news
+    - node.type.org_page
+    - node.type.regulation
+    - node.type.rules
+    - node.type.service_details
+    - node.type.service_page
     - node.type.topic_page
-    - taxonomy.vocabulary.label
   module:
-    - content_moderation
+    - entity_hierarchy
     - mass_superset
+    - mass_views
     - node
-    - taxonomy
     - user
-    - views_bulk_operations
-id: change_parents
-label: 'Change parents'
+id: breadcrumb_depth
+label: 'breadcrumb depth'
 module: views
 description: ''
 tag: ''
@@ -29,7 +48,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'view the administration theme'
+          perm: 'use content reports'
       cache:
         type: tag
         options: {  }
@@ -78,31 +97,25 @@ display:
           default_row_class: true
           override: true
           sticky: false
-          caption: 'Select the children that you want to assign a new parent.'
+          caption: ''
           summary: ''
           description: ''
           columns:
-            views_bulk_operations_bulk_form: views_bulk_operations_bulk_form
             title: title
-            nid: nid
+            depth: depth
             type: type
-            moderation_state: moderation_state
-            changed: changed
+            field_organizations: field_organizations
             pageviews: pageviews
+            operations: operations
           info:
-            views_bulk_operations_bulk_form:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
             title:
-              sortable: true
+              sortable: false
               default_sort_order: asc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
-            nid:
+            depth:
               sortable: true
               default_sort_order: asc
               align: ''
@@ -116,29 +129,25 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            moderation_state:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            changed:
-              sortable: true
-              default_sort_order: asc
+            field_organizations:
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
             pageviews:
               sortable: true
-              default_sort_order: asc
+              default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            operations:
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
           default: '-1'
-          empty_table: true
+          empty_table: false
       row:
         type: fields
         options:
@@ -147,67 +156,6 @@ display:
           hide_empty: false
           default_field_elements: true
       fields:
-        views_bulk_operations_bulk_form:
-          id: views_bulk_operations_bulk_form
-          table: views
-          field: views_bulk_operations_bulk_form
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Views bulk operations'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          batch: true
-          batch_size: 10
-          form_step: true
-          buttons: true
-          clear_on_exposed: false
-          action_title: Action
-          selected_actions:
-            2:
-              action_id: mass_hierarchy_change_parent
-              preconfiguration:
-                add_confirmation: 0
-          force_selection_info: 0
-          plugin_id: views_bulk_operations_bulk_form
         title:
           id: title
           table: node_field_data
@@ -215,7 +163,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          label: Title
+          label: 'Page title'
           exclude: false
           alter:
             alter_text: false
@@ -248,7 +196,7 @@ display:
           element_class: ''
           element_label_type: ''
           element_label_class: ''
-          element_label_colon: false
+          element_label_colon: true
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
@@ -273,14 +221,14 @@ display:
           entity_type: node
           entity_field: title
           plugin_id: field
-        nid:
-          id: nid
-          table: node_field_data
-          field: nid
+        depth:
+          id: depth
+          table: nested_set_field_primary_parent_node
+          field: depth
           relationship: none
           group_type: group
           admin_label: ''
-          label: ID
+          label: 'Breadcrumb levels'
           exclude: false
           alter:
             alter_text: false
@@ -321,24 +269,15 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: value
-          type: number_integer
-          settings:
-            thousand_separator: ''
-            prefix_suffix: true
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          entity_type: node
-          entity_field: nid
-          plugin_id: field
+          set_precision: false
+          precision: 0
+          decimal: .
+          separator: ','
+          format_plural: false
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
+          plugin_id: numeric
         type:
           id: type
           table: node_field_data
@@ -379,7 +318,7 @@ display:
           element_class: ''
           element_label_type: ''
           element_label_class: ''
-          element_label_colon: false
+          element_label_colon: true
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
@@ -404,14 +343,14 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: field
-        moderation_state:
-          id: moderation_state
-          table: node_field_data
-          field: moderation_state
+        field_organizations:
+          id: field_organizations
+          table: node__field_organizations
+          field: field_organizations
           relationship: none
           group_type: group
           admin_label: ''
-          label: 'Publication status'
+          label: Organization(s)
           exclude: false
           alter:
             alter_text: false
@@ -452,87 +391,20 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: value
-          type: content_moderation_state
-          settings: {  }
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          entity_type: node
-          plugin_id: moderation_state_field
-        changed:
-          id: changed
-          table: node_field_revision
-          field: changed
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Last revised'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: timestamp
+          click_sort_column: target_id
+          type: entity_reference_label
           settings:
-            date_format: short_date_only
-            custom_date_format: ''
-            timezone: ''
-          group_column: value
+            link: false
+          group_column: target_id
           group_columns: {  }
           group_rows: true
           delta_limit: 0
           delta_offset: 0
           delta_reversed: false
           delta_first_last: false
-          multi_type: separator
+          multi_type: ul
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: changed
           plugin_id: field
         pageviews:
           id: pageviews
@@ -591,191 +463,83 @@ display:
           prefix: ''
           suffix: ''
           plugin_id: numeric
-      filters:
-        field_reusable_label_target_id:
-          id: field_reusable_label_target_id
-          table: node__field_reusable_label
-          field: field_reusable_label_target_id
+        operations:
+          id: operations
+          table: node
+          field: operations
           relationship: none
           group_type: group
           admin_label: ''
-          operator: or
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_reusable_label_target_id_op
-            label: Label(s)
-            description: ''
-            use_operator: false
-            operator: field_reusable_label_target_id_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: field_reusable_label_target_id
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: true
-          type: textfield
-          limit: true
-          vid: label
-          hierarchy: false
-          error_message: true
-          plugin_id: taxonomy_index_tid
-        type:
-          id: type
-          table: node_field_data
-          field: type
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: in
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: type_op
-            label: 'Content type'
-            description: ''
-            use_operator: false
-            operator: type_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: type
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
+          label: 'Operations links'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          destination: false
           entity_type: node
-          entity_field: type
-          plugin_id: bundle
+          plugin_id: entity_operations
+      filters:
         status:
-          id: status
+          value: '1'
           table: node_field_data
           field: status
-          relationship: none
-          group_type: group
-          admin_label: ''
-          operator: '='
-          value: '1'
-          group: 1
-          exposed: true
-          expose:
-            operator_id: ''
-            label: Published
-            description: ''
-            use_operator: false
-            operator: status_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: Published
-            required: true
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
+          plugin_id: boolean
           entity_type: node
           entity_field: status
-          plugin_id: boolean
-        type_1:
-          id: type_1
-          table: node_field_data
-          field: type
+          id: status
+          expose:
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+          group: 1
+        field_primary_parent_target_id:
+          id: field_primary_parent_target_id
+          table: node__field_primary_parent
+          field: field_primary_parent_target_id
           relationship: none
           group_type: group
           admin_label: ''
-          operator: 'not in'
+          operator: 'not empty'
           value:
-            topic_page: topic_page
+            min: ''
+            max: ''
+            value: ''
           group: 1
           exposed: false
           expose:
@@ -792,7 +556,85 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-            reduce: false
+            placeholder: ''
+            min_placeholder: ''
+            max_placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: numeric
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: in
+          value:
+            advisory: advisory
+            binder: binder
+            curated_list: curated_list
+            decision: decision
+            decision_tree: decision_tree
+            event: event
+            executive_order: executive_order
+            form_page: form_page
+            guide_page: guide_page
+            how_to_page: how_to_page
+            info_details: info_details
+            location: location
+            location_details: location_details
+            news: news
+            org_page: org_page
+            campaign_landing: campaign_landing
+            regulation: regulation
+            rules: rules
+            service_page: service_page
+            service_details: service_details
+            topic_page: topic_page
+          group: 1
+          exposed: true
+          expose:
+            operator_id: type_op
+            label: 'Content type'
+            description: ''
+            use_operator: false
+            operator: type_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: type
+            required: false
+            remember: true
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            reduce: true
           is_grouped: false
           group_info:
             label: ''
@@ -808,48 +650,133 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+        depth:
+          id: depth
+          table: nested_set_field_primary_parent_node
+          field: depth
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '>='
+          value:
+            min: ''
+            max: ''
+            value: '5'
+          group: 1
+          exposed: true
+          expose:
+            operator_id: depth_op
+            label: 'Breadcrumb levels >='
+            description: ''
+            use_operator: false
+            operator: depth_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: depth
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            placeholder: ''
+            min_placeholder: ''
+            max_placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: numeric
+        node_org_filter:
+          id: node_org_filter
+          table: node_field_data
+          field: node_org_filter
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: null
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: Organization(s)
+            description: ''
+            use_operator: false
+            operator: node_org_filter_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: node_org_filter
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          plugin_id: mass_views_node_org_filter
       sorts:
-        type:
-          id: type
-          table: node_field_data
-          field: type
+        depth:
+          id: depth
+          table: nested_set_field_primary_parent_node
+          field: depth
           relationship: none
           group_type: group
           admin_label: ''
-          order: ASC
+          order: DESC
           exposed: false
           expose:
             label: ''
-          entity_type: node
-          entity_field: type
-          plugin_id: standard
-        status:
-          id: status
-          table: node_field_data
-          field: status
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: ASC
-          exposed: false
-          expose:
-            label: ''
-          entity_type: node
-          entity_field: status
-          plugin_id: standard
-        title:
-          id: title
-          table: node_field_data
-          field: title
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: ASC
-          exposed: false
-          expose:
-            label: ''
-          entity_type: node
-          entity_field: title
           plugin_id: standard
       header:
         area:
@@ -862,81 +789,26 @@ display:
           empty: false
           tokenize: false
           content:
-            value: '<div class="block-help-block"><p>If there are many children, you can use these filters to see only specific children.</p></div>'
-            format: full_html
+            value: '<p>Any page that has a large number of breadcrumb levels has a strong chance of having an inappropriate parent somewhere in the breadcrumb (not necessarily the direct parent).  Go to the edit view of a page to see the full breadcrumb. From there, you can review the breadcrumb, and if needed, pick a breadcrumb link that should have a different parent and set it there.</p>'
+            format: basic_html
           plugin_id: text
       footer: {  }
       empty: {  }
-      relationships:
-        node__field_primary_parent:
-          id: node__field_primary_parent
-          table: node__field_primary_parent
-          field: node__field_primary_parent
-          relationship: none
-          group_type: group
-          admin_label: Parent
-          required: true
-          plugin_id: standard
-      arguments:
-        nid:
-          id: nid
-          table: node_field_data
-          field: nid
-          relationship: node__field_primary_parent
-          group_type: group
-          admin_label: ''
-          default_action: 'not found'
-          exception:
-            value: all
-            title_enable: false
-            title: All
-          title_enable: false
-          title: ''
-          default_argument_type: raw
-          default_argument_options:
-            index: 1
-            use_alias: false
-          default_argument_skip_url: false
-          summary_options:
-            base_path: ''
-            count: true
-            items_per_page: 25
-            override: false
-          summary:
-            sort_order: asc
-            number_of_records: 0
-            format: default_summary
-          specify_validation: true
-          validate:
-            type: 'entity:node'
-            fail: 'not found'
-          validate_options:
-            access: true
-            operation: view
-            multiple: 0
-            bundles: {  }
-          break_phrase: false
-          not: false
-          entity_type: node
-          entity_field: nid
-          plugin_id: node_nid
+      relationships: {  }
+      arguments: {  }
       display_extenders: {  }
-      title: 'Move children'
-      filter_groups:
-        operator: AND
-        groups:
-          1: AND
+      title: 'Pages that have many breadcrumb levels'
     cache_metadata:
-      max-age: 0
+      max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - 'user.node_grants:view'
         - user.permissions
-      tags: {  }
+      tags:
+        - 'config:field.storage.node.field_organizations'
   page_1:
     display_plugin: page
     id: page_1
@@ -944,15 +816,15 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: node/%node/move-children
+      path: admin/report/breadcrumbdepth
     cache_metadata:
-      max-age: 0
+      max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
         - url.query_args
-        - user
         - 'user.node_grants:view'
         - user.permissions
-      tags: {  }
+      tags:
+        - 'config:field.storage.node.field_organizations'

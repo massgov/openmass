@@ -5,6 +5,8 @@ jQuery(document).ready(function ($) {
   var $form = $('form[id^=node][id$="-entity-hierarchy-reorder-form"]');
   var $table = $('#edit-children', $form);
   var parentId = jQuery('tr.hierarchy-row', $table).eq(0).find('.child-parent').val();
+  var wrongBundleMessageId = 'hierarchy-node-wrong-bundle-message';
+  var hierarchyMessagesClass = 'messages--hierarchy';
 
   // Checks original table rows as not loaded yet.
   $('tr.hierarchy-row--parent', $table).data('loaded', false);
@@ -172,7 +174,7 @@ jQuery(document).ready(function ($) {
       // Requires patching tabledrag.js.
       Drupal.tableDrag.prototype.makeDraggable.bind(jQuery('#edit-children').data('tableDragObject'), elem)();
       $(elem).find('td:nth-child(3)').addClass('tabledrag-hide');
-      $(elem).find('td:nth-child(7)').addClass('tabledrag-hide');
+      $(elem).find('td:nth-child(6)').addClass('tabledrag-hide');
       Drupal.attachBehaviors(elem, drupalSettings);
     }).removeClass(justAppendedClass);
 
@@ -232,8 +234,39 @@ jQuery(document).ready(function ($) {
     } while (true);  // eslint-disable-line
   }
 
+  // Abstraction to check for an error and toggle an error message.
+  function checkForErrorsAndMessage($tr, checkerFn, errorClass, wrongMessageId, message) {
+    var $parentRow = getParentFromRow($tr);
+    var ok = true;
+    if ($parentRow) {
+      ok = checkerFn($tr, $parentRow);
+    }
+    $tr.toggleClass(errorClass, !ok);
+    var rowsWithErrorsCount = $table.find('tr.' + errorClass).length;
+
+    if (!rowsWithErrorsCount) {
+      $('#' + wrongMessageId).remove();
+      return true;
+    }
+
+    var messageBox =
+    '<div ' +
+      ' id="' + wrongMessageId + '" ' +
+      ' role="contentinfo" ' +
+      ' aria-label="Status message" ' +
+      ' class="messages messages--warning ' + hierarchyMessagesClass + '"> ' +
+        ' <h2 class="visually-hidden">Status message</h2> ' +
+        message +
+    '</div>';
+
+    if ($('#' + wrongMessageId).length === 0) {
+      $table.before(messageBox);
+    }
+    return false;
+  }
+
   // Checks if row can be a child for parentRow.
-  function isParentCorrect($row, $parentRow) {
+  function isParentBundleCorrect($row, $parentRow) {
     var parentBundle = $parentRow.find('td [data-bundle]').data('bundle');
     var rowBundle = $row.find('td [data-bundle]').data('bundle');
     var allowedBundles = drupalSettings.mass_hierarchy_parent_bundle_info[rowBundle];
@@ -243,36 +276,21 @@ jQuery(document).ready(function ($) {
   // Checks if there are unallowed parent/child relationships,
   // if any, shows a warning message.
   function parentChildRelationshipChecker($tr) {
-    var $parentRow = getParentFromRow($tr);
-    var ok = true;
-    if ($parentRow) {
-      ok = isParentCorrect($tr, $parentRow);
-    }
-    $tr.toggleClass('hierarchy-row--is-wrong', !ok);
+    return checkForErrorsAndMessage(
+      $tr,
+      isParentBundleCorrect,
+      'hierarchy-row--parent-bundle-is-wrong',
+      wrongBundleMessageId,
+      ' One or more children have a parent with a content type that isn\'t allowed. ' +
+      ' Please choose a parent that has an allowed content type. ' +
+      ' For content type limits see our ' +
+      ' <a href="/allowedparents_for_contenttypes">knowledge base article</a>. '
+    );
+  }
 
-    var rowsWithErrorsCount = $table.find('tr.hierarchy-row--is-wrong').length;
-    if (!rowsWithErrorsCount) {
-      $('#hierarchy-node-wrong-message').remove();
-      return true;
-    }
-
-    var messageBox =
-      '<div ' +
-        ' id="hierarchy-node-wrong-message" ' +
-        ' role="contentinfo" ' +
-        ' aria-label="Status message" ' +
-        ' class="messages messages--warning"> ' +
-          ' <h2 class="visually-hidden">Status message</h2> ' +
-          ' One or more children have a parent with a content type that isn\'t allowed. ' +
-          ' Please choose a parent that has an allowed content type. ' +
-          ' For content type limits see our ' +
-          ' <a href="/allowedparents_for_contenttypes">knowledge base article</a>. ' +
-      '</div>';
-
-    if ($('#hierarchy-node-wrong-message').length === 0) {
-      $($table).before(messageBox);
-    }
-    return false;
+  // Enables or disables submit button state if hierarchy messages are found.
+  function updateSubmitButtonState() {
+    $form.find('#edit-submit').attr('disabled', $form.find('.' + hierarchyMessagesClass).length > 0);
   }
 
   // Things do on drag events.
@@ -283,11 +301,12 @@ jQuery(document).ready(function ($) {
     removeParentClassIfRowIsNotParent();
     addParentClassOnRowsWithChildren();
     applyEventsToHierarchyControls();
+    updateSubmitButtonState();
   }
 
   // Things to do on submit (and before submit).
   function doOnSubmit() {
-    if (!parentChildRelationshipChecker()) {
+    if ($('#' + wrongBundleMessageId).length > 0) {
       return false;
     }
     setParentOnFirstLevel();
