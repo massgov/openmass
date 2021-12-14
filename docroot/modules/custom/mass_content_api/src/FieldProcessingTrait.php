@@ -205,51 +205,50 @@ trait FieldProcessingTrait {
 
   function processTextItemBase(&$collected, $ref, $field_label, $field_name) {
     $body = $ref->getValue('value');
-    if (isset($body['value'])) {
-      $matches = [];
-      $pattern = '/<a\s[^>]*href=\"([^\"]*)\"[^>]*>(.*)<\/a>/siU';
-      preg_match_all($pattern, $body['value'], $matches);
-      // $matches[1] contains the array of urls in <a> in this textarea.
-      if (isset($matches[1])) {
-        foreach ($matches[1] as $match) {
-          $parsed_match = parse_url($match);
-          // Relative urls have no host set, external links need filtered.
-          if (isset($parsed_match['path']) && (!isset($parsed_match['host']) || str_contains($parsed_match['host'], 'mass.gov'))) {
-            $validator = $this->getPathValidator();
-            $url = $validator->getUrlIfValid($parsed_match['path']);
-            // Confirming the local link is a node, not media or other.
-            if ($url && $url->getRouteName() === 'entity.node.canonical') {
-              $params = $url->getRouteParameters();
-              $nid = $params['node'];
-              $collected[$nid] = [
-                'id' => $nid,
-                'entity' => 'node',
-                'field_label' => $field_label .' ppp' ?? 'xxx',
-                'field_name' => $field_name . 'ddd' ?? 'yyy',
-              ];
-            }
-            // Documents particularly are linked to, track those.
-            elseif ($url && $url->getRouteName() === 'media_entity_download.download') {
-              $params = $url->getRouteParameters();
-              $id = $params['media'];
+    if (!isset($body['value'])) {
+      return;
+    }
 
-              if (!isset($params['node'])) {
-                continue;
-              } else {
-                ksm('hola!');
-              }
+    $matches = [];
+    $pattern = '/<a\s[^>]*href=\"([^\"]*)\"[^>]*>(.*)<\/a>/siU';
+    preg_match_all($pattern, $body['value'], $matches);
+    // $matches[1] contains the array of urls in <a> in this textarea.
+    if (!isset($matches[1])) {
+      return;
+    }
 
-              // $nid = $params['node'];
+    foreach ($matches[1] as $match) {
+      $parsed_match = parse_url($match);
+      // Relative urls have no host set, external links need filtered.
 
-              $collected[$nid] = [
-                'id' => $id,
-                'entity' => 'media',
-                'field_label' => $field_label ?? '',
-                'field_name' => $field_name ?? '',
-              ];
-            }
-          }
-        }
+      if (!isset($parsed_match['path']) || (isset($parsed_match['host']) && !str_contains($parsed_match['host'], 'mass.gov'))) {
+        return;
+      }
+
+      $validator = $this->getPathValidator();
+      $url = $validator->getUrlIfValid($parsed_match['path']);
+      // Confirming the local link is a node, not media or other.
+      if ($url && $url->getRouteName() === 'entity.node.canonical') {
+        $params = $url->getRouteParameters();
+        $nid = $params['node'];
+        $collected[$nid] = [
+          'id' => $nid,
+          'entity' => 'node',
+          'field_label' => $field_label .' ppp' ?? 'xxx',
+          'field_name' => $field_name . 'ddd' ?? 'yyy',
+        ];
+      }
+      // Documents particularly are linked to, track those.
+      elseif ($url && $url->getRouteName() === 'media_entity_download.download') {
+        $params = $url->getRouteParameters();
+        $id = $params['media'];
+        // @TODO the undefined need below needs to be fixed.
+        $collected[$nid] = [
+          'id' => $id,
+          'entity' => 'media',
+          'field_label' => $field_label ?? '',
+          'field_name' => $field_name ?? '',
+        ];
       }
     }
   }
