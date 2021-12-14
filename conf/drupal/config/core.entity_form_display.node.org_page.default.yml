@@ -42,6 +42,7 @@ dependencies:
     - field.field.node.org_page.field_organizations
     - field.field.node.org_page.field_parent
     - field.field.node.org_page.field_person_bio
+    - field.field.node.org_page.field_primary_parent
     - field.field.node.org_page.field_public_records_link
     - field.field.node.org_page.field_ref_actions_6
     - field.field.node.org_page.field_ref_card_view_6
@@ -52,6 +53,7 @@ dependencies:
     - field.field.node.org_page.field_reusable_label
     - field.field.node.org_page.field_secondary_person_bio
     - field.field.node.org_page.field_short_name
+    - field.field.node.org_page.field_short_title
     - field.field.node.org_page.field_social_links
     - field.field.node.org_page.field_state_organization_tax
     - field.field.node.org_page.field_sub_brand
@@ -67,6 +69,7 @@ dependencies:
     - conditional_fields
     - content_moderation
     - dynamic_entity_reference
+    - entity_hierarchy
     - field_group
     - image
     - link
@@ -99,6 +102,7 @@ third_party_settings:
         - field_bg_narrow
         - field_banner_image
         - field_image_credit
+        - field_primary_parent
         - field_organizations
         - field_reusable_label
       parent_name: group_node_edit_form
@@ -169,6 +173,7 @@ third_party_settings:
     group_organization_name:
       children:
         - title
+        - field_short_title
         - field_subtype
         - field_person_bio
         - field_secondary_person_bio
@@ -266,7 +271,7 @@ content:
     type: string_textfield
     region: content
   field_banner_image:
-    weight: 12
+    weight: 11
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
@@ -292,7 +297,7 @@ content:
     type: image_image
     region: content
   field_bg_narrow:
-    weight: 11
+    weight: 10
     settings:
       preview_image_style: thumbnail
       progress_indicator: throbber
@@ -318,7 +323,7 @@ content:
     type: image_image
     region: content
   field_bg_wide:
-    weight: 10
+    weight: 9
     settings:
       preview_image_style: thumbnail
       progress_indicator: throbber
@@ -417,7 +422,7 @@ content:
     type: boolean_checkbox
     region: content
   field_image_credit:
-    weight: 13
+    weight: 12
     settings:
       size: 60
       placeholder: ''
@@ -512,7 +517,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_person_bio:
-    weight: 23
+    weight: 145
     settings:
       match_operator: CONTAINS
       size: 60
@@ -538,6 +543,17 @@ content:
           entity_type: node
           bundle: org_page
     type: entity_reference_autocomplete
+    region: content
+  field_primary_parent:
+    weight: 13
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
     region: content
   field_public_records_link:
     weight: 124
@@ -600,7 +616,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_secondary_person_bio:
-    weight: 24
+    weight: 146
     settings:
       match_operator: CONTAINS
       size: 60
@@ -626,6 +642,14 @@ content:
           entity_type: node
           bundle: org_page
     type: entity_reference_autocomplete
+    region: content
+  field_short_title:
+    weight: 143
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
     region: content
   field_social_links:
     weight: 130
@@ -664,13 +688,13 @@ content:
     type: string_textarea
     region: content
   field_subtype:
-    weight: 22
+    weight: 144
     settings: {  }
     third_party_settings: {  }
     type: options_select
     region: content
   field_title_sub_text:
-    weight: 25
+    weight: 147
     settings:
       size: 60
       placeholder: ''
@@ -734,7 +758,7 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: 21
+    weight: 142
     settings:
       size: 60
       placeholder: ''
