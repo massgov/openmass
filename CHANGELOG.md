@@ -1,5 +1,67 @@
 
 
+## [0.305.0] - December 14, 2021
+
+### Added
+  - DP-22908: Adding parent breadcrumb feature.
+  - DP-23017: Added documentation to the openmass project for Drupal Twig debugging.
+  - DP-23089: Added "Parent page" and "Short title" fields to content types.
+  - DP-23302: Added validation to nodes to only allow nodes without children to be unpublished or trashed.
+  - DP-23335: Added a module to automatically assign parent relationships.
+  - DP-23356: Adds functionality to move direct children to another parent.
+  - DP-23360: Display current breadcrumb for authors below the parent field.
+  - DP-23411: - Patches core tabledrag.js to store its object on the table data, to
+  allow later append rows asynchronously.
+- Patches entity_hierarchy based on another patch which allowed to see
+  node hierarchies, reorder and save. However, the original patch loaded
+  all the tree, causing memory and processing issues. The current patch
+  against entity_hierarchy loads second level and beyond asynchronously,
+  and also saves hierarchy information only when parent changes, ommiting
+  the weight.
+- Adds js/hierarchy-node-form.js to handle expansion and async loading.
+- Adds css/overrides/hierarchy-node-form.css.
+  - DP-23499: Update display of current breadcrumb for authors below the parent field to use short title if exists.
+  - DP-23507: Made the breadcrumb displayed on edit pages autocomplete when new parent selected.
+  - DP-23549: Added help text for moving children advising users that experience may be slow.
+  - DP-23555: Add Akamai purger
+  - DP-23570: - Disable the “save” button if an unallowed parent type is chosen.
+- Don’t allow published pages to be children of unpublished pages
+- Don’t allow people without the Create topic permission to change the parent of a topic page.
+- Don’t show any nodes that are not published in the hierarchy.
+- Move the help text in the hierarchy tab to be above the tabs and below the H1.  (Like Move Children tab)
+- Change Hierarchy help text.
+- Reorder the tabs when editing content so that Hierarchy is to the left of “Move Children”
+- Change “Move Children” to not allow:
+  - Move of a published page to have an unpublished parent.
+  - Move of a page to have a parent of a type that is not allowed for the child type.
+  - DP-23572: Added an Updated date field to the Event content type and migrated the node changed date into the field.
+  
+### Changed
+  - DP-23486: Adding views reports to the author report area to support the parent field release.
+  - DP-23513: On child hierarchy form, restores drag and drop and children button, check for allowed bundles when reordering the hierarchy, changes the parents draft version of a node when the draft is the latest version, multiple fixes to the Drag and Drop script.
+  - DP-23537: For pages with missing parents report, allow authors to change operator for the content type field and select multiple types to filter.
+  - DP-23539: Replaced a custom entity_hierarchy patch with a version that changes the weight of the Hierarchy tab.
+  - DP-23540: Get the reports menu page to be easier to maintain and more organized.
+  - DP-23624: Added breadcrumb report. Minor changes to other parent reports.
+  - DP-23629: Org page now allowed as parent for service page. Header change for parent report.
+  
+### Fixed
+  - DP-23536: - Properly setting a state value for the Entity Hierarchy in the auto assignment queue processing.
+- When using the "Move children" feature, set the revision user with the current user.
+- When using the "Move children" feature, set the revision log message.
+  - DP-23538: Fixed the missing Schedule Transitions tab on custom and views local task pages.
+  - DP-23546: Fixed questionable parent report view labels filter.
+  - DP-23589: Disable Akamai purger via mass_caching_purge_purgers_alter().
+  - DP-23594: - Users with editor role can move children
+- Users with the author role (and not editor) cannot move children.
+- Users with only the “author” role cannot move items in hierarchy.
+- Users with “editor” role can see the hierarchy tab and change the hierarchy as allowed-
+- Users with “editor” role cannot change the parent of a topic page.
+  - DP-23620: Fix key message margin bottom.
+  - DP-23623: Added ignore to an insert query that was missing it to bypass error.
+  
+
+
 ## [0.304.0] - December 9, 2021
 
 ### Changed
