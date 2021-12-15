@@ -234,6 +234,63 @@ jQuery(document).ready(function ($) {
     } while (true);  // eslint-disable-line
   }
 
+  // Shows an alert when there is a message saying there are wrong
+  // parent/child relationship.
+  function showAlertDueToWrongBundles() {
+    var wrongBundleAlertId = 'hierarchy-node-wrong-bundle-alert';
+
+    var alertBox =
+    '<div ' +
+      ' id="' + wrongBundleAlertId + '" ' +
+      ' role="contentinfo" ' +
+      ' aria-label="Alert" ' +
+      ' class="messages messages--error"> ' +
+      ' <h2 class="visually-hidden">Status message</h2> ' +
+      ' <div>' +
+      ' Moving this page to a parent of this content type is not allowed. ' +
+      ' Please move the row in red to a different content type. ' +
+      ' See knowledge base for more information about what types are allowed.' +
+      ' </div>' +
+      ' <div class="form-actions">' +
+      '   <div class="button" id="hierarchyDismissAlert">Got it</div>' +
+      ' </div>' +
+    '</div>';
+
+    var alertBoxWrapper =
+      '<div ' +
+      ' id="' + wrongBundleAlertId + '--wrapper" ' +
+      ' role="contentinfo" ' +
+      ' >' +
+      ' <h2 class="visually-hidden">Status message</h2> ' +
+        alertBox +
+      '</div>';
+
+    // Remove once data and class on already alerted rows
+    // that currently are not wrong.
+    $table.find('tr.hierarchy-row--alerted')
+      .not('.hierarchy-row--parent-bundle-is-wrong')
+      .removeData('jqueryOnceHierarchyAlert')
+      .removeClass('hierarchy-row--alerted');
+
+    if ($('#' + wrongBundleMessageId).length === 0) {
+      return;
+    }
+
+    // Count new rows with errors.
+    var newRowsWithErrors =
+      $table.find('tr.hierarchy-row--parent-bundle-is-wrong')
+        .once('hierarchyAlert').addClass('hierarchy-row--alerted').length;
+
+    if (!newRowsWithErrors) {
+      return;
+    }
+
+    $('main').before(alertBoxWrapper);
+    $('#hierarchyDismissAlert').click(function () {
+      $('#' + wrongBundleAlertId).parent().remove();
+    });
+  }
+
   // Abstraction to check for an error and toggle an error message.
   function checkForErrorsAndMessage($tr, checkerFn, errorClass, wrongMessageId, message) {
     var $parentRow = getParentFromRow($tr);
@@ -298,6 +355,7 @@ jQuery(document).ready(function ($) {
   function doOnDrag(event) {
     var $tr = $(event.target).closest('tr');
     parentChildRelationshipChecker($tr);
+    showAlertDueToWrongBundles();
     loadAsyncChildrenWhenChildIsDraggedInto($tr);
     removeParentClassIfRowIsNotParent();
     addParentClassOnRowsWithChildren();
