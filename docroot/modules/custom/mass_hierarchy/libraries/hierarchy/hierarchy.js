@@ -259,6 +259,7 @@ jQuery(document).ready(function ($) {
         message +
     '</div>';
 
+    // Only create one wrong bundle message.
     if ($('#' + wrongMessageId).length === 0) {
       $table.before(messageBox);
     }
