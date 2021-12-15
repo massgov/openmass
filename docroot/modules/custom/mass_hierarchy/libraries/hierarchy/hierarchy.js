@@ -254,7 +254,7 @@ jQuery(document).ready(function ($) {
       ' id="' + wrongMessageId + '" ' +
       ' role="contentinfo" ' +
       ' aria-label="Status message" ' +
-      ' class="messages messages--warning ' + hierarchyMessagesClass + '"> ' +
+      ' class="messages messages--error ' + hierarchyMessagesClass + '"> ' +
         ' <h2 class="visually-hidden">Status message</h2> ' +
         message +
     '</div>';
