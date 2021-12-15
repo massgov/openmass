@@ -29,7 +29,7 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteWebDriverTestBase {
    * Tests temporary access links work.
    *
    * Properly testing this scenario is only possible creating the content
-   * through UI. An extra check was added because
+   * through UI. An extra check was added to mass_hierarchy_form_alter because
    * `$form_state->getValue('field_primary_parent')` returns a non-empty
    * array even if it doesn't have a value. Creating the node programmatically
    * with `$this->createNode` will not trigger this issue.
