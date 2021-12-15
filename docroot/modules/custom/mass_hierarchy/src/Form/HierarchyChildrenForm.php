@@ -5,7 +5,6 @@ namespace Drupal\mass_hierarchy\Form;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Drupal\entity_hierarchy\Form\HierarchyChildrenForm as EntityHierachyHierarchyChildrenForm;
@@ -106,11 +105,11 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
     $form['children'] = [
       '#type' => 'table',
       '#header' => [
-        t('Child'),
-        t('Type'),
-        t('Weight'),
-        ['data' => t('Pageviews'), 'colspan' => 1],
-        ['data' => t('Operations'), 'colspan' => 2],
+        $this->t('Child'),
+        $this->t('Type'),
+        $this->t('Weight'),
+        ['data' => $this->t('Pageviews'), 'colspan' => 1],
+        ['data' => $this->t('Operations'), 'colspan' => 2],
       ],
       '#tabledrag' => [
         [
@@ -126,7 +125,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
           'action' => 'order',
           'relationship' => 'sibling',
           'group' => 'child-weight',
-        ]
+        ],
       ],
       '#empty' => $this->t('There are no children to reorder'),
     ];
@@ -203,7 +202,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
             <div class="hierarchy-row-controls">
               <div class="hierarchy-row-controls--expand"></div>
               <div class="hierarchy-row-controls--collapse"></div>
-            </div>'
+            </div>',
         ],
       ];
 
@@ -220,7 +219,7 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
       $form['children'][$child]['weight'] = [
         '#type' => 'weight',
         '#delta' => 50,
-        '#title' => t('Weight for @title', ['@title' => $childEntity->label()]),
+        '#title' => $this->t('Weight for @title', ['@title' => $childEntity->label()]),
         '#title_display' => 'invisible',
         '#default_value' => $childEntity->{$fieldName}->weight,
         // Classify the weight element for #tabledrag.
@@ -249,13 +248,13 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
 
       if ($childEntity->access('update') && $childEntity->hasLinkTemplate('edit-form')) {
         $form['children'][$child]['operations']['#links']['edit'] = [
-          'title' => t('Edit'),
+          'title' => $this->t('Edit'),
           'url' => $childEntity->toUrl('edit-form'),
         ];
       }
       if ($childEntity->access('delete') && $childEntity->hasLinkTemplate('delete-form')) {
         $form['children'][$child]['operations']['#links']['delete'] = [
-          'title' => t('Delete'),
+          'title' => $this->t('Delete'),
           'url' => $childEntity->toUrl('delete-form'),
         ];
       }
