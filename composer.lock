@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "51886ba5547970678a1d725db86812a2",
+    "content-hash": "a2f88e4332068c09d5cae863fe9687eb",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -2432,6 +2432,158 @@
                 }
             ],
             "time": "2020-06-05T16:46:05+00:00"
+        },
+        {
+            "name": "doctrine/dbal",
+            "version": "2.13.6",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/dbal.git",
+                "reference": "67ef6d0327ccbab1202b39e0222977a47ed3ef2f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/67ef6d0327ccbab1202b39e0222977a47ed3ef2f",
+                "reference": "67ef6d0327ccbab1202b39e0222977a47ed3ef2f",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/cache": "^1.0|^2.0",
+                "doctrine/deprecations": "^0.5.3",
+                "doctrine/event-manager": "^1.0",
+                "ext-pdo": "*",
+                "php": "^7.1 || ^8"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "9.0.0",
+                "jetbrains/phpstorm-stubs": "2021.1",
+                "phpstan/phpstan": "1.2.0",
+                "phpunit/phpunit": "^7.5.20|^8.5|9.5.10",
+                "psalm/plugin-phpunit": "0.16.1",
+                "squizlabs/php_codesniffer": "3.6.1",
+                "symfony/cache": "^4.4",
+                "symfony/console": "^2.0.5|^3.0|^4.0|^5.0",
+                "vimeo/psalm": "4.13.0"
+            },
+            "suggest": {
+                "symfony/console": "For helpful console commands such as SQL execution and import of files."
+            },
+            "bin": [
+                "bin/doctrine-dbal"
+            ],
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\DBAL\\": "lib/Doctrine/DBAL"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Guilherme Blanco",
+                    "email": "guilhermeblanco@gmail.com"
+                },
+                {
+                    "name": "Roman Borschel",
+                    "email": "roman@code-factory.org"
+                },
+                {
+                    "name": "Benjamin Eberlei",
+                    "email": "kontakt@beberlei.de"
+                },
+                {
+                    "name": "Jonathan Wage",
+                    "email": "jonwage@gmail.com"
+                }
+            ],
+            "description": "Powerful PHP database abstraction layer (DBAL) with many features for database schema introspection and management.",
+            "homepage": "https://www.doctrine-project.org/projects/dbal.html",
+            "keywords": [
+                "abstraction",
+                "database",
+                "db2",
+                "dbal",
+                "mariadb",
+                "mssql",
+                "mysql",
+                "oci8",
+                "oracle",
+                "pdo",
+                "pgsql",
+                "postgresql",
+                "queryobject",
+                "sasql",
+                "sql",
+                "sqlanywhere",
+                "sqlite",
+                "sqlserver",
+                "sqlsrv"
+            ],
+            "support": {
+                "issues": "https://github.com/doctrine/dbal/issues",
+                "source": "https://github.com/doctrine/dbal/tree/2.13.6"
+            },
+            "funding": [
+                {
+                    "url": "https://www.doctrine-project.org/sponsorship.html",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://www.patreon.com/phpdoctrine",
+                    "type": "patreon"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/doctrine%2Fdbal",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2021-11-26T20:11:05+00:00"
+        },
+        {
+            "name": "doctrine/deprecations",
+            "version": "v0.5.3",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/doctrine/deprecations.git",
+                "reference": "9504165960a1f83cc1480e2be1dd0a0478561314"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/doctrine/deprecations/zipball/9504165960a1f83cc1480e2be1dd0a0478561314",
+                "reference": "9504165960a1f83cc1480e2be1dd0a0478561314",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.1|^8.0"
+            },
+            "require-dev": {
+                "doctrine/coding-standard": "^6.0|^7.0|^8.0",
+                "phpunit/phpunit": "^7.0|^8.0|^9.0",
+                "psr/log": "^1.0"
+            },
+            "suggest": {
+                "psr/log": "Allows logging deprecations via PSR-3 logger implementation"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Doctrine\\Deprecations\\": "lib/Doctrine/Deprecations"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "A small layer on top of trigger_error(E_USER_DEPRECATED) or PSR-3 logging with options to disable all deprecations or selectively for packages.",
+            "homepage": "https://www.doctrine-project.org/",
+            "support": {
+                "issues": "https://github.com/doctrine/deprecations/issues",
+                "source": "https://github.com/doctrine/deprecations/tree/v0.5.3"
+            },
+            "time": "2021-03-21T12:59:47+00:00"
         },
         {
             "name": "doctrine/event-manager",
@@ -5015,6 +5167,52 @@
             }
         },
         {
+            "name": "drupal/dbal",
+            "version": "1.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/dbal.git",
+                "reference": "8.x-1.3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/dbal-8.x-1.3.zip",
+                "reference": "8.x-1.3",
+                "shasum": "42ef2bf39bac33676ef0ccfa4480c207407f4c0e"
+            },
+            "require": {
+                "doctrine/dbal": "^2.5",
+                "drupal/core": "^8.8 || ^9.0"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.3",
+                    "datestamp": "1607286563",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL2+"
+            ],
+            "authors": [
+                {
+                    "name": "Lee Rowlands",
+                    "homepage": "https://www.drupal.org/user/395439",
+                    "email": "lee.rowlands@previousnext.com.au"
+                }
+            ],
+            "description": "Provides a Doctrine/DBAL connection from your Database connection settings.",
+            "homepage": "https://www.drupal.org/project/dbal",
+            "support": {
+                "source": "https://git.drupalcode.org/project/dbal"
+            }
+        },
+        {
             "name": "drupal/devel",
             "version": "4.1.1",
             "source": {
@@ -5817,6 +6015,72 @@
                 "source": "https://git.drupalcode.org/project/entity_embed",
                 "issues": "https://www.drupal.org/project/issues/entity_embed",
                 "irc": "irc://irc.freenode.org/drupal-media"
+            }
+        },
+        {
+            "name": "drupal/entity_hierarchy",
+            "version": "3.0.4",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/entity_hierarchy.git",
+                "reference": "3.0.4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/entity_hierarchy-3.0.4.zip",
+                "reference": "3.0.4",
+                "shasum": "547081731acf5ac36be119cd3e08b3913f7c2a28"
+            },
+            "require": {
+                "drupal/core": "^8.8 || ^9.0",
+                "drupal/dbal": "~1.0",
+                "previousnext/nested-set": "^0.1.1"
+            },
+            "require-dev": {
+                "drupal/workbench_access": "*"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "3.0.4",
+                    "datestamp": "1624593400",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                },
+                "drush": {
+                    "services": {
+                        "drush.services.yml": "^9"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL2+"
+            ],
+            "authors": [
+                {
+                    "name": "fenstrat",
+                    "homepage": "https://www.drupal.org/user/362649"
+                },
+                {
+                    "name": "jibran",
+                    "homepage": "https://www.drupal.org/user/1198144"
+                },
+                {
+                    "name": "larowlan",
+                    "homepage": "https://www.drupal.org/user/395439"
+                },
+                {
+                    "name": "webdrips",
+                    "homepage": "https://www.drupal.org/user/164950"
+                }
+            ],
+            "description": "A module to extend entity-reference fields so that a hierarchy is maintained.",
+            "homepage": "https://www.drupal.org/project/entity_hierarchy",
+            "support": {
+                "source": "https://git.drupalcode.org/project/entity_hierarchy"
             }
         },
         {
@@ -6755,8 +7019,16 @@
             ],
             "authors": [
                 {
+                    "name": "mcdruid",
+                    "homepage": "https://www.drupal.org/user/255969"
+                },
+                {
                     "name": "minnur",
                     "homepage": "https://www.drupal.org/user/702026"
+                },
+                {
+                    "name": "mmcconnell",
+                    "homepage": "https://www.drupal.org/user/3559324"
                 },
                 {
                     "name": "vijaycs85",
@@ -6892,6 +7164,10 @@
                 {
                     "name": "oknate",
                     "homepage": "https://www.drupal.org/user/471638"
+                },
+                {
+                    "name": "ram4nd",
+                    "homepage": "https://www.drupal.org/user/601534"
                 },
                 {
                     "name": "rszrama",
@@ -7345,7 +7621,7 @@
             "extra": {
                 "drupal": {
                     "version": "6.0.0-beta3",
-                    "datestamp": "1632933683",
+                    "datestamp": "1632946984",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Beta releases are not covered by Drupal security advisories."
@@ -7491,6 +7767,10 @@
                     "homepage": "https://www.drupal.org/user/2210776"
                 },
                 {
+                    "name": "spncr",
+                    "homepage": "https://www.drupal.org/user/3664814"
+                },
+                {
                     "name": "tauno",
                     "homepage": "https://www.drupal.org/user/105595"
                 }
@@ -7535,10 +7815,6 @@
             ],
             "authors": [
                 {
-                    "name": "Aron Novak",
-                    "homepage": "https://www.drupal.org/user/61864"
-                },
-                {
                     "name": "cedewey",
                     "homepage": "https://www.drupal.org/user/38694"
                 },
@@ -7553,6 +7829,10 @@
                 {
                     "name": "mariuss",
                     "homepage": "https://www.drupal.org/user/28539"
+                },
+                {
+                    "name": "pmichelazzo",
+                    "homepage": "https://www.drupal.org/user/182237"
                 },
                 {
                     "name": "srdtwc",
@@ -8167,6 +8447,10 @@
                     "homepage": "https://www.drupal.org/user/1557710"
                 },
                 {
+                    "name": "paulocs",
+                    "homepage": "https://www.drupal.org/user/3640109"
+                },
+                {
                     "name": "shrop",
                     "homepage": "https://www.drupal.org/user/14767"
                 }
@@ -8216,20 +8500,12 @@
                     "homepage": "https://www.drupal.org/user/279352"
                 },
                 {
-                    "name": "kporras07",
-                    "homepage": "https://www.drupal.org/user/1349780"
-                },
-                {
-                    "name": "otrolopezmas",
-                    "homepage": "https://www.drupal.org/user/3516204"
+                    "name": "paulocs",
+                    "homepage": "https://www.drupal.org/user/3640109"
                 },
                 {
                     "name": "plopesc",
                     "homepage": "https://www.drupal.org/user/282415"
-                },
-                {
-                    "name": "tjwelde",
-                    "homepage": "https://www.drupal.org/user/3411453"
                 }
             ],
             "description": "Provides the ability to import redirects for the Redirect module",
@@ -12981,6 +13257,51 @@
             "time": "2020-07-07T09:29:14+00:00"
         },
         {
+            "name": "previousnext/nested-set",
+            "version": "0.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/previousnext/nested-set.git",
+                "reference": "3406247013806d4401d753f0d01c464a65596c6d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/previousnext/nested-set/zipball/3406247013806d4401d753f0d01c464a65596c6d",
+                "reference": "3406247013806d4401d753f0d01c464a65596c6d",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": "~2.5"
+            },
+            "require-dev": {
+                "drupal/coder": "~8.0",
+                "pear/console_table": "^1.3",
+                "phpunit/phpunit": "~4.8"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "PNX\\NestedSet\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Kim Pepper",
+                    "email": "kim@pepper.id.au"
+                }
+            ],
+            "description": "A PHP Doctrine DBAL implementation for Nested Sets.",
+            "support": {
+                "issues": "https://github.com/previousnext/nested-set/issues",
+                "source": "https://github.com/previousnext/nested-set/tree/0.1.2"
+            },
+            "time": "2021-02-22T03:57:17+00:00"
+        },
+        {
             "name": "psr/cache",
             "version": "1.0.1",
             "source": {
@@ -16887,6 +17208,7 @@
                 "issues": "https://github.com/webmozart/path-util/issues",
                 "source": "https://github.com/webmozart/path-util/tree/2.3.0"
             },
+            "abandoned": "symfony/filesystem",
             "time": "2015-12-17T08:42:14+00:00"
         },
         {
