@@ -50,6 +50,7 @@ If the Docker section above is unappealing, its easy to run mass.gov natively on
 - The site is browseable at https://mass.local
 - It takes a few minutes for the `dbmass` container start up.
 - [You may override ddev config locally](https://ddev.readthedocs.io/en/stable/users/extend/config_yaml/). For example, create a `.ddev/config.personal.yml` file and add a line `dbimage: massgov/mysql-sanitized:latest` to use our less sanitized DB.
+- Similarly, rename [.ddev/config.arm.yaml.example](https://github.com/massgov/openmass/blob/develop/.ddev/config.arm.yaml.example) to config.arm.yaml in order to use ARM containers suitable for the Apple M1 Macs.
 - Since we use a custom `dbmass` service and not DDEV's usual `db`, some DDEV DB commands will not work here. @todo try to improve this.
 - Mass Digital team members: see additional information at [Mass Digital Developers](https://github.com/massgov/massgov-internal-docs/blob/master/development-massgov-team.md).
 
@@ -121,9 +122,9 @@ View `/etc/hosts` for Mac/Linux or `c:\windows\system32\drivers\etc\hosts` in Wi
 
 This usually happens if you go visit mass.local right after the containers are brought up. MySQL has not started yet. Open Portainer and go to _Containers > mass_mysql_1 > Logs_ and check for the message: _mysqld: ready for connections._ If you don't see this message, _mysqld_ has not started yet.
 
-### Xdebug
+### Debug
 
-If you know where a problem is happening in your code, Xdebug is a useful tool that allows you set breakpoints to trace the problem back. See [.env.example](../.env.example) for setup instructions.
+If you know where a problem is happening in your code in Twig or PHP, refer to [these steps](./docs/drupal_debug.md).
 
 ### Windows troubleshooting
 
