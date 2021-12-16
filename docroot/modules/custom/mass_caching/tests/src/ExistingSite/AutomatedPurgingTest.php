@@ -59,7 +59,9 @@ class AutomatedPurgingTest extends ExistingSiteBase {
     ]);
     $file->save();
     $this->markEntityForCleanup($file);
-    $this->assertCount(0, $this->getInvalidations('url', $file->createFileUrl(FALSE)));
+    $relative = $file->createFileUrl(TRUE);
+    $absolute = sprintf('%s://%s%s', 'http', 'stage.mass.gov', $relative);
+    $this->assertCount(0, $this->getInvalidations('url', $absolute));
   }
 
   /**
@@ -72,12 +74,12 @@ class AutomatedPurgingTest extends ExistingSiteBase {
         'alias' => '/foo-foo',
       ],
     ]);
-    $url = $node->toUrl('canonical', ['absolute' => TRUE])->toString();
-    $this->assertCount(1, $this->getInvalidations('url', $url));
+    $absolute = $node->toUrl('canonical', ['base_url' => 'http://stage.mass.gov', 'absolute' => TRUE])->toString();
+    $this->assertCount(1, $this->getInvalidations('url', $absolute));
     $node->path->alias = '/foo-bar';
     $node->save();
-    $url = $node->toUrl('canonical', ['absolute' => TRUE])->toString();
-    $this->assertCount(1, $this->getInvalidations('url', $url));
+    $absolute = $node->toUrl('canonical', ['base_url' => 'http://stage.mass.gov', 'absolute' => TRUE])->toString();
+    $this->assertCount(1, $this->getInvalidations('url', $absolute));
   }
 
   /**
