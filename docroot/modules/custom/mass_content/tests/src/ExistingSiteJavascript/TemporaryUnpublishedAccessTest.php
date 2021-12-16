@@ -46,10 +46,16 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteWebDriverTestBase {
     $this->getCurrentPage()->selectFieldOption('Content type', 'Topic Page');
     $this->getCurrentPage()->pressButton('Apply');
 
+    $this->htmlOutput('After filtering by topic page');
+    $this->htmlOutput();
+
     // Unpublishing it.
     $this->clickLink('Edit');
     $this->getCurrentPage()->selectFieldOption('Change to', 'Unpublished');
     $this->getCurrentPage()->pressButton('Save');
+
+    $this->htmlOutput('After unpublishing topic page');
+    $this->htmlOutput();
 
     // Ensure we have a parent page.
     $this->clickLink('Edit');
