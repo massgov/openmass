@@ -325,7 +325,7 @@ jobs:
     steps:
       - attach_workspace: {at: /tmp}
       # https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages
-      *yarn_install
+      - *yarn_install
       - run: "npm test"
 
   # Cut the release branch for weekly release
