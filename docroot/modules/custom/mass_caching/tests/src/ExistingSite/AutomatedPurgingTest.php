@@ -35,10 +35,15 @@ class AutomatedPurgingTest extends ExistingSiteBase {
     ]);
     $file->save();
     $this->markEntityForCleanup($file);
-    $this->assertCount(1, $this->getInvalidations('url', $file->createFileUrl(FALSE)));
+    $relative = $file->createFileUrl(TRUE);
+    // Make URL the same way that ManualPurger::purgePath() does it.
+    $absolute = sprintf('%s://%s%s', 'http', 'stage.mass.gov', $relative);
+    $this->assertCount(1, $this->getInvalidations('url', $absolute));
     $file->set('uri', 'public://llama-44.txt');
     $file->save();
-    $this->assertCount(1, $this->getInvalidations('url', $file->createFileUrl(FALSE)));
+    $relative = $file->createFileUrl(TRUE);
+    $absolute = sprintf('%s://%s%s', 'http', 'stage.mass.gov', $relative);
+    $this->assertCount(1, $this->getInvalidations('url', $absolute));
   }
 
   /**
