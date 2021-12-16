@@ -59,7 +59,7 @@
 - Users with “editor” role cannot change the parent of a topic page.
   - DP-23620: Fix key message margin bottom.
   - DP-23623: Added ignore to an insert query that was missing it to bypass error.
-  
+  - DP-23650: Improve parentID check on mass_hierarchy_form_alter.
 
 
 ## [0.304.0] - December 9, 2021
