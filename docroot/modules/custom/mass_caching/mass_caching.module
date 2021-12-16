@@ -196,7 +196,7 @@ function mass_caching_entity_insert(EntityInterface $entity) {
  */
 function mass_caching_purge_media(MediaInterface $entity) {
   $purger = \Drupal::service('manual_purger');
-  $paths[] = '/media/' . $entity->id() . '/download';
+  $paths[] = 'media/' . $entity->id() . '/download';
   $paths[] = $entity->toUrl()->toString() . '/download';
   // array_unique() because the entity provided URL for unaliased media
   // will be the same as /media/123/download.
