@@ -43,9 +43,13 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteWebDriverTestBase {
     $this->drupalLogin($admin);
 
     $this->drupalGet('admin/content');
-    $this->getCurrentPage()->selectFieldOption('Publication status', 'Unpublished');
     $this->getCurrentPage()->selectFieldOption('Content type', 'Topic Page');
     $this->getCurrentPage()->pressButton('Apply');
+
+    // Unpublishing it.
+    $this->clickLink('Edit');
+    $this->getCurrentPage()->selectFieldOption('Change to', 'Unpublished');
+    $this->getCurrentPage()->pressButton('Save');
 
     // Ensure we have a parent page.
     $this->clickLink('Edit');
