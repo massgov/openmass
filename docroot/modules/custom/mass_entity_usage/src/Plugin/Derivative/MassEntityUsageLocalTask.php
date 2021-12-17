@@ -17,7 +17,7 @@ class MassEntityUsageLocalTask extends EntityUsageLocalTask {
 
     foreach ($this->derivatives as &$entry) {
       $entry['title'] = $this->t('Pages linking here');
-      $entry['weight'] = 0;
+      $entry['weight'] = 40;
     }
 
     return $this->derivatives;
