@@ -2,12 +2,18 @@
 
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
+use Drupal\file\Entity\File;
+use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Ensures access links for unpublished content are generated properly.
+ *
+ * An extra check was added on `mass_hierarchy_form_alter` because
+ * `$form_state->getValue('field_primary_parent')` returns a non-empty
+ * array even if it doesn't have a value.
  */
 class TemporaryUnpublishedAccessTest extends ExistingSiteWebDriverTestBase {
 
@@ -26,39 +32,55 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteWebDriverTestBase {
   }
 
   /**
-   * Tests temporary access links work.
-   *
-   * Properly testing this scenario is only possible creating the content
-   * through UI. An extra check was added to mass_hierarchy_form_alter because
-   * `$form_state->getValue('field_primary_parent')` returns a non-empty
-   * array even if it doesn't have a value. Creating the node programmatically
-   * with `$this->createNode` will not trigger this issue.
+   * Creates and returns a unpublished topic page node.
    */
-  public function testTemporaryUnpublishedAccessGetsLink() {
+  private function createUnpublishedTopicPage() {
+    // Create required fields for topic_page.
+    $org_node = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Test Org Page',
+    ]);
+    $image = File::create([
+      'uri' => 'public://test.jpg',
+    ]);
+    $this->markEntityForCleanup($image);
+
+    // Create topic page.
+    $node = $this->createNode([
+      'type' => 'topic_page',
+      'title' => 'Test',
+      'field_topic_lede' => 'Short description',
+      'field_topic_bg_wide' => $image,
+      'field_organizations' => [$org_node],
+      'moderation_state' => 'unpublished',
+      'status' => 0,
+    ]);
+
+    return $node;
+  }
+
+  /**
+   * Creates an admin, saves it and returns it.
+   */
+  private function createAdmin() {
     // An admin is needed.
     $admin = User::create(['name' => $this->randomMachineName()]);
     $admin->addRole('administrator');
     $admin->activate();
     $admin->save();
-    $this->drupalLogin($admin);
+    return $admin;
+  }
 
-    $this->drupalGet('admin/content');
-    $this->getCurrentPage()->selectFieldOption('Content type', 'Topic Page');
-    $this->getCurrentPage()->pressButton('Apply');
+  /**
+   * Tests temporary access links work.
+   */
+  public function testTemporaryUnpublishedAccessGetsLink() {
 
-    $this->htmlOutput('After filtering by topic page');
-    $this->htmlOutput();
-
-    // Unpublishing it.
-    $this->clickLink('Edit');
-    $this->getCurrentPage()->selectFieldOption('Change to', 'Unpublished');
-    $this->getCurrentPage()->pressButton('Save');
-
-    $this->htmlOutput('After unpublishing topic page');
-    $this->htmlOutput();
+    $this->drupalLogin($this->createAdmin());
+    $node = $this->createUnpublishedTopicPage();
+    $this->drupalGet('node/'. $node->id(). '/edit');
 
     // Ensure we have a parent page.
-    $this->clickLink('Edit');
     $this->getCurrentPage()->fillField('Parent page', 'About the Massachusetts Court System');
     $this->getCurrentPage()->pressButton('Save');
     $this->clickLink('Edit');
