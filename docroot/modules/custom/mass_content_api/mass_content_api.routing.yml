@@ -21,21 +21,3 @@ mass_content_api.descendant_controller_overview:
     _title: 'Overview'
   requirements:
     _permission: 'view descendant api test pages'
-mass_content_api.descendant_controller_linking_page:
-  path: '/node/{node}/linking-page'
-  defaults:
-    _controller: '\Drupal\mass_content_api\Controller\LinkingPageController::build'
-    _title: 'Pages linking here'
-  options:
-    _node_operation_route: TRUE
-  requirements:
-    _permission: 'view pages linking here tab'
-mass_content_api.descendant_controller_media_linking_page:
-  path: '/media/{media}/linking-page'
-  defaults:
-    _controller: '\Drupal\mass_content_api\Controller\MediaLinkingPageController::build'
-    _title: 'Pages linking here'
-  options:
-    _admin_route: TRUE
-  requirements:
-    _permission: 'view pages linking here tab'
