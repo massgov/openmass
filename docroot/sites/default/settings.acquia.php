@@ -111,6 +111,7 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
       // Disable once Stage File Proxy in off in Prod.
       $config['stage_file_proxy.settings']['origin'] = FALSE;
       $config['media_entity_download.settings']['external_file_storage'] = 0;
+      // Override for Prod.
       $settings['mass_caching.hosts'] = ['edit.mass.gov', 'www.mass.gov'];
 
       $config['akamai.settings']['disabled'] = FALSE;
@@ -118,10 +119,6 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
 
       break;
     case 'test':
-      $settings['mass_caching.hosts'] = [
-        'stage.mass.gov',
-        'edit.stage.mass.gov',
-      ];
       $config['akamai.settings']['disabled'] = FALSE;
       break;
     case 'dev':
