@@ -86,7 +86,7 @@ class LinkingPageController extends ControllerBase {
       ],
       '#empty' => $this->t('No pages link here.'),
     ];
-    $nid = $this->requestStack->getCurrentRequest()->attributes->get('node');
+    $nid = $this->requestStack->getCurrentRequest()->attributes->get('node')->id();
     $children = $this->descendantManager->getImpact($nid, 'node');
 
     $used_links = [];
