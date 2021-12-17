@@ -78,7 +78,7 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteWebDriverTestBase {
 
     $this->drupalLogin($this->createAdmin());
     $node = $this->createUnpublishedTopicPage();
-    $this->drupalGet('node/'. $node->id(). '/edit');
+    $this->drupalGet('node/' . $node->id() . '/edit');
 
     // Ensure we have a parent page.
     $this->getCurrentPage()->fillField('Parent page', 'About the Massachusetts Court System');
