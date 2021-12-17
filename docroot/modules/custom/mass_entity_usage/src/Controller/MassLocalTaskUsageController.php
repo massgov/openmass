@@ -41,7 +41,6 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
     // Table headers.
     $header = [
       $this->t('Entity'),
-      $this->t('ID'),
       $this->t('Content Type'),
       $this->t('Field name'),
       $this->t('Status'),
@@ -128,7 +127,6 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
         // Set the row values.
         $rows[] = [
           $link,
-          $source_entity->id(),
           $source_entity->type->entity->label(),
           $field_label,
           $state_label,

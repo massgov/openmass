@@ -101,7 +101,6 @@ class EntityUsageTest extends ExistingSiteBase {
     $table_headers = '<thead>
       <tr>
                             <th>Entity</th>
-                            <th>ID</th>
                             <th>Content Type</th>
                             <th>Field name</th>
                             <th>Status</th>
