@@ -90,6 +90,12 @@ function mass_entity_usage_keep_only_current_vid($entity) {
     return;
   }
 
+  // Only intervene on tracked entities.
+  $to_track = \Drupal::service('entity_usage.settings')->config->get('track_enabled_source_entity_types');
+  if (is_array($to_track) && !in_array($entity->getEntityType(), $to_track, TRUE)) {
+    return;
+  }
+
   // Get the current revision ID.
   $storage = \Drupal::entityTypeManager()->getStorage($entity->getEntityType()->id());
   /** @var \Drupal\Core\Entity\ContentEntityBase */
