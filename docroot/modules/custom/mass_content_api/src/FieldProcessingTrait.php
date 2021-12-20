@@ -281,10 +281,11 @@ trait FieldProcessingTrait {
   private function collectFieldEntities(FieldItemListInterface $field_entity) {
     $collected = [];
 
-    if (!empty($field_entity->getFieldDefinition())) {
-      $field_label = $field_entity->getFieldDefinition()->getLabel();
-    }
+    $field_label = !empty($field_entity->getFieldDefinition()) ?
+      $field_entity->getFieldDefinition()->getLabel() : '';
+
     $field_name = $field_entity->getName();
+
     if ($field_entity instanceof EntityReferenceFieldItemListInterface) {
       $this->processEntityReferenceFieldItemListInterface($collected, $field_entity, $field_label, $field_name);
     }
