@@ -163,7 +163,9 @@ trait FieldProcessingTrait {
     return array_filter($this->collected);
   }
 
-
+  /**
+   * Processes Entity Reference field lists.
+   */
   private function processEntityReferenceFieldItemListInterface(&$collected, $field_entity, $field_label, $field_name) {
     // If we can extract entity type and ID without loading up the child,
     // do it. If this results in deleted/unpublished entities ending up in the
@@ -173,9 +175,9 @@ trait FieldProcessingTrait {
         $child_id = $item->target_id;
         $collected[$child_id] = [
           'id' => $child_id,
-          'entity' => $child_entity_type .'hola',
-          'field_label' => $field_label . '888' ?? '111',
-          'field_name' => $field_name . '777' ?? '222',
+          'entity' => $child_entity_type,
+          'field_label' => $field_label ?? '',
+          'field_name' => $field_name ?? '',
         ];
       }
     }
@@ -184,26 +186,32 @@ trait FieldProcessingTrait {
         $collected[$child->id()] = [
           'id' => $child->id(),
           'entity' => $child->getEntityTypeId(),
-          'field_label' => $field_label .  '666' ?? '333',
-          'field_name' => $field_name . '555' ?? '444',
+          'field_label' => $field_label ?? '',
+          'field_name' => $field_name ?? '',
         ];
       }
     }
   }
 
-  function processLinkItemInterface(&$collected, $ref, $field_label, $field_name) {
+  /**
+   * Processes Link Item fields.
+   */
+  private function processLinkItemInterface(&$collected, $ref, $field_label, $field_name) {
     if (!preg_match('~^entity:node/(\d+)$~', $ref->uri, $matches)) {
       return;
     }
     $collected[$matches[1]] = [
       'id' => $matches[1],
       'entity' => 'node',
-      'field_label' => $field_label .' qqq' ?? ' ooo',
-      'field_name' => $field_name .' www' ?? ' eee',
+      'field_label' => $field_label ?? '',
+      'field_name' => $field_name ?? '',
     ];
   }
 
-  function processTextItemBase(&$collected, $ref, $field_label, $field_name) {
+  /**
+   * Processes Text Item fields.
+   */
+  private function processTextItemBase(&$collected, $ref, $field_label, $field_name) {
     $body = $ref->getValue('value');
     if (!isset($body['value'])) {
       return;
@@ -234,8 +242,8 @@ trait FieldProcessingTrait {
         $collected[$nid] = [
           'id' => $nid,
           'entity' => 'node',
-          'field_label' => $field_label .' ppp' ?? 'xxx',
-          'field_name' => $field_name . 'ddd' ?? 'yyy',
+          'field_label' => $field_label ?? '',
+          'field_name' => $field_name ?? '',
         ];
       }
       // Documents particularly are linked to, track those.
