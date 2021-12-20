@@ -98,7 +98,7 @@ function mass_entity_usage_keep_only_current_vid($entity) {
 
   // Delete references from other revisions.
   $delete = \Drupal::database()->delete('entity_usage');
-  $delete->condition('source_id', $entity->id(),);
+  $delete->condition('source_id', $entity->id());
   $delete->condition('source_vid', $vid, '<>');
   $delete->execute();
 }
