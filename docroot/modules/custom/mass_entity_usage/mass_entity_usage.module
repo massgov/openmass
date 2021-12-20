@@ -87,16 +87,19 @@ function _mass_entity_usage_tracking_check($entity_type, $id, $vid) {
  */
 function mass_entity_usage_keep_only_current_vid($entity) {
 
-  // Only intervene on tracked entities.
-  $to_track = \Drupal::service('config.factory')
-    ->get('entity_usage.settings')
-    ->get('track_enabled_source_entity_types');
-
   if (!method_exists($entity, 'getRevisionId')) {
     return;
   }
 
-  if (is_array($to_track) && !in_array($entity->getEntityType(), $to_track, TRUE)) {
+  // Only intervene on tracked entities.
+  $to_track = \Drupal::service('config.factory')
+  ->get('entity_usage.settings')
+  ->get('track_enabled_source_entity_types');
+
+  /** @var Drupal\Core\Entity\ContentEntityType */
+  $entity_type = $entity->getEntityType();
+
+  if (is_array($to_track) && !in_array($entity_type->id(), $to_track, TRUE)) {
     return;
   }
 
