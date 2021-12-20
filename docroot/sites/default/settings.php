@@ -163,6 +163,12 @@ $config['scheduler.settings']['lightweight_cron_access_key'] = getenv('LIGHTWEIG
 $config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
 $config['geocoder.geocoder_provider.opencage']['configuration']['apiKey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
 
+// Start with stage for all envs. This gets overridden for Prod in settings.acquia.php
+$settings['mass_caching.hosts'] = [
+  'stage.mass.gov',
+  'edit.stage.mass.gov',
+];
+
 // If in an Acquia Cloud environment
 if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   // if in acquia...

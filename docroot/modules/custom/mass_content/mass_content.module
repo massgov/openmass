@@ -664,7 +664,7 @@ function mass_content_node_update(EntityInterface $node) {
  * Implements hook_field_widget_WIDGET_TYPE_form_alter().
  */
 function mass_content_field_widget_entity_reference_paragraphs_form_alter(&$element, &$form_state, $context) {
-  if ($element['#paragraph_type'] == 'organization_contact_logo') {
+  if (isset($element['#paragraph_type']) && $element['#paragraph_type'] == 'organization_contact_logo') {
     $element['#suffix'] = "<br/><span class='mass_content__custom-notice'>Contact is required and must be added on the “Title Banner” tab. Logo is optional and is defined on the “Overview” tab.</span>" . $element['#suffix'];
   }
 }
