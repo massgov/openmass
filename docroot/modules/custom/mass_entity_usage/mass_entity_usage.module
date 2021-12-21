@@ -115,9 +115,21 @@ function mass_entity_usage_keep_only_current_vid($entity) {
   $delete->condition('source_id', $entity->id());
   $delete->execute();
 
+  // Delete reference to itself when entity uses string id.
+  $delete = \Drupal::database()->delete('entity_usage');
+  $delete->condition('target_id_string', $entity->id());
+  $delete->condition('source_id_string', $entity->id());
+  $delete->execute();
+
   // Delete references from other revisions.
   $delete = \Drupal::database()->delete('entity_usage');
   $delete->condition('source_id', $entity->id());
+  $delete->condition('source_vid', $vid, '<>');
+  $delete->execute();
+
+  // Delete references from other when entity uses string id..
+  $delete = \Drupal::database()->delete('entity_usage');
+  $delete->condition('source_id_string', $entity->id());
   $delete->condition('source_vid', $vid, '<>');
   $delete->execute();
 }
