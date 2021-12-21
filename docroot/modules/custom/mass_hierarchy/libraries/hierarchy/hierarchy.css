@@ -1,0 +1,116 @@
+.hierarchy-level--expanded {
+  display: table-row;
+}
+
+.hierarchy-row-controls {
+  display: none;
+}
+
+.hierarchy-row-controls .hierarchy-row-controls--collapse {
+  display: none;
+}
+
+.hierarchy-row--parent .hierarchy-row-controls {
+  display: inline-block;
+  position: relative;
+  width: 1.5rem;
+  height: 1rem;
+  vertical-align: middle;
+}
+
+.hierarchy-row--parent .hierarchy-row-controls div {
+  cursor: pointer;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+}
+
+.hierarchy-row--parent .hierarchy-row-controls div::after {
+  width: 100%;
+  height: 1rem;
+  content: '▴';
+  font-size: 20px;
+  position: absolute;
+  transform: rotate(180deg);
+  line-height: 1rem;
+  text-align: center;
+  margin-top: 1px;
+}
+
+.hierarchy-row--parent .hierarchy-row-controls .hierarchy-row-controls--collapse::after {
+  transform: rotate(0deg);
+  margin-top: -3px;
+}
+
+.hierarchy-row--expanded .hierarchy-row-controls .hierarchy-row-controls--collapse {
+  display: block;
+}
+
+.hierarchy-row--expanded .hierarchy-row-controls .hierarchy-row-controls--expand {
+  display: none;
+}
+
+.hierarchy-row--loading {
+  display: inline-block;
+  font-size: .75rem;
+  margin-left: 0.5rem;
+  text-transform: uppercase;
+  font-weight: bold;
+  color: #777;
+}
+
+.hierarchy-row--parent-bundle-is-wrong.hover td,
+.hierarchy-row--parent-bundle-is-wrong.hover .tabledrag-handle,
+.hierarchy-row--parent-bundle-is-wrong td,
+.hierarchy-row--parent-bundle-is-wrong .tabledrag-handle {
+  background-color: #f7e0e4 !important;
+}
+
+/* Hiding nid value */
+[id^="node-"][id$="-entity-hierarchy-reorder-form"] td:nth-child(4) {
+  display: none;
+}
+
+/* Not showing changed marker, it is confusing on this case */
+[id^="node-"][id$="-entity-hierarchy-reorder-form"] .tabledrag-changed {
+  display: none;
+}
+
+/* Default margin is 10rem, that is too much */
+[id^="node-"][id$="-entity-hierarchy-reorder-form"] .dropbutton-multiple {
+  padding-right: 2em;
+}
+
+tbody .hierarchy-row .tabledrag-handle {
+  padding-top: 0px;
+}
+
+.mass_hierarchy_cant_drag .tabledrag-handle,
+.mass_hierarchy_cant_drag_topic_page .hierarchy-row--topic_page .tabledrag-handle {
+  pointer-events: none;
+  color: #aaa;
+}
+
+.mass_hierarchy_cant_drag #edit-submit {
+  display: none;
+}
+
+
+#hierarchy-node-wrong-bundle-alert {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translateX(-50%) translateY(-50%);
+  -webkit-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+}
+
+#hierarchy-node-wrong-bundle-alert--wrapper {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  background: rgba(0,0,0, 0.5);
+}

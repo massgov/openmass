@@ -58,11 +58,11 @@
 - [ ] If it is purely presentational, can the logic be in the template? (unless it is Mass.gov specific logic and a Mayflower template).
 
 ## Mayflower Integration
-All openmass feature development PRs that require Mayflower changes must pass all these checks before squashing and merging into develop:
-- [ ] PR reviewed and approved 
-- [ ] The corresponding Mayflower PR is merged into develop
-- [ ] Mayflower artifacts is pointing to the `dev-develop` version in composer.json
-- [ ] Up-to-date with latest openmass develop branch (resolve any composer.lock conflicts with the develop branch)
-- [ ] All circleCI tests are green on the branch
+All openmass feature development PRs that require Mayflower changes must pass all these checks before **squashing and merging** into develop:
+- [ ] Both the Mayflower and Openmass PRs reviewed and approved
+- [ ] **Squash and merge** the corresponding Mayflower PR into develop
+- [ ] After the Mayflower develop circleCI tasks are done, in the Openmass branch, resolve merge conflicts with the develop branch and run `composer require massgov/mayflower-artifacts:dev-develop`. 
+- [ ] Commit and push up the composer.lock changes. (mayflower-artifacts should be pointing to the latest `dev-develop` version)
+- [ ] All circleCI tests are green on the Openmass branch
 
 Because we are no longer compiling Mayflower changelogs for each Openmass release, we expect you to follow the branch naming conventions, include the ticket number in the branch names so they appear in JIRA. Please also link to the corresponding Mayflower PR in the Openmass PR description. Doing so will help others review the PRs together and find the related PRs quickly in case where a hotfix is needed.
