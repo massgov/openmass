@@ -142,7 +142,7 @@ class EntityUsageTest extends ExistingSiteBase {
       'uid' => $this->user->id(),
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
-    $node_curated_list = $this->createNode([
+    $this->createNode([
       'type' => 'curated_list',
       'title' => 'Test Curated List',
       'uid' => $this->user->id(),
