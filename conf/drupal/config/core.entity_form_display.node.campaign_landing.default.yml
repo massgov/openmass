@@ -13,14 +13,17 @@ dependencies:
     - field.field.node.campaign_landing.field_kpi_pct_video_play
     - field.field.node.campaign_landing.field_meta_description
     - field.field.node.campaign_landing.field_organizations
+    - field.field.node.campaign_landing.field_primary_parent
     - field.field.node.campaign_landing.field_promotional_kpi_choice
     - field.field.node.campaign_landing.field_reusable_label
     - field.field.node.campaign_landing.field_sections
+    - field.field.node.campaign_landing.field_short_title
     - node.type.campaign_landing
     - workflows.workflow.campaign_landing_page
   module:
     - conditional_fields
     - content_moderation
+    - entity_hierarchy
     - field_group
     - maxlength
     - metatag
@@ -31,10 +34,12 @@ third_party_settings:
     group_overview:
       children:
         - title
+        - field_short_title
         - field_meta_description
+        - field_primary_parent
         - field_organizations
-        - field_reusable_label
         - langcode
+        - field_reusable_label
         - field_english_version
       parent_name: group_campaign_landing_edit_form
       weight: 6
@@ -108,7 +113,7 @@ content:
     type: metatag_firehose
     region: content
   field_english_version:
-    weight: 5
+    weight: 63
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -155,7 +160,7 @@ content:
     third_party_settings: {  }
     region: content
   field_kpi_ctr_button_links:
-    weight: 28
+    weight: 29
     settings:
       placeholder: ''
     third_party_settings:
@@ -180,7 +185,7 @@ content:
     type: number
     region: content
   field_kpi_ctr_key_msg:
-    weight: 27
+    weight: 28
     settings:
       placeholder: ''
     third_party_settings:
@@ -205,7 +210,7 @@ content:
     type: number
     region: content
   field_kpi_pageviews:
-    weight: 29
+    weight: 30
     settings:
       placeholder: ''
     third_party_settings:
@@ -230,7 +235,7 @@ content:
     type: number
     region: content
   field_kpi_pct_video_50:
-    weight: 31
+    weight: 32
     settings:
       placeholder: ''
     third_party_settings:
@@ -255,7 +260,7 @@ content:
     type: number
     region: content
   field_kpi_pct_video_play:
-    weight: 30
+    weight: 31
     settings:
       placeholder: ''
     third_party_settings:
@@ -280,7 +285,7 @@ content:
     type: number
     region: content
   field_meta_description:
-    weight: 2
+    weight: 58
     settings:
       size: 60
       placeholder: ''
@@ -292,7 +297,7 @@ content:
     type: string_textfield
     region: content
   field_organizations:
-    weight: 3
+    weight: 60
     settings:
       match_operator: CONTAINS
       size: 60
@@ -301,6 +306,17 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_primary_parent:
+    weight: 59
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
+    region: content
   field_promotional_kpi_choice:
     weight: 26
     settings: {  }
@@ -308,7 +324,7 @@ content:
     type: options_buttons
     region: content
   field_reusable_label:
-    weight: 4
+    weight: 62
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -319,7 +335,7 @@ content:
     region: content
   field_sections:
     type: paragraphs
-    weight: 9
+    weight: 10
     settings:
       title: Section
       title_plural: Sections
@@ -336,9 +352,17 @@ content:
         duplicate: duplicate
     third_party_settings: {  }
     region: content
+  field_short_title:
+    weight: 57
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
   langcode:
     type: language_select
-    weight: 4
+    weight: 61
     region: content
     settings:
       include_locked: false
@@ -374,7 +398,7 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: 1
+    weight: 56
     region: content
     settings:
       size: 60

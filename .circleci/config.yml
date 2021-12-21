@@ -38,6 +38,12 @@ references:
       key: site-composer-v12-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
+  # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
+  yarn_install: &yarn_install
+    node/install-packages:
+      pkg-manager: yarn
+      cache-version: v1001
+
   branch_ignore: &branch_ignore
     ignore:
       - /^release\/.*$/
@@ -162,10 +168,7 @@ jobs:
       - *restore_composer_cache
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - *save_composer_cache
-      # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
-      - node/install-packages:
-          pkg-manager: yarn
-          cache-version: v1001
+      - *yarn_install
       - persist_to_workspace:
           root: ..
           paths: [code]
@@ -182,9 +185,7 @@ jobs:
           name: Update Mayflower to latest develop
           command: composer require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
       - *save_composer_cache
-      - run:
-          name: Install node modules
-          command: yarn install
+      - *yarn_install
       - persist_to_workspace:
           root: ..
           paths: [code]
@@ -324,9 +325,7 @@ jobs:
     steps:
       - attach_workspace: {at: /tmp}
       # https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages
-      - node/install-packages:
-          pkg-manager: yarn
-          cache-version: v1
+      - *yarn_install
       - run: "npm test"
 
   # Cut the release branch for weekly release
@@ -635,7 +634,7 @@ workflows:
     triggers:
       - schedule:
           # UTC time-zone
-          cron: "00 16 * * 4"
+          cron: "00 17 * * 2"
           filters:
             branches:
               only:
