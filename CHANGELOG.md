@@ -1,3 +1,17 @@
+
+
+## [0.306.0] - December 21, 2021
+
+### Added
+  - DP-23630: Hierarchy Tab:
+- Message box when parent-child relationships are not set correctly
+- Changes message for wrong relationships from warning to error
+  
+### Fixed
+  - DP-23651: Fix halfImage promo page overlap issue.
+  - DP-23654: Add tests to ensure back from preview and access links.
+  - DP-9880: Fixed image upload requirements and added custom style for display.
+  
 ## [0.305.2] - December 16, 2021
 
   - DP-23602 Fix purging of media URLs.
