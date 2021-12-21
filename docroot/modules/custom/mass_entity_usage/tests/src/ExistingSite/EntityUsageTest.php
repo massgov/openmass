@@ -2,8 +2,10 @@
 
 namespace Drupal\Tests\mass_entity_usage\ExistingSite;
 
+use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\user\Entity\User;
+use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
@@ -13,6 +15,7 @@ use weitzman\LoginTrait\LoginTrait;
 class EntityUsageTest extends ExistingSiteBase {
 
   use LoginTrait;
+  use MediaCreationTrait;
 
   private $user;
 
@@ -26,50 +29,107 @@ class EntityUsageTest extends ExistingSiteBase {
     $user->activate();
     $user->save();
     $this->user = $user;
+    $this->drupalLogin($user);
   }
 
   /**
-   * Assert that usage records are tracked properly.
+   * Counts how many usage rows an entity has on its /mass-usage page.
    */
-  public function testEntityUsageTracking() {
+  private function countUsageRows($entity) {
+    /** @var \Drupal\Core\Entity\EntityBase $entity */
+    $this->drupalGet($entity->getEntityType()->id() . '/' . $entity->id() . '/mass-usage');
+    $table = $this->getCurrentPage()->find('css', 'main table');
+    if ($table->find('css', 'td.empty.message')) {
+      return 0;
+    }
+    return count($table->findAll('css', 'tbody tr td a'));
+  }
+
+  /**
+   * Asserts how many usage rows an entity has on its /mass-usage page.
+   */
+  private function assertUsageRows($entity, $usage_expected) {
+    $usage_actual = $this->countUsageRows($entity);
+    $this->assertEquals($usage_expected, $usage_actual, 'Usage is ' . $usage_actual . ' instead of ' . $usage_expected);
+  }
+
+  /**
+   * Creates 1 media, 1 org_page and 1 curated_list referencing the org_page.
+   */
+  private function createEntities($curated_list_state) {
+    // Create a file to upload.
+    $destination = 'public://file-001.txt';
+    $file = File::create([
+      'uri' => $destination,
+    ]);
+    $file->setPermanent();
+    $file->save();
+    $src = 'modules/custom/mass_entity_usage/tests/fixtures/file-001.txt';
+
+    /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+    $file_system = \Drupal::service('file_system');
+    $file_system->copy($src, $destination, TRUE);
+
+    // Create media item.
+    $media = $this->createMedia([
+      'title' => 'Llama',
+      'bundle' => 'document',
+      'field_upload_file' => [
+        'target_id' => $file->id(),
+      ],
+      'status' => 1,
+    ]);
+
     $node_org = $this->createNode([
       'type' => 'org_page',
       'title' => 'Test Organization',
       'uid' => $this->user->id(),
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
+
     $node_curated_list = $this->createNode([
       'type' => 'curated_list',
       'title' => 'Test Curated List',
       'uid' => $this->user->id(),
-      'moderation_state' => MassModeration::UNPUBLISHED,
+      'moderation_state' => $curated_list_state,
       'field_organizations' => $node_org->id(),
+      'field_curatedlist_overview' => [
+        'value' => $media->toLink()->toString(),
+        'format' => 'basic_html',
+      ],
     ]);
 
-    // Verify an Unpublished source does not create a usage record.
-    $node_org_usage = \Drupal::service('entity_usage.usage')->listUniqueSourcesCount($node_org);
-    // The referenced_organizations computed field on org_page creates a record.
-    $this->assertEquals(1, $node_org_usage);
+    return [$media, $node_org, $node_curated_list];
+  }
 
-    // Verify a Trash source does not create a usage record.
-    $node_curated_list->set('moderation_state', MassModeration::TRASH)->save();
-    $node_org_usage = \Drupal::service('entity_usage.usage')->listUniqueSourcesCount($node_org);
-    $this->assertEquals(1, $node_org_usage);
+  /**
+   * Assert that usage records are tracked properly.
+   */
+  public function testEntityUsageTracking() {
 
-    // Verify a Draft source creates a usage record.
-    $node_curated_list->set('moderation_state', MassModeration::DRAFT)->save();
-    $node_org_usage = \Drupal::service('entity_usage.usage')->listUniqueSourcesCount($node_org);
-    $this->assertEquals(2, $node_org_usage);
+    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::UNPUBLISHED);
+    // All created entities should be unused.
+    $this->assertUsageRows($media, 0);
+    $this->assertUsageRows($node_curated_list, 0);
+    $this->assertUsageRows($node_org, 0);
 
-    // Verify a Prepublished Draft source creates a usage record.
-    $node_curated_list->set('moderation_state', MassModeration::PREPUBLISHED_DRAFT)->save();
-    $node_org_usage = \Drupal::service('entity_usage.usage')->listUniqueSourcesCount($node_org);
-    $this->assertEquals(2, $node_org_usage);
+    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::TRASH);
+    // All created entities should be unused.
+    $this->assertUsageRows($media, 0);
+    $this->assertUsageRows($node_curated_list, 0);
+    $this->assertUsageRows($node_org, 0);
 
-    // Verify a Published source creates a usage record.
-    $node_curated_list->set('moderation_state', MassModeration::PUBLISHED)->save();
-    $node_org_usage = \Drupal::service('entity_usage.usage')->listUniqueSourcesCount($node_org);
-    $this->assertEquals(2, $node_org_usage);
+    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PREPUBLISHED_DRAFT);
+    // Media and Org should have 1 reference.
+    $this->assertUsageRows($media, 1);
+    $this->assertUsageRows($node_curated_list, 0);
+    $this->assertUsageRows($node_org, 1);
+
+    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PUBLISHED);
+    // Media and Org should have 1 reference.
+    $this->assertUsageRows($media, 1);
+    $this->assertUsageRows($node_curated_list, 0);
+    $this->assertUsageRows($node_org, 1);
   }
 
   /**
