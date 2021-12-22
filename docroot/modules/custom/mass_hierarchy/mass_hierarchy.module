@@ -103,6 +103,24 @@ function mass_hierarchy_views_pre_view($view) {
 }
 
 /**
+ * Deletes revision that are not current on the nested set table.
+ */
+function mass_hierarchy_delete_other_revisions_from_nested_set_table(Node $node) {
+  if ($node->isNew()) {
+    return;
+  }
+
+  $nid = $node->id();
+  $vid = $node->getRevisionId();
+
+  // Eliminates revisions that are not current on the nested set table.
+  $query = Drupal::database()->delete('nested_set_field_primary_parent_node');
+  $query->condition('id', $nid);
+  $query->condition('revision_id', $vid, '<>');
+  $query->execute();
+}
+
+/**
  * Implements hook_views_pre_render().
  */
 function mass_hierarchy_views_post_render(ViewExecutable $view) {
