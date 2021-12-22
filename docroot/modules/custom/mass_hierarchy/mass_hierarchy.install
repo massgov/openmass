@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Installation functions for Mass Hierarchy.
+ */
+
+use Drupal\node\Entity\Node;
+
+/**
+ * Implementations of hook_update_N().
+ */
+
+/**
+ * Remove records on nested set table from non-current revisions.
+ */
+function mass_hierarchy_update_8105() {
+
+  $res = \Drupal::database()->query('
+    select id, count(*)
+    from nested_set_field_primary_parent_node
+    group by id
+    having count(*) > 1
+  ')->fetchAll();
+
+  foreach ($res as $value) {
+    $nid = $value->id;
+    $node = Node::load($nid);
+    if (!$node) {
+      continue;
+    }
+    mass_hierarchy_delete_other_revisions_from_nested_set_table($node);
+  }
+}
