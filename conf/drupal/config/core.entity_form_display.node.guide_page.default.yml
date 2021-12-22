@@ -17,7 +17,9 @@ dependencies:
     - field.field.node.guide_page.field_image_credit
     - field.field.node.guide_page.field_intended_audience
     - field.field.node.guide_page.field_organizations
+    - field.field.node.guide_page.field_primary_parent
     - field.field.node.guide_page.field_reusable_label
+    - field.field.node.guide_page.field_short_title
     - field.field.node.guide_page.field_state_organization_tax
     - image.style.large
     - node.type.guide_page
@@ -25,6 +27,7 @@ dependencies:
   module:
     - conditional_fields
     - content_moderation
+    - entity_hierarchy
     - field_group
     - focal_point
     - maxlength
@@ -50,9 +53,11 @@ third_party_settings:
     group_overview:
       children:
         - title
+        - field_short_title
         - field_guide_page_lede
         - field_guide_page_bg_wide
         - field_image_credit
+        - field_primary_parent
         - field_organizations
         - field_data_flag
         - field_details_data_type
@@ -114,7 +119,7 @@ bundle: guide_page
 mode: default
 content:
   field_collections:
-    weight: 7
+    weight: 11
     settings:
       start_minimized: true
       select_parents: true
@@ -125,13 +130,13 @@ content:
     type: term_reference_tree
     region: content
   field_data_flag:
-    weight: 0
+    weight: 4
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_data_format:
-    weight: 3
+    weight: 7
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -155,7 +160,7 @@ content:
     type: options_buttons
     region: content
   field_data_resource_type:
-    weight: 2
+    weight: 6
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -179,7 +184,7 @@ content:
     type: options_buttons
     region: content
   field_data_topic:
-    weight: 4
+    weight: 8
     settings:
       start_minimized: true
       cascading_selection: 0
@@ -208,7 +213,7 @@ content:
     type: term_reference_tree
     region: content
   field_details_data_type:
-    weight: 1
+    weight: 5
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -232,7 +237,7 @@ content:
     type: options_buttons
     region: content
   field_guide_page_bg_wide:
-    weight: -3
+    weight: 0
     settings:
       preview_image_style: large
       progress_indicator: throbber
@@ -242,7 +247,7 @@ content:
     type: image_focal_point
     region: content
   field_guide_page_lede:
-    weight: -4
+    weight: -1
     settings:
       rows: 5
       placeholder: ''
@@ -279,7 +284,7 @@ content:
     third_party_settings: {  }
     region: content
   field_image_credit:
-    weight: -2
+    weight: 1
     settings:
       size: 60
       placeholder: ''
@@ -287,13 +292,13 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 5
+    weight: 9
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: -1
+    weight: 3
     settings:
       match_operator: CONTAINS
       size: 60
@@ -302,8 +307,19 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_primary_parent:
+    weight: 2
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
+    region: content
   field_reusable_label:
-    weight: 6
+    weight: 10
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -311,6 +327,14 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: entity_reference_autocomplete
+    region: content
+  field_short_title:
+    weight: -2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
     region: content
   field_state_organization_tax:
     weight: 6
@@ -347,7 +371,7 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: -5
+    weight: -3
     settings:
       size: 60
       placeholder: ''

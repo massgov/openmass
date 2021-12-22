@@ -46,7 +46,8 @@ class MediaPrivateTest extends ExistingSiteBase {
   /**
    * Media files are moved to private on media unpublish.
    *
-   * The 'file can't de deleted' notices from this test come from mass_utility_file_move().
+   * The 'file can't de deleted' notices from this test come
+   * from mass_utility_file_move().
    */
   public function testMovesFileToPrivateOnUnpublish() {
     // Create a "Llama" media item.
@@ -71,7 +72,8 @@ class MediaPrivateTest extends ExistingSiteBase {
   /**
    * Media files are moved to public on media publish.
    *
-   * The 'file can't de deleted' notices from this test come from mass_utility_file_move().
+   * The 'file can't de deleted' notices from this test come
+   * from mass_utility_file_move().
    */
   public function testMovesFileToPublicOnPublish() {
     // Create a "Llama" media item.

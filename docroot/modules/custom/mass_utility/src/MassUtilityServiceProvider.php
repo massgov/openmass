@@ -20,6 +20,7 @@ class MassUtilityServiceProvider extends ServiceProviderBase {
       $processors[] = 'backtrace_removal';
       $container->setParameter('monolog.processors', $processors);
     }
+
   }
 
 }
