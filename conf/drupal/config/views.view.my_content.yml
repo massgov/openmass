@@ -1543,15 +1543,51 @@ display:
           id: flag_relationship
           table: node_field_data
           field: flag_relationship
-          relationship: vid
+          relationship: nid
           group_type: group
           admin_label: Flags
           required: true
           flag: watch_content
-          user_scope: current
+          user_scope: any
           entity_type: node
           plugin_id: flag_relationship
-      arguments: {  }
+      arguments:
+        uid:
+          id: uid
+          table: flagging
+          field: uid
+          relationship: flag_relationship
+          group_type: group
+          admin_label: ''
+          default_action: default
+          exception:
+            value: all
+            title_enable: false
+            title: All
+          title_enable: false
+          title: ''
+          default_argument_type: current_user
+          default_argument_options: {  }
+          default_argument_skip_url: false
+          summary_options:
+            base_path: ''
+            count: true
+            items_per_page: 25
+            override: false
+          summary:
+            sort_order: asc
+            number_of_records: 0
+            format: default_summary
+          specify_validation: false
+          validate:
+            type: none
+            fail: 'not found'
+          validate_options: {  }
+          break_phrase: false
+          not: false
+          entity_type: flagging
+          entity_field: uid
+          plugin_id: numeric
       display_extenders: {  }
       filter_groups:
         operator: AND
@@ -1565,6 +1601,7 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:
@@ -2091,7 +2128,9 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
+        - url
         - url.query_args
+        - user
         - 'user.node_grants:view'
         - user.permissions
       tags:
