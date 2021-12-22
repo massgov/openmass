@@ -1,0 +1,41 @@
+uuid: bdcc0976-6f22-4f11-b42b-1b0839f38d7b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_primary_parent
+    - node.type.org_page
+    - node.type.service_page
+    - node.type.topic_page
+  module:
+    - entity_hierarchy
+    - require_on_publish
+third_party_settings:
+  require_on_publish:
+    require_on_publish: true
+id: node.service_page.field_primary_parent
+field_name: field_primary_parent
+entity_type: node
+bundle: service_page
+label: 'Parent page'
+description: 'Choose the parent for the current page. Parents are higher-level pages that link to child pages that contain more detailed content. Normally, you will want to make sure that you have a link on the parent to this page.<br> The breadcrumb that this field will generate is shown below. If you change the parent, save this page to see the updated breadcrumb.  The breadcrumb will be shown on the published page in the near future. '
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+      service_page: service_page
+      topic_page: topic_page
+    sort:
+      field: title
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: service_page
+  weight_min: -50
+  weight_max: 50
+  weight_label: Weight
+field_type: entity_reference_hierarchy

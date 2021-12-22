@@ -42,9 +42,6 @@ function mass_alerts_get_scope(NodeInterface $node) {
 function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = 'mass_alerts_validate_alert_placement';
   $form['#validate'][] = 'mass_alerts_validate_alert_content';
-
-  // @TODO Remove the code, since we are using new Sitewide Alerts content type.
-  unset($form['field_alert_display']['widget']['#options']['site_wide']);
 }
 
 /**
@@ -53,9 +50,6 @@ function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form
 function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = 'mass_alerts_validate_alert_placement';
   $form['#validate'][] = 'mass_alerts_validate_alert_content';
-
-  // @TODO Remove the code, since we are using new Sitewide Alerts content type.
-  unset($form['field_alert_display']['widget']['#options']['site_wide']);
 }
 
 /**
