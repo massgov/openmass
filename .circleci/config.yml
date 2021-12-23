@@ -38,6 +38,12 @@ references:
       key: site-composer-v12-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
+  # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
+  yarn_install: &yarn_install
+    node/install-packages:
+      pkg-manager: yarn
+      cache-version: v1001
+
   branch_ignore: &branch_ignore
     ignore:
       - /^release\/.*$/
@@ -162,10 +168,24 @@ jobs:
       - *restore_composer_cache
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - *save_composer_cache
-      # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
-      - node/install-packages:
-          pkg-manager: yarn
-          cache-version: v1001
+      - *yarn_install
+      - persist_to_workspace:
+          root: ..
+          paths: [code]
+
+  build_with_latest_mayflower:
+    working_directory: ~/project/code
+    docker:
+      - image: cimg/php:7.4-node
+    steps:
+      - checkout
+      - *restore_composer_cache
+      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
+      - run:
+          name: Update Mayflower to latest develop
+          command: composer require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
+      - *save_composer_cache
+      - *yarn_install
       - persist_to_workspace:
           root: ..
           paths: [code]
@@ -305,9 +325,7 @@ jobs:
     steps:
       - attach_workspace: {at: /tmp}
       # https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages
-      - node/install-packages:
-          pkg-manager: yarn
-          cache-version: v1
+      - *yarn_install
       - run: "npm test"
 
   # Cut the release branch for weekly release
@@ -465,22 +483,26 @@ jobs:
         default: --sanitize
       instance:
         type: string
+      resource_class:
+        type: string
+        default: large
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
-    docker:
-      # Use Python since that's needed for docker tools anyway.
-      - image: circleci/python:2.7.14
+    resource_class: << parameters.resource_class >>
+    machine:
+      image: ubuntu-2004:202101-01
     steps:
       - attach_workspace: {at: /home/circleci}
-      - setup_remote_docker
-      - fetch_drush_aliases
+      - fetch_drush_aliases:
+          destination: /home/circleci/code/drush/sites/self.site.yml
       - run: docker-compose up -d
-      - run: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www
+      - run: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www/html
       # @todo Actually perform health check.
       - run:
           name: Wait for mysql
-          command: sleep 60
+          command: sleep 5
+      - run: docker-compose exec drupal sudo apk add --no-cache --upgrade grep
       - run:
-          command: docker-compose exec drupal drush deploy
+          command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
           no_output_timeout: 60m
       - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
       - run:
@@ -601,72 +623,6 @@ workflows:
             branches:
               <<: *branch_ignore
 
-  # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_develop_branch.
-  # This only happens on Thursday night 11 p.m. ETS to allow us to review Mayflower in Drupal on Mondays.
-  mayflower_dev_branch:
-    jobs:
-      - build
-      - mayflower_develop_branch:
-          requires: [build]
-    triggers:
-      - schedule:
-          cron: "00 04 * * 5"
-          filters:
-            branches:
-              only:
-                - develop
-
-  # Automation for deploy to CD environment and create a branch with Mayflower and Mass develop branch by using mayflower_dev branch only.
-  deploy_mayflower_cd:
-    jobs:
-      - build:
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
-      - push_acquia:
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
-      - test:
-          name: test-phpunit
-          command: phpunit
-          requires: [build]
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
-      - test:
-          name: test-behat
-          command: behat
-          requires: [build]
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
-      - deploy:
-          name: deploy-cd-refresh-db
-          requires:
-            - build
-            - push_acquia
-          refresh-db: "--refresh-db"
-          target: cd
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
-      - crawl:
-          name: crawl-cd-900
-          requires: [deploy-cd-refresh-db]
-          samples: 900
-          target: cd
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
-      - backstop:
-          name: backstop-cd
-          requires: [deploy-cd-refresh-db]
-          target: cd
-          reference: prod
-          filters:
-            branches:
-              only: /^mayflower-dev-.*/
 
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
@@ -1081,9 +1037,21 @@ workflows:
           requires: [build]
           sanitizeOption: --super-sanitize
           instance: massgov/mysql-sanitized:super
+      - populate:
+          name: massgov.populate.arm --sanitize
+          requires: [ build ]
+          sanitizeOption: --sanitize
+          instance: massgov/mysql-sanitized:latest.arm
+          resource_class: arm.large
+      - populate:
+          name: massgov.populate.arm --super-sanitize
+          requires: [ build ]
+          sanitizeOption: --super-sanitize
+          instance: massgov/mysql-sanitized:super.arm
+          resource_class: arm.large
     triggers:
       - schedule:
-          cron: "55 18 * * *"
+          cron: "20 00 * * *"
           filters:
             branches:
               only:
@@ -1130,13 +1098,13 @@ workflows:
           auto-approve: true
 
 
-# Daily deploy to the CD environment, runs at 11:00PM EST. Except for Thursday night the deploy_mayflower_cd uses the CD environment instead.
+# Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
   deploy_cd:
     jobs:
-      - build
+      - build_with_latest_mayflower
       - deploy:
           name: deploy-cd-refresh-db
-          requires: [build]
+          requires: [build_with_latest_mayflower]
           target: cd
           refresh-db: "--refresh-db"
       - crawl:
@@ -1150,7 +1118,7 @@ workflows:
           reference: prod
     triggers:
       - schedule:
-          cron: "00 04 * * 0,1,2,3,4,6"
+          cron: "00 04 * * *"
           filters:
             branches:
               only:

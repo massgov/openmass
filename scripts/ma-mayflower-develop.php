@@ -1,7 +1,9 @@
 <?php
 
 /**
- * Use the Mayflower develop branch as way to test beforehand the integration with Mass repository.
+ * Archived:
+ * This script is no longer in use as openmass develop branch always point to the latest Mayflower in our new workflow.
+ * This was used for cutting a branch in openmass to test the latest of Mayflower develop branch beforehand the integration with Mass repository.
  */
 
 

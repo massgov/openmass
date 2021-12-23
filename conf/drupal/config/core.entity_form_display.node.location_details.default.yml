@@ -9,12 +9,14 @@ dependencies:
     - field.field.node.location_details.field_location_details_metatags
     - field.field.node.location_details.field_location_details_sections
     - field.field.node.location_details.field_organizations
+    - field.field.node.location_details.field_primary_parent
     - field.field.node.location_details.field_reusable_label
     - field.field.node.location_details.field_state_organization_tax
     - node.type.location_details
     - workflows.workflow.editorial
   module:
     - content_moderation
+    - entity_hierarchy
     - field_group
     - link
     - mass_validation
@@ -41,6 +43,7 @@ third_party_settings:
       children:
         - title
         - field_location_details_lede
+        - field_primary_parent
         - field_organizations
         - field_intended_audience
         - field_reusable_label
@@ -89,7 +92,7 @@ bundle: location_details
 mode: default
 content:
   field_intended_audience:
-    weight: -2
+    weight: -1
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -122,7 +125,7 @@ content:
     type: metatag_firehose
     region: content
   field_location_details_sections:
-    weight: 31
+    weight: 38
     settings:
       title: Section
       title_plural: Sections
@@ -134,7 +137,7 @@ content:
     type: entity_reference_paragraphs
     region: content
   field_organizations:
-    weight: -3
+    weight: -2
     settings:
       match_operator: CONTAINS
       size: 60
@@ -143,8 +146,19 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_primary_parent:
+    weight: -3
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
+    region: content
   field_reusable_label:
-    weight: -1
+    weight: 0
     settings:
       match_operator: CONTAINS
       match_limit: 10
