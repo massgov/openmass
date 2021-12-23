@@ -4927,6 +4927,11 @@ function mass_theme_preprocess_field(&$variables, $hook) {
 
   // The first element of the featured items mosaic needs a slightly different template.
   if ($element['#field_name'] == 'field_featured_item_mosaic_items') {
+    // First image with an image style.
+    $highlight = $variables['items'][0]['content']['#paragraph']->field_featured_item_highlight;
+    $style = ImageStyle::load('featured_item_highlight');
+    $new_image = $style->buildUrl($highlight->entity->getFileUri());
+    $highlight->entity->setFileUri($new_image);
     $variables['items'][0]['content']['#view_mode'] = 'tall';
   }
 

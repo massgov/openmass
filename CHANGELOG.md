@@ -1,4 +1,6 @@
+## [0.305.2] - December 16, 2021
 
+  - DP-23602 Fix purging of media URLs.
 
 ## [0.305.0] - December 14, 2021
 
@@ -35,7 +37,7 @@
   - Move of a published page to have an unpublished parent.
   - Move of a page to have a parent of a type that is not allowed for the child type.
   - DP-23572: Added an Updated date field to the Event content type and migrated the node changed date into the field.
-  
+
 ### Changed
   - DP-23486: Adding views reports to the author report area to support the parent field release.
   - DP-23513: On child hierarchy form, restores drag and drop and children button, check for allowed bundles when reordering the hierarchy, changes the parents draft version of a node when the draft is the latest version, multiple fixes to the Drag and Drop script.
@@ -44,7 +46,7 @@
   - DP-23540: Get the reports menu page to be easier to maintain and more organized.
   - DP-23624: Added breadcrumb report. Minor changes to other parent reports.
   - DP-23629: Org page now allowed as parent for service page. Header change for parent report.
-  
+
 ### Fixed
   - DP-23536: - Properly setting a state value for the Entity Hierarchy in the auto assignment queue processing.
 - When using the "Move children" feature, set the revision user with the current user.
@@ -74,22 +76,22 @@
   - DP-23414: Fix BrandBanner accessiblity - make the whole banner clickable on mobile and add aria controls.
   - DP-23487: Stop accumulating Tugboat binaries in local dev.
   - DP-23552: Fix extra spacing on promotional pages.
-  
+
 ### Removed
   - DP-23406: Drop unused DB tables.
-  
+
 ### Fixed
   - DP-23444: Fixed issue with Organization Locations paragraphs causing Behat errors.
   - DP-23447: Fixed duplicate location listing item and location paragraph input fields styling.
   - DP-23573: Curated List sorts not sorting by created date when created sort is selected.
   - DP-23575: Fixed canonical URLs for translated content.
-  
+
 ### Security
   - DP-23501: Drupal core update.
-  
+
 ### Added
   - DP-23517: Add Akamai module
-  
+
 ## [0.303.1] - November 17, 2021
 
 ### Fixed
