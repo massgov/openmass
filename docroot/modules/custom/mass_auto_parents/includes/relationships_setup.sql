@@ -985,7 +985,7 @@ update relationships set parent_nid = 48896	where child_nid = 49886;
 
 # ------------------------------------------------------------
 # -- Many services were left without parents after the above. We took the most trafficked of these and assigned them parents_manually.
-INSERT INTO `relationships` (`parent_nid`, `child_nid`, `source_field`, `parent_type`, `child_type`) VALUES
+INSERT IGNORE INTO `relationships` (`parent_nid`, `child_nid`, `source_field`, `parent_type`, `child_type`) VALUES
   (5966,489746,'manual_service_parent','org_page','service_page'),
   (16586,11856,'manual_service_parent','topic_page','service_page'),
   (17496,589476,'manual_service_parent','topic_page','service_page'),

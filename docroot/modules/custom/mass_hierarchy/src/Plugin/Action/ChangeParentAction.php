@@ -161,11 +161,13 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
       '#access' => !empty($target_bundles),
       '#type' => 'entity_autocomplete',
       '#target_type' => 'node',
-      '#selection_handler' => 'default:node',
+      '#selection_handler' => 'views',
       '#selection_settings' => [
-        'target_bundles' => $target_bundles,
-        'match_operator' => 'CONTAINS',
-        'match_limit' => 10,
+        'view' => [
+          'view_name' => 'parent_selection_for_change_parent_action',
+          'display_name' => 'entity_reference_1',
+          'arguments' => [implode('+', $target_bundles)],
+        ],
       ],
       '#title' => $this->t('New parent'),
       '#required' => TRUE,

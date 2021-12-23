@@ -40,8 +40,8 @@ web_environment:
 hooks:
   post-start:
     # Tugboat CLI
-    - exec: wget https://dashboard.tugboat.qa/cli/linux/tugboat.tar.gz
-    - exec: tar -zxf tugboat.tar.gz -C /usr/local/bin/
+    - exec: curl https://dashboard.tugboat.qa/cli/linux/tugboat.tar.gz > tugboat.tar.gz
+    - exec: tar -zxf tugboat.tar.gz -C /usr/local/bin/ && rm -f tugboat.tar.gz
     # CicleCI CLI
     - exec: curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | bash
     # gh install is too slow to be enabled by default as we dont need it. Uncomment or copy to personal config if needed.
