@@ -8,6 +8,8 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\mass_content_moderation\MassModeration;
 
 /**
+ * Restore Action to move items from Trash to Unpublished state.
+ *
  * @Action(
  *   id = "mass_content_moderation_restore_action",
  *   label = @Translation("Restore item from trash"),
@@ -35,7 +37,7 @@ class RestoreAction extends ViewsBulkOperationsActionBase {
     $entity->moderation_state = $next_moderation_state;
     $entity->setNewRevision(TRUE);
     $entity->setRevisionUserId(\Drupal::currentUser()->id());
-    $entity->setRevisionLogMessage('Unpublished with "' . __CLASS__  . '" action.');
+    $entity->setRevisionLogMessage('Unpublished with "Restore item from trash" action.');
     $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
     $entity->save();
     return $this->t('Restored: ') . ' ' . $entity->label() . ' - ' . $entity->id();
@@ -55,6 +57,5 @@ class RestoreAction extends ViewsBulkOperationsActionBase {
     // access methods and properties.
     return TRUE;
   }
-
 
 }
