@@ -9,6 +9,7 @@ use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Url;
+use Drupal\node\Entity\Node;
 
 /**
  * Provides a mayflower Block for @organisms/by-template/ajax-pattern.
@@ -88,6 +89,7 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
     $config = $this->getConfiguration();
     $path = FALSE;
     $node = $this->routeMatch->getParameter('node');
+    $node = \is_object($node) ? $node : Node::load($node);
     $node_type = $node ? $node->bundle() : '';
 
     if ($config['alerts_block_type'] == 'sitewide') {
