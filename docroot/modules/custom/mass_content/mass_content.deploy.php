@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 
@@ -633,5 +634,64 @@ function mass_content_deploy_org_page_section_migration(&$sandbox) {
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
     return t('All Organization node data has migrated to Organization Sections.');
+  }
+}
+
+/**
+ * Set default value for the updated date field on events.
+ */
+function mass_content_deploy_event_updated_date(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  $query = \Drupal::entityQuery('node');
+  $query->condition('type', 'event');
+  // Only update public meeting events.
+  $query->condition('field_event_type_list', 'public_meeting');
+
+  if (empty($sandbox)) {
+    // Get a list of all nodes of type event.
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  $nids = $query->condition('nid', $sandbox['current'], '>')
+    ->sort('nid')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $memory_cache = \Drupal::service('entity.memory_cache');
+
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+
+  $nodes = $node_storage->loadMultiple($nids);
+
+  foreach ($nodes as $node) {
+    $sandbox['current'] = $node->id();
+    // Set the updated date for events.
+    $timestamp = $node->getChangedTime();
+    // Convert the timestamp to the proper date format including timezone.
+    $date_time = DrupalDatetime::createFromTimestamp((int) $timestamp);
+    $date_time->setTimezone(new \Datetimezone('EST'));
+    $updated_date = \Drupal::service('date.formatter')->format($date_time->getTimestamp(), 'custom', 'Y-m-d\TH:i:s');
+    // Set the value of the new field.
+    $node->set('field_updated_date', $updated_date);
+    // Save the node.
+    // Save without updating the last modified date. This requires a core patch
+    // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
+    $node->setSyncing(TRUE);
+    $node->save();
+
+    $sandbox['progress']++;
+  }
+
+  $memory_cache->deleteAll();
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('All Event "Updated date" fields have been set.');
   }
 }

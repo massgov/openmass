@@ -19,6 +19,7 @@ dependencies:
     - field.field.node.person.field_person_role_title
     - field.field.node.person.field_person_type
     - field.field.node.person.field_plain_description
+    - field.field.node.person.field_primary_parent
     - field.field.node.person.field_publish_bio_page
     - field.field.node.person.field_ref_fax
     - field.field.node.person.field_ref_links
@@ -34,6 +35,7 @@ dependencies:
   module:
     - conditional_fields
     - content_moderation
+    - entity_hierarchy
     - field_group
     - image
     - link
@@ -86,6 +88,7 @@ third_party_settings:
         - field_person_ref_org
         - field_publish_bio_page
         - field_short_bio
+        - field_primary_parent
         - field_organizations
         - field_reusable_label
       parent_name: group_node_edit_form
@@ -201,7 +204,7 @@ content:
     type: metatag_firehose
     region: content
   field_organizations:
-    weight: 18
+    weight: 19
     settings:
       match_operator: CONTAINS
       size: 60
@@ -291,6 +294,17 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: string_textfield
+    region: content
+  field_primary_parent:
+    weight: 18
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
     region: content
   field_publish_bio_page:
     weight: 16
@@ -420,7 +434,7 @@ content:
           bundle: person
     region: content
   field_reusable_label:
-    weight: 19
+    weight: 20
     settings:
       match_operator: CONTAINS
       size: 60

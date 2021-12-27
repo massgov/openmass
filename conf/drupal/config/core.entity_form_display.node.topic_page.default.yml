@@ -6,7 +6,9 @@ dependencies:
     - field.field.node.topic_page.field_image_credit
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
+    - field.field.node.topic_page.field_primary_parent
     - field.field.node.topic_page.field_reusable_label
+    - field.field.node.topic_page.field_short_title
     - field.field.node.topic_page.field_state_organization_tax
     - field.field.node.topic_page.field_topic_bg_narrow
     - field.field.node.topic_page.field_topic_bg_wide
@@ -25,6 +27,7 @@ dependencies:
   module:
     - conditional_fields
     - content_moderation
+    - entity_hierarchy
     - field_group
     - image
     - maxlength
@@ -49,6 +52,7 @@ third_party_settings:
     group_overview:
       children:
         - title
+        - field_short_title
         - field_topic_type
         - field_topic_lede
         - field_topic_ref_icon
@@ -57,6 +61,7 @@ third_party_settings:
         - field_topic_section_bg_wide
         - field_topic_section_bg_narrow
         - field_image_credit
+        - field_primary_parent
         - field_organizations
         - field_intended_audience
         - field_reusable_label
@@ -106,7 +111,7 @@ bundle: topic_page
 mode: default
 content:
   field_image_credit:
-    weight: 3
+    weight: 65
     settings:
       size: 60
       placeholder: ''
@@ -114,13 +119,13 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 5
+    weight: 68
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 4
+    weight: 67
     settings:
       match_operator: CONTAINS
       size: 60
@@ -129,8 +134,19 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_primary_parent:
+    weight: 66
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
+    region: content
   field_reusable_label:
-    weight: 6
+    weight: 69
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -138,6 +154,14 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: entity_reference_autocomplete
+    region: content
+  field_short_title:
+    weight: 57
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
     region: content
   field_state_organization_tax:
     weight: 6
@@ -150,7 +174,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_topic_bg_narrow:
-    weight: 0
+    weight: 62
     settings:
       preview_image_style: thumbnail
       progress_indicator: throbber
@@ -176,7 +200,7 @@ content:
     type: image_image
     region: content
   field_topic_bg_wide:
-    weight: -1
+    weight: 61
     settings:
       preview_image_style: thumbnail
       progress_indicator: throbber
@@ -203,7 +227,7 @@ content:
     region: content
   field_topic_content_cards:
     type: entity_reference_paragraphs
-    weight: 38
+    weight: 39
     settings:
       title: 'Content card group'
       title_plural: 'Content card groups'
@@ -221,7 +245,7 @@ content:
     type: boolean_checkbox
     region: content
   field_topic_lede:
-    weight: -3
+    weight: 59
     settings:
       size: 60
       placeholder: ''
@@ -237,7 +261,7 @@ content:
     type: metatag_firehose
     region: content
   field_topic_ref_icon:
-    weight: -2
+    weight: 60
     settings: {  }
     third_party_settings: {  }
     type: options_select
@@ -253,7 +277,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_topic_section_bg_narrow:
-    weight: 2
+    weight: 64
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
@@ -279,7 +303,7 @@ content:
     type: image_image
     region: content
   field_topic_section_bg_wide:
-    weight: 1
+    weight: 63
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
@@ -305,7 +329,7 @@ content:
     type: image_image
     region: content
   field_topic_type:
-    weight: -4
+    weight: 58
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -335,7 +359,7 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: -5
+    weight: 56
     settings:
       size: 60
       placeholder: ''

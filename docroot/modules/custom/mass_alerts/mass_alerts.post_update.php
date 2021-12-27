@@ -111,3 +111,59 @@ function mass_alerts_post_update_paragraphs_target_pages(&$sandbox) {
   $entities = $storage->loadMultiple($result);
   $storage->delete($entities);
 }
+
+/**
+ * Implements hook_post_update_sitewide_alerts_cleanup().
+ *
+ * Clean-up Alert nodes from site_wide alert option.
+ */
+function mass_alerts_post_update_sitewide_alerts_cleanup(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  if (!isset($sandbox['total'])) {
+    $nids = \Drupal::entityQuery('node')
+      ->condition('type', 'alert')
+      ->condition('field_alert_display', 'site_wide')
+      ->sort('nid')
+      ->accessCheck(FALSE)
+      ->execute();
+    $sandbox['total'] = count($nids);
+    $sandbox['current'] = 0;
+
+    if (empty($sandbox['total'])) {
+      $sandbox['#finished'] = 1;
+      return;
+    }
+  }
+
+  $batch_size = 5;
+
+  $nids = \Drupal::entityQuery('node')
+    ->condition('type', 'alert')
+    ->condition('field_alert_display', 'site_wide')
+    ->range($sandbox['current'], $batch_size)
+    ->sort('nid')
+    ->accessCheck(FALSE)
+    ->execute();
+
+  if (empty($nids)) {
+    $sandbox['#finished'] = 1;
+    return;
+  }
+
+  $nodes = Node::loadMultiple($nids);
+
+  // Loop through nodes in this batch.
+  foreach ($nodes as $node) {
+
+    $node->set('field_alert_display', NULL);
+    $node->save();
+    $sandbox['current']++;
+  }
+
+  $sandbox['#finished'] = $sandbox['current'] >= $sandbox['total'] ? 1 : ($sandbox['current'] / $sandbox['total']);
+
+  if ($sandbox['#finished'] >= 1) {
+    return t('Clean-up Alert @nodes.', ["@nodes" => $sandbox['total']]);
+  }
+}

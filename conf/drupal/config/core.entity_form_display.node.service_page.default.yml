@@ -25,6 +25,7 @@ dependencies:
     - field.field.node.service_page.field_location_button_short_desc
     - field.field.node.service_page.field_log_in_links
     - field.field.node.service_page.field_organizations
+    - field.field.node.service_page.field_primary_parent
     - field.field.node.service_page.field_ref_contact_info
     - field.field.node.service_page.field_related_organization_type
     - field.field.node.service_page.field_reusable_label
@@ -46,6 +47,7 @@ dependencies:
     - field.field.node.service_page.field_service_ref_services_6
     - field.field.node.service_page.field_service_video
     - field.field.node.service_page.field_services_social_links
+    - field.field.node.service_page.field_short_title
     - field.field.node.service_page.field_state_organization_tax
     - field.field.node.service_page.field_template
     - image.style.thumbnail
@@ -55,6 +57,7 @@ dependencies:
     - conditional_fields
     - content_moderation
     - entity_browser_entity_form
+    - entity_hierarchy
     - field_group
     - image
     - inline_entity_form
@@ -85,11 +88,13 @@ third_party_settings:
     group_banner:
       children:
         - title
+        - field_short_title
         - field_service_lede
         - field_template
         - field_service_bg_wide
         - field_service_bg_narrow
         - field_image_credit
+        - field_primary_parent
         - field_organizations
         - field_data_flag
         - field_list_data_type
@@ -212,7 +217,7 @@ third_party_settings:
         - field_service_links
         - field_service_file
       parent_name: group_additional_info
-      weight: 50
+      weight: 67
       format_type: fieldset
       format_settings:
         description: 'Optional. If there are additional resources that contain helpful information, add them here. A maximum of 6 links and downloads (combined) will appear on the service page. Work is underway to allow all Additional Resources to appear on a ''more'' page'
@@ -249,7 +254,7 @@ bundle: service_page
 mode: default
 content:
   field_collections:
-    weight: 9
+    weight: 46
     settings:
       start_minimized: true
       select_parents: true
@@ -260,13 +265,13 @@ content:
     type: term_reference_tree
     region: content
   field_data_flag:
-    weight: 2
+    weight: 78
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_data_format:
-    weight: 5
+    weight: 81
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -290,7 +295,7 @@ content:
     type: options_buttons
     region: content
   field_data_resource_type:
-    weight: 4
+    weight: 80
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -314,7 +319,7 @@ content:
     type: options_buttons
     region: content
   field_data_topic:
-    weight: 6
+    weight: 82
     settings:
       start_minimized: true
       select_parents: true
@@ -343,13 +348,13 @@ content:
     type: term_reference_tree
     region: content
   field_event_quantity:
-    weight: 48
+    weight: 65
     settings: {  }
     third_party_settings: {  }
     type: options_select
     region: content
   field_image_credit:
-    weight: 0
+    weight: 75
     settings:
       size: 60
       placeholder: ''
@@ -357,7 +362,7 @@ content:
     type: string_textfield
     region: content
   field_intended_audience:
-    weight: 7
+    weight: 83
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -593,7 +598,7 @@ content:
           bundle: service_page
     region: content
   field_list_data_type:
-    weight: 3
+    weight: 79
     settings: {  }
     third_party_settings:
       conditional_fields:
@@ -648,7 +653,7 @@ content:
     type: string_textfield
     region: content
   field_log_in_links:
-    weight: 41
+    weight: 42
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -656,7 +661,7 @@ content:
     type: link_default
     region: content
   field_organizations:
-    weight: 1
+    weight: 77
     settings:
       match_operator: CONTAINS
       size: 60
@@ -665,8 +670,19 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_primary_parent:
+    weight: 76
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
+    type: entity_reference_hierarchy_autocomplete
+    region: content
   field_ref_contact_info:
-    weight: 39
+    weight: 40
     settings:
       match_operator: CONTAINS
       size: 60
@@ -683,7 +699,7 @@ content:
     type: boolean_checkbox
     region: content
   field_reusable_label:
-    weight: 8
+    weight: 84
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -693,7 +709,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_service_bg_narrow:
-    weight: -1
+    weight: 74
     settings:
       preview_image_style: thumbnail
       progress_indicator: throbber
@@ -701,7 +717,7 @@ content:
     type: image_image
     region: content
   field_service_bg_wide:
-    weight: -2
+    weight: 73
     settings:
       preview_image_style: thumbnail
       progress_indicator: throbber
@@ -717,7 +733,7 @@ content:
     type: string_textarea
     region: content
   field_service_eligibility_info:
-    weight: 38
+    weight: 39
     settings:
       match_operator: CONTAINS
       size: 60
@@ -816,7 +832,7 @@ content:
     type: options_buttons
     region: content
   field_service_lede:
-    weight: -4
+    weight: 71
     settings:
       size: 60
       placeholder: ''
@@ -857,7 +873,7 @@ content:
     type: metatag_firehose
     region: content
   field_service_offered_by:
-    weight: 40
+    weight: 41
     settings:
       match_operator: CONTAINS
       size: 60
@@ -901,7 +917,7 @@ content:
     type: link_default
     region: content
   field_service_ref_guide_page_1:
-    weight: 37
+    weight: 38
     settings:
       match_operator: CONTAINS
       size: 60
@@ -939,7 +955,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_service_ref_services_6:
-    weight: 49
+    weight: 66
     settings:
       match_operator: CONTAINS
       size: 60
@@ -969,13 +985,21 @@ content:
     type: inline_entity_form_complex
     region: content
   field_services_social_links:
-    weight: 36
+    weight: 37
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings:
       conditional_fields: {  }
     type: link_default
+    region: content
+  field_short_title:
+    weight: 70
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
     region: content
   field_state_organization_tax:
     weight: 6
@@ -988,7 +1012,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_template:
-    weight: -3
+    weight: 72
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -1018,7 +1042,7 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: -5
+    weight: 69
     settings:
       size: 60
       placeholder: ''
