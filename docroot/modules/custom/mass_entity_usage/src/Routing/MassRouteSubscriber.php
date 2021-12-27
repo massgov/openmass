@@ -50,7 +50,7 @@ class MassRouteSubscriber extends RouteSubscriber {
           '_title_callback' => '\Drupal\mass_entity_usage\Controller\MassLocalTaskUsageController::getTitleLocalTask',
         ],
         [
-          '_permission' => 'access entity usage statistics',
+          '_permission' => 'view pages linking here tab',
           '_custom_access' => '\Drupal\mass_entity_usage\Controller\MassLocalTaskUsageController::checkAccessLocalTask',
         ],
         $options
