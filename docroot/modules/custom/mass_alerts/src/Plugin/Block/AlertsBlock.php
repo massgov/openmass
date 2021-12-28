@@ -89,7 +89,9 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
     $config = $this->getConfiguration();
     $path = FALSE;
     $node = $this->routeMatch->getParameter('node');
-    $node = \is_object($node) ? $node : Node::load($node);
+    if (is_string($node) && $node) {
+      $node = Node::load($node);
+    }
     $node_type = $node ? $node->bundle() : '';
 
     if ($config['alerts_block_type'] == 'sitewide') {
