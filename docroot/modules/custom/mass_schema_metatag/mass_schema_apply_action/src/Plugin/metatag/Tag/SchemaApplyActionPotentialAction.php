@@ -54,7 +54,12 @@ class SchemaApplyActionPotentialAction extends SchemaNameBase {
     foreach ($content as $link_values) {
       // Decode the link values.
       $link_values = json_decode($link_values, TRUE);
-      if (is_array($link_values)) {
+
+      if (!is_array($link_values)) {
+        continue;
+      }
+
+      if (!isset($link_values['name'])) {
         // For each link item, append the values of the 'name' and 'url' to the
         // 'content' key. This will be the value outputted on the markup.
         foreach ($link_values as $item) {
