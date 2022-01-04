@@ -111,6 +111,8 @@ function mass_hierarchy_delete_other_revisions_from_nested_set_table(Node $node)
     return;
   }
 
+  // Loading the node again to get the default revision.
+  $node = Node::load($node->id());
   $nid = $node->id();
   $vid = $node->getRevisionId();
 
