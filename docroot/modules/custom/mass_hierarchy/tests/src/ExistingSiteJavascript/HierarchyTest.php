@@ -2,9 +2,11 @@
 
 namespace Drupal\Tests\mass_hierarchy\ExistingSite;
 
+use Drupal\mass_content_moderation\MassModeration;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
+use Drupal\Tests\Traits\Core\CronRunTrait;
 
 /**
  * Tests Hierachy tab.
@@ -12,6 +14,7 @@ use weitzman\LoginTrait\LoginTrait;
 class HierarchyTest extends ExistingSiteWebDriverTestBase {
 
   use LoginTrait;
+  use CronRunTrait;
 
   /**
    * Creates a random user with a specified role.
@@ -40,21 +43,21 @@ class HierarchyTest extends ExistingSiteWebDriverTestBase {
       'title' => 'child1-' . $this->randomMachineName(16),
       'field_primary_parent' => $parent1Node->id(),
     ] + $parent1;
-    $this->createNode($child1);
+    $child1Node = $this->createNode($child1);
 
     $child2 = $child1;
     $child2['title'] = 'child2-' . $this->randomMachineName(16);
     $child2['type'] = 'how_to_page';
-    $this->createNode($child2);
+    $child2Node = $this->createNode($child2);
 
-    return $parent1Node;
+    return [$parent1Node, $child1Node, $child2Node];
   }
 
   /**
    * Tests hierarchy permissions are working as expected.
    */
   public function testHierarchy() {
-    $parent1Node = $this->createParentAndChildren();
+    $parent1Node = $this->createParentAndChildren()[0];
 
     // Administrator tests.
     $this->drupalLogin($this->createRandomUser('content_team'));
@@ -76,6 +79,61 @@ class HierarchyTest extends ExistingSiteWebDriverTestBase {
     $this->assertSession()->buttonNotExists('Update children');
     $this->assertSession()->elementExists('css', '.mass_hierarchy_cant_drag_topic_page');
     $this->assertSession()->elementExists('css', '.mass_hierarchy_cant_drag');
+  }
+
+  private function countNestedSetFieldPrimaryParentNodeEntries($nid) {
+
+    $res = \Drupal::database()->query('
+      select * from nested_set_field_primary_parent_node where id=%nid;
+    ', ['%nid' => $nid])->fetchAll();
+
+    return is_array($res) ? count($res) : -1;
+  }
+
+  /**
+   * Tests cron erases others revision other than the current.
+   */
+  public function testCronErasesOtherRevisions() {
+    $this->drupalLogin($this->createRandomUser('content_team'));
+    list($parent1Node, $child1Node,) = $this->createParentAndChildren();
+
+    // Save child node.
+    $child1Node->moderation_state = MassModeration::DRAFT;
+    $child1Node->save();
+
+    // Verify it has 2 entries
+    $this->assertEquals(2, $this->countNestedSetFieldPrimaryParentNodeEntries($child1Node->id()));
+    $this->cronRun();
+    // Verify it has 1 entry.
+    $this->assertEquals(1, $this->countNestedSetFieldPrimaryParentNodeEntries($child1Node->id()));
+
+    // Verify it is still showing in the hierarchy,
+    // hence we delete the draft and not the published version.
+    $this->drupalGet('node/' . $parent1Node->id() . '/children');
+    $this->assertSession()->pageTextContains($child1Node->label());
+  }
+
+  /**
+   * Tests node edit erases other revisions other than the current.
+   */
+  public function testNodeEditFormErasesOtherRevisions() {
+    $this->drupalLogin($this->createRandomUser('content_team'));
+    list($parent1Node, $child1Node,) = $this->createParentAndChildren();
+
+    // Save child node.
+    $child1Node->moderation_state = MassModeration::DRAFT;
+    $child1Node->save();
+
+    // Verify it has 2 entries
+    $this->assertEquals(2, $this->countNestedSetFieldPrimaryParentNodeEntries($child1Node->id()));
+    $this->drupalGet('node/' . $child1Node->id() . '/edit');
+    // Verify it has 1 entry.
+    $this->assertEquals(1, $this->countNestedSetFieldPrimaryParentNodeEntries($child1Node->id()));
+
+    // Verify it is still showing in the hierarchy,
+    // hence we delete the draft and not the published version.
+    $this->drupalGet('node/' . $parent1Node->id() . '/children');
+    $this->assertSession()->pageTextContains($child1Node->label());
   }
 
 }
