@@ -1,3 +1,7 @@
+## [0.305.3] - January 3, 2022
+
+- DP-23765 Log purge messages to New Relic and add patch to purge.
+
 ## [0.305.2] - December 16, 2021
 
   - DP-23602 Fix purging of media URLs.
