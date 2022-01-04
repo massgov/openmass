@@ -53,6 +53,37 @@ const scenarios = pages.map(function(page) {
   if (url.search !== "") {
     separator = "&";
   }
+  if (page.screens !== undefined) {
+    if (page.screens.length > 0 && page.viewports === undefined) {
+      page.viewports = page.screens.map(function (screen) {
+        let viewport;
+        switch (screen) {
+          case "desktop":
+            viewport = {
+              "label": "desktop",
+              "width": 1920,
+              "height": 1080
+            };
+            break;
+          case "tablet":
+            viewport = {
+              "label": "tablet",
+              "width": 1024,
+              "height": 768
+            };
+            break;
+          case "mobile":
+            viewport = {
+              "label": "phone",
+              "width": 320,
+              "height": 480
+            };
+            break;
+        }
+        return viewport;
+      });
+    }
+  }
   return {
     ...page,
     url: `${base}${page.url}${separator}cachebuster=${Math.random().toString(36).substring(7)}`,
