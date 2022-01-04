@@ -248,3 +248,10 @@ function mass_hierarchy_delete_all_non_current_revisions_from_nested_set_table()
 function mass_hierachy_cron() {
   mass_hierarchy_delete_all_non_current_revisions_from_nested_set_table();
 }
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function mass_hierarchy_node_update(EntityInterface $entity) {
+  mass_hierarchy_delete_other_revisions_from_nested_set_table($entity);
+}
