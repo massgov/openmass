@@ -80,6 +80,9 @@ class HierarchyTest extends ExistingSiteWebDriverTestBase {
     $this->assertSession()->elementExists('css', '.mass_hierarchy_cant_drag');
   }
 
+  /**
+   * Counts records in nested_set_field_primary_parent_node for given node.
+   */
   private function countNestedSetFieldPrimaryParentNodeEntries($nid) {
 
     $res = \Drupal::database()->query(
