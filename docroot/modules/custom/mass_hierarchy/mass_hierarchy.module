@@ -227,12 +227,11 @@ function _mass_utility_breadcrumb_ajax(array &$form, FormStateInterface $form_st
  * Deletes all non-current revisions from the nested_set_field_primary_parent_node table.
  */
 function mass_hierarchy_delete_all_non_current_revisions_from_nested_set_table() {
-  $res = \Drupal::database()->query('
-    select id, count(*)
-    from nested_set_field_primary_parent_node
-    group by id
-    having count(*) > 1
-  ')->fetchAll();
+  $res = \Drupal::database()->query(
+    'SELECT id, COUNT(*)
+    FROM nested_set_field_primary_parent_node
+    GROUP BY id
+    HAVING COUNT(*) > 1')->fetchAll();
 
   foreach ($res as $value) {
     $nid = $value->id;

@@ -83,9 +83,10 @@ class HierarchyTest extends ExistingSiteWebDriverTestBase {
 
   private function countNestedSetFieldPrimaryParentNodeEntries($nid) {
 
-    $res = \Drupal::database()->query('
-      select * from nested_set_field_primary_parent_node where id=%nid;
-    ', ['%nid' => $nid])->fetchAll();
+    $res = \Drupal::database()->query(
+      'SELECT id FROM {nested_set_field_primary_parent_node} WHERE id = :nid',
+      [':nid' => $nid]
+    )->fetchAll();
 
     return is_array($res) ? count($res) : -1;
   }
