@@ -55,7 +55,7 @@ class HierarchyTest extends ExistingSiteWebDriverTestBase {
   /**
    * Tests hierarchy permissions are working as expected.
    */
-  public function _NO_testHierarchy() {
+  public function testHierarchy() {
     $parent1Node = $this->createParentAndChildren()[0];
 
     // Administrator tests.
