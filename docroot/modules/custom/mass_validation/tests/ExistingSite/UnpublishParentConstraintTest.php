@@ -35,39 +35,56 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
     $node_parent_org = $this->createNode([
       'type' => 'org_page',
       'title' => 'Test Parent Organization',
+      'field_sub_title' => $this->randomString(20),
       'uid' => $this->user->id(),
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
-    $node_child_org_1 = $this->createNode([
+
+    $this->createNode([
       'type' => 'org_page',
-      'title' => 'Test Child Organization 1',
+      'title' => 'Test Child Organization - 1',
       'uid' => $this->user->id(),
       'moderation_state' => MassModeration::PUBLISHED,
       'field_primary_parent' => $node_parent_org->id(),
     ]);
 
+    $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Test Child Organization - 2',
+      'uid' => $this->user->id(),
+      'moderation_state' => MassModeration::UNPUBLISHED,
+      'field_primary_parent' => $node_parent_org->id(),
+    ]);
+
     $this->drupalLogin($this->user);
+
+    $this->visit($node_parent_org->toUrl()->toString() . '/move-children');
+    $this->htmlOutput();
+
     $this->visit($node_parent_org->toUrl()->toString() . '/edit');
     $this->assertEquals($this->getSession()->getStatusCode(), 200);
     $page = $this->getSession()->getPage();
     $page->selectFieldOption('edit-moderation-state-0-state', 'Unpublished');
     $page->pressButton('edit-submit');
     $page_contents = $page->getContent();
-    $validation_text = 'This content cannot be unpublished or trashed because it is a parent of 1 child:';
+
+    $validation_text = 'This content cannot be unpublished or trashed because it is a parent of 1 published child:';
     $this->assertStringContainsString($validation_text, $page_contents, 'Validation message not found.');
-    $node_child_org_2 = $this->createNode([
+
+    $this->createNode([
       'type' => 'org_page',
-      'title' => 'Test Child Organization 2',
+      'title' => 'Test Child Organization 3',
       'uid' => $this->user->id(),
       'moderation_state' => MassModeration::PUBLISHED,
       'field_primary_parent' => $node_parent_org->id(),
     ]);
+
     $this->visit($node_parent_org->toUrl()->toString() . '/edit');
     $page = $this->getSession()->getPage();
     $page->selectFieldOption('edit-moderation-state-0-state', 'Trash');
     $page->pressButton('edit-submit');
     $page_contents = $page->getContent();
-    $validation_text = 'This content cannot be unpublished or trashed because it is a parent of 2 children:';
+    $validation_text = 'This content cannot be unpublished or trashed because it is a parent of 2 published children:';
     $this->assertStringContainsString($validation_text, $page_contents, 'Validation message not found.');
   }
 
