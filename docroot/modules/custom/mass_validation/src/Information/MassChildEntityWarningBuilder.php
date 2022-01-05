@@ -34,6 +34,8 @@ class MassChildEntityWarningBuilder extends ChildEntityWarningBuilder {
    *
    * @param \Drupal\Core\Entity\ContentEntityInterface $parent
    *   Parent to be deleted.
+   * @param bool $removeUnpublished
+   *   Ignores unpublished items.
    *
    * @return \Drupal\mass_validation\Information\MassChildEntityWarning[]
    *   Array of warning value objects.

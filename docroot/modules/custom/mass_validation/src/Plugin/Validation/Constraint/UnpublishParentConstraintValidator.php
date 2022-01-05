@@ -26,7 +26,7 @@ class UnpublishParentConstraintValidator extends ConstraintValidator {
       if ($children = \Drupal::service('class_resolver')
         ->getInstanceFromDefinition(MassChildEntityWarningBuilder::class)
         ->buildChildEntityWarnings($entity, TRUE)) {
-          foreach ($children as $child) {
+        foreach ($children as $child) {
           $items = $child->getList()['#items'];
           if (!empty($items)) {
             $items_string = implode(', ', $items);
