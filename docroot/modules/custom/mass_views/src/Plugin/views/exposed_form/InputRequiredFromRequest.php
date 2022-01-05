@@ -17,13 +17,16 @@ use Drupal\views\Plugin\views\exposed_form\InputRequired;
  */
 class InputRequiredFromRequest extends InputRequired {
 
+  /**
+   * {@inheritdoc}
+   */
   protected function exposedFilterApplied() {
 
     $exposed_input = \Drupal::request()->query->all();
     unset($exposed_input['_wrapper_format']);
 
     if (!$exposed_input) {
-      return false;
+      return FALSE;
     }
 
     return parent::exposedFilterApplied();
