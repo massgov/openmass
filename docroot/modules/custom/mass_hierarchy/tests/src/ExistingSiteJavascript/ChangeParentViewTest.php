@@ -204,6 +204,8 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
       'title' => 'child1-' . $this->randomMachineName(16),
       'field_primary_parent' => $parent1Node->id(),
     ] + $parent1;
+
+    /** @var \Drupal\node\Entity\Node $child1Node */
     $child1Node = $this->createNode($child1);
 
     // Create draft revision of the child.
@@ -234,12 +236,6 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     $this->getCurrentPage()->pressButton('Change parent');
     $this->getSession()->wait(2000);
 
-    /** @var \Drupal\Core\Entity\ContentEntityStorageBase */
-    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
-
-    // Reloading the node to see changes.
-    $child1Node = $node_storage->load($child1Node->id());
-
     // See the revisions and make the latests draft the current revision.
     $this->drupalGet('node/' . $child1Node->id() . '/revisions');
 
@@ -250,8 +246,7 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     $this->assertSession()->pageTextContains('Revision created with "Move Children" feature. (Published)');
     $this->htmlOutput();
 
-    // Get the latest revision as the current and revert.
-    $this->getCurrentPage()->clickLink('Set as current revision');
+    $this->drupalGet('node/' . $child1Node->id() . '/revisions/' . $child1Node->getRevisionId() . '/revert');
     $this->htmlOutput();
     $this->getCurrentPage()->pressButton('Revert');
 
