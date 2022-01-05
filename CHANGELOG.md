@@ -1,5 +1,6 @@
 
 
+
 ## [0.306.0] - January 4, 2022
 
 ### Changed
@@ -7,7 +8,9 @@
   - DP-23377: Increase max number of custom link groups on service page from 6 to 10.
   - DP-23591: Upcoming events are shown since today instead of now, to see upcoming events no matter the time.
   - DP-23674: Allowed Parent Bundles for Location Details.
+  - DP-23678: Remove Cloudflare, Fix akamai purge in prod
   - DP-23687: Update help text for parent page field.
+  - DP-23719: Parent report modifications.
   
 ### Added
   - DP-23359: Add bulk feature to add collection information to content.
