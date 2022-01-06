@@ -54,8 +54,8 @@
   {% include "@organisms/by-template/illustrated-header.twig" with {
     "illustratedHeader": {
       "bgImage": content.field_guide_page_bg_wide[0],
+      "noImage": content.field_guide_page_bg_wide[0]?false:true,
       "bgCentered": true,
-      "category": "Guide",
       "pageHeader": {
         "title": node.title.value,
         "subTitle": "",

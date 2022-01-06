@@ -29,6 +29,7 @@ if (file_exists($secrets_file)) {
  * Loads global secrets.
  *
  * - Used by TFA's encryption profile'.
+ * - Used by Akamai module's Key module integration.
  */
 $secrets_file_global = '/home/massgov/.app/secrets.settings.php';
 if (file_exists($secrets_file_global)) {
@@ -42,9 +43,16 @@ if (file_exists($secrets_file_global)) {
  */
 if (!$cli && ($is_prod || $is_mass_gov)) {
   if ($_SERVER['HTTP_MASS_CDN_FWD'] !== getenv('MASS_CDN_TOKEN')) {
-    throw new AccessDeniedHttpException('Only requests sent through Cloudflare CDN are allowed.');
+    throw new AccessDeniedHttpException('Only requests sent through the CDN are allowed.');
   }
 }
+
+/**
+ * Set the HTTP header name which stores real client IP. Harmless if not provided.
+ * See https://www.drupal.org/project/reverse_proxy_header.
+ */
+$settings['reverse_proxy_header'] = 'True-Client-IP';
+
 
 /**
  * Load Acquia-specific services.
@@ -103,13 +111,15 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
       // Disable once Stage File Proxy in off in Prod.
       $config['stage_file_proxy.settings']['origin'] = FALSE;
       $config['media_entity_download.settings']['external_file_storage'] = 0;
+      // Override for Prod.
       $settings['mass_caching.hosts'] = ['edit.mass.gov', 'www.mass.gov'];
+
+      $config['akamai.settings']['disabled'] = FALSE;
+      $config['akamai.settings']['basepath'] = 'https://www.mass.gov';
+
       break;
     case 'test':
-      $settings['mass_caching.hosts'] = [
-        'stage.mass.gov',
-        'edit.stage.mass.gov',
-      ];
+      $config['akamai.settings']['disabled'] = FALSE;
       break;
     case 'dev':
       $settings['mass_caching.hosts'] = [
@@ -128,3 +138,5 @@ if(function_exists('newrelic_add_custom_parameter') && !$cli) {
   newrelic_add_custom_parameter('backend_url', $_SERVER['REQUEST_URI']);
   newrelic_add_custom_parameter('request_id', $_SERVER['HTTP_X_REQUEST_ID']);
 }
+
+

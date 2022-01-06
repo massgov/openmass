@@ -9,6 +9,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\entity_hierarchy_breadcrumb\HierarchyBasedBreadcrumbBuilder;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use SplObjectStorage;
 
 /**
@@ -24,6 +25,30 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
     $breadcrumb->addCacheContexts(['route']);
     /** @var \Drupal\Core\Entity\ContentEntityInterface $route_entity */
     $route_entity = $this->getEntityFromRouteMatch($route_match);
+
+    $entity_type = $route_entity->getEntityTypeId();
+    $storage = $this->storageFactory->get($this->getHierarchyFieldFromEntity($route_entity), $entity_type);
+    $ancestors = $storage->findAncestors($this->nodeKeyFactory->fromEntity($route_entity));
+    // Pass in the breadcrumb object for caching.
+    $ancestor_entities = $this->mapper->loadAndAccessCheckEntitysForTreeNodes($entity_type, $ancestors, $breadcrumb);
+
+    return $this->buildBreadcrumb($breadcrumb, $route_entity, $ancestor_entities);
+  }
+
+  /**
+   * Build the breadcrumb based on an entity.
+   *
+   * @param \Drupal\node\NodeInterface $entity_passed
+   *   The entity to use in building the breadcrumb.
+   *
+   * @return \Drupal\Core\Breadcrumb\Breadcrumb
+   *   The breadcrumb.
+   */
+  public function buildFromEntity(NodeInterface $entity_passed) {
+    $breadcrumb = new Breadcrumb();
+    $breadcrumb->addCacheContexts(['route']);
+    /** @var \Drupal\Core\Entity\ContentEntityInterface $route_entity */
+    $route_entity = $entity_passed;
 
     $entity_type = $route_entity->getEntityTypeId();
     $storage = $this->storageFactory->get($this->getHierarchyFieldFromEntity($route_entity), $entity_type);
