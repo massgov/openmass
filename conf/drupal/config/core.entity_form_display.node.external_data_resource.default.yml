@@ -45,6 +45,7 @@ third_party_settings:
         - field_data_resource_type
         - field_data_format
         - field_data_topic
+        - field_collections
       parent_name: group_externaldata_edit_form
       weight: 0
       format_type: tab
@@ -62,14 +63,15 @@ bundle: external_data_resource
 mode: default
 content:
   field_collections:
-    weight: 1
+    weight: 17
     settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
     third_party_settings: {  }
-    type: entity_reference_autocomplete
+    type: term_reference_tree
     region: content
   field_data_flag:
     weight: 12
