@@ -222,7 +222,7 @@ class MapController extends ControllerBase {
           $section_paragraph = current($this->entityTypeManager->getStorage('paragraph')
             ->loadByProperties($section_properties));
           // If the content field is not empty, proceed.
-          if (!$section_paragraph->field_section_long_form_content->isEmpty()) {
+          if ($section_paragraph->field_section_long_form_content ?? FALSE && !$section_paragraph->field_section_long_form_content->isEmpty()) {
             // Get the content field value.
             $field_section_long_form_content = $section_paragraph->get('field_section_long_form_content')
               ->getValue();
