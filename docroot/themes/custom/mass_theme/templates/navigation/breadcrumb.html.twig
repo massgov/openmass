@@ -7,6 +7,12 @@
  * - breadcrumb: Breadcrumb trail items.
  */
 #}
+
+{# Remove current elemement if it's on the structure#}
+{% if breadcrumb|last.url == "" %}
+  {% set breadcrumb = breadcrumb|slice(0,-1) %}
+{% endif %}
+
 {% if breadcrumb %}
   {% include "@organisms/by-template/breadcrumbs.twig" with {
     "breadcrumbs": {
