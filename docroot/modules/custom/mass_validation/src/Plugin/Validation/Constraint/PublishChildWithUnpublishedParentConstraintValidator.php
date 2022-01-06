@@ -42,7 +42,7 @@ class PublishChildWithUnpublishedParentConstraintValidator extends ConstraintVal
     $parent_state = $parent->moderation_state->value;
 
     // The parent cannot be unpublished or in the trash.
-    if ($parent_state != MassModeration::UNPUBLISHED && $parent_state != MassModeration::TRASH) {
+    if ($parent_state == MassModeration::PUBLISHED) {
       return;
     }
 

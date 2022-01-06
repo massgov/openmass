@@ -38,7 +38,7 @@ class PublishChildWithUnpublishedParentConstraintTest extends ExistingSiteBase {
       'title' => 'Test Parent',
       'field_sub_title' => $this->randomString(20),
       'uid' => $this->user->id(),
-      'moderation_state' => MassModeration::UNPUBLISHED,
+      'moderation_state' => MassModeration::DRAFT,
     ]);
 
     $childNode = $this->createNode([
@@ -49,11 +49,19 @@ class PublishChildWithUnpublishedParentConstraintTest extends ExistingSiteBase {
       'field_primary_parent' => $node_parent_org->id(),
     ]);
 
-    // Attempt to publish a child node with an unpublished parent.
+    // Edit the child node, select the moderation state to published.
     $this->drupalLogin($this->user);
     $this->drupalGet('node/' . $childNode->id());
     $this->visit($childNode->toUrl()->toString() . '/edit');
     $this->getCurrentPage()->selectFieldOption('Change to', MassModeration::PUBLISHED);
+
+    // Attempt to publish a child node with parent in draft.
+    $this->getCurrentPage()->pressButton('Save');
+    $this->assertSession()->pageTextContains(PublishChildWithUnpublishedParentConstraint::MESSAGE);
+
+    // Attempt to publish a child node with an unpublished parent.
+    $node_parent_org->moderation_state = MassModeration::UNPUBLISHED;
+    $node_parent_org->save();
     $this->getCurrentPage()->pressButton('Save');
     $this->assertSession()->pageTextContains(PublishChildWithUnpublishedParentConstraint::MESSAGE);
 
