@@ -42,6 +42,7 @@ class MapLocationFetcher {
           'name' => 'filter-by-location',
           'type' => 'text',
           'placeholder' => 'City, town, or ZIP code',
+          'errorMsg' => 'You entered an invalid address. Please select an option in the suggesions.'
         ],
       ],
       'tags' => [
