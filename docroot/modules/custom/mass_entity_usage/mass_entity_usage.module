@@ -87,7 +87,7 @@ function _mass_entity_usage_tracking_check($entity_type, $id, $vid) {
  */
 function mass_entity_usage_keep_only_current_vid($entity) {
 
-  if (!method_exists($entity, 'getRevisionId')) {
+  if (!$entity->getEntityType()->isRevisionable()) {
     return;
   }
 
