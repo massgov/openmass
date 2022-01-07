@@ -167,6 +167,7 @@
         "drupal/entity_browser": "^2",
         "drupal/entity_hierarchy": "^3.0",
         "drupal/entity_reference_revisions": "^1.7",
+        "drupal/entity_usage": "^2.0-beta5",
         "drupal/entityreference_filter": "^1.4",
         "drupal/field_group": "^3.1",
         "drupal/field_tokens": "dev-8.x-1.x",
@@ -327,6 +328,12 @@
             "drupal/entity_browser": {
                 "Fix duplicated image selection when click use selected button": "https://www.drupal.org/files/issues/prevent-duplication.patch"
             },
+            "drupal/entity_usage": {
+                "2954973 - Track absolute URLs in link fields": "https://www.drupal.org/files/issues/2021-08-17/2954973-63.patch",
+                "3007752 - Entity usage list does not scale (https://www.drupal.org/project/entity_usage/issues/3007752)": "patches/entity_usage-usage_list_scale-3007752-17.patch",
+                "Hides language column and shows bundle" : "patches/entity-usage--hide-language--show-bundle.patch",
+                "3254437 - Delete queue items for `entity_usage_regenerate_queue` when `running drush entity-usage:recreate`  ": "https://www.drupal.org/files/issues/2021-12-14/issue-3254437--remove-items-from-queue-before-recreating-it.patch"
+            },
             "drupal/entity_hierarchy": {
                 "Hidden Weight field causes extra space in the form": "patches/entity_hierarchy-weight-widget-space-3245879-2.patch",
                 "Fatal error on node/{nid}/media #3034602": "https://www.drupal.org/files/issues/2021-11-25/issue-3034602_fatal_error_on_getCandidateFields.patch",
@@ -352,7 +359,8 @@
                 "Add index to media changed field (https://www.drupal.org/node/2944569)": "patches/DP-7726_media_changed_index.patch"
             },
             "drupal/media_entity_download": {
-                "CKeditor Plugin - using a combined patch to avoid conflict (https://www.drupal.org/node/2928318)": "https://www.drupal.org/files/issues/2020-10-28/media_entity_download-ckeditor_plugin-2928318-20.patch"
+                "CKeditor Plugin - using a combined patch to avoid conflict (https://www.drupal.org/node/2928318)": "https://www.drupal.org/files/issues/2020-10-28/media_entity_download-ckeditor_plugin-2928318-20.patch",
+                "3106062 - Track the usage of Media entity through media_entity_download route with entity_usage": "patches/media_entity_download-track_media_entity_usage-3106062-2.patch"
             },
             "drupal/memcache": {
                 "Split large (> 1mb) items (https://www.drupal.org/node/435694)": "https://www.drupal.org/files/issues/2019-02-26/435694-118-d8-memcache-large-items.patch"
