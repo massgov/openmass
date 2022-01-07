@@ -43,6 +43,7 @@ class OrgPageCountBase extends NumericField {
     $subQuery->addExpression("COUNT($this->pseudoTableAlias.id)", $this->pseudoFieldName);
     $subQuery->condition("$this->pseudoTableAlias.parent_type", 'paragraph');
     $subQuery->condition("$this->pseudoTableAlias.type", $this->paragraphBundle);
+    $subQuery->groupBy('parent_id');
 
     $relationship = $this->relationship ?: 'paragraphs_item_field_data';
 
