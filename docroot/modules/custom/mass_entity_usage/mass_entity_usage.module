@@ -110,10 +110,10 @@ function mass_entity_usage_keep_only_current_vid($entity) {
   $vid = $loaded_entity->getRevisionId();
 
   // Delete reference to itself.
-  $delete = \Drupal::database()->delete('entity_usage');
-  $delete->condition('target_id', $entity->id());
-  $delete->condition('source_id', $entity->id());
-  $delete->execute();
+  $delete = \Drupal::database()->delete('entity_usage')
+    ->condition('target_id', $entity->id());
+    ->condition('source_id', $entity->id());
+    ->execute();
 
   // Delete reference to itself when entity uses string id.
   $delete = \Drupal::database()->delete('entity_usage');
