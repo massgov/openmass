@@ -109,28 +109,28 @@ function mass_entity_usage_keep_only_current_vid($entity) {
   $vid = $loaded_entity->getRevisionId();
 
   // Delete reference to itself.
-  $delete = \Drupal::database()->delete('entity_usage')
-    ->condition('target_id', $entity->id());
-    ->condition('source_id', $entity->id());
+  \Drupal::database()->delete('entity_usage')
+    ->condition('target_id', $entity->id())
+    ->condition('source_id', $entity->id())
     ->execute();
 
   // Delete reference to itself when entity uses string id.
-  $delete = \Drupal::database()->delete('entity_usage');
-  $delete->condition('target_id_string', $entity->id());
-  $delete->condition('source_id_string', $entity->id());
-  $delete->execute();
+  \Drupal::database()->delete('entity_usage')
+    ->condition('target_id_string', $entity->id())
+    ->condition('source_id_string', $entity->id())
+    ->execute();
 
   // Delete references from other revisions.
-  $delete = \Drupal::database()->delete('entity_usage');
-  $delete->condition('source_id', $entity->id());
-  $delete->condition('source_vid', $vid, '<>');
-  $delete->execute();
+  \Drupal::database()->delete('entity_usage')
+    ->condition('source_id', $entity->id())
+    ->condition('source_vid', $vid, '<>')
+    ->execute();
 
   // Delete references from other when entity uses string id..
-  $delete = \Drupal::database()->delete('entity_usage');
-  $delete->condition('source_id_string', $entity->id());
-  $delete->condition('source_vid', $vid, '<>');
-  $delete->execute();
+  \Drupal::database()->delete('entity_usage')
+    ->condition('source_id_string', $entity->id())
+    ->condition('source_vid', $vid, '<>')
+    ->execute();
 }
 
 /**
