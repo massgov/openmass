@@ -7106,12 +7106,18 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
     if (mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
       $items = [];
       do {
-        $items[] = $paragraphs[$i];
+        if (isset($paragraphs[$i])) {
+          $items[] = $paragraphs[$i];
+        }
+
         $i++;
         // Keep grouping together while the next element has the check.
       } while (isset($paragraphs[$i]) && mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields));
+
       // Once done, also group the following one.
-      $items[] = $paragraphs[$i];
+      if (isset($paragraphs[$i])) {
+        $items[] = $paragraphs[$i];
+      }
 
       $component = ['group' => 'default', 'items' => $items];
     }
