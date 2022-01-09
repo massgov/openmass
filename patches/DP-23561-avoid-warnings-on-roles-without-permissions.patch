@@ -1,0 +1,22 @@
+diff --git a/core/modules/user/src/Entity/Role.php b/core/modules/user/src/Entity/Role.php
+index 3512fee03e..aecb22f1ae 100644
+--- a/core/modules/user/src/Entity/Role.php
++++ b/core/modules/user/src/Entity/Role.php
+@@ -95,7 +95,7 @@ public function getPermissions() {
+     if ($this->isAdmin()) {
+       return [];
+     }
+-    return $this->permissions;
++    return $this->permissions ?: [];
+   }
+ 
+   /**
+@@ -120,7 +120,7 @@ public function hasPermission($permission) {
+     if ($this->isAdmin()) {
+       return TRUE;
+     }
+-    return in_array($permission, $this->permissions);
++    return in_array($permission, $this->permissions ?: []);
+   }
+ 
+   /**
