@@ -22,7 +22,8 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
   protected function setUp() {
     parent::setUp();
     $user = User::create(['name' => $this->randomMachineName()]);
-    $user->addRole('editor');
+    $user->addRole('content_team');
+    // $user->addRole('administrator');
     $user->activate();
     $user->save();
     $this->user = $user;
@@ -31,7 +32,7 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
   /**
    * Assert that the validation works properly.
    */
-  public function testUnpublishParentValidation() {
+  public function no_testUnpublishParentValidation() {
     $node_parent_org = $this->createNode([
       'type' => 'org_page',
       'title' => 'Test Parent Organization',
@@ -88,4 +89,68 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
     $this->assertStringContainsString($validation_text, $page_contents, 'Validation message not found.');
   }
 
+  public function testSomething() {
+
+    $parent = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Test Parent Organization',
+      'field_sub_title' => $this->randomString(20),
+      'uid' => $this->user->id(),
+      'moderation_state' => MassModeration::UNPUBLISHED,
+    ]);
+
+    $child = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Test Child Organization - 1' . __FUNCTION__,
+      'uid' => $this->user->id(),
+      'moderation_state' => MassModeration::TRASH,
+      'field_primary_parent' => $parent->id(),
+    ]);
+
+
+    // If I trash a child,
+
+    // then unpublish the parent
+
+
+    // $parent->moderation_state = MassModeration::UNPUBLISHED;
+    // $parent->save();
+
+
+
+    // which has no other children,
+
+    // I cannot transition the trashed child to unpublished because
+    // it knows that the parent is unpublished.
+
+
+    // $this->htmlOutput('AHORA!');
+
+    $this->htmlOutput();
+    $this->drupalGet('user/'. $this->user->id() . '/edit');
+    $this->htmlOutput();
+
+    $this->drupalLogin($this->user);
+    $this->drupalGet('node/' . $child->id() . '/edit');
+    $this->getCurrentPage()->selectFieldOption('Change to', MassModeration::UNPUBLISHED);
+    $this->getCurrentPage()->pressButton('Save');
+
+    $this->htmlOutput();
+
+    // $this->user->addRole('administrator');
+    // $this->user->save();
+    // $this->drupalGet('node/' . $child->id() . '/edit');
+    // $this->getCurrentPage()->selectFieldOption('Change to', MassModeration::UNPUBLISHED);
+    // $this->getCurrentPage()->pressButton('Save');
+    // $this->htmlOutput();
+
+
+    // $this->assertSession()->pageTextNotMatches('/This entity \(node: .*\) cannot be referenced./');
+
+    // die();
+
+
+  }
+
 }
+
