@@ -56,7 +56,8 @@ class UnpublishedEntitiesCanBeReferencedTest extends ExistingSiteBase {
 
     // We should be able to transition the child from trash to unpublished.
     // Check cotent administrators.
-    $this->user->addRole('cotent_team');
+    $this->user->addRole('content_team');
+    $this->user->save();
     $this->drupalGet('node/' . $child->id() . '/edit');
     $this->getCurrentPage()->selectFieldOption('Change to', MassModeration::UNPUBLISHED);
     $this->getCurrentPage()->pressButton('Save');
@@ -66,6 +67,7 @@ class UnpublishedEntitiesCanBeReferencedTest extends ExistingSiteBase {
     // We should be able to transition the child from trash to unpublished.
     // Check editors.
     $this->user->addRole('editor');
+    $this->user->save();
     $this->drupalGet('node/' . $child->id() . '/edit');
     $this->getCurrentPage()->selectFieldOption('Change to', MassModeration::UNPUBLISHED);
     $this->getCurrentPage()->pressButton('Save');
