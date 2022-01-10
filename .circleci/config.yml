@@ -318,16 +318,6 @@ jobs:
           # Save Junit files for timing inspection.
           path: /tmp/test-results
 
-  cloudflare:
-    working_directory: /tmp/code/cloudflare
-    docker:
-      - image: cimg/php:7.4-node
-    steps:
-      - attach_workspace: {at: /tmp}
-      # https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages
-      - *yarn_install
-      - run: "npm test"
-
   # Cut the release branch for weekly release
   cut_release_branch:
     working_directory: /tmp/code
@@ -523,37 +513,6 @@ jobs:
       - run: "drush pm:security"
       - run: "drush pm:security-php"
 
-  ma-cf-deploy:
-    parameters:
-      auto-approve:
-        type: boolean
-        default: false
-    working_directory: /tmp/code
-    docker:
-      - image: cimg/php:7.4-node
-    steps:
-      - checkout
-      - run: curl -L -f -o chamber https://github.com/segmentio/chamber/releases/download/v2.7.5/chamber-v2.7.5-linux-amd64
-      - run: chmod +x ./chamber
-      - run: |
-          mkdir -p /tmp/terraform
-          curl -f -L -o /tmp/terraform/terraform.zip https://releases.hashicorp.com/terraform/0.12.31/terraform_0.12.31_linux_amd64.zip
-          unzip /tmp/terraform/terraform.zip -d /tmp/terraform/
-          mv /tmp/terraform/terraform .
-          chmod +x ./terraform
-          rm -rf /tmp/terraform
-      - *vendor_bin_add_path
-      - when:
-          condition: << parameters.auto-approve >>
-          steps:
-            run: ./scripts/cloudflare-deploy << pipeline.parameters.target >> --auto-approve
-      - unless:
-          # We expect to fail when this job runs *before* the hold. Keep it green by appending `|| true`.
-          # See https://discuss.circleci.com/t/run-all-test-steps-even-if-one-fails/11229/12
-          condition: << parameters.auto-approve >>
-          steps:
-            run: ./scripts/cloudflare-deploy << pipeline.parameters.target >> || true
-
 workflows:
   version: 2
   build_validate:
@@ -613,11 +572,6 @@ workflows:
       - test:
           name: test-behat
           command: behat
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
-      - cloudflare:
           requires: [build]
           filters:
             branches:
@@ -868,11 +822,6 @@ workflows:
           filters:
             branches:
               only: master
-      - cloudflare:
-          requires: [build]
-          filters:
-            branches:
-              only: master
       - hold - Release manager only:
           type: approval
           requires:
@@ -1081,21 +1030,6 @@ workflows:
           gitRef: << pipeline.parameters.git-ref >>
           skip-maint: << pipeline.parameters.skip-maint >>
           refresh-db: << pipeline.parameters.refresh-db >>
-
-  # Usually triggered by drush ma:cf-deploy.
-  deploy_cloudflare:
-    when: << pipeline.parameters.ma-cf-deploy >>
-    jobs:
-      - ma-cf-deploy:
-          name: view-plan
-      - hold - Release manager only:
-          type: approval
-          requires:
-            - view-plan
-      - ma-cf-deploy:
-          name: apply-plan
-          requires: [hold - Release manager only]
-          auto-approve: true
 
 
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.

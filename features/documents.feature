@@ -22,7 +22,6 @@ Feature: Media Documents
     When I follow "upload.txt"
     Then I should see "Test document Behat"
     And I should see "(TXT 24 BYTES)"
-    And a url purge should be issued for ".*/files/documents/.*"
 
   Scenario: Create and view a new MP3
     Given I am logged in as a user with the "editor" role
@@ -41,4 +40,3 @@ Feature: Media Documents
     Given I am on "/admin/content/media"
     When I follow "upload.mp3"
     And I should see "Test mp3"
-    And a url purge should be issued for ".*/files/documents/.*"

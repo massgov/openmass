@@ -6467,6 +6467,7 @@ function mass_theme_googletranslate_options_languages() {
     'bo' => 'Tibetan',
     'br' => 'Breton',
     'ca' => 'Catalan',
+    'cv' => 'Cape Verdean Creole',
     'co' => 'Corsican',
     'cs' => 'Czech',
     'cy' => 'Welsh',
@@ -6584,7 +6585,8 @@ function mass_theme_googletranslate_options_languages() {
     'xh' => 'Xhosa',
     'yo' => 'Yoruba',
     'zh-CN' => 'Chinese',
-    'zu' => 'Zulu',
+    'zh-TW' => 'Chinese, Traditional',
+    'zu' => 'Zulu'
   ];
   return $language_codes;
 }
@@ -7119,8 +7121,8 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
  */
 function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
   // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
-  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image'];
-  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping'];
+  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
+  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
   $contained = ['rich_text'];
 
   $components = [];
@@ -7133,12 +7135,18 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
     if (mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
       $items = [];
       do {
-        $items[] = $paragraphs[$i];
+        if (isset($paragraphs[$i])) {
+          $items[] = $paragraphs[$i];
+        }
+
         $i++;
         // Keep grouping together while the next element has the check.
       } while (isset($paragraphs[$i]) && mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields));
+
       // Once done, also group the following one.
-      $items[] = $paragraphs[$i];
+      if (isset($paragraphs[$i])) {
+        $items[] = $paragraphs[$i];
+      }
 
       $component = ['group' => 'default', 'items' => $items];
     }
