@@ -1,3 +1,31 @@
+
+
+
+## [0.306.0] - January 4, 2022
+
+### Changed
+  - DP-23357: Reduce number of pages in backstop.
+  - DP-23377: Increase max number of custom link groups on service page from 6 to 10.
+  - DP-23591: Upcoming events are shown since today instead of now, to see upcoming events no matter the time.
+  - DP-23674: Allowed Parent Bundles for Location Details.
+  - DP-23678: Remove Cloudflare, Fix akamai purge in prod
+  - DP-23687: Update help text for parent page field.
+  - DP-23719: Parent report modifications.
+  
+### Added
+  - DP-23359: Add bulk feature to add collection information to content.
+  - DP-23630: Hierarchy Tab:
+- Message box when parent-child relationships are not set correctly
+- Changes message for wrong relationships from warning to error
+  - DP-23695: Add languages to Google Translate widget.
+  
+### Fixed
+  - DP-23561: Change monolog level notice level from string to int to avoid warning messages.
+  - DP-23651: Fix halfImage promo page overlap issue.
+  - DP-23654: Add tests to ensure back from preview and access links.
+  - DP-23691: Checks field_section_long_form_content is not null before trying to access any methods.
+  - DP-9880: Fixed image upload requirements and added custom style for display.
+  
 ## [0.305.3] - January 3, 2022
 
 - DP-23765 Log purge messages to New Relic and add patch to purge.
