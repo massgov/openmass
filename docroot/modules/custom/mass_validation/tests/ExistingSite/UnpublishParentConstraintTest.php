@@ -91,6 +91,8 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
 
   public function testSomething() {
 
+    // An unpublished parent.
+    // No other children.
     $parent = $this->createNode([
       'type' => 'org_page',
       'title' => 'Test Parent Organization',
@@ -99,6 +101,7 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
       'moderation_state' => MassModeration::UNPUBLISHED,
     ]);
 
+    // A child in trash.
     $child = $this->createNode([
       'type' => 'org_page',
       'title' => 'Test Child Organization - 1' . __FUNCTION__,
@@ -107,49 +110,12 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
       'field_primary_parent' => $parent->id(),
     ]);
 
-
-    // If I trash a child,
-
-    // then unpublish the parent
-
-
-    // $parent->moderation_state = MassModeration::UNPUBLISHED;
-    // $parent->save();
-
-
-
-    // which has no other children,
-
-    // I cannot transition the trashed child to unpublished because
-    // it knows that the parent is unpublished.
-
-
-    // $this->htmlOutput('AHORA!');
-
-    $this->htmlOutput();
-    $this->drupalGet('user/'. $this->user->id() . '/edit');
-    $this->htmlOutput();
-
+    // We should be able to transition the child from trash to unpublished.
     $this->drupalLogin($this->user);
     $this->drupalGet('node/' . $child->id() . '/edit');
     $this->getCurrentPage()->selectFieldOption('Change to', MassModeration::UNPUBLISHED);
     $this->getCurrentPage()->pressButton('Save');
-
-    $this->htmlOutput();
-
-    // $this->user->addRole('administrator');
-    // $this->user->save();
-    // $this->drupalGet('node/' . $child->id() . '/edit');
-    // $this->getCurrentPage()->selectFieldOption('Change to', MassModeration::UNPUBLISHED);
-    // $this->getCurrentPage()->pressButton('Save');
-    // $this->htmlOutput();
-
-
-    // $this->assertSession()->pageTextNotMatches('/This entity \(node: .*\) cannot be referenced./');
-
-    // die();
-
-
+    $this->assertSession()->pageTextNotMatches('/This entity \(node: .*\) cannot be referenced./');
   }
 
 }
