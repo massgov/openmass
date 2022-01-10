@@ -116,7 +116,8 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
 
       $config['akamai.settings']['disabled'] = FALSE;
       $config['akamai.settings']['basepath'] = 'https://www.mass.gov';
-
+      $config['akamai.settings']['domain']['staging'] = FALSE;
+      $config['akamai.settings']['domain']['production'] = TRUE;
       break;
     case 'test':
       $config['akamai.settings']['disabled'] = FALSE;
