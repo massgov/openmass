@@ -23,7 +23,6 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
     parent::setUp();
     $user = User::create(['name' => $this->randomMachineName()]);
     $user->addRole('content_team');
-    // $user->addRole('administrator');
     $user->activate();
     $user->save();
     $this->user = $user;
@@ -32,7 +31,7 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
   /**
    * Assert that the validation works properly.
    */
-  public function no_testUnpublishParentValidation() {
+  public function testUnpublishParentValidation() {
     $node_parent_org = $this->createNode([
       'type' => 'org_page',
       'title' => 'Test Parent Organization',
@@ -89,34 +88,4 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
     $this->assertStringContainsString($validation_text, $page_contents, 'Validation message not found.');
   }
 
-  public function testSomething() {
-
-    // An unpublished parent.
-    // No other children.
-    $parent = $this->createNode([
-      'type' => 'org_page',
-      'title' => 'Test Parent Organization',
-      'field_sub_title' => $this->randomString(20),
-      'uid' => $this->user->id(),
-      'moderation_state' => MassModeration::UNPUBLISHED,
-    ]);
-
-    // A child in trash.
-    $child = $this->createNode([
-      'type' => 'org_page',
-      'title' => 'Test Child Organization - 1' . __FUNCTION__,
-      'uid' => $this->user->id(),
-      'moderation_state' => MassModeration::TRASH,
-      'field_primary_parent' => $parent->id(),
-    ]);
-
-    // We should be able to transition the child from trash to unpublished.
-    $this->drupalLogin($this->user);
-    $this->drupalGet('node/' . $child->id() . '/edit');
-    $this->getCurrentPage()->selectFieldOption('Change to', MassModeration::UNPUBLISHED);
-    $this->getCurrentPage()->pressButton('Save');
-    $this->assertSession()->pageTextNotMatches('/This entity \(node: .*\) cannot be referenced./');
-  }
-
 }
-
