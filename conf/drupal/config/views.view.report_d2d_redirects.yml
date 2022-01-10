@@ -1,4 +1,4 @@
-uuid: e1fba66b-2a0a-4bc2-b34a-12d03e304f74
+uuid: f79db67f-1555-4d75-ba0d-9dc249b37c02
 langcode: en
 status: true
 dependencies:
@@ -9,8 +9,8 @@ dependencies:
     - views_autocomplete_filters
 _core:
   default_config_hash: CmEaMuCJ98kSh_yrKoFCxG628jM5_QIS9Nmb7cHFBc4
-id: redirect
-label: Redirect
+id: report_d2d_redirects
+label: 'Report D2D redirects'
 module: views
 description: 'List of redirects'
 tag: ''
@@ -26,7 +26,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'administer redirects'
+          perm: 'use content reports'
       cache:
         type: tag
         options: {  }
@@ -132,72 +132,6 @@ display:
       row:
         type: fields
       fields:
-        rid:
-          id: rid
-          table: redirect
-          field: rid
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: 'Redirect ID'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: number_integer
-          settings:
-            thousand_separator: ''
-            prefix_suffix: true
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-          entity_type: redirect
-          entity_field: rid
-          plugin_id: field
         redirect_source__path:
           id: redirect_source__path
           table: redirect
@@ -266,6 +200,68 @@ display:
           id: redirect_redirect__uri
           table: redirect
           field: redirect_redirect__uri
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: To
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: uri
+          type: link
+          settings:
+            trim_length: null
+            url_only: false
+            url_plain: false
+            rel: '0'
+            target: '0'
+          group_column: ''
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
           entity_type: redirect
           entity_field: redirect_redirect
           plugin_id: field
@@ -323,10 +319,121 @@ display:
           entity_type: redirect
           entity_field: created
           plugin_id: date
+        rid:
+          id: rid
+          table: redirect
+          field: rid
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: 'Redirect ID'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: value
+          type: number_integer
+          settings:
+            thousand_separator: ''
+            prefix_suffix: true
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          entity_type: redirect
+          entity_field: rid
+          plugin_id: field
         operations:
           id: operations
           table: redirect
           field: operations
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          destination: false
           entity_type: redirect
           plugin_id: entity_operations
       filters:
@@ -337,7 +444,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          operator: contains
+          operator: '='
           value: ''
           group: 1
           exposed: true
@@ -347,8 +454,13 @@ display:
             description: ''
             use_operator: true
             operator: redirect_source__path_op
-            operator_limit_selection: false
-            operator_list: {  }
+            operator_limit_selection: true
+            operator_list:
+              '=': '='
+              contains: contains
+              word: word
+              allwords: allwords
+              starts: starts
             identifier: redirect_source__path
             required: false
             remember: false
@@ -401,7 +513,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
-          operator: contains
+          operator: '='
           value: ''
           group: 1
           exposed: true
@@ -411,9 +523,13 @@ display:
             description: ''
             use_operator: true
             operator: redirect_redirect__uri_op
-            operator_limit_selection: false
+            operator_limit_selection: true
             operator_list:
               '=': '='
+              contains: contains
+              word: word
+              allwords: allwords
+              starts: starts
             identifier: redirect_redirect__uri
             required: false
             remember: false
@@ -459,71 +575,22 @@ display:
           entity_type: redirect
           entity_field: redirect_redirect
           plugin_id: string
-        rid:
-          id: rid
-          table: redirect
-          field: rid
+      sorts: {  }
+      title: Redirects
+      header:
+        area:
+          id: area
+          table: views
+          field: area
           relationship: none
           group_type: group
           admin_label: ''
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: rid_op
-            label: 'Redirect ID'
-            description: ''
-            use_operator: false
-            operator: rid_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: rid
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
-              d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            placeholder: ''
-            min_placeholder: ''
-            max_placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          entity_type: redirect
-          entity_field: rid
-          plugin_id: numeric
-      sorts: {  }
-      title: Redirect
-      header: {  }
+          empty: true
+          tokenize: false
+          content:
+            value: "<p>This report shows redirects that exist in Drupal.  Redirects may have been created manually by EOTSS, imported in bulk during the migration to Drupal, or created automatically when a page title change caused a URL change.</p>\r\n\r\n<p>To request a new redirect or a change to an existing redirect, please make a ServiceNow request. <strong>If you request a redirect change or removal, please include the \"From\" and \"To\" URLs as well as the redirect ID as shown in the far right column.</strong></p>"
+            format: basic_html
+          plugin_id: text
       footer: {  }
       empty:
         area_text_custom:
@@ -561,7 +628,16 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: admin/config/search/redirect
+      path: admin/ma-dash/reports/redirects
+      menu:
+        type: none
+        title: ''
+        description: ''
+        expanded: false
+        parent: ''
+        weight: 0
+        context: '0'
+        menu_name: main
     cache_metadata:
       contexts:
         - 'languages:language_content'
