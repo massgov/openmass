@@ -14,7 +14,11 @@ class UnpublishedEntitiesCanBeReferencedTest extends ExistingSiteBase {
 
   use LoginTrait;
 
-  /** @var \Drupal\user\Entity\User */
+  /**
+   * The user to log in and test the functionality.
+   *
+   * @var \Drupal\user\Entity\User
+   */
   private $user;
 
   /**
@@ -76,4 +80,3 @@ class UnpublishedEntitiesCanBeReferencedTest extends ExistingSiteBase {
   }
 
 }
-

@@ -14,6 +14,11 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
 
   use LoginTrait;
 
+  /**
+   * The user to log in and test the functionality.
+   *
+   * @var \Drupal\user\Entity\User
+   */
   private $user;
 
   /**
