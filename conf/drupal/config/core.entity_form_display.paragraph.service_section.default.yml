@@ -3,7 +3,9 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.service_section.field_hide_heading
     - field.field.paragraph.service_section.field_service_section_content
+    - field.field.paragraph.service_section.field_service_section_heading
     - paragraphs.paragraphs_type.service_section
   module:
     - paragraphs
@@ -12,6 +14,13 @@ targetEntityType: paragraph
 bundle: service_section
 mode: default
 content:
+  field_hide_heading:
+    weight: 2
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
   field_service_section_content:
     type: entity_reference_paragraphs
     weight: 0
@@ -23,6 +32,14 @@ content:
       form_display_mode: default
       default_paragraph_type: ''
     third_party_settings: {  }
+    region: content
+  field_service_section_heading:
+    weight: 1
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
     region: content
 hidden:
   created: true

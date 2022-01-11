@@ -73,6 +73,7 @@ third_party_settings:
       children:
         - group_banner
         - group_overview
+        - group_content
         - group_tasks_key_info
         - group_map
         - group_additional_info
@@ -143,7 +144,7 @@ third_party_settings:
         - field_link_group
         - group_what_you_need_to_know
       parent_name: group_service_edit_form
-      weight: 22
+      weight: 23
       format_type: tab
       format_settings:
         id: ''
@@ -160,7 +161,7 @@ third_party_settings:
         - field_location_button_short_desc
         - field_related_organization_type
       parent_name: group_service_edit_form
-      weight: 23
+      weight: 24
       format_type: tab
       format_settings:
         id: ''
@@ -176,7 +177,7 @@ third_party_settings:
         - field_service_ref_services_6
         - group_additional_resources
       parent_name: group_service_edit_form
-      weight: 24
+      weight: 25
       format_type: tab
       format_settings:
         id: ''
@@ -191,7 +192,7 @@ third_party_settings:
         - field_service_ref_actions_2
         - field_service_ref_actions
       parent_name: group_tasks_key_info
-      weight: 42
+      weight: 47
       format_type: fieldset
       format_settings:
         description: 'This section provides links to all transactions related to this service.'
@@ -204,7 +205,7 @@ third_party_settings:
       children:
         - field_service_key_info_links_6
       parent_name: group_tasks_key_info
-      weight: 44
+      weight: 50
       format_type: fieldset
       format_settings:
         description: 'This section provides links to key information needed to use this service.'
@@ -239,7 +240,7 @@ third_party_settings:
         - field_kpi_pl_em_app_review_rate
         - field_kpi_pl_em_app_review_time
       parent_name: group_service_edit_form
-      weight: 25
+      weight: 26
       format_type: tab
       format_settings:
         formatter: closed
@@ -249,6 +250,21 @@ third_party_settings:
         classes: ''
       label: 'Service Family Key Indicators'
       region: content
+    group_content:
+      children:
+        - field_service_sections
+      parent_name: group_service_edit_form
+      weight: 22
+      format_type: tab
+      region: content
+      format_settings:
+        description: ''
+        formatter: closed
+        required_fields: true
+        id: ''
+        classes: ''
+        show_empty_fields: false
+      label: Content
 id: node.service_page.default
 targetEntityType: node
 bundle: service_page
@@ -369,7 +385,7 @@ content:
     type: options_buttons
     region: content
   field_kpi_pl_avg_cl_comp_time:
-    weight: 56
+    weight: 10
     settings:
       placeholder: ''
     third_party_settings:
@@ -394,7 +410,7 @@ content:
     type: number
     region: content
   field_kpi_pl_cl_app_starts:
-    weight: 53
+    weight: 7
     settings:
       placeholder: ''
     third_party_settings:
@@ -419,7 +435,7 @@ content:
     type: number
     region: content
   field_kpi_pl_cl_app_subs:
-    weight: 54
+    weight: 8
     settings:
       placeholder: ''
     third_party_settings:
@@ -444,7 +460,7 @@ content:
     type: number
     region: content
   field_kpi_pl_cl_task_rate:
-    weight: 55
+    weight: 9
     settings:
       placeholder: ''
     third_party_settings:
@@ -469,7 +485,7 @@ content:
     type: number
     region: content
   field_kpi_pl_em_app_review_rate:
-    weight: 58
+    weight: 12
     settings:
       placeholder: ''
     third_party_settings:
@@ -494,7 +510,7 @@ content:
     type: number
     region: content
   field_kpi_pl_em_app_review_time:
-    weight: 59
+    weight: 13
     settings:
       placeholder: ''
     third_party_settings:
@@ -519,7 +535,7 @@ content:
     type: number
     region: content
   field_kpi_pl_em_app_reviews:
-    weight: 57
+    weight: 11
     settings:
       placeholder: ''
     third_party_settings:
@@ -544,7 +560,7 @@ content:
     type: number
     region: content
   field_kpi_sessions_clicks_pl_pct:
-    weight: 52
+    weight: 6
     settings:
       placeholder: ''
     third_party_settings:
@@ -570,7 +586,7 @@ content:
     region: content
   field_link_group:
     type: entity_reference_paragraphs
-    weight: 43
+    weight: 48
     settings:
       title: 'Link group'
       title_plural: 'Link groups'
@@ -654,7 +670,7 @@ content:
     type: string_textfield
     region: content
   field_log_in_links:
-    weight: 42
+    weight: 41
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -683,7 +699,7 @@ content:
     type: entity_reference_hierarchy_autocomplete
     region: content
   field_ref_contact_info:
-    weight: 40
+    weight: 39
     settings:
       match_operator: CONTAINS
       size: 60
@@ -734,7 +750,7 @@ content:
     type: string_textarea
     region: content
   field_service_eligibility_info:
-    weight: 39
+    weight: 38
     settings:
       match_operator: CONTAINS
       size: 60
@@ -762,7 +778,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_service_file:
-    weight: 4
+    weight: 12
     settings:
       form_mode: default
       label_singular: ''
@@ -826,7 +842,7 @@ content:
     type: link_default
     region: content
   field_service_kpi_choice:
-    weight: 51
+    weight: 4
     settings: {  }
     third_party_settings:
       conditional_fields: {  }
@@ -841,7 +857,7 @@ content:
     type: string_textfield
     region: content
   field_service_links:
-    weight: 3
+    weight: 11
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -867,14 +883,14 @@ content:
     type: link_default
     region: content
   field_service_metatags:
-    weight: 5
+    weight: 2
     settings:
       sidebar: true
     third_party_settings: {  }
     type: metatag_firehose
     region: content
   field_service_offered_by:
-    weight: 41
+    weight: 40
     settings:
       match_operator: CONTAINS
       size: 60
@@ -918,7 +934,7 @@ content:
     type: link_default
     region: content
   field_service_ref_guide_page_1:
-    weight: 38
+    weight: 37
     settings:
       match_operator: CONTAINS
       size: 60
@@ -967,14 +983,14 @@ content:
     region: content
   field_service_sections:
     type: entity_reference_paragraphs
-    weight: 86
+    weight: 46
     settings:
       title: Paragraph
       title_plural: Paragraphs
       edit_mode: open
-      add_mode: dropdown
+      add_mode: button
       form_display_mode: default
-      default_paragraph_type: ''
+      default_paragraph_type: service_section
     third_party_settings: {  }
     region: content
   field_service_video:
@@ -998,7 +1014,7 @@ content:
     type: inline_entity_form_complex
     region: content
   field_services_social_links:
-    weight: 37
+    weight: 36
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -1015,7 +1031,7 @@ content:
     type: string_textfield
     region: content
   field_state_organization_tax:
-    weight: 6
+    weight: 4
     settings:
       match_operator: CONTAINS
       size: 60
@@ -1032,7 +1048,7 @@ content:
     region: content
   moderation_state:
     type: moderation_state_default
-    weight: 9
+    weight: 5
     settings: {  }
     region: content
     third_party_settings: {  }
@@ -1088,7 +1104,7 @@ content:
     type: options_select
     region: content
   url_redirects:
-    weight: 10
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }
