@@ -20,7 +20,6 @@
   - DP-23839: Patched access_unpublish contrib module to eliminate warnings.
   
 ### Changed
-  - DP-23222: Alerts without jQuery, running ASAP.
   - DP-23730: - Adds field_collections to external_data_resource.
 - Adds field_data_flag to external_data_resource.
 - Updates view displays for external_data_resource.
