@@ -139,7 +139,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
       $results['emergencyAlerts']['emergencyHeader']['title'] = $node->label();
     }
 
-    $build = [
+    $build = isset($results['emergencyAlerts']) ? [
       '#theme' => 'mass_alerts_sitewide',
       '#emergencyAlerts' => $results['emergencyAlerts'],
       '#cache' => [
@@ -149,14 +149,14 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           MASS_ALERTS_TAG_SITEWIDE . ':list'
         ]
       ],
-    ];
+    ] : [];
 
     $output = $this->renderer->renderRoot($build);
     $this->attachSvg($output);
 
     $response = new CacheableResponse($output);
 
-    if ($node) {
+    if ($node ?? FALSE) {
       $response->addCacheableDependency($node);
     }
 
