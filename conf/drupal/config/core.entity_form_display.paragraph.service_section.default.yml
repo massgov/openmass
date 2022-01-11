@@ -1,0 +1,29 @@
+uuid: d82c8414-2fd0-4235-9d0b-9330403d8080
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.service_section.field_service_section_content
+    - paragraphs.paragraphs_type.service_section
+  module:
+    - paragraphs
+id: paragraph.service_section.default
+targetEntityType: paragraph
+bundle: service_section
+mode: default
+content:
+  field_service_section_content:
+    type: entity_reference_paragraphs
+    weight: 0
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  status: true
