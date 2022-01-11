@@ -284,13 +284,17 @@ function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
 function mass_alerts_theme() {
   return [
     'mass_alerts_block' => [
-      'variables' => ['path' => NULL],
+      'variables' => ['path' => NULL, 'node_type' => NULL],
     ],
     'mass_alerts_sitewide' => [
-      'variables' => ['emergencyAlerts' => NULL],
+      'variables' => ['emergencyAlerts' => NULL, 'node_type' => NULL],
     ],
     'mass_alerts_page' => [
-      'variables' => ['headerAlerts' => NULL, 'headerTitle' => NULL],
+      'variables' => [
+        'headerAlerts' => NULL,
+        'headerTitle' => NULL,
+        'node_type' => NULL,
+      ],
     ],
   ];
 }

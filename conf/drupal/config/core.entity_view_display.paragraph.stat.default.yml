@@ -6,6 +6,7 @@ dependencies:
     - field.field.paragraph.stat.field_alignment
     - field.field.paragraph.stat.field_description
     - field.field.paragraph.stat.field_stat
+    - field.field.paragraph.stat.field_stat_wrapping
     - paragraphs.paragraphs_type.stat
   module:
     - options
@@ -36,6 +37,13 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     type: string
+    region: content
+  field_stat_wrapping:
+    weight: 3
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
     region: content
 hidden:
   created: true

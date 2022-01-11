@@ -4373,6 +4373,27 @@ function mass_theme_preprocess_field__person_org_role(&$variables) {
 }
 
 /**
+ * Data to fetch the alerts as soon as possible.
+ *
+ * @see docroot/themes/custom/mass_theme/templates/layout/html.html.twig
+ */
+function mass_theme_build_data_from_alert_blocks(&$variables) {
+  $is_front_page = \Drupal::service('path.matcher')->isFrontPage();
+  /** @var Drupal\Core\Routing\CurrentRouteMatch */
+  $current_route_match_service = Drupal::service('current_route_match');
+  /** @var \Drupal\node\Entity\Node */
+  $node = $current_route_match_service->getParameter('node');
+  if (is_string($node) && $node) {
+    $node = Node::load($node);
+  }
+  // Defining paths to fetch alerts.
+  $paths = [];
+  $paths[] = ['#path' => '/alerts/sitewide'];
+  !$is_front_page && $node ? $paths[] = ['#path' => '/alerts/page/' . $node->id()] : NULL;
+  $variables['mass_alerts_block_request_data'] = json_encode($paths);
+}
+
+/**
  * Implements hook_preprocess_HOOK().
  *
  * Various global preprocessing.
@@ -4382,6 +4403,7 @@ function mass_theme_preprocess_html(&$variables) {
     $node_type = $variables['node_type'];
   }
 
+  mass_theme_build_data_from_alert_blocks($variables);
   $variables['optimize_hiding_snippet'] = \Drupal::state()->get('optimize_hiding_snippet', FALSE);
 
   // Add Schema.org markup for body.
@@ -6433,6 +6455,7 @@ function mass_theme_googletranslate_options_languages() {
     'bo' => 'Tibetan',
     'br' => 'Breton',
     'ca' => 'Catalan',
+    'cv' => 'Cape Verdean Creole',
     'co' => 'Corsican',
     'cs' => 'Czech',
     'cy' => 'Welsh',
@@ -6550,7 +6573,8 @@ function mass_theme_googletranslate_options_languages() {
     'xh' => 'Xhosa',
     'yo' => 'Yoruba',
     'zh-CN' => 'Chinese',
-    'zu' => 'Zulu',
+    'zh-TW' => 'Chinese, Traditional',
+    'zu' => 'Zulu'
   ];
   return $language_codes;
 }
@@ -7085,8 +7109,8 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
  */
 function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
   // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
-  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image'];
-  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping'];
+  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
+  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
   $contained = ['rich_text'];
 
   $components = [];
@@ -7099,12 +7123,18 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
     if (mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
       $items = [];
       do {
-        $items[] = $paragraphs[$i];
+        if (isset($paragraphs[$i])) {
+          $items[] = $paragraphs[$i];
+        }
+
         $i++;
         // Keep grouping together while the next element has the check.
       } while (isset($paragraphs[$i]) && mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields));
+
       // Once done, also group the following one.
-      $items[] = $paragraphs[$i];
+      if (isset($paragraphs[$i])) {
+        $items[] = $paragraphs[$i];
+      }
 
       $component = ['group' => 'default', 'items' => $items];
     }
