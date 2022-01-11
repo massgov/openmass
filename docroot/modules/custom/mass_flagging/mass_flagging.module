@@ -34,7 +34,7 @@ function mass_flagging_help($route_name, RouteMatchInterface $route_match) {
  */
 function mass_flagging_node_update(Node $node) {
   // We need a way to bypass notifications (eg when we do bulk updates via drush).
-  $bypass_notification = isset($_ENV['MASS_FLAGGING_BYPASS']) ? (bool) $_ENV['MASS_FLAGGING_BYPASS'] : FALSE;
+  $bypass_notification = isset($_ENV['MASS_FLAGGING_BYPASS']) ? (bool) $_ENV['MASS_FLAGGING_BYPASS'] : PHP_SAPI === 'cli';
 
   // Sends Watch notifications on local and Prod environments only when
   // there is no bypass flag.
