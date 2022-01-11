@@ -1,27 +1,34 @@
 
 
-## [0.306.0] - January 4, 2022
+## [0.308.0] - January 11, 2022
 
-### Changed
-  - DP-23357: Reduce number of pages in backstop.
-  - DP-23377: Increase max number of custom link groups on service page from 6 to 10.
-  - DP-23591: Upcoming events are shown since today instead of now, to see upcoming events no matter the time.
-  - DP-23674: Allowed Parent Bundles for Location Details.
-  - DP-23678: Remove Cloudflare, Fix akamai purge in prod
-  - DP-23687: Update help text for parent page field.
-  - DP-23719: Parent report modifications.
-  
 ### Added
-  - DP-23359: Add bulk feature to add collection information to content.
-  - DP-23630: Hierarchy Tab:
-- Message box when parent-child relationships are not set correctly
-- Changes message for wrong relationships from warning to error
-  - DP-23695: Add languages to Google Translate widget.
+  - DP-22007: Added the Entity Usage module.
+  - DP-22872: - Usage records from non-current revisions are deleted on entity creation/update.
+- Added tests for nodes and media by checking the Usage table (Pages Linking Here tab).
+- Removed some deprecated functionality for "Pages linking here".
+  - DP-23382: Add report for D2D redirects in Drupal.
   
 ### Fixed
-  - DP-23561: Change monolog level notice level from string to int to avoid warning messages.
-  - DP-23651: Fix halfImage promo page overlap issue.
-  - DP-23654: Add tests to ensure back from preview and access links.
-  - DP-23691: Checks field_section_long_form_content is not null before trying to access any methods.
-  - DP-9880: Fixed image upload requirements and added custom style for display.
+  - DP-22028: Add map zoom level to allow mapped locations to zoom out on mobile.
+  - DP-23215: Align stat component(s) in stack row sections, org page, vertically.
+  - DP-23681: - Avoids storing records for non-current revisions on the nested_set_field_primary_parent_node table.
+- To clear nested_set_field_primary_parent_node table from non-current revisions.
+  - Adds an update hook.
+  - Implements hook_entity_update & hook_form_alter.
+  - DP-23836: Fixing Invalid argument exception on interal path for link fields.
+  - DP-23839: Patched access_unpublish contrib module to eliminate warnings.
+  
+### Changed
+  - DP-23222: Alerts without jQuery, running ASAP.
+  - DP-23730: - Adds field_collections to external_data_resource.
+- Adds field_data_flag to external_data_resource.
+- Updates view displays for external_data_resource.
+- Updates form display for external_data_resource.
+  - DP-23763: - Unpublished children of a node are ignored when unpublishing a parent.
+- A node cannot be published if its parent is not published.
+  - DP-23821: Field order seen by authors corrected for service and form content types.
+  - DP-23811: Alert title max length reduced to 145 and character countdown added.
+  - DP-23818: Allowed parents of service details page expanded to include 8 more types.
+  - DP-3904: Stop logging 404 in watchdog
   
