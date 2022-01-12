@@ -8,8 +8,8 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\node\NodeInterface;
 use Drupal\Core\Url;
-use Drupal\node\Entity\Node;
 
 /**
  * Provides a mayflower Block for @organisms/by-template/ajax-pattern.
@@ -88,24 +88,21 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
 
     $config = $this->getConfiguration();
     $path = FALSE;
-    $node = $this->routeMatch->getParameter('node');
-    if (is_string($node) && $node) {
-      $node = Node::load($node);
-    }
-    $node_type = $node ? $node->bundle() : '';
 
     if ($config['alerts_block_type'] == 'sitewide') {
       $path = Url::fromRoute('mass_alerts.site_alerts')->toString();
     }
-    elseif ($node) {
-      $nid = $node->id();
-      $path = Url::fromRoute('mass_alerts.page_alerts', ['nid' => $nid])->toString();
+    else {
+      $node = $this->routeMatch->getParameter('node');
+      if ($node instanceof NodeInterface) {
+        $nid = $node->id();
+        $path = Url::fromRoute('mass_alerts.page_alerts', ['nid' => $nid])->toString();
+      }
     }
 
     return [
       '#theme' => 'mass_alerts_block',
       '#path' => $path,
-      '#node_type' => $node_type,
       '#cache' => [
         'contexts' => ['url'],
       ],
