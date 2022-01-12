@@ -135,6 +135,9 @@
 {% endblock %}
 
 {% block pageContent %}
+
+  {{ content.field_service_sections }}
+
   {% set featuredTasks = node.field_service_ref_actions_2 is not empty %}
   {% set allTasks = node.field_service_ref_actions is not empty %}
   {% set linkGroups = node.field_link_group is not empty %}
