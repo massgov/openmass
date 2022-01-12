@@ -22,10 +22,10 @@ default_value_callback: ''
 settings:
   handler: 'default:paragraph'
   handler_settings:
-    negate: 0
     target_bundles:
       file_download_single: file_download_single
       page: page
+    negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 84
@@ -130,8 +130,11 @@ settings:
         weight: 117
         enabled: false
       file_download_single:
-        enabled: true
         weight: 118
+        enabled: true
+      footnotes:
+        weight: 123
+        enabled: false
       full_bleed:
         weight: 119
         enabled: false
@@ -143,9 +146,6 @@ settings:
         enabled: false
       homepage_background_images:
         weight: 122
-        enabled: false
-      footnotes:
-        weight: 123
         enabled: false
       hours:
         weight: 123
@@ -165,11 +165,17 @@ settings:
       image:
         weight: 128
         enabled: false
+      image_credit:
+        weight: 134
+        enabled: false
       issuer:
         weight: 129
         enabled: false
       links:
         weight: 130
+        enabled: false
+      links_downloads:
+        weight: 133
         enabled: false
       list_dynamic:
         weight: 131
@@ -177,14 +183,8 @@ settings:
       list_item_document:
         weight: 132
         enabled: false
-      links_downloads:
-        weight: 133
-        enabled: false
       list_item_link:
         weight: 133
-        enabled: false
-      image_credit:
-        weight: 134
         enabled: false
       list_static:
         weight: 134
@@ -214,8 +214,8 @@ settings:
         weight: 142
         enabled: false
       page:
-        enabled: true
         weight: 143
+        enabled: true
       page_group:
         weight: 144
         enabled: false
@@ -258,6 +258,9 @@ settings:
       section_heading_text:
         weight: 157
         enabled: false
+      section_long_form:
+        weight: 161
+        enabled: false
       section_with_heading:
         weight: 158
         enabled: false
@@ -266,9 +269,6 @@ settings:
         enabled: false
       stacked_band:
         weight: 160
-        enabled: false
-      section_long_form:
-        weight: 161
         enabled: false
       start_button:
         weight: 161
