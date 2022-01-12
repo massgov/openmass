@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Installation functions for Mass Hierarchy.
+ */
+
+use Drupal\node\Entity\Node;
+
+/**
+ * Implementations of hook_update_N().
+ */
+
+/**
+ * Remove records on nested set table from non-current revisions.
+ */
+function mass_hierarchy_update_8101() {
+  mass_hierarchy_delete_all_non_current_revisions_from_nested_set_table();
+}

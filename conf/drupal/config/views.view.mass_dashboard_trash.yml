@@ -47,6 +47,7 @@ dependencies:
     - taxonomy
     - user
     - views_autocomplete_filters
+    - views_bulk_operations
 id: mass_dashboard_trash
 label: 'Mass Dashboard Trash'
 module: views
@@ -211,14 +212,14 @@ display:
           hide_empty: false
           default_field_elements: true
       fields:
-        node_bulk_form:
-          id: node_bulk_form
-          table: node
-          field: node_bulk_form
-          relationship: nid
+        views_bulk_operations_bulk_form:
+          id: views_bulk_operations_bulk_form
+          table: views
+          field: views_bulk_operations_bulk_form
+          relationship: none
           group_type: group
           admin_label: ''
-          label: ''
+          label: 'Views bulk operations'
           exclude: false
           alter:
             alter_text: false
@@ -251,7 +252,7 @@ display:
           element_class: ''
           element_label_type: ''
           element_label_class: ''
-          element_label_colon: false
+          element_label_colon: true
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
@@ -259,13 +260,20 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
+          batch: true
+          batch_size: 10
+          form_step: true
+          buttons: true
+          clear_on_exposed: true
           action_title: Action
-          include_exclude: include
           selected_actions:
-            - flag_action.watch_content.flag
-            - flag_action.watch_content.unflag
-          entity_type: node
-          plugin_id: node_bulk_form
+            2:
+              action_id: mass_content_moderation_restore_action
+              preconfiguration:
+                label_override: 'Restore to unpublished state'
+                add_confirmation: 0
+          force_selection_info: 0
+          plugin_id: views_bulk_operations_bulk_form
         title:
           id: title
           table: node_field_revision
@@ -1513,6 +1521,7 @@ display:
         operator: AND
         groups:
           1: AND
+      title: Trash
     cache_metadata:
       max-age: 0
       contexts:
