@@ -83,13 +83,7 @@ class HowToPageMetadataTest extends MetadataTestCase {
         ],
         'disambiguatingDescription' => 'Test Lede',
         'instrument' => "Online\n Test Method Details",
-        'potentialAction' => [
-          [
-            // @todo: I think this is broken.
-            'name' => NULL,
-            'url' => NULL,
-          ],
-        ],
+        'potentialAction' => [],
         'target' => [
           [
             '@type' => 'EntryPoint',
