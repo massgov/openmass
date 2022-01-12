@@ -239,3 +239,15 @@ function mass_media_file_move(FileInterface $file, FileInterface $source) {
     $file_system->delete($source->getFileUri());
   }
 }
+
+/**
+ * Implements hook_entity_bundle_info_alter().
+ */
+function mass_media_entity_bundle_info_alter(array &$bundles): void {
+  if (isset($bundles['media']['document'])) {
+    $bundles['media']['document']['class'] = \Drupal\mass_media\Entity\Bundle\DocumentBundle::class;
+  }
+  if (isset($bundles['media']['media_video'])) {
+    $bundles['media']['media_video']['class'] = \Drupal\mass_media\Entity\Bundle\VideoBundle::class;
+  }
+}
