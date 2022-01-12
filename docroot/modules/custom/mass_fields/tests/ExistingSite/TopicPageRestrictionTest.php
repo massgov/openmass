@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_fields\ExistingSite;
 
+use Drupal\file\Entity\File;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
@@ -92,12 +93,19 @@ class TopicPageRestrictionTest extends ExistingSiteBase {
       'title' => $this->randomMachineName(),
     ]);
 
+    $image = File::create([
+      'uri' => 'public://test.jpg',
+    ]);
+
+    $this->markEntityForCleanup($image);
+
     $data = [
       'type' => 'topic_page',
       'title' => $this->randomMachineName(),
       'field_restrict_link_management' => $restricted,
       'field_organizations' => $newOrgNode->id(),
       'field_topic_lede' => $this->randomString(20),
+      'field_topic_bg_wide' => $image,
       'status' => 1,
       'moderation_state' => 'published',
     ];
