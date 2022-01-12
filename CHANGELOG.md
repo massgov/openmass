@@ -1,5 +1,38 @@
 
 
+## [0.308.0] - January 11, 2022
+
+### Added
+  - DP-22007: Added the Entity Usage module.
+  - DP-22872: - Usage records from non-current revisions are deleted on entity creation/update.
+- Added tests for nodes and media by checking the Usage table (Pages Linking Here tab).
+- Removed some deprecated functionality for "Pages linking here".
+  - DP-23382: Add report for D2D redirects in Drupal.
+  
+### Fixed
+  - DP-22028: Add map zoom level to allow mapped locations to zoom out on mobile.
+  - DP-23215: Align stat component(s) in stack row sections, org page, vertically.
+  - DP-23681: - Avoids storing records for non-current revisions on the nested_set_field_primary_parent_node table.
+- To clear nested_set_field_primary_parent_node table from non-current revisions.
+  - Adds an update hook.
+  - Implements hook_entity_update & hook_form_alter.
+  - DP-23836: Fixing Invalid argument exception on interal path for link fields.
+  - DP-23839: Patched access_unpublish contrib module to eliminate warnings.
+  
+### Changed
+  - DP-23730: - Adds field_collections to external_data_resource.
+- Adds field_data_flag to external_data_resource.
+- Updates view displays for external_data_resource.
+- Updates form display for external_data_resource.
+  - DP-23763: - Unpublished children of a node are ignored when unpublishing a parent.
+- A node cannot be published if its parent is not published.
+  - DP-23821: Field order seen by authors corrected for service and form content types.
+  - DP-23811: Alert title max length reduced to 145 and character countdown added.
+  - DP-23818: Allowed parents of service details page expanded to include 8 more types.
+  - DP-3904: Stop logging 404 in watchdog
+  
+
+
 
 ## [0.306.0] - January 4, 2022
 
