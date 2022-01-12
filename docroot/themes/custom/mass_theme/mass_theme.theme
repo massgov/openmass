@@ -7097,9 +7097,9 @@ function mass_theme_preprocess_paragraph__featured_content_single_item(&$variabl
 function mass_theme_preprocess_paragraph__social_media(&$variables) {
   $paragraph = $variables['paragraph'];
   $node = Helper::getParentNode($paragraph);
-
-  $variables['social_links'] = $node->get('field_social_links')->view();
-
+  $social_field_name = $node->bundle() == 'service_page' ? 'field_services_social_links' : 'field_social_links';
+  $variables['social_links'] = $node && ($node->$social_field_name ?? FALSE) ?
+    $node->$social_field_name->view() : [];
 }
 
 /**
