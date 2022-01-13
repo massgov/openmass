@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_alerts\ExistingSiteJavascript;
 
+use Behat\Mink\Exception\ExpectationException;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\paragraphs\Entity\Paragraph;
 use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
@@ -31,6 +32,9 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
     }
   }
 
+  /**
+   * Creates an alert site wide.
+   */
   private function createSiteWideAlert() {
     $related = $this->createNode([
       'type' => 'service_page',
@@ -139,8 +143,11 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
    */
   private function getContentTypesAndSelectorForSpecificAlerts() {
     $bundles = $this->getBundlesToTestAlerts();
+
     // @todo: Still having issues to tests campaign_landing.
-    unset($bundles['campaign_landing']);
+    $campaign_landing_key = array_search('campaign_landing', $bundles);
+    unset($bundles[$campaign_landing_key]);
+
     $content_types_and_selectors = [];
     foreach ($bundles as $bundle) {
       $content_types_and_selectors[$bundle] = '#main-content > div.pre-content > div.mass-alerts-block > div > section > button';
@@ -149,7 +156,7 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
       'decision_tree' => '#main-content > div.pre-content > div.decision-tree > div > div > section > button',
       'person' => '#main-content > div.ma__bio__content > div > div > div.mass-alerts-block > div > section > button',
     ];
-    return $irregular_selectors + $content_types_and_selectors;
+    return $content_types_and_selectors + $irregular_selectors;
   }
 
   /**
@@ -183,11 +190,19 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
   /**
    * Asserts alerts placements
    */
-  private function checkAlertsMatchBundleAndSelectors($nodes, $content_types_and_selectors) {
+  private function checkAlertsMatchBundleAndSelectors($nodes, $content_types_and_selectors, $test_ref) {
     foreach ($nodes as $node) {
       $this->drupalGet($node->toUrl()->toString());
       $selector = $content_types_and_selectors[$node->bundle()];
-      $this->assertSession()->elementExists('css', $selector);
+      $element = $this->getCurrentPage()->find('css', $selector);
+      // $this->assertSession()->elementExists()
+      if ($element) {
+        continue;
+      }
+      throw new ExpectationException(
+        "'$selector' not found in {$node->bundle()} for $test_ref",
+        $this->getSession()->getDriver()
+      );
     }
   }
 
@@ -200,7 +215,7 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
     /** @var \Drupal\node\Entity\Node[] */
     $nodes = $this->createNodesToTestAlert($content_types_and_selectors);
     $this->createSiteWideAlert();
-    $this->checkAlertsMatchBundleAndSelectors($nodes, $content_types_and_selectors);
+    $this->checkAlertsMatchBundleAndSelectors($nodes, $content_types_and_selectors, __FUNCTION__);
   }
 
   /**
@@ -209,10 +224,12 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
   public function testSpecificAlertPlacement() {
     $this->createAndLoginUser('administrator');
     $content_types_and_selectors = $this->getContentTypesAndSelectorForSpecificAlerts();
+    dump($content_types_and_selectors);
+    return;
     /** @var \Drupal\node\Entity\Node[] */
     $nodes = $this->createNodesToTestAlert($content_types_and_selectors);
     $this->createSpecificAlert($nodes);
-    $this->checkAlertsMatchBundleAndSelectors($nodes, $content_types_and_selectors);
+    $this->checkAlertsMatchBundleAndSelectors($nodes, $content_types_and_selectors, __FUNCTION__);
   }
 
 }
