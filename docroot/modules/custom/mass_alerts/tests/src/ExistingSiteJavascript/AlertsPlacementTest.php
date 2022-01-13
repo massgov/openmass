@@ -41,7 +41,7 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
       'title' => 'EmergencyAlertsClientSideTest Service Page',
     ]);
     $alert_message_text = $this->randomMachineName();
-    $node = $this->createNode([
+    $this->createNode([
       'type' => 'sitewide_alert',
       'title' => $this->randomMachineName(),
       'status' => 1,
@@ -189,7 +189,7 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
   }
 
   /**
-   * Asserts alerts placements
+   * Asserts alerts placements.
    */
   private function checkAlertsMatchBundleAndSelectors($nodes, $content_types_and_selectors, $test_ref) {
     foreach ($nodes as $node) {
