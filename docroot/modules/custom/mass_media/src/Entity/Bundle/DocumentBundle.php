@@ -12,8 +12,6 @@ class DocumentBundle extends MediaBundle {
 
   /**
    * Get the changed time for the first referenced file.
-   *
-   * @param $field_name
    */
   public function getFileChangedTime($field_name = 'field_upload_file'): string {
     $file = $this->{$field_name}->entity;
