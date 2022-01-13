@@ -93,10 +93,10 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
   }
 
   /**
-   * Get the content types and the selectors for wide alerts.
+   * Returns bundles where we are going to test the specific and wide alerts.
    */
-  private function getContentTypesAndSelectorForWideAlerts() {
-    $bundles = [
+  private function getBundlesToTestAlerts() {
+    return [
       'campaign_landing',
       'person',
       'service_page',
@@ -120,12 +120,17 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
       'decision',
       'decision_tree',
     ];
+  }
 
+  /**
+   * Get the content types and the selectors for wide alerts.
+   */
+  private function getContentTypesAndSelectorForWideAlerts() {
+    $bundles = $this->getBundlesToTestAlerts();
     $content_types_and_selectors = [];
     foreach ($bundles as $bundle) {
       $content_types_and_selectors[$bundle] = 'body > div.dialog-off-canvas-main-canvas > div.mass-alerts-block > section > div.ma__emergency-alerts__content.js-accordion-content > div > p > span';
     }
-
     return $content_types_and_selectors;
   }
 
@@ -133,38 +138,17 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
    * Get the content types and the selectors for wide alerts.
    */
   private function getContentTypesAndSelectorForSpecificAlerts() {
-    $bundles = [
-      'service_page',
-      'advisory',
-      'service_details',
-      'news',
-      'org_page',
-      'info_details',
-      'guide_page',
-      'how_to_page',
-      'rules',
-      'curated_list',
-      'location',
-      'topic_page',
-      'binder',
-      'event',
-      'location_details',
-      'regulation',
-      'form_page',
-      'executive_order',
-      'decision',
-    ];
-
+    $bundles = $this->getBundlesToTestAlerts();
+    // @todo: Still having issues to tests campaign_landing.
+    unset($bundles['campaign_landing']);
     $content_types_and_selectors = [];
     foreach ($bundles as $bundle) {
       $content_types_and_selectors[$bundle] = '#main-content > div.pre-content > div.mass-alerts-block > div > section > button';
     }
-
     $irregular_selectors = [
       'decision_tree' => '#main-content > div.pre-content > div.decision-tree > div > div > section > button',
       'person' => '#main-content > div.ma__bio__content > div > div > div.mass-alerts-block > div > section > button',
     ];
-
     return $irregular_selectors + $content_types_and_selectors;
   }
 
@@ -197,48 +181,38 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
   }
 
   /**
-   * Tests the placement for Site Wide Alerts.
+   * Asserts alerts placements
    */
-  public function testWideAlertPlacement() {
-
-    $this->createAndLoginUser('administrator');
-
-    $content_types_and_selectors = $this->getContentTypesAndSelectorForWideAlerts();
-
-    /** @var \Drupal\node\Entity\Node[] */
-    $nodes = $this->createNodesToTestAlert($content_types_and_selectors);
-
-    $this->createSiteWideAlert();
-
+  private function checkAlertsMatchBundleAndSelectors($nodes, $content_types_and_selectors) {
     foreach ($nodes as $node) {
       $this->drupalGet($node->toUrl()->toString());
       $selector = $content_types_and_selectors[$node->bundle()];
       $this->assertSession()->elementExists('css', $selector);
     }
+  }
 
+  /**
+   * Tests the placement for Site Wide Alerts.
+   */
+  public function testWideAlertPlacement() {
+    $this->createAndLoginUser('administrator');
+    $content_types_and_selectors = $this->getContentTypesAndSelectorForWideAlerts();
+    /** @var \Drupal\node\Entity\Node[] */
+    $nodes = $this->createNodesToTestAlert($content_types_and_selectors);
+    $this->createSiteWideAlert();
+    $this->checkAlertsMatchBundleAndSelectors($nodes, $content_types_and_selectors);
   }
 
   /**
    * Test the placement of specific alerts is correct.
    */
   public function testSpecificAlertPlacement() {
-
     $this->createAndLoginUser('administrator');
-
-    // @todo: Still having issues to tests campaign_landing.
     $content_types_and_selectors = $this->getContentTypesAndSelectorForSpecificAlerts();
-
     /** @var \Drupal\node\Entity\Node[] */
     $nodes = $this->createNodesToTestAlert($content_types_and_selectors);
-
     $this->createSpecificAlert($nodes);
-
-    foreach ($nodes as $node) {
-      $this->drupalGet($node->toUrl()->toString());
-      $selector = $content_types_and_selectors[$node->bundle()];
-      $this->assertSession()->elementExists('css', $selector);
-    }
-
+    $this->checkAlertsMatchBundleAndSelectors($nodes, $content_types_and_selectors);
   }
 
 }
