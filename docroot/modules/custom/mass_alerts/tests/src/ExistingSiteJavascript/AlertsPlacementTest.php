@@ -52,15 +52,22 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
   }
 
   /**
+   * Creates and logs in a user with a specific role.
+   */
+  private function createAndLoginUser($role) {
+    $user = $this->createUser();
+    $user->addRole($role);
+    $user->save();
+    $this->drupalLogin($user);
+    $this->unpublishAlerts();
+  }
+
+  /**
    * Test the placement of specific alerts is correct.
    */
   public function testSpecificAlertPlacement() {
 
-    $user = $this->createUser();
-    $user->addRole('administrator');
-    $user->save();
-    $this->drupalLogin($user);
-    $this->unpublishAlerts();
+    $this->createAndLoginUser('administrator');
 
     // @todo: Still having issues to tests campaign_landing.
     $content_types = [
