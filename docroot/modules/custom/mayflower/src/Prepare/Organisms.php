@@ -901,6 +901,41 @@ class Organisms {
   }
 
   /**
+   * Returns the variables structure required to render an Inline Links.
+   *
+   * @param array $items
+   *   Items of the list.
+
+   *
+   * @see @organisms/by-template/inline-links.twig
+   *
+   * @return array
+   *   Returns a structured array of inline links.
+   */
+  public static function prepareInlineLinks(array $items, array $options) {
+    $links = [];
+
+    // Create the links data structure.
+    foreach ($items as $item) {
+
+      $links[] = [
+        'text' => $item['title'],
+        'href' => $item['url'],
+      ];
+    }
+
+    if ($links) {
+      return [
+        'ariaLabel' => $options['ariaLabel'],
+        'links' => $links,
+      ];
+    }
+    else {
+      return [];
+    }
+  }
+
+  /**
    * Returns the variables structure required for ActionDetails.
    *
    * @param object $entity
