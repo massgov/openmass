@@ -59,7 +59,12 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
   /**
    * Creates an specific alerts with specific target ids.
    */
-  private function createSpecificAlert($targets) {
+  private function createSpecificAlert(array $nodes) {
+
+    $targets = [];
+    foreach ($nodes as $node) {
+      $targets[] = $node->id();
+    }
 
     $this->createNode([
       'type' => 'alert',
@@ -125,16 +130,48 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
   }
 
   /**
-   * Tests the placement for Site Wide Alerts.
+   * Get the content types and the selectors for wide alerts.
    */
-  public function testWideAlertPlacement() {
+  private function getContentTypesAndSelectorForSpecificAlerts() {
+    $bundles = [
+      'service_page',
+      'advisory',
+      'service_details',
+      'news',
+      'org_page',
+      'info_details',
+      'guide_page',
+      'how_to_page',
+      'rules',
+      'curated_list',
+      'location',
+      'topic_page',
+      'binder',
+      'event',
+      'location_details',
+      'regulation',
+      'form_page',
+      'executive_order',
+      'decision',
+    ];
 
-    $this->createAndLoginUser('administrator');
+    $content_types_and_selectors = [];
+    foreach ($bundles as $bundle) {
+      $content_types_and_selectors[$bundle] = '#main-content > div.pre-content > div.mass-alerts-block > div > section > button';
+    }
 
-    $content_types_and_selectors = $this->getContentTypesAndSelectorForWideAlerts();
+    $irregular_selectors = [
+      'decision_tree' => '#main-content > div.pre-content > div.decision-tree > div > div > section > button',
+      'person' => '#main-content > div.ma__bio__content > div > div > div.mass-alerts-block > div > section > button',
+    ];
 
-    $targets = [];
-    /** @var \Drupal\node\Entity\Node[] */
+    return $irregular_selectors + $content_types_and_selectors;
+  }
+
+  /**
+   * Creates the nodes needed to test an Alert.
+   */
+  private function createNodesToTestAlert($content_types_and_selectors) {
     $nodes = [];
 
     foreach ($content_types_and_selectors as $content_type => $selector) {
@@ -153,9 +190,23 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
       }
 
       $node = $this->createNode($node_data);
-      $targets[] = ['target_id' => $node->id()];
       $nodes[] = $node;
     }
+
+    return $nodes;
+  }
+
+  /**
+   * Tests the placement for Site Wide Alerts.
+   */
+  public function testWideAlertPlacement() {
+
+    $this->createAndLoginUser('administrator');
+
+    $content_types_and_selectors = $this->getContentTypesAndSelectorForWideAlerts();
+
+    /** @var \Drupal\node\Entity\Node[] */
+    $nodes = $this->createNodesToTestAlert($content_types_and_selectors);
 
     $this->createSiteWideAlert();
 
@@ -175,59 +226,16 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
     $this->createAndLoginUser('administrator');
 
     // @todo: Still having issues to tests campaign_landing.
-    $content_types = [
-      'person' => '#main-content > div.ma__bio__content > div > div > div.mass-alerts-block > div > section > button',
-      'service_page' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'advisory' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'service_details' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'news' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'org_page' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'info_details' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'guide_page' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'how_to_page' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'rules' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'curated_list' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'location' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'topic_page' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'binder' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'event' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'location_details' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'regulation' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'form_page' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'executive_order' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'decision' => '#main-content > div.pre-content > div.mass-alerts-block > div > section > button',
-      'decision_tree' => '#main-content > div.pre-content > div.decision-tree > div > div > section > button',
-    ];
+    $content_types_and_selectors = $this->getContentTypesAndSelectorForSpecificAlerts();
 
-    $targets = [];
     /** @var \Drupal\node\Entity\Node[] */
-    $nodes = [];
+    $nodes = $this->createNodesToTestAlert($content_types_and_selectors);
 
-    foreach ($content_types as $content_type => $selector) {
-      $node_data = [
-        'type' => $content_type,
-        'title' => $this->randomMachineName(),
-        'status' => 1,
-        'moderation_state' => MassModeration::PUBLISHED,
-      ];
-
-      if ($content_type == 'person') {
-        $node_data += [
-          'field_person_first_name' => $this->randomString(10),
-          'field_person_last_name' => $this->randomString(10),
-        ];
-      }
-
-      $node = $this->createNode($node_data);
-      $targets[] = ['target_id' => $node->id()];
-      $nodes[] = $node;
-    }
-
-    $this->createSpecificAlert($targets);
+    $this->createSpecificAlert($nodes);
 
     foreach ($nodes as $node) {
       $this->drupalGet($node->toUrl()->toString());
-      $selector = $content_types[$node->bundle()];
+      $selector = $content_types_and_selectors[$node->bundle()];
       $this->assertSession()->elementExists('css', $selector);
     }
 
