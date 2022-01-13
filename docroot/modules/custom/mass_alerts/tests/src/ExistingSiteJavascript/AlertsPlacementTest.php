@@ -165,13 +165,14 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
   private function createNodesToTestAlert($content_types_and_selectors) {
     $nodes = [];
 
+    $node_data = [
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ];
+
     foreach ($content_types_and_selectors as $content_type => $selector) {
-      $node_data = [
-        'type' => $content_type,
-        'title' => $this->randomMachineName(),
-        'status' => 1,
-        'moderation_state' => MassModeration::PUBLISHED,
-      ];
+      $node_data['title'] = $this->randomMachineName();
+      $node_data['type'] = $content_type;
 
       if ($content_type == 'person') {
         $node_data += [
