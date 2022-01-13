@@ -31,6 +31,31 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
     }
   }
 
+  private function createSiteWideAlert() {
+    $related = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'EmergencyAlertsClientSideTest Service Page',
+    ]);
+    $alert_message_text = $this->randomMachineName();
+    $node = $this->createNode([
+      'type' => 'sitewide_alert',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      // 'State 911 Department (6416)'.
+      'field_alert_ref_contact' => ['target_id' => 6416],
+      'field_alert_severity' => 'emergency_alert',
+      'field_sitewide_alert' => Paragraph::create([
+        'type' => 'sitewide_alert_message',
+        'field_sitewide_alert_message' => $alert_message_text,
+      ]),
+      'field_alert_related_links_5' => [
+        'uri' => 'entity:node/' . $related->id(),
+        'title' => $related->getTitle(),
+      ],
+    ]);
+  }
+
   /**
    * Creates an specific alerts with specific target ids.
    */
@@ -60,6 +85,86 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
     $user->save();
     $this->drupalLogin($user);
     $this->unpublishAlerts();
+  }
+
+  /**
+   * Get the content types and the selectors for wide alerts.
+   */
+  private function getContentTypesAndSelectorForWideAlerts() {
+    $bundles = [
+      'campaign_landing',
+      'person',
+      'service_page',
+      'advisory',
+      'service_details',
+      'news',
+      'org_page',
+      'info_details',
+      'guide_page',
+      'how_to_page',
+      'rules',
+      'curated_list',
+      'location',
+      'topic_page',
+      'binder',
+      'event',
+      'location_details',
+      'regulation',
+      'form_page',
+      'executive_order',
+      'decision',
+      'decision_tree',
+    ];
+
+    $content_types_and_selectors = [];
+    foreach ($bundles as $bundle) {
+      $content_types_and_selectors[$bundle] = 'body > div.dialog-off-canvas-main-canvas > div.mass-alerts-block > section > div.ma__emergency-alerts__content.js-accordion-content > div > p > span';
+    }
+
+    return $content_types_and_selectors;
+  }
+
+  /**
+   * Tests the placement for Site Wide Alerts.
+   */
+  public function testWideAlertPlacement() {
+
+    $this->createAndLoginUser('administrator');
+
+    $content_types_and_selectors = $this->getContentTypesAndSelectorForWideAlerts();
+
+    $targets = [];
+    /** @var \Drupal\node\Entity\Node[] */
+    $nodes = [];
+
+    foreach ($content_types_and_selectors as $content_type => $selector) {
+      $node_data = [
+        'type' => $content_type,
+        'title' => $this->randomMachineName(),
+        'status' => 1,
+        'moderation_state' => MassModeration::PUBLISHED,
+      ];
+
+      if ($content_type == 'person') {
+        $node_data += [
+          'field_person_first_name' => $this->randomString(10),
+          'field_person_last_name' => $this->randomString(10),
+        ];
+      }
+
+      $node = $this->createNode($node_data);
+      $targets[] = ['target_id' => $node->id()];
+      $nodes[] = $node;
+    }
+
+    $this->createSiteWideAlert();
+
+    foreach ($nodes as $node) {
+      $this->drupalGet($node->toUrl()->toString());
+      $selector = $content_types_and_selectors[$node->bundle()];
+      $this->assertSession()->elementExists('css', $selector);
+    }
+
   }
 
   /**
