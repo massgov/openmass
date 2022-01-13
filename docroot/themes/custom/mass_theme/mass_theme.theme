@@ -9,7 +9,6 @@ use Drupal\block\Entity\Block;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
@@ -29,7 +28,6 @@ use Drupal\mass_utility\RelatedToHelper;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -6684,7 +6682,7 @@ function mass_theme_preprocess_media(array &$variables) {
  *   - media: An individual media for display.
  */
 function mass_theme_preprocess_media_document(array &$variables) {
-  /** @var \Drupal\media\Entity\Media $media */
+  /** @var \Drupal\mass_media\Entity\Bundle\DocumentBundle $media */
   $media = $variables['elements']['#media'];
   $variables = array_merge($variables, Molecules::prepareDownloadLink($media));
   if ($variables['elements']['#view_mode'] == 'full') {
@@ -6694,7 +6692,7 @@ function mass_theme_preprocess_media_document(array &$variables) {
     $list_table_rows = [];
 
     // Get the attached file from the media entity.
-    if ($media_file_changed_time = media_file_changed_time($media, 'field_upload_file')) {
+    if ($media_file_changed_time = $media->getFileChangedTime()) {
       $list_table_rows[] = [
         'label' => 'Last Updated:',
         'text' => $media_file_changed_time,

@@ -681,3 +681,12 @@ function mass_content_entity_view_mode_alter(&$view_mode, $entity, $context) {
     }
   }
 }
+
+/**
+ * Implements hook_entity_bundle_info_alter().
+ */
+function mass_content_entity_bundle_info_alter(array &$bundles): void {
+  if (isset($bundles['user']['user'])) {
+    $bundles['user']['user']['class'] = \Drupal\mass_content\Entity\Bundle\UserBundle::class;
+  }
+}

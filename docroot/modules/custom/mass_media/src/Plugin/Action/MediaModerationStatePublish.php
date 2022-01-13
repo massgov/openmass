@@ -32,7 +32,7 @@ class MediaModerationStatePublish extends ActionBase {
   public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
     /** @var \Drupal\media\MediaInterface $object */
     // Get current moderation state.
-    $state = $object->get('moderation_state')->getString();
+    $state = $object->getM->getString();
 
     if ($state == "restricted") {
       // Get the current user.
