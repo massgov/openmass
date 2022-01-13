@@ -11,6 +11,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\mass_content\Entity\Bundle\UserBundle;
 use Drupal\node\Entity\Node;
 
 /**
@@ -687,6 +688,6 @@ function mass_content_entity_view_mode_alter(&$view_mode, $entity, $context) {
  */
 function mass_content_entity_bundle_info_alter(array &$bundles): void {
   if (isset($bundles['user']['user'])) {
-    $bundles['user']['user']['class'] = \Drupal\mass_content\Entity\Bundle\UserBundle::class;
+    $bundles['user']['user']['class'] = UserBundle::class;
   }
 }

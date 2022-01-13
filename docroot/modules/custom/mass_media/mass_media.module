@@ -13,7 +13,9 @@ use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
 use Drupal\Core\Url;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\mass_media\Entity\Bundle\DocumentBundle;
 use Drupal\mass_media\Entity\Bundle\MediaBundle;
+use Drupal\mass_media\Entity\Bundle\VideoBundle;
 use Drupal\media\MediaInterface;
 use Drupal\file\FileInterface;
 use Drupal\Core\File\FileSystemInterface;
@@ -246,9 +248,9 @@ function mass_media_file_move(FileInterface $file, FileInterface $source) {
  */
 function mass_media_entity_bundle_info_alter(array &$bundles): void {
   if (isset($bundles['media']['document'])) {
-    $bundles['media']['document']['class'] = \Drupal\mass_media\Entity\Bundle\DocumentBundle::class;
+    $bundles['media']['document']['class'] = DocumentBundle::class;
   }
   if (isset($bundles['media']['media_video'])) {
-    $bundles['media']['media_video']['class'] = \Drupal\mass_media\Entity\Bundle\VideoBundle::class;
+    $bundles['media']['media_video']['class'] = VideoBundle::class;
   }
 }

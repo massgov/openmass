@@ -7,7 +7,8 @@ use Drupal\Core\Field\FieldItemListInterface;
 interface MassModerationAwareInterface {
 
   /**
-   * Get the moderation state
+   * Get the moderation state.
    */
   public function getModerationState(): FieldItemListInterface;
+
 }
