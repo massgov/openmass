@@ -31,7 +31,7 @@ function mass_translations_preprocess_node(&$variables) {
     $translations_controller = new TranslationsController($node_storage);
     $current_url = Drupal::request()->getUri();
 
-    // Build hreflang links.
+    // Build href links.
     foreach ($translations_controller->getTranslationLanguages($node, $node_storage, 'field_english_version') as $language_id => $translation) {
       // Skip any translation that cannot be viewed.
       $access = $translation->access('view', NULL, TRUE);
