@@ -156,7 +156,7 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
       'decision_tree' => '#main-content > div.pre-content > div.decision-tree > div > div > section > button',
       'person' => '#main-content > div.ma__bio__content > div > div > div.mass-alerts-block > div > section > button',
     ];
-    return $content_types_and_selectors + $irregular_selectors;
+    return $irregular_selectors + $content_types_and_selectors ;
   }
 
   /**
@@ -225,8 +225,6 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
   public function testSpecificAlertPlacement() {
     $this->createAndLoginUser('administrator');
     $content_types_and_selectors = $this->getContentTypesAndSelectorForSpecificAlerts();
-    dump($content_types_and_selectors);
-    return;
     /** @var \Drupal\node\Entity\Node[] */
     $nodes = $this->createNodesToTestAlert($content_types_and_selectors);
     $this->createSpecificAlert($nodes);
