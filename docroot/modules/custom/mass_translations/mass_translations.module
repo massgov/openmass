@@ -30,33 +30,43 @@ function mass_translations_preprocess_node(&$variables) {
     $node_storage = Drupal::service('entity_type.manager')->getStorage('node');
     $translations_controller = new TranslationsController($node_storage);
     $current_url = Drupal::request()->getUri();
+    $lang_codes = Drupal::languageManager()->getLanguages();
 
-    // Build href links.
-    foreach ($translations_controller->getTranslationLanguages($node, $node_storage, 'field_english_version') as $language_id => $translation) {
-      // Skip any translation that cannot be viewed.
-      $access = $translation->access('view', NULL, TRUE);
-      if (!$access->isAllowed()) {
-        continue;
-      }
+    // Get all the translations for this node.
+    $all_translations = $translations_controller->getTranslationLanguages($node, $node_storage, 'field_english_version');
+    // Replace "x-default" with the default language id.
+    $all_translations[$lang_default->getId()] = $all_translations["x-default"];
+    unset($all_translations["x-default"]);
+    // Sort translations in the same order as languages in the UI.
+    $sorted_translations = array_replace($lang_codes, array_flip(array_keys($lang_codes)), $all_translations);
+    // Build links for translations.
+    foreach ($sorted_translations as $language_id => $translation) {
+      if ($translation instanceof NodeInterface) {
+        // Skip any translation that cannot be viewed.
+        $access = $translation->access('view', NULL, TRUE);
+        if (!$access->isAllowed()) {
+          continue;
+        }
 
-      $name = NULL;
-      $predefined = LanguageManager::getStandardLanguageList();
-      // Get the native name for each language.
-      if (isset($predefined[$language_id])) {
-        $name = $predefined[$language_id][1];
-      }
-      elseif ($language_id == "x-default") {
-        $name = $predefined[$lang_default->getId()][1];
-      }
+        $name = NULL;
+        $predefined = LanguageManager::getStandardLanguageList();
+        // Get the native name for each language.
+        if (isset($predefined[$language_id])) {
+          $name = $predefined[$language_id][1];
+        }
+        elseif ($language_id == "x-default") {
+          $name = $predefined[$lang_default->getId()][1];
+        }
 
-      // Build the translation link.
-      if ($name) {
-        $url = $translation->toUrl('canonical')
-          ->setOption('language', $lang_default)
-          ->setAbsolute()
-          ->toString();
+        // Build the translation link.
+        if ($name) {
+          $url = $translation->toUrl('canonical')
+            ->setOption('language', $lang_default)
+            ->setAbsolute()
+            ->toString();
 
-        $languages[] = ["title" => $name, "url" => ($url != $current_url) ? $url : NULL];
+          $languages[] = ["title" => $name, "url" => ($url != $current_url) ? $url : NULL];
+        }
       }
     }
 
