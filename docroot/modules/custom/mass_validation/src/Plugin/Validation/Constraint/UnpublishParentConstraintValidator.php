@@ -25,15 +25,15 @@ class UnpublishParentConstraintValidator extends ConstraintValidator {
     if (in_array($moderation_state, $unpublished_states)) {
       if ($children = \Drupal::service('class_resolver')
         ->getInstanceFromDefinition(MassChildEntityWarningBuilder::class)
-        ->buildChildEntityWarnings($entity)) {
+        ->buildChildEntityWarnings($entity, TRUE)) {
         foreach ($children as $child) {
           $items = $child->getList()['#items'];
           if (!empty($items)) {
             $items_string = implode(', ', $items);
             $message = new PluralTranslatableMarkup(
               count($items),
-              $constraint->message . '1 child: ' . $items_string,
-              $constraint->message . '@count children: ' . $items_string);
+              $constraint->message . '1 published child: ' . $items_string,
+              $constraint->message . '@count published children: ' . $items_string);
             $this->context->addViolation($message);
           }
         }
