@@ -373,9 +373,9 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $process = Drush::drush($targetRecord, 'cache:tags', [implode(',', $tags)], ['verbose' => TRUE]);
       $process->mustRun();
 
-      // Enqueue purging of notable URLs. Don't use tags to avoid over-purging.
+      // Enqueue purging of notable URLs. Don't use tags to avoid over-purging. Consider using manual purger.
       // Empty path is the homepage
-      $paths = ['', 'orgs/office-of-the-governor', '/media/1268726'];
+      $paths = ['', 'orgs/office-of-the-governor', 'media/1268726'];
       foreach ($domains_web as $domain) {
         foreach ($paths as $path) {
           $expressions[] = 'url ' . 'https://' . $domain . '/' . $path . ',';
