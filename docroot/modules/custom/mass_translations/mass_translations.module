@@ -53,13 +53,7 @@ function mass_translations_preprocess_node(&$variables) {
         // Get the native name for each language.
         if (isset($predefined[$language_id])) {
           $name = $predefined[$language_id][1];
-        }
-        elseif ($language_id == "x-default") {
-          $name = $predefined[$lang_default->getId()][1];
-        }
-
-        // Build the translation link.
-        if ($name) {
+          // Build the translation link.
           $url = $translation->toUrl('canonical')
             ->setOption('language', $lang_default)
             ->setAbsolute()
