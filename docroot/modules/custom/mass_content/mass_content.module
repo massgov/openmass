@@ -5,6 +5,7 @@
  * Contains mass_content.module.
  */
 
+use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -723,15 +724,6 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
   // Removing order by on union select, otherwise we will get a syntax error.
   $order_by = &$media_query->getOrderBy();
   $order_by = [];
-
-  // Filtering by topic, if available.
-  // I was hoping this would be automatically include if topicid parameter
-  // was sent in the request, however, that didn't happen.
-  $all = \Drupal::request()->query->all();
-  $topicid = intval($all['topicid']);
-  if ($topicid) {
-    $media_query->where('media__field_collections.field_collections_target_id=' . $topicid);
-  }
 
   // Adding fields.
   // We must have the same number of columns for the UNION to work.
