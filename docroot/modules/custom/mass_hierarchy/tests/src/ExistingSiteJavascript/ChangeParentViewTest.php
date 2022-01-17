@@ -187,10 +187,9 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
    * Tests parent bulk update when the current revision is not the latest.
    */
   public function testMoveChildrenWhenItsDraft() {
-
     $this->adminLogin();
 
-    // Create a node to be the fist parent of $child1.
+    // Create a node to be the first parent of $child1.
     $parent1 = [
       'type' => 'service_page',
       'title' => 'first-parent-' . $this->randomMachineName(16),
@@ -204,6 +203,8 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
       'title' => 'child1-' . $this->randomMachineName(16),
       'field_primary_parent' => $parent1Node->id(),
     ] + $parent1;
+
+    /** @var \Drupal\node\Entity\Node $child1Node */
     $child1Node = $this->createNode($child1);
 
     // Create draft revision of the child.
@@ -229,36 +230,30 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     $this->getCurrentPage()->find('css', '.vbo-table .select-all input:nth-child(1)')->check();
     $this->getCurrentPage()->pressButton('Change parent');
 
-    // Bulk updating to the new parent.
+    // Bulk updating to the new parent (second parent).
     $this->getCurrentPage()->fillField('New parent', $parent2Node->label());
     $this->getCurrentPage()->pressButton('Change parent');
     $this->getSession()->wait(2000);
 
-    /** @var \Drupal\Core\Entity\ContentEntityStorageBase */
+    /** @var \Drupal\Node\NodeStorage */
     $node_storage = \Drupal::entityTypeManager()->getStorage('node');
-
-    // Reloading the node to see changes.
-    $child1Node = $node_storage->load($child1Node->id());
-
-    // See the revisions and make the latests draft the current revision.
-    $this->drupalGet('node/' . $child1Node->id() . '/revisions');
+    $latest_vid = $node_storage->getLatestRevisionId($child1Node->id());
 
     // Check revision author is the current user.
+    $this->drupalGet('node/' . $child1Node->id() . '/revisions');
     $this->assertSession()->pageTextContains('by ' . $randomUser->getAccountName());
     // Check we have a custom message for this action on the revision log.
     $this->assertSession()->pageTextContains('Revision created with "Move Children" feature. (Draft)');
     $this->assertSession()->pageTextContains('Revision created with "Move Children" feature. (Published)');
     $this->htmlOutput();
 
-    // Get the latest revision as the current and revert.
-    $this->getCurrentPage()->clickLink('Set as current revision');
+    // Make the latest draft the current revision.
+    $this->drupalGet('node/' . $child1Node->id() . '/revisions/' . $latest_vid . '/revert');
     $this->htmlOutput();
     $this->getCurrentPage()->pressButton('Revert');
 
     // Edit the node.
     $this->getCurrentPage()->clickLink('Edit');
-    $this->htmlOutput();
-
     // Check it has the second parent.
     $this->assertSession()->fieldValueEquals('Parent page', $parent2Node->label() . ' (' . $parent2Node->id() . ')');
   }
