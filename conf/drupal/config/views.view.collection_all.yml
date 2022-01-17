@@ -11,6 +11,7 @@ dependencies:
   module:
     - better_exposed_filters
     - entityreference_filter
+    - mass_content
     - node
     - taxonomy
     - text
@@ -19,7 +20,7 @@ dependencies:
 id: collection_all
 label: 'Collection All'
 module: views
-description: ''
+description: 'This view is related to collection_all_media and it is altered via code. Look hook_query_TAG_alter on the mass_content_module.'
 tag: ''
 base_table: node_field_data
 base_field: nid
@@ -137,10 +138,10 @@ display:
           separator: ''
           hide_empty: false
       fields:
-        rendered_entity:
-          id: rendered_entity
+        rendered_entity_mixed:
+          id: rendered_entity_mixed
           table: node
-          field: rendered_entity
+          field: rendered_entity_mixed
           relationship: none
           group_type: group
           admin_label: ''
@@ -180,14 +181,14 @@ display:
           element_label_colon: false
           element_wrapper_type: ''
           element_wrapper_class: ''
-          element_default_classes: false
+          element_default_classes: true
           empty: ''
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
           view_mode: listing
           entity_type: node
-          plugin_id: rendered_entity
+          plugin_id: rendered_entity_mixed
         title:
           id: title
           table: node_field_data

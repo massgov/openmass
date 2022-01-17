@@ -703,7 +703,6 @@ function mass_content_query_collection_all_media_alter(AlterableInterface $query
  * Implements hook_query_TAG_alter().
  */
 function mass_content_query_collection_all_alter(AlterableInterface $query) {
-
   /** @var Drupal\Core\Database\Query\Select $query */
   // To identify later this result is from a node.
   $query->addExpression('\'node\'', 'entity_type');
@@ -743,4 +742,23 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
 
   // Put together nodes and media on the same query.
   $query->union($media_query);
+}
+
+/**
+ * Implements hook_views_data().
+ */
+function mass_content_views_data() {
+
+  $data = [];
+
+  $data['node']['rendered_entity_mixed'] = [
+    'field' => [
+      'title' => t('Rendered entity mixed'),
+      'help' => t('Renders an node/media in a view mode.'),
+      'id' => 'rendered_entity_mixed',
+    ],
+  ];
+
+  return $data;
+
 }
