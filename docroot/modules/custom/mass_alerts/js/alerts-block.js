@@ -67,25 +67,35 @@
           }
         }
 
-
         if (path) {
-          $.ajax({
-            type: 'GET',
-            url: path,
-            cache: true,
-            success: function (content) {
-              if (!content) {
-                $this.hide();
-                return;
-              }
-
-              $this.html(content);
-              if (removeContainer) {
-                $this.find('.ma__page-banner__container').removeClass('ma__page-banner__container');
-              }
-              $(document).trigger('ma:AjaxPattern:Render', [{el: $this}]);
+          var renderData = function (content) {
+            if (!content) {
+              $this.hide();
+              return;
             }
-          });
+
+            $this.html(content);
+            if (removeContainer) {
+              $this.find('.ma__page-banner__container').removeClass('ma__page-banner__container');
+            }
+            $(document).trigger('ma:AjaxPattern:Render', [{el: $this}]);
+          };
+
+          // Check if the data is already there.
+          if (document.prefetchAlertsData[path]) {
+            renderData(document.prefetchAlertsData[path]);
+            document.prefetchAlertsData[path] = false;
+          }
+          else {
+            // Data is not ready yet.
+            // Lets listen mass_alerts_data_ready event.
+            document.addEventListener('mass_alerts_data_ready', function () {
+              if (document.prefetchAlertsData[path]) {
+                renderData(document.prefetchAlertsData[path]);
+                document.prefetchAlertsData[path] = false;
+              }
+            }, false);
+          }
         }
       });
     }
