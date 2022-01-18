@@ -1,0 +1,40 @@
+uuid: 53567ffd-f05c-4639-b055-000f5ded16b2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.flexible_link_group.field_display_type
+    - field.field.paragraph.flexible_link_group.field_flexible_link_group_desc
+    - field.field.paragraph.flexible_link_group.field_flexible_link_group_title
+    - paragraphs.paragraphs_type.flexible_link_group
+  module:
+    - options
+id: paragraph.flexible_link_group.default
+targetEntityType: paragraph
+bundle: flexible_link_group
+mode: default
+content:
+  field_display_type:
+    weight: 0
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_flexible_link_group_desc:
+    weight: 2
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_flexible_link_group_title:
+    weight: 1
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden: {  }
