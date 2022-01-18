@@ -156,7 +156,7 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
       'decision_tree' => '#main-content > div.pre-content > div.decision-tree > div > div > section > button',
       'person' => '#main-content > div.ma__bio__content > div > div > div.mass-alerts-block > div > section > button',
     ];
-    
+
     return $irregular_selectors + $content_types_and_selectors;
   }
 

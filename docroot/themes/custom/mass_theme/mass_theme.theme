@@ -9,7 +9,6 @@ use Drupal\block\Entity\Block;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
@@ -29,7 +28,6 @@ use Drupal\mass_utility\RelatedToHelper;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -4389,8 +4387,8 @@ function mass_theme_preprocess_field__person_org_role(&$variables) {
  */
 function mass_theme_block_alert_build(&$variables) {
   $block_configs = [
-    'sitewide_alerts' => \Drupal\block\Entity\Block::load('sitewide_alerts'),
-    'page_alerts' => \Drupal\block\Entity\Block::load('page_alerts')
+    'sitewide_alerts' => Block::load('sitewide_alerts'),
+    'page_alerts' => Block::load('page_alerts'),
   ];
 
   /** @var Drupal\block\Entity\Block $block_config */
