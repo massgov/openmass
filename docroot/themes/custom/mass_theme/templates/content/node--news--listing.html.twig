@@ -97,10 +97,14 @@
   {% set contents = contents|merge([decorative_link]) %}
 {% endfor %}
 
-{{ content.field_news_image }}
-
 {% include "@molecules/general-teaser.twig" with {
   "generalTeaser" : {
+    "image": {
+      "src": content.src,
+      "alt": "placeholder image",
+      "width": "172",
+      "height": "96"
+    },
     "title" : {
       "href": url,
       "text": label,
