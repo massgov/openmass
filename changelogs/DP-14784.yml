@@ -36,10 +36,9 @@
 #  - description: Third change item that needs a description along with an issue.
 #    issue: DP-19843
 #
-Fixed:
+Added:
   - description: |-
-      - Avoids storing records for non-current revisions on the nested_set_field_primary_parent_node table.
-      - To clear nested_set_field_primary_parent_node table from non-current revisions.
-        - Adds an update hook.
-        - Implements hook_entity_update & hook_form_alter.
-    issue: DP-23681
+      - Creates a custom VBO action to Restore content from trash.
+      - Adds a VBO action field to the Trash view to allow users to restore content.
+      - Adds a title to the Trash view.
+    issue: DP-14784
