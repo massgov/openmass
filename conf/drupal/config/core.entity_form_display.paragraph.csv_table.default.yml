@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.csv_table.field_center_content
     - field.field.paragraph.csv_table.field_csv_file
     - field.field.paragraph.csv_table.field_csvtable_caption
     - field.field.paragraph.csv_table.field_csvtable_display_size
@@ -18,6 +19,13 @@ targetEntityType: paragraph
 bundle: csv_table
 mode: default
 content:
+  field_center_content:
+    weight: 3
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
   field_csv_file:
     weight: 0
     settings:
