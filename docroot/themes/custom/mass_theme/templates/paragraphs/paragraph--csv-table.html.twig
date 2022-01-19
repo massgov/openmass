@@ -42,6 +42,8 @@
   '#format':  paragraph.field_csvtable_caption.format ?: 'basic_html',
 } %}
 
+{% set centered_class = paragraph.field_center_content.value ? 'ma__csvtable--centered': '' %}
+
 {% include "@atoms/09-media/figure.twig" with {
   figure: {
     'title': {
@@ -52,7 +54,7 @@
     'align': '',
     'wrap': FALSE,
     'size': paragraph.field_csvtable_display_size.value,
-    'class': 'ma__csvtable',
+    'class': 'ma__csvtable ' ~ centered_class,
     'ariaLive': 'polite',
     'caption': caption,
     'skiplink': {
