@@ -4,9 +4,17 @@ status: true
 dependencies:
   config:
     - field.storage.paragraph.field_service_section_content
+    - paragraphs.paragraphs_type.campaign_features
+    - paragraphs.paragraphs_type.caspio_embed
+    - paragraphs.paragraphs_type.featured_item_mosaic
+    - paragraphs.paragraphs_type.key_message_section
     - paragraphs.paragraphs_type.org_locations
+    - paragraphs.paragraphs_type.pull_quote
     - paragraphs.paragraphs_type.service_section
     - paragraphs.paragraphs_type.social_media
+    - paragraphs.paragraphs_type.stat
+    - paragraphs.paragraphs_type.tableau_embed
+    - paragraphs.paragraphs_type.video_with_section
   module:
     - entity_reference_revisions
 id: paragraph.service_section.field_service_section_content
@@ -24,8 +32,16 @@ settings:
   handler_settings:
     negate: 0
     target_bundles:
+      caspio_embed: caspio_embed
+      featured_item_mosaic: featured_item_mosaic
       social_media: social_media
       org_locations: org_locations
+      pull_quote: pull_quote
+      stat: stat
+      tableau_embed: tableau_embed
+      campaign_features: campaign_features
+      key_message_section: key_message_section
+      video_with_section: video_with_section
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 23
@@ -94,14 +110,14 @@ settings:
         weight: 1
         enabled: false
       campaign_features:
+        enabled: true
         weight: 43
-        enabled: false
       card:
         weight: 44
         enabled: false
       caspio_embed:
+        enabled: true
         weight: 3
-        enabled: false
       completion_time:
         weight: 45
         enabled: false
@@ -154,8 +170,8 @@ settings:
         weight: 61
         enabled: false
       featured_item_mosaic:
+        enabled: true
         weight: 5
-        enabled: false
       featured_message:
         weight: 6
         enabled: false
@@ -214,8 +230,8 @@ settings:
         weight: 75
         enabled: false
       key_message_section:
+        enabled: true
         weight: 76
-        enabled: false
       link_group:
         weight: 77
         enabled: false
@@ -319,8 +335,8 @@ settings:
         weight: 103
         enabled: false
       pull_quote:
+        enabled: true
         weight: 16
-        enabled: false
       quick_action:
         weight: 104
         enabled: false
@@ -385,8 +401,8 @@ settings:
         weight: 120
         enabled: false
       stat:
+        enabled: true
         weight: 19
-        enabled: false
       state_organization:
         weight: 121
         enabled: false
@@ -394,8 +410,8 @@ settings:
         weight: 122
         enabled: false
       tableau_embed:
+        enabled: true
         weight: 20
-        enabled: false
       video:
         weight: 21
         enabled: false
@@ -403,8 +419,8 @@ settings:
         weight: 123
         enabled: false
       video_with_section:
+        enabled: true
         weight: 124
-        enabled: false
       what_would_you_like_to_do:
         weight: 22
         enabled: false
