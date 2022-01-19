@@ -71,6 +71,8 @@
  */
 #}
 
+{{ kint(content.field_news_image) }}
+
 {# Initalize the contents array for the component. #}
 {% set contents = [{
   "path": "@atoms/11-text/paragraph.twig",
@@ -97,10 +99,11 @@
   {% set contents = contents|merge([decorative_link]) %}
 {% endfor %}
 
+
 {% include "@molecules/general-teaser.twig" with {
   "generalTeaser" : {
     "image": {
-      "src": content.src,
+      "src": content.field_news_image[0]['565w']['#markup'],
       "alt": "placeholder image",
       "width": "172",
       "height": "96"
