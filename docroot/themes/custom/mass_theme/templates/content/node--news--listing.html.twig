@@ -71,8 +71,6 @@
  */
 #}
 
-{{ kint(content.field_news_image) }}
-
 {# Initalize the contents array for the component. #}
 {% set contents = [{
   "path": "@atoms/11-text/paragraph.twig",
@@ -114,9 +112,18 @@
       "info": "",
       "property": ""
     },
+    "layout": "stacked",
+    "eyebrow": content.field_news_type[0]['#markup'],
     "level": "",
-    "emphasizedText": "",
+    "emphasizedText": [content.field_news_date[0]['#markup'], content.field_organizations[0]['#title']],
     "tags": "",
-    "contents": contents,
+    "contents": [{
+      "path": "@atoms/11-text/paragraph.twig",
+      "data": {
+        "paragraph" : {
+          "text": node.field_news_lede.value ?: ""
+        }
+      }
+    }]
   }
 } %}
