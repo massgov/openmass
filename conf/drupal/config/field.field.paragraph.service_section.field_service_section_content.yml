@@ -4,11 +4,10 @@ status: true
 dependencies:
   config:
     - field.storage.paragraph.field_service_section_content
-    - paragraphs.paragraphs_type.contact
+    - paragraphs.paragraphs_type.contact_placeholder
     - paragraphs.paragraphs_type.flexible_link_group
     - paragraphs.paragraphs_type.org_events
     - paragraphs.paragraphs_type.org_locations
-    - paragraphs.paragraphs_type.org_section_long_form
     - paragraphs.paragraphs_type.service_section
     - paragraphs.paragraphs_type.social_media
   module:
@@ -31,9 +30,8 @@ settings:
       org_events: org_events
       social_media: social_media
       org_locations: org_locations
-      contact: contact
-      org_section_long_form: org_section_long_form
       flexible_link_group: flexible_link_group
+      contact_placeholder: contact_placeholder
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 23
@@ -114,14 +112,17 @@ settings:
         weight: 45
         enabled: false
       contact:
-        enabled: true
         weight: 46
+        enabled: false
       contact_group:
         weight: 47
         enabled: false
       contact_info:
         weight: 48
         enabled: false
+      contact_placeholder:
+        enabled: true
+        weight: 159
       content_card_group:
         weight: 49
         enabled: false
@@ -312,8 +313,8 @@ settings:
         weight: 17
         enabled: false
       org_section_long_form:
-        enabled: true
         weight: 100
+        enabled: false
       organization_contact_logo:
         weight: 4
         enabled: false
