@@ -1,5 +1,25 @@
 
 
+## [0.309.0] - January 18, 2022
+
+### Added
+  - DP-14784: - Creates a custom VBO action to Restore content from trash.
+- Adds a VBO action field to the Trash view to allow users to restore content.
+- Adds a title to the Trash view.
+  
+### Changed
+  - DP-23647: Bypass watch notifications for CLI node saves
+  - DP-23677: Requires input on "admin/content" view.
+  
+### Fixed
+  - DP-23780: Fix google places autocomplete using enter key to select
+  - DP-23873: Patched entity_usage module to eliminate issues on config import.
+  
+### Removed
+  - DP-23883: Removed entity usage source entity types for Content, Media, and Taxonomy term. Set to View.
+  
+
+
 ## [0.308.0] - January 11, 2022
 
 ### Added

@@ -169,6 +169,7 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
           'arguments' => [implode('+', $target_bundles)],
         ],
       ],
+      '#maxlength' => 1024,
       '#title' => $this->t('New parent'),
       '#required' => TRUE,
       '#description' => $this->t('Choose a new parent (%types) for the selected items.', ['%types' => implode(', ', $target_bundles)]),
