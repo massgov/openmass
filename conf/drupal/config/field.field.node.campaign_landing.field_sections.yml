@@ -6,6 +6,7 @@ dependencies:
     - field.storage.node.field_sections
     - node.type.campaign_landing
     - paragraphs.paragraphs_type.campaign_features
+    - paragraphs.paragraphs_type.collection_search
     - paragraphs.paragraphs_type.custom_html
     - paragraphs.paragraphs_type.key_message_section
     - paragraphs.paragraphs_type.video_with_section
@@ -30,16 +31,8 @@ settings:
       video_with_section: video_with_section
       campaign_features: campaign_features
       custom_html: custom_html
+      collection_search: collection_search
     target_bundles_drag_drop:
-      key_message_section:
-        enabled: true
-        weight: 0
-      video_with_section:
-        enabled: true
-        weight: 1
-      campaign_features:
-        enabled: true
-        weight: 2
       1up_stacked_band:
         weight: 4
         enabled: false
@@ -109,6 +102,12 @@ settings:
       callout_link:
         weight: 26
         enabled: false
+      campaign_features:
+        enabled: true
+        weight: 2
+      collection_search:
+        enabled: true
+        weight: 153
       completion_time:
         weight: 27
         enabled: false
@@ -124,6 +123,9 @@ settings:
       content_card_group:
         weight: 31
         enabled: false
+      custom_html:
+        enabled: true
+        weight: 140
       decision_participants:
         weight: 32
         enabled: false
@@ -144,6 +146,12 @@ settings:
         enabled: false
       fax_number:
         weight: 38
+        enabled: false
+      featured_content_2up_item:
+        weight: 46
+        enabled: false
+      featured_content_single_item:
+        weight: 48
         enabled: false
       featured_item:
         weight: 39
@@ -166,14 +174,8 @@ settings:
       guide_section:
         weight: 45
         enabled: false
-      featured_content_2up_item:
-        weight: 46
-        enabled: false
       guide_section_3up:
         weight: 47
-        enabled: false
-      featured_content_single_item:
-        weight: 48
         enabled: false
       homepage_background_images:
         weight: 49
@@ -202,14 +204,17 @@ settings:
       issuer:
         weight: 57
         enabled: false
+      key_message:
+        weight: 60
+        enabled: false
+      key_message_section:
+        enabled: true
+        weight: 0
       link_group:
         weight: 58
         enabled: false
       link_group_document:
         weight: 59
-        enabled: false
-      key_message:
-        weight: 60
         enabled: false
       link_group_link:
         weight: 61
@@ -301,6 +306,9 @@ settings:
       related_link:
         weight: 90
         enabled: false
+      rich_text:
+        weight: 199
+        enabled: false
       rules_section:
         weight: 91
         enabled: false
@@ -309,6 +317,9 @@ settings:
         enabled: false
       search_band:
         weight: 93
+        enabled: false
+      search_banner:
+        weight: 98
         enabled: false
       section:
         weight: 94
@@ -321,9 +332,6 @@ settings:
         enabled: false
       section_long_form:
         weight: 97
-        enabled: false
-      search_banner:
-        weight: 98
         enabled: false
       section_with_heading:
         weight: 99
@@ -355,10 +363,7 @@ settings:
       video_with_header:
         weight: 108
         enabled: false
-      custom_html:
+      video_with_section:
         enabled: true
-        weight: 140
-      rich_text:
-        weight: 199
-        enabled: false
+        weight: 1
 field_type: entity_reference_revisions
