@@ -3989,10 +3989,33 @@ function mass_theme_add_regions_to_node($allowed_regions, &$variables) {
 }
 
 /**
+ * Adds the ALT value for field news image.
+ */
+function mass_theme_add_alt_value_on_news(&$variables) {
+  $variables['news_image_alt'] = '';
+  /** @var \Drupal\node\Entity\Node */
+  $node = $variables['node'];
+
+  if (
+    $node->bundle() != 'news' ||
+    empty($node->field_news_image)
+  ) {
+    return;
+  }
+
+  /** @var Drupal\Core\TypedData\Plugin\DataType\StringData */
+  $alt = $node->field_news_image[0]->get('alt');
+  $variables['news_image_alt'] = $alt->getCastedValue();
+}
+
+/**
  * Implements hook_preprocess_node().
  */
 function mass_theme_preprocess_node(&$variables) {
+  /** @var \Drupal\node\Entity\Node */
   $node = $variables['node'];
+
+  mass_theme_add_alt_value_on_news($variables);
 
   // Retrieve view mode.
   $view_mode = $variables['view_mode'];
