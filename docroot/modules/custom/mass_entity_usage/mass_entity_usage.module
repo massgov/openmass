@@ -153,6 +153,6 @@ function mass_entity_usage_entity_update(EntityInterface $entity) {
 function mass_entity_usage_queue_info_alter(&$queues) {
   // Removes entity usage queue from processing when cron runs.
   if (isset($queues['entity_usage_regenerate_queue'])) {
-    $queues['entity_usage_regenerate_queue']['cron']['time'] = 0;
+    unset($queues['entity_usage_regenerate_queue']['cron']);
   }
 }
