@@ -15,7 +15,13 @@
         "platform": {
             "php": "7.4"
         },
-        "discard-changes": true
+        "discard-changes": true,
+        "allow-plugins": {
+            "composer/installers": true,
+            "cweagans/composer-patches": true,
+            "drupal/core-composer-scaffold": true,
+            "drupal/core-project-message": true
+        }
     },
     "repositories": [
         {
@@ -343,7 +349,8 @@
                 "2954973 - Track absolute URLs in link fields": "https://www.drupal.org/files/issues/2021-08-17/2954973-63.patch",
                 "3007752 - Entity usage list does not scale (https://www.drupal.org/project/entity_usage/issues/3007752)": "patches/entity_usage-usage_list_scale-3007752-17.patch",
                 "Hides language column and shows bundle" : "patches/entity-usage--hide-language--show-bundle.patch",
-                "3254437 - Delete queue items for `entity_usage_regenerate_queue` when `running drush entity-usage:recreate`  ": "https://www.drupal.org/files/issues/2021-12-14/issue-3254437--remove-items-from-queue-before-recreating-it.patch"
+                "3254437 - Delete queue items for `entity_usage_regenerate_queue` when `running drush entity-usage:recreate`  ": "https://www.drupal.org/files/issues/2021-12-14/issue-3254437--remove-items-from-queue-before-recreating-it.patch",
+                "Getting the base fields is not supported for entity type (https://www.drupal.org/project/entity_usage/issues/3101451)": "https://www.drupal.org/files/issues/2019-12-24/3101451-3.patch"
             },
             "drupal/geocoder": {
                 "The post_update script fails when not all plugins are present in 3.x (https://www.drupal.org/project/geocoder/issues/3152846#comment-13705805)": "https://www.drupal.org/files/issues/2020-06-18/geocoder_upgrade_3152846-2.patch"
