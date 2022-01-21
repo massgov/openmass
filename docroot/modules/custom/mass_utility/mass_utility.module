@@ -436,18 +436,6 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
       $element['name']['#type'] = 'hidden';
     }
   }
-  elseif ($type == 'entity_reference_hierarchy') {
-    if ($field_name == 'field_primary_parent') {
-      $rendered_block = BlockViewBuilder::lazyBuilder('breadcrumbs', 'default');
-
-      $element['breadcrumb'] = [
-        '#type' => 'container',
-        '#weight' => 100,
-        "#attributes" => ["class" => "form-item"]
-      ];
-      $element['breadcrumb']['block'] = $rendered_block;
-    }
-  }
   elseif ($type == 'link') {
     // Change description of internal+external widgets.
     // This is needed because supportsExternalLinks() and supportsInternalLinks() are protected.
