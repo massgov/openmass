@@ -1,0 +1,20 @@
+diff --git a/src/Plugin/Purge/Purger/AkamaiPurger.php b/src/Plugin/Purge/Purger/AkamaiPurger.php
+index 67024b2..cbe5146 100644
+--- a/src/Plugin/Purge/Purger/AkamaiPurger.php
++++ b/src/Plugin/Purge/Purger/AkamaiPurger.php
+@@ -140,6 +140,15 @@ class AkamaiPurger extends PurgerBase {
+         $invalidation->setState(InvalidationInterface::SUCCEEDED);
+       }
+     }
++    else {
++      $msg = 'AkamaiPurger: Failed to purge ' . count($urls_to_clear) .  ' url(s): ' . implode(', ', $urls_to_clear);
++      $this->logger()->error($msg);
++      // Avoid holding up future purges by marking invalidations as succeeded.
++      // @todo Address root cause and remove this loop.
++      foreach ($invalidations as $invalidation) {
++        $invalidation->setState(InvalidationInterface::SUCCEEDED);
++      }
++    }
+   }
+ 
+   /**
