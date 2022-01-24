@@ -1,4 +1,4 @@
-uuid: 64fa9ea7-fde7-423a-9ec0-9941985babf6
+uuid: 8e654748-f26e-4e0b-9151-76bac4b08c57
 langcode: en
 status: true
 dependencies:
@@ -6,47 +6,30 @@ dependencies:
     - field.field.paragraph.flexible_link_group.field_display_type
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_desc
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_title
-    - field.field.paragraph.flexible_link_group.field_links_documents
+    - field.field.paragraph.flexible_link_group.field_link_group
     - paragraphs.paragraphs_type.flexible_link_group
   module:
-    - entity_reference_revisions
+    - paragraphs
 id: paragraph.flexible_link_group.default
 targetEntityType: paragraph
 bundle: flexible_link_group
 mode: default
 content:
-  field_display_type:
-    weight: 2
-    settings: {  }
-    third_party_settings: {  }
-    type: options_select
-    region: content
-  field_flexible_link_group_desc:
-    weight: 1
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
-    region: content
-  field_flexible_link_group_title:
+  field_link_group:
+    type: entity_reference_paragraphs
     weight: 0
     settings:
-      size: 60
-      placeholder: ''
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
-  field_links_documents:
-    weight: 3
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: entity_reference_revisions_autocomplete
     region: content
 hidden:
   created: true
+  field_display_type: true
+  field_flexible_link_group_desc: true
+  field_flexible_link_group_title: true
   status: true

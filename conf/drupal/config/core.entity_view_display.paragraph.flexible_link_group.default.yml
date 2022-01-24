@@ -6,8 +6,10 @@ dependencies:
     - field.field.paragraph.flexible_link_group.field_display_type
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_desc
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_title
+    - field.field.paragraph.flexible_link_group.field_link_group
     - paragraphs.paragraphs_type.flexible_link_group
   module:
+    - entity_reference_revisions
     - options
 id: paragraph.flexible_link_group.default
 targetEntityType: paragraph
@@ -36,5 +38,14 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     type: string
+    region: content
+  field_link_group:
+    type: entity_reference_revisions_entity_view
+    weight: 3
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
     region: content
 hidden: {  }
