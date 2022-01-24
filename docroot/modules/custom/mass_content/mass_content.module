@@ -5,6 +5,7 @@
  * Contains mass_content.module.
  */
 
+use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -680,4 +681,84 @@ function mass_content_entity_view_mode_alter(&$view_mode, $entity, $context) {
       $view_mode = 'card_compact';
     }
   }
+}
+
+/**
+ * Stores/retrieves the altered query for view collection_all_media.
+ */
+function mass_content_query_collection_media($query_arg = NULL) {
+  static $query;
+  $query = $query_arg ?? $query;
+  return $query;
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ */
+function mass_content_query_collection_all_media_alter(AlterableInterface $query) {
+  mass_content_query_collection_media(clone $query);
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ */
+function mass_content_query_collection_all_alter(AlterableInterface $query) {
+  /** @var Drupal\Core\Database\Query\Select $query */
+  // To identify later this result is from a node.
+  $query->addExpression('\'node\'', 'entity_type');
+
+  // Executes collection_all_media to then get its query.
+  views_get_view_result('collection_all_media', 'default');
+
+  /** @var Drupal\Core\Database\Query\Select $media_query */
+  $media_query = mass_content_query_collection_media();
+
+  // Avoids repeated results and syntax errors due to the removal of fields.
+  // This may leave if set on the view, but to ensure it we can set it here.
+  $media_query->distinct(TRUE);
+
+  // To identify later that records from this query are from media.
+  $media_query->addExpression('\'media\'', 'entity_type');
+  $media_query->range(NULL);
+
+  // Removing order by on union select, otherwise we will get a syntax error.
+  $order_by = &$media_query->getOrderBy();
+  $order_by = [];
+
+  // Adding fields.
+  // We must have the same number of columns for the UNION to work.
+  // Currently, we only care about the 2 last fields.
+  // Order of field/columns is important.
+  $fields = &$media_query->getFields();
+  $fields = [];
+  $media_query->addField('media_field_data', 'mid', 'not_used_1');
+  $media_query->addField('media_field_data', 'mid', 'not_used_2');
+
+  // Same alias from the node title to be able to sort nodes and media by title.
+  $media_query->addField('media__field_title', 'field_title_value', 'node_field_data_title');
+  // Last field, on the same column as NID, the alias doesn't matter here
+  // because it is a UNION, the second select doesn't define columns.
+  $media_query->addField('media_field_data', 'mid');
+
+  // Put together nodes and media on the same query.
+  $query->union($media_query);
+}
+
+/**
+ * Implements hook_views_data().
+ */
+function mass_content_views_data() {
+
+  $data = [];
+
+  $data['node']['rendered_entity_mixed'] = [
+    'field' => [
+      'title' => t('Rendered entity mixed'),
+      'help' => t('Renders an node/media in a view mode.'),
+      'id' => 'rendered_entity_mixed',
+    ],
+  ];
+
+  return $data;
+
 }
