@@ -3998,7 +3998,8 @@ function mass_theme_add_alt_value_on_news(&$variables) {
 
   if (
     $node->bundle() != 'news' ||
-    empty($node->field_news_image)
+    empty($node->field_news_image) ||
+    empty($node->field_news_image[0])
   ) {
     return;
   }
