@@ -219,17 +219,18 @@
     attach: function (context) {
       $('.field--name-field-event-address-type', context).change(function () {
         var addressTypeUniqueChecked = $('#edit-field-event-address-type-unique').prop('checked') !== false;
-        $('.field--name-field-address-address').each(function() {
-          $(this).find('.administrative-area').each(function() {
+        $('.field--name-field-address-address').each(function () {
+          $(this).find('.administrative-area').each(function () {
             if (!addressTypeUniqueChecked) {
               $(this).removeAttr('required');
-            } else {
+            }
+            else {
               $(this).attr('required', 'required');
             }
           });
         });
       }).change();
     }
-  }
+  };
 
 })(jQuery, Drupal);
