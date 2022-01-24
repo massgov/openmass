@@ -6,7 +6,10 @@ dependencies:
     - field.field.paragraph.flexible_link_group.field_display_type
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_desc
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_title
+    - field.field.paragraph.flexible_link_group.field_links_documents
     - paragraphs.paragraphs_type.flexible_link_group
+  module:
+    - entity_reference_revisions
 id: paragraph.flexible_link_group.default
 targetEntityType: paragraph
 bundle: flexible_link_group
@@ -33,6 +36,16 @@ content:
       placeholder: ''
     third_party_settings: {  }
     type: string_textfield
+    region: content
+  field_links_documents:
+    weight: 3
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_revisions_autocomplete
     region: content
 hidden:
   created: true
