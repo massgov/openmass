@@ -88,6 +88,10 @@ class EntityUsageTest extends ExistingSiteBase {
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
+    // Entity usage tracking is done at the end of the requests, so we need to
+    // create the node through requests to updated the entity usage tracking
+    // table, instead of using $node->create.
+    // See patch related to issue #3015287 in composer.json.
     $this->visit('/node/add/curated_list');
     $this->getCurrentPage()->fillField('Title', 'Test Curated List');
     $this->getCurrentPage()->fillField('Short title', 'Test Curated List Short Title');
@@ -97,6 +101,7 @@ class EntityUsageTest extends ExistingSiteBase {
     $this->getCurrentPage()->fillField('Overview', $media->toLink()->toString());
     $this->getCurrentPage()->fillField('Save as', $curated_list_state);
     $this->getCurrentPage()->pressButton('Save');
+    $this->getCurrentPage()->hasContent('Curated List Test Curated List has been created.');
 
     // Get last created node.
     $res = \Drupal::entityQuery('node')->sort('nid', 'DESC')->range(0, 1)->execute();
@@ -147,6 +152,10 @@ class EntityUsageTest extends ExistingSiteBase {
     ]);
     $this->drupalLogin($this->user);
 
+    // Entity usage tracking is done at the end of the requests, so we need to
+    // create the node through requests to updated the entity usage tracking
+    // table, instead of using $node->create.
+    // See patch related to issue #3015287 in composer.json.
     $this->visit('/node/add/curated_list');
     $this->getCurrentPage()->fillField('Title', 'Test Curated List');
     $this->getCurrentPage()->fillField('Short title', 'Test Curated List Short Title');
@@ -156,7 +165,6 @@ class EntityUsageTest extends ExistingSiteBase {
     $this->getCurrentPage()->fillField('Save as', MassModeration::PUBLISHED);
     $this->getCurrentPage()->pressButton('Save');
     $this->htmlOutput();
-
     $this->getCurrentPage()->hasContent('Curated List Test Curated List has been created.');
 
     $this->visit($node_org->toUrl()->toString() . '/mass-usage');
