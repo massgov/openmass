@@ -1,7 +1,7 @@
 /**
  * @file
  */
-(function ($, Drupal) {
+(function ($, Drupal, CKEDITOR) {
 
   'use strict';
 
@@ -16,4 +16,14 @@
     }
   };
 
-})(jQuery, Drupal);
+  if (typeof CKEDITOR != 'undefined') {
+    CKEDITOR.on('instanceReady', function (e) {
+      if (e.editor.contextMenu) {
+        e.editor.removeMenuItem('tablecell_merge');
+        e.editor.removeMenuItem('tablecell_merge_right');
+        e.editor.removeMenuItem('tablecell_merge_down');
+      }
+    });
+  }
+
+})(jQuery, Drupal, CKEDITOR);
