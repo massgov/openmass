@@ -4,6 +4,7 @@ namespace Drupal\Tests\mass_entity_usage\ExistingSite;
 
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
@@ -109,8 +110,7 @@ class EntityUsageTest extends ExistingSiteBase {
    * Assert that usage records are tracked properly.
    */
   public function testEntityUsageTracking() {
-
-    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::UNPUBLISHED);
+    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PREPUBLISHED_NEEDS_REVIEW);
     // All created entities should be unused.
     $this->assertUsageRows($media, 0);
     $this->assertUsageRows($node_curated_list, 0);
@@ -123,10 +123,10 @@ class EntityUsageTest extends ExistingSiteBase {
     $this->assertUsageRows($node_org, 0);
 
     list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PREPUBLISHED_DRAFT);
-    // Media and Org should have 1 reference.
-    $this->assertUsageRows($media, 1);
+    // All created entities should be unused.
+    $this->assertUsageRows($media, 0);
     $this->assertUsageRows($node_curated_list, 0);
-    $this->assertUsageRows($node_org, 1);
+    $this->assertUsageRows($node_org, 0);
 
     list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PUBLISHED);
     // Media and Org should have 1 reference.
