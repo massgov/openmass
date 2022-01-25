@@ -142,14 +142,20 @@ class EntityUsageTest extends ExistingSiteBase {
       'uid' => $this->user->id(),
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
-    $this->createNode([
-      'type' => 'curated_list',
-      'title' => 'Test Curated List',
-      'uid' => $this->user->id(),
-      'moderation_state' => MassModeration::PUBLISHED,
-      'field_organizations' => $node_org->id(),
-    ]);
     $this->drupalLogin($this->user);
+
+    $this->visit('/node/add/curated_list');
+    $this->getCurrentPage()->fillField('Title', 'Test Curated List');
+    $this->getCurrentPage()->fillField('Short title', 'Test Curated List Short Title');
+    $this->getCurrentPage()->fillField('Short description', 'Test Curated List Short Description');
+    $this->getCurrentPage()->fillField('Parent page', 'Test Organization (' . $node_org->id() . ') - Organization');
+    $this->getCurrentPage()->fillField('Organization(s)', 'Test Organization (' . $node_org->id() . ') - Organization');
+    $this->getCurrentPage()->fillField('Save as', MassModeration::PUBLISHED);
+    $this->getCurrentPage()->pressButton('Save');
+    $this->htmlOutput();
+
+    $this->getCurrentPage()->hasContent('Curated List Test Curated List has been created.');
+
     $this->visit($node_org->toUrl()->toString() . '/mass-usage');
     // Verify the usage tab is reachable.
     $this->assertEquals($this->getSession()->getStatusCode(), 200);
