@@ -68,6 +68,9 @@ function _mass_entity_usage_tracking_check($entity_type, $id, $vid) {
       // These states should be not be tracked.
       $skipped_states = [
         MassModeration::UNPUBLISHED,
+        MassModeration::PREPUBLISHED_DRAFT,
+        MassModeration::DRAFT,
+        MassModeration::PREPUBLISHED_NEEDS_REVIEW,
         MassModeration::TRASH,
       ];
       // Don't track sources that are in unpublished or trash state.
