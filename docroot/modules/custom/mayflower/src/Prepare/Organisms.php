@@ -1903,7 +1903,7 @@ class Organisms {
                 $link_items[] = array_merge($topic_category_heading, ['subItems' => $topic_links]);
               }
               else {
-                $link_items = $topic_links;
+                $link_items += $topic_links;
               }
             }
             // Add the section with topic heading and linkItems.
