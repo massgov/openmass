@@ -7,6 +7,7 @@ dependencies:
     - field.field.media.document.field_alternative_title
     - field.field.media.document.field_category
     - field.field.media.document.field_checksum
+    - field.field.media.document.field_collections
     - field.field.media.document.field_conform
     - field.field.media.document.field_contact_information
     - field.field.media.document.field_contact_name
@@ -44,6 +45,7 @@ dependencies:
     - field.field.media.document.field_title
     - field.field.media.document.field_upload_file
     - media.type.document
+    - workflows.workflow.media_states
   module:
     - content_moderation
     - datetime
@@ -53,6 +55,7 @@ dependencies:
     - key_value_field
     - link
     - path
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -64,7 +67,6 @@ third_party_settings:
       weight: 15
       format_type: fieldset
       format_settings:
-        label: Timeframe
         description: 'Always use the start date, and if applicable an end date, to specify the period of time that is named, defined, or represented by the file''s subject matter.'
         required_fields: true
         id: ''
@@ -131,9 +133,10 @@ third_party_settings:
         - field_contact_information
         - group_timeframe
         - field_document_type
+        - field_document_label
+        - field_collections
         - field_tags
         - field_internal_notes
-        - field_document_label
       parent_name: group_form
       weight: 12
       format_type: tab
@@ -151,7 +154,7 @@ bundle: document
 mode: default
 content:
   field_additional_info:
-    weight: 42
+    weight: 49
     settings:
       key_size: 60
       key_placeholder: ''
@@ -167,7 +170,7 @@ content:
     type: key_value_textfield
     region: content
   field_alternative_title:
-    weight: 35
+    weight: 45
     settings:
       size: 60
       placeholder: ''
@@ -181,15 +184,26 @@ content:
     type: options_select
     region: content
   field_checksum:
-    weight: 53
+    weight: 60
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
     type: string_textfield
     region: content
+  field_collections:
+    weight: 18
+    settings:
+      start_minimized: true
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+      leaves_only: false
+    third_party_settings: {  }
+    type: term_reference_tree
+    region: content
   field_conform:
-    weight: 47
+    weight: 54
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -215,7 +229,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_content_type:
-    weight: 40
+    weight: 47
     settings:
       match_operator: CONTAINS
       size: 60
@@ -235,7 +249,7 @@ content:
     type: entity_reference_autocomplete_tags
     region: content
   field_data_dictionary:
-    weight: 54
+    weight: 61
     settings:
       rows: 5
       placeholder: ''
@@ -243,7 +257,7 @@ content:
     type: text_textarea
     region: content
   field_data_quality:
-    weight: 48
+    weight: 55
     settings:
       display_label: true
     third_party_settings: {  }
@@ -276,7 +290,7 @@ content:
     type: string_textfield
     region: content
   field_document_type:
-    weight: 17
+    weight: 16
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
@@ -288,7 +302,7 @@ content:
     type: datetime_default
     region: content
   field_file_migration_id:
-    weight: 51
+    weight: 58
     settings:
       size: 60
       placeholder: ''
@@ -296,7 +310,7 @@ content:
     type: string_textfield
     region: content
   field_geographic_area:
-    weight: 36
+    weight: 46
     settings:
       html5_geolocation: false
     third_party_settings: {  }
@@ -311,7 +325,7 @@ content:
     type: string_textfield
     region: content
   field_internal_notes:
-    weight: 19
+    weight: 20
     settings:
       rows: 1
       placeholder: ''
@@ -319,13 +333,13 @@ content:
     type: string_textarea
     region: content
   field_license:
-    weight: 45
+    weight: 52
     settings: {  }
     third_party_settings: {  }
     type: options_select
     region: content
   field_link_classic_massgov:
-    weight: 52
+    weight: 59
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -333,7 +347,7 @@ content:
     type: link_default
     region: content
   field_link_related_content:
-    weight: 43
+    weight: 50
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -369,7 +383,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_oclc_number:
-    weight: 50
+    weight: 57
     settings:
       size: 60
       placeholder: ''
@@ -387,7 +401,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_part_of:
-    weight: 44
+    weight: 51
     settings:
       match_operator: CONTAINS
       size: 60
@@ -403,7 +417,7 @@ content:
     type: options_select
     region: content
   field_rights:
-    weight: 46
+    weight: 53
     settings:
       size: 60
       placeholder: ''
@@ -417,7 +431,7 @@ content:
     type: datetime_default
     region: content
   field_subjects:
-    weight: 41
+    weight: 48
     settings:
       match_operator: CONTAINS
       size: 60
@@ -427,7 +441,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_system_of_records:
-    weight: 49
+    weight: 56
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -435,7 +449,7 @@ content:
     type: link_default
     region: content
   field_tags:
-    weight: 18
+    weight: 19
     settings:
       match_operator: CONTAINS
       size: 60
