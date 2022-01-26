@@ -51,6 +51,15 @@ var jQueryLike = function (elemOrSelector, context) {
     elem[0].classList.remove(classname);
   };
 
+  elem.html = function (htmlContent) {
+    if (typeof htmlContent == 'undefined') {
+      return elem.innerHTML;
+    }
+    else {
+      elem.innerHTML = htmlContent;
+    }
+  };
+
   elem.each = function (fn) {
 
     elem.forEach(function (item, index) {
