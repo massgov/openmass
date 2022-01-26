@@ -2,6 +2,8 @@
  * @file
  */
 
+var drupalLike = {behaviors: {massAlertBlocks: {}}};
+
 var jQueryLike = function (elemOrSelector, context) {
   'use strict';
 
@@ -14,6 +16,9 @@ var jQueryLike = function (elemOrSelector, context) {
 
   if (typeof elemOrSelector == 'string') {
     elem = document.querySelectorAll(elemOrSelector);
+  }
+  else {
+    elem = elemOrSelector;
   }
 
   elem.data = function (key) {
@@ -50,7 +55,7 @@ var jQueryLike = function (elemOrSelector, context) {
 
     elem.forEach(function (item, index) {
 
-      fn().bind(item);
+      fn(index, item).bind(item);
 
     });
   };
@@ -72,9 +77,9 @@ var jQueryLike = function (elemOrSelector, context) {
      */
     attach: function (context, settings) {
 
-      $('.mass-alerts-block', context).each(function () {
-        var $this = $(this);
-        var path = $this.data('alerts-path');
+      $('.mass-alerts-block', context).each(function (i, e) {
+        var $this = $(e);
+        var path = $this.data('alertsPath');
         var removeContainer = false;
 
         if (path !== '/alerts/sitewide') {
@@ -157,4 +162,4 @@ var jQueryLike = function (elemOrSelector, context) {
     }
 
   };
-})(jQueryLike, Drupal);
+})(jQueryLike, drupalLike);
