@@ -93,6 +93,13 @@ var jQueryLike = function (elemOrSelector, context) {
 
       $('.mass-alerts-block', context).each(function (i, e) {
         var $this = $(e);
+
+        if ($this.data('alertProcessed')) {
+          return;
+        }
+
+        $this.data('alertProcessed', 1);
+
         var path = $this.data('alertsPath');
         var removeContainer = false;
 
