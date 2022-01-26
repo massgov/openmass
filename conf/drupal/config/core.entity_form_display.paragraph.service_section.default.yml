@@ -8,7 +8,25 @@ dependencies:
     - field.field.paragraph.service_section.field_service_section_heading
     - paragraphs.paragraphs_type.service_section
   module:
+    - field_group
     - paragraphs
+third_party_settings:
+  field_group:
+    group_section_cont:
+      children:
+        - field_service_section_content
+      parent_name: ''
+      weight: 2
+      format_type: details
+      region: content
+      format_settings:
+        show_empty_fields: false
+        id: ''
+        classes: ''
+        description: ''
+        open: false
+        required_fields: true
+      label: 'Section content'
 id: paragraph.service_section.default
 targetEntityType: paragraph
 bundle: service_section
@@ -23,7 +41,7 @@ content:
     region: content
   field_service_section_content:
     type: entity_reference_paragraphs
-    weight: 2
+    weight: 3
     settings:
       title: Paragraph
       title_plural: Paragraphs
