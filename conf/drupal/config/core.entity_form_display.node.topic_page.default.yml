@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
     - field.field.node.topic_page.field_primary_parent
+    - field.field.node.topic_page.field_restrict_link_management
     - field.field.node.topic_page.field_reusable_label
     - field.field.node.topic_page.field_short_title
     - field.field.node.topic_page.field_state_organization_tax
@@ -23,7 +24,7 @@ dependencies:
     - field.field.node.topic_page.field_topic_section_bg_wide
     - field.field.node.topic_page.field_topic_type
     - node.type.topic_page
-    - workflows.workflow.editorial
+    - workflows.workflow.topic_page
   module:
     - content_moderation
     - entity_hierarchy
@@ -51,16 +52,10 @@ third_party_settings:
       children:
         - title
         - field_short_title
-        - field_topic_type
         - field_topic_lede
         - field_display_short_description
         - field_restrict_link_management
         - field_topic_ref_icon
-        - field_topic_bg_wide
-        - field_topic_bg_narrow
-        - field_topic_section_bg_wide
-        - field_topic_section_bg_narrow
-        - field_image_credit
         - field_primary_parent
         - field_organizations
         - field_intended_audience
@@ -109,21 +104,21 @@ targetEntityType: node
 bundle: topic_page
 mode: default
 content:
-  field_image_credit:
-    weight: 65
+  field_display_short_description:
+    type: boolean_checkbox
+    weight: 59
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_intended_audience:
-    weight: 68
+    weight: 64
     settings: {  }
     third_party_settings: {  }
     type: options_buttons
     region: content
   field_organizations:
-    weight: 67
+    weight: 63
     settings:
       match_operator: CONTAINS
       size: 60
@@ -133,7 +128,7 @@ content:
     type: entity_reference_autocomplete
     region: content
   field_primary_parent:
-    weight: 66
+    weight: 62
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -143,8 +138,15 @@ content:
     third_party_settings: {  }
     type: entity_reference_hierarchy_autocomplete
     region: content
+  field_restrict_link_management:
+    type: boolean_checkbox
+    weight: 60
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_reusable_label:
-    weight: 69
+    weight: 65
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -171,58 +173,6 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
-  field_topic_bg_narrow:
-    weight: 62
-    settings:
-      preview_image_style: thumbnail
-      progress_indicator: throbber
-    third_party_settings:
-      conditional_fields:
-        613aa4c0-b2bd-4a70-86a2-a70b23f9b8fa:
-          dependee: field_topic_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: topic
-            effect: show
-            effect_options: {  }
-            selector: ''
-          entity_type: node
-          bundle: topic_page
-    type: image_image
-    region: content
-  field_topic_bg_wide:
-    weight: 61
-    settings:
-      preview_image_style: thumbnail
-      progress_indicator: throbber
-    third_party_settings:
-      conditional_fields:
-        b50ee6a9-15bd-4f50-8f89-4702d6daa7b9:
-          dependee: field_topic_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: topic
-            effect: show
-            effect_options: {  }
-            selector: ''
-          entity_type: node
-          bundle: topic_page
-    type: image_image
-    region: content
   field_topic_content_cards:
     type: entity_reference_paragraphs
     weight: 39
@@ -236,7 +186,7 @@ content:
     third_party_settings: {  }
     region: content
   field_topic_lede:
-    weight: 59
+    weight: 58
     settings:
       size: 60
       placeholder: ''
@@ -252,7 +202,7 @@ content:
     type: metatag_firehose
     region: content
   field_topic_ref_icon:
-    weight: 60
+    weight: 61
     settings: {  }
     third_party_settings: {  }
     type: options_select
@@ -266,64 +216,6 @@ content:
       match_limit: 10
     third_party_settings: {  }
     type: entity_reference_autocomplete
-    region: content
-  field_topic_section_bg_narrow:
-    weight: 64
-    settings:
-      progress_indicator: throbber
-      preview_image_style: thumbnail
-    third_party_settings:
-      conditional_fields:
-        8a493627-bf2b-4406-bf53-41b7288d6316:
-          dependee: field_topic_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: 'section landing'
-            effect: show
-            effect_options: {  }
-            selector: ''
-          entity_type: node
-          bundle: topic_page
-    type: image_image
-    region: content
-  field_topic_section_bg_wide:
-    weight: 63
-    settings:
-      progress_indicator: throbber
-      preview_image_style: thumbnail
-    third_party_settings:
-      conditional_fields:
-        db3199b3-3041-4394-a5d8-7d0c9b7cbd82:
-          dependee: field_topic_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: 'section landing'
-            effect: show
-            effect_options: {  }
-            selector: ''
-          entity_type: node
-          bundle: topic_page
-    type: image_image
-    region: content
-  field_topic_type:
-    weight: 58
-    settings: {  }
-    third_party_settings: {  }
-    type: options_buttons
     region: content
   moderation_state:
     type: moderation_state_default
