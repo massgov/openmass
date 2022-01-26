@@ -64,7 +64,7 @@ var jQueryLike = function (elemOrSelector, context) {
 
     elem.forEach(function (item, index) {
 
-      fn(index, item).bind(item);
+      fn(index, item);
 
     });
   };
