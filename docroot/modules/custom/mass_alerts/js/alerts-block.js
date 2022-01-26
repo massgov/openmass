@@ -2,7 +2,63 @@
  * @file
  */
 
-(function ($, Drupal, drupalSettings) {
+var jQueryLike = function (elemOrSelector, context) {
+  'use strict';
+
+  var elem;
+  var $ = this;
+
+  if (typeof context == 'undefined') {
+    context = document;
+  }
+
+  if (typeof elemOrSelector == 'string') {
+    elem = document.querySelectorAll(elemOrSelector);
+  }
+
+  elem.data = function (key) {
+    return elem.dataset[key];
+  };
+
+  elem.insertBefore = function (selector) {
+    elem.insertAdjacentHTML('beforebegin', $(selector)[0].outerHTML);
+  };
+
+  elem.insertAfter = function (selector) {
+    elem.insertAdjacentHTML('afterend', $(selector)[0].outerHTML);
+  };
+
+  elem.hide = function () {
+    elem[0].style.display = 'none';
+    return elem;
+  };
+
+  elem.find = function (selector) {
+    return elem.querySelector(selector);
+  };
+
+  elem.trigger = function (eventName, data) {
+    var customEvent = new CustomEvent(eventName, data);
+    document.dispatchEvent(customEvent);
+  };
+
+  elem.removeClass = function (classname) {
+    elem[0].classList.remove(classname);
+  };
+
+  elem.each = function (fn) {
+
+    elem.forEach(function (item, index) {
+
+      fn().bind(item);
+
+    });
+  };
+
+  return elem;
+};
+
+(function ($, Drupal) {
   'use strict';
   Drupal.behaviors.massAlertBlocks = {
 
@@ -101,4 +157,4 @@
     }
 
   };
-})(jQuery, Drupal, drupalSettings);
+})(jQueryLike, Drupal);
