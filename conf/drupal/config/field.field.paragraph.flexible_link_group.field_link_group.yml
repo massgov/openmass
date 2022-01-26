@@ -5,7 +5,8 @@ dependencies:
   config:
     - field.storage.paragraph.field_link_group
     - paragraphs.paragraphs_type.flexible_link_group
-    - paragraphs.paragraphs_type.link_group
+    - paragraphs.paragraphs_type.link_group_document
+    - paragraphs.paragraphs_type.link_group_link
   module:
     - entity_reference_revisions
 id: paragraph.flexible_link_group.field_link_group
@@ -23,7 +24,8 @@ settings:
   handler_settings:
     negate: 0
     target_bundles:
-      link_group: link_group
+      link_group_document: link_group_document
+      link_group_link: link_group_link
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 131
@@ -224,17 +226,17 @@ settings:
         weight: 196
         enabled: false
       link_group:
-        enabled: true
         weight: 199
+        enabled: false
       link_group_accordion:
         weight: 200
         enabled: false
       link_group_document:
+        enabled: true
         weight: 201
-        enabled: false
       link_group_link:
+        enabled: true
         weight: 202
-        enabled: false
       links:
         weight: 197
         enabled: false

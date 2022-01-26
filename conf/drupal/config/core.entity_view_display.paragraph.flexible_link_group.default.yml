@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.flexible_link_group.field_display_type
+    - field.field.paragraph.flexible_link_group.field_featured
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_desc
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_title
     - field.field.paragraph.flexible_link_group.field_link_group
@@ -22,6 +23,16 @@ content:
     settings: {  }
     third_party_settings: {  }
     type: list_default
+    region: content
+  field_featured:
+    weight: 4
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
     region: content
   field_flexible_link_group_desc:
     weight: 2

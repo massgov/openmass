@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.flexible_link_group.field_display_type
+    - field.field.paragraph.flexible_link_group.field_featured
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_desc
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_title
     - field.field.paragraph.flexible_link_group.field_link_group
@@ -15,21 +16,47 @@ targetEntityType: paragraph
 bundle: flexible_link_group
 mode: default
 content:
+  field_display_type:
+    type: options_select
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_featured:
+    weight: 1
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_flexible_link_group_desc:
+    type: string_textfield
+    weight: 3
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_flexible_link_group_title:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_link_group:
     type: entity_reference_paragraphs
-    weight: 0
+    weight: 4
     settings:
       title: Paragraph
       title_plural: Paragraphs
       edit_mode: open
-      add_mode: dropdown
+      add_mode: button
       form_display_mode: default
-      default_paragraph_type: ''
+      default_paragraph_type: _none
     third_party_settings: {  }
     region: content
 hidden:
   created: true
-  field_display_type: true
-  field_flexible_link_group_desc: true
-  field_flexible_link_group_title: true
   status: true
