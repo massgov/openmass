@@ -21,8 +21,13 @@ var jQueryLike = function (elemOrSelector, context) {
     elem = elemOrSelector;
   }
 
-  elem.data = function (key) {
-    return elem.dataset[key];
+  elem.data = function (key, value) {
+
+    if (typeof value !== 'undefined') {
+      elem.dataset[key] = value;
+    }
+
+    return typeof elem.dataset[key] !== 'undefined' ? elem.dataset[key] : null;
   };
 
   elem.insertBefore = function (selector) {
