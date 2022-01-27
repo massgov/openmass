@@ -8,7 +8,6 @@ var jQueryLike = function (elemOrSelector, context) {
   'use strict';
 
   var elem;
-  var $ = this;
 
   if (typeof context == 'undefined') {
     context = document;
@@ -87,19 +86,11 @@ var jQueryLike = function (elemOrSelector, context) {
   return elem;
 };
 
-(function ($, Drupal) {
+(function ($, drupalLike) {
   'use strict';
-  Drupal.behaviors.massAlertBlocks = {
+  drupalLike.behaviors.massAlertBlocks = {
 
-    /**
-     * Drupal behavior.
-     *
-     * @param {HTMLDocument|HTMLElement} context
-     * The context argument for Drupal.attachBehaviors()/detachBehaviors().
-     * @param {object} settings
-     * The settings argument for Drupal.attachBehaviors()/detachBehaviors().
-     */
-    attach: function (context, settings) {
+    attach: function (context, nodeType) {
 
       $('.mass-alerts-block', context).each(function (i, e) {
         var $this = $(e);
@@ -113,10 +104,9 @@ var jQueryLike = function (elemOrSelector, context) {
         var path = $this.data('alertsPath');
         var removeContainer = false;
 
-        if (path !== '/alerts/sitewide') {
+        if (!path.includes('alerts/sitewide')) {
 
-          if (settings.mass_alerts) {
-            var nodeType = settings.mass_alerts.node.type;
+          if (nodeType !== '') {
             var positioned = false;
 
             if (nodeType === 'how_to_page') {
