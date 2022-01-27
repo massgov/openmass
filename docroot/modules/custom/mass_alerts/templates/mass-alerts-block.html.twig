@@ -5,8 +5,12 @@
   <script>
     {# We need way for the content to be loaded #}
     {# because we insert alert based on specific regions #}
-    document.addEventListener('DOMContentLoaded', function () {
-      drupalLike.behaviors.massAlertBlocks.attach(document, "{{ type }}");
-    });
+    {% if wait %}
+      document.addEventListener('DOMContentLoaded', function () {
+        drupalLike.behaviors.massAlertBlocks.attach(document, "{{ type }}");
+      });
+    {% else %}
+        drupalLike.behaviors.massAlertBlocks.attach(document, "{{ type }}");
+    {% endif %}
   </script>
 {% endif %}
