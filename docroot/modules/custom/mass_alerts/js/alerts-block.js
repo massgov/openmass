@@ -183,4 +183,10 @@ var jQueryLike = function (elemOrSelector, context) {
     }
 
   };
+
+  // Attaching Mass Accordion Behavior.
+  document.addEventListener('DOMContentLoaded', function () {
+    Drupal.behaviors.MassAccordions.create(document);
+  });
+
 })(jQueryLike, drupalLike);
