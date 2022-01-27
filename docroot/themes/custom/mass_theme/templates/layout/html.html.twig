@@ -36,7 +36,9 @@
         if (!data) {
           return;
         }
-        fetch(data).then(function (response) {
+        // Avoids potential browser cache issues.
+        var noCache = '?time=' + (new Date().getTime());
+        fetch(data + noCache).then(function (response) {
           return response.text();
         }).then(function (content) {
           document.prefetchAlertsData[data] = content;
