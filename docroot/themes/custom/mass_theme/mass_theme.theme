@@ -6793,6 +6793,37 @@ function media_file_changed_time(MediaInterface $entity, $field_name) {
 /**
  * Implements hook_preprocess_HOOK().
  *
+ * Prepare collection_search values for template.
+ */
+function mass_theme_preprocess_paragraph__collection_search(&$variables) {
+  $variables['searchBoxWithLinks'] = [];
+  $variables['searchBoxWithLinks']['form'] = [];
+
+  $p = $variables['paragraph'];
+  $variables['searchBoxWithLinks']['form']['headingText'] = $p->field_search_heading->value;
+  $variables['searchBoxWithLinks']['form']['submitText'] = t('SEARCH');
+
+  $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
+  $variables['searchBoxWithLinks']['form']['actionUrl'] = $collection_url;
+
+  $variables['searchBoxWithLinks']['secondary']['heading'] = $p->field_secondary_heading->value;
+  $variables['searchBoxWithLinks']['secondary']['firstLink']['href'] = $collection_url;
+  $variables['searchBoxWithLinks']['secondary']['firstLink']['text'] = $p->field_see_all_items_link_text->value;
+
+  $uri = $p->field_secondary_link[0]->uri ?? FALSE;
+  if (!$uri) {
+    return;
+  }
+  $uri_is_external = UrlHelper::isExternal($uri);
+  $variables['searchBoxWithLinks']['secondary']['secondLink']['href'] = $uri_is_external ?
+    $p->field_secondary_link[0]->uri : Url::fromUri($uri);
+  $variables['searchBoxWithLinks']['secondary']['secondLink']['text'] = $uri_is_external ?
+    $p->field_secondary_link[0]->title : $p->field_secondary_link[0]->computed_title;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
  * Prepare video values for template.
  */
 function mass_theme_preprocess_paragraph__video(&$variables) {
@@ -7122,8 +7153,8 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
  */
 function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
   // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
-  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image'];
-  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping'];
+  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
+  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
   $contained = ['rich_text'];
 
   $components = [];
@@ -7136,12 +7167,18 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
     if (mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
       $items = [];
       do {
-        $items[] = $paragraphs[$i];
+        if (isset($paragraphs[$i])) {
+          $items[] = $paragraphs[$i];
+        }
+
         $i++;
         // Keep grouping together while the next element has the check.
       } while (isset($paragraphs[$i]) && mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields));
+
       // Once done, also group the following one.
-      $items[] = $paragraphs[$i];
+      if (isset($paragraphs[$i])) {
+        $items[] = $paragraphs[$i];
+      }
 
       $component = ['group' => 'default', 'items' => $items];
     }
