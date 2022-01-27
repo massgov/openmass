@@ -3,6 +3,10 @@
   {{ attach_library('mass_decision_tree/mass_decision_tree_accordion_only') }}
   <div class="mass-alerts-block" data-alerts-path="{{ path }}"></div>
   <script>
-    drupalLike.behaviors.massAlertBlocks.attach(document, drupalSettings.mass_alerts);
+    {# We need way for the content to be loaded #}
+    {# because we insert alert based on specific regions #}
+    document.addEventListener('DOMContentLoaded', function () {
+      drupalLike.behaviors.massAlertBlocks.attach(document, "{{ type }}");
+    });
   </script>
 {% endif %}
