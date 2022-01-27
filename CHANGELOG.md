@@ -1,5 +1,47 @@
 
 
+## [0.310.0] - January 26, 2022
+
+### Added
+  - DP-23355: Search collection component for promotional and org pages.
+  - DP-23849: Adds autocomplete collections filter to view content and my_content.
+  - DP-23909: Add CSV for report of pages with long breadcrumbs.
+  
+### Changed
+  - DP-23716: - Modifies collection_all view by adding documents for search.
+- Alters collection_all query and creates a union with the collection_all_media_query.
+- Adds a rendered_entity_mixed field for views, to render based on a column named entity_type.
+  - DP-23840: Change autocomplete link search to show published status.
+  - DP-23876: - Entity usage: database updates happen at the end of the transaction so they don’t block anything.
+- Entity usage tracking queue: removed processing out of cron.
+  
+### Fixed
+  - DP-23824: Fix bug with parent length calculation for move children.
+  - DP-23943: Fixed address type conditional field validation on events.
+  - DP-23964: Output safe value for person short bio fields on org pages.
+  
+
+
+## [0.309.0] - January 18, 2022
+
+### Added
+  - DP-14784: - Creates a custom VBO action to Restore content from trash.
+- Adds a VBO action field to the Trash view to allow users to restore content.
+- Adds a title to the Trash view.
+  
+### Changed
+  - DP-23647: Bypass watch notifications for CLI node saves
+  - DP-23677: Requires input on "admin/content" view.
+  
+### Fixed
+  - DP-23780: Fix google places autocomplete using enter key to select
+  - DP-23873: Patched entity_usage module to eliminate issues on config import.
+  
+### Removed
+  - DP-23883: Removed entity usage source entity types for Content, Media, and Taxonomy term. Set to View.
+  
+
+
 ## [0.308.0] - January 11, 2022
 
 ### Added

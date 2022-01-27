@@ -4,6 +4,7 @@ namespace Drupal\Tests\mass_entity_usage\ExistingSite;
 
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
@@ -87,17 +88,25 @@ class EntityUsageTest extends ExistingSiteBase {
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
-    $node_curated_list = $this->createNode([
-      'type' => 'curated_list',
-      'title' => 'Test Curated List',
-      'uid' => $this->user->id(),
-      'moderation_state' => $curated_list_state,
-      'field_organizations' => $node_org->id(),
-      'field_curatedlist_overview' => [
-        'value' => $media->toLink()->toString(),
-        'format' => 'basic_html',
-      ],
-    ]);
+    // Entity usage tracking is done at the end of the requests, so we need to
+    // create the node through requests to updated the entity usage tracking
+    // table, instead of using $node->create.
+    // See patch related to issue #3015287 in composer.json.
+    $this->visit('/node/add/curated_list');
+    $this->getCurrentPage()->fillField('Title', 'Test Curated List');
+    $this->getCurrentPage()->fillField('Short title', 'Test Curated List Short Title');
+    $this->getCurrentPage()->fillField('Short description', 'Test Curated List Short Description');
+    $this->getCurrentPage()->fillField('Parent page', 'Test Organization (' . $node_org->id() . ') - Organization');
+    $this->getCurrentPage()->fillField('Organization(s)', 'Test Organization (' . $node_org->id() . ') - Organization');
+    $this->getCurrentPage()->fillField('Overview', $media->toLink()->toString());
+    $this->getCurrentPage()->fillField('Save as', $curated_list_state);
+    $this->getCurrentPage()->pressButton('Save');
+    $this->getCurrentPage()->hasContent('Curated List Test Curated List has been created.');
+
+    // Get last created node.
+    $res = \Drupal::entityQuery('node')->sort('nid', 'DESC')->range(0, 1)->execute();
+    $nid = reset($res);
+    $node_curated_list = Node::load($nid);
 
     return [$media, $node_org, $node_curated_list];
   }
@@ -106,8 +115,7 @@ class EntityUsageTest extends ExistingSiteBase {
    * Assert that usage records are tracked properly.
    */
   public function testEntityUsageTracking() {
-
-    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::UNPUBLISHED);
+    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PREPUBLISHED_NEEDS_REVIEW);
     // All created entities should be unused.
     $this->assertUsageRows($media, 0);
     $this->assertUsageRows($node_curated_list, 0);
@@ -120,10 +128,10 @@ class EntityUsageTest extends ExistingSiteBase {
     $this->assertUsageRows($node_org, 0);
 
     list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PREPUBLISHED_DRAFT);
-    // Media and Org should have 1 reference.
-    $this->assertUsageRows($media, 1);
+    // All created entities should be unused.
+    $this->assertUsageRows($media, 0);
     $this->assertUsageRows($node_curated_list, 0);
-    $this->assertUsageRows($node_org, 1);
+    $this->assertUsageRows($node_org, 0);
 
     list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PUBLISHED);
     // Media and Org should have 1 reference.
@@ -142,14 +150,23 @@ class EntityUsageTest extends ExistingSiteBase {
       'uid' => $this->user->id(),
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
-    $this->createNode([
-      'type' => 'curated_list',
-      'title' => 'Test Curated List',
-      'uid' => $this->user->id(),
-      'moderation_state' => MassModeration::PUBLISHED,
-      'field_organizations' => $node_org->id(),
-    ]);
     $this->drupalLogin($this->user);
+
+    // Entity usage tracking is done at the end of the requests, so we need to
+    // create the node through requests to updated the entity usage tracking
+    // table, instead of using $node->create.
+    // See patch related to issue #3015287 in composer.json.
+    $this->visit('/node/add/curated_list');
+    $this->getCurrentPage()->fillField('Title', 'Test Curated List');
+    $this->getCurrentPage()->fillField('Short title', 'Test Curated List Short Title');
+    $this->getCurrentPage()->fillField('Short description', 'Test Curated List Short Description');
+    $this->getCurrentPage()->fillField('Parent page', 'Test Organization (' . $node_org->id() . ') - Organization');
+    $this->getCurrentPage()->fillField('Organization(s)', 'Test Organization (' . $node_org->id() . ') - Organization');
+    $this->getCurrentPage()->fillField('Save as', MassModeration::PUBLISHED);
+    $this->getCurrentPage()->pressButton('Save');
+    $this->htmlOutput();
+    $this->getCurrentPage()->hasContent('Curated List Test Curated List has been created.');
+
     $this->visit($node_org->toUrl()->toString() . '/mass-usage');
     // Verify the usage tab is reachable.
     $this->assertEquals($this->getSession()->getStatusCode(), 200);
