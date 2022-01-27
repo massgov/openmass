@@ -31,11 +31,21 @@ var jQueryLike = function (elemOrSelector, context) {
   };
 
   elem.insertBefore = function (selector) {
-    elem.insertAdjacentHTML('beforebegin', $(selector)[0].outerHTML);
+    elem.insertAdjacentHTML('beforebegin', jQueryLike(selector)[0].outerHTML);
   };
 
+  // @see https://stackoverflow.com/a/4793630/1038565.
+  function createElementFromHTML(htmlString) {
+    var div = document.createElement('div');
+    div.innerHTML = htmlString.trim();
+    // Change this to div.childNodes to support multiple top-level nodes.
+    return div.firstChild;
+  }
+
   elem.insertAfter = function (selector) {
-    elem.insertAdjacentHTML('afterend', $(selector)[0].outerHTML);
+    var newNode = createElementFromHTML(elem.outerHTML);
+    jQueryLike(selector)[0].parentNode.insertBefore(newNode, newNode.nextSibling);
+    elem = newNode;
   };
 
   elem.hide = function () {
