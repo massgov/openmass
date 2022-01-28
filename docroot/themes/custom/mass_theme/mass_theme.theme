@@ -7202,20 +7202,21 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
   // Remove current page.
   foreach ($breadcrumb as $key => $link) {
     if ($link['url'] == "") {
-      unset($breadcrumb[$key]);  
+      unset($breadcrumb[$key]);
     }
   }
 
   // Remove breadcrumbs for top level pages
-  if(count($breadcrumb) < 2) {
-    $variables['breadcrumb'] = null;  
-  } else {
+  if (count($breadcrumb) < 2) {
+    $variables['breadcrumb'] = NULL;
+  }
+  else {
     foreach ($breadcrumb as $key => $link) {
       $itemListElement[] = [
         "@type" => "ListItem",
-        "position" => $key +1,
+        "position" => $key + 1,
         "name" => $link['text'],
-        "item" => $link['url']
+        "item" => $link['url'],
       ];
     }
 
@@ -7225,7 +7226,7 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
     $items = [
       '@context' => 'https://schema.org/',
       '@type' => 'BreadcrumbList',
-      'itemListElement' => $itemListElement
+      'itemListElement' => $itemListElement,
     ];
     $jsonld = SchemaMetatagManager::encodeJsonld($items);
     $variables['#attached']['html_head']['schema_dataset'] = [
