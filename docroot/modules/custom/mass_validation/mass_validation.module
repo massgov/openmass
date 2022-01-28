@@ -1146,14 +1146,14 @@ function mass_validation_org_page_alter_helper(array &$form) {
 }
 
 /**
- * Validates mosaic items to be 5.
+ * Validates mosaic items to be 5 and Hightlight image for the first item.
  */
-function _mass_validation_validate_mosaic_items(&$form_state, &$paragraph) {
+function _mass_validation_validate_mosaic_items(FormStateInterface &$form_state, &$paragraph) {
   if (!isset($paragraph['subform']['field_featured_item_mosaic_items'])) {
     return;
   }
   if (isset($paragraph['subform']['field_featured_item_mosaic_items']['add_more'])) {
-    $form_state->setErrorByName('', t('You must provide 5 featured items.'));
+    $form_state->setErrorByName('mosaic_items_add_more', t('You must provide 5 featured items.'));
   }
   // Find the item with the lowest weight.
   foreach ($paragraph['subform']['field_featured_item_mosaic_items'] as $mosaic_key => $mosaic_array) {
@@ -1167,7 +1167,7 @@ function _mass_validation_validate_mosaic_items(&$form_state, &$paragraph) {
     }
   }
   if (isset($first) && empty($first['subform']['field_featured_item_highlight'][0]['fids'])) {
-    $form_state->setErrorByName('',
+    $form_state->setErrorByName('mosaic_hightlight',
       t('You must provide a value for the Highlight Image of the first Featured Item.'));
   }
 }
