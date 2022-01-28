@@ -186,7 +186,7 @@ var jQueryLike = function (elemOrSelector, context) {
 
   // Attaching Mass Accordion Behavior.
   document.addEventListener('DOMContentLoaded', function () {
-    Drupal.behaviors.MassAccordions.create(document);
+    Drupal.behaviors.MassAccordions.create(document.querySelector('.mass-alerts-block'));
   });
 
 })(jQueryLike, drupalLike);

@@ -15,8 +15,8 @@
     create: function (context) {
       $('.js-accordion', context).once('massAccordionCreate').each(function (index) {
         var $el = $(this);
-        var $link = $el.find('.js-accordion-link');
-        var $content = $el.find('.js-accordion-content');
+        var $link = $el.find('.js-accordion-link').eq(0);
+        var $content = $el.find('.js-accordion-content').eq(0);
         var id = $content.attr('id') || 'accordion' + (index + 1);
         var active = checkActive($el);
         var open = $el.hasClass('is-open');
