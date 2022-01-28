@@ -43,13 +43,6 @@
         {{ content.field_organizations }}
       {% endblock %}
     {% endembed %}
-
-  {% if translationLinks %}
-    {% include "@organisms/by-author/inline-links.twig" with {
-      "inlineLinks": translationLinks
-    } %}
-  {% endif %}
-
   {% include "@organisms/by-template/page-header.twig" with {
       "pageHeader": {
         "title": node.label,
