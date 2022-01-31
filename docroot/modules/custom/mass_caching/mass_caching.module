@@ -21,7 +21,13 @@ use Drupal\redirect\Entity\Redirect;
  *   All plugin definitions.
  */
 function mass_caching_purge_purgers_alter(array &$definitions): void {
-  // Start with disabled for both purgers.
+  // Use our own Purger class
+  if (isset($definitions['akamai'])) {
+    $definitions['akamai']['class'] = \Drupal\mass_caching\AkamaiPurger::class;
+  }
+
+
+  // Change handled types depending on env. Start with disabled for both purgers.
   $akamai = $acquia_purge = FALSE;
 
   $env = getenv('AH_SITE_ENVIRONMENT');
