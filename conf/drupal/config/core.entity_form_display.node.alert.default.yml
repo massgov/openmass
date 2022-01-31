@@ -26,6 +26,7 @@ dependencies:
     - datetime
     - field_group
     - link
+    - maxlength
     - paragraphs
     - path
 third_party_settings:
@@ -460,7 +461,11 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      maxlength:
+        maxlength_js: 145
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce_attribute: true
   uid:
     type: entity_reference_autocomplete
     weight: 1
