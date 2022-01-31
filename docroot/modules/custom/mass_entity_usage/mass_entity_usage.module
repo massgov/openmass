@@ -55,7 +55,7 @@ function _mass_entity_usage_tracking_check($entity_type, $id, $vid) {
       return FALSE;
     }
     // Check if the parent node should be tracked.
-    _mass_entity_usage_tracking_check('node', $parent_node->id(), $parent_node->getRevisionId());
+    return _mass_entity_usage_tracking_check('node', $parent_node->id(), $parent_node->getRevisionId());
   }
   if ($entity_type == 'node') {
     // Load the node.
