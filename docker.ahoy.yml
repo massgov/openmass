@@ -12,7 +12,7 @@ commands:
   stop:
     cmd: ddev pause "$@"
   pull:
-    cmd: ahoy down && ~/.ddev/bin/docker-compose -f .ddev/.ddev-docker-compose-full.yaml pull && ahoy up
+    cmd: ddev delete --omit-snapshot -y && ahoy up
   refresh:
     cmd: ahoy exec "scripts/ma-refresh-local -dpo && vendor/bin/drush sql:sanitize -y"
   updatedb:
