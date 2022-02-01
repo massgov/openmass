@@ -1,8 +1,9 @@
-uuid: e1a1b6a3-0202-4ed5-ac1a-5d263d50e525
+uuid: 640bf770-da04-480c-9aa6-10a1609e1039
 langcode: en
 status: true
 dependencies:
   config:
+    - core.entity_view_mode.media.listing
     - field.field.media.document.field_additional_info
     - field.field.media.document.field_alternative_title
     - field.field.media.document.field_category
@@ -45,24 +46,21 @@ dependencies:
     - field.field.media.document.field_title
     - field.field.media.document.field_upload_file
     - media.type.document
-id: media.document.default
+  module:
+    - datetime
+id: media.document.listing
 targetEntityType: media
 bundle: document
-mode: default
+mode: listing
 content:
   calculated_file_size:
-    weight: 7
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }
-  content_moderation_control:
-    weight: -20
-    settings: {  }
-    third_party_settings: {  }
-    region: content
   created:
     type: timestamp
-    weight: 1
+    weight: 4
     region: content
     label: hidden
     settings:
@@ -71,33 +69,17 @@ content:
       timezone: ''
     third_party_settings: {  }
   extra_file_extension:
-    weight: 9
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }
   extra_file_icon:
-    weight: 8
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_category:
-    weight: 10
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    type: entity_reference_label
-    region: content
-  field_collections:
-    weight: 102
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    type: entity_reference_label
-    region: content
   field_creator:
-    weight: 3
+    weight: 7
     label: hidden
     settings:
       link: false
@@ -105,7 +87,7 @@ content:
     type: entity_reference_label
     region: content
   field_document_listing_desc:
-    weight: 6
+    weight: 8
     label: above
     settings:
       link_to_entity: false
@@ -113,23 +95,6 @@ content:
     type: string
     region: content
   field_language:
-    weight: 4
-    label: hidden
-    settings:
-      link: false
-    third_party_settings: {  }
-    type: entity_reference_label
-    region: content
-  field_media_english_version:
-    type: entity_reference_entity_view
-    weight: 101
-    label: above
-    settings:
-      view_mode: default
-      link: false
-    third_party_settings: {  }
-    region: content
-  field_organizations:
     weight: 5
     label: hidden
     settings:
@@ -137,6 +102,31 @@ content:
     third_party_settings: {  }
     type: entity_reference_label
     region: content
+  field_organizations:
+    weight: 2
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_size:
+    type: string
+    weight: 11
+    region: content
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_start_date:
+    type: datetime_default
+    weight: 3
+    region: content
+    label: above
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
   field_title:
     weight: 0
     label: hidden
@@ -156,16 +146,19 @@ content:
   name:
     label: hidden
     type: string
-    weight: 2
+    weight: 1
     settings:
       link_to_entity: true
     third_party_settings: {  }
     region: content
 hidden:
   computed_manual_description: true
+  content_moderation_control: true
   field_additional_info: true
   field_alternative_title: true
+  field_category: true
   field_checksum: true
+  field_collections: true
   field_conform: true
   field_contact_information: true
   field_contact_name: true
@@ -185,13 +178,12 @@ hidden:
   field_license: true
   field_link_classic_massgov: true
   field_link_related_content: true
+  field_media_english_version: true
   field_oclc_number: true
   field_other_license_url: true
   field_part_of: true
   field_publishing_frequency: true
   field_rights: true
-  field_size: true
-  field_start_date: true
   field_subjects: true
   field_system_of_records: true
   field_tags: true
