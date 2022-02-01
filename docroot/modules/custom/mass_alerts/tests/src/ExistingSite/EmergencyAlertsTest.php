@@ -85,6 +85,11 @@ class EmergencyAlertsTest extends ExistingSiteBase {
       ],
     ]);
 
+    // MW: trying to fix test failures where response is uncacheable.
+    if ($this->loggedInUser) {
+      $this->drupalLogout();
+    }
+
     $session = $this->getSession();
     $session->visit('/alerts/sitewide');
     $page = $session->getPage();
