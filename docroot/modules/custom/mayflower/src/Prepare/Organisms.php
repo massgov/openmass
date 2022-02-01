@@ -660,7 +660,7 @@ class Organisms {
     // Determines which field names to use from the map.
     $fields = Helper::getMappedFields($entity, $map);
 
-    // @TODO consider passing the image style in as an option.
+    // @todo consider passing the image style in as an option.
     // Use action_banner_* as default pageBanner image styles.
     $image_style_wide = 'action_banner_large';
     $image_style_narrow = 'action_banner_small';
@@ -897,6 +897,42 @@ class Organisms {
     if ($links) {
       return [
         'title' => $options['title'],
+        'links' => $links,
+      ];
+    }
+    else {
+      return [];
+    }
+  }
+
+  /**
+   * Returns the variables structure required to render an Inline Links.
+   *
+   * @param array $items
+   *   Items of the list.
+   * @param array $options
+   *   'ariaLabel' receives an optional aria-label to show.
+   *
+   * @see @organisms/by-template/inline-links.twig
+   *
+   * @return array
+   *   Returns a structured array of inline links.
+   */
+  public static function prepareInlineLinks(array $items, array $options) {
+    $links = [];
+
+    // Create the links data structure.
+    foreach ($items as $item) {
+
+      $links[] = [
+        'text' => $item['title'],
+        'href' => $item['url'],
+      ];
+    }
+
+    if ($links) {
+      return [
+        'ariaLabel' => $options['ariaLabel'],
         'links' => $links,
       ];
     }
