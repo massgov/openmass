@@ -1,5 +1,20 @@
 
 
+## [0.311.0] - February 1, 2022
+
+### Added
+  - DP-23663: Adds option to center the content of CSV tables.
+  - DP-23669: Add "language bar" links for pages that have  professional translations.
+  
+### Fixed
+  - DP-23936: Remove merge choices from rich text for tables.
+  - DP-24012: Fixed edge case issue impacting locations.
+  
+### Changed
+  - DP-24000: Update Ahoy pull for latest DDEV
+  
+
+
 ## [0.310.0] - January 26, 2022
 
 ### Added
