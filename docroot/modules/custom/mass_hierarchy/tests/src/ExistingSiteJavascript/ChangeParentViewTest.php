@@ -243,8 +243,8 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     $this->drupalGet('node/' . $child1Node->id() . '/revisions');
     $this->assertSession()->pageTextContains('by ' . $randomUser->getAccountName());
     // Check we have a custom message for this action on the revision log.
-    $this->assertSession()->pageTextContains('Revision created with "Move Children" feature. (Draft)');
-    $this->assertSession()->pageTextContains('Revision created with "Move Children" feature. (Published)');
+    $this->assertSession()->waitForText('Revision created with "Move Children" feature. (Draft)', 2000);
+    $this->assertSession()->waitForText('Revision created with "Move Children" feature. (Published)', 2000);
     $this->htmlOutput();
 
     // Make the latest draft the current revision.
