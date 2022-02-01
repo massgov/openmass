@@ -60,6 +60,9 @@ function _mass_entity_usage_tracking_check($entity_type, $id, $vid) {
   if ($entity_type == 'node') {
     // Load the node.
     $node = \Drupal::entityTypeManager()->getStorage('node')->loadRevision($vid);
+    if (empty($node)) {
+      return FALSE;
+    }
     // Get the moderation state.
     $content_moderation_state = ContentModerationState::loadFromModeratedEntity($node);
     if ($content_moderation_state instanceof ContentModerationStateInterface
