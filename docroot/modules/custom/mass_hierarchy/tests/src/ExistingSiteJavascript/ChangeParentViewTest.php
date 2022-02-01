@@ -249,9 +249,8 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
 
     // Make the latest draft the current revision.
     $this->drupalGet('node/' . $child1Node->id() . '/revisions/' . $latest_vid . '/revert');
-    $this->getSession()->wait(2000);
-    $this->htmlOutput();
     $this->getCurrentPage()->pressButton('Revert');
+    $this->htmlOutput();
 
     // Edit the node.
     $this->getCurrentPage()->clickLink('Edit');
