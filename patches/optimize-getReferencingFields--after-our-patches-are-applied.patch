@@ -1,0 +1,51 @@
+diff --git a/src/EntityUsageTrackBase.php b/src/EntityUsageTrackBase.php
+index a511913..b3ba757 100644
+--- a/src/EntityUsageTrackBase.php
++++ b/src/EntityUsageTrackBase.php
+@@ -240,32 +240,39 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+     }
+   }
+ 
+-  /**
++/**
+    * {@inheritdoc}
+    */
+   public function getReferencingFields(EntityInterface $source_entity, array $field_types) {
+-    $referencing_fields_on_bundle = [];
++    $referencing_fields_on_bundle = &drupal_static(__FUNCTION__);
++    $ref_key = $source_entity->getEntityTypeId() . '.' . $source_entity->bundle() . ' '. implode(',', $field_types);
++
++    if (isset($referencing_fields_on_bundle[$ref_key])) {
++      return $referencing_fields_on_bundle[$ref_key];
++    }
++
++    $referencing_fields_on_bundle[$ref_key] = [];
+     if (!($source_entity instanceof FieldableEntityInterface)) {
+-      return $referencing_fields_on_bundle;
++      return [];
+     }
+ 
+     $source_entity_type_id = $source_entity->getEntityTypeId();
+     $all_fields_on_bundle = $this->entityFieldManager->getFieldDefinitions($source_entity_type_id, $source_entity->bundle());
+     foreach ($all_fields_on_bundle as $field_name => $field) {
+       if (in_array($field->getType(), $field_types)) {
+-        $referencing_fields_on_bundle[$field_name] = $field;
++        $referencing_fields_on_bundle[$ref_key][$field_name] = $field;
+       }
+     }
+ 
+     if (!$this->config->get('track_enabled_base_fields')) {
+-      foreach ($referencing_fields_on_bundle as $key => $referencing_field_on_bundle) {
++      foreach ($referencing_fields_on_bundle[$ref_key] as $key => $referencing_field_on_bundle) {
+         if ($referencing_field_on_bundle->getFieldStorageDefinition()->isBaseField()) {
+-          unset($referencing_fields_on_bundle[$key]);
++          unset($referencing_fields_on_bundle[$ref_key][$key]);
+         }
+       }
+     }
+ 
+-    return $referencing_fields_on_bundle;
++    return $referencing_fields_on_bundle[$ref_key];
+   }
+ 
+   /**
