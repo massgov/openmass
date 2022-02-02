@@ -4,12 +4,12 @@ status: true
 dependencies:
   config:
     - views.view.file_entity_browser
-  enforced:
-    module:
-      - file_browser
   module:
     - dropzonejs_eb_widget
     - views
+  enforced:
+    module:
+      - file_browser
 _core:
   default_config_hash: 1Y-fC4LxFu8Rg3SCSaYMZMXRAvMtueQ3JQIiKuna8hM
 name: browse_files
@@ -35,20 +35,24 @@ widget_selector: tabs
 widget_selector_configuration: {  }
 widgets:
   a4ad947c-9669-497c-9988-24351955a02f:
+    id: view
+    uuid: a4ad947c-9669-497c-9988-24351955a02f
+    label: 'Files listing'
+    weight: 1
     settings:
-      view: file_entity_browser
-      view_display: entity_browser_1
       submit_text: 'Confirm selection'
       auto_select: true
-    uuid: a4ad947c-9669-497c-9988-24351955a02f
-    weight: 1
-    label: 'Files listing'
-    id: view
+      view: file_entity_browser
+      view_display: entity_browser_1
   735d146c-a4b2-4327-a057-d109e0905e05:
+    id: dropzonejs
+    uuid: 735d146c-a4b2-4327-a057-d109e0905e05
+    label: 'Upload files'
+    weight: 0
     settings:
+      submit_text: Import
+      auto_select: true
       upload_location: 'public://images/[date:custom:Y]-[date:custom:m]'
-      dropzone_upload_multiple: '1'
-      dropzone_parallel_uploads: '2'
       dropzone_description: 'Click or drop a file here to upload it.'
       max_filesize: 100M
       extensions: 'jpg jpeg gif png'
@@ -58,9 +62,5 @@ widgets:
       resize_quality: !!float 1
       resize_method: contain
       thumbnail_method: contain
-      submit_text: Import
-      auto_select: true
-    uuid: 735d146c-a4b2-4327-a057-d109e0905e05
-    weight: 0
-    label: 'Upload files'
-    id: dropzonejs
+      dropzone_upload_multiple: '1'
+      dropzone_parallel_uploads: '2'

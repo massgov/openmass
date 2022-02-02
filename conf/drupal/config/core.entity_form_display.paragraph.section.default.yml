@@ -21,49 +21,51 @@ third_party_settings:
       children:
         - field_section_links
         - field_section_downloads
+      label: 'Additional Resources'
+      region: content
       parent_name: ''
       weight: 2
       format_type: fieldset
       format_settings:
         label: 'Additional Resources'
+        classes: ''
+        id: additional-resources-tab
         description: 'Add up to 6 additional resources.'
         required_fields: true
-        id: additional-resources-tab
-        classes: ''
-      label: 'Additional Resources'
-      region: content
 id: paragraph.section.default
 targetEntityType: paragraph
 bundle: section
 mode: default
 content:
   field_section_body:
+    type: text_textarea
     weight: 1
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_section_downloads:
+    type: inline_entity_form_complex
     weight: 5
+    region: content
     settings:
       form_mode: default
+      override_labels: false
       label_singular: ''
       label_plural: ''
       allow_new: true
       allow_existing: true
       match_operator: CONTAINS
-      override_labels: false
       collapsible: false
       collapsed: false
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
-    type: inline_entity_form_complex
-    region: content
   field_section_links:
+    type: link_default
     weight: 4
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -72,21 +74,19 @@ content:
         internal_link_content_type_blacklist:
           - contact_information
           - fee
-    type: link_default
-    region: content
   field_section_title:
+    type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   status: true

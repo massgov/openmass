@@ -35,15 +35,15 @@ bundle: service_details
 mode: token
 content:
   field_service_detail_lede:
-    weight: 2
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 2
     region: content
   field_service_detail_links_5:
-    weight: 4
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -52,34 +52,34 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 4
     region: content
   field_service_detail_overview:
-    weight: 5
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 5
     region: content
   field_service_detail_sections:
     type: entity_reference_revisions_entity_view
-    weight: 3
     label: above
     settings:
       view_mode: token
       link: ''
     third_party_settings: {  }
+    weight: 3
     region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_log_in_links: true
   computed_related_to: true
