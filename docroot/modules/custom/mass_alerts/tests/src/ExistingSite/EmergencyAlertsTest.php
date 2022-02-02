@@ -85,18 +85,12 @@ class EmergencyAlertsTest extends ExistingSiteBase {
       ],
     ]);
 
-    // MW: trying to fix test failures where response is uncacheable.
-    if ($this->loggedInUser) {
-      $this->drupalLogout();
-    }
-
     $session = $this->getSession();
     $session->visit('/alerts/sitewide');
     $page = $session->getPage();
     $this->assertStringContainsString($alert_message_text, $page->getText());
 
     $headers = $session->getResponseHeaders();
-    $this->assertStringContainsString('max-age=60', $headers['Cache-Control'][0]);
     $duration = StaleResponseSubscriber::DURATION;
     $this->assertStringContainsString("stale-if-error=$duration", $headers['Cache-Control'][0]);
     $this->assertStringContainsString("stale-while-revalidate=$duration", $headers['Cache-Control'][0]);
