@@ -25,4 +25,5 @@ class DocumentBundle extends MediaBundle {
     }
     return DrupalDateTime::createFromTimestamp($file->getChangedTime())->format('Y-m-d');
   }
+
 }
