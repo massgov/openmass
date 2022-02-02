@@ -17,17 +17,17 @@ third_party_settings:
       children:
         - field_landing_page
         - field_all_collection_breadcrumb
+      label: 'Collection Settings'
+      region: content
       parent_name: ''
       weight: 3
       format_type: tab
-      region: content
       format_settings:
-        id: ''
         classes: ''
+        id: ''
+        formatter: closed
         description: 'These settings only need to be defined for the top level collection term. They don''t need to be set for topics or sub topics.'
         required_fields: true
-        formatter: closed
-      label: 'Collection Settings'
 id: taxonomy_term.collections.default
 targetEntityType: taxonomy_term
 bundle: collections
@@ -42,29 +42,29 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_all_collection_breadcrumb:
+    type: string_textfield
     weight: 4
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_landing_page:
+    type: link_default
     weight: 3
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_url_name:
+    type: string_textfield
     weight: 1
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   langcode:
     type: language_select
     weight: 4
@@ -82,10 +82,10 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 5
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
 hidden:
   path: true

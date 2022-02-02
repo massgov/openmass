@@ -38,16 +38,16 @@ third_party_settings:
         - group_meta_info
         - group_extended_header
         - group_org_landing_page
+      label: 'Node Edit Form'
+      region: content
       parent_name: ''
       weight: 1
-      label: 'Node Edit Form'
       format_type: tabs
       format_settings:
         label: 'Node Edit Form'
-        direction: horizontal
-        id: ''
         classes: ''
-      region: content
+        id: ''
+        direction: horizontal
     group_primary_content:
       children:
         - field_use_alt_header
@@ -55,83 +55,85 @@ third_party_settings:
         - field_label
         - field_lede
         - field_photo
+      label: 'Primary Content'
+      region: content
       parent_name: group_node_edit_form
       weight: 108
-      label: 'Primary Content'
       format_type: tab
       format_settings:
         label: 'Primary Content'
+        classes: ''
+        id: ''
         formatter: open
         description: ''
         required_fields: true
-        id: ''
-        classes: ''
-      region: content
     group_bands:
       children:
         - field_bands
+      label: Rows
+      region: content
       parent_name: group_node_edit_form
       weight: 109
-      label: Rows
       format_type: tab
       format_settings:
-        formatter: closed
-        description: ''
         classes: ''
         id: ''
+        formatter: closed
+        description: ''
         required_fields: true
-      region: content
     group_extended_header:
       children:
         - field_action_header
         - field_action_banner
         - field_header_cta
         - field_image_credit
+      label: 'Extended Header'
+      region: content
       parent_name: group_node_edit_form
       weight: 111
-      label: 'Extended Header'
       format_type: tab
       format_settings:
-        formatter: closed
-        description: ''
         classes: ''
         id: ''
+        formatter: closed
+        description: ''
         required_fields: true
-      region: content
     group_meta_info:
       children: {  }
+      label: 'Meta Info'
+      region: content
       parent_name: group_node_edit_form
       weight: 110
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: false
-      label: 'Meta Info'
-      region: content
     group_org_landing_page:
       children:
         - field_topic_callout_links
+      label: 'Org Landing Page'
+      region: content
       parent_name: group_node_edit_form
       weight: 112
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-      label: 'Org Landing Page'
-      region: content
 id: node.stacked_layout.default
 targetEntityType: node
 bundle: stacked_layout
 mode: default
 content:
   field_action_banner:
+    type: entity_reference_paragraphs
     weight: 113
+    region: content
     settings:
       title: Banner
       title_plural: Banners
@@ -140,10 +142,10 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    type: entity_reference_paragraphs
-    region: content
   field_action_header:
+    type: entity_reference_paragraphs
     weight: 112
+    region: content
     settings:
       title: 'Contact Group'
       title_plural: 'Contact Groups'
@@ -152,11 +154,10 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    type: entity_reference_paragraphs
-    region: content
   field_bands:
     type: entity_reference_paragraphs
     weight: 3
+    region: content
     settings:
       title: Row
       title_plural: Rows
@@ -165,9 +166,10 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    region: content
   field_header_cta:
+    type: entity_reference_paragraphs
     weight: 114
+    region: content
     settings:
       title: 'Call to Action'
       title_plural: 'Call to Action'
@@ -176,132 +178,130 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    type: entity_reference_paragraphs
-    region: content
   field_image_credit:
+    type: string_textfield
     weight: 115
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_intended_audience:
+    type: options_select
     weight: 13
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_label:
+    type: string_textfield
     weight: 117
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_lede:
+    type: string_textarea
     weight: 118
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: string_textarea
-    region: content
   field_metatags:
+    type: metatag_firehose
     weight: 6
+    region: content
     settings:
       sidebar: true
     third_party_settings: {  }
-    type: metatag_firehose
-    region: content
   field_organizations:
+    type: entity_reference_autocomplete
     weight: 12
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_photo:
+    type: entity_browser_file
     weight: 119
+    region: content
     settings:
       entity_browser: browse_files_modal
       field_widget_edit: true
       field_widget_remove: true
+      field_widget_replace: false
       open: true
       selection_mode: selection_append
-      preview_image_style: thumbnail
       view_mode: default
-      field_widget_replace: false
+      preview_image_style: thumbnail
     third_party_settings: {  }
-    type: entity_browser_file
-    region: content
   field_related_content:
+    type: entity_reference_autocomplete
     weight: 5
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_reusable_label:
+    type: entity_reference_autocomplete
     weight: 122
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_state_organization_tax:
+    type: entity_reference_autocomplete
     weight: 7
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_topic_callout_links:
     type: link_default
     weight: 2
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    region: content
   field_use_alt_header:
+    type: boolean_checkbox
     weight: 115
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   moderation_state:
     type: moderation_state_default
     weight: 11
-    settings: {  }
     region: content
+    settings: {  }
     third_party_settings: {  }
   publish_on:
-    weight: 125
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 125
     region: content
-  publish_state:
-    weight: 123
     settings: {  }
     third_party_settings: {  }
+  publish_state:
     type: options_select
+    weight: 123
     region: content
+    settings: {  }
+    third_party_settings: {  }
   scheduler_settings:
     weight: 2
     region: content
@@ -310,33 +310,33 @@ content:
   title:
     type: string_textfield
     weight: 116
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    region: content
   uid:
     type: entity_reference_autocomplete
     weight: 0
     region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
   unpublish_on:
-    weight: 126
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 126
     region: content
-  unpublish_state:
-    weight: 124
     settings: {  }
     third_party_settings: {  }
+  unpublish_state:
     type: options_select
+    weight: 124
     region: content
+    settings: {  }
+    third_party_settings: {  }
   url_redirects:
     weight: 50
     region: content

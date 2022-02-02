@@ -16,13 +16,13 @@ plugin: mass_decision_tree_admin_block
 settings:
   id: mass_decision_tree_admin_block
   label: 'Customize Decision Tree'
-  provider: mass_decision_tree
   label_display: visible
+  provider: mass_decision_tree
 visibility:
   'entity_bundle:node':
     id: 'entity_bundle:node'
-    bundles:
-      decision_tree: decision_tree
     negate: false
     context_mapping:
       node: '@node.node_route_context:node'
+    bundles:
+      decision_tree: decision_tree

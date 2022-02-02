@@ -33,26 +33,26 @@ bundle: regulation
 mode: listing
 content:
   field_regulation_listing_desc:
-    weight: 0
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
     region: content
   referencing_binders_page_flipper:
     type: entity_reference_label
-    weight: 22
-    region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
-  workbench_moderation_control:
-    weight: 0
+    weight: 22
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   computed_related_to: true
   content_moderation_control: true
@@ -61,6 +61,7 @@ hidden:
   field_collections: true
   field_intended_audience: true
   field_organizations: true
+  field_primary_parent: true
   field_regluation_official_ver: true
   field_regulation_agency_cmr: true
   field_regulation_cmr_chapter: true
@@ -76,6 +77,7 @@ hidden:
   field_regulation_short_descr: true
   field_regulation_title: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true
   links: true
