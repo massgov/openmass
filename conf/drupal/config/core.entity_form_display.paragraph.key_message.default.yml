@@ -31,27 +31,31 @@ third_party_settings:
         - field_image
         - field_use_half_image
         - field_background_color
+      label: Background
+      region: content
       parent_name: ''
       weight: 5
       format_type: fieldset
       format_settings:
+        classes: ''
+        id: ''
         description: 'Either a solid block of color or a primary image that sits at the top of page.'
         required_fields: true
-        id: ''
-        classes: ''
-      label: Background
-      region: content
 id: paragraph.key_message.default
 targetEntityType: paragraph
 bundle: key_message
 mode: default
 content:
   field_background_color:
+    type: options_buttons
     weight: 8
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         3005304f-6a0d-42ae-ada4-3f4b10b9cb99:
+          entity_type: paragraph
+          bundle: key_message
           dependee: field_background_type
           settings:
             state: visible
@@ -66,9 +70,9 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+        01d9f10b-8e9d-456b-b774-0500080a46dc:
           entity_type: paragraph
           bundle: key_message
-        01d9f10b-8e9d-456b-b774-0500080a46dc:
           dependee: field_background_type
           settings:
             state: '!visible'
@@ -83,9 +87,9 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+        30ea3527-6aba-43b7-bb1d-908a16a8a0e7:
           entity_type: paragraph
           bundle: key_message
-        30ea3527-6aba-43b7-bb1d-908a16a8a0e7:
           dependee: field_background_type
           settings:
             state: required
@@ -100,18 +104,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: paragraph
-          bundle: key_message
-    type: options_buttons
-    region: content
   field_background_type:
+    type: options_buttons
     weight: 5
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_button:
+    type: link_default
     weight: 4
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -122,28 +124,28 @@ content:
         maxlength_js_enforce_attribute: true
       mass_validation:
         internal_link_content_type_blacklist: {  }
-    type: link_default
-    region: content
   field_image:
+    type: image_focal_point
     weight: 6
+    region: content
     settings:
+      progress_indicator: throbber
       preview_image_style: embedded_half_width
       preview_link: true
       offsets: '50,50'
-      progress_indicator: throbber
     third_party_settings: {  }
-    type: image_focal_point
-    region: content
   field_main_heading:
+    type: string_textfield
     weight: 1
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_rich_text_description:
+    type: text_textarea
     weight: 3
+    region: content
     settings:
       rows: 5
       placeholder: ''
@@ -154,27 +156,29 @@ content:
       maxlength:
         maxlength_js: 300
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
-        maxlength_js_enforce_attribute: true
         maxlength_js_enforce: true
         maxlength_js_truncate_html: true
+        maxlength_js_enforce_attribute: true
       conditional_fields: {  }
-    type: text_textarea
-    region: content
   field_sub_heading:
+    type: string_textfield
     weight: 2
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings:
       conditional_fields: {  }
-    type: string_textfield
-    region: content
   field_text_overlay_color:
+    type: options_buttons
     weight: 6
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         a1b17516-676b-4562-94c6-150165cee7e6:
+          entity_type: paragraph
+          bundle: key_message
           dependee: field_background_type
           settings:
             state: visible
@@ -189,9 +193,9 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+        228b7692-c5e7-4566-98ad-abf724c58fc0:
           entity_type: paragraph
           bundle: key_message
-        228b7692-c5e7-4566-98ad-abf724c58fc0:
           dependee: field_background_type
           settings:
             state: '!visible'
@@ -206,17 +210,13 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: paragraph
-          bundle: key_message
-    type: options_buttons
-    region: content
   field_use_half_image:
+    type: boolean_checkbox
     weight: 7
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   paragraphs_type_help__default:
     weight: 0
     region: content

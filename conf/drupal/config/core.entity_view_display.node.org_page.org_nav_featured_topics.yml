@@ -73,34 +73,34 @@ mode: org_nav_featured_topics
 content:
   computed_event_listing:
     type: entity_reference_entity_view
-    weight: 32
-    region: content
     label: hidden
     settings:
       view_mode: teaser
       link: false
     third_party_settings: {  }
-  extra_org_nav_application_login_links:
-    weight: 1
+    weight: 32
     region: content
+  extra_org_nav_application_login_links:
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
   field_board_members:
     type: entity_reference_revisions_entity_view
-    weight: 136
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 136
     region: content
   field_ref_card_view_6:
-    weight: 0
+    type: entity_reference_label
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 0
     region: content
 hidden:
   body: true
