@@ -15,29 +15,29 @@ third_party_settings:
     group_additional_resources:
       children:
         - field_section_long_form_addition
+      label: 'Additional Resources'
+      region: content
       parent_name: ''
       weight: 3
       format_type: details
       format_settings:
-        id: additional-resources
         classes: ''
+        id: additional-resources
         open: false
         required_fields: true
-      label: 'Additional Resources'
-      region: content
     group_section_content:
       children:
         - field_section_long_form_content
+      label: 'Section Content'
+      region: content
       parent_name: ''
       weight: 1
       format_type: details
       format_settings:
-        id: section-content
         classes: ''
+        id: section-content
         open: false
         required_fields: true
-      label: 'Section Content'
-      region: content
 id: paragraph.section_long_form.default
 targetEntityType: paragraph
 bundle: section_long_form
@@ -46,6 +46,7 @@ content:
   field_section_long_form_addition:
     type: entity_reference_paragraphs
     weight: 3
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -54,10 +55,10 @@ content:
       form_display_mode: default
       default_paragraph_type: links_downloads
     third_party_settings: {  }
-    region: content
   field_section_long_form_content:
     type: entity_reference_paragraphs
     weight: 2
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -66,20 +67,19 @@ content:
       form_display_mode: media_caption_and_display
       default_paragraph_type: _none
     third_party_settings: {  }
-    region: content
   field_section_long_form_heading:
+    type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   status: true

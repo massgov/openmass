@@ -14,7 +14,9 @@ bundle: 2up_stacked_band
 mode: default
 content:
   field_main:
+    type: entity_reference_paragraphs
     weight: 8
+    region: content
     settings:
       title: 'Action step'
       title_plural: 'Action steps'
@@ -23,11 +25,10 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    type: entity_reference_paragraphs
-    region: content
   field_right_rail:
     type: entity_reference_paragraphs
     weight: 7
+    region: content
     settings:
       title: 'Contact group'
       title_plural: 'Contact groups'
@@ -36,12 +37,11 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    region: content
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   status: true
