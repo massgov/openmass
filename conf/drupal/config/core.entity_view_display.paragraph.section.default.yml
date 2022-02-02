@@ -17,23 +17,23 @@ bundle: section
 mode: default
 content:
   field_section_body:
-    weight: 1
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 1
     region: content
   field_section_downloads:
-    weight: 2
+    type: entity_reference_entity_view
     label: above
     settings:
       view_mode: media_download_link
       link: false
     third_party_settings: {  }
-    type: entity_reference_entity_view
+    weight: 2
     region: content
   field_section_links:
-    weight: 3
+    type: dynamic_link_separate
     label: above
     settings:
       trim_length: 80
@@ -42,14 +42,14 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: dynamic_link_separate
+    weight: 3
     region: content
   field_section_title:
-    weight: 0
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
     region: content
 hidden: {  }

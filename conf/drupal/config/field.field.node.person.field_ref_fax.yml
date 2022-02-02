@@ -21,9 +21,9 @@ default_value_callback: ''
 settings:
   handler: 'default:paragraph'
   handler_settings:
-    negate: 0
     target_bundles:
       fax_number: fax_number
+    negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 92
@@ -125,8 +125,8 @@ settings:
         weight: 124
         enabled: false
       fax_number:
-        enabled: true
         weight: 125
+        enabled: true
       featured_item:
         weight: 126
         enabled: false
@@ -187,19 +187,25 @@ settings:
       list_dynamic:
         weight: 145
         enabled: false
+      list_item_contact:
+        weight: 149
+        enabled: false
       list_item_document:
         weight: 146
         enabled: false
       list_item_link:
         weight: 147
         enabled: false
+      list_item_person:
+        weight: 152
+        enabled: false
+      list_manual_directory:
+        weight: 153
+        enabled: false
       list_static:
         weight: 148
         enabled: false
       location_information:
-        weight: 149
-        enabled: false
-      list_item_contact:
         weight: 149
         enabled: false
       map:
@@ -208,14 +214,8 @@ settings:
       map_row:
         weight: 151
         enabled: false
-      list_item_person:
-        weight: 152
-        enabled: false
       media_contact:
         weight: 152
-        enabled: false
-      list_manual_directory:
-        weight: 153
         enabled: false
       method:
         weight: 153
@@ -228,6 +228,9 @@ settings:
         enabled: false
       online_email:
         weight: 156
+        enabled: false
+      organization_grid:
+        weight: 182
         enabled: false
       page:
         weight: 157
@@ -303,8 +306,5 @@ settings:
         enabled: false
       video:
         weight: 181
-        enabled: false
-      organization_grid:
-        weight: 182
         enabled: false
 field_type: entity_reference_revisions

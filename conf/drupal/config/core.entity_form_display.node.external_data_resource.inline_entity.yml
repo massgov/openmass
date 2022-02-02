@@ -25,15 +25,15 @@ third_party_settings:
     group_externaldata_edit_form:
       children:
         - group_external_data_resource
+      label: 'External data resource edit form'
+      region: content
       parent_name: ''
       weight: 0
       format_type: tabs
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         direction: horizontal
-      label: 'External data resource edit form'
-      region: content
     group_external_data_resource:
       children:
         - title
@@ -45,34 +45,38 @@ third_party_settings:
         - field_data_format
         - field_data_topic
         - field_data_sub_topic
+      label: 'External data resource'
+      region: content
       parent_name: group_externaldata_edit_form
       weight: 0
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: open
         description: ''
         required_fields: true
-      label: 'External data resource'
-      region: content
 id: node.external_data_resource.inline_entity
 targetEntityType: node
 bundle: external_data_resource
 mode: inline_entity
 content:
   field_data_format:
+    type: options_buttons
     weight: 14
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_data_resource_type:
+    type: options_buttons
     weight: 13
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         426f433e-cb54-4199-aa9d-1e97961db4f6:
+          entity_type: node
+          bundle: external_data_resource
           dependee: field_details_data_type
           settings:
             state: visible
@@ -87,9 +91,9 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+        e656fa82-bdff-4d28-b0b4-166ce8c3129e:
           entity_type: node
           bundle: external_data_resource
-        e656fa82-bdff-4d28-b0b4-166ce8c3129e:
           dependee: field_details_data_type
           settings:
             state: required
@@ -104,29 +108,27 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: external_data_resource
-    type: options_buttons
-    region: content
   field_data_topic:
     type: term_reference_tree
     weight: 15
     region: content
     settings:
       start_minimized: true
+      leaves_only: false
       select_parents: true
       cascading_selection: 0
       max_depth: 0
-      leaves_only: false
     third_party_settings: {  }
   field_details_data_type:
+    type: options_buttons
     weight: 12
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_externaldata_description:
+    type: string_textarea
     weight: 10
+    region: content
     settings:
       rows: 5
       placeholder: ''
@@ -134,29 +136,27 @@ content:
       maxlength:
         maxlength_js: 500
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
-        maxlength_js_enforce_attribute: true
         maxlength_js_enforce: false
         maxlength_js_truncate_html: false
-    type: string_textarea
-    region: content
+        maxlength_js_enforce_attribute: true
   field_externaldata_url:
+    type: link_default
     weight: 9
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_organizations:
+    type: entity_reference_autocomplete
     weight: 11
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   langcode:
     type: language_select
     weight: 2
@@ -171,17 +171,17 @@ content:
     settings: {  }
     third_party_settings: {  }
   publish_on:
-    weight: 28
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 28
     region: content
-  publish_state:
-    weight: 26
     settings: {  }
     third_party_settings: {  }
+  publish_state:
     type: options_select
+    weight: 26
     region: content
+    settings: {  }
+    third_party_settings: {  }
   scheduler_settings:
     weight: 2
     region: content
@@ -206,17 +206,17 @@ content:
       placeholder: ''
     third_party_settings: {  }
   unpublish_on:
-    weight: 29
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 29
     region: content
-  unpublish_state:
-    weight: 27
     settings: {  }
     third_party_settings: {  }
+  unpublish_state:
     type: options_select
+    weight: 27
     region: content
+    settings: {  }
+    third_party_settings: {  }
   url_redirects:
     weight: 7
     region: content

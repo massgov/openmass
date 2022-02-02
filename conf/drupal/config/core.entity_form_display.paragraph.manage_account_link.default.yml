@@ -15,15 +15,17 @@ bundle: manage_account_link
 mode: default
 content:
   field_manage_account_link:
+    type: link_default
     weight: 7
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_manage_account_link_body:
+    type: string_textarea
     weight: 6
+    region: content
     settings:
       rows: 3
       placeholder: ''
@@ -33,13 +35,11 @@ content:
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce: false
         maxlength_js_truncate_html: false
-    type: string_textarea
-    region: content
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   status: true
