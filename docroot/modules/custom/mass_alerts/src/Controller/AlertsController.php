@@ -51,7 +51,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
    */
   public function handleSiteRequest(Request $request) {
 
-    $results = [];
+    $results['emergencyAlerts'] = [];
     $nodeStorage = $this->entityTypeManager()->getStorage('node');
 
     // Load sitewide.
@@ -75,8 +75,6 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           'showText' => $this->t('Show'),
         ],
       ];
-
-      $results = [];
 
       $results['emergencyAlerts'] = $emergencyAlerts;
       $results['emergencyAlerts']['alerts'] = [];
@@ -156,7 +154,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
     $response = new CacheableResponse($output);
 
-    if ($node) {
+    if (isset($node)) {
       $response->addCacheableDependency($node);
     }
 
