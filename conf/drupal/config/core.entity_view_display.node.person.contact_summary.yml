@@ -40,73 +40,73 @@ bundle: person
 mode: contact_summary
 content:
   field_contact:
-    weight: 0
+    type: entity_reference_entity_view
     label: above
     settings:
       view_mode: contact_groups_only
       link: false
     third_party_settings: {  }
-    type: entity_reference_entity_view
+    weight: 0
     region: content
   field_person_ref_org:
     type: entity_reference_label
-    weight: 7
-    region: content
     label: above
     settings:
       link: true
     third_party_settings: {  }
+    weight: 7
+    region: content
   field_person_role_title:
     type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
     weight: 6
     region: content
-    label: above
-    settings:
-      link_to_entity: false
-    third_party_settings: {  }
   field_plain_description:
-    weight: 2
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 2
     region: content
   field_ref_fax:
     type: entity_reference_revisions_entity_view
-    weight: 3
     label: above
     settings:
       view_mode: directory
       link: ''
     third_party_settings: {  }
+    weight: 3
     region: content
   field_ref_links:
-    weight: 4
+    type: entity_reference_revisions_entity_view
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    type: entity_reference_revisions_entity_view
+    weight: 4
     region: content
   field_ref_phone:
     type: entity_reference_revisions_entity_view
-    weight: 1
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 1
     region: content
   field_ref_single_address:
     type: entity_reference_revisions_entity_view
-    weight: 5
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 5
     region: content
 hidden:
   body: true

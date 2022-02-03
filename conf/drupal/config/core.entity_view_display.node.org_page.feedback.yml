@@ -74,36 +74,34 @@ mode: feedback
 content:
   computed_event_listing:
     type: entity_reference_entity_view
-    weight: 32
-    region: content
     label: hidden
     settings:
       view_mode: teaser
       link: false
     third_party_settings: {  }
+    weight: 32
+    region: content
   extra_org_nav_application_login_link:
-    weight: 100
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 100
+    region: content
   extra_org_page_all_services:
-    weight: 100
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 100
+    region: content
   field_board_members:
     type: entity_reference_revisions_entity_view
-    weight: 136
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 136
     region: content
   field_feedback_com_link:
     type: dynamic_link_separate
-    weight: 1
-    region: content
     label: above
     settings:
       trim_length: '80'
@@ -112,21 +110,23 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
+    weight: 1
+    region: content
   field_org_sentence_phrasing:
-    weight: 0
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
     region: content
   field_response_expectations:
     type: basic_string
-    weight: 2
-    region: content
     label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 2
+    region: content
 hidden:
   body: true
   content_moderation_control: true

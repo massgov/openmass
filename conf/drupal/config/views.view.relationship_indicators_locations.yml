@@ -14,44 +14,12 @@ base_table: node_field_data
 base_field: nid
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: perm
-        options:
-          perm: 'access content'
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          disable_sql_rewrite: false
-          distinct: false
-          replica: false
-          query_comment: ''
-          query_tags: {  }
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: none
-        options:
-          offset: 0
-      style:
-        type: default
-      row:
-        type: fields
+      title: ''
       fields:
         title:
           id: title
@@ -60,6 +28,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: ''
           exclude: false
           alter:
@@ -115,60 +84,45 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          plugin_id: field
-      filters:
-        status:
-          value: '1'
-          table: node_field_data
-          field: status
-          plugin_id: boolean
-          entity_type: node
-          entity_field: status
-          id: status
-          expose:
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-          group: 1
+      pager:
+        type: none
+        options:
+          offset: 0
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: perm
+        options:
+          perm: 'access content'
+      cache:
+        type: tag
+        options: {  }
+      empty: {  }
       sorts:
         created:
           id: created
           table: node_field_data
           field: created
-          order: DESC
-          entity_type: node
-          entity_field: created
-          plugin_id: date
           relationship: none
           group_type: group
           admin_label: ''
-          exposed: false
+          entity_type: node
+          entity_field: created
+          plugin_id: date
+          order: DESC
           expose:
             label: ''
+            field_identifier: created
+          exposed: false
           granularity: second
-      title: ''
-      header: {  }
-      footer: {  }
-      empty: {  }
-      relationships:
-        field_service_ref_locations:
-          id: field_service_ref_locations
-          table: node__field_service_ref_locations
-          field: field_service_ref_locations
-          relationship: none
-          group_type: group
-          admin_label: 'Content referenced from field_service_ref_locations - Location'
-          required: false
-          plugin_id: standard
-        field_org_ref_locations:
-          id: field_org_ref_locations
-          table: node__field_org_ref_locations
-          field: field_org_ref_locations
-          relationship: none
-          group_type: group
-          admin_label: 'Content referenced from field_org_ref_locations - Location'
-          required: false
-          plugin_id: standard
       arguments:
         nid:
           id: nid
@@ -177,6 +131,9 @@ display:
           relationship: field_org_ref_locations
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: nid
+          plugin_id: node_nid
           default_action: default
           exception:
             value: all
@@ -190,8 +147,8 @@ display:
           summary_options:
             base_path: ''
             count: true
-            items_per_page: 25
             override: false
+            items_per_page: 25
           summary:
             sort_order: asc
             number_of_records: 0
@@ -203,11 +160,55 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
+      filters:
+        status:
+          id: status
+          table: node_field_data
+          field: status
           entity_type: node
-          entity_field: nid
-          plugin_id: node_nid
-      display_extenders: {  }
+          entity_field: status
+          plugin_id: boolean
+          value: '1'
+          group: 1
+          expose:
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+      style:
+        type: default
+      row:
+        type: fields
+      query:
+        type: views_query
+        options:
+          query_comment: ''
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_tags: {  }
+      relationships:
+        field_service_ref_locations:
+          id: field_service_ref_locations
+          table: node__field_service_ref_locations
+          field: field_service_ref_locations
+          relationship: none
+          group_type: group
+          admin_label: 'Content referenced from field_service_ref_locations - Location'
+          plugin_id: standard
+          required: false
+        field_org_ref_locations:
+          id: field_org_ref_locations
+          table: node__field_org_ref_locations
+          field: field_org_ref_locations
+          relationship: none
+          group_type: group
+          admin_label: 'Content referenced from field_org_ref_locations - Location'
+          plugin_id: standard
+          required: false
       group_by: true
+      header: {  }
+      footer: {  }
+      display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:
@@ -218,13 +219,11 @@ display:
         - user.permissions
       tags: {  }
   block_1:
-    display_plugin: block
     id: block_1
     display_title: 'Services referencing Location'
+    display_plugin: block
     position: 1
     display_options:
-      display_extenders: {  }
-      display_description: ''
       arguments:
         nid:
           id: nid
@@ -233,6 +232,9 @@ display:
           relationship: field_service_ref_locations
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: nid
+          plugin_id: node_nid
           default_action: default
           exception:
             value: all
@@ -246,8 +248,8 @@ display:
           summary_options:
             base_path: ''
             count: true
-            items_per_page: 25
             override: false
+            items_per_page: 25
           summary:
             sort_order: asc
             number_of_records: 0
@@ -259,11 +261,10 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
-          entity_type: node
-          entity_field: nid
-          plugin_id: node_nid
       defaults:
         arguments: false
+      display_description: ''
+      display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:
@@ -274,13 +275,13 @@ display:
         - user.permissions
       tags: {  }
   block_2:
-    display_plugin: block
     id: block_2
     display_title: 'Orgs referencing Location'
+    display_plugin: block
     position: 2
     display_options:
-      display_extenders: {  }
       display_description: ''
+      display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:
