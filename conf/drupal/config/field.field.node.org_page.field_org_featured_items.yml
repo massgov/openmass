@@ -21,9 +21,9 @@ default_value_callback: ''
 settings:
   handler: 'default:paragraph'
   handler_settings:
-    negate: 0
     target_bundles:
       featured_item_mosaic: featured_item_mosaic
+    negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 82
@@ -36,6 +36,9 @@ settings:
         enabled: false
       3_up_text:
         weight: 85
+        enabled: false
+      about:
+        weight: 96
         enabled: false
       action_address:
         weight: 86
@@ -70,9 +73,6 @@ settings:
       adjustment_type:
         weight: 96
         enabled: false
-      about:
-        weight: 96
-        enabled: false
       advisory_issuer:
         weight: 97
         enabled: false
@@ -81,6 +81,9 @@ settings:
         enabled: false
       answers:
         weight: 99
+        enabled: false
+      board_member:
+        weight: 117
         enabled: false
       callout_alert:
         weight: 100
@@ -131,13 +134,16 @@ settings:
         weight: 115
         enabled: false
       featured_item_mosaic:
-        enabled: true
         weight: 116
+        enabled: true
       file_download:
         weight: 117
         enabled: false
-      board_member:
-        weight: 117
+      file_download_single:
+        weight: 129
+        enabled: false
+      footnotes:
+        weight: 130
         enabled: false
       full_bleed:
         weight: 118
@@ -169,26 +175,38 @@ settings:
       image:
         weight: 127
         enabled: false
+      image_credit:
+        weight: 141
+        enabled: false
       issuer:
         weight: 128
-        enabled: false
-      file_download_single:
-        weight: 129
         enabled: false
       links:
         weight: 129
         enabled: false
-      footnotes:
-        weight: 130
+      links_downloads:
+        weight: 144
+        enabled: false
+      list_board_members:
+        weight: 152
         enabled: false
       list_dynamic:
         weight: 130
+        enabled: false
+      list_item_contact:
+        weight: 154
         enabled: false
       list_item_document:
         weight: 131
         enabled: false
       list_item_link:
         weight: 132
+        enabled: false
+      list_item_person:
+        weight: 157
+        enabled: false
+      list_manual_directory:
+        weight: 158
         enabled: false
       list_static:
         weight: 133
@@ -214,11 +232,17 @@ settings:
       next_step:
         weight: 140
         enabled: false
-      image_credit:
-        weight: 141
-        enabled: false
       online_email:
         weight: 141
+        enabled: false
+      organization_grid:
+        weight: 157
+        enabled: false
+      page:
+        weight: 158
+        enabled: false
+      page_group:
+        weight: 159
         enabled: false
       phone_number:
         weight: 142
@@ -227,9 +251,6 @@ settings:
         weight: 143
         enabled: false
       quick_action:
-        weight: 144
-        enabled: false
-      links_downloads:
         weight: 144
         enabled: false
       recommended_activity:
@@ -256,16 +277,19 @@ settings:
       search_band:
         weight: 152
         enabled: false
-      list_board_members:
-        weight: 152
-        enabled: false
       section:
         weight: 153
         enabled: false
-      section_with_heading:
-        weight: 154
+      section_board_members:
+        weight: 183
         enabled: false
-      list_item_contact:
+      section_heading_text:
+        weight: 172
+        enabled: false
+      section_long_form:
+        weight: 173
+        enabled: false
+      section_with_heading:
         weight: 154
         enabled: false
       slideshow:
@@ -274,28 +298,13 @@ settings:
       stacked_band:
         weight: 156
         enabled: false
-      list_item_person:
-        weight: 157
-        enabled: false
-      organization_grid:
-        weight: 157
-        enabled: false
       start_button:
         weight: 157
-        enabled: false
-      page:
-        weight: 158
         enabled: false
       stat:
         weight: 158
         enabled: false
-      list_manual_directory:
-        weight: 158
-        enabled: false
       state_organization:
-        weight: 159
-        enabled: false
-      page_group:
         weight: 159
         enabled: false
       subhead:
@@ -306,14 +315,5 @@ settings:
         enabled: false
       video:
         weight: 162
-        enabled: false
-      section_heading_text:
-        weight: 172
-        enabled: false
-      section_long_form:
-        weight: 173
-        enabled: false
-      section_board_members:
-        weight: 183
         enabled: false
 field_type: entity_reference_revisions
