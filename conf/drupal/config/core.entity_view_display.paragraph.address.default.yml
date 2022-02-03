@@ -18,28 +18,28 @@ bundle: address
 mode: default
 content:
   field_address_address:
-    weight: 1
+    type: address_full_link
     label: hidden
     settings:
       link_text: directions
     third_party_settings: {  }
-    type: address_full_link
+    weight: 1
     region: content
   field_geofield:
     type: geofield_default
-    weight: 2
     label: above
     settings:
       output_format: wkt
     third_party_settings: {  }
+    weight: 2
     region: content
   field_label:
-    weight: 0
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
     region: content
 hidden:
   created: true

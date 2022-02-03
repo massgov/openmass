@@ -14,35 +14,35 @@ bundle: org_news
 mode: default
 content:
   field_component_add_separator:
+    type: boolean_checkbox
     weight: 3
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_number_of_news_items:
+    type: options_select
     weight: 1
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_org_featured_news_items:
+    type: entity_reference_autocomplete
     weight: 0
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_org_show_news_images:
+    type: boolean_checkbox
     weight: 2
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
 hidden:
   created: true
   status: true

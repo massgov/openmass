@@ -16,20 +16,20 @@ bundle: state_organization
 mode: token
 content:
   field_state_org_name:
-    weight: 1
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 1
     region: content
   field_state_org_ref_org:
-    weight: 0
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 0
     region: content
 hidden:
   field_state_org_description: true

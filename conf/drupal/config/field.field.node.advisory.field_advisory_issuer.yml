@@ -21,9 +21,9 @@ default_value_callback: ''
 settings:
   handler: 'default:paragraph'
   handler_settings:
-    negate: 0
     target_bundles:
       issuer: issuer
+    negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 62
@@ -67,6 +67,9 @@ settings:
       address:
         weight: 75
         enabled: false
+      adjustment_type:
+        weight: 80
+        enabled: false
       advisory_issuer:
         weight: 76
         enabled: false
@@ -80,9 +83,6 @@ settings:
         weight: 79
         enabled: false
       callout_link:
-        weight: 80
-        enabled: false
-      adjustment_type:
         weight: 80
         enabled: false
       completion_time:
@@ -99,6 +99,12 @@ settings:
         enabled: false
       content_card_group:
         weight: 85
+        enabled: false
+      decision_participants:
+        weight: 91
+        enabled: false
+      decision_section:
+        weight: 92
         enabled: false
       emergency_alert:
         weight: 86
@@ -118,13 +124,7 @@ settings:
       guide_section:
         weight: 91
         enabled: false
-      decision_participants:
-        weight: 91
-        enabled: false
       guide_section_3up:
-        weight: 92
-        enabled: false
-      decision_section:
         weight: 92
         enabled: false
       hours:
@@ -145,6 +145,9 @@ settings:
       image:
         weight: 98
         enabled: false
+      issuer:
+        weight: 106
+        enabled: true
       links:
         weight: 99
         enabled: false
@@ -169,9 +172,6 @@ settings:
       online_email:
         weight: 106
         enabled: false
-      issuer:
-        enabled: true
-        weight: 106
       phone_number:
         weight: 107
         enabled: false
@@ -183,6 +183,9 @@ settings:
         enabled: false
       recommended_activity:
         weight: 110
+        enabled: false
+      regulation_section:
+        weight: 120
         enabled: false
       related_content:
         weight: 111
@@ -210,9 +213,6 @@ settings:
         enabled: false
       stat:
         weight: 119
-        enabled: false
-      regulation_section:
-        weight: 120
         enabled: false
       state_organization:
         weight: 120

@@ -20,7 +20,9 @@ bundle: video_with_section
 mode: default
 content:
   field_campaign_description:
+    type: text_textarea
     weight: 3
+    region: content
     settings:
       rows: 5
       placeholder: ''
@@ -31,43 +33,41 @@ content:
       maxlength:
         maxlength_js: 300
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
-        maxlength_js_enforce_attribute: true
         maxlength_js_enforce: true
         maxlength_js_truncate_html: true
-    type: text_textarea
-    region: content
+        maxlength_js_enforce_attribute: true
   field_main_heading:
+    type: string_textfield
     weight: 1
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_video:
+    type: inline_entity_form_complex
     weight: 2
+    region: content
     settings:
       form_mode: default
+      override_labels: false
       label_singular: ''
       label_plural: ''
       allow_new: true
       allow_existing: true
       match_operator: CONTAINS
-      override_labels: false
+      allow_duplicate: false
       collapsible: false
       collapsed: false
-      allow_duplicate: false
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: video_browser
-    type: inline_entity_form_complex
-    region: content
   field_video_section_bg_color:
+    type: options_buttons
     weight: 4
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   paragraphs_type_help__default:
     weight: 0
     region: content
