@@ -29,6 +29,10 @@ var jQueryLike = function (elemOrSelector, context) {
     return typeof elem.dataset[key] !== 'undefined' ? elem.dataset[key] : null;
   };
 
+  elem.attr = function (key) {
+    return elem[0].getAttribute(key);
+  };
+
   elem.insertBefore = function (selector) {
     elem.insertAdjacentHTML('beforebegin', jQueryLike(selector)[0].outerHTML);
   };
@@ -53,7 +57,7 @@ var jQueryLike = function (elemOrSelector, context) {
   };
 
   elem.find = function (selector) {
-    return elem.querySelector(selector);
+    return jQueryLike(elem[0].querySelectorAll(selector));
   };
 
   elem.trigger = function (eventName, data) {
@@ -74,12 +78,15 @@ var jQueryLike = function (elemOrSelector, context) {
     }
   };
 
+  elem.click = function (fn) {
+    elem.each(function (index, item) {
+      item.addEventListener('click', fn);
+    });
+  };
+
   elem.each = function (fn) {
-
     elem.forEach(function (item, index) {
-
       fn(index, item);
-
     });
   };
 
@@ -150,6 +157,48 @@ var jQueryLike = function (elemOrSelector, context) {
         }
 
         if (path) {
+          var manageEmergencyAlerts = function () {
+            var $alerts = $('.js-emergency-alerts');
+            if ($alerts.length !== 1) {
+              return;
+            }
+            var id = $alerts.attr('data-id');
+
+            if (typeof getCookie(id) === 'undefined') {
+              document.cookie = id + '=1';
+            }
+
+            $alerts.find('.js-accordion-link').click(function () {
+              var cookieval = getCookie(id);
+              cookieval = cookieval === '0' ? 1 : 0;
+              document.cookie = id + '=' + cookieval;
+            });
+
+            $alerts.find('.js-accordion-content')[0].style.display =
+              getCookie(id) === '1' ? 'block' : 'none';
+
+            if (getCookie(id) === '1') {
+              $alerts[0].classList.add('is-open');
+            }
+            else {
+              $alerts[0].classList.remove('is-open');
+            }
+          };
+
+          /**
+           * Get the value of a cookie
+           * Source: https://gist.github.com/wpsmith/6cf23551dd140fb72ae7
+           * @param  {String} name  The name of the cookie
+           * @return {String}       The cookie value
+           */
+          var getCookie = function (name) {
+            var value = '; ' + document.cookie;
+            var parts = value.split('; ' + name + '=');
+            if (parts.length === 2) {
+              return parts.pop().split(';').shift();
+            }
+          };
+
           var renderData = function (content) {
             if (!content) {
               $this.hide();
@@ -163,18 +212,22 @@ var jQueryLike = function (elemOrSelector, context) {
             $(document).trigger('ma:AjaxPattern:Render', [{el: $this}]);
           };
 
+          var doWhenDataIsReady = function () {
+            renderData(document.prefetchAlertsData[path]);
+            manageEmergencyAlerts();
+            document.prefetchAlertsData[path] = false;
+          };
+
           // Check if the data is already there.
           if (document.prefetchAlertsData[path]) {
-            renderData(document.prefetchAlertsData[path]);
-            document.prefetchAlertsData[path] = false;
+            doWhenDataIsReady();
           }
           else {
             // Data is not ready yet.
             // Lets listen mass_alerts_data_ready event.
             document.addEventListener('mass_alerts_data_ready', function () {
               if (document.prefetchAlertsData[path]) {
-                renderData(document.prefetchAlertsData[path]);
-                document.prefetchAlertsData[path] = false;
+                doWhenDataIsReady();
               }
             }, false);
           }
