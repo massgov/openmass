@@ -1,7 +1,8 @@
 parameters:
   monolog.channel_handlers:
     default: ['rotating_file']
-  monolog.processors: ['message_placeholder', 'current_user', 'request_uri', 'ip', 'referer']
+    php: ['rotating_file']
+  monolog.processors: ['message_placeholder', 'current_user', 'request_uri', 'referer']
 
 services:
   monolog.handler.rotating_file:
