@@ -83,7 +83,7 @@
     {% set image_width = node.field_person_headshot.width %}
     {% set image_height = node.field_person_headshot.height %}
     {# Only show the download link if image width is greater than 285x380. #}
-    {% if node.field_person_headshot.entity.fileuri is not  null and image_width >= 380 and image_height >= 285 %}
+    {% if node.field_person_headshot.entity.fileuri is not null and image_width >= 380 and image_height >= 285 %}
       {% include "@atoms/decorative-link.twig" with {
         decorativeLink: {
           href: file_url(node.field_person_headshot.entity.fileuri),
