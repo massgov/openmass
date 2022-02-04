@@ -309,6 +309,9 @@ jobs:
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
+          # Monolog via services.ci.yml
+          path: /var/www/code/sites/default/files/private/logs
+      - store_artifacts:
           # Pages saved via 'Then save the html for the page'. @see \FeatureContext::saveHtml.
           path: /var/www/code/output
       - store_artifacts:
