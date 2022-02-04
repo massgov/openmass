@@ -159,10 +159,28 @@ var jQueryLike = function (elemOrSelector, context) {
         if (path) {
           var manageEmergencyAlerts = function () {
             var $alerts = $('.js-emergency-alerts');
+
             if ($alerts.length !== 1) {
               return;
             }
             var id = $alerts.attr('data-id');
+
+            var updateAccordionBaseOnCookieValue = function () {
+              if (
+                typeof jQuery !== 'undefined' &&
+                typeof jQuery($alerts[0]).data('jqueryOnceMassAccordionCreate') !== 'undefined') {
+                return;
+              }
+
+              $alerts.find('.js-accordion-content')[0].style.display =
+                getCookie(id) === '1' ? 'block' : 'none';
+              if (getCookie(id) === '1') {
+                $alerts[0].classList.add('is-open');
+              }
+              else {
+                $alerts[0].classList.remove('is-open');
+              }
+            };
 
             if (typeof getCookie(id) === 'undefined') {
               document.cookie = id + '=1';
@@ -172,17 +190,10 @@ var jQueryLike = function (elemOrSelector, context) {
               var cookieval = getCookie(id);
               cookieval = cookieval === '0' ? 1 : 0;
               document.cookie = id + '=' + cookieval;
+              updateAccordionBaseOnCookieValue();
             });
 
-            $alerts.find('.js-accordion-content')[0].style.display =
-              getCookie(id) === '1' ? 'block' : 'none';
-
-            if (getCookie(id) === '1') {
-              $alerts[0].classList.add('is-open');
-            }
-            else {
-              $alerts[0].classList.remove('is-open');
-            }
+            updateAccordionBaseOnCookieValue();
           };
 
           /**
