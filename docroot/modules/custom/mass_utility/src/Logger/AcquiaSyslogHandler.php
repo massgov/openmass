@@ -29,7 +29,7 @@ class AcquiaSyslogHandler extends SyslogHandler {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultFormatter(): FormatterInterface {
+  public function getFormatter(): FormatterInterface {
     return new LineFormatter(self::FORMAT);
   }
 

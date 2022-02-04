@@ -15,7 +15,7 @@ class DockerStreamHandler extends StreamHandler {
   /**
    * {@inheritdoc}
    */
-  public function getDefaultFormatter(): FormatterInterface {
+  public function getFormatter(): FormatterInterface {
     return new LineFormatter(self::FORMAT, 'Y-m-d H:i:s');
   }
 
