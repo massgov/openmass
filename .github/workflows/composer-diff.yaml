@@ -1,0 +1,32 @@
+# See https://github.com/WyriHaximus/github-action-composer.lock-diff
+name: Composer Diff
+on:
+  ## To make this workflow work in the simplest way possible, without a PAT or juggling information between, we need to
+  ## run it with permissions as if it was already merged.
+  ## Refs: https://docs.github.com/en/actions/reference/events-that-trigger-workflows#pull_request_target
+  ## Refs: https://securitylab.github.com/research/github-actions-preventing-pwn-requests/
+  ## Refs: https://twitter.com/WyriHaximus/status/1393679576828686340
+  pull_request_target:
+    types:
+      - opened
+      - synchronize
+      - reopened
+## This workflow needs the `pull-request` permissions to work
+## Refs: https://docs.github.com/en/actions/reference/workflow-syntax-for-github-actions#permissions
+permissions:
+  pull-requests: write
+  contents: read
+jobs:
+  comment-composer-lock-diff:
+    name: Comment composer.lock diff
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+      - name: Comment composer.lock diff
+        uses: WyriHaximus/github-action-composer.lock-diff@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
