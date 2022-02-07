@@ -47,17 +47,15 @@ class MassMoreLists extends ControllerBase {
    */
   public function buildList(Node $node) {
     // Build list data for rendering.
-    if (!$more_list = $this->listBuilder->build($node)) {
-      return;
-    }
+    $more_list = $this->listBuilder->build($node);
 
     // Assembles overall 'more_list' render array for actual page output.
     $build['more_list'] = [
       '#theme' => 'more_list',
-      '#contentEyebrow' => $more_list['contentEyebrow'],
-      '#pageHeader' => $more_list['pageHeader'],
-      '#resultsHeading' => $more_list['resultsHeading'],
-      '#formDownloads' => $more_list['formDownloads'],
+      '#contentEyebrow' => $more_list['contentEyebrow'] ?? '',
+      '#pageHeader' => $more_list['pageHeader'] ?? '',
+      '#resultsHeading' => $more_list['resultsHeading'] ?? '',
+      '#formDownloads' => $more_list['formDownloads'] ?? '',
       '#pager' => [
         '#type' => 'pager',
         '#tags' => [
