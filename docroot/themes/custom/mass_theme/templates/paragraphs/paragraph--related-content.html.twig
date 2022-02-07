@@ -69,7 +69,7 @@
               'text': item.label,
               'type': item.field_label,
               'href': item.node_path,
-              'image': file_url(item.field_photo.entity.fileuri),
+              'image': file_url(item.field_photo.entity.fileuri ?? ''),
               'label': item.label_text
             }
             %}
