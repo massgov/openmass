@@ -1062,27 +1062,6 @@ function mass_utility_mail_alter(&$message) {
 }
 
 /**
- * Implements hook_rebuild().
- */
-function mass_utility_rebuild() {
-  $current_user = \Drupal::currentUser();
-  $location = (PHP_SAPI === 'cli') ? 'drush' : 'the UI';
-  $message = 'drupal_flush_all_caches() has been called by @name using @location.';
-
-  if (!is_null($current_user)) {
-    $name = (empty($current_user->getAccountName())) ? 'Anonymous' : $current_user->getAccountName();
-  }
-  else {
-    $name = 'Anonymous';
-  }
-
-  \Drupal::logger('mass_utility')->notice($message, [
-    '@name' => $name,
-    '@location' => $location,
-  ]);
-}
-
-/**
  * Implements hook_entity_extra_field_info().
  */
 function mass_utility_entity_extra_field_info() {
