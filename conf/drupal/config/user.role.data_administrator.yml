@@ -1,7 +1,15 @@
 uuid: ee586b45-9a9a-4c70-b66f-7fe46f29dada
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - taxonomy.vocabulary.data_topic
+    - taxonomy.vocabulary.tx_data_resource_type
+    - taxonomy.vocabulary.tx_details_data_type
+    - taxonomy.vocabulary.tx_list_data_type
+  module:
+    - access_unpublished
+    - taxonomy
 id: data_administrator
 label: 'Data Administrator'
 weight: 5
