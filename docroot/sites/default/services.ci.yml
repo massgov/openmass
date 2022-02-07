@@ -1,6 +1,7 @@
 parameters:
   monolog.channel_handlers:
-    default: ['rotating_file_debug', 'rotating_file_warning']
+    # 'rotating_file_debug', 'rotating_file_warning'
+    default: []
   monolog.processors: ['message_placeholder', 'current_user', 'request_uri', 'referer']
 
 services:
