@@ -197,7 +197,3 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
 if (PHP_SAPI === 'cli' && ini_get('memory_limit')) {
   ini_set('memory_limit', '1536M');
 }
-
-// Allow usage records to be registered in background.
-// See composer.json, in the patches for entity usage.
-$config['entity_usage.settings']['background_tracking'] = TRUE;
