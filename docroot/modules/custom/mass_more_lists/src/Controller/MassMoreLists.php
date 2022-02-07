@@ -47,7 +47,9 @@ class MassMoreLists extends ControllerBase {
    */
   public function buildList(Node $node) {
     // Build list data for rendering.
-    $more_list = $this->listBuilder->build($node);
+    if (!$more_list = $this->listBuilder->build($node)) {
+      return;
+    }
 
     // Assembles overall 'more_list' render array for actual page output.
     $build['more_list'] = [
