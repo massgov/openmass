@@ -4037,8 +4037,8 @@ function mass_theme_preprocess_node(&$variables) {
     'Data catalog' => 'catalog',
     'Data Resource' => 'resource',
     'Report' => 'report',
-    'TestDataType' => 'data',
   ];
+
   // The field_data_flag field determines if it's a data listing. All External
   // Data Resource nodes are data listings.
   if ($node->getType() === 'external_data_resource' ||
@@ -4071,7 +4071,7 @@ function mass_theme_preprocess_node(&$variables) {
         }
       }
       else {
-        $variables['data_listing_icon'] = $icon_map[$term->label()];
+        $variables['data_listing_icon'] = $icon_map[$term->label()] ?? NULL;
         $variables['data_listing_icon_label'] = $term->label();
       }
     }
