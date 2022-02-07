@@ -55,7 +55,6 @@ Feature: Content Management
       | administer nodes     |
       | revert all revisions |
       | view any unpublished content |
-      | view moderation states       |
       | view latest version          |
 
     # Does not have permission to change site code or administer users
