@@ -258,7 +258,7 @@ var jQueryLike = function (elemOrSelector, context) {
             renderData(document.prefetchAlertsData[path]);
             manageEmergencyAlerts();
             document.prefetchAlertsData[path] = false;
-            Drupal.behaviors.MassAccordions.create(document.querySelector('.mass-alerts-block'));
+            Drupal.behaviors.MassAccordions.create();
           };
 
           // Check if the data is already there.
