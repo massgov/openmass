@@ -168,7 +168,7 @@ var jQueryLike = function (elemOrSelector, context) {
             var updateAccordionBaseOnCookieValue = function () {
               if (
                 typeof jQuery !== 'undefined' &&
-                typeof jQuery($alerts[0]).data('jqueryOnceMassAccordionCreate') !== 'undefined') {
+                typeof jQuery($alerts[0]).data('js-accordion') !== 'undefined') {
                 return;
               }
 
