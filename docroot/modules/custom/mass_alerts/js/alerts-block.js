@@ -103,6 +103,21 @@ var jQueryLike = function (elemOrSelector, context) {
 
     attach: function (context, nodeType) {
 
+      var checkDrupalBehaviors = function () {
+        return (
+          typeof Drupal !== 'undefined' &&
+          typeof Drupal.behaviors !== 'undefined' &&
+          typeof Drupal.behaviors.MassAccordions !== 'undefined'
+        );
+      };
+
+      var checkJsAccordions = function ($alerts) {
+        return (
+          typeof jQuery !== 'undefined' &&
+          typeof jQuery($alerts[0]).data('js-accordion') !== 'undefined'
+        );
+      };
+
       $('.mass-alerts-block', context).each(function (i, e) {
         var $this = $(e);
 
@@ -169,24 +184,6 @@ var jQueryLike = function (elemOrSelector, context) {
             }
             var id = $alerts.attr('data-id');
 
-            var otherAccordionBehaviorsLoaded = function () {
-              if (
-                typeof jQuery !== 'undefined' &&
-                typeof jQuery($alerts[0]).data('js-accordion') !== 'undefined'
-              ) {
-                return true;
-              }
-
-              if (
-                typeof Drupal !== 'undefined' &&
-                typeof Drupal.behaviors !== 'undefined' &&
-                typeof Drupal.behaviors.MassAccordions !== 'undefined') {
-                return true;
-              }
-
-              return false;
-            };
-
             var updateAccordionBaseOnCookieValue = function () {
               $alerts.find('.js-accordion-content')[0].style.display =
                 getCookie(id) === '1' ? 'block' : 'none';
@@ -209,7 +206,7 @@ var jQueryLike = function (elemOrSelector, context) {
               var cookieval = getCookie(id);
               cookieval = cookieval === '0' ? 1 : 0;
               document.cookie = id + '=' + cookieval;
-              if (!otherAccordionBehaviorsLoaded()) {
+              if (!checkJsAccordions($alerts) && !checkDrupalBehaviors()()) {
                 updateAccordionBaseOnCookieValue();
               }
             });
@@ -258,7 +255,9 @@ var jQueryLike = function (elemOrSelector, context) {
             renderData(document.prefetchAlertsData[path]);
             manageEmergencyAlerts();
             document.prefetchAlertsData[path] = false;
-            Drupal.behaviors.MassAccordions.create();
+            if (checkDrupalBehaviors()) {
+              Drupal.behaviors.MassAccordions.create();
+            }
           };
 
           // Check if the data is already there.
