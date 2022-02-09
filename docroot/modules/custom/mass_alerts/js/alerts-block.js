@@ -209,7 +209,9 @@ var jQueryLike = function (elemOrSelector, context) {
               var cookieval = getCookie(id);
               cookieval = cookieval === '0' ? 1 : 0;
               document.cookie = id + '=' + cookieval;
-              updateAccordionBaseOnCookieValue();
+              if (!otherAccordionBehaviorsLoaded()) {
+                updateAccordionBaseOnCookieValue();
+              }
             });
 
             updateAccordionBaseOnCookieValue();
