@@ -23,11 +23,11 @@ default_value_callback: ''
 settings:
   handler: 'default:paragraph'
   handler_settings:
-    negate: 0
     target_bundles:
       iframe: iframe
       image: image
       video: video
+    negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 81
@@ -128,8 +128,20 @@ settings:
       fax_number:
         weight: 113
         enabled: false
+      featured_item:
+        weight: 123
+        enabled: false
+      featured_item_mosaic:
+        weight: 124
+        enabled: false
       file_download:
         weight: 114
+        enabled: false
+      file_download_single:
+        weight: 121
+        enabled: false
+      footnotes:
+        weight: 127
         enabled: false
       full_bleed:
         weight: 115
@@ -152,32 +164,26 @@ settings:
       icon_link:
         weight: 121
         enabled: false
-      file_download_single:
-        weight: 121
-        enabled: false
       icon_links:
         weight: 122
         enabled: false
-      featured_item:
-        weight: 123
-        enabled: false
       iframe:
-        enabled: true
         weight: 123
-      featured_item_mosaic:
-        weight: 124
-        enabled: false
-      image:
         enabled: true
+      image:
         weight: 124
+        enabled: true
+      image_credit:
+        weight: 138
+        enabled: false
       issuer:
         weight: 125
         enabled: false
       links:
         weight: 126
         enabled: false
-      footnotes:
-        weight: 127
+      links_downloads:
+        weight: 134
         enabled: false
       list_dynamic:
         weight: 127
@@ -200,9 +206,6 @@ settings:
       map_row:
         weight: 133
         enabled: false
-      links_downloads:
-        weight: 134
-        enabled: false
       media_contact:
         weight: 135
         enabled: false
@@ -212,14 +215,17 @@ settings:
       more_info:
         weight: 137
         enabled: false
-      image_credit:
-        weight: 138
-        enabled: false
       next_step:
         weight: 138
         enabled: false
       online_email:
         weight: 139
+        enabled: false
+      page:
+        weight: 148
+        enabled: false
+      page_group:
+        weight: 149
         enabled: false
       phone_number:
         weight: 140
@@ -245,14 +251,8 @@ settings:
       rich_text:
         weight: 147
         enabled: false
-      page:
-        weight: 148
-        enabled: false
       rules_section:
         weight: 148
-        enabled: false
-      page_group:
-        weight: 149
         enabled: false
       rules_updates:
         weight: 149
@@ -262,6 +262,12 @@ settings:
         enabled: false
       section:
         weight: 151
+        enabled: false
+      section_heading_text:
+        weight: 162
+        enabled: false
+      section_long_form:
+        weight: 163
         enabled: false
       section_with_heading:
         weight: 152
@@ -288,12 +294,6 @@ settings:
         weight: 159
         enabled: false
       video:
-        enabled: true
         weight: 160
-      section_heading_text:
-        weight: 162
-        enabled: false
-      section_long_form:
-        weight: 163
-        enabled: false
+        enabled: true
 field_type: entity_reference_revisions

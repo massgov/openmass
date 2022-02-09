@@ -20,6 +20,7 @@ content:
   field_emergency_alert_content:
     type: entity_reference_paragraphs
     weight: 4
+    region: content
     settings:
       title: 'Details content'
       title_plural: 'Details content'
@@ -28,23 +29,24 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    region: content
   field_emergency_alert_link:
+    type: link_default
     weight: 3
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_emergency_alert_link_type:
+    type: options_buttons
     weight: 2
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_emergency_alert_message:
+    type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 80
       placeholder: ''
@@ -53,13 +55,11 @@ content:
         maxlength_js: 255
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce_attribute: true
-    type: string_textfield
-    region: content
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   field_emergency_alert_timestamp: true

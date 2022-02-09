@@ -1,5 +1,19 @@
 
 
+## [0.312.0] - February 8, 2022
+
+### Changed
+  - DP-23608: Upgrade to Drupal 9.3
+  
+### Fixed
+  - DP-24018: Fix the halfImage check bug that results in overlapping content on promo page.
+  - DP-24040: Fix 2 file twig errors
+  
+### Removed
+  - DP-24022: Remove entity usage.
+  
+
+
 ## [0.311.0] - February 1, 2022
 
 ### Added

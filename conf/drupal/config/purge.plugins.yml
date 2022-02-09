@@ -1,26 +1,12 @@
 purgers:
   -
-    order_index: 2
     instance_id: fa3e594f20
     plugin_id: acquia_purge
+    order_index: 2
   -
-    order_index: 3
     instance_id: 20fe5b998e
     plugin_id: akamai
-queuers:
-  -
-    plugin_id: manual
-    status: true
-  -
-    plugin_id: drush_purge_queue_add
-    status: true
-  -
-    plugin_id: coretags
-    status: true
-  -
-    plugin_id: purge_ui_block_queuer
-    status: true
-queue: database_unique
+    order_index: 3
 processors:
   -
     plugin_id: drush_purge_queue_work
@@ -37,3 +23,17 @@ processors:
   -
     plugin_id: purge_ui_block_processor
     status: true
+queuers:
+  -
+    plugin_id: manual
+    status: true
+  -
+    plugin_id: drush_purge_queue_add
+    status: true
+  -
+    plugin_id: coretags
+    status: true
+  -
+    plugin_id: purge_ui_block_queuer
+    status: true
+queue: database_unique

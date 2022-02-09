@@ -12,18 +12,18 @@ third_party_settings:
   geocoder_field:
     method: geocode
     weight: 0
-    skip_not_empty_value: 0
+    field: field_address_address
+    skip_not_empty_value: false
     disabled: false
     hidden: false
     providers:
       - opencage
     dumper: wkt
+    delta_handling: default
     failure:
       handling: empty
       status_message: true
       log: true
-    field: field_address_address
-    delta_handling: default
 id: paragraph.address.field_geofield
 field_name: field_geofield
 entity_type: paragraph

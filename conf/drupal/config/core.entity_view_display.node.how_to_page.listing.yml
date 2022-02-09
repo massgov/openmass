@@ -43,17 +43,15 @@ bundle: how_to_page
 mode: listing
 content:
   field_how_to_lede:
-    weight: 0
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
     region: content
   field_how_to_link_1:
     type: link
-    weight: 1
-    region: content
     label: hidden
     settings:
       trim_length: null
@@ -62,11 +60,13 @@ content:
       rel: '0'
       target: '0'
     third_party_settings: {  }
-  workbench_moderation_control:
-    weight: 0
+    weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   computed_log_in_links: true
   computed_related_to: true

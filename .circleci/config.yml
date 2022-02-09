@@ -183,7 +183,7 @@ jobs:
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - run:
           name: Update Mayflower to latest develop
-          command: composer require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
+          command: composer -n require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
       - *save_composer_cache
       - *yarn_install
       - persist_to_workspace:
@@ -255,7 +255,7 @@ jobs:
       - attach_workspace: {at: /tmp }
       - *vendor_bin_add_path
       # Validate .json and check if it is in sync with the .lock file
-      - run: composer validate
+      - run: composer -n validate
       # Make sure changelogs are parseable by PHP (since build-changelog.php requires that).
       - run: php scripts/directory-yaml-parse.php
       # Lint javascript

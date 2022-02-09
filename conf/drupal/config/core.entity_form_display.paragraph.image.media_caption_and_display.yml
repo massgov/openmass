@@ -25,13 +25,13 @@ bundle: image
 mode: media_caption_and_display
 content:
   field_image:
-    weight: 1
-    settings:
-      preview_image_style: thumbnail
-      progress_indicator: throbber
-    third_party_settings: {  }
     type: image_image
+    weight: 1
     region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
   field_image_administrative_title:
     type: string_textfield
     weight: 0
@@ -77,9 +77,9 @@ content:
     third_party_settings: {  }
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   field_caption: true
