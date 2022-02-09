@@ -258,6 +258,7 @@ var jQueryLike = function (elemOrSelector, context) {
             renderData(document.prefetchAlertsData[path]);
             manageEmergencyAlerts();
             document.prefetchAlertsData[path] = false;
+            Drupal.behaviors.MassAccordions.create(document.querySelector('.mass-alerts-block'));
           };
 
           // Check if the data is already there.
@@ -278,14 +279,4 @@ var jQueryLike = function (elemOrSelector, context) {
     }
 
   };
-
-  // Attaching Mass Accordion Behavior.
-  document.addEventListener('DOMContentLoaded', function () {
-    // Apply accordion behaviors right after the last alert is placed.
-    // @see docroot/modules/custom/mass_alerts/templates/mass-alerts-block.html.twig
-    setTimeout(function () {
-      Drupal.behaviors.MassAccordions.create(document.querySelector('.mass-alerts-block'));
-    }, 10);
-  });
-
 })(jQueryLike, drupalLike);
