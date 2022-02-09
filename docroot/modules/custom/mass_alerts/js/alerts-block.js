@@ -169,13 +169,25 @@ var jQueryLike = function (elemOrSelector, context) {
             }
             var id = $alerts.attr('data-id');
 
-            var updateAccordionBaseOnCookieValue = function () {
+            var otherAccordionBehaviorsLoaded = function () {
               if (
                 typeof jQuery !== 'undefined' &&
-                typeof jQuery($alerts[0]).data('js-accordion') !== 'undefined') {
-                return;
+                typeof jQuery($alerts[0]).data('js-accordion') !== 'undefined'
+              ) {
+                return true;
               }
 
+              if (
+                typeof Drupal !== 'undefined' &&
+                typeof Drupal.behaviors !== 'undefined' &&
+                typeof Drupal.behaviors.MassAccordions !== 'undefined') {
+                return true;
+              }
+
+              return false;
+            };
+
+            var updateAccordionBaseOnCookieValue = function () {
               $alerts.find('.js-accordion-content')[0].style.display =
                 getCookie(id) === '1' ? 'block' : 'none';
               if (getCookie(id) === '1') {
