@@ -69,6 +69,10 @@ var jQueryLike = function (elemOrSelector, context) {
     elem[0].classList.remove(classname);
   };
 
+  elem.hasClass = function (classname) {
+    return elem[0].classList.contains(classname);
+  };
+
   elem.html = function (htmlContent) {
     if (typeof htmlContent == 'undefined') {
       return elem.innerHTML;
@@ -182,8 +186,11 @@ var jQueryLike = function (elemOrSelector, context) {
               }
             };
 
+            // Value by default, when there is no cookie.
+            // Front, opened.
+            // Else: closed.
             if (typeof getCookie(id) === 'undefined') {
-              document.cookie = id + '=1';
+              document.cookie = id + '=' + ($('body').hasClass('is-front') ? '1' : '0');
             }
 
             $alerts.find('.js-accordion-link').click(function () {
@@ -196,17 +203,27 @@ var jQueryLike = function (elemOrSelector, context) {
             updateAccordionBaseOnCookieValue();
           };
 
-          /**
-           * Get the value of a cookie
-           * Source: https://gist.github.com/wpsmith/6cf23551dd140fb72ae7
-           * @param  {String} name  The name of the cookie
-           * @return {String}       The cookie value
-           */
+          // https://daily-dev-tips.com/posts/vanilla-javascript-cookies/
           var getCookie = function (name) {
-            var value = '; ' + document.cookie;
-            var parts = value.split('; ' + name + '=');
-            if (parts.length === 2) {
-              return parts.pop().split(';').shift();
+            // Add the = sign
+            name = name + '=';
+
+            // Get the decoded cookie
+            var decodedCookie = decodeURIComponent(document.cookie);
+
+            // Get all cookies, split on ; sign
+            var cookies = decodedCookie.split(';');
+
+            // Loop over the cookies
+            for (var i = 0; i < cookies.length; i++) {
+              // Define the single cookie, and remove whitespace
+              var cookie = cookies[i].trim();
+
+              // If this cookie has the name of what we are searching
+              if (cookie.indexOf(name) === 0) {
+                // Return everything after the cookies name
+                return cookie.substring(name.length, cookie.length);
+              }
             }
           };
 
