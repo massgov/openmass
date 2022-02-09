@@ -284,8 +284,8 @@ var jQueryLike = function (elemOrSelector, context) {
     // Apply accordion behaviors right after the last alert is placed.
     // @see docroot/modules/custom/mass_alerts/templates/mass-alerts-block.html.twig
     setTimeout(function () {
-      Drupal.behaviors.MassAccordions.create(document.querySelector('main .mass-alerts-block'));
-    }, 1);
+      Drupal.behaviors.MassAccordions.create(document.querySelector('.mass-alerts-block'));
+    }, 10);
   });
 
 })(jQueryLike, drupalLike);
