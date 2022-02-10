@@ -17,46 +17,48 @@ third_party_settings:
     group_spacer:
       children:
         - field_links_downloads_down
+      label: Spacer
+      region: content
       parent_name: ''
       weight: 1
       format_type: html_element
       format_settings:
         label: Spacer
+        classes: ''
+        id: spacer
         element: p
         show_label: false
         label_element: h3
-        required_fields: true
         attributes: ''
         effect: none
         speed: fast
-        id: spacer
-        classes: ''
-      label: Spacer
-      region: content
+        required_fields: true
 id: paragraph.links_downloads.default
 targetEntityType: paragraph
 bundle: links_downloads
 mode: default
 content:
   field_links_downloads_down:
+    type: inline_entity_form_complex
     weight: 2
+    region: content
     settings:
       form_mode: default
+      override_labels: false
       label_singular: ''
       label_plural: ''
       allow_new: true
       allow_existing: true
       match_operator: CONTAINS
-      override_labels: false
       collapsible: false
       collapsed: false
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
-    type: inline_entity_form_complex
-    region: content
   field_links_downloads_link:
+    type: link_default
     weight: 0
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -65,13 +67,11 @@ content:
         internal_link_content_type_blacklist:
           - contact_information
           - fee
-    type: link_default
-    region: content
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   status: true

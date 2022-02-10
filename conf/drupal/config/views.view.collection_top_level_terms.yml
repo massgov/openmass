@@ -16,81 +16,33 @@ base_table: taxonomy_term_field_data
 base_field: tid
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: perm
-        options:
-          perm: 'access content'
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          disable_sql_rewrite: false
-          distinct: false
-          replica: false
-          query_comment: ''
-          query_tags: {  }
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: none
-        options:
-          offset: 0
-      style:
-        type: default
-        options:
-          grouping: {  }
-          row_class: ''
-          default_row_class: true
-          uses_fields: false
-      row:
-        type: fields
-        options:
-          inline: {  }
-          separator: ''
-          hide_empty: false
-          default_field_elements: true
       fields:
         name:
           id: name
           table: taxonomy_term_field_data
           field: name
+          relationship: none
+          group_type: group
+          admin_label: ''
           entity_type: taxonomy_term
           entity_field: name
+          plugin_id: term_name
           label: ''
+          exclude: false
           alter:
             alter_text: false
             make_link: false
             absolute: false
-            trim: false
             word_boundary: false
             ellipsis: false
             strip_tags: false
+            trim: false
             html: false
-          hide_empty: false
-          empty_zero: false
-          type: string
-          settings:
-            link_to_entity: true
-          plugin_id: term_name
-          relationship: none
-          group_type: group
-          admin_label: ''
-          exclude: false
           element_type: ''
           element_class: ''
           element_label_type: ''
@@ -100,8 +52,13 @@ display:
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
+          hide_empty: false
+          empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
+          type: string
+          settings:
+            link_to_entity: true
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -113,20 +70,59 @@ display:
           separator: ', '
           field_api_classes: false
           convert_spaces: false
+      pager:
+        type: none
+        options:
+          offset: 0
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: perm
+        options:
+          perm: 'access content'
+      cache:
+        type: tag
+        options: {  }
+      empty: {  }
+      sorts:
+        weight:
+          id: weight
+          table: taxonomy_term_field_data
+          field: weight
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: taxonomy_term
+          entity_field: weight
+          plugin_id: standard
+          order: ASC
+          expose:
+            label: ''
+            field_identifier: weight
+          exposed: false
+      arguments: {  }
       filters:
         status:
-          value: '1'
+          id: status
           table: taxonomy_term_field_data
           field: status
-          plugin_id: boolean
           entity_type: taxonomy_term
           entity_field: status
-          id: status
+          plugin_id: boolean
+          value: '1'
+          group: 1
           expose:
             operator: ''
             operator_limit_selection: false
             operator_list: {  }
-          group: 1
         vid:
           id: vid
           table: taxonomy_term_field_data
@@ -134,6 +130,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: taxonomy_term
+          entity_field: vid
+          plugin_id: bundle
           operator: in
           value:
             collections: collections
@@ -166,9 +165,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: taxonomy_term
-          entity_field: vid
-          plugin_id: bundle
         tid:
           id: tid
           table: taxonomy_term_field_data
@@ -176,6 +172,9 @@ display:
           relationship: parent_target_id
           group_type: group
           admin_label: ''
+          entity_type: taxonomy_term
+          entity_field: tid
+          plugin_id: taxonomy_index_tid
           operator: empty
           value: {  }
           group: 1
@@ -208,32 +207,33 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           reduce_duplicates: false
-          type: textfield
-          limit: true
           vid: collections
+          type: textfield
           hierarchy: false
+          limit: true
           error_message: true
-          entity_type: taxonomy_term
-          entity_field: tid
-          plugin_id: taxonomy_index_tid
-      sorts:
-        weight:
-          id: weight
-          table: taxonomy_term_field_data
-          field: weight
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: ASC
-          exposed: false
-          expose:
-            label: ''
-          entity_type: taxonomy_term
-          entity_field: weight
-          plugin_id: standard
-      header: {  }
-      footer: {  }
-      empty: {  }
+      style:
+        type: default
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+          uses_fields: false
+      row:
+        type: fields
+        options:
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: false
+      query:
+        type: views_query
+        options:
+          query_comment: ''
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_tags: {  }
       relationships:
         parent_target_id:
           id: parent_target_id
@@ -242,11 +242,12 @@ display:
           relationship: none
           group_type: group
           admin_label: Parent
-          required: false
           entity_type: taxonomy_term
           entity_field: parent
           plugin_id: standard
-      arguments: {  }
+          required: false
+      header: {  }
+      footer: {  }
       display_extenders: {  }
     cache_metadata:
       max-age: -1
@@ -257,12 +258,15 @@ display:
         - user.permissions
       tags: {  }
   entity_reference:
-    display_plugin: entity_reference
     id: entity_reference
     display_title: 'Collection Reference'
+    display_plugin: entity_reference
     position: 1
     display_options:
-      display_extenders: {  }
+      pager:
+        type: none
+        options:
+          offset: 0
       style:
         type: entity_reference
         options:
@@ -275,11 +279,8 @@ display:
           inline: {  }
           separator: '-'
           hide_empty: false
-      pager:
-        type: none
-        options:
-          offset: 0
       display_description: ''
+      display_extenders: {  }
     cache_metadata:
       max-age: -1
       contexts:

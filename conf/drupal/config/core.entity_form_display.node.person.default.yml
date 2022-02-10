@@ -50,31 +50,31 @@ third_party_settings:
         - field_state_organization_tax
         - body
         - field_social_links
+      label: 'Bio Page'
+      region: content
       parent_name: group_node_edit_form
       weight: 5
       format_type: tab
       format_settings:
-        id: bio-page-tab
         classes: bio-page-only
+        id: bio-page-tab
         formatter: closed
         description: ''
         required_fields: true
-      label: 'Bio Page'
-      region: content
     group_node_edit_form:
       children:
         - group_overview
         - group_contact_information
         - group_bio_page
+      label: 'Node Edit Form'
+      region: content
       parent_name: ''
       weight: 0
       format_type: tabs
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         direction: horizontal
-      label: 'Node Edit Form'
-      region: content
     group_overview:
       children:
         - title
@@ -91,17 +91,17 @@ third_party_settings:
         - field_primary_parent
         - field_organizations
         - field_reusable_label
+      label: Overview
+      region: content
       parent_name: group_node_edit_form
       weight: 3
       format_type: tab
       format_settings:
-        id: overview-tab
         classes: ''
+        id: overview-tab
         formatter: closed
         description: ''
         required_fields: true
-      label: Overview
-      region: content
     group_contact_information:
       children:
         - field_contact_source
@@ -110,42 +110,46 @@ third_party_settings:
         - field_ref_phone
         - field_ref_fax
         - field_ref_links
+      label: 'Contact information'
+      region: content
       parent_name: group_node_edit_form
       weight: 4
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-      label: 'Contact information'
-      region: content
 id: node.person.default
 targetEntityType: node
 bundle: person
 mode: default
 content:
   body:
+    type: text_textarea_with_summary
     weight: 33
+    region: content
     settings:
       rows: 9
       summary_rows: 3
       placeholder: ''
       show_summary: false
     third_party_settings: {  }
-    type: text_textarea_with_summary
-    region: content
   field_contact:
+    type: entity_reference_autocomplete
     weight: 53
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings:
       conditional_fields:
         38fb56bb-d3e3-4616-8c2f-666c48644fb8:
+          entity_type: node
+          bundle: person
           dependee: field_contact_source
           settings:
             state: visible
@@ -160,24 +164,24 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: person
-    type: entity_reference_autocomplete
-    region: content
   field_contact_source:
+    type: options_buttons
     weight: 52
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_medium_image:
+    type: image_image
     weight: 11
+    region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings:
       conditional_fields:
         00d74c7f-cbcc-45cd-8e2f-e51e4314111c:
+          entity_type: node
+          bundle: person
           dependee: field_person_type
           settings:
             state: visible
@@ -192,59 +196,59 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: person
-    type: image_image
-    region: content
   field_metatags:
+    type: metatag_firehose
     weight: 4
+    region: content
     settings:
       sidebar: true
     third_party_settings: {  }
-    type: metatag_firehose
-    region: content
   field_organizations:
+    type: entity_reference_autocomplete
     weight: 19
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_person_first_name:
+    type: string_textfield
     weight: 12
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_person_headshot:
+    type: image_image
     weight: 29
+    region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings: {  }
-    type: image_image
-    region: content
   field_person_last_name:
+    type: string_textfield
     weight: 13
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_person_profile_image:
+    type: image_image
     weight: 9
+    region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings:
       conditional_fields:
         328697df-e88f-44f9-958f-21ab85501df7:
+          entity_type: node
+          bundle: person
           dependee: field_person_type
           settings:
             state: visible
@@ -259,44 +263,42 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: person
-    type: image_image
-    region: content
   field_person_ref_org:
+    type: entity_reference_autocomplete
     weight: 15
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_person_role_title:
+    type: string_textfield
     weight: 14
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_person_type:
+    type: options_buttons
     weight: 8
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_plain_description:
+    type: string_textfield
     weight: 10
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_primary_parent:
+    type: entity_reference_hierarchy_autocomplete
     weight: 18
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -304,18 +306,17 @@ content:
       placeholder: ''
       hide_weight: true
     third_party_settings: {  }
-    type: entity_reference_hierarchy_autocomplete
-    region: content
   field_publish_bio_page:
+    type: boolean_checkbox
     weight: 16
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_ref_fax:
     type: entity_reference_paragraphs
     weight: 56
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -326,6 +327,8 @@ content:
     third_party_settings:
       conditional_fields:
         440c75cc-83b3-44cc-8e21-8f99dff47220:
+          entity_type: node
+          bundle: person
           dependee: field_contact_source
           settings:
             state: visible
@@ -340,11 +343,10 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: person
-    region: content
   field_ref_links:
+    type: entity_reference_paragraphs
     weight: 57
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -355,6 +357,8 @@ content:
     third_party_settings:
       conditional_fields:
         3ce153cc-0540-4a32-b015-dbe006fb8151:
+          entity_type: node
+          bundle: person
           dependee: field_contact_source
           settings:
             state: visible
@@ -369,13 +373,10 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: person
-    type: entity_reference_paragraphs
-    region: content
   field_ref_phone:
     type: entity_reference_paragraphs
     weight: 55
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -386,6 +387,8 @@ content:
     third_party_settings:
       conditional_fields:
         d46fa28a-7329-44db-8f6f-0faffcc074eb:
+          entity_type: node
+          bundle: person
           dependee: field_contact_source
           settings:
             state: visible
@@ -400,12 +403,10 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: person
-    region: content
   field_ref_single_address:
     type: entity_reference_paragraphs
     weight: 54
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -416,6 +417,8 @@ content:
     third_party_settings:
       conditional_fields:
         4e793370-c484-424a-a042-5fb5c29dc500:
+          entity_type: node
+          bundle: person
           dependee: field_contact_source
           settings:
             state: visible
@@ -430,63 +433,60 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: person
-    region: content
   field_reusable_label:
+    type: entity_reference_autocomplete
     weight: 20
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_short_bio:
+    type: string_textfield
     weight: 17
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_social_links:
+    type: link_default
     weight: 34
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_state_organization_tax:
+    type: entity_reference_autocomplete
     weight: 32
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   moderation_state:
     type: moderation_state_default
     weight: 9
-    settings: {  }
     region: content
+    settings: {  }
     third_party_settings: {  }
   publish_on:
-    weight: 60
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 60
     region: content
-  publish_state:
-    weight: 58
     settings: {  }
     third_party_settings: {  }
+  publish_state:
     type: options_select
+    weight: 58
     region: content
+    settings: {  }
+    third_party_settings: {  }
   scheduler_settings:
     weight: 1
     region: content
@@ -495,33 +495,33 @@ content:
   title:
     type: string_textfield
     weight: 7
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    region: content
   uid:
     type: entity_reference_autocomplete
     weight: 5
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    region: content
   unpublish_on:
-    weight: 61
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 61
     region: content
-  unpublish_state:
-    weight: 59
     settings: {  }
     third_party_settings: {  }
+  unpublish_state:
     type: options_select
+    weight: 59
     region: content
+    settings: {  }
+    third_party_settings: {  }
   url_redirects:
     weight: 50
     region: content

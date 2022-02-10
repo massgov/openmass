@@ -35,15 +35,15 @@ third_party_settings:
       children:
         - group_severity_and_target_pages
         - group_alert_headline
+      label: Alert
+      region: content
       parent_name: ''
       weight: 0
       format_type: tabs
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         direction: horizontal
-      label: Alert
-      region: content
     group_severity_and_target_pages:
       children:
         - title
@@ -58,34 +58,34 @@ third_party_settings:
         - langcode
         - field_reusable_label
         - field_english_version
+      label: 'Overview & Alert placement'
+      region: content
       parent_name: group_alert
       weight: 4
       format_type: tab
       format_settings:
+        classes: ''
+        id: ''
         formatter: open
         description: "<p>There are 3 kinds of alerts: Page-level, Organization and Sitewide.</p>\r\n<p>Page-level and Organization Alerts appears as a short message in a bright yellow banner below the title of the pages or organizations you select.</p>\r\n<p>An Alert may contain 1 or more specific Alert Messages. For example, a weather alert may have 1 message about roads and another about public transportation.</p>\r\n<p>Sitewide Alerts typically are created only by the Governor’s office or MEMA. Sitewide alerts have been moved to a separate content type ‘sitewide alerts’.</p>\r\n<p><a href=\"https://massgovdigital.gitbook.io/knowledge-base/content-types-1/news-and-events/alerts\" target=\"_blank\">See screenshots and learn more about the Alert content type.</a></p>"
         required_fields: true
-        id: ''
-        classes: ''
-      label: 'Overview & Alert placement'
-      region: content
     group_alert_headline:
       children:
         - field_alert_severity
         - field_alert
         - field_alert_ref_contact
         - field_alert_related_links_5
+      label: 'Alert content'
+      region: content
       parent_name: group_alert
       weight: 6
       format_type: tab
       format_settings:
+        classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-        id: ''
-        classes: ''
-      label: 'Alert content'
-      region: content
 id: node.alert.default
 targetEntityType: node
 bundle: alert
@@ -98,7 +98,9 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_alert:
+    type: entity_reference_paragraphs
     weight: 6
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -109,6 +111,8 @@ content:
     third_party_settings:
       conditional_fields:
         fb2a5666-ad5c-460a-966d-96fc05a8575b:
+          entity_type: node
+          bundle: alert
           dependee: field_alert_hide_message
           settings:
             state: '!visible'
@@ -122,23 +126,23 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: alert
-    type: entity_reference_paragraphs
-    region: content
   field_alert_display:
+    type: options_buttons
     weight: 5
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_alert_hide_message:
+    type: boolean_checkbox
     weight: 9
+    region: content
     settings:
       display_label: true
     third_party_settings:
       conditional_fields:
         1e7e7136-723a-4261-bff4-20253f9d96d8:
+          entity_type: node
+          bundle: alert
           dependee: field_alert_display
           settings:
             state: visible
@@ -153,16 +157,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: alert
-    type: boolean_checkbox
-    region: content
   field_alert_node_timestamp:
+    type: datetime_default
     weight: 8
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         f16795f8-ef6d-413c-a2b7-46e45dc88754:
+          entity_type: node
+          bundle: alert
           dependee: field_alert_display
           settings:
             state: visible
@@ -177,20 +181,20 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: alert
-    type: datetime_default
-    region: content
   field_alert_ref_contact:
+    type: entity_reference_autocomplete
     weight: 7
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings:
       conditional_fields:
         fdd31663-b2df-4aa7-a0a6-a0be67f1ec65:
+          entity_type: node
+          bundle: alert
           dependee: field_alert_hide_message
           settings:
             state: '!visible'
@@ -204,18 +208,18 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: alert
-    type: entity_reference_autocomplete
-    region: content
   field_alert_related_links_5:
+    type: link_default
     weight: 8
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings:
       conditional_fields:
         20f5660e-69d1-47b3-b26e-4b75343f6062:
+          entity_type: node
+          bundle: alert
           dependee: field_alert_hide_message
           settings:
             state: '!visible'
@@ -229,22 +233,22 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: alert
-    type: link_default
-    region: content
   field_alert_severity:
+    type: options_buttons
     weight: 4
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_alert_title_link:
+    type: options_buttons
     weight: 10
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         35830fca-4b15-4754-af94-4e40547846ed:
+          entity_type: node
+          bundle: alert
           dependee: field_alert_hide_message
           settings:
             state: visible
@@ -258,18 +262,18 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: alert
-    type: options_buttons
-    region: content
   field_alert_title_link_target:
+    type: link_default
     weight: 11
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings:
       conditional_fields:
         ba32f5e0-bca7-4494-a296-17fa4c2a4a79:
+          entity_type: node
+          bundle: alert
           dependee: field_alert_title_link
           settings:
             state: visible
@@ -284,9 +288,9 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+        07307aa7-61fd-4310-b62b-ba9f5f552ccf:
           entity_type: node
           bundle: alert
-        07307aa7-61fd-4310-b62b-ba9f5f552ccf:
           dependee: field_alert_hide_message
           settings:
             state: visible
@@ -300,12 +304,10 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: alert
-    type: link_default
-    region: content
   field_english_version:
+    type: entity_reference_autocomplete
     weight: 15
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -314,6 +316,8 @@ content:
     third_party_settings:
       conditional_fields:
         0b90cc3c-979b-491e-b627-79a7affbd52a:
+          entity_type: node
+          bundle: alert
           dependee: langcode
           settings:
             state: '!visible'
@@ -328,42 +332,40 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: alert
-    type: entity_reference_autocomplete
-    region: content
   field_organizations:
+    type: entity_reference_autocomplete
     weight: 12
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_reusable_label:
+    type: entity_reference_autocomplete
     weight: 14
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_state_organization_tax:
+    type: entity_reference_autocomplete
     weight: 6
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_target_organization:
+    type: entity_reference_autocomplete
     weight: 7
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -372,6 +374,8 @@ content:
     third_party_settings:
       conditional_fields:
         fb44db58-80de-4537-be5f-8bc426304794:
+          entity_type: node
+          bundle: alert
           dependee: field_alert_display
           settings:
             state: visible
@@ -386,12 +390,10 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: alert
-    type: entity_reference_autocomplete
-    region: content
   field_target_page:
+    type: entity_reference_autocomplete
     weight: 6
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -400,6 +402,8 @@ content:
     third_party_settings:
       conditional_fields:
         a241f4a7-6816-4678-9422-351bb04b26ac:
+          entity_type: node
+          bundle: alert
           dependee: field_alert_display
           settings:
             state: visible
@@ -414,10 +418,6 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: alert
-    type: entity_reference_autocomplete
-    region: content
   langcode:
     type: language_select
     weight: 13
@@ -428,8 +428,8 @@ content:
   moderation_state:
     type: moderation_state_default
     weight: 12
-    settings: {  }
     region: content
+    settings: {  }
     third_party_settings: {  }
   path:
     type: path
@@ -438,17 +438,17 @@ content:
     settings: {  }
     third_party_settings: {  }
   publish_on:
-    weight: 28
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 28
     region: content
-  publish_state:
-    weight: 26
     settings: {  }
     third_party_settings: {  }
+  publish_state:
     type: options_select
+    weight: 26
     region: content
+    settings: {  }
+    third_party_settings: {  }
   scheduler_settings:
     weight: 4
     region: content
@@ -469,25 +469,25 @@ content:
   uid:
     type: entity_reference_autocomplete
     weight: 1
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
-    region: content
     third_party_settings: {  }
   unpublish_on:
-    weight: 29
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 29
     region: content
-  unpublish_state:
-    weight: 27
     settings: {  }
     third_party_settings: {  }
+  unpublish_state:
     type: options_select
+    weight: 27
     region: content
+    settings: {  }
+    third_party_settings: {  }
   url_redirects:
     weight: 11
     region: content

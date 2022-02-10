@@ -17,26 +17,24 @@ mode: default
 content:
   computed_bio_page:
     type: entity_reference_entity_view
+    label: hidden
+    settings:
+      view_mode: about_details
+      link: false
+    third_party_settings: {  }
     weight: 2
     region: content
-    label: hidden
-    settings:
-      view_mode: about_details
-      link: false
-    third_party_settings: {  }
   computed_secondary_bio_page:
     type: entity_reference_entity_view
-    weight: 3
-    region: content
     label: hidden
     settings:
       view_mode: about_details
       link: false
     third_party_settings: {  }
+    weight: 3
+    region: content
   computed_social_links:
     type: link
-    weight: 1
-    region: content
     label: hidden
     settings:
       trim_length: 80
@@ -45,18 +43,20 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
+    weight: 1
+    region: content
   field_component_add_separator:
-    weight: 5
+    type: boolean
     label: hidden
     settings:
       format: true-false
-      format_custom_true: ''
       format_custom_false: ''
+      format_custom_true: ''
     third_party_settings: {  }
-    type: boolean
+    weight: 5
     region: content
   field_read_more_page:
-    weight: 4
+    type: dynamic_link_separate
     label: hidden
     settings:
       trim_length: ''
@@ -65,7 +65,7 @@ content:
       rel: 0
       target: 0
     third_party_settings: {  }
-    type: dynamic_link_separate
+    weight: 4
     region: content
 hidden:
   computed_short_name: true

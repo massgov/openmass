@@ -15,16 +15,17 @@ bundle: action_address_info
 mode: default
 content:
   field_address_label:
+    type: string_textfield
     weight: 6
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_address_ref:
     type: entity_reference_paragraphs
     weight: 7
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -32,10 +33,10 @@ content:
       add_mode: dropdown
       form_display_mode: default
     third_party_settings: {  }
-    region: content
   field_location_info_ref:
     type: entity_reference_paragraphs
     weight: 8
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -43,12 +44,11 @@ content:
       add_mode: dropdown
       form_display_mode: default
     third_party_settings: {  }
-    region: content
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   status: true
