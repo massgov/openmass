@@ -6,6 +6,8 @@ use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
+use Drush\Drupal\Commands\core\QueueCommands;
+use Drush\Log\DrushLoggerManager;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
@@ -20,17 +22,47 @@ class EntityUsageTest extends ExistingSiteBase {
 
   private $user;
 
+  /** @var \Drush\Drupal\Commands\core\QueueCommands */
+  private $queueCommands;
+
   /**
    * Create the user.
    */
   protected function setUp() {
     parent::setUp();
+    $this->setQueueCommands();
+    $this->emptyEntityUsageQueues();
     $user = User::create(['name' => $this->randomMachineName()]);
     $user->addRole('administrator');
     $user->activate();
     $user->save();
     $this->user = $user;
     $this->drupalLogin($user);
+  }
+
+  /**
+   * Creates and returns a new queueCommandsService.
+   */
+  private function createQueueCommandsService() {
+    return new QueueCommands(
+      \Drupal::service('plugin.manager.queue_worker'),
+      \Drupal::service('queue')
+    );
+  }
+
+  /**
+   * Sets queueCommands property.
+   */
+  private function setQueueCommands() {
+    // Declares dt function needed to run Drush commands.
+    eval('if (!function_exists("dt")) { function dt() { return ""; }}');
+    $queueCommands = $this->createQueueCommandsService();
+    $logger = $this->getMockBuilder(DrushLoggerManager::class)
+      ->disableOriginalConstructor()
+      ->getMock();
+    /** @var \Psr\Log\LoggerInterface $logger */
+    $queueCommands->setLogger($logger);
+    $this->queueCommands = $queueCommands;
   }
 
   /**
