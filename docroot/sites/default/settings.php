@@ -197,3 +197,5 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
 if (PHP_SAPI === 'cli' && ini_get('memory_limit')) {
   ini_set('memory_limit', '1536M');
 }
+
+$config['entity_usage.settings']['queue_tracking'] = TRUE;
