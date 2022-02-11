@@ -66,6 +66,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
+    - redirect
     - term_reference_tree
 third_party_settings:
   field_group:
@@ -385,6 +386,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_kpi_pl_avg_cl_comp_time:
+    type: number
     weight: 10
     region: content
     settings:
@@ -409,6 +411,7 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_pl_cl_app_starts:
+    type: number
     weight: 7
     region: content
     settings:
@@ -433,6 +436,7 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_pl_cl_app_subs:
+    type: number
     weight: 8
     region: content
     settings:
@@ -457,6 +461,7 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_pl_cl_task_rate:
+    type: number
     weight: 9
     region: content
     settings:
@@ -481,6 +486,7 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_pl_em_app_review_rate:
+    type: number
     weight: 12
     region: content
     settings:
@@ -505,6 +511,7 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_pl_em_app_review_time:
+    type: number
     weight: 13
     region: content
     settings:
@@ -529,6 +536,7 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_pl_em_app_reviews:
+    type: number
     weight: 11
     region: content
     settings:
@@ -553,6 +561,7 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_sessions_clicks_pl_pct:
+    type: number
     weight: 6
     region: content
     settings:
@@ -662,11 +671,10 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_log_in_links:
+    type: redirect_source
     weight: 41
     region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
+    settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
@@ -690,13 +698,15 @@ content:
       hide_weight: true
     third_party_settings: {  }
   field_ref_contact_info:
+    type: term_reference_tree
     weight: 39
     region: content
     settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
+      start_minimized: true
+      leaves_only: false
+      select_parents: false
+      cascading_selection: 0
+      max_depth: 0
     third_party_settings: {  }
   field_related_organization_type:
     type: boolean_checkbox
@@ -740,13 +750,15 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_service_eligibility_info:
+    type: term_reference_tree
     weight: 38
     region: content
     settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
+      start_minimized: true
+      leaves_only: false
+      select_parents: false
+      cascading_selection: 0
+      max_depth: 0
     third_party_settings:
       conditional_fields:
         7931e70d-a78b-4cec-a527-30237d712636:
@@ -767,21 +779,15 @@ content:
             effect_options: {  }
             selector: ''
   field_service_file:
+    type: term_reference_tree
     weight: 12
     region: content
     settings:
-      form_mode: default
-      override_labels: false
-      label_singular: ''
-      label_plural: ''
-      allow_new: true
-      allow_existing: true
-      allow_edit: true
-      match_operator: CONTAINS
-      allow_duplicate: false
-      collapsible: false
-      collapsed: false
-      revision: false
+      start_minimized: true
+      leaves_only: false
+      select_parents: false
+      cascading_selection: 0
+      max_depth: 0
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
@@ -830,6 +836,7 @@ content:
             effect_options: {  }
             selector: ''
   field_service_kpi_choice:
+    type: options_buttons
     weight: 4
     region: content
     settings: {  }
@@ -844,11 +851,10 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_service_links:
+    type: redirect_source
     weight: 11
     region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
+    settings: {  }
     third_party_settings:
       conditional_fields:
         a0bc6929-b26a-479a-a27f-c83782609d35:
@@ -869,19 +875,22 @@ content:
             effect_options: {  }
             selector: ''
   field_service_metatags:
+    type: metatag_firehose
     weight: 2
     region: content
     settings:
       sidebar: true
     third_party_settings: {  }
   field_service_offered_by:
+    type: term_reference_tree
     weight: 40
     region: content
     settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
+      start_minimized: true
+      leaves_only: false
+      select_parents: false
+      cascading_selection: 0
+      max_depth: 0
     third_party_settings: {  }
   field_service_ref_actions:
     type: link_default
@@ -918,13 +927,15 @@ content:
       placeholder_title: ''
     third_party_settings: {  }
   field_service_ref_guide_page_1:
+    type: term_reference_tree
     weight: 37
     region: content
     settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
+      start_minimized: true
+      leaves_only: false
+      select_parents: false
+      cascading_selection: 0
+      max_depth: 0
     third_party_settings:
       conditional_fields:
         c61775d4-fa36-46aa-a752-2111f459d311:
@@ -997,11 +1008,10 @@ content:
       entity_browser_entity_form:
         entity_browser_id: video_browser
   field_services_social_links:
+    type: redirect_source
     weight: 36
     region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
+    settings: {  }
     third_party_settings:
       conditional_fields: {  }
   field_short_title:
@@ -1013,13 +1023,15 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_state_organization_tax:
+    type: term_reference_tree
     weight: 4
     region: content
     settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
+      start_minimized: true
+      leaves_only: false
+      select_parents: false
+      cascading_selection: 0
+      max_depth: 0
     third_party_settings: {  }
   field_template:
     type: options_buttons
