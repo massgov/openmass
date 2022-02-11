@@ -6664,7 +6664,7 @@ function mass_theme_preprocess_media(array &$variables) {
  *   - media: An individual media for display.
  */
 function mass_theme_preprocess_media_document(array &$variables) {
-  /** @var \Drupal\media\Entity\Media $media */
+  /** @var \Drupal\mass_content\Entity\Bundle\media\DocumentBundle $media */
   $media = $variables['elements']['#media'];
   $variables = array_merge($variables, Molecules::prepareDownloadLink($media));
   if ($variables['elements']['#view_mode'] == 'full') {
@@ -6674,7 +6674,7 @@ function mass_theme_preprocess_media_document(array &$variables) {
     $list_table_rows = [];
 
     // Get the attached file from the media entity.
-    if ($media_file_changed_time = media_file_changed_time($media, 'field_upload_file')) {
+    if ($media_file_changed_time = $media->getFileChangedTime()) {
       $list_table_rows[] = [
         'label' => 'Last Updated:',
         'text' => $media_file_changed_time,
@@ -6722,29 +6722,6 @@ function mass_theme_preprocess_media_document(array &$variables) {
     }
     $variables['curated_rows'] = $list_table_rows;
   }
-}
-
-/**
- * Get the attached file from the media entity.
- *
- * @param \Drupal\media\MediaInterface $entity
- *   Media Entity.
- * @param string $field_name
- *   File upload field name.
- *
- * @return string
- *   Date formatted Y-m-d for the file last changed date.
- */
-function media_file_changed_time(MediaInterface $entity, $field_name) {
-  $file = $entity->{$field_name}->entity;
-  if (!$file instanceof File) {
-    \Drupal::logger('media.documents')->error('Media bundle is missing file for media entity: @entity_label (@entity_id)', [
-      '@entity_label' => $entity->label(),
-      '@entity_id' => $entity->id(),
-    ]);
-    return '';
-  }
-  return DrupalDateTime::createFromTimestamp($entity->{$field_name}->entity->getChangedTime())->format('Y-m-d');
 }
 
 /**
