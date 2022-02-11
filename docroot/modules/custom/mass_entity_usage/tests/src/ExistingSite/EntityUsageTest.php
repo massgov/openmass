@@ -144,6 +144,24 @@ class EntityUsageTest extends ExistingSiteBase {
   }
 
   /**
+   * Empties entity usage related queues.
+   */
+  private function emptyEntityUsageQueues() {
+    $this->queueCommands->delete('entity_usage_tracker');
+    $this->queueCommands->delete('entity_usage_regenerate_queue');
+    $this->queueCommands->delete('mass_entity_usage_delete_not_current_revision_usages');
+  }
+
+  /**
+   * Process entity usage related queues.
+   */
+  private function processEntityUsageQueues() {
+    $options = ['time-limit' => 10, 'items-limit' => 100];
+    $this->queueCommands->run('entity_usage_tracker', $options);
+    $this->queueCommands->run('mass_entity_usage_delete_not_current_revision_usages', $options);
+  }
+
+  /**
    * Assert that usage records are tracked properly.
    */
   public function testEntityUsageTracking() {
