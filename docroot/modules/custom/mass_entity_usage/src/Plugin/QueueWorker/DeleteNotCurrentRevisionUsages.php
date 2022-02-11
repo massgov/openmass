@@ -32,11 +32,7 @@ class EntityUsageTracker extends QueueWorkerBase implements ContainerFactoryPlug
    * {@inheritdoc}
    */
   public function processItem($data) {
-    $nid = $data;
-    if (!intval($nid)) {
-      return;
-    }
-    $this->keepOnlyCurrentVid(Node::load($nid));
+    $this->keepOnlyCurrentVid($data['id'], $data['entity_type']);
   }
 
   /**
@@ -46,9 +42,15 @@ class EntityUsageTracker extends QueueWorkerBase implements ContainerFactoryPlug
    * but we don't want/need that data, we don't want to see that data in the
    * entity_usage table either.
    */
-  private function keepOnlyCurrentVid($entity) {
+  private function keepOnlyCurrentVid($id, $entity_type) {
+    $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
+    /** @var \Drupal\Core\Entity\ContentEntityBase */
+    $entity = $storage->load($id);
 
-    if (!$entity->getEntityType()->isRevisionable()) {
+    if (
+      !$entity ||
+      !$entity->getEntityType()->isRevisionable()
+    ) {
       return;
     }
 
@@ -62,11 +64,7 @@ class EntityUsageTracker extends QueueWorkerBase implements ContainerFactoryPlug
       return;
     }
 
-    // Get the current revision ID.
-    $storage = \Drupal::entityTypeManager()->getStorage($entity->getEntityType()->id());
-    /** @var \Drupal\Core\Entity\ContentEntityBase */
-    $loaded_entity = $storage->load($entity->id());
-    $vid = $loaded_entity->getRevisionId();
+    $vid = $entity->getRevisionId();
     $delete = \Drupal::database()->delete('entity_usage');
 
     // Condition to delete reference to itself.
