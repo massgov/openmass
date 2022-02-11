@@ -159,8 +159,11 @@ function mass_entity_usage_entity_update(EntityInterface $entity) {
  * Implements hook_queue_info_alter().
  */
 function mass_entity_usage_queue_info_alter(&$queues) {
-  // Removes entity usage queue from processing when cron runs.
+  // Removes entity usage queues from processing when cron runs.
   if (isset($queues['entity_usage_regenerate_queue'])) {
     unset($queues['entity_usage_regenerate_queue']['cron']);
+  }
+  if (isset($queues['entity_usage_tracker'])) {
+    unset($queues['entity_usage_tracker']['cron']);
   }
 }
