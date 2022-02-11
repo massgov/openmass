@@ -166,24 +166,28 @@ class EntityUsageTest extends ExistingSiteBase {
    */
   public function testEntityUsageTracking() {
     list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PREPUBLISHED_NEEDS_REVIEW);
+    $this->processEntityUsageQueues();
     // All created entities should be unused.
     $this->assertUsageRows($media, 0);
     $this->assertUsageRows($node_curated_list, 0);
     $this->assertUsageRows($node_org, 0);
 
     list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::TRASH);
+    $this->processEntityUsageQueues();
     // All created entities should be unused.
     $this->assertUsageRows($media, 0);
     $this->assertUsageRows($node_curated_list, 0);
     $this->assertUsageRows($node_org, 0);
 
     list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PREPUBLISHED_DRAFT);
+    $this->processEntityUsageQueues();
     // All created entities should be unused.
     $this->assertUsageRows($media, 0);
     $this->assertUsageRows($node_curated_list, 0);
     $this->assertUsageRows($node_org, 0);
 
     list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PUBLISHED);
+    $this->processEntityUsageQueues();
     // Media and Org should have 1 reference.
     $this->assertUsageRows($media, 1);
     $this->assertUsageRows($node_curated_list, 0);
@@ -216,6 +220,7 @@ class EntityUsageTest extends ExistingSiteBase {
     $this->getCurrentPage()->pressButton('Save');
     $this->htmlOutput();
     $this->getCurrentPage()->hasContent('Curated List Test Curated List has been created.');
+    $this->processEntityUsageQueues();
 
     $this->visit($node_org->toUrl()->toString() . '/mass-usage');
     // Verify the usage tab is reachable.
