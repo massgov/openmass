@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   title = @Translation("Deletes entity usage data for non current revisions"),
  * )
  */
-class EntityUsageTracker extends QueueWorkerBase implements ContainerFactoryPluginInterface {
+class DeleteNotCurrentRevisionUsages extends QueueWorkerBase implements ContainerFactoryPluginInterface {
 
   /**
    * {@inheritdoc}
