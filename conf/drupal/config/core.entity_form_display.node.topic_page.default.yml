@@ -3,10 +3,12 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.topic_page.field_display_short_description
     - field.field.node.topic_page.field_image_credit
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
     - field.field.node.topic_page.field_primary_parent
+    - field.field.node.topic_page.field_restrict_link_management
     - field.field.node.topic_page.field_reusable_label
     - field.field.node.topic_page.field_short_title
     - field.field.node.topic_page.field_state_organization_tax
@@ -23,7 +25,7 @@ dependencies:
     - field.field.node.topic_page.field_topic_type
     - image.style.thumbnail
     - node.type.topic_page
-    - workflows.workflow.editorial
+    - workflows.workflow.topic_page
   module:
     - conditional_fields
     - content_moderation
@@ -43,7 +45,7 @@ third_party_settings:
       label: 'Topic Page Edit Form'
       region: content
       parent_name: ''
-      weight: 2
+      weight: 1
       format_type: tabs
       format_settings:
         classes: ''
@@ -55,6 +57,8 @@ third_party_settings:
         - field_short_title
         - field_topic_type
         - field_topic_lede
+        - field_display_short_description
+        - field_restrict_link_management
         - field_topic_ref_icon
         - field_topic_bg_wide
         - field_topic_bg_narrow
@@ -110,9 +114,16 @@ targetEntityType: node
 bundle: topic_page
 mode: default
 content:
+  field_display_short_description:
+    type: boolean_checkbox
+    weight: 60
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_image_credit:
     type: string_textfield
-    weight: 65
+    weight: 67
     region: content
     settings:
       size: 60
@@ -120,13 +131,13 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 68
+    weight: 70
     region: content
     settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 67
+    weight: 69
     region: content
     settings:
       match_operator: CONTAINS
@@ -136,7 +147,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 66
+    weight: 68
     region: content
     settings:
       match_operator: CONTAINS
@@ -145,9 +156,16 @@ content:
       placeholder: ''
       hide_weight: true
     third_party_settings: {  }
+  field_restrict_link_management:
+    type: boolean_checkbox
+    weight: 61
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 69
+    weight: 71
     region: content
     settings:
       match_operator: CONTAINS
@@ -165,7 +183,7 @@ content:
     third_party_settings: {  }
   field_state_organization_tax:
     type: entity_reference_autocomplete
-    weight: 6
+    weight: 3
     region: content
     settings:
       match_operator: CONTAINS
@@ -175,7 +193,7 @@ content:
     third_party_settings: {  }
   field_topic_bg_narrow:
     type: image_image
-    weight: 62
+    weight: 64
     region: content
     settings:
       progress_indicator: throbber
@@ -201,7 +219,7 @@ content:
             selector: ''
   field_topic_bg_wide:
     type: image_image
-    weight: 61
+    weight: 63
     region: content
     settings:
       progress_indicator: throbber
@@ -255,20 +273,20 @@ content:
       conditional_fields: {  }
   field_topic_metatags:
     type: metatag_firehose
-    weight: 5
+    weight: 2
     region: content
     settings:
       sidebar: true
     third_party_settings: {  }
   field_topic_ref_icon:
     type: options_select
-    weight: 60
+    weight: 62
     region: content
     settings: {  }
     third_party_settings: {  }
   field_topic_ref_related_topics:
     type: entity_reference_autocomplete
-    weight: 36
+    weight: 7
     region: content
     settings:
       match_operator: CONTAINS
@@ -278,7 +296,7 @@ content:
     third_party_settings: {  }
   field_topic_section_bg_narrow:
     type: image_image
-    weight: 64
+    weight: 66
     region: content
     settings:
       progress_indicator: throbber
@@ -304,7 +322,7 @@ content:
             selector: ''
   field_topic_section_bg_wide:
     type: image_image
-    weight: 63
+    weight: 65
     region: content
     settings:
       progress_indicator: throbber
@@ -336,7 +354,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 10
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -392,14 +410,12 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
-  field_display_short_description: true
-  field_restrict_link_management: true
   langcode: true
   path: true
   promote: true
