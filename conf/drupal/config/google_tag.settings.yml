@@ -1,3 +1,5 @@
+_core:
+  default_config_hash: 65d5DfK5p2hQDpBskbvCIj2hSEqw_Odm2e_d46BH1Lk
 uri: 'public:/'
 compact_snippet: true
 include_file: false
@@ -6,6 +8,19 @@ flush_snippets: false
 debug_output: false
 _default_container:
   container_id: ''
+  data_layer: dataLayer
+  include_classes: false
+  whitelist_classes: |-
+    google
+    nonGooglePixels
+    nonGoogleScripts
+    nonGoogleIframes
+  blacklist_classes: |-
+    customScripts
+    customPixels
+  include_environment: false
+  environment_id: ''
+  environment_token: ''
   path_toggle: 'exclude listed'
   path_list: |-
     /admin*
@@ -21,18 +36,3 @@ _default_container:
   status_list: |-
     403
     404
-  data_layer: dataLayer
-  include_classes: false
-  whitelist_classes: |-
-    google
-    nonGooglePixels
-    nonGoogleScripts
-    nonGoogleIframes
-  blacklist_classes: |-
-    customScripts
-    customPixels
-  include_environment: false
-  environment_id: ''
-  environment_token: ''
-_core:
-  default_config_hash: 65d5DfK5p2hQDpBskbvCIj2hSEqw_Odm2e_d46BH1Lk

@@ -23,133 +23,12 @@ base_table: node_field_data
 base_field: nid
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: perm
-        options:
-          perm: 'use mass dashboard'
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          disable_sql_rewrite: false
-          distinct: false
-          replica: false
-          query_comment: ''
-          query_tags: {  }
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Filter
-          reset_button: true
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: mini
-        options:
-          items_per_page: 10
-          offset: 0
-          id: 0
-          total_pages: null
-          tags:
-            previous: Previous
-            next: Next
-          expose:
-            items_per_page: false
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-      style:
-        type: table
-        options:
-          grouping: {  }
-          row_class: ''
-          default_row_class: true
-          override: true
-          sticky: false
-          caption: ''
-          summary: ''
-          description: ''
-          columns:
-            node_bulk_form: node_bulk_form
-            title: title
-            nid: nid
-            changed: changed
-            link_flag: link_flag
-            type: type
-            score: score
-            pageviews: pageviews
-          info:
-            node_bulk_form:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            title:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            nid:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            changed:
-              sortable: true
-              default_sort_order: desc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            link_flag:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            type:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            score:
-              sortable: true
-              default_sort_order: asc
-              align: views-align-right
-              separator: ''
-              empty_column: false
-              responsive: ''
-            pageviews:
-              sortable: true
-              default_sort_order: desc
-              align: views-align-right
-              separator: ''
-              empty_column: false
-              responsive: ''
-          default: changed
-          empty_table: false
-      row:
-        type: fields
+      title: 'Watched content'
       fields:
         node_bulk_form:
           id: node_bulk_form
@@ -158,6 +37,8 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          plugin_id: node_bulk_form
           label: 'Bulk Unwatch'
           exclude: false
           alter:
@@ -204,33 +85,27 @@ display:
           selected_actions:
             - flag_action.watch_content_flag
             - flag_action.watch_content_unflag
-          entity_type: node
-          plugin_id: node_bulk_form
         title:
           id: title
           table: node_field_data
           field: title
+          relationship: none
+          group_type: group
+          admin_label: ''
           entity_type: node
           entity_field: title
+          plugin_id: field
+          label: Title
+          exclude: false
           alter:
             alter_text: false
             make_link: false
             absolute: false
-            trim: false
             word_boundary: false
             ellipsis: false
             strip_tags: false
+            trim: false
             html: false
-          hide_empty: false
-          empty_zero: false
-          settings:
-            link_to_entity: true
-          plugin_id: field
-          relationship: none
-          group_type: group
-          admin_label: ''
-          label: Title
-          exclude: false
           element_type: ''
           element_class: ''
           element_label_type: ''
@@ -240,9 +115,13 @@ display:
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
+          hide_empty: false
+          empty_zero: false
           hide_alter_empty: true
           click_sort_column: value
           type: string
+          settings:
+            link_to_entity: true
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -260,6 +139,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: nid
+          plugin_id: field
           label: ID
           exclude: false
           alter:
@@ -316,9 +198,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: nid
-          plugin_id: field
         changed:
           id: changed
           table: node_field_data
@@ -326,6 +205,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: changed
+          plugin_id: field
           label: 'Last revised'
           exclude: false
           alter:
@@ -383,9 +265,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: changed
-          plugin_id: field
         link_flag:
           id: link_flag
           table: flagging
@@ -393,6 +272,8 @@ display:
           relationship: flag_relationship
           group_type: group
           admin_label: ''
+          entity_type: flagging
+          plugin_id: flag_link
           label: 'Unwatch this content'
           exclude: false
           alter:
@@ -434,8 +315,6 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          entity_type: flagging
-          plugin_id: flag_link
         type:
           id: type
           table: node_field_data
@@ -443,6 +322,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: field
           label: 'Content type'
           exclude: true
           alter:
@@ -498,9 +380,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: type
-          plugin_id: field
         score:
           id: score
           table: mass_superset_data
@@ -508,6 +387,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: standard
           label: Score
           exclude: false
           alter:
@@ -557,7 +437,6 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-          plugin_id: standard
         pageviews:
           id: pageviews
           table: mass_superset_data
@@ -565,6 +444,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: standard
           label: 'Page views (1 month)'
           exclude: false
           alter:
@@ -606,7 +486,75 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          plugin_id: standard
+      pager:
+        type: mini
+        options:
+          offset: 0
+          items_per_page: 10
+          total_pages: null
+          id: 0
+          tags:
+            next: Next
+            previous: Previous
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Filter
+          reset_button: true
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: perm
+        options:
+          perm: 'use mass dashboard'
+      cache:
+        type: tag
+        options: {  }
+      empty:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: 'No-Results Text'
+          plugin_id: text
+          empty: true
+          content:
+            value: |-
+              <p><em>You are not currently watching any content on the site.</em></p>
+              <p><em>You can watch content by clicking the 'Watch' link located in the upper righthand corner of each content page.</em></p>
+            format: basic_html
+          tokenize: false
+      sorts:
+        created:
+          id: created
+          table: node_field_data
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: created
+          plugin_id: date
+          order: DESC
+          expose:
+            label: 'Authored on'
+            field_identifier: created
+          exposed: false
+          granularity: second
+      arguments: {  }
       filters:
         moderation_state:
           id: moderation_state
@@ -615,6 +563,8 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          plugin_id: moderation_state_filter
           operator: 'not in'
           value:
             editorial-trash: editorial-trash
@@ -626,6 +576,8 @@ display:
             description: ''
             use_operator: false
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: ''
             required: false
             remember: false
@@ -633,8 +585,6 @@ display:
             remember_roles:
               authenticated: authenticated
             reduce: false
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -647,8 +597,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          plugin_id: moderation_state_filter
         title:
           id: title
           table: node_field_data
@@ -656,6 +604,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: string
           operator: contains
           value: ''
           group: 1
@@ -666,6 +617,8 @@ display:
             description: ''
             use_operator: false
             operator: title_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: title
             required: false
             remember: false
@@ -684,8 +637,6 @@ display:
               tester: '0'
               doc_deletion: '0'
             placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -698,9 +649,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          entity_field: title
-          plugin_id: string
         nid:
           id: nid
           table: node_field_data
@@ -708,6 +656,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: nid
+          plugin_id: numeric
           operator: '='
           value:
             min: ''
@@ -721,6 +672,8 @@ display:
             description: ''
             use_operator: false
             operator: nid_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: nid
             required: false
             remember: false
@@ -737,11 +690,9 @@ display:
               developer: '0'
               administrator: '0'
               tester: '0'
-            placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
+            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -754,9 +705,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          entity_field: nid
-          plugin_id: numeric
         node_org_filter:
           id: node_org_filter
           table: node_field_data
@@ -764,6 +712,8 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          plugin_id: mass_views_node_org_filter
           operator: '='
           value: null
           group: 1
@@ -774,6 +724,8 @@ display:
             description: ''
             use_operator: false
             operator: node_org_filter_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: node_org_filter
             required: false
             remember: false
@@ -791,8 +743,6 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -805,8 +755,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          plugin_id: mass_views_node_org_filter
         score:
           id: score
           table: mass_superset_data
@@ -814,6 +762,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: numeric
           operator: '<='
           value:
             min: ''
@@ -827,6 +776,8 @@ display:
             description: ''
             use_operator: false
             operator: score_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: score
             required: false
             remember: false
@@ -844,11 +795,9 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
-            placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
+            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -861,55 +810,97 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          plugin_id: numeric
-      sorts:
-        created:
-          id: created
-          table: node_field_data
-          field: created
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: DESC
-          exposed: false
-          expose:
-            label: 'Authored on'
-          granularity: second
-          entity_type: node
-          entity_field: created
-          plugin_id: date
-      title: 'Watched content'
-      header:
-        area:
-          id: area
-          table: views
-          field: area
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: true
-          tokenize: false
-          content:
-            value: '<p><em>Any content that you are currently "watching" is listed on this page unless it was moved to Trash.</em></p>'
-            format: basic_html
-          plugin_id: text
-      footer: {  }
-      empty:
-        area:
-          id: area
-          table: views
-          field: area
-          relationship: none
-          group_type: group
-          admin_label: 'No-Results Text'
-          empty: true
-          tokenize: false
-          content:
-            value: |-
-              <p><em>You are not currently watching any content on the site.</em></p>
-              <p><em>You can watch content by clicking the 'Watch' link located in the upper righthand corner of each content page.</em></p>
-            format: basic_html
-          plugin_id: text
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      style:
+        type: table
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+          columns:
+            node_bulk_form: node_bulk_form
+            title: title
+            nid: nid
+            changed: changed
+            link_flag: link_flag
+            type: type
+            score: score
+            pageviews: pageviews
+          default: changed
+          info:
+            node_bulk_form:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            title:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            nid:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            changed:
+              sortable: true
+              default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            link_flag:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            type:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            score:
+              sortable: true
+              default_sort_order: asc
+              align: views-align-right
+              separator: ''
+              empty_column: false
+              responsive: ''
+            pageviews:
+              sortable: true
+              default_sort_order: desc
+              align: views-align-right
+              separator: ''
+              empty_column: false
+              responsive: ''
+          override: true
+          sticky: false
+          summary: ''
+          empty_table: false
+          caption: ''
+          description: ''
+      row:
+        type: fields
+      query:
+        type: views_query
+        options:
+          query_comment: ''
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_tags: {  }
       relationships:
         flag_relationship:
           id: flag_relationship
@@ -918,11 +909,11 @@ display:
           relationship: none
           group_type: group
           admin_label: '"Watch Content" flags'
+          entity_type: node
+          plugin_id: flag_relationship
           required: true
           flag: watch_content
           user_scope: current
-          entity_type: node
-          plugin_id: flag_relationship
         vid:
           id: vid
           table: node_field_revision
@@ -930,17 +921,27 @@ display:
           relationship: none
           group_type: group
           admin_label: Content
-          required: false
           entity_type: node
           entity_field: vid
           plugin_id: standard
-      arguments: {  }
-      display_extenders: {  }
+          required: false
       use_ajax: false
-      filter_groups:
-        operator: AND
-        groups:
-          1: AND
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: '<p><em>Any content that you are currently "watching" is listed on this page unless it was moved to Trash.</em></p>'
+            format: basic_html
+          tokenize: false
+      footer: {  }
+      display_extenders: {  }
     cache_metadata:
       max-age: 0
       contexts:
@@ -953,9 +954,9 @@ display:
       tags:
         - 'config:workflow_list'
   page:
-    display_plugin: page
     id: page
     display_title: Page
+    display_plugin: page
     position: 1
     display_options:
       display_extenders: {  }
@@ -964,12 +965,12 @@ display:
         type: normal
         title: 'Watched content'
         description: ''
-        expanded: false
-        parent: ''
         weight: -38
-        context: '0'
-        menu_name: mass-dashboard
         enabled: false
+        expanded: false
+        menu_name: mass-dashboard
+        parent: ''
+        context: '0'
     cache_metadata:
       max-age: 0
       contexts:

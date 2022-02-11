@@ -20,40 +20,42 @@ third_party_settings:
         - field_featured_item_highlight
         - field_featured_item_image
         - field_featured_item_link
+      label: ''
+      region: content
       parent_name: ''
       weight: 0
       format_type: details
       format_settings:
         label: ''
+        classes: ''
+        id: ''
         open: true
         required_fields: true
-        id: ''
-        classes: ''
-      label: ''
-      region: content
 id: paragraph.featured_item.default
 targetEntityType: paragraph
 bundle: featured_item
 mode: default
 content:
   field_featured_item_highlight:
+    type: image_image
     weight: 1
+    region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings: {  }
-    type: image_image
-    region: content
   field_featured_item_image:
+    type: image_image
     weight: 2
+    region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings: {  }
-    type: image_image
-    region: content
   field_featured_item_link:
+    type: link_default
     weight: 3
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -66,13 +68,11 @@ content:
           - decision_tree_conclusion
           - fee
           - person
-    type: link_default
-    region: content
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   status: true

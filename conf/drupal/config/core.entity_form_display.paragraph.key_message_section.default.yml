@@ -27,13 +27,15 @@ bundle: key_message_section
 mode: default
 content:
   field_background_type:
+    type: options_buttons
     weight: 6
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_button:
+    type: link_default
     weight: 5
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -44,26 +46,26 @@ content:
         maxlength_js_enforce_attribute: true
       mass_validation:
         internal_link_content_type_blacklist: {  }
-    type: link_default
-    region: content
   field_image:
+    type: image_image
     weight: 7
+    region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings: {  }
-    type: image_image
-    region: content
   field_main_heading:
+    type: string_textfield
     weight: 1
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_rich_text_description:
+    type: text_textarea
     weight: 4
+    region: content
     settings:
       rows: 5
       placeholder: ''
@@ -74,18 +76,20 @@ content:
       maxlength:
         maxlength_js: 300
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
-        maxlength_js_enforce_attribute: true
         maxlength_js_enforce: true
         maxlength_js_truncate_html: true
+        maxlength_js_enforce_attribute: true
       conditional_fields: {  }
-    type: text_textarea
-    region: content
   field_section_background_color:
+    type: options_buttons
     weight: 8
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         ca5695dc-aaa3-4a5c-989f-db1622209b3a:
+          entity_type: paragraph
+          bundle: key_message_section
           dependee: field_background_type
           settings:
             state: visible
@@ -100,9 +104,9 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+        e66728be-cbfa-446c-b204-c80d2fe6e60a:
           entity_type: paragraph
           bundle: key_message_section
-        e66728be-cbfa-446c-b204-c80d2fe6e60a:
           dependee: field_background_type
           settings:
             state: '!visible'
@@ -117,9 +121,9 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+        4f297771-9915-4e0f-9b8e-ca838246b904:
           entity_type: paragraph
           bundle: key_message_section
-        4f297771-9915-4e0f-9b8e-ca838246b904:
           dependee: field_background_type
           settings:
             state: required
@@ -134,12 +138,10 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: paragraph
-          bundle: key_message_section
-    type: options_buttons
-    region: content
   field_section_text_overlay_color:
+    type: options_buttons
     weight: 9
+    region: content
     settings: {  }
     third_party_settings:
       maxlength:
@@ -148,6 +150,8 @@ content:
         maxlength_js_enforce_attribute: true
       conditional_fields:
         ae838475-d901-45e5-8fa5-55775b4d84ee:
+          entity_type: paragraph
+          bundle: key_message_section
           dependee: field_background_type
           settings:
             state: visible
@@ -162,9 +166,9 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+        ba86d68d-1d51-40bd-94a1-51ccf1aad640:
           entity_type: paragraph
           bundle: key_message_section
-        ba86d68d-1d51-40bd-94a1-51ccf1aad640:
           dependee: field_background_type
           settings:
             state: '!visible'
@@ -179,19 +183,15 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: paragraph
-          bundle: key_message_section
-    type: options_buttons
-    region: content
   field_sub_heading:
+    type: string_textfield
     weight: 3
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings:
       conditional_fields: {  }
-    type: string_textfield
-    region: content
   paragraphs_type_help__default:
     weight: 0
     region: content
