@@ -83,76 +83,17 @@ function _mass_entity_usage_tracking_check($entity_type, $id, $vid) {
 }
 
 /**
- * Deletes usage data from revisions that are not the current revision.
- *
- * Entity usage also stores data from other revisions than the current one,
- * but we don't want/need that data, we don't want to see that data in the
- * entity_usage table either.
- */
-function mass_entity_usage_keep_only_current_vid($entity) {
-
-  if (!$entity->getEntityType()->isRevisionable()) {
-    return;
-  }
-
-  // Only intervene on tracked entities.
-  $to_track = \Drupal::config('entity_usage.settings')->get('track_enabled_source_entity_types');
-
-  /** @var Drupal\Core\Entity\ContentEntityType */
-  $entity_type = $entity->getEntityType();
-
-  if (is_array($to_track) && !in_array($entity_type->id(), $to_track, TRUE)) {
-    return;
-  }
-
-  // Get the current revision ID.
-  $storage = \Drupal::entityTypeManager()->getStorage($entity->getEntityType()->id());
-  /** @var \Drupal\Core\Entity\ContentEntityBase */
-  $loaded_entity = $storage->load($entity->id());
-  $vid = $loaded_entity->getRevisionId();
-  $delete = \Drupal::database()->delete('entity_usage');
-
-  // Condition to delete reference to itself.
-  $c1 = $delete->andConditionGroup()
-      ->condition('target_id', $entity->id())
-      ->condition('source_id', $entity->id());
-
-  // Condition to delete reference to itself when entity uses string id.
-  $c2 = $delete->andConditionGroup()
-    ->condition('target_id_string', $entity->id())
-    ->condition('source_id_string', $entity->id());
-
-  // Condition to delete references from other revisions.
-  $c3 = $delete->andConditionGroup()
-    ->condition('source_id', $entity->id())
-    ->condition('source_vid', $vid, '<>');
-
-  // Condition to delete references from other when entity uses string id.
-  $c4 = $delete->andConditionGroup()
-    ->condition('source_id_string', $entity->id())
-    ->condition('source_vid', $vid, '<>');
-
-  $delete->orConditionGroup()
-    ->condition($c1)
-    ->condition($c2)
-    ->condition($c3)
-    ->condition($c4);
-
-  $delete->execute();
-}
-
-/**
  * Implements hook_entity_insert().
  */
 function mass_entity_usage_entity_insert(EntityInterface $entity) {
-  mass_entity_usage_keep_only_current_vid($entity);
+  Drupal::queue('mass_entity_usage_delete_not_current_revision_usages')->createItem($entity->id());
 }
 
 /**
  * Implements hook_entity_update().
  */
 function mass_entity_usage_entity_update(EntityInterface $entity) {
-  mass_entity_usage_keep_only_current_vid($entity);
+  Drupal::queue('mass_entity_usage_delete_not_current_revision_usages')->createItem($entity->id());
 }
 
 /**
