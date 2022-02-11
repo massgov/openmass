@@ -3,12 +3,10 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.node.topic_page.field_display_short_description
     - field.field.node.topic_page.field_image_credit
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
     - field.field.node.topic_page.field_primary_parent
-    - field.field.node.topic_page.field_restrict_link_management
     - field.field.node.topic_page.field_reusable_label
     - field.field.node.topic_page.field_short_title
     - field.field.node.topic_page.field_state_organization_tax
@@ -23,12 +21,15 @@ dependencies:
     - field.field.node.topic_page.field_topic_section_bg_narrow
     - field.field.node.topic_page.field_topic_section_bg_wide
     - field.field.node.topic_page.field_topic_type
+    - image.style.thumbnail
     - node.type.topic_page
-    - workflows.workflow.topic_page
+    - workflows.workflow.editorial
   module:
+    - conditional_fields
     - content_moderation
     - entity_hierarchy
     - field_group
+    - image
     - maxlength
     - metatag
     - paragraphs
@@ -42,7 +43,7 @@ third_party_settings:
       label: 'Topic Page Edit Form'
       region: content
       parent_name: ''
-      weight: 1
+      weight: 2
       format_type: tabs
       format_settings:
         classes: ''
@@ -52,10 +53,14 @@ third_party_settings:
       children:
         - title
         - field_short_title
+        - field_topic_type
         - field_topic_lede
-        - field_display_short_description
-        - field_restrict_link_management
         - field_topic_ref_icon
+        - field_topic_bg_wide
+        - field_topic_bg_narrow
+        - field_topic_section_bg_wide
+        - field_topic_section_bg_narrow
+        - field_image_credit
         - field_primary_parent
         - field_organizations
         - field_intended_audience
@@ -73,6 +78,7 @@ third_party_settings:
         required_fields: true
     group_content_cards:
       children:
+        - field_topic_display_links
         - field_topic_content_cards
       label: 'Content cards'
       region: content
@@ -80,11 +86,11 @@ third_party_settings:
       weight: 21
       format_type: tab
       format_settings:
-        description: ''
-        formatter: closed
-        required_fields: true
-        id: ''
         classes: ''
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
     group_related_list:
       children:
         - field_topic_ref_related_topics
@@ -109,7 +115,8 @@ content:
     weight: 65
     region: content
     settings:
-      display_label: true
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
@@ -166,13 +173,65 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_topic_bg_narrow:
+    type: image_image
+    weight: 62
+    region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings:
+      conditional_fields:
+        613aa4c0-b2bd-4a70-86a2-a70b23f9b8fa:
+          entity_type: node
+          bundle: topic_page
+          dependee: field_topic_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: topic
+            effect: show
+            effect_options: {  }
+            selector: ''
+  field_topic_bg_wide:
+    type: image_image
+    weight: 61
+    region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings:
+      conditional_fields:
+        b50ee6a9-15bd-4f50-8f89-4702d6daa7b9:
+          entity_type: node
+          bundle: topic_page
+          dependee: field_topic_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: topic
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_topic_content_cards:
     type: entity_reference_paragraphs
     weight: 39
     region: content
     settings:
-      title: 'Link group'
-      title_plural: 'Link groups'
+      title: 'Content card group'
+      title_plural: 'Content card groups'
       edit_mode: open
       add_mode: dropdown
       form_display_mode: default
@@ -277,9 +336,9 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 4
-    settings: {  }
+    weight: 10
     region: content
+    settings: {  }
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp
@@ -333,19 +392,14 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 5
+    weight: 50
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
-  field_image_credit: true
-  field_topic_bg_narrow: true
-  field_topic_bg_wide: true
-  field_topic_display_links: true
-  field_topic_section_bg_narrow: true
-  field_topic_section_bg_wide: true
-  field_topic_type: true
+  field_display_short_description: true
+  field_restrict_link_management: true
   langcode: true
   path: true
   promote: true
