@@ -162,7 +162,7 @@ jobs:
           steps:
             - continuation/continue:
                 parameters: '{"post-trigger": true, "webhook": false}'
-                configuration_path: /home/circleci/project/openmass/config.yml
+                configuration_path: /home/circleci/project/.circleci/config.yml
       - unless:
           condition: $CIRCLE_PR_NUMBER
           steps:
