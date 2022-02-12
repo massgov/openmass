@@ -160,7 +160,7 @@ jobs:
 #          We have a PR so run tests.
           steps:
             - continuation/continue:
-                parameters: "{post-trigger: true, webhook: false}"
+                parameters: '{"post-trigger": true, "webhook": false}'
                 configuration_path: config.yml
       - unless:
           condition: $CIRCLE_PR_NUMBER
