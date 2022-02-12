@@ -205,6 +205,14 @@ jobs:
     docker:
       - image: cimg/php:7.4-node
     steps:
+      - run: |
+          if [ -z "$CIRCLE_PR_NUMBER" ]; then
+            echo "This is an internal PR. Proceed with additional testing."
+          fi
+          else
+            echo "This PR is from a fork. A staff member must test it manually."
+            exit 1;
+          fi
       - attach_workspace: {at: /tmp}
       - run:
           #Fail when there is no PR. This helps avoid false positives given by Danger when no PR exists.
