@@ -162,7 +162,7 @@ jobs:
           steps:
             - continuation/continue:
                 parameters: '{"post-trigger": true, "webhook": false}'
-                configuration_path: home/circleci/project/config.yml
+                configuration_path: /home/circleci/project/config.yml
       - unless:
           condition: $CIRCLE_PR_NUMBER
           steps:
