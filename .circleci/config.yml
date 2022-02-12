@@ -166,6 +166,7 @@ jobs:
           condition: $CIRCLE_PR_NUMBER
           steps:
             - run: echo -e "Skip trigger since this is a fork."
+            - continuation/finish
 
   build:
     working_directory: ~/project/code
@@ -589,6 +590,7 @@ workflows:
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   release_branch:
+    when: false
     jobs:
       - build
       - cut_release_branch:
@@ -604,6 +606,7 @@ workflows:
 
   # This is to automate the release branch only.
   release:
+    when: false
     jobs:
       - build:
           filters:
@@ -670,7 +673,8 @@ workflows:
 
   # This is to automate the hotfix branch only.
   hotfix:
-    when: << pipeline.parameters.webhook >>
+    when: false
+#    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -736,7 +740,8 @@ workflows:
 
   # This is to automate the mayflower branch only.
   mayflower:
-    when: << pipeline.parameters.webhook >>
+    # when: << pipeline.parameters.webhook >>
+    when: false
     jobs:
       - build:
           filters:
@@ -806,7 +811,8 @@ workflows:
 
   # This is to tag the release in the GitHub repository
   build_github_tag:
-    when: << pipeline.parameters.webhook >>
+    # when: << pipeline.parameters.webhook >>
+    when: false
     jobs:
       - build:
           filters:
@@ -848,7 +854,8 @@ workflows:
   # This is to tag the release in the Acquia repository.
   # This will deploy the newly created tag to stage environment and production environment with hold/approval for each job.
   build_tag:
-    when: << pipeline.parameters.webhook >>
+    when: false
+    #when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -959,6 +966,7 @@ workflows:
 
   # Daily run of test suite using super sanitized DB
   build_test_super:
+    when: false
     jobs:
       - build
       - test:
@@ -982,6 +990,7 @@ workflows:
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
+    when: false
     jobs:
       - build
       - populate:
@@ -1042,6 +1051,7 @@ workflows:
 
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
   deploy_cd:
+    when: false
     jobs:
       - build_with_latest_mayflower
       - deploy:
@@ -1068,6 +1078,7 @@ workflows:
 
   # Nightly pm:security and pm:security-php.
   nightly_pending_security:
+    when: false
     jobs:
       - build
       - pending_security:
