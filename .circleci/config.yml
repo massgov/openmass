@@ -152,9 +152,10 @@ parameters:
     type: string
     default: ""
 jobs:
-  trigger_workflows:
+  setup:
     executor: continuation/default
     steps:
+      - checkout
       - when:
           condition: $CIRCLE_PR_NUMBER
 #          We have a PR so run tests.
@@ -524,7 +525,7 @@ jobs:
 
 workflows:
   version: 2
-  build_validate:
+  setup:
     when: << pipeline.parameters.webhook >>
     jobs:
       - build:
@@ -540,7 +541,7 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - trigger_workflows:
+      - setup:
           filters:
             branches:
               <<: *branch_ignore
