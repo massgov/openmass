@@ -152,8 +152,7 @@ parameters:
     default: ""
 jobs:
   trigger_workflows:
-    docker:
-      - image: circleci/node
+    executor: continuation/default
     steps:
       - when:
           condition: $CIRCLE_PR_NUMBER
