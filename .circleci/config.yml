@@ -207,9 +207,6 @@ jobs:
     steps:
       - attach_workspace: {at: /tmp}
       - run:
-          #Fail when the PR comes from a fork.
-          command: '[ -n "$CIRCLE_PR_NUMBER" ] && echo "A staff member will internally test your PR. Thanks!" && exit 1'
-      - run:
           #Fail when there is no PR. This helps avoid false positives given by Danger when no PR exists.
           command: '[ -n "$CIRCLE_PULL_REQUEST" ] && DANGER_GITHUB_API_TOKEN=$GITHUB_MASSGOV_BOT_TOKEN yarn danger ci --failOnErrors'
 
