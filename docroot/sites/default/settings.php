@@ -199,3 +199,6 @@ if (PHP_SAPI === 'cli' && ini_get('memory_limit')) {
 }
 
 $config['entity_usage.settings']['queue_tracking'] = TRUE;
+
+$settings['mass_entity_usage_delete_not_current_revision_usages'] = 'queue_unique.database';
+$settings['entity_usage_tracker'] = 'queue_unique.database';
