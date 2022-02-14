@@ -8,6 +8,7 @@ dependencies:
     - field.field.media.document.field_alternative_title
     - field.field.media.document.field_category
     - field.field.media.document.field_checksum
+    - field.field.media.document.field_collections
     - field.field.media.document.field_conform
     - field.field.media.document.field_contact_information
     - field.field.media.document.field_contact_name
@@ -51,46 +52,46 @@ bundle: document
 mode: linked_desc
 content:
   calculated_file_size:
+    settings: {  }
+    third_party_settings: {  }
     weight: 2
     region: content
-    settings: {  }
-    third_party_settings: {  }
   content_moderation_control:
-    weight: -20
     settings: {  }
     third_party_settings: {  }
+    weight: -20
     region: content
   extra_file_extension:
-    weight: 100
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 100
+    region: content
   extra_file_icon:
-    weight: 100
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 100
+    region: content
   field_document_listing_desc:
-    weight: 1
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 1
     region: content
   field_title:
-    weight: 0
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
     region: content
   generated_file_extension:
-    weight: 3
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 3
+    region: content
   generated_file_icon_twig_path:
     weight: 100
     region: content
@@ -101,6 +102,7 @@ hidden:
   field_alternative_title: true
   field_category: true
   field_checksum: true
+  field_collections: true
   field_conform: true
   field_contact_information: true
   field_contact_name: true

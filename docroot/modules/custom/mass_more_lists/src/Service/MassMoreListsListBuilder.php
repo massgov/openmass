@@ -52,10 +52,10 @@ class MassMoreListsListBuilder {
    * @param \Drupal\node\Entity\Node $node
    *   Node object.
    *
-   * @return null|array
+   * @return
    *   Array of list data.
    */
-  public function build(Node $node) {
+  public function build(Node $node): array {
     // Creates Content Eyebrow and Page Header render arrays.
     $headers = $this->buildHeaders($node);
     $content_eyebrow = $headers['contentEyebrow'];
@@ -65,7 +65,7 @@ class MassMoreListsListBuilder {
     $form_downloads = $this->buildFormDownloads($node);
     // Return nothing if download links are missing.
     if (empty($form_downloads['downloadLinks'])) {
-      return NULL;
+      return [];
     }
 
     // Builds data for results header, paged results, and pager.

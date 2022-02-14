@@ -16,16 +16,17 @@ bundle: link_group
 mode: default
 content:
   field_description:
+    type: string_textfield
     weight: 1
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_links_documents:
     type: entity_reference_paragraphs
     weight: 2
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -34,9 +35,10 @@ content:
       form_display_mode: limit_fields
       default_paragraph_type: _none
     third_party_settings: {  }
-    region: content
   field_section_title:
+    type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
@@ -45,13 +47,11 @@ content:
         maxlength_js: 75
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce_attribute: true
-    type: string_textfield
-    region: content
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   status: true

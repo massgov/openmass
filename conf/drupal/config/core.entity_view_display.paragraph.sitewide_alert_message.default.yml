@@ -21,15 +21,15 @@ mode: default
 content:
   field_sitewide_alert_content:
     type: entity_reference_revisions_entity_view
-    weight: 3
     label: hidden
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 3
     region: content
   field_sitewide_alert_link:
-    weight: 2
+    type: link
     label: hidden
     settings:
       trim_length: 80
@@ -38,30 +38,30 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 2
     region: content
   field_sitewide_alert_link_type:
-    weight: 4
+    type: list_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 4
     region: content
   field_sitewide_alert_message:
-    weight: 0
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
     region: content
   field_sitewide_alert_timestamp:
-    weight: 1
+    type: datetime_custom
     label: hidden
     settings:
       timezone_override: ''
       date_format: 'M. jS, Y, g:i a'
     third_party_settings: {  }
-    type: datetime_custom
+    weight: 1
     region: content
 hidden: {  }

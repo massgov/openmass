@@ -1,7 +1,13 @@
 uuid: f82188ab-f25e-4f82-af7f-6f2084dbb7d4
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - node.type.campaign_landing
+    - workflows.workflow.campaign_landing_page
+  module:
+    - content_moderation
+    - node
 id: campaign_landing_page_publisher
 label: 'Campaign landing page publisher'
 weight: 2
