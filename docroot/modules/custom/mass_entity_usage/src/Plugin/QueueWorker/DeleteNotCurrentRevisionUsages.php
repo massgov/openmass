@@ -66,28 +66,29 @@ class DeleteNotCurrentRevisionUsages extends QueueWorkerBase implements Containe
 
     $vid = $entity->getRevisionId();
 
-  // Delete reference to itself.
-  \Drupal::database()->delete('entity_usage')
-    ->condition('target_id', $entity->id())
-    ->condition('source_id', $entity->id())
-    ->execute();
+    // Delete reference to itself.
+    \Drupal::database()->delete('entity_usage')
+      ->condition('target_id', $entity->id())
+      ->condition('source_id', $entity->id())
+      ->execute();
 
-  // Delete reference to itself when entity uses string id.
-  \Drupal::database()->delete('entity_usage')
-    ->condition('target_id_string', $entity->id())
-    ->condition('source_id_string', $entity->id())
-    ->execute();
+    // Delete reference to itself when entity uses string id.
+    \Drupal::database()->delete('entity_usage')
+      ->condition('target_id_string', $entity->id())
+      ->condition('source_id_string', $entity->id())
+      ->execute();
 
-  // Delete references from other revisions.
-  \Drupal::database()->delete('entity_usage')
-    ->condition('source_id', $entity->id())
-    ->condition('source_vid', $vid, '<>')
-    ->execute();
+    // Delete references from other revisions.
+    \Drupal::database()->delete('entity_usage')
+      ->condition('source_id', $entity->id())
+      ->condition('source_vid', $vid, '<>')
+      ->execute();
 
-  // Delete references from other when entity uses string id..
-  \Drupal::database()->delete('entity_usage')
-    ->condition('source_id_string', $entity->id())
-    ->condition('source_vid', $vid, '<>')
-    ->execute();
+    // Delete references from other when entity uses string id..
+    \Drupal::database()->delete('entity_usage')
+      ->condition('source_id_string', $entity->id())
+      ->condition('source_vid', $vid, '<>')
+      ->execute();
   }
+
 }

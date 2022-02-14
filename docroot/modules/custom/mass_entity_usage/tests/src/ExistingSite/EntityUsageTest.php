@@ -22,7 +22,11 @@ class EntityUsageTest extends ExistingSiteBase {
 
   private $user;
 
-  /** @var \Drush\Drupal\Commands\core\QueueCommands */
+  /**
+   * To execute Drush commands to process queues.
+   *
+   * @var \Drush\Drupal\Commands\core\QueueCommands
+   */
   private $queueCommands;
 
   /**
