@@ -6,6 +6,7 @@ use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
+use DrupalTest\QueueRunnerTrait\QueueRunnerTrait;
 use Drush\Drupal\Commands\core\QueueCommands;
 use Drush\Log\DrushLoggerManager;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
@@ -19,22 +20,15 @@ class EntityUsageTest extends ExistingSiteBase {
 
   use LoginTrait;
   use MediaCreationTrait;
+  use QueueRunnerTrait;
 
   private $user;
-
-  /**
-   * To execute Drush commands to process queues.
-   *
-   * @var \Drush\Drupal\Commands\core\QueueCommands
-   */
-  private $queueCommands;
 
   /**
    * Create the user.
    */
   protected function setUp() {
     parent::setUp();
-    $this->setQueueCommands();
     $this->emptyEntityUsageQueues();
     $user = User::create(['name' => $this->randomMachineName()]);
     $user->addRole('administrator');
@@ -42,31 +36,6 @@ class EntityUsageTest extends ExistingSiteBase {
     $user->save();
     $this->user = $user;
     $this->drupalLogin($user);
-  }
-
-  /**
-   * Creates and returns a new queueCommandsService.
-   */
-  private function createQueueCommandsService() {
-    return new QueueCommands(
-      \Drupal::service('plugin.manager.queue_worker'),
-      \Drupal::service('queue')
-    );
-  }
-
-  /**
-   * Sets queueCommands property.
-   */
-  private function setQueueCommands() {
-    // Declares dt function needed to run Drush commands.
-    eval('if (!function_exists("dt")) { function dt() { return ""; }}');
-    $queueCommands = $this->createQueueCommandsService();
-    $logger = $this->getMockBuilder(DrushLoggerManager::class)
-      ->disableOriginalConstructor()
-      ->getMock();
-    /** @var \Psr\Log\LoggerInterface $logger */
-    $queueCommands->setLogger($logger);
-    $this->queueCommands = $queueCommands;
   }
 
   /**
@@ -151,18 +120,17 @@ class EntityUsageTest extends ExistingSiteBase {
    * Empties entity usage related queues.
    */
   private function emptyEntityUsageQueues() {
-    $this->queueCommands->delete('entity_usage_tracker');
-    $this->queueCommands->delete('entity_usage_regenerate_queue');
-    $this->queueCommands->delete('mass_entity_usage_delete_not_current_revision_usages');
+    $this->clearQueue('entity_usage_tracker');
+    $this->clearQueue('entity_usage_regenerate_queue');
+    $this->clearQueue('mass_entity_usage_delete_not_current_revision_usages');
   }
 
   /**
    * Process entity usage related queues.
    */
   private function processEntityUsageQueues() {
-    $options = ['time-limit' => 10, 'items-limit' => 100];
-    $this->queueCommands->run('entity_usage_tracker', $options);
-    $this->queueCommands->run('mass_entity_usage_delete_not_current_revision_usages', $options);
+    $this->runQueue('entity_usage_tracker');
+    $this->runQueue('mass_entity_usage_delete_not_current_revision_usages');
   }
 
   /**
