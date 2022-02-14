@@ -93,10 +93,6 @@ class EntityUsageTest extends ExistingSiteBase {
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
-    // Entity usage tracking is done at the end of the requests, so we need to
-    // create the node through requests to updated the entity usage tracking
-    // table, instead of using $node->create.
-    // See patch related to issue #3015287 in composer.json.
     $this->visit('/node/add/curated_list');
     $this->getCurrentPage()->fillField('Title', 'Test Curated List');
     $this->getCurrentPage()->fillField('Short title', 'Test Curated List Short Title');
@@ -178,10 +174,6 @@ class EntityUsageTest extends ExistingSiteBase {
     ]);
     $this->drupalLogin($this->user);
 
-    // Entity usage tracking is done at the end of the requests, so we need to
-    // create the node through requests to updated the entity usage tracking
-    // table, instead of using $node->create.
-    // See patch related to issue #3015287 in composer.json.
     $this->visit('/node/add/curated_list');
     $this->getCurrentPage()->fillField('Title', 'Test Curated List');
     $this->getCurrentPage()->fillField('Short title', 'Test Curated List Short Title');
