@@ -7,8 +7,6 @@ use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
 use DrupalTest\QueueRunnerTrait\QueueRunnerTrait;
-use Drush\Drupal\Commands\core\QueueCommands;
-use Drush\Log\DrushLoggerManager;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
