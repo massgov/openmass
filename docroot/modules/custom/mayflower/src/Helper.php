@@ -400,7 +400,7 @@ class Helper {
       }
       // If the final nested entity has the reference field, use that as the
       // value of field.
-      if ($nested_entity->hasField($reference_field)) {
+      if (isset($nested_entity) && $nested_entity->hasField($reference_field)) {
         return self::getReferencedEntitiesFromField($nested_entity, $reference_field);
       }
     }
