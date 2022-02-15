@@ -1363,12 +1363,13 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
     $pageBanner_options = [
       'icon' => $icon,
       'color' => '',
+      'renderImageOnMobile' => TRUE,
     ];
 
     if (Helper::isFieldPopulated($node, 'field_topic_type')) {
       $type = Helper::fieldValue($node, 'field_topic_type');
       if ($type == 'section landing') {
-        $pageBanner_options = array_merge($pageBanner_options, ['size' => 'hero1600x400']);
+        $pageBanner_options = array_merge($pageBanner_options, ['size' => 'large']);
       }
       else {
         $pageBanner_options = array_merge($pageBanner_options, ['size' => 'columns']);
