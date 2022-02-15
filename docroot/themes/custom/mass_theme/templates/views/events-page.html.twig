@@ -51,10 +51,37 @@
     }
   }]}) %}
 {% endif %}
-
+{% if breadcrumb %}
+  {% include "@organisms/by-template/breadcrumbs.twig" with {
+    "breadcrumbs": {
+      "light": true,
+      "links": breadcrumb['#links']
+    }
+  } %}
+{% endif %}
 <main id="main-content" tabindex="-1">
   <div class="pre-content">
     {% block preContent %}
+      {% set secondaryIndicators = false %}
+      {% if organizations is not empty %}
+        {% set secondaryIndicators = {
+          "icon": "building",
+          "label": "offered by",
+          "groupAfter": 3
+        } %}
+      {% endif %}
+      {% embed "@molecules/relationship-indicators.twig" with {
+        "relationshipIndicators": {
+          "pageTitle": node.label,
+          "primary": null,
+          "secondary": secondaryIndicators
+        }
+      } %}
+        {% block secondaryRelationship %}
+          {{ organizations }}
+        {% endblock %}
+      {% endembed %}
+      {% set pageHeader = pageHeader|merge({'headerTags': null}) %}
       {% include "@organisms/by-template/page-header.twig" %}
       {% include "@organisms/by-template/page-header-addons.twig" %}
     {% endblock %}
