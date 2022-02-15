@@ -21,9 +21,9 @@ default_value_callback: ''
 settings:
   handler: 'default:paragraph'
   handler_settings:
-    negate: 0
     target_bundles:
       section_heading_text: section_heading_text
+    negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 81
@@ -127,6 +127,9 @@ settings:
       file_download:
         weight: 114
         enabled: false
+      file_download_single:
+        weight: 120
+        enabled: false
       full_bleed:
         weight: 115
         enabled: false
@@ -141,9 +144,6 @@ settings:
         enabled: false
       hours:
         weight: 119
-        enabled: false
-      file_download_single:
-        weight: 120
         enabled: false
       icon:
         weight: 120
@@ -166,6 +166,9 @@ settings:
       links:
         weight: 126
         enabled: false
+      links_downloads:
+        weight: 133
+        enabled: false
       list_dynamic:
         weight: 127
         enabled: false
@@ -187,9 +190,6 @@ settings:
       map_row:
         weight: 133
         enabled: false
-      links_downloads:
-        weight: 133
-        enabled: false
       media_contact:
         weight: 134
         enabled: false
@@ -204,6 +204,12 @@ settings:
         enabled: false
       online_email:
         weight: 138
+        enabled: false
+      page:
+        weight: 146
+        enabled: false
+      page_group:
+        weight: 147
         enabled: false
       phone_number:
         weight: 139
@@ -226,14 +232,8 @@ settings:
       related_link:
         weight: 145
         enabled: false
-      page:
-        weight: 146
-        enabled: false
       rich_text:
         weight: 146
-        enabled: false
-      page_group:
-        weight: 147
         enabled: false
       rules_section:
         weight: 147
@@ -248,8 +248,11 @@ settings:
         weight: 150
         enabled: false
       section_heading_text:
-        enabled: true
         weight: 151
+        enabled: true
+      section_long_form:
+        weight: 161
+        enabled: false
       section_with_heading:
         weight: 152
         enabled: false
@@ -276,8 +279,5 @@ settings:
         enabled: false
       video:
         weight: 160
-        enabled: false
-      section_long_form:
-        weight: 161
         enabled: false
 field_type: entity_reference_revisions

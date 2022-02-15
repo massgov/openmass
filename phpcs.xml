@@ -19,6 +19,9 @@
   <rule ref="vendor/drupal/coder/coder_sniffer/DrupalPractice/ruleset.xml"/>
 
   <!-- Exceptions which keep us sane. -->
+  <rule ref="Drupal.Classes.FullyQualifiedNamespace.UseStatementMissing"><severity>0</severity></rule>
+  <rule ref="Drupal.Commenting.ClassComment.Missing"><severity>0</severity></rule>
+  <rule ref="Drupal.Commenting.FunctionComment.MissingReturnType"><severity>0</severity></rule>
   <rule ref="Drupal.Commenting.InlineComment.InvalidEndChar"><severity>0</severity></rule>
   <rule ref="Drupal.Arrays.Array.LongLineDeclaration"><severity>0</severity></rule>
   <rule ref="Drupal.Commenting.VariableComment.Missing"><severity>0</severity></rule>
@@ -29,5 +32,9 @@
   <rule ref="Drupal.Commenting.Deprecated.IncorrectTextLayout"><severity>0</severity></rule>
   <rule ref="Drupal.Commenting.Deprecated.DeprecatedMissingSeeTag"><severity>0</severity></rule>
 
+<!--  New with Coder 8.3.14. Fix our violations and then remove the lines below-->
+  <rule ref="SlevomatCodingStandard.ControlStructures.RequireNullCoalesceOperator.NullCoalesceOperatorNotUsed"><severity>0</severity></rule>
+  <rule ref="DrupalPractice.FunctionCalls.InsecureUnserialize.InsecureUnserialize"><severity>0</severity></rule>
+  <rule ref="SlevomatCodingStandard.PHP.ShortList.LongListUsed"><severity>0</severity></rule>
 
 </ruleset>

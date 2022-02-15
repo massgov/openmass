@@ -40,93 +40,93 @@ bundle: decision
 mode: token
 content:
   field_decision_date:
-    weight: 2
+    type: datetime_default
     label: above
     settings:
-      format_type: medium
       timezone_override: ''
+      format_type: medium
     third_party_settings: {  }
-    type: datetime_default
+    weight: 2
     region: content
   field_decision_docket_number:
-    weight: 3
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 3
     region: content
   field_decision_download:
-    weight: 14
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 14
     region: content
   field_decision_footnotes:
-    weight: 15
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 15
     region: content
   field_decision_location:
-    weight: 4
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 4
     region: content
   field_decision_metatags:
-    weight: 9
+    type: metatag_empty_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: metatag_empty_formatter
+    weight: 9
     region: content
   field_decision_overview:
-    weight: 6
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 6
     region: content
   field_decision_participants:
     type: entity_reference_revisions_entity_view
-    weight: 5
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 5
     region: content
   field_decision_ref_contact:
-    weight: 11
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 11
     region: content
   field_decision_ref_organization:
-    weight: 12
+    type: entity_reference_entity_id
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: entity_reference_entity_id
+    weight: 12
     region: content
   field_decision_ref_type:
-    weight: 13
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 13
     region: content
   field_decision_related:
-    weight: 8
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -135,19 +135,19 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 8
     region: content
   field_decision_section:
     type: entity_reference_revisions_entity_view
-    weight: 7
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 7
     region: content
   field_decision_sources:
-    weight: 10
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -156,18 +156,18 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 10
     region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_related_to: true
   content_moderation_control: true
