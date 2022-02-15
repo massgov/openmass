@@ -127,7 +127,7 @@ function _mass_docs_auto_populate_user_fields(array &$form) {
   // Load organization value from user field.
   $user = User::load(Drupal::currentUser()->id());
   /** @var \Drupal\Core\Field\EntityReferenceFieldItemList $org_entity */
-  $org_entity = $user->get('field_user_org');
+  $org_entity = $user->getOrg();
   $organization_id = empty($org_entity->referencedEntities()) ? NULL : current($org_entity->referencedEntities())->id();
 
   $form['field_contributing_organization']['widget'][0]['target_id']['#default_value'] = empty($organization_id) ? NULL : Term::load($organization_id);

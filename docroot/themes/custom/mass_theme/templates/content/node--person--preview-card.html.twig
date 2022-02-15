@@ -150,7 +150,7 @@
       {% if is_featured_board_member %}
         <span class="ma__general-teaser__image-wrapper">
           {% set image = {
-            src: file_url(node.field_medium_image.entity.fileuri),
+            src: file_url(node.field_medium_image.entity.fileuri ?? ''),
             alt: node.field_medium_image.alt,
             width: "172",
             height: "228",

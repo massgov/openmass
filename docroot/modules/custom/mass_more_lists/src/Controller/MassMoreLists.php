@@ -42,10 +42,10 @@ class MassMoreLists extends ControllerBase {
    * @param \Drupal\node\Entity\Node $node
    *   Node object.
    *
-   * @return null|string
+   * @return
    *   Render array for More List page display.
    */
-  public function buildList(Node $node) {
+  public function buildList(Node $node): array {
     // Build list data for rendering.
     $more_list = $this->listBuilder->build($node);
 
