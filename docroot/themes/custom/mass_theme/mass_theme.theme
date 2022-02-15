@@ -7173,8 +7173,11 @@ function mass_theme_org_section_long_form_check_wrapping_field($paragraph, $fiel
  * Remove breadcrumbs for top level pages and generates schema.org metadata.
  */
 function mass_theme_preprocess_breadcrumb(&$variables) {
+  ksm($variables);
   $breadcrumb = $variables['breadcrumb'];
   $itemListElement = [];
+
+  $variables['current_page'] = end($breadcrumb)['text'];
 
   // Remove current page.
   foreach ($breadcrumb as $key => $link) {
