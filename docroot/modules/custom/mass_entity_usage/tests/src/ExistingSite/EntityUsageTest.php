@@ -93,16 +93,17 @@ class EntityUsageTest extends ExistingSiteBase {
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
-    $this->visit('/node/add/curated_list');
-    $this->getCurrentPage()->fillField('Title', 'Test Curated List');
-    $this->getCurrentPage()->fillField('Short title', 'Test Curated List Short Title');
-    $this->getCurrentPage()->fillField('Short description', 'Test Curated List Short Description');
-    $this->getCurrentPage()->fillField('Parent page', 'Test Organization (' . $node_org->id() . ') - Organization');
-    $this->getCurrentPage()->fillField('Organization(s)', 'Test Organization (' . $node_org->id() . ') - Organization');
-    $this->getCurrentPage()->fillField('Overview', $media->toLink()->toString());
-    $this->getCurrentPage()->fillField('Save as', $curated_list_state);
-    $this->getCurrentPage()->pressButton('Save');
-    $this->getCurrentPage()->hasContent('Curated List Test Curated List has been created.');
+    $node_curated_list = $this->createNode([
+      'type' => 'curated_list',
+      'title' => 'Test Curated List',
+      'uid' => $this->user->id(),
+      'moderation_state' => $curated_list_state,
+      'field_organizations' => $node_org->id(),
+      'field_curatedlist_overview' => [
+        'value' => $media->toLink()->toString(),
+        'format' => 'basic_html',
+      ],
+    ]);
 
     // Get last created node.
     $res = \Drupal::entityQuery('node')->sort('nid', 'DESC')->range(0, 1)->execute();
@@ -160,6 +161,13 @@ class EntityUsageTest extends ExistingSiteBase {
     $this->assertUsageRows($media, 1);
     $this->assertUsageRows($node_curated_list, 0);
     $this->assertUsageRows($node_org, 1);
+
+    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::UNPUBLISHED);
+    $this->processEntityUsageQueues();
+    // All created entities should be unused.
+    $this->assertUsageRows($media, 0);
+    $this->assertUsageRows($node_curated_list, 0);
+    $this->assertUsageRows($node_org, 0);
   }
 
   /**
