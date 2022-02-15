@@ -7,13 +7,10 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Http\Exception\CacheableNotFoundHttpException;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
-use Drupal\entity_hierarchy_breadcrumb\HierarchyBasedBreadcrumbBuilder;
 use Drupal\mass_content\EventManager;
 use Drupal\mass_hierarchy\MassHierarchyBasedBreadcrumbBuilder;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Drupal\Core\Datetime\DrupalDateTime;
 
 /**
  * Event pages controller.
