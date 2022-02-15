@@ -14,7 +14,7 @@ entity_type: node
 bundle: topic_page
 label: 'Link groups'
 description: 'A Topic page is a collection of content related to a subject. From a topic page, users can navigate to services or to more specific topics. These pages are represented by links on the Topic page.'
-required: false
+required: true
 translatable: false
 default_value: {  }
 default_value_callback: ''
@@ -100,6 +100,9 @@ settings:
       caspio_embed:
         weight: 140
         enabled: false
+      collection_search:
+        weight: 153
+        enabled: false
       completion_time:
         weight: 74
         enabled: false
@@ -157,6 +160,9 @@ settings:
       featured_message:
         weight: 159
         enabled: false
+      featured_topics:
+        weight: 173
+        enabled: false
       file_download:
         weight: 81
         enabled: false
@@ -213,6 +219,9 @@ settings:
         enabled: false
       link_group:
         weight: 180
+        enabled: false
+      link_group_accordion:
+        weight: 195
         enabled: false
       link_group_document:
         weight: 181
@@ -280,6 +289,24 @@ settings:
       online_email:
         weight: 97
         enabled: false
+      org_events:
+        weight: 218
+        enabled: false
+      org_locations:
+        weight: 219
+        enabled: false
+      org_news:
+        weight: 220
+        enabled: false
+      org_related_orgs:
+        weight: 221
+        enabled: false
+      org_section_long_form:
+        weight: 222
+        enabled: false
+      organization_contact_logo:
+        weight: 216
+        enabled: false
       organization_grid:
         weight: 201
         enabled: false
@@ -340,8 +367,14 @@ settings:
       section_with_heading:
         weight: 107
         enabled: false
+      sitewide_alert_message:
+        weight: 242
+        enabled: false
       slideshow:
         weight: 108
+        enabled: false
+      social_media:
+        weight: 244
         enabled: false
       stacked_band:
         weight: 109
@@ -369,5 +402,8 @@ settings:
         enabled: false
       video_with_section:
         weight: 230
+        enabled: false
+      what_would_you_like_to_do:
+        weight: 254
         enabled: false
 field_type: entity_reference_revisions
