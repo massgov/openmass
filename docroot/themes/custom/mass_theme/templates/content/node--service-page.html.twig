@@ -235,11 +235,6 @@
   {% if contactList %}
     {% include "@organisms/by-author/contact-list.twig" %}
   {% endif %}
-  {% if mappedLocations %}
-    {% set compHeading = mappedLocations.compHeading|merge({'level': level}) %}
-    {% set mappedLocations = mappedLocations|merge({'compHeading': compHeading}) %}
-    {% include "@organisms/by-author/mapped-locations.twig" %}
-  {% endif %}
   {% if eventListing %}
     {% set compHeading = eventListing.compHeading|merge({'level': level}) %}
     {% set eventListing = eventListing|merge({'compHeading': compHeading}) %}

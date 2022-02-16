@@ -1297,8 +1297,8 @@ function mass_theme_preprocess_node_location(&$variables) {
 
               $hour = array_map('trim', explode('<br>', $hour));
               $variables['imagePromo']['hours'][] = [
-                'label' => trim($hour[0]),
-                'text' => trim($hour[1]),
+                'label' => trim($hour[0] ?? ''),
+                'text' => trim($hour[1] ?? ''),
               ];
             }
           }

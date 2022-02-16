@@ -7,9 +7,17 @@ dependencies:
     - paragraphs.paragraphs_type.contact_placeholder
     - paragraphs.paragraphs_type.flexible_link_group
     - paragraphs.paragraphs_type.org_events
+    - paragraphs.paragraphs_type.campaign_features
+    - paragraphs.paragraphs_type.caspio_embed
+    - paragraphs.paragraphs_type.featured_item_mosaic
+    - paragraphs.paragraphs_type.key_message_section
     - paragraphs.paragraphs_type.org_locations
+    - paragraphs.paragraphs_type.pull_quote
     - paragraphs.paragraphs_type.service_section
     - paragraphs.paragraphs_type.social_media
+    - paragraphs.paragraphs_type.stat
+    - paragraphs.paragraphs_type.tableau_embed
+    - paragraphs.paragraphs_type.video_with_section
   module:
     - entity_reference_revisions
 id: paragraph.service_section.field_service_section_content
@@ -25,13 +33,21 @@ default_value_callback: ''
 settings:
   handler: 'default:paragraph'
   handler_settings:
-    negate: 0
     target_bundles:
       org_events: org_events
       social_media: social_media
       org_locations: org_locations
       flexible_link_group: flexible_link_group
       contact_placeholder: contact_placeholder
+      caspio_embed: caspio_embed
+      featured_item_mosaic: featured_item_mosaic
+      pull_quote: pull_quote
+      stat: stat
+      tableau_embed: tableau_embed
+      campaign_features: campaign_features
+      key_message_section: key_message_section
+      video_with_section: video_with_section
+    negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 23
@@ -101,13 +117,13 @@ settings:
         enabled: false
       campaign_features:
         weight: 43
-        enabled: false
+        enabled: true
       card:
         weight: 44
         enabled: false
       caspio_embed:
         weight: 3
-        enabled: false
+        enabled: true
       completion_time:
         weight: 45
         enabled: false
@@ -164,7 +180,7 @@ settings:
         enabled: false
       featured_item_mosaic:
         weight: 5
-        enabled: false
+        enabled: true
       featured_message:
         weight: 6
         enabled: false
@@ -227,7 +243,7 @@ settings:
         enabled: false
       key_message_section:
         weight: 76
-        enabled: false
+        enabled: true
       link_group:
         weight: 77
         enabled: false
@@ -304,8 +320,8 @@ settings:
         enabled: true
         weight: 11
       org_locations:
-        enabled: true
         weight: 14
+        enabled: true
       org_news:
         weight: 15
         enabled: false
@@ -332,7 +348,7 @@ settings:
         enabled: false
       pull_quote:
         weight: 16
-        enabled: false
+        enabled: true
       quick_action:
         weight: 104
         enabled: false
@@ -388,8 +404,8 @@ settings:
         weight: 118
         enabled: false
       social_media:
-        enabled: true
         weight: 13
+        enabled: true
       stacked_band:
         weight: 119
         enabled: false
@@ -398,7 +414,7 @@ settings:
         enabled: false
       stat:
         weight: 19
-        enabled: false
+        enabled: true
       state_organization:
         weight: 121
         enabled: false
@@ -407,7 +423,7 @@ settings:
         enabled: false
       tableau_embed:
         weight: 20
-        enabled: false
+        enabled: true
       video:
         weight: 21
         enabled: false
@@ -416,7 +432,7 @@ settings:
         enabled: false
       video_with_section:
         weight: 124
-        enabled: false
+        enabled: true
       what_would_you_like_to_do:
         weight: 22
         enabled: false

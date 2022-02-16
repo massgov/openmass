@@ -1056,9 +1056,9 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-service-ref-locations',
-            'tag' => 'input',
-            'type' => 'text',
+            'field' => 'field-service-sections',
+            'tag' => 'paragraphs',
+            'type' => '',
           ),
           array (
             'field' => 'field-service-body',
@@ -1516,8 +1516,8 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
         $fields = [
           [
             'field' => 'field-curatedlist-list-section',
-            'tag' => 'paragraphs',
             'type' => 'list-dynamic',
+            'tag' => 'paragraphs',
           ],
           [
             'field' => 'field-curatedlist-list-section',
