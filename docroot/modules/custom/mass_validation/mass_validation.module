@@ -1173,6 +1173,9 @@ function _mass_validation_validate_mosaic_items(FormStateInterface $form_state, 
   }
 }
 
+/**
+ * Validates caspio items to have a URL to caspio.com.
+ */
 function _mass_validation_validate_caspio(FormStateInterface $form_state, $paragraph, $section_key, $paragraph_key) {
   if (isset($paragraph['subform']['field_caspio_data_identifier'])) {
     foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
