@@ -375,6 +375,7 @@ function _mass_validation_service_page_sections_validate(array &$form, FormState
       if (!is_int($key)) {
         continue;
       }
+      _mass_validation_validate_caspio($form_state, $paragraph, $section, $key);
       _mass_validation_validate_mosaic_items($form_state, $paragraph);
     }
   }
@@ -1148,7 +1149,7 @@ function mass_validation_org_page_alter_helper(array &$form) {
 /**
  * Validates mosaic items to be 5 and Hightlight image for the first item.
  */
-function _mass_validation_validate_mosaic_items(FormStateInterface &$form_state, &$paragraph) {
+function _mass_validation_validate_mosaic_items(FormStateInterface $form_state, &$paragraph) {
   if (!isset($paragraph['subform']['field_featured_item_mosaic_items'])) {
     return;
   }
@@ -1172,6 +1173,18 @@ function _mass_validation_validate_mosaic_items(FormStateInterface &$form_state,
   }
 }
 
+function _mass_validation_validate_caspio(FormStateInterface $form_state, $paragraph, $section_key, $paragraph_key) {
+  if (isset($paragraph['subform']['field_caspio_data_identifier'])) {
+    foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
+      if (!empty($caspioId)) {
+        if (!preg_match('/^http(s)?:\/\/\w+\.caspio\.(com)(\/.*|$)/', $caspioId['value'])) {
+          $form_state->setErrorByName('field_organization_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform][field_caspio_data_identifier', t('Only caspio.com URL allowed. See help text for this field.'));
+        }
+      }
+    }
+  }
+}
+
 /**
  * Validates submission values in the FORM_ID() form.
  */
@@ -1185,15 +1198,7 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
       if (isset($section['subform']['field_section_long_form_content'])) {
         $paragraphs = $section['subform']['field_section_long_form_content'];
         foreach ($paragraphs as $paragraph_key => $paragraph) {
-          if (isset($paragraph['subform']['field_caspio_data_identifier'])) {
-            foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
-              if (!empty($caspioId)) {
-                if (!preg_match('/^http(s)?:\/\/\w+\.caspio\.(com)(\/.*|$)/', $caspioId['value'])) {
-                  $form_state->setErrorByName('field_organization_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform][field_caspio_data_identifier', t('Only caspio.com URL allowed. See help text for this field.'));
-                }
-              }
-            }
-          }
+          _mass_validation_validate_caspio($form_state, $paragraph, $section, $paragraph_key);
           _mass_validation_validate_mosaic_items($form_state, $paragraph);
         }
       }
