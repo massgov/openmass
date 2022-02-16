@@ -23,12 +23,12 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_featured:
+    type: boolean_checkbox
     weight: 1
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_flexible_link_group_desc:
     type: string_textfield
     weight: 3
@@ -48,6 +48,7 @@ content:
   field_link_group:
     type: entity_reference_paragraphs
     weight: 5
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -56,7 +57,6 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   status: true
