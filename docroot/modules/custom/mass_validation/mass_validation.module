@@ -1176,11 +1176,12 @@ function _mass_validation_validate_mosaic_items(FormStateInterface $form_state, 
 /**
  * Validates caspio items to have a URL to caspio.com.
  */
-function _mass_validation_validate_caspio(FormStateInterface $form_state, $paragraph, $section_key, $paragraph_key) {
+function _mass_validation_validate_caspio(FormStateInterface $form_state, $paragraph, $section_key, $paragraph_key, $field, ) {
   if (isset($paragraph['subform']['field_caspio_data_identifier'])) {
     foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
       if (!empty($caspioId)) {
         if (!preg_match('/^http(s)?:\/\/\w+\.caspio\.(com)(\/.*|$)/', $caspioId['value'])) {
+          $form_state->setErrorByName('field_organization_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform][field_caspio_data_identifier', t('Only caspio.com URL allowed. See help text for this field.'));
           $form_state->setErrorByName('field_organization_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform][field_caspio_data_identifier', t('Only caspio.com URL allowed. See help text for this field.'));
         }
       }
