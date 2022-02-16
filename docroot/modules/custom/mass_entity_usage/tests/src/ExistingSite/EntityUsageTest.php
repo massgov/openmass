@@ -5,6 +5,7 @@ namespace Drupal\Tests\mass_entity_usage\ExistingSite;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\User;
 use DrupalTest\QueueRunnerTrait\QueueRunnerTrait;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
@@ -166,6 +167,65 @@ class EntityUsageTest extends ExistingSiteBase {
     $this->assertUsageRows($media, 0);
     $this->assertUsageRows($node_curated_list, 0);
     $this->assertUsageRows($node_org, 0);
+  }
+
+  /**
+   * Creates an organization with nested paragpraphs.
+   */
+  private function createOrganizationWithNestedParagraphs($topic_page_link, $state) {
+    $rich_text = Paragraph::create([
+      'type' => 'rich_text',
+      'field_body' => [
+        'value' => $topic_page_link,
+        'format' => 'basic_html',
+      ],
+    ]);
+
+    $organization_section = Paragraph::create([
+      'type' => 'org_section_long_form',
+      'field_section_long_form_content' => [
+        $rich_text
+      ],
+    ]);
+
+    $org_node = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Test Org Page',
+      'moderation_state' => $state,
+      'field_organization_sections' => [$organization_section],
+    ]);
+    return $org_node;
+  }
+
+  /**
+   * Creates and returns a topic page node.
+   */
+  private function createTopicPage($state) {
+    $node = $this->createNode([
+      'type' => 'topic_page',
+      'title' => 'Test',
+      'field_topic_lede' => 'Short description',
+      'moderation_state' => $state,
+    ]);
+
+    return $node;
+  }
+
+  /**
+   * Tests entity usage tracking with nested paragraphs.
+   */
+  public function testEntityUsageComplexStrucure() {
+    $topic_page_node = $this->createTopicPage(MassModeration::PUBLISHED);
+    $topic_page_link = '<a href="' . $topic_page_node->toUrl()->toString() . '">LINK</a>';
+    $this->createOrganizationWithNestedParagraphs($topic_page_link, MassModeration::PUBLISHED);
+    $this->processEntityUsageQueues();
+    $this->assertUsageRows($topic_page_node, 1);
+
+    $topic_page_node = $this->createTopicPage(MassModeration::UNPUBLISHED);
+    $topic_page_link = '<a href="' . $topic_page_node->toUrl()->toString() . '">LINK</a>';
+    $this->createOrganizationWithNestedParagraphs($topic_page_link, MassModeration::UNPUBLISHED);
+    $this->processEntityUsageQueues();
+    $this->assertUsageRows($topic_page_node, 0);
   }
 
   /**
