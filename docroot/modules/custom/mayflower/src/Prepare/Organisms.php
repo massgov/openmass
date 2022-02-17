@@ -620,14 +620,14 @@ class Organisms {
    * @param array $options
    *   The object that contains static data and other options.
    *
-   * @see @organisms/by-template/page-banner.twig
+   * @see @organisms/page-banner/page-banner.twig
    *
    * @return array
    *   Returns an array of items that contains:
    *    [
    *      "bgWide":"/assets/images/placeholder/1600x400.png"
    *      "bgNarrow":"/assets/images/placeholder/800x400.png",
-   *      "size": "large",
+   *      "layout": "taper",
    *      "icon": null,
    *      "title": "Executive Office of Health and Human Services",
    *      "titleSubText": "(EOHHS)"
