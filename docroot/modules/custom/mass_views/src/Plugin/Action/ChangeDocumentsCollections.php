@@ -14,12 +14,12 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
  * @see https://www.drupal.org/docs/contributed-modules/views-bulk-operations-vbo/creating-a-new-action#s-2-action-class
  *
  * @Action(
- *   id = "mass_views_change_collections",
- *   label = @Translation("Change Collections"),
- *   type = "node"
+ *   id = "mass_views_change_documents_collections",
+ *   label = @Translation("Change Documents Collections"),
+ *   type = "media"
  * )
  */
-class ChangeCollections extends ViewsBulkOperationsActionBase {
+class ChangeDocumentsCollections extends ViewsBulkOperationsActionBase {
 
   use StringTranslationTrait;
 
@@ -31,12 +31,10 @@ class ChangeCollections extends ViewsBulkOperationsActionBase {
     $config = $this->getConfiguration();
     $new_collection_id = $config['new_collection'];
 
-    /** @var \Drupal\Node\NodeStorage */
-    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
-    $vid = $node_storage->getLatestRevisionId($entity->id());
+    $media_storage = \Drupal::entityTypeManager()->getStorage('media');
+    $vid = $media_storage->getLatestRevisionId($entity->id());
     $create_draft = $vid != $entity->getRevisionId();
 
-    /** @var \Drupal\node\Entity\Node $entity */
     if (is_array($new_collection_id)) {
       if (!empty($entity->field_collections->getValue())) {
         foreach ($new_collection_id as $id) {
@@ -56,23 +54,22 @@ class ChangeCollections extends ViewsBulkOperationsActionBase {
 
     // Was the current version different from the latest version?
     if ($create_draft) {
-      /** @var \Drupal\node\Entity\Node */
-      $node_latest = $node_storage->loadRevision($vid);
-      $node_latest->setNewRevision(TRUE);
-      $node_latest->setRevisionUserId(\Drupal::currentUser()->id());
-      $node_latest->setRevisionLogMessage('Revision created with "Move Collections" feature.');
-      $node_latest->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+      $media_latest = $media_storage->loadRevision($vid);
+      $media_latest->setNewRevision(TRUE);
+      $media_latest->setRevisionUserId(\Drupal::currentUser()->id());
+      $media_latest->setRevisionLogMessage('Revision created with "Move Collections" feature.');
+      $media_latest->setRevisionCreationTime(\Drupal::time()->getRequestTime());
       if (is_array($new_collection_id)) {
-        if (!empty($node_latest->field_collections->getValue())) {
+        if (!empty($media_latest->field_collections->getValue())) {
           foreach ($new_collection_id as $id) {
-            $node_latest->field_collections->appendItem($id);
+            $media_latest->field_collections->appendItem($id);
           }
         }
         else {
-          $node_latest->field_collections = $new_collection_id;
+          $media_latest->field_collections = $new_collection_id;
         }
       }
-      $node_latest->save();
+      $media_latest->save();
     }
 
     return $this->t('Updated collections for') . ' ' . $entity->label() . ' - ' . $entity->id();
@@ -82,7 +79,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase {
    * {@inheritdoc}
    */
   public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
-    if ($object->getEntityType() === 'node') {
+    if ($object->getEntityType() === 'media') {
       $access = $object->access('update', $account, TRUE)
         ->andIf($object->status->access('edit', $account, TRUE));
       return $return_as_object ? $access : $access->isAllowed();
@@ -97,17 +94,17 @@ class ChangeCollections extends ViewsBulkOperationsActionBase {
    * Returns the entity bundles allowed for collections.
    */
   private function intersectTargetBundles() {
-    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $media_storage = \Drupal::entityTypeManager()->getStorage('media');
     $target_bundles = NULL;
 
     /** @var int[] */
     $list = $this->context['list'];
     foreach ($list as $item_id) {
-      $node = $node_storage->load(array_reverse($item_id)[0]);
-      if (!empty($node)) {
+      $media = $media_storage->load(array_reverse($item_id)[0]);
+      if (!empty($media)) {
         /** @var \Drupal\entity_hierarchy\Plugin\Field\FieldType\EntityReferenceHierarchyFieldItemList */
-        $collections = $node->hasField('field_collections') ?? FALSE;
-        $definition = $collections ? $node->field_collections->getFieldDefinition() : FALSE;
+        $collections = $media->hasField('field_collections') ?? FALSE;
+        $definition = $collections ? $media->field_collections->getFieldDefinition() : FALSE;
         $settings = $definition ? $definition->getSettings() : FALSE;
         $handler_settings = $settings ? $settings['handler_settings'] ?? [] : [];
         $target_bundles =
