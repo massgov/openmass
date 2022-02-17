@@ -6050,6 +6050,9 @@ function mass_theme_preprocess_views_view_locations_page(&$variables) {
     $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
 
     if ($node) {
+      if ($node->hasField('field_organizations')) {
+        $variables['organizations'] = $node->field_organizations->view();
+      }
       $node_title = $node->label();
       // Set appropriate page title.
       if ($node->getType() == "location") {
@@ -7192,8 +7195,10 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
       $itemListElement[] = [
         "@type" => "ListItem",
         "position" => $key + 1,
-        "name" => $link['text'],
-        "item" => $link['url'],
+        "item" => [
+          "@id" => $link['url'],
+          "name" => $link['text']
+        ],
       ];
     }
 
