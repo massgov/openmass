@@ -1365,9 +1365,9 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
     $pageBanner_options = [
       'icon' => $icon,
       'color' => 'white',
+      'underline' => true,
     ];
 
-    $pageBanner_options = array_merge($pageBanner_options, ['size' => 'full']);
     $pageBanner_options = array_merge($pageBanner_options, ['type' => 'topic']);
     // Make pageBanner data structure available in twig template.
     $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
