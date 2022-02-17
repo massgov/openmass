@@ -1416,7 +1416,7 @@ function mass_validation_form_alter(&$form, FormStateInterface $form_state, $for
   // Fields may be not focusable but required, for instance when they are
   // inside a tab, then browser client-side validation stops the form
   // submission and shows a console error. The final user doesn't
-  // know what is happening, he just can't submit the form.
+  // know what is happening and not able to submit the form.
   $form['#attributes']['novalidate'] = TRUE;
 }
 
