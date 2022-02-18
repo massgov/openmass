@@ -64,7 +64,7 @@
   {# values for "icon", "primaryLink", and "secondaryLink", so we don't set them. We may in the future. #}
   {% include "@organisms/page-banner/page-banner.twig" with {
     "pageBanner": {
-      "layout": "overlay",
+      "layout": bannerImageWide ? "overlay" : "",
       "color": "blue",
       "title": node.label,
       "titleSubText": content.field_title_sub_text,
