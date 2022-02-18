@@ -5,13 +5,25 @@ dependencies:
   config:
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_landing_page
+    - field.field.taxonomy_term.collections.field_primary_parent
     - field.field.taxonomy_term.collections.field_url_name
     - taxonomy.vocabulary.collections
+  module:
+    - entity_hierarchy
 id: taxonomy_term.collections.default
 targetEntityType: taxonomy_term
 bundle: collections
 mode: default
-content: {  }
+content:
+  field_primary_parent:
+    type: entity_reference_hierarchy_label
+    label: above
+    settings:
+      link: true
+      weight_output: attribute
+    third_party_settings: {  }
+    weight: -4
+    region: content
 hidden:
   description: true
   field_all_collection_breadcrumb: true
