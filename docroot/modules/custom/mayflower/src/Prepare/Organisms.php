@@ -666,17 +666,8 @@ class Organisms {
     $image_style_narrow = 'action_banner_small';
 
     // Get pageBanner size, use as flag to determine image style.
-    $pageBanner['size'] = array_key_exists('size', $options) ? $options['size'] : 'large';
+    $pageBanner['layout'] = array_key_exists('layout', $options) ? $options['layout'] : '';
 
-    // Use appropriate image style for various pageBanner sizes.
-    if ($pageBanner['size'] === 'columns') {
-      $image_style_wide = 'hero820x460_no_blur';
-      $image_style_narrow = 'hero800x400_no_blur';
-    }
-    elseif ($pageBanner['size'] === 'hero1600x400') {
-      $image_style_wide = 'hero1600x400';
-      $image_style_narrow = 'hero800x400_no_blur';
-    }
 
     // Use helper function to get the image url of a given image style.
     $pageBanner['bgWide'] = Helper::getFieldImageUrl($entity, $image_style_wide, $fields['bg_wide']);
@@ -693,6 +684,7 @@ class Organisms {
     // @todo determine how to handle options vs field value (check existence, order of importance, etc.)
     $pageBanner['icon'] = $options['icon'];
     $pageBanner['color'] = array_key_exists('color', $options) ? $options['color'] : '';
+    $pageBanner['underline'] = array_key_exists('underline', $options) ? $options['underline'] : FALSE;
 
     $pageBanner['title'] = $entity->{$fields['title']}->value;
 
