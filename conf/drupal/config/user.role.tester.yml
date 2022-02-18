@@ -1,16 +1,32 @@
 uuid: d4b98b38-5584-45a0-9cbd-89818d717589
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - node.type.advisory
+    - node.type.curated_list
+    - node.type.decision
+    - node.type.decision_tree
+    - node.type.decision_tree_branch
+    - node.type.decision_tree_conclusion
+    - node.type.event
+    - node.type.form_page
+    - node.type.guide_page
+    - node.type.location_details
+    - node.type.news
+    - node.type.person
+    - node.type.regulation
+  module:
+    - mass_validation
+    - node
+    - route_iframes
 id: tester
 label: Tester
 weight: 0
 is_admin: null
 permissions:
-  - 'access entity usage statistics'
   - 'create advisory content'
   - 'create curated_list content'
-  - 'create curated_list_page content'
   - 'create decision content'
   - 'create decision_tree content'
   - 'create decision_tree_branch content'
@@ -24,7 +40,6 @@ permissions:
   - 'create regulation content'
   - 'edit any advisory content'
   - 'edit any curated_list content'
-  - 'edit any curated_list_page content'
   - 'edit any decision content'
   - 'edit any decision_tree content'
   - 'edit any decision_tree_branch content'
@@ -38,7 +53,6 @@ permissions:
   - 'edit any regulation content'
   - 'edit own advisory content'
   - 'edit own curated_list content'
-  - 'edit own curated_list_page content'
   - 'edit own decision content'
   - 'edit own decision_tree content'
   - 'edit own decision_tree_branch content'
@@ -52,7 +66,6 @@ permissions:
   - 'edit own regulation content'
   - 'revert advisory revisions'
   - 'revert curated_list revisions'
-  - 'revert curated_list_page revisions'
   - 'revert decision revisions'
   - 'revert decision_tree revisions'
   - 'revert decision_tree_branch revisions'
@@ -65,16 +78,8 @@ permissions:
   - 'revert person revisions'
   - 'revert regulation revisions'
   - 'set collection tags'
-  - 'use draft_to_trash transition'
-  - 'use needs_review_to_trash transition'
-  - 'use prepublished_draft_to_trash transition'
-  - 'use prepublished_needs_review_to_trash transition'
-  - 'use published_to_trash transition'
-  - 'use restore_from_trash transition'
-  - 'use unpublished_to_trash transition'
   - 'view advisory revisions'
   - 'view curated_list revisions'
-  - 'view curated_list_page revisions'
   - 'view decision revisions'
   - 'view decision_tree revisions'
   - 'view decision_tree_branch revisions'

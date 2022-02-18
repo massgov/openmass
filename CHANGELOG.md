@@ -1,5 +1,38 @@
 
 
+## [0.313.0] - February 15, 2022
+
+### Changed
+  - DP-23065: - Makes the header image optional on service pages.
+- When there are no BG image the banner height becomes fluid.
+- Hide image background on mobile by default, disable mobile image field on service page. 
+  
+### Added
+  - DP-24023: Upgrade to Drupal 9.3. Add bundle classes.
+  
+### Fixed
+  - DP-24041: Fix breadcrumb visible with parent field to have immediate parent clickable.
+  - DP-24115: Fixed bug related to adding signees on news items when no logo present.
+  
+### Security
+  - DP-24045: Update jQuery UI Datepicker Library.
+  
+
+
+## [0.312.0] - February 8, 2022
+
+### Changed
+  - DP-23608: Upgrade to Drupal 9.3
+  
+### Fixed
+  - DP-24018: Fix the halfImage check bug that results in overlapping content on promo page.
+  - DP-24040: Fix 2 file twig errors
+  
+### Removed
+  - DP-24022: Remove entity usage.
+  
+
+
 ## [0.311.0] - February 1, 2022
 
 ### Added
