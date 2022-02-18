@@ -21,63 +21,12 @@ base_table: node_field_data
 base_field: nid
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: perm
-        options:
-          perm: 'access content'
-      cache:
-        type: custom_tag
-        options:
-          custom_tag: 'node:{{ raw_arguments.nid }}'
-      query:
-        type: views_query
-        options:
-          disable_sql_rewrite: false
-          distinct: false
-          replica: false
-          query_comment: ''
-          query_tags: {  }
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: mini
-        options:
-          items_per_page: 15
-          offset: 0
-          id: 0
-          total_pages: null
-          tags:
-            previous: Previous
-            next: Next
-          expose:
-            items_per_page: false
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-      style:
-        type: press_listing
-        options:
-          uses_fields: false
-      row:
-        type: 'entity:node'
-        options:
-          view_mode: teaser
+      title: 'News and Announcements'
       fields:
         title:
           id: title
@@ -86,6 +35,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: field
           label: ''
           exclude: false
           alter:
@@ -141,9 +93,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: title
-          plugin_id: field
         field_news_lede:
           id: field_news_lede
           table: node__field_news_lede
@@ -151,6 +100,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: ''
           exclude: false
           alter:
@@ -206,21 +156,43 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          plugin_id: field
-      filters:
-        status:
-          value: '1'
-          table: node_field_data
-          field: status
-          plugin_id: boolean
-          entity_type: node
-          entity_field: status
-          id: status
+      pager:
+        type: mini
+        options:
+          offset: 0
+          items_per_page: 15
+          total_pages: null
+          id: 0
+          tags:
+            next: Next
+            previous: Previous
           expose:
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-          group: 1
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: perm
+        options:
+          perm: 'access content'
+      cache:
+        type: custom_tag
+        options:
+          custom_tag: 'node:{{ raw_arguments.nid }}'
+      empty: {  }
       sorts:
         field_news_date_value:
           id: field_news_date_value
@@ -229,35 +201,13 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: datetime
           order: DESC
-          exposed: false
           expose:
             label: ''
+            field_identifier: field_news_date_value
+          exposed: false
           granularity: second
-          plugin_id: datetime
-      title: 'News and Announcements'
-      header: {  }
-      footer: {  }
-      empty: {  }
-      relationships:
-        field_news_signees:
-          id: field_news_signees
-          table: node__field_news_signees
-          field: field_news_signees
-          relationship: none
-          group_type: group
-          admin_label: 'field_news_signees: Paragraph'
-          required: true
-          plugin_id: standard
-        field_state_org_ref_org:
-          id: field_state_org_ref_org
-          table: paragraph__field_state_org_ref_org
-          field: field_state_org_ref_org
-          relationship: field_news_signees
-          group_type: group
-          admin_label: 'field_state_org_ref_org: Content'
-          required: true
-          plugin_id: standard
       arguments:
         nid:
           id: nid
@@ -266,6 +216,9 @@ display:
           relationship: field_state_org_ref_org
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: nid
+          plugin_id: node_nid
           default_action: 'not found'
           exception:
             value: all
@@ -280,8 +233,8 @@ display:
           summary_options:
             base_path: ''
             count: true
-            items_per_page: 25
             override: false
+            items_per_page: 25
           summary:
             sort_order: asc
             number_of_records: 0
@@ -293,9 +246,57 @@ display:
           validate_options: {  }
           break_phrase: false
           not: false
+      filters:
+        status:
+          id: status
+          table: node_field_data
+          field: status
           entity_type: node
-          entity_field: nid
-          plugin_id: node_nid
+          entity_field: status
+          plugin_id: boolean
+          value: '1'
+          group: 1
+          expose:
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+      style:
+        type: press_listing
+        options:
+          uses_fields: false
+      row:
+        type: 'entity:node'
+        options:
+          view_mode: teaser
+      query:
+        type: views_query
+        options:
+          query_comment: ''
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_tags: {  }
+      relationships:
+        field_news_signees:
+          id: field_news_signees
+          table: node__field_news_signees
+          field: field_news_signees
+          relationship: none
+          group_type: group
+          admin_label: 'field_news_signees: Paragraph'
+          plugin_id: standard
+          required: true
+        field_state_org_ref_org:
+          id: field_state_org_ref_org
+          table: paragraph__field_state_org_ref_org
+          field: field_state_org_ref_org
+          relationship: field_news_signees
+          group_type: group
+          admin_label: 'field_state_org_ref_org: Content'
+          plugin_id: standard
+          required: true
+      header: {  }
+      footer: {  }
       display_extenders: {  }
     cache_metadata:
       max-age: -1
@@ -309,18 +310,18 @@ display:
       tags:
         - 'config:field.storage.node.field_news_lede'
   curated_news:
-    display_plugin: page
     id: curated_news
     display_title: News
+    display_plugin: page
     position: 1
     display_options:
-      display_extenders: {  }
-      path: node/%/news
-      display_description: ''
       defaults:
+        title: true
         relationships: true
         fields: true
-        title: true
+      display_description: ''
+      display_extenders: {  }
+      path: node/%/news
     cache_metadata:
       max-age: -1
       contexts:

@@ -19,14 +19,16 @@ bundle: csv_table
 mode: default
 content:
   field_csv_file:
+    type: csv_file_generic
     weight: 0
+    region: content
     settings:
       progress_indicator: throbber
     third_party_settings: {  }
-    type: csv_file_generic
-    region: content
   field_csvtable_caption:
+    type: text_textarea
     weight: 4
+    region: content
     settings:
       rows: 3
       placeholder: ''
@@ -34,28 +36,26 @@ content:
       maxlength:
         maxlength_js: null
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
-        maxlength_js_enforce_attribute: false
         maxlength_js_enforce: false
         maxlength_js_truncate_html: false
+        maxlength_js_enforce_attribute: false
       allowed_formats:
         hide_help: '0'
         hide_guidelines: '0'
-    type: text_textarea
-    region: content
   field_csvtable_display_size:
+    type: options_select
     weight: 2
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_csvtable_title:
+    type: string_textfield
     weight: 1
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
 hidden:
   created: true
   status: true

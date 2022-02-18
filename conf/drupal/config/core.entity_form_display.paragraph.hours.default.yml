@@ -18,46 +18,46 @@ third_party_settings:
     group_typical_hours:
       children:
         - field_hours_structured
+      label: 'Typical Hours'
+      region: content
       parent_name: group_hours
       weight: 2
       format_type: details
       format_settings:
         label: 'Typical Hours'
+        classes: ma--white-bg
+        id: ''
         open: true
         required_fields: true
-        id: ''
-        classes: ma--white-bg
-      label: 'Typical Hours'
-      region: content
     group_non_typical_hours:
       children:
         - field_hours_description
+      label: 'Non-Typical hours'
+      region: content
       parent_name: group_hours
       weight: 3
       format_type: details
       format_settings:
         label: 'Non-Typical hours'
+        classes: ma--white-bg
+        id: ''
         open: true
         required_fields: true
-        id: ''
-        classes: ma--white-bg
-      label: 'Non-Typical hours'
-      region: content
     group_hours:
       children:
         - group_typical_hours
         - group_non_typical_hours
+      label: Hours
+      region: content
       parent_name: ''
       weight: 1
       format_type: fieldset
       format_settings:
         label: Hours
+        classes: ma--grey-bg
+        id: ''
         description: ''
         required_fields: true
-        id: ''
-        classes: ma--grey-bg
-      label: Hours
-      region: content
 id: paragraph.hours.default
 targetEntityType: paragraph
 bundle: hours
@@ -66,39 +66,39 @@ content:
   field_hours_description:
     type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    region: content
   field_hours_group_title:
+    type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_hours_override:
+    type: string_textfield
     weight: 2
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_hours_structured:
+    type: office_hours_list
     weight: 2
+    region: content
     settings:
       date_element_type: datelist
     third_party_settings: {  }
-    type: office_hours_list
-    region: content
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   field_hours: true
