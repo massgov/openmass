@@ -627,10 +627,8 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
  */
 function mass_utility_form_node_news_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   foreach ($form['field_news_signees']['widget'] as $delta => $widget) {
-    if (is_numeric($delta)) {
-      if (!empty($form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url'])) {
-        $element = $form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'][0]['value'];
-        $original_path = $element['#default_value'];
+    if (is_numeric($delta) && !empty($form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'])) {
+      if ($original_path = $form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'][0]['value']['#default_value']) {
         $image_path = file_create_url($original_path);
         $form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'][0]['#prefix'] = '<p><div class="photo-preview"><img src=' . $image_path . '/></div></p>';
       }
