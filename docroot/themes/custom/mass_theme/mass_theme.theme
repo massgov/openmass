@@ -1372,7 +1372,6 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
     // Make pageBanner data structure available in twig template.
     $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
 
-    ksm($variables['pageBanner']);
     // Make sure images aren't visible in the page banner.
     unset($variables['pageBanner']['bgWide']);
     unset($variables['pageBanner']['bgNarrow']);
