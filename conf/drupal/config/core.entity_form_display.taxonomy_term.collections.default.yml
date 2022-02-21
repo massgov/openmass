@@ -6,6 +6,7 @@ dependencies:
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_landing_page
     - field.field.taxonomy_term.collections.field_primary_parent
+    - field.field.taxonomy_term.collections.field_short_description
     - field.field.taxonomy_term.collections.field_url_name
     - taxonomy.vocabulary.collections
   module:
@@ -20,6 +21,7 @@ third_party_settings:
         - field_landing_page
         - field_primary_parent
         - field_all_collection_breadcrumb
+        - field_short_description
       label: 'Collection Settings'
       region: content
       parent_name: ''
@@ -70,6 +72,14 @@ content:
       size: 60
       placeholder: ''
       hide_weight: true
+    third_party_settings: {  }
+  field_short_description:
+    type: string_textfield
+    weight: 6
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   field_url_name:
     type: string_textfield
