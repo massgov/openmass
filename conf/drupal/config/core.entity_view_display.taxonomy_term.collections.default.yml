@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_collection_logo
+    - field.field.taxonomy_term.collections.field_header_color
     - field.field.taxonomy_term.collections.field_landing_page
     - field.field.taxonomy_term.collections.field_organizations
     - field.field.taxonomy_term.collections.field_primary_parent
@@ -14,6 +15,7 @@ dependencies:
   module:
     - entity_hierarchy
     - image
+    - options
 id: taxonomy_term.collections.default
 targetEntityType: taxonomy_term
 bundle: collections
@@ -27,6 +29,13 @@ content:
       image_style: ''
     third_party_settings: {  }
     weight: -2
+    region: content
+  field_header_color:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
     region: content
   field_organizations:
     type: entity_reference_label

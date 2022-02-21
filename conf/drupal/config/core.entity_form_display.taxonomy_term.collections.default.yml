@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_collection_logo
+    - field.field.taxonomy_term.collections.field_header_color
     - field.field.taxonomy_term.collections.field_landing_page
     - field.field.taxonomy_term.collections.field_organizations
     - field.field.taxonomy_term.collections.field_primary_parent
@@ -29,6 +30,7 @@ third_party_settings:
         - field_short_description
         - field_collection_logo
         - field_organizations
+        - field_header_color
       label: 'Collection Settings'
       region: content
       parent_name: ''
@@ -68,6 +70,12 @@ content:
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
+    third_party_settings: {  }
+  field_header_color:
+    type: options_select
+    weight: 9
+    region: content
+    settings: {  }
     third_party_settings: {  }
   field_landing_page:
     type: link_default
