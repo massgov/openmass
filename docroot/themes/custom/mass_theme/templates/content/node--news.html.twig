@@ -94,14 +94,17 @@
           {% endif %}
         {% endfor %}
       {% endblock %}
-      {% if pageContent.contactList %}
-        {% set contactList = pageContent.contactList %}
-        {% set contactList = contactList|merge({'compHeading': {
-            'title': contactList.compHeading.title,
-            'titleContext': contactList.compHeading.titleContext,
-            'level': level,
-            'id': contactList.compHeading.id }}) %}
-        {% include "@organisms/by-author/contact-list.twig" %}
+      {% if node.field_news_type.value != 'blog_post' %}
+        {% if pageContent.contactList %}
+
+          {% set contactList = pageContent.contactList %}
+          {% set contactList = contactList|merge({'compHeading': {
+              'title': contactList.compHeading.title,
+              'titleContext': contactList.compHeading.titleContext,
+              'level': level,
+              'id': contactList.compHeading.id }}) %}
+          {% include "@organisms/by-author/contact-list.twig" %}
+        {% endif %}
       {% endif %}
       {% if pageContent.personalMessage %}
         {% set personalMessage = pageContent.personalMessage %}
