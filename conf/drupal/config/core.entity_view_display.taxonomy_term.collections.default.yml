@@ -6,6 +6,7 @@ dependencies:
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_collection_logo
     - field.field.taxonomy_term.collections.field_landing_page
+    - field.field.taxonomy_term.collections.field_organizations
     - field.field.taxonomy_term.collections.field_primary_parent
     - field.field.taxonomy_term.collections.field_short_description
     - field.field.taxonomy_term.collections.field_url_name
@@ -26,6 +27,14 @@ content:
       image_style: ''
     third_party_settings: {  }
     weight: -2
+    region: content
+  field_organizations:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: -1
     region: content
   field_primary_parent:
     type: entity_reference_hierarchy_label
