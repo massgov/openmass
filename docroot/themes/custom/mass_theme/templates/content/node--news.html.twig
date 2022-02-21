@@ -10,6 +10,8 @@
 {% set level = 1 %}
 
 {% block preContent %}
+  {% include directory ~ "/templates/misc/collection-header.html.twig" %}
+
   {# Check if primary indicator content exists. #}
   {% if content.computed_related_to[0] %}
     {% set primaryIndicators = { "label": "part of" } %}
@@ -96,7 +98,7 @@
           {% endif %}
         {% endfor %}
       {% endblock %}
-      {% if node.field_news_type.value != 'blog_post' %}
+      {% if is_blog_post %}
         {% if pageContent.contactList %}
 
           {% set contactList = pageContent.contactList %}
@@ -114,7 +116,7 @@
         {% include "@organisms/by-author/personal-message.twig" %}
       {% endif %}
     </div>
-    {% if node.field_news_type.value != 'blog_post' %}
+    {% if is_blog_post %}
       <aside class="sidebar ma__announcement__sidebar">
         {% if sidebar.contactList %}
           {% set contactList = sidebar.contactList %}

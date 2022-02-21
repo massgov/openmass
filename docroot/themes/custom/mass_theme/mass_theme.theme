@@ -3403,6 +3403,18 @@ function mass_theme_preprocess_node_news_full(&$variables) {
   $cache_tags = [];
   $titleContext = NULL;
 
+  $is_blog_post = $node->field_news_type->value === 'blog_post';
+  $variables['is_blog_post'] = $is_blog_post;
+
+  $variables['collection'] = [];
+  if ($is_blog_post) {
+    /** @todo add here REAL collection information */
+    $variables['collection']['title'] = "Collection title";
+    $variables['collection']['description'] = "This would be the collection description";
+    $variables['collection']['image'] = '<img alt="coronavirus image" src="/sites/default/files/styles/embedded_full_width/public/images/2020-03/outbreak-coronavirus-world-462x231px-2.jpg?itok=c-XDSWiV">';
+    $variables['collection']['bg_color'] = '#333';
+  }
+
   $ap_conformity = FALSE;
 
   // Get the page title for title context.
