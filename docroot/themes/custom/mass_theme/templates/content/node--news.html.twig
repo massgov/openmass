@@ -53,7 +53,9 @@
   {# Increase heading number by 1 from the parent heading. #}
   {% set level = level + 1 %}
   <div class="main-content main-content--two">
-    <div class="page-content ma__announcement__page-content">
+
+    {% set type_class = "ma__announcement__page-content--" ~ node.field_news_type.value %}
+    <div class="page-content ma__announcement__page-content {{ type_class }}">
       {% if pageContent.pressStatus %}
         {% set pressStatus = pageContent.pressStatus %}
         {% include "@molecules/press-status.twig" %}
