@@ -65,19 +65,21 @@
   ]
 %}
 <div{{ attributes.addClass(classes) }}>
-  {# <div class="ma__breadcrumb--views">
-    {% if header.area %}
-      {{ header.area }}
-    {% endif %}
-  </div> #}
   {#
   Using the raw filter allows special characters to render properly.
   It allows markup to render. This should be safe in this case because
   administrators and content administrators are the only users that
   can edit Collection term names.
   #}
-  <h1>{{ title|raw }}</h1>
-
+  {% if bg_color is not empty %}
+    <div style="background-color: {{ bg_color }}">
+      <h1>{{ title|raw }}</h1>
+      <div>{{ content.field_short_description }}</div>
+      <div>{{ content.field_collection_logo }}</div>
+    </div>
+  {% else %}
+    <h1>{{ title|raw }}</h1>
+  {% endif %}
 
   <aside class="sidebar">
     <button id="filter-toggle" aria-controls="filters"></button>
