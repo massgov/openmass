@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
+    - field.field.taxonomy_term.collections.field_collection_logo
     - field.field.taxonomy_term.collections.field_landing_page
     - field.field.taxonomy_term.collections.field_primary_parent
     - field.field.taxonomy_term.collections.field_short_description
@@ -11,11 +12,21 @@ dependencies:
     - taxonomy.vocabulary.collections
   module:
     - entity_hierarchy
+    - image
 id: taxonomy_term.collections.default
 targetEntityType: taxonomy_term
 bundle: collections
 mode: default
 content:
+  field_collection_logo:
+    type: image
+    label: above
+    settings:
+      image_link: ''
+      image_style: ''
+    third_party_settings: {  }
+    weight: -2
+    region: content
   field_primary_parent:
     type: entity_reference_hierarchy_label
     label: above

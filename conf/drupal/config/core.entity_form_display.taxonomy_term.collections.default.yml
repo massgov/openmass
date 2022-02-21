@@ -4,14 +4,17 @@ status: true
 dependencies:
   config:
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
+    - field.field.taxonomy_term.collections.field_collection_logo
     - field.field.taxonomy_term.collections.field_landing_page
     - field.field.taxonomy_term.collections.field_primary_parent
     - field.field.taxonomy_term.collections.field_short_description
     - field.field.taxonomy_term.collections.field_url_name
+    - image.style.thumbnail
     - taxonomy.vocabulary.collections
   module:
     - entity_hierarchy
     - field_group
+    - image
     - link
     - text
 third_party_settings:
@@ -22,6 +25,7 @@ third_party_settings:
         - field_primary_parent
         - field_all_collection_breadcrumb
         - field_short_description
+        - field_collection_logo
       label: 'Collection Settings'
       region: content
       parent_name: ''
@@ -53,6 +57,14 @@ content:
     settings:
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  field_collection_logo:
+    type: image_image
+    weight: 7
+    region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
     third_party_settings: {  }
   field_landing_page:
     type: link_default
