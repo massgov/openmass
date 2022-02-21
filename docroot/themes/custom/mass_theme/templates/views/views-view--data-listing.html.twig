@@ -36,6 +36,26 @@
 
 {{ attach_library('mass_theme/views-view--data-listing') }}
 
+{% set primaryRelationshipContent = content.field_primary_parent %}
+{% set primaryIndicators = { "label": "part of" } %}
+{% set secondaryIndicators = { "label":  term.field_organizations is not empty ? "offered by" : "" } %}
+
+{% embed "@molecules/relationship-indicators.twig" with {
+  "relationshipIndicators": {
+    "pageTitle": node.label,
+    "primary": primaryIndicators,
+    "secondary": secondaryIndicators
+  }
+} %}
+
+  {% block primaryRelationship %}
+    {{ primaryRelationshipContent }}
+  {% endblock %}
+  {% block secondaryRelationship %}
+    {{ content.field_organizations }}
+  {% endblock %}
+{% endembed %}
+
 {%
   set classes = [
     dom_id ? 'js-view-dom-id-' ~ dom_id,
@@ -45,11 +65,11 @@
   ]
 %}
 <div{{ attributes.addClass(classes) }}>
-  <div class="ma__breadcrumb--views">
+  {# <div class="ma__breadcrumb--views">
     {% if header.area %}
       {{ header.area }}
     {% endif %}
-  </div>
+  </div> #}
   {#
   Using the raw filter allows special characters to render properly.
   It allows markup to render. This should be safe in this case because

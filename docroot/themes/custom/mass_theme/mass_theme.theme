@@ -6061,6 +6061,36 @@ function mass_theme_preprocess_views_view(&$variables) {
 }
 
 /**
+ * Adds variables to views-view--data-listing.html.
+ */
+function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
+  $collection = \Drupal::routeMatch()->getParameter('collection');
+  if (!$collection) {
+    return;
+  }
+
+  // Get collection terms matching the field_url_name
+  $query = Drupal::entityQuery('taxonomy_term');
+  $query
+    ->condition('vid', 'collections')
+    ->condition('field_url_name', 'eotss-service-catalog')
+    ->range(0,1);
+
+  $res = $query->execute();
+  if (!$res) {
+    return;
+  }
+
+  $tid = reset($res);
+  $term = Term::load($tid);
+
+  /** @var \Drupal\Core\Entity\EntityViewBuilder $view_builder */
+  $view_builder = \Drupal::entityTypeManager()->getViewBuilder('taxonomy_term');
+  $variables['content'] = $view_builder->build($view_builder->view($term));
+  $variables['term'] = $term;
+}
+
+/**
  * Implements template_preprocess_views_view().
  *
  * @see mass_theme_theme_suggestions_alter()
