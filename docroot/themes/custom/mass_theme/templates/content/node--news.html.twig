@@ -10,7 +10,9 @@
 {% set level = 1 %}
 
 {% block preContent %}
-  {% include directory ~ "/templates/misc/collection-header.html.twig" %}
+  {% if is_blog_post %}
+    {% include directory ~ "/templates/misc/collection-header.html.twig" %}
+  {% endif %}
 
   {# Check if primary indicator content exists. #}
   {% if content.computed_related_to[0] %}

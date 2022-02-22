@@ -64,6 +64,11 @@
     'data-listing-wrapper'
   ]
 %}
+
+{% if bg_color is not empty %}
+  {% include directory ~ "/templates/misc/collection-header.html.twig" %}
+{% endif %}
+
 <div{{ attributes.addClass(classes) }}>
   {#
   Using the raw filter allows special characters to render properly.
@@ -71,13 +76,7 @@
   administrators and content administrators are the only users that
   can edit Collection term names.
   #}
-  {% if bg_color is not empty %}
-    <div style="background-color: {{ bg_color }}">
-      <h1>{{ title|raw }}</h1>
-      <div>{{ content.field_short_description }}</div>
-      <div>{{ content.field_collection_logo }}</div>
-    </div>
-  {% else %}
+  {% if bg_color is empty %}
     <h1>{{ title|raw }}</h1>
   {% endif %}
 

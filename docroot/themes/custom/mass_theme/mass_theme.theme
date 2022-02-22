@@ -6098,9 +6098,14 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
 
   /** @var \Drupal\Core\Entity\EntityViewBuilder $view_builder */
   $view_builder = \Drupal::entityTypeManager()->getViewBuilder('taxonomy_term');
-  $variables['content'] = $view_builder->build($view_builder->view($term));
+  $build = $view_builder->build($view_builder->view($term));
   $variables['term'] = $term;
   $variables['bg_color'] = $term->field_header_color->value;
+  $variables['content'] = $build;
+  $variables['collection']['title'] = $term->label();
+  $variables['collection']['description'] = $build['field_short_description'];
+  $variables['collection']['image'] = $build['field_collection_logo'];
+  $variables['collection']['bg_color'] = $term->field_header_color->value;
 }
 
 /**
