@@ -704,7 +704,7 @@ function mass_content_deploy_published_date(&$sandbox) {
 
   $query = \Drupal::entityQuery('node');
   $query->condition('type', ['binder', 'decision'], 'IN');
-  
+
   if (empty($sandbox)) {
     // Get a list of all nodes of type event.
     $sandbox['progress'] = 0;
