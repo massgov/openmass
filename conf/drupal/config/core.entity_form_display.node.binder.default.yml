@@ -23,6 +23,7 @@ dependencies:
     - field.field.node.binder.field_data_format
     - field.field.node.binder.field_data_resource_type
     - field.field.node.binder.field_data_topic
+    - field.field.node.binder.field_date_published
     - field.field.node.binder.field_downloads
     - field.field.node.binder.field_intended_audience
     - field.field.node.binder.field_organizations
@@ -73,6 +74,7 @@ third_party_settings:
         - field_binder_banner_image
         - field_binder_ref_organization
         - field_binder_date_published
+        - field_date_published
         - field_binder_last_updated
         - field_binder_volume
         - field_binder_serial_number
@@ -162,7 +164,7 @@ content:
     third_party_settings: {  }
   field_binder_data_type:
     type: options_buttons
-    weight: 24
+    weight: 25
     region: content
     settings: {  }
     third_party_settings:
@@ -190,7 +192,7 @@ content:
     third_party_settings: {  }
   field_binder_last_updated:
     type: datetime_default
-    weight: 17
+    weight: 18
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -203,7 +205,7 @@ content:
     third_party_settings: {  }
   field_binder_overview:
     type: entity_reference_paragraphs
-    weight: 20
+    weight: 21
     region: content
     settings:
       title: Overview
@@ -249,7 +251,7 @@ content:
           - fee
   field_binder_serial_number:
     type: string_textfield
-    weight: 19
+    weight: 20
     region: content
     settings:
       size: 60
@@ -265,7 +267,7 @@ content:
     third_party_settings: {  }
   field_binder_volume:
     type: string_textfield
-    weight: 18
+    weight: 19
     region: content
     settings:
       size: 60
@@ -273,7 +275,7 @@ content:
     third_party_settings: {  }
   field_collections:
     type: term_reference_tree
-    weight: 29
+    weight: 31
     region: content
     settings:
       start_minimized: true
@@ -294,7 +296,7 @@ content:
     third_party_settings: {  }
   field_data_flag:
     type: options_buttons
-    weight: 23
+    weight: 24
     region: content
     settings: {  }
     third_party_settings:
@@ -333,7 +335,7 @@ content:
             selector: ''
   field_data_format:
     type: options_buttons
-    weight: 26
+    weight: 27
     region: content
     settings: {  }
     third_party_settings:
@@ -357,7 +359,7 @@ content:
             selector: ''
   field_data_resource_type:
     type: options_buttons
-    weight: 25
+    weight: 26
     region: content
     settings: {  }
     third_party_settings:
@@ -381,7 +383,7 @@ content:
             selector: ''
   field_data_topic:
     type: term_reference_tree
-    weight: 27
+    weight: 28
     region: content
     settings:
       start_minimized: true
@@ -408,9 +410,15 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_date_published:
+    type: datetime_default
+    weight: 17
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_downloads:
     type: inline_entity_form_complex
-    weight: 31
+    weight: 32
     region: content
     settings:
       form_mode: default
@@ -430,13 +438,13 @@ content:
         entity_browser_id: media_browser
   field_intended_audience:
     type: options_buttons
-    weight: 29
+    weight: 30
     region: content
     settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 22
+    weight: 23
     region: content
     settings:
       match_operator: CONTAINS
@@ -446,7 +454,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 21
+    weight: 22
     region: content
     settings:
       match_operator: CONTAINS
@@ -457,7 +465,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 28
+    weight: 29
     region: content
     settings:
       match_operator: CONTAINS

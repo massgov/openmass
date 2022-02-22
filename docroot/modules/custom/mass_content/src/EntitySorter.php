@@ -68,7 +68,7 @@ class EntitySorter {
           break;
 
         case 'binder':
-          $date = Helper::fieldValue($object, 'field_binder_date_published');
+          $date = Helper::fieldValue($object, 'field_date_published');
           break;
 
         case 'curated_list':

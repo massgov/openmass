@@ -16,8 +16,8 @@
 
 {# Build published date row. #}
 {% set binder_table_rows = binder_table_rows|merge([{
-  "label": node.field_binder_date_published.fieldDefinition.label ~ ':',
-  "text": (content.field_binder_date_published.0)
+  "label": node.field_date_published.fieldDefinition.label ~ ':',
+  "text": (content.field_date_published.0)
 }]) %}
 
 {# Build optional last update row. #}
