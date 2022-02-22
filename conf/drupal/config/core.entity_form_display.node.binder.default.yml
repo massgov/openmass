@@ -73,7 +73,6 @@ third_party_settings:
         - field_binder_short_desc
         - field_binder_banner_image
         - field_binder_ref_organization
-        - field_binder_date_published
         - field_date_published
         - field_binder_last_updated
         - field_binder_volume
@@ -164,7 +163,7 @@ content:
     third_party_settings: {  }
   field_binder_data_type:
     type: options_buttons
-    weight: 25
+    weight: 24
     region: content
     settings: {  }
     third_party_settings:
@@ -184,28 +183,22 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-  field_binder_date_published:
-    type: datetime_default
-    weight: 16
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   field_binder_last_updated:
     type: datetime_default
-    weight: 18
+    weight: 17
     region: content
     settings: {  }
     third_party_settings: {  }
   field_binder_metatags:
     type: metatag_firehose
-    weight: 3
+    weight: 2
     region: content
     settings:
       sidebar: true
     third_party_settings: {  }
   field_binder_overview:
     type: entity_reference_paragraphs
-    weight: 21
+    weight: 20
     region: content
     settings:
       title: Overview
@@ -239,7 +232,7 @@ content:
     third_party_settings: {  }
   field_binder_related:
     type: link_default
-    weight: 29
+    weight: 33
     region: content
     settings:
       placeholder_url: ''
@@ -251,7 +244,7 @@ content:
           - fee
   field_binder_serial_number:
     type: string_textfield
-    weight: 20
+    weight: 19
     region: content
     settings:
       size: 60
@@ -267,7 +260,7 @@ content:
     third_party_settings: {  }
   field_binder_volume:
     type: string_textfield
-    weight: 19
+    weight: 18
     region: content
     settings:
       size: 60
@@ -286,7 +279,7 @@ content:
     third_party_settings: {  }
   field_contact:
     type: entity_reference_autocomplete
-    weight: 27
+    weight: 32
     region: content
     settings:
       match_operator: CONTAINS
@@ -296,7 +289,7 @@ content:
     third_party_settings: {  }
   field_data_flag:
     type: options_buttons
-    weight: 24
+    weight: 23
     region: content
     settings: {  }
     third_party_settings:
@@ -335,7 +328,7 @@ content:
             selector: ''
   field_data_format:
     type: options_buttons
-    weight: 27
+    weight: 26
     region: content
     settings: {  }
     third_party_settings:
@@ -359,7 +352,7 @@ content:
             selector: ''
   field_data_resource_type:
     type: options_buttons
-    weight: 26
+    weight: 25
     region: content
     settings: {  }
     third_party_settings:
@@ -383,7 +376,7 @@ content:
             selector: ''
   field_data_topic:
     type: term_reference_tree
-    weight: 28
+    weight: 27
     region: content
     settings:
       start_minimized: true
@@ -412,7 +405,7 @@ content:
             selector: ''
   field_date_published:
     type: datetime_default
-    weight: 17
+    weight: 16
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -444,7 +437,7 @@ content:
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 23
+    weight: 22
     region: content
     settings:
       match_operator: CONTAINS
@@ -454,7 +447,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 22
+    weight: 21
     region: content
     settings:
       match_operator: CONTAINS
@@ -465,7 +458,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 29
+    weight: 28
     region: content
     settings:
       match_operator: CONTAINS
@@ -483,7 +476,7 @@ content:
     third_party_settings: {  }
   field_state_organization_tax:
     type: entity_reference_autocomplete
-    weight: 4
+    weight: 3
     region: content
     settings:
       match_operator: CONTAINS
@@ -493,7 +486,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 6
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -549,12 +542,13 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_binder_date_published: true
   langcode: true
   path: true
   promote: true
