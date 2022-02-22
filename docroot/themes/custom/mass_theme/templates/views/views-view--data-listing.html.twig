@@ -66,7 +66,20 @@
 %}
 
 {% if bg_color is not empty %}
-  {% include directory ~ "/templates/misc/collection-header.html.twig" %}
+
+  {% set collection_content %}
+    <div class="collection-header__title">
+      {{ collection.title }}
+    </div>
+    {% if collection.description is not empty %}
+      <div class="collection-header__description">
+        {{ collection.description }}
+      </div>
+    {% endif %}
+  {% endset %}
+
+  {% set collection = collection|merge({"content" : collection_content}) %}
+  {% include directory ~ "/templates/misc/collection-bg-header.html.twig" %}
 {% endif %}
 
 <div{{ attributes.addClass(classes) }}>

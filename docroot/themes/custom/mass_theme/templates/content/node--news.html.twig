@@ -10,8 +10,19 @@
 {% set level = 1 %}
 
 {% block preContent %}
+
   {% if is_blog_post %}
-    {% include directory ~ "/templates/misc/collection-header.html.twig" %}
+    {% set collection_content %}
+      {% include "@molecules/callout-link.twig" with {
+        'calloutLink' : {
+          'text' : 'Some temporary text',
+          'href' : 'https://temporary.tmp'
+        }
+      } %}
+    {% endset %}
+
+    {% set collection  = collection|merge({ 'content' : collection_content}) %}
+    {% include directory ~ "/templates/misc/collection-bg-header.html.twig" %}
   {% endif %}
 
   {# Check if primary indicator content exists. #}
