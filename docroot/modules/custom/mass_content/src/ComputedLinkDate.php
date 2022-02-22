@@ -28,7 +28,7 @@ class ComputedLinkDate extends StringData {
       // Sets a mapping of content type to "date" fields.
       $date_fields = [
         'advisory' => 'field_advisory_date',
-        'decision' => 'field_decision_date',
+        'decision' => 'field_date_published',
         'event' => 'field_event_date',
         'executive_order' => 'field_executive_order_date',
         'news' => 'field_news_date',

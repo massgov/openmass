@@ -1,20 +1,20 @@
-uuid: a3b47c75-f0ec-440b-8201-35f8e0d2925e
+uuid: 5cf3f539-16f6-4393-ac04-ae50b3211aec
 langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_decision_date
+    - field.storage.node.field_date_published
     - node.type.decision
   module:
     - datetime
-id: node.decision.field_decision_date
-field_name: field_decision_date
+id: node.decision.field_date_published
+field_name: field_date_published
 entity_type: node
 bundle: decision
-label: 'Date (Deprecated)'
+label: Date
 description: 'The date that the decision was issued.'
-required: false
-translatable: false
+required: true
+translatable: true
 default_value:
   -
     default_date_type: now

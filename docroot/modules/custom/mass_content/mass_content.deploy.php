@@ -703,7 +703,7 @@ function mass_content_deploy_published_date(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $query = \Drupal::entityQuery('node');
-  $query->condition('type', ['binder'], 'IN');
+  $query->condition('type', ['binder', 'decision'], 'IN');
 
 
   if (empty($sandbox)) {
@@ -721,32 +721,31 @@ function mass_content_deploy_published_date(&$sandbox) {
     ->range(0, $batch_size)
     ->execute();
 
-  $memory_cache = \Drupal::service('entity.memory_cache');
-
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
 
   $nodes = $node_storage->loadMultiple($nids);
 
+  $field_names = ['field_binder_date_published', 'field_decision_date'];
+
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
     // Set the updated date for events.
-    if ($node->hasField('field_binder_date_published') && $node->hasField('field_date_published')) {
-      if (!$node->field_binder_date_published->isEmpty()) {
-        $published_date = $node->get('field_binder_date_published')->getValue();
-        $node->set('field_binder_date_published', NULL);
-        $node->set('field_date_published', $published_date);
-        // Save the node.
-        // Save without updating the last modified date. This requires a core patch
-        // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
-        $node->setSyncing(TRUE);
-        $node->save();
+    foreach ($field_names as $field_name) {
+      if ($node->hasField($field_name) && $node->hasField('field_date_published')) {
+        if (!$node->$field_name->isEmpty()) {
+          $published_date = $node->get($field_name)->getValue();
+          $node->set($field_name, NULL);
+          $node->set('field_date_published', $published_date);
+          // Save the node.
+          // Save without updating the last modified date. This requires a core patch
+          // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
+          $node->setSyncing(TRUE);
+          $node->save();
+        }
       }
     }
-
     $sandbox['progress']++;
   }
-
-  $memory_cache->deleteAll();
 
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {

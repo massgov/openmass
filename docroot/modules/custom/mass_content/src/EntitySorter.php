@@ -68,15 +68,12 @@ class EntitySorter {
           break;
 
         case 'binder':
+        case 'decision':
           $date = Helper::fieldValue($object, 'field_date_published');
           break;
 
         case 'curated_list':
           $date = date('Y-d-m', $object->created->value);
-          break;
-
-        case 'decision':
-          $date = Helper::fieldValue($object, 'field_decision_date');
           break;
 
         case 'executive_order':
