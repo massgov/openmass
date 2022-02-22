@@ -1,14 +1,6 @@
 {% if collection.bg_color is not empty %}
   <div class="collection-header" style="background-color: {{ collection.bg_color }}">
-    <div class="collection-header__title">
-      {{ collection.title }}
-    </div>
-
-    {% if collection.description is not empty %}
-      <div class="collection-header__description">
-        {{ collection.description }}
-      </div>
-    {% endif %}
+    {{ collection.content|raw }}
 
     {% if collection.image|raw is not empty %}
       <div class="collection-header__image">
