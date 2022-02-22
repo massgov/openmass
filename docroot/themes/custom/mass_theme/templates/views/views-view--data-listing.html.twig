@@ -44,7 +44,8 @@
   "relationshipIndicators": {
     "pageTitle": node.label,
     "primary": primaryIndicators,
-    "secondary": secondaryIndicators
+    "secondary": secondaryIndicators,
+    "borderless": true
   }
 } %}
 
@@ -79,7 +80,8 @@
   {% endset %}
 
   {% set collection = collection|merge({"content" : collection_content}) %}
-  {% include directory ~ "/templates/misc/collection-bg-header.html.twig" %}
+
+  {% include "@organisms/by-template/collection-header.twig" %}
 {% endif %}
 
 <div{{ attributes.addClass(classes) }}>
