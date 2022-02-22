@@ -1,5 +1,17 @@
 
 
+## [0.314.0] - February 22, 2022
+
+### Changed
+  - DP-23222: Fetches earlier the request for the block alerts.
+  - DP-23584: CircleCI - omit trigger during build_validate
+  - DP-24122: Avoid browser clientside validation on forms.
+  
+### Fixed
+  - DP-24139: Fixed adding state org signees for existing news items.
+  
+
+
 ## [0.313.0] - February 15, 2022
 
 ### Changed
