@@ -101,13 +101,10 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
       }
     }
 
-    $node = \Drupal::routeMatch()->getParameter('node');
-
-    if (\is_string($node)) {
-      $node = Node::load($node);
-    }
-
-    $type = $node ? $node->getType() : '';
+    $param_node = \Drupal::routeMatch()->getParameter('node');
+    /** @var \Drupal\node\NodeInterface $node */
+    $node = \is_string($param_node) && intval($param_node) ? Node::load($param_node) : $param_node;
+    $type = $node && is_a($node, 'Drupal\node\Entity\Node') ? $node->getType() : '';
 
     return [
       '#theme' => 'mass_alerts_block',
