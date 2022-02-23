@@ -107,9 +107,6 @@ parameters:
   webhook:
     type: boolean
     default: true
-  post-trigger:
-    type: boolean
-    default: false
 
   # These params for currently used in drush ma:cf-deploy
   ma-cf-deploy:
@@ -150,15 +147,6 @@ parameters:
     type: string
     default: ""
 jobs:
-  trigger_workflows:
-    docker:
-      - image: circleci/node
-    steps:
-      - checkout
-      - run:
-          name: Trigger workflows
-          command: .circleci/circle_trigger.sh
-
   build:
     working_directory: ~/project/code
     docker:
@@ -183,7 +171,7 @@ jobs:
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - run:
           name: Update Mayflower to latest develop
-          command: composer require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
+          command: composer -n require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
       - *save_composer_cache
       - *yarn_install
       - persist_to_workspace:
@@ -255,7 +243,7 @@ jobs:
       - attach_workspace: {at: /tmp }
       - *vendor_bin_add_path
       # Validate .json and check if it is in sync with the .lock file
-      - run: composer validate
+      - run: composer -n validate
       # Make sure changelogs are parseable by PHP (since build-changelog.php requires that).
       - run: php scripts/directory-yaml-parse.php
       # Lint javascript
@@ -515,29 +503,8 @@ jobs:
 
 workflows:
   version: 2
-  build_validate:
-    when: << pipeline.parameters.webhook >>
-    jobs:
-      - build:
-          filters:
-            branches:
-              ignore:
-                - /^release\/.*$/
-                - /^hotfix\/.*$/
-                - master
-                - /^mayflower-dev-.*/
-      - validate:
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
-      - trigger_workflows:
-          filters:
-            branches:
-              <<: *branch_ignore
-
   build_test:
-    when: << pipeline.parameters.post-trigger >>
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -588,7 +555,7 @@ workflows:
     triggers:
       - schedule:
           # UTC time-zone
-          cron: "00 19 * * 2"
+          cron: "15 18 * * 2"
           filters:
             branches:
               only:

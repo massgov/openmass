@@ -27,8 +27,6 @@ mode: contact_summary
 content:
   field_contact_more_info_link:
     type: link
-    weight: 6
-    region: content
     label: above
     settings:
       trim_length: null
@@ -37,57 +35,59 @@ content:
       rel: '0'
       target: '0'
     third_party_settings: {  }
+    weight: 6
+    region: content
   field_display_title:
     type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
     weight: 0
     region: content
-    label: hidden
-    settings:
-      link_to_entity: false
-    third_party_settings: {  }
   field_plain_description:
-    weight: 5
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 5
     region: content
   field_ref_address:
     type: entity_reference_revisions_entity_view
-    weight: 1
     label: hidden
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 1
     region: content
   field_ref_fax_number:
     type: entity_reference_revisions_entity_view
-    weight: 4
     label: hidden
     settings:
       view_mode: directory
       link: ''
     third_party_settings: {  }
+    weight: 4
     region: content
   field_ref_links:
     type: entity_reference_revisions_entity_view
-    weight: 3
     label: hidden
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 3
     region: content
   field_ref_phone_number:
     type: entity_reference_revisions_entity_view
-    weight: 2
     label: hidden
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 2
     region: content
 hidden:
   content_moderation_control: true

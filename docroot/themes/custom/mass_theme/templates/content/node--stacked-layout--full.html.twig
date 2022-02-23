@@ -8,8 +8,8 @@
  #}
 {%
 set pageBanner = {
-  'bgWide': file_url(node.field_photo.entity.fileuri),
-  'bgNarrow': file_url(node.field_photo.entity.fileuri),
+  'bgWide': file_url(node.field_photo.entity.fileuri ?? ''),
+  'bgNarrow': file_url(node.field_photo.entity.fileuri ?? ''),
   'size':'large',
   'icon': '',
   'title': label|field_value,

@@ -18,24 +18,24 @@ bundle: action_set
 mode: default
 content:
   field_featured_content:
-    weight: 1
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 1
     region: content
   field_image:
-    weight: 0
+    type: image
     label: hidden
     settings:
-      image_style: hero800x400
       image_link: ''
+      image_style: hero800x400
     third_party_settings: {  }
-    type: image
+    weight: 0
     region: content
   field_link_single:
-    weight: 3
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -44,15 +44,15 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 3
     region: content
   field_related_content:
-    weight: 2
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 2
     region: content
 hidden:
   created: true

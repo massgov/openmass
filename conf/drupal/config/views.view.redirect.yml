@@ -18,119 +18,12 @@ base_table: redirect
 base_field: rid
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: perm
-        options:
-          perm: 'administer redirects'
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          disable_sql_rewrite: false
-          distinct: false
-          replica: false
-          query_comment: ''
-          query_tags: {  }
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: false
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: mini
-        options:
-          items_per_page: 50
-          offset: 0
-          id: 0
-          total_pages: null
-          tags:
-            previous: Previous
-            next: Next
-          expose:
-            items_per_page: false
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-      style:
-        type: table
-        options:
-          grouping: {  }
-          row_class: ''
-          default_row_class: true
-          override: true
-          sticky: false
-          caption: ''
-          summary: ''
-          description: ''
-          columns:
-            redirect_source__path: redirect_source__path
-            redirect_redirect__uri: redirect_redirect__uri
-            status_code: status_code
-            language: language
-            created: created
-            operations: operations
-          info:
-            redirect_source__path:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            redirect_redirect__uri:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            status_code:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            language:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            created:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            operations:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-          default: created
-          empty_table: false
-      row:
-        type: fields
+      title: Redirect
       fields:
         rid:
           id: rid
@@ -139,6 +32,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: redirect
+          entity_field: rid
+          plugin_id: field
           label: 'Redirect ID'
           exclude: false
           alter:
@@ -195,9 +91,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: redirect
-          entity_field: rid
-          plugin_id: field
         redirect_source__path:
           id: redirect_source__path
           table: redirect
@@ -205,6 +98,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: redirect
+          entity_field: redirect_source
+          plugin_id: field
           label: From
           exclude: false
           alter:
@@ -259,9 +155,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: redirect
-          entity_field: redirect_source
-          plugin_id: field
         redirect_redirect__uri:
           id: redirect_redirect__uri
           table: redirect
@@ -276,6 +169,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: redirect
+          entity_field: created
+          plugin_id: date
           label: Created
           exclude: false
           alter:
@@ -320,15 +216,61 @@ display:
           date_format: fallback
           custom_date_format: ''
           timezone: ''
-          entity_type: redirect
-          entity_field: created
-          plugin_id: date
         operations:
           id: operations
           table: redirect
           field: operations
           entity_type: redirect
           plugin_id: entity_operations
+      pager:
+        type: mini
+        options:
+          offset: 0
+          items_per_page: 50
+          total_pages: null
+          id: 0
+          tags:
+            next: Next
+            previous: Previous
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: false
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: perm
+        options:
+          perm: 'administer redirects'
+      cache:
+        type: tag
+        options: {  }
+      empty:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text_custom
+          empty: true
+          content: 'There is no redirect yet.'
+          tokenize: false
+      sorts: {  }
+      arguments: {  }
       filters:
         redirect_source__path:
           id: redirect_source__path
@@ -337,6 +279,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: redirect
+          entity_field: redirect_source
+          plugin_id: string
           operator: contains
           value: ''
           group: 1
@@ -391,9 +336,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: redirect
-          entity_field: redirect_source
-          plugin_id: string
         redirect_redirect__uri:
           id: redirect_redirect__uri
           table: redirect
@@ -401,6 +343,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: redirect
+          entity_field: redirect_redirect
+          plugin_id: string
           operator: contains
           value: ''
           group: 1
@@ -456,9 +401,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: redirect
-          entity_field: redirect_redirect
-          plugin_id: string
         rid:
           id: rid
           table: redirect
@@ -466,6 +408,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: redirect
+          entity_field: rid
+          plugin_id: numeric
           operator: '='
           value:
             min: ''
@@ -503,9 +448,9 @@ display:
               external_data_resource_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
-            placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
+            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -518,57 +463,112 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: redirect
-          entity_field: rid
-          plugin_id: numeric
-      sorts: {  }
-      title: Redirect
-      header: {  }
-      footer: {  }
-      empty:
-        area_text_custom:
-          id: area_text_custom
-          table: views
-          field: area_text_custom
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: true
-          tokenize: false
-          content: 'There is no redirect yet.'
-          plugin_id: text_custom
-      relationships: {  }
-      arguments: {  }
-      display_extenders: {  }
       filter_groups:
         operator: AND
         groups:
           1: AND
+      style:
+        type: table
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+          columns:
+            redirect_source__path: redirect_source__path
+            redirect_redirect__uri: redirect_redirect__uri
+            status_code: status_code
+            language: language
+            created: created
+            operations: operations
+          default: created
+          info:
+            redirect_source__path:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            redirect_redirect__uri:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            status_code:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            language:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            created:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            operations:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+          override: true
+          sticky: false
+          summary: ''
+          empty_table: false
+          caption: ''
+          description: ''
+      row:
+        type: fields
+      query:
+        type: views_query
+        options:
+          query_comment: ''
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_tags: {  }
+      relationships: {  }
+      header: {  }
+      footer: {  }
+      display_extenders: {  }
     cache_metadata:
+      max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
         - url.query_args
         - user.permissions
-      cacheable: false
-      max-age: -1
       tags: {  }
+      cacheable: false
   page_1:
-    display_plugin: page
     id: page_1
     display_title: Page
+    display_plugin: page
     position: 1
     display_options:
       display_extenders: {  }
       path: admin/config/search/redirect
     cache_metadata:
+      max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url
         - url.query_args
         - user.permissions
-      cacheable: false
-      max-age: -1
       tags: {  }
+      cacheable: false

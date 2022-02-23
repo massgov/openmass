@@ -21,9 +21,9 @@ default_value_callback: ''
 settings:
   handler: 'default:paragraph'
   handler_settings:
-    negate: 0
     target_bundles:
       organization_grid: organization_grid
+    negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 81
@@ -124,8 +124,20 @@ settings:
       fax_number:
         weight: 113
         enabled: false
+      featured_item:
+        weight: 125
+        enabled: false
+      featured_item_mosaic:
+        weight: 126
+        enabled: false
       file_download:
         weight: 114
+        enabled: false
+      file_download_single:
+        weight: 128
+        enabled: false
+      footnotes:
+        weight: 129
         enabled: false
       full_bleed:
         weight: 115
@@ -157,29 +169,23 @@ settings:
       image:
         weight: 124
         enabled: false
-      featured_item:
-        weight: 125
+      image_credit:
+        weight: 140
         enabled: false
       issuer:
         weight: 125
         enabled: false
-      featured_item_mosaic:
-        weight: 126
-        enabled: false
       links:
         weight: 126
+        enabled: false
+      links_downloads:
+        weight: 143
         enabled: false
       list_dynamic:
         weight: 127
         enabled: false
-      file_download_single:
-        weight: 128
-        enabled: false
       list_item_document:
         weight: 128
-        enabled: false
-      footnotes:
-        weight: 129
         enabled: false
       list_item_link:
         weight: 129
@@ -212,10 +218,13 @@ settings:
         weight: 138
         enabled: false
       organization_grid:
-        enabled: true
         weight: 139
-      image_credit:
-        weight: 140
+        enabled: true
+      page:
+        weight: 157
+        enabled: false
+      page_group:
+        weight: 158
         enabled: false
       phone_number:
         weight: 140
@@ -225,9 +234,6 @@ settings:
         enabled: false
       quick_action:
         weight: 142
-        enabled: false
-      links_downloads:
-        weight: 143
         enabled: false
       recommended_activity:
         weight: 143
@@ -256,6 +262,15 @@ settings:
       section:
         weight: 151
         enabled: false
+      section_heading_body_image:
+        weight: 171
+        enabled: false
+      section_heading_text:
+        weight: 172
+        enabled: false
+      section_long_form:
+        weight: 173
+        enabled: false
       section_with_heading:
         weight: 152
         enabled: false
@@ -271,16 +286,10 @@ settings:
       stat:
         weight: 156
         enabled: false
-      page:
-        weight: 157
-        enabled: false
       state_organization:
         weight: 157
         enabled: false
       subhead:
-        weight: 158
-        enabled: false
-      page_group:
         weight: 158
         enabled: false
       target_pages:
@@ -288,14 +297,5 @@ settings:
         enabled: false
       video:
         weight: 160
-        enabled: false
-      section_heading_body_image:
-        weight: 171
-        enabled: false
-      section_heading_text:
-        weight: 172
-        enabled: false
-      section_long_form:
-        weight: 173
         enabled: false
 field_type: entity_reference_revisions
