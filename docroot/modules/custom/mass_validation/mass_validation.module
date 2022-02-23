@@ -1458,6 +1458,19 @@ function mass_validation_preprocess_input(&$variables) {
 }
 
 /**
+ * Implements hook_form_alter().
+ */
+function mass_validation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Avoids client-side validation on all the forms in the system.
+  // See: https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
+  // Fields may be not focusable but required, for instance when they are
+  // inside a tab, then browser client-side validation stops the form
+  // submission and shows a console error. The final user doesn't
+  // know what is happening and not able to submit the form.
+  $form['#attributes']['novalidate'] = TRUE;
+}
+
+/**
  * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
  */
 function mass_validation_form_node_contact_information_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
