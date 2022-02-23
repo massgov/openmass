@@ -699,11 +699,11 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 /**
  * Migrate Published date field value to the new field.
  */
-function mass_content_deploy_published_date(&$sandbox) {
+function mass_content_deploy_published_date7(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $query = \Drupal::entityQuery('node');
-  $query->condition('type', ['binder', 'decision', 'executive_order', 'info_details'], 'IN');
+  $query->condition('type', ['binder', 'decision', 'executive_order', 'info_details', 'regulation'], 'IN');
 
   if (empty($sandbox)) {
     // Get a list of all nodes of type event.
@@ -728,7 +728,8 @@ function mass_content_deploy_published_date(&$sandbox) {
     'field_binder_date_published',
     'field_decision_date',
     'field_executive_order_date',
-    'field_info_details_date_publishe'
+    'field_info_details_date_publishe',
+    'field_regulation_last_updated'
   ];
 
   foreach ($nodes as $node) {
@@ -749,7 +750,7 @@ function mass_content_deploy_published_date(&$sandbox) {
       }
     }
     $sandbox['progress']++;
-    print_r('Processing');
+    
   }
 
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);

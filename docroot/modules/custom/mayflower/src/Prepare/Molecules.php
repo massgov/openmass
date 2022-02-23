@@ -1704,7 +1704,6 @@ class Molecules {
         'field_event_date',
         'field_date_published',
         'field_advisory_date',
-        'field_regulation_last_updated',
       ],
       'eyebrow' => [
         'field_decision_ref_type',
