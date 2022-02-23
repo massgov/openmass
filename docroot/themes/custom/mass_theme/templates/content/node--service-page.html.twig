@@ -138,100 +138,11 @@
 
   {{ content.field_service_sections }}
 
-  {% set featuredTasks = node.field_service_ref_actions_2 is not empty %}
-  {% set allTasks = node.field_service_ref_actions is not empty %}
-  {% set linkGroups = node.field_link_group is not empty %}
+  {% set linkGroups = false %}
   {% set default = (node.field_template is empty or node.field_template.value == "default") %}
   {% set custom = (node.field_template.value == "custom" and linkGroups) %}
   {% set seeAll = false %}
-  {% if default and (content.field_service_ref_actions['#items']|length > 6) %}
-    {% set seeAll =  {
-      "type": "internal",
-      "href": url ~ "/tasks",
-      "text": "See all " ~ (content.field_service_ref_actions['#items']|length + content.field_service_ref_actions_2['#items']|length),
-      "info": "",
-      "labelContext": "of the what would you like to do section"|t
-    } %}
-  {% endif %}
-  {% if (default or custom) and (featuredTasks or allTasks or linkGroups) %}
-  {% if (default) %}
-    {% set featuredHeading = 'Top tasks' %}
-  {% else %}
-    {% set featuredHeading = 'Featured' %}
-  {% endif %}
-    {% embed "@organisms/by-author/action-finder.twig" with {
-      "actionFinder": {
-        "title": "What would you like to do?"|t,
-        "featuredHeading": featuredHeading,
-        "generalHeading": "All other tasks"|t,
-        "featuredLinks": featuredTasks,
-        "links": default and allTasks,
-        "linkLists": custom and linkGroups,
-        "seeAll": seeAll
-      }
-    } %}
-      {% block featuredLinksList %}
-        {{ content.field_service_ref_actions_2 }}
-      {% endblock %}
-      {% block actionFinderLinksList %}
-        {{ content.field_service_ref_actions }}
-      {% endblock %}
-      {% block linkLists %}
-        {{ content.field_link_group }}
-      {% endblock %}
-    {% endembed %}
-  {% endif %}
-  {# What you need to know #}
-  {% if not flexibleLinkGroup and node.field_service_key_info_links_6 is not empty %}
-    {# Prepare seeAll link. #}
-    {% set publishedLinkCount = 0 %}
-    {# Get number of published items. #}
-    {% set itemCount = node.field_service_key_info_links_6|length %}
-    {% if itemCount < 1 %}
-      {% set links = '' %}
-    {% else %}
-      {% set links = [] %}
-      {% set lastIndex = itemCount -1 %}
-      {% for i in 0..lastIndex %}
-        {% set keyInfoLink = content.field_service_key_info_links_6[i] %}
-        {% set href = keyInfoLink['#url_title'] %}
-        {% if '/node/' in href or href ends with '---unpublished' %}
-          {# DO NOTHING if referenced item is NULL or unpublished state. #}
-        {% else %}
-          {% set publishedLinkCount = publishedLinkCount + 1 %}
-          {% if publishedLinkCount < 7 %}
-            {% set text = keyInfoLink['#title']['#markup'] ? keyInfoLink['#title']['#markup'] : keyInfoLink['#title'] %}
-            {% set links = links|merge([{
-              "text": text,
-              "href": href
-            }]) %}
-          {% endif %}
-        {% endif %}
-      {% endfor %}
-    {% endif %}
-    {# Prepare See all link. #}
-    {% set seeAll = false %}
-    {% if publishedLinkCount > 6 %}
-      {% set text = "See all " ~ publishedLinkCount %}
-      {% set seeAll = {
-        "text": text,
-        "labelContext": titleContextOf,
-        "href": url ~ "/need-to-know"
-      } %}
-    {% endif %}
-    {% include "@organisms/by-author/action-finder.twig" with {
-      "actionFinder": {
-        "title": "What you need to know"|t,
-        "featuredHeading": "",
-        "generalHeading": "",
-        "hideFilter": true,
-        "titleContext": titleContextAbout,
-        "seeAll": seeAll,
-        "featuredLinks": "",
-        "links": links
-      }
-    } %}
-  {% endif %}
+
   {% if contactList %}
     {% include "@organisms/by-author/contact-list.twig" %}
   {% endif %}

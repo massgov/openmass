@@ -74,7 +74,6 @@ third_party_settings:
         - group_banner
         - group_overview
         - group_content
-        - group_tasks_key_info
         - group_additional_info
         - group_key_performance_indicators
       label: 'Service Edit Form'
@@ -142,9 +141,9 @@ third_party_settings:
         - field_link_group
         - group_what_you_need_to_know
       label: 'Tasks and key info'
-      region: content
-      parent_name: group_service_edit_form
-      weight: 23
+      region: hidden
+      parent_name: ''
+      weight: 6
       format_type: tab
       format_settings:
         classes: ''
@@ -161,7 +160,7 @@ third_party_settings:
       label: Map
       region: hidden
       parent_name: ''
-      weight: 14
+      weight: 15
       format_type: tab
       format_settings:
         classes: ''
@@ -189,7 +188,7 @@ third_party_settings:
         - field_service_ref_actions_2
         - field_service_ref_actions
       label: 'What would you like to do?'
-      region: content
+      region: hidden
       parent_name: group_tasks_key_info
       weight: 39
       format_type: fieldset
@@ -202,7 +201,7 @@ third_party_settings:
       children:
         - field_service_key_info_links_6
       label: 'What you need to know'
-      region: content
+      region: hidden
       parent_name: group_tasks_key_info
       weight: 41
       format_type: fieldset
@@ -575,36 +574,6 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-  field_link_group:
-    type: entity_reference_paragraphs
-    weight: 40
-    region: content
-    settings:
-      title: 'Link group'
-      title_plural: 'Link groups'
-      edit_mode: open
-      add_mode: button
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings:
-      conditional_fields:
-        241e3d22-b728-4984-9028-593fd9646c5c:
-          entity_type: node
-          bundle: service_page
-          dependee: field_template
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: custom
-            effect: show
-            effect_options: {  }
-            selector: ''
   field_list_data_type:
     type: options_buttons
     weight: 79
@@ -775,32 +744,6 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-  field_service_key_info_links_6:
-    type: link_default
-    weight: 47
-    region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
-    third_party_settings:
-      conditional_fields:
-        0b155678-04da-48b7-ad0e-d83a4c054b82:
-          entity_type: node
-          bundle: service_page
-          dependee: field_template
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: default
-            effect: show
-            effect_options: {  }
-            selector: ''
   field_service_kpi_choice:
     type: options_buttons
     weight: 51
@@ -858,40 +801,6 @@ content:
       match_limit: 10
       size: 60
       placeholder: ''
-    third_party_settings: {  }
-  field_service_ref_actions:
-    type: link_default
-    weight: 24
-    region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
-    third_party_settings:
-      conditional_fields:
-        909148ea-9d8d-4500-811a-5f0cdebcd1b1:
-          entity_type: node
-          bundle: service_page
-          dependee: field_template
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: default
-            effect: show
-            effect_options: {  }
-            selector: ''
-  field_service_ref_actions_2:
-    type: link_default
-    weight: 23
-    region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
     third_party_settings: {  }
   field_service_ref_guide_page_1:
     type: entity_reference_autocomplete
@@ -1061,10 +970,14 @@ content:
 hidden:
   created: true
   field_event_quantity: true
+  field_link_group: true
   field_location_button_label: true
   field_location_button_short_desc: true
   field_related_organization_type: true
   field_service_bg_narrow: true
+  field_service_key_info_links_6: true
+  field_service_ref_actions: true
+  field_service_ref_actions_2: true
   field_service_ref_locations: true
   langcode: true
   path: true
