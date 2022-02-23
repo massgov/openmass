@@ -30,7 +30,7 @@ class ComputedLinkDate extends StringData {
         'advisory' => 'field_advisory_date',
         'decision' => 'field_date_published',
         'event' => 'field_event_date',
-        'executive_order' => 'field_executive_order_date',
+        'executive_order' => 'field_date_published',
         'news' => 'field_news_date',
         'regulation' => 'field_regulation_last_updated',
         'rules' => 'field_rules_effective_date',

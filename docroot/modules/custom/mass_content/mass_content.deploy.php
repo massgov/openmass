@@ -699,11 +699,11 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 /**
  * Migrate Published date field value to the new field.
  */
-function mass_content_deploy_published_date(&$sandbox) {
+function mass_content_deploy_published_date5(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $query = \Drupal::entityQuery('node');
-  $query->condition('type', ['binder', 'decision'], 'IN');
+  $query->condition('type', ['binder', 'decision', 'executive_order'], 'IN');
 
   if (empty($sandbox)) {
     // Get a list of all nodes of type event.
@@ -724,7 +724,11 @@ function mass_content_deploy_published_date(&$sandbox) {
 
   $nodes = $node_storage->loadMultiple($nids);
 
-  $field_names = ['field_binder_date_published', 'field_decision_date'];
+  $field_names = [
+    'field_binder_date_published',
+    'field_decision_date',
+    'field_executive_order_date'
+  ];
 
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();

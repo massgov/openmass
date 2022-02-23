@@ -1,20 +1,20 @@
-uuid: feb61d23-a93a-458c-91ee-d5cfa7991c5e
+uuid: 8779a9bc-e86d-4439-8102-834fd50a411c
 langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_executive_order_date
+    - field.storage.node.field_date_published
     - node.type.executive_order
   module:
     - datetime
-id: node.executive_order.field_executive_order_date
-field_name: field_executive_order_date
+id: node.executive_order.field_date_published
+field_name: field_date_published
 entity_type: node
 bundle: executive_order
-label: 'Date (Deprecated)'
+label: Date
 description: 'The date that the executive order was issued.'
-required: false
-translatable: false
+required: true
+translatable: true
 default_value:
   -
     default_date_type: now
