@@ -699,7 +699,7 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 /**
  * Migrate Published date field value to the new field.
  */
-function mass_content_deploy_published_date5(&$sandbox) {
+function mass_content_deploy_published_date(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $query = \Drupal::entityQuery('node');
@@ -749,6 +749,7 @@ function mass_content_deploy_published_date5(&$sandbox) {
       }
     }
     $sandbox['progress']++;
+    print_r('Processing');
   }
 
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
