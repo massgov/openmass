@@ -703,7 +703,7 @@ function mass_content_deploy_published_date5(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $query = \Drupal::entityQuery('node');
-  $query->condition('type', ['binder', 'decision', 'executive_order'], 'IN');
+  $query->condition('type', ['binder', 'decision', 'executive_order', 'info_details'], 'IN');
 
   if (empty($sandbox)) {
     // Get a list of all nodes of type event.
@@ -727,7 +727,8 @@ function mass_content_deploy_published_date5(&$sandbox) {
   $field_names = [
     'field_binder_date_published',
     'field_decision_date',
-    'field_executive_order_date'
+    'field_executive_order_date',
+    'field_info_details_date_publishe'
   ];
 
   foreach ($nodes as $node) {
