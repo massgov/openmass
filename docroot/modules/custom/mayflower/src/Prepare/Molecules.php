@@ -1703,7 +1703,6 @@ class Molecules {
         'field_news_date',
         'field_event_date',
         'field_date_published',
-        'field_advisory_date',
       ],
       'eyebrow' => [
         'field_decision_ref_type',

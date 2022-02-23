@@ -64,13 +64,11 @@ class EntitySorter {
       $type = $object->getType();
       switch ($type) {
         case 'advisory':
-          $date = Helper::fieldValue($object, 'field_advisory_date');
-          break;
-
         case 'binder':
         case 'decision':
         case 'executive_order':
         case 'regulation':
+        case 'rules':
           $date = Helper::fieldValue($object, 'field_date_published');
           break;
 
@@ -80,10 +78,6 @@ class EntitySorter {
 
         case 'info_details':
           $date = Helper::fieldValue($object, 'field_info_details_last_updated');
-          break;
-
-        case 'rules':
-          $date = Helper::fieldValue($object, 'field_rules_effective_date');
           break;
 
         default:

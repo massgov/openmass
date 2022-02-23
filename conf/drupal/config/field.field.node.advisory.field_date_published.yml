@@ -1,20 +1,20 @@
-uuid: e6cfb676-39b8-4614-87a7-93cee072f959
+uuid: 91702338-253b-451d-945d-d5740f20abc6
 langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_advisory_date
+    - field.storage.node.field_date_published
     - node.type.advisory
   module:
     - datetime
-id: node.advisory.field_advisory_date
-field_name: field_advisory_date
+id: node.advisory.field_date_published
+field_name: field_date_published
 entity_type: node
 bundle: advisory
-label: 'Date (Deprecated)'
+label: Date
 description: 'The date that the advisory was issued.'
-required: false
-translatable: false
+required: true
+translatable: true
 default_value:
   -
     default_date_type: now
