@@ -68,7 +68,7 @@
   - DP-23355: Search collection component for promotional and org pages.
   - DP-23849: Adds autocomplete collections filter to view content and my_content.
   - DP-23909: Add CSV for report of pages with long breadcrumbs.
-  
+
 ### Changed
   - DP-23716: - Modifies collection_all view by adding documents for search.
 - Alters collection_all query and creates a union with the collection_all_media_query.
