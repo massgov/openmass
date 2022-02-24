@@ -1,16 +1,4 @@
 {% if path %}
   {{ attach_library('mass_alerts/behaviors') }}
-  {{ attach_library('mass_decision_tree/mass_decision_tree_accordion_only') }}
   <div class="mass-alerts-block" data-alerts-path="{{ path }}"></div>
-  <script>
-    {# We need way for the content to be loaded #}
-    {# because we insert alert based on specific regions #}
-    {% if wait %}
-      document.addEventListener('DOMContentLoaded', function () {
-        drupalLike.behaviors.massAlertBlocks.attach(document, "{{ type }}");
-      });
-    {% else %}
-        drupalLike.behaviors.massAlertBlocks.attach(document, "{{ type }}");
-    {% endif %}
-  </script>
 {% endif %}

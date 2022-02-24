@@ -100,14 +100,9 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
       }
     }
 
-    $node = \Drupal::routeMatch()->getParameter('node');
-    $type = $node ? $node->getType() : '';
-
     return [
       '#theme' => 'mass_alerts_block',
       '#path' => $path,
-      '#wait' => strpos($path, 'sitewide') === FALSE,
-      '#type' => $type,
       '#cache' => [
         'contexts' => ['url'],
       ],

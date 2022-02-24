@@ -41,8 +41,6 @@ class ExpandCollapseElementsTest extends ExistingSiteWebDriverTestBase {
   private function testAccordionsAtNode(int $nid) {
     $session = $this->getSession();
     $this->drupalGet('node/' . $nid);
-    // Wait for async notifications to be processed.
-    $session->wait(2000);
     $page = $session->getPage();
     $accordion_links = $page->findAll('css', '.js-accordion');
     foreach ($accordion_links as $accordion_link) {
