@@ -38,6 +38,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -149,15 +150,16 @@ bundle: news
 mode: default
 content:
   field_collections:
+    type: term_reference_tree
     weight: 13
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
     region: content
+    settings:
+      start_minimized: true
+      leaves_only: false
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+    third_party_settings: {  }
   field_english_version:
     type: entity_reference_autocomplete
     weight: 10
