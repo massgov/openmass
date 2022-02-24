@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
     - field.field.node.topic_page.field_primary_parent
+    - field.field.node.topic_page.field_restrict_link_management
     - field.field.node.topic_page.field_reusable_label
     - field.field.node.topic_page.field_short_title
     - field.field.node.topic_page.field_state_organization_tax
@@ -26,6 +27,7 @@ dependencies:
     - node.type.topic_page
   module:
     - entity_reference_revisions
+    - mass_map
     - user
 id: node.topic_page.token
 targetEntityType: node
@@ -50,20 +52,22 @@ content:
     weight: 1
     region: content
   field_topic_ref_icon:
+    type: map_row_formatter
     label: above
-    settings:
-      link: true
+    settings: {  }
     third_party_settings: {  }
     weight: 2
     region: content
   field_topic_ref_related_topics:
+    type: map_row_formatter
     label: above
-    settings:
-      link: true
+    settings: {  }
     third_party_settings: {  }
     weight: 3
     region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 0
     region: content
   workbench_moderation_control:

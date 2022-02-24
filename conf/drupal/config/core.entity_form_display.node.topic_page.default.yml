@@ -23,15 +23,12 @@ dependencies:
     - field.field.node.topic_page.field_topic_section_bg_narrow
     - field.field.node.topic_page.field_topic_section_bg_wide
     - field.field.node.topic_page.field_topic_type
-    - image.style.thumbnail
     - node.type.topic_page
     - workflows.workflow.topic_page
   module:
-    - conditional_fields
     - content_moderation
     - entity_hierarchy
     - field_group
-    - image
     - maxlength
     - metatag
     - paragraphs
@@ -55,16 +52,10 @@ third_party_settings:
       children:
         - title
         - field_short_title
-        - field_topic_type
         - field_topic_lede
         - field_display_short_description
         - field_restrict_link_management
         - field_topic_ref_icon
-        - field_topic_bg_wide
-        - field_topic_bg_narrow
-        - field_topic_section_bg_wide
-        - field_topic_section_bg_narrow
-        - field_image_credit
         - field_primary_parent
         - field_organizations
         - field_intended_audience
@@ -82,15 +73,15 @@ third_party_settings:
         required_fields: true
     group_content_cards:
       children:
-        - field_topic_display_links
         - field_topic_content_cards
-      label: 'Content cards'
+      label: 'Link Groups'
       region: content
       parent_name: group_topic_page_edit_form
       weight: 21
       format_type: tab
       format_settings:
         classes: ''
+        show_empty_fields: false
         id: ''
         formatter: closed
         description: ''
@@ -101,7 +92,7 @@ third_party_settings:
       label: 'Related list'
       region: content
       parent_name: group_topic_page_edit_form
-      weight: 22
+      weight: 23
       format_type: tab
       format_settings:
         classes: ''
@@ -116,28 +107,20 @@ mode: default
 content:
   field_display_short_description:
     type: boolean_checkbox
-    weight: 60
+    weight: 59
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
-  field_image_credit:
-    type: string_textfield
-    weight: 67
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 70
+    weight: 64
     region: content
     settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 69
+    weight: 63
     region: content
     settings:
       match_operator: CONTAINS
@@ -147,7 +130,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 68
+    weight: 62
     region: content
     settings:
       match_operator: CONTAINS
@@ -158,14 +141,14 @@ content:
     third_party_settings: {  }
   field_restrict_link_management:
     type: boolean_checkbox
-    weight: 61
+    weight: 60
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 71
+    weight: 65
     region: content
     settings:
       match_operator: CONTAINS
@@ -183,7 +166,7 @@ content:
     third_party_settings: {  }
   field_state_organization_tax:
     type: entity_reference_autocomplete
-    weight: 3
+    weight: 6
     region: content
     settings:
       match_operator: CONTAINS
@@ -191,80 +174,21 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_topic_bg_narrow:
-    type: image_image
-    weight: 64
-    region: content
-    settings:
-      progress_indicator: throbber
-      preview_image_style: thumbnail
-    third_party_settings:
-      conditional_fields:
-        613aa4c0-b2bd-4a70-86a2-a70b23f9b8fa:
-          entity_type: node
-          bundle: topic_page
-          dependee: field_topic_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: topic
-            effect: show
-            effect_options: {  }
-            selector: ''
-  field_topic_bg_wide:
-    type: image_image
-    weight: 63
-    region: content
-    settings:
-      progress_indicator: throbber
-      preview_image_style: thumbnail
-    third_party_settings:
-      conditional_fields:
-        b50ee6a9-15bd-4f50-8f89-4702d6daa7b9:
-          entity_type: node
-          bundle: topic_page
-          dependee: field_topic_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: topic
-            effect: show
-            effect_options: {  }
-            selector: ''
   field_topic_content_cards:
     type: entity_reference_paragraphs
-    weight: 39
+    weight: 1
     region: content
     settings:
-      title: 'Content card group'
-      title_plural: 'Content card groups'
+      title: 'Link group'
+      title_plural: 'Link groups'
       edit_mode: open
       add_mode: dropdown
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-  field_topic_display_links:
-    type: boolean_checkbox
-    weight: 37
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
   field_topic_lede:
     type: string_textfield
-    weight: 59
+    weight: 58
     region: content
     settings:
       size: 60
@@ -273,20 +197,20 @@ content:
       conditional_fields: {  }
   field_topic_metatags:
     type: metatag_firehose
-    weight: 2
+    weight: 3
     region: content
     settings:
       sidebar: true
     third_party_settings: {  }
   field_topic_ref_icon:
     type: options_select
-    weight: 62
+    weight: 61
     region: content
     settings: {  }
     third_party_settings: {  }
   field_topic_ref_related_topics:
     type: entity_reference_autocomplete
-    weight: 7
+    weight: 36
     region: content
     settings:
       match_operator: CONTAINS
@@ -294,67 +218,9 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_topic_section_bg_narrow:
-    type: image_image
-    weight: 66
-    region: content
-    settings:
-      progress_indicator: throbber
-      preview_image_style: thumbnail
-    third_party_settings:
-      conditional_fields:
-        8a493627-bf2b-4406-bf53-41b7288d6316:
-          entity_type: node
-          bundle: topic_page
-          dependee: field_topic_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: 'section landing'
-            effect: show
-            effect_options: {  }
-            selector: ''
-  field_topic_section_bg_wide:
-    type: image_image
-    weight: 65
-    region: content
-    settings:
-      progress_indicator: throbber
-      preview_image_style: thumbnail
-    third_party_settings:
-      conditional_fields:
-        db3199b3-3041-4394-a5d8-7d0c9b7cbd82:
-          entity_type: node
-          bundle: topic_page
-          dependee: field_topic_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: 'section landing'
-            effect: show
-            effect_options: {  }
-            selector: ''
-  field_topic_type:
-    type: options_buttons
-    weight: 58
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 4
+    weight: 2
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -410,12 +276,19 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_image_credit: true
+  field_topic_bg_narrow: true
+  field_topic_bg_wide: true
+  field_topic_display_links: true
+  field_topic_section_bg_narrow: true
+  field_topic_section_bg_wide: true
+  field_topic_type: true
   langcode: true
   path: true
   promote: true

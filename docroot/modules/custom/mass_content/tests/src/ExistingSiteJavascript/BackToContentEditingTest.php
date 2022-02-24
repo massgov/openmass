@@ -3,6 +3,8 @@
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\file\Entity\File;
+use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\Tests\paragraphs\FunctionalJavascript\ParagraphsTestBaseTrait;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
@@ -13,6 +15,7 @@ use weitzman\LoginTrait\LoginTrait;
 class BackToContentEditingTest extends ExistingSiteWebDriverTestBase {
 
   use LoginTrait;
+  use ParagraphsTestBaseTrait;
 
   /**
    * Creates and returns a unpublished topic page node.
@@ -33,9 +36,17 @@ class BackToContentEditingTest extends ExistingSiteWebDriverTestBase {
       'type' => 'topic_page',
       'title' => 'Test',
       'field_topic_lede' => 'Short description',
-      'field_topic_bg_wide' => $image,
       'field_organizations' => [$org_node],
       'moderation_state' => 'unpublished',
+      'field_topic_content_cards' => [
+        Paragraph::create([
+          'type' => 'content_card_group',
+          'field_content_card_link_cards' => [
+            'uri' => 'http://test.card',
+            'title' => 'Test Card',
+          ]
+        ])
+      ],
       'status' => 0,
     ]);
 

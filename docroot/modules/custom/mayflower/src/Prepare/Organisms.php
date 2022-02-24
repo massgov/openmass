@@ -699,7 +699,10 @@ class Organisms {
     $description = '';
     if (array_key_exists('description', $fields)) {
       if (Helper::isFieldPopulated($entity, $fields['description'])) {
-        if ($entity->field_display_short_description->value === '1') {
+        if (!Helper::isFieldPopulated($entity, 'field_display_short_description')) {
+          $description = "";
+        }
+        elseif ($entity->field_display_short_description->value === '1') {
           $description = $entity->{$fields['description']}->value;
         }
       }

@@ -9,7 +9,6 @@ use Drupal\block\Entity\Block;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
@@ -29,7 +28,6 @@ use Drupal\mass_utility\RelatedToHelper;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -4365,6 +4363,29 @@ function mass_theme_preprocess_field__person_org_role(&$variables) {
 }
 
 /**
+ * Build block early on the page and set a variable for html.html.twig.
+ */
+function mass_theme_block_alert_build(&$variables) {
+  $block_configs = [
+    'sitewide_alerts' => Block::load('sitewide_alerts'),
+    'page_alerts' => Block::load('page_alerts'),
+  ];
+
+  /** @var Drupal\block\Entity\Block $block_config */
+  foreach ($block_configs as $id => $block_config) {
+
+    if (!$block_config->access('view')) {
+      continue;
+    }
+    $block_manager = \Drupal::service('plugin.manager.block');
+    /** @var Drupal\mass_alerts\Plugin\Block\AlertsBlock */
+    $plugin_block = $block_manager->createInstance('mass_alerts_block', $block_config->get('settings'));
+    $path = $plugin_block->build()['#path'];
+    $variables[$id . '_path'] = $path;
+  }
+}
+
+/**
  * Implements hook_preprocess_HOOK().
  *
  * Various global preprocessing.
@@ -4373,6 +4394,8 @@ function mass_theme_preprocess_html(&$variables) {
   if (isset($variables['node_type'])) {
     $node_type = $variables['node_type'];
   }
+
+  mass_theme_block_alert_build($variables);
 
   $variables['optimize_hiding_snippet'] = \Drupal::state()->get('optimize_hiding_snippet', FALSE);
 
