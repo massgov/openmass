@@ -740,6 +740,12 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
   // because it is a UNION, the second select doesn't define columns.
   $media_query->addField('media_field_data', 'mid');
 
+  // @todo test how sorting is affected by these expressions.
+  // @todo use creation date when
+  // event start date or news publish date is not available?
+  $media_query->addExpression('\'extra\'', '1');
+  $media_query->addExpression('\'extra1\'', '1');
+
   // Put together nodes and media on the same query.
   $query->union($media_query);
 }
