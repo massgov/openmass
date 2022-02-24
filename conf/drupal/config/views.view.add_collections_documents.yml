@@ -1,4 +1,4 @@
-uuid: 8e2cae0b-3e93-4da8-b5f9-b3b0ab2af9c3
+uuid: 2fa7b0de-c721-4a28-9706-1916c5d70855
 langcode: en
 status: true
 dependencies:
@@ -16,8 +16,8 @@ dependencies:
     - views_bulk_operations
 _core:
   default_config_hash: '-fJpPBLfGRPa6VPFiBweHcjlSOTqltsw5cbz8VVqXAI'
-id: change_collections_documents
-label: 'Change collections Documents'
+id: add_collections_documents
+label: 'Add collections Documents'
 module: views
 description: ''
 tag: ''
@@ -30,7 +30,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'Change Documents Collections'
+      title: 'Add Collections to Documents'
       fields:
         views_bulk_operations_bulk_form:
           id: views_bulk_operations_bulk_form
@@ -82,13 +82,13 @@ display:
           empty_zero: false
           hide_alter_empty: true
           batch: true
-          batch_size: 25
+          batch_size: 50
           form_step: true
           buttons: true
           action_title: Action
           selected_actions:
             6:
-              action_id: mass_views_change_documents_collections
+              action_id: mass_views_add_documents_collections
               preconfiguration:
                 add_confirmation: 1
           clear_on_exposed: false
@@ -1120,13 +1120,13 @@ display:
         - 'config:workflow_list'
   media_page_list:
     id: media_page_list
-    display_title: 'Change Documents Collections'
+    display_title: 'Add Collections to Documents'
     display_plugin: page
     position: 1
     display_options:
       display_description: ''
       display_extenders: {  }
-      path: admin/ma-dash/reports/change-collections-documents
+      path: admin/ma-dash/reports/add-collections-documents
       menu:
         type: none
         title: Media

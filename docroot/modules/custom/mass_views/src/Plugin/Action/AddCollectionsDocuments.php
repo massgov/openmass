@@ -9,17 +9,17 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
- * Allows to change Collections field value.
+ * Allows to add Collections field value.
  *
  * @see https://www.drupal.org/docs/contributed-modules/views-bulk-operations-vbo/creating-a-new-action#s-2-action-class
  *
  * @Action(
- *   id = "mass_views_change_documents_collections",
- *   label = @Translation("Change Documents Collections"),
+ *   id = "mass_views_add_documents_collections",
+ *   label = @Translation("Add Collections to Documents"),
  *   type = "media"
  * )
  */
-class ChangeDocumentsCollections extends ViewsBulkOperationsActionBase {
+class AddCollectionsDocuments extends ViewsBulkOperationsActionBase {
 
   use StringTranslationTrait;
 
@@ -48,7 +48,7 @@ class ChangeDocumentsCollections extends ViewsBulkOperationsActionBase {
 
     $entity->setNewRevision(TRUE);
     $entity->setRevisionUserId(\Drupal::currentUser()->id());
-    $entity->setRevisionLogMessage('Revision created with "Move Collections" feature.');
+    $entity->setRevisionLogMessage('Revision created with "Add Collections" feature.');
     $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
     $entity->save();
 
@@ -57,7 +57,7 @@ class ChangeDocumentsCollections extends ViewsBulkOperationsActionBase {
       $media_latest = $media_storage->loadRevision($vid);
       $media_latest->setNewRevision(TRUE);
       $media_latest->setRevisionUserId(\Drupal::currentUser()->id());
-      $media_latest->setRevisionLogMessage('Revision created with "Move Collections" feature.');
+      $media_latest->setRevisionLogMessage('Revision created with "Add Collections" feature.');
       $media_latest->setRevisionCreationTime(\Drupal::time()->getRequestTime());
       if (is_array($new_collection_id)) {
         if (!empty($media_latest->field_collections->getValue())) {
@@ -128,7 +128,7 @@ class ChangeDocumentsCollections extends ViewsBulkOperationsActionBase {
 
       $form['#list'] = $this->context['list'];
 
-      $form['actions']['submit']['#value'] = $this->t('Change collections');
+      $form['actions']['submit']['#value'] = $this->t('Add collections');
 
       $form['new_collection'] = [
         '#type' => 'checkbox_tree',
