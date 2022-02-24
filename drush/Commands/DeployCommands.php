@@ -86,7 +86,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       'json' => [
         'branch' => $options['ci-branch'],
         'parameters' => [
-          'post-trigger' => FALSE,
           'webhook' => FALSE,
           'ma-backstop' => TRUE,
           'target' => $target,
@@ -136,7 +135,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       'json' => [
         'branch' => $options['ci-branch'],
         'parameters' => [
-          'post-trigger' => FALSE,
           'webhook' => FALSE,
           'ma-cf-deploy' => TRUE,
           'target' => $target,
@@ -231,7 +229,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       'json' => [
         'branch' => $options['ci-branch'] ?: $git_ref,
         'parameters' => [
-          'post-trigger' => FALSE,
           'webhook' => FALSE,
           'ma-release' => TRUE,
           'target' => $target,
