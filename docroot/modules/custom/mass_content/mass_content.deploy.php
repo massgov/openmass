@@ -742,7 +742,7 @@ function mass_content_deploy_published_date(&$sandbox) {
       if ($node->hasField($field_name) && $node->hasField('field_date_published')) {
         if (!$node->$field_name->isEmpty()) {
           $published_date = $node->get($field_name)->getValue();
-          $node->set($field_name, '');
+          $node->set($field_name, 0);
           $node->set('field_date_published', $published_date);
           // Save the node.
           // Save without updating the last modified date. This requires a core patch
