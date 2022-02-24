@@ -1562,7 +1562,20 @@ display:
           admin_label: 'file from field_upload_file'
           plugin_id: standard
           required: false
-      header: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: false
+          content:
+            value: '<p>You can add collection tagging to documents with this bulk feature but it does not allow you to remove collections tags in bulk. To remove collection tags, you will need to edit the items individually.</p>'
+            format: basic_html
+          tokenize: false
       footer: {  }
       display_extenders: {  }
     cache_metadata:
