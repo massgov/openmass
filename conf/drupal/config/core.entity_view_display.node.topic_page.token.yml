@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
     - field.field.node.topic_page.field_primary_parent
+    - field.field.node.topic_page.field_restrict_link_management
     - field.field.node.topic_page.field_reusable_label
     - field.field.node.topic_page.field_short_title
     - field.field.node.topic_page.field_state_organization_tax
@@ -26,6 +27,7 @@ dependencies:
     - node.type.topic_page
   module:
     - entity_reference_revisions
+    - mass_map
     - user
 id: node.topic_page.token
 targetEntityType: node
@@ -34,39 +36,38 @@ mode: token
 content:
   field_topic_content_cards:
     type: entity_reference_revisions_entity_view
-    weight: 4
     label: above
     settings:
       view_mode: token
       link: ''
     third_party_settings: {  }
-    weight: 8
+    weight: 4
     region: content
   field_topic_lede:
-    weight: 1
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 2
+    weight: 1
     region: content
   field_topic_ref_icon:
-    weight: 2
+    type: map_row_formatter
     label: above
-    settings:
-      link: true
+    settings: {  }
     third_party_settings: {  }
-    weight: 3
+    weight: 2
     region: content
   field_topic_ref_related_topics:
-    weight: 3
+    type: map_row_formatter
     label: above
-    settings:
-      link: true
+    settings: {  }
     third_party_settings: {  }
-    weight: 6
+    weight: 3
     region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 0
     region: content
   workbench_moderation_control:
@@ -83,6 +84,7 @@ hidden:
   field_intended_audience: true
   field_organizations: true
   field_primary_parent: true
+  field_restrict_link_management: true
   field_reusable_label: true
   field_short_title: true
   field_state_organization_tax: true
