@@ -107,7 +107,7 @@ function mass_hierarchy_views_pre_view($view) {
  * Deletes revision that are not current on the nested set table.
  */
 function mass_hierarchy_delete_other_revisions_from_nested_set_table(Node $node) {
-  if ($node->isNew()) {
+  if ($node->isNew() || $node->isSyncing()) {
     return;
   }
 
