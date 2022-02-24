@@ -114,7 +114,6 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
       'rules',
       'curated_list',
       'location',
-      'topic_page',
       'binder',
       'event',
       'location_details',
