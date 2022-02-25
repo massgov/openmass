@@ -707,11 +707,28 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
   // To identify later this result is from a node.
   $query->addExpression('\'node\'', 'entity_type');
 
+  // Only show types related to the selected sort order.
+  $order_by= $query->getOrderBy();
+  $order_by_event = $order_by['node__field_event_date_field_event_date_value'] ?? FALSE;
+  if ($order_by_event) {
+
+    $query->condition('type', 'event');
+  }
+
+  $order_by_news = $order_by['node__field_news_date_field_news_date_value'] ?? FALSE;
+  if ($order_by_news) {
+    $query->condition('type', 'news');
+  }
+
   // Executes collection_all_media to then get its query.
   views_get_view_result('collection_all_media', 'default');
 
   /** @var Drupal\Core\Database\Query\Select $media_query */
   $media_query = mass_content_query_collection_media();
+
+  if (!$media_query) {
+    return;
+  }
 
   // Avoids repeated results and syntax errors due to the removal of fields.
   // This may leave if set on the view, but to ensure it we can set it here.
@@ -731,20 +748,21 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
   // Order of field/columns is important.
   $fields = &$media_query->getFields();
   $fields = [];
-  $media_query->addField('media_field_data', 'mid', 'not_used_1');
-  $media_query->addField('media_field_data', 'mid', 'not_used_2');
+  $media_query->addField('media_field_data', 'mid', 'extra_column_1');
+  $media_query->addField('media_field_data', 'mid', 'extra_column_2');
+  $media_query->addField('media_field_data', 'mid', 'extra_column_3');
+  $media_query->addField('media_field_data', 'mid', 'extra_column_4');
+
+  // If the sort is for news of event do not show media.
+  if ($order_by_event || $order_by_news) {
+    $media_query->condition('mid', -1);
+  }
 
   // Same alias from the node title to be able to sort nodes and media by title.
   $media_query->addField('media__field_title', 'field_title_value', 'node_field_data_title');
   // Last field, on the same column as NID, the alias doesn't matter here
   // because it is a UNION, the second select doesn't define columns.
   $media_query->addField('media_field_data', 'mid');
-
-  // @todo test how sorting is affected by these expressions.
-  // @todo use creation date when
-  // event start date or news publish date is not available?
-  $media_query->addExpression('\'extra\'', '1');
-  $media_query->addExpression('\'extra1\'', '1');
 
   // Put together nodes and media on the same query.
   $query->union($media_query);
