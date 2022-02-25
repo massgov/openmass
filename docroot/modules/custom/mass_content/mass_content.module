@@ -708,10 +708,9 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
   $query->addExpression('\'node\'', 'entity_type');
 
   // Only show types related to the selected sort order.
-  $order_by= $query->getOrderBy();
+  $order_by = $query->getOrderBy();
   $order_by_event = $order_by['node__field_event_date_field_event_date_value'] ?? FALSE;
   if ($order_by_event) {
-
     $query->condition('type', 'event');
   }
 
