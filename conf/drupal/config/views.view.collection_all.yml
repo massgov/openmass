@@ -452,7 +452,7 @@ display:
               plugin_id: default
               advanced:
                 combine: true
-                combine_rewrite: ''
+                combine_rewrite: "Title Asc|Alpha by title - ascending\r\nTitle Desc|Alpha by title - descending\r\nPublish date (News) Asc|Publish date (News) - ascending\r\nPublish date (News) Desc|Publish date - descending\r\nStart date (Events) Asc|Event start date - ascending\r\nStart date (Events) Desc|Event start date - descending\r\n"
                 reset: false
                 reset_label: ''
                 collapsible: false
@@ -508,7 +508,7 @@ display:
           plugin_id: standard
           order: ASC
           expose:
-            label: 'Alpha by title'
+            label: Title
             field_identifier: title
           exposed: true
         field_news_date_value:
@@ -535,7 +535,7 @@ display:
           plugin_id: datetime
           order: ASC
           expose:
-            label: 'Event start date'
+            label: 'Start date (Events)'
             field_identifier: event_date
           exposed: true
           granularity: second
@@ -965,6 +965,7 @@ display:
         - 'config:core.entity_view_display.node.news.default'
         - 'config:core.entity_view_display.node.news.link_and_description'
         - 'config:core.entity_view_display.node.news.link_only'
+        - 'config:core.entity_view_display.node.news.listing'
         - 'config:core.entity_view_display.node.news.press_teaser'
         - 'config:core.entity_view_display.node.news.teaser'
         - 'config:core.entity_view_display.node.news.token'
@@ -1172,6 +1173,7 @@ display:
         - 'config:core.entity_view_display.node.news.default'
         - 'config:core.entity_view_display.node.news.link_and_description'
         - 'config:core.entity_view_display.node.news.link_only'
+        - 'config:core.entity_view_display.node.news.listing'
         - 'config:core.entity_view_display.node.news.press_teaser'
         - 'config:core.entity_view_display.node.news.teaser'
         - 'config:core.entity_view_display.node.news.token'
