@@ -74,8 +74,6 @@ third_party_settings:
         - group_banner
         - group_overview
         - group_content
-        - group_tasks_key_info
-        - group_map
         - group_additional_info
         - group_key_performance_indicators
       label: 'Service Edit Form'
@@ -92,7 +90,6 @@ third_party_settings:
         - title
         - field_short_title
         - field_service_lede
-        - field_template
         - field_service_bg_wide
         - field_image_credit
         - field_primary_parent
@@ -139,13 +136,13 @@ third_party_settings:
         required_fields: true
     group_tasks_key_info:
       children:
-        - group_what_would_you_like_to_do_
         - field_link_group
+        - group_what_would_you_like_to_do_
         - group_what_you_need_to_know
       label: 'Tasks and key info'
-      region: content
-      parent_name: group_service_edit_form
-      weight: 23
+      region: hidden
+      parent_name: ''
+      weight: 15
       format_type: tab
       format_settings:
         classes: ''
@@ -155,14 +152,14 @@ third_party_settings:
         required_fields: true
     group_map:
       children:
-        - field_service_ref_locations
         - field_location_button_label
         - field_location_button_short_desc
         - field_related_organization_type
+        - field_service_ref_locations
       label: Map
-      region: content
-      parent_name: group_service_edit_form
-      weight: 24
+      region: hidden
+      parent_name: ''
+      weight: 16
       format_type: tab
       format_settings:
         classes: ''
@@ -172,13 +169,12 @@ third_party_settings:
         required_fields: true
     group_additional_info:
       children:
-        - field_event_quantity
         - field_service_ref_services_6
         - group_additional_resources
       label: 'Additional info'
       region: content
       parent_name: group_service_edit_form
-      weight: 25
+      weight: 24
       format_type: tab
       format_settings:
         classes: ''
@@ -188,12 +184,12 @@ third_party_settings:
         required_fields: true
     group_what_would_you_like_to_do_:
       children:
-        - field_service_ref_actions_2
         - field_service_ref_actions
+        - field_service_ref_actions_2
       label: 'What would you like to do?'
-      region: content
+      region: hidden
       parent_name: group_tasks_key_info
-      weight: 47
+      weight: 39
       format_type: fieldset
       format_settings:
         classes: ''
@@ -204,9 +200,9 @@ third_party_settings:
       children:
         - field_service_key_info_links_6
       label: 'What you need to know'
-      region: content
+      region: hidden
       parent_name: group_tasks_key_info
-      weight: 50
+      weight: 41
       format_type: fieldset
       format_settings:
         classes: ''
@@ -241,7 +237,7 @@ third_party_settings:
       label: 'Service Family Key Indicators'
       region: content
       parent_name: group_service_edit_form
-      weight: 26
+      weight: 25
       format_type: tab
       format_settings:
         classes: ''
@@ -249,25 +245,21 @@ third_party_settings:
         formatter: closed
         description: 'Key indicators are the most important metrics you need to track.'
         required_fields: true
-        id: ''
-        classes: ''
-      label: 'Service Family Key Indicators'
-      region: content
     group_content:
       children:
         - field_service_sections
+      label: Content
+      region: content
       parent_name: group_service_edit_form
       weight: 22
       format_type: tab
-      region: content
       format_settings:
-        description: ''
-        formatter: closed
-        required_fields: true
-        id: ''
         classes: ''
         show_empty_fields: false
-      label: Content
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
 id: node.service_page.default
 targetEntityType: node
 bundle: service_page
@@ -367,12 +359,6 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-  field_event_quantity:
-    type: options_select
-    weight: 65
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   field_image_credit:
     type: string_textfield
     weight: 75
@@ -388,7 +374,9 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_kpi_pl_avg_cl_comp_time:
-    weight: 10
+    type: number
+    weight: 57
+    region: content
     settings:
       placeholder: ''
     third_party_settings:
@@ -411,7 +399,9 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_pl_cl_app_starts:
-    weight: 7
+    type: number
+    weight: 53
+    region: content
     settings:
       placeholder: ''
     third_party_settings:
@@ -434,7 +424,9 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_pl_cl_app_subs:
-    weight: 8
+    type: number
+    weight: 55
+    region: content
     settings:
       placeholder: ''
     third_party_settings:
@@ -457,7 +449,9 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_pl_cl_task_rate:
-    weight: 9
+    type: number
+    weight: 56
+    region: content
     settings:
       placeholder: ''
     third_party_settings:
@@ -480,7 +474,9 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_pl_em_app_review_rate:
-    weight: 12
+    type: number
+    weight: 59
+    region: content
     settings:
       placeholder: ''
     third_party_settings:
@@ -503,7 +499,9 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_pl_em_app_review_time:
-    weight: 13
+    type: number
+    weight: 60
+    region: content
     settings:
       placeholder: ''
     third_party_settings:
@@ -526,7 +524,9 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_pl_em_app_reviews:
-    weight: 11
+    type: number
+    weight: 58
+    region: content
     settings:
       placeholder: ''
     third_party_settings:
@@ -549,7 +549,9 @@ content:
             effect_options: {  }
             selector: ''
   field_kpi_sessions_clicks_pl_pct:
-    weight: 6
+    type: number
+    weight: 52
+    region: content
     settings:
       placeholder: ''
     third_party_settings:
@@ -568,35 +570,6 @@ content:
             value_form:
               -
                 value: sessions_clicks_pl_pct
-            effect: show
-            effect_options: {  }
-            selector: ''
-  field_link_group:
-    type: entity_reference_paragraphs
-    weight: 48
-    settings:
-      title: 'Link group'
-      title_plural: 'Link groups'
-      edit_mode: open
-      add_mode: button
-      form_display_mode: default
-      default_paragraph_type: _none
-    third_party_settings:
-      conditional_fields:
-        241e3d22-b728-4984-9028-593fd9646c5c:
-          entity_type: node
-          bundle: service_page
-          dependee: field_template
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: custom
             effect: show
             effect_options: {  }
             selector: ''
@@ -639,24 +612,10 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-  field_location_button_label:
-    type: string_textfield
-    weight: 45
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_location_button_short_desc:
-    type: string_textfield
-    weight: 46
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   field_log_in_links:
-    weight: 41
+    type: link_default
+    weight: 42
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -683,19 +642,14 @@ content:
       hide_weight: true
     third_party_settings: {  }
   field_ref_contact_info:
-    weight: 39
+    type: entity_reference_autocomplete
+    weight: 40
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
-    third_party_settings: {  }
-  field_related_organization_type:
-    type: boolean_checkbox
-    weight: 47
-    region: content
-    settings:
-      display_label: false
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
@@ -724,7 +678,9 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_service_eligibility_info:
-    weight: 38
+    type: entity_reference_autocomplete
+    weight: 39
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -750,7 +706,9 @@ content:
             effect_options: {  }
             selector: ''
   field_service_file:
-    weight: 12
+    type: inline_entity_form_complex
+    weight: 56
+    region: content
     settings:
       form_mode: default
       override_labels: false
@@ -785,34 +743,10 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-  field_service_key_info_links_6:
-    type: link_default
-    weight: 47
-    region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
-    third_party_settings:
-      conditional_fields:
-        0b155678-04da-48b7-ad0e-d83a4c054b82:
-          entity_type: node
-          bundle: service_page
-          dependee: field_template
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: default
-            effect: show
-            effect_options: {  }
-            selector: ''
   field_service_kpi_choice:
-    weight: 4
+    type: options_buttons
+    weight: 51
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields: {  }
@@ -825,7 +759,9 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_service_links:
-    weight: 11
+    type: link_default
+    weight: 55
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -849,54 +785,26 @@ content:
             effect_options: {  }
             selector: ''
   field_service_metatags:
+    type: metatag_firehose
     weight: 2
+    region: content
     settings:
       sidebar: true
     third_party_settings: {  }
   field_service_offered_by:
-    weight: 40
+    type: entity_reference_autocomplete
+    weight: 41
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_service_ref_actions:
-    type: link_default
-    weight: 24
-    region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
-    third_party_settings:
-      conditional_fields:
-        909148ea-9d8d-4500-811a-5f0cdebcd1b1:
-          entity_type: node
-          bundle: service_page
-          dependee: field_template
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: default
-            effect: show
-            effect_options: {  }
-            selector: ''
-  field_service_ref_actions_2:
-    type: link_default
-    weight: 23
-    region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
-    third_party_settings: {  }
   field_service_ref_guide_page_1:
+    type: entity_reference_autocomplete
     weight: 37
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -921,16 +829,6 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-  field_service_ref_locations:
-    type: entity_reference_autocomplete
-    weight: 44
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   field_service_ref_services_6:
     type: entity_reference_autocomplete
     weight: 66
@@ -941,20 +839,18 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_service_sections:
     type: entity_reference_paragraphs
-    weight: 46
+    weight: 13
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
       edit_mode: open
-      add_mode: button
+      add_mode: dropdown
       form_display_mode: default
-      default_paragraph_type: service_section
+      default_paragraph_type: ''
     third_party_settings: {  }
-    region: content
   field_service_video:
     type: inline_entity_form_complex
     weight: 35
@@ -976,7 +872,9 @@ content:
       entity_browser_entity_form:
         entity_browser_id: video_browser
   field_services_social_links:
+    type: link_default
     weight: 36
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -991,23 +889,18 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_state_organization_tax:
-    weight: 4
+    type: entity_reference_autocomplete
+    weight: 3
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_template:
-    type: options_buttons
-    weight: 72
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 5
-    settings: {  }
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -1063,13 +956,23 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 6
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_event_quantity: true
+  field_link_group: true
+  field_location_button_label: true
+  field_location_button_short_desc: true
+  field_related_organization_type: true
   field_service_bg_narrow: true
+  field_service_key_info_links_6: true
+  field_service_ref_actions: true
+  field_service_ref_actions_2: true
+  field_service_ref_locations: true
+  field_template: true
   langcode: true
   path: true
   promote: true
