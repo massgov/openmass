@@ -90,7 +90,6 @@ third_party_settings:
         - title
         - field_short_title
         - field_service_lede
-        - field_template
         - field_service_bg_wide
         - field_image_credit
         - field_primary_parent
@@ -137,13 +136,13 @@ third_party_settings:
         required_fields: true
     group_tasks_key_info:
       children:
-        - group_what_would_you_like_to_do_
         - field_link_group
+        - group_what_would_you_like_to_do_
         - group_what_you_need_to_know
       label: 'Tasks and key info'
       region: hidden
       parent_name: ''
-      weight: 6
+      weight: 15
       format_type: tab
       format_settings:
         classes: ''
@@ -160,7 +159,7 @@ third_party_settings:
       label: Map
       region: hidden
       parent_name: ''
-      weight: 15
+      weight: 16
       format_type: tab
       format_settings:
         classes: ''
@@ -185,8 +184,8 @@ third_party_settings:
         required_fields: true
     group_what_would_you_like_to_do_:
       children:
-        - field_service_ref_actions_2
         - field_service_ref_actions
+        - field_service_ref_actions_2
       label: 'What would you like to do?'
       region: hidden
       parent_name: group_tasks_key_info
@@ -899,12 +898,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_template:
-    type: options_buttons
-    weight: 72
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 5
@@ -979,6 +972,7 @@ hidden:
   field_service_ref_actions: true
   field_service_ref_actions_2: true
   field_service_ref_locations: true
+  field_template: true
   langcode: true
   path: true
   promote: true
