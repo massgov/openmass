@@ -26,7 +26,6 @@ function mass_caching_purge_purgers_alter(array &$definitions): void {
     $definitions['akamai']['class'] = \Drupal\mass_caching\AkamaiPurger::class;
   }
 
-
   // Change handled types depending on env. Start with disabled for both purgers.
   $akamai = $acquia_purge = FALSE;
 

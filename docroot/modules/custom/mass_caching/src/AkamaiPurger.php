@@ -11,6 +11,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
  * This purger class gets swapped in via mass_caching_purge_purgers_alter().
  */
 class AkamaiPurger extends \Drupal\akamai\Plugin\Purge\Purger\AkamaiPurger {
+
   /**
    * {@inheritdoc}
    */
@@ -40,7 +41,7 @@ class AkamaiPurger extends \Drupal\akamai\Plugin\Purge\Purger\AkamaiPurger {
     // Mass: Added an array_unique() here as quick fix for dupes.
     $urls_to_clear = array_unique($urls_to_clear);
 
-    // Mass: Go right to purgeRequest(), byoassing unwanted check in purgeUrls().
+    // Mass: Go right to purgeRequest(), bypassing unwanted check in purgeUrls().
     $method = new \ReflectionMethod($this->client, 'purgeRequest');
     $method->setAccessible(TRUE);
     if ($method->invoke($this->client, $urls_to_clear)) {
@@ -50,13 +51,9 @@ class AkamaiPurger extends \Drupal\akamai\Plugin\Purge\Purger\AkamaiPurger {
       }
     }
     else {
-      $msg = 'AkamaiPurger: Failed to purge ' . count($urls_to_clear) .  ' url(s): ' . implode(', ', $urls_to_clear);
+      $msg = 'AkamaiPurger: Failed to purge ' . count($urls_to_clear) . ' url(s): ' . implode(', ', $urls_to_clear);
       $this->logger()->error($msg);
-      // Avoid holding up future purges by marking invalidations as succeeded.
-      // @todo Address root cause and remove this loop.
-      //      foreach ($invalidations as $invalidation) {
-      //        $invalidation->setState(InvalidationInterface::SUCCEEDED);
-      //      }
     }
   }
+
 }
