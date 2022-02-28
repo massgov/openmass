@@ -7179,6 +7179,8 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
   $breadcrumb = $variables['breadcrumb'];
   $itemListElement = [];
 
+  $variables['current_page'] = end($breadcrumb)['text'];
+
   // Remove current page.
   foreach ($breadcrumb as $key => $link) {
     if ($link['url'] == "") {
