@@ -12,6 +12,7 @@ dependencies:
   module:
     - content_moderation
     - file
+    - mass_views
     - media
     - taxonomy
     - user
@@ -175,10 +176,10 @@ display:
           alter:
             alter_text: false
             text: ''
-            make_link: false
-            path: ''
+            make_link: true
+            path: 'https://www.mass.gov/media/{{ mid }}/download'
             absolute: false
-            external: false
+            external: true
             replace_spaces: false
             path_case: none
             trim_whitespace: false
@@ -1175,30 +1176,28 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        field_organizations_target_id:
-          id: field_organizations_target_id
-          table: media__field_organizations
-          field: field_organizations_target_id
+        media_org_filter:
+          id: media_org_filter
+          table: media_field_data
+          field: media_org_filter
           relationship: none
           group_type: group
           admin_label: ''
-          plugin_id: numeric
+          entity_type: media
+          plugin_id: mass_views_media_org_filter
           operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
+          value: null
           group: 1
           exposed: true
           expose:
-            operator_id: field_organizations_target_id_op
+            operator_id: ''
             label: Organization
             description: ''
             use_operator: false
-            operator: field_organizations_target_id_op
+            operator: media_org_filter_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: field_organizations_target_id
+            identifier: media_org_filter
             required: false
             remember: false
             multiple: false
@@ -1220,9 +1219,6 @@ display:
               external_data_resource_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
