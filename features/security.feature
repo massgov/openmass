@@ -40,9 +40,6 @@ Scenario: Check for access to compromising files
   Then I should get a 403 HTTP response
   When I am on "/autoload.php"
   Then I should get a 403 HTTP response
-  # Check that access to hq2 is ok.
-  When I am on "/hq2/index.php"
-  Then I should get a 200 HTTP response
 
   # Check that /filter/tips _is_ accessible.
   # Note: Blocking this URL causes Acquia uptime checks to fail.
