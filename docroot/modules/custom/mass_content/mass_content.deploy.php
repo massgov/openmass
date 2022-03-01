@@ -703,6 +703,9 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 function mass_content_deploy_published_date(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
+  // Disable entity_hierarchy during this process.
+  Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+
   $query = \Drupal::entityQuery('node');
   $query->condition('type', ['advisory', 'binder', 'decision', 'executive_order', 'info_details', 'regulation', 'rules'], 'IN');
 
@@ -760,6 +763,8 @@ function mass_content_deploy_published_date(&$sandbox) {
 
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
+    // Enable entity_hierarchy after the process is done.
+    Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
     return t('All content "Date published" fields have been migrated.');
   }
 }
