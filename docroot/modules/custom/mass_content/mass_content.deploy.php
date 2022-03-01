@@ -7,6 +7,7 @@
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\mass_content_moderation\MassModeration;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 use Drush\Drush;
@@ -700,7 +701,7 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 /**
  * Migrate Published date field value to the new field.
  */
-function mass_content_deploy_date_published(&$sandbox) {
+function mass_content_deploy_date_published3(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   // Disable entity_hierarchy during this process.
@@ -744,7 +745,7 @@ function mass_content_deploy_date_published(&$sandbox) {
     $sandbox['current'] = $node->id();
     // Set the updated date for events.
     foreach ($field_names as $field_name) {
-      if ($node->hasField($field_name) && $node->hasField('field_date_published')) {
+      if ($node->hasField($field_name) && $node->hasField('field_date_published') && $node->moderation_state->value != MassModeration::TRASH) {
         if (!$node->$field_name->isEmpty()) {
           $published_date = $node->get($field_name)->getValue();
           $node->set($field_name, NULL);
