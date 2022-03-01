@@ -704,7 +704,7 @@ function mass_content_deploy_date_published(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   // Disable entity_hierarchy during this process.
-  Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+  Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
 
   $query = \Drupal::entityQuery('node');
   $query->condition('type', ['advisory', 'binder', 'decision', 'executive_order', 'info_details', 'regulation', 'rules'], 'IN');
@@ -764,7 +764,7 @@ function mass_content_deploy_date_published(&$sandbox) {
   }
 
   // Enable entity_hierarchy after the process is done.
-  Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+  Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
 
   $memory_cache->deleteAll();
 
