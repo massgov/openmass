@@ -62,7 +62,6 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
     $sitewide = $query->execute();
     // Last item.
     $sitewide = reset($sitewide);
-    $results = ['emergencyAlerts' => []];
 
     if (!empty($sitewide)) {
       $node = $nodeStorage->load($sitewide);
@@ -76,6 +75,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           'showText' => $this->t('Show'),
         ],
       ];
+
+      $results = [];
 
       $results['emergencyAlerts'] = $emergencyAlerts;
       $results['emergencyAlerts']['alerts'] = [];
@@ -155,7 +156,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
     $response = new CacheableResponse($output);
 
-    if (!empty($node)) {
+    if ($node) {
       $response->addCacheableDependency($node);
     }
 

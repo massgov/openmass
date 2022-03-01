@@ -284,11 +284,7 @@ function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
 function mass_alerts_theme() {
   return [
     'mass_alerts_block' => [
-      'variables' => [
-        'path' => NULL,
-        'type' => '',
-        'wait' => TRUE,
-      ],
+      'variables' => ['path' => NULL],
     ],
     'mass_alerts_sitewide' => [
       'variables' => ['emergencyAlerts' => NULL],
@@ -297,4 +293,19 @@ function mass_alerts_theme() {
       'variables' => ['headerAlerts' => NULL, 'headerTitle' => NULL],
     ],
   ];
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function mass_alerts_preprocess_node(&$variables) {
+  if ($variables['view_mode'] == 'full') {
+
+    $node = $variables['node'];
+    $alert_settings = [
+      'type' => $node->getType(),
+    ];
+
+    $variables['#attached']['drupalSettings']['mass_alerts']['node'] = $alert_settings;
+  }
 }

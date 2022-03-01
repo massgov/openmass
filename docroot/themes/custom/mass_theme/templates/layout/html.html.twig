@@ -29,25 +29,6 @@
 <!DOCTYPE html>
 <html{{ html_attributes }} >
   <head>
-
-    <script>
-      document.prefetchAlertsData = {};
-      function prefetch_alerts(data) {
-        if (!data) {
-          return;
-        }
-        fetch(data).then(function (response) {
-          return response.text();
-        }).then(function (content) {
-          document.prefetchAlertsData[data] = content;
-          document.dispatchEvent(new Event('mass_alerts_data_ready'));
-        });
-      }
-
-      prefetch_alerts("{{ page_alerts_path }}");
-      prefetch_alerts("{{ sitewide_alerts_path }}");
-    </script>
-
     <!-- DEPLOYMENT IDENTIFIER: {{ deployment_identifier}} -->
     <head-placeholder token="{{ placeholder_token|raw }}">
     <title>{{ head_title|safe_join(' | ') }}</title>
@@ -59,15 +40,15 @@
 
     <link rel="preload" href="{{ file_url('libraries/mayflower-artifacts/assets/fonts/noto/Latin/NotoSansItalic-VF-subset.woff2?version=1') }}" as="font" crossorigin/>
     {# Browser support banner #}
-    <script>
+    <script> 
       var $buoop = {
         required:{e:11,c:41,f:33,o:15,s:5},
         api:2021.07,
         text: "<b>Your browser ({brow_name}) is too old.</b> Things may not look or work right.  <a{up_but}>Update browser</a>  <a{ignore_but}>Ignore</a>"
-      };
-      function $buo_f(){
-      var e = document.createElement("script");
-      e.src = "//browser-update.org/update.min.js";
+      }; 
+      function $buo_f(){ 
+      var e = document.createElement("script"); 
+      e.src = "//browser-update.org/update.min.js"; 
       document.body.appendChild(e);
       };
       try {document.addEventListener("DOMContentLoaded", $buo_f,false)}

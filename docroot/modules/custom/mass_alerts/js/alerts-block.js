@@ -102,40 +102,27 @@ var jQueryLike = function (elemOrSelector, context) {
 
 (function ($, drupalLike) {
   'use strict';
-  drupalLike.behaviors.massAlertBlocks = {
+  Drupal.behaviors.massAlertBlocks = {
 
-    attach: function (context, nodeType) {
+    /**
+     * Drupal behavior.
+     *
+     * @param {HTMLDocument|HTMLElement} context
+     * The context argument for Drupal.attachBehaviors()/detachBehaviors().
+     * @param {object} settings
+     * The settings argument for Drupal.attachBehaviors()/detachBehaviors().
+     */
+    attach: function (context, settings) {
 
-      var checkDrupalBehaviors = function () {
-        return (
-          typeof Drupal !== 'undefined' &&
-          typeof Drupal.behaviors !== 'undefined' &&
-          typeof Drupal.behaviors.MassAccordions !== 'undefined'
-        );
-      };
-
-      var checkJsAccordions = function ($alerts) {
-        return (
-          typeof jQuery !== 'undefined' &&
-          typeof jQuery($alerts[0]).data('js-accordion') !== 'undefined'
-        );
-      };
-
-      $('.mass-alerts-block', context).each(function (i, e) {
-        var $this = $(e);
-
-        if ($this.data('alertProcessed')) {
-          return;
-        }
-
-        $this.data('alertProcessed', 1);
-
-        var path = $this.data('alertsPath');
+      $('.mass-alerts-block', context).each(function () {
+        var $this = $(this);
+        var path = $this.data('alerts-path');
         var removeContainer = false;
 
-        if (!path.includes('alerts/sitewide')) {
+        if (path !== '/alerts/sitewide') {
 
-          if (nodeType !== '') {
+          if (settings.mass_alerts) {
+            var nodeType = settings.mass_alerts.node.type;
             var positioned = false;
 
             if (nodeType === 'how_to_page') {
@@ -178,100 +165,28 @@ var jQueryLike = function (elemOrSelector, context) {
           }
         }
 
+
         if (path) {
-          var manageEmergencyAlerts = function () {
-            var $alerts = $('.js-emergency-alerts');
-
-            if ($alerts.length !== 1) {
-              return;
-            }
-            var id = $alerts.attr('data-id');
-
-            var updateAccordionBaseOnCookieValue = function () {
-              $alerts.find('.js-accordion-content')[0].style.display =
-                getCookie(id) === '1' ? 'block' : 'none';
-              if (getCookie(id) === '1') {
-                $alerts[0].classList.add('is-open');
+          $.ajax({
+            type: 'GET',
+            url: path,
+            cache: true,
+            success: function (content) {
+              if (!content) {
+                $this.hide();
+                return;
               }
-              else {
-                $alerts[0].classList.remove('is-open');
+
+              $this.html(content);
+              if (removeContainer) {
+                $this.find('.ma__page-banner__container').removeClass('ma__page-banner__container');
               }
-            };
-
-            // Value by default, when there is no cookie.
-            // Front, opened.
-            // Else: closed.
-            if (typeof getCookie(id) === 'undefined') {
-              document.cookie = id + '=' + ($('body').hasClass('is-front') ? '1' : '0');
+              $(document).trigger('ma:AjaxPattern:Render', [{el: $this}]);
             }
-
-            $alerts.find('.js-accordion-link').click(function () {
-              var cookieval = getCookie(id);
-              cookieval = cookieval === '0' ? 1 : 0;
-              document.cookie = id + '=' + cookieval;
-              if (!checkJsAccordions($alerts) && !checkDrupalBehaviors()()) {
-                updateAccordionBaseOnCookieValue();
-              }
-            });
-
-            updateAccordionBaseOnCookieValue();
-          };
-
-          // https://daily-dev-tips.com/posts/vanilla-javascript-cookies/
-          var getCookie = function (name) {
-            name = name + '=';
-            var decodedCookie = decodeURIComponent(document.cookie);
-            // Get all cookies, split on ; sign
-            var cookies = decodedCookie.split(';');
-            // Loop over the cookies
-            for (var i = 0; i < cookies.length; i++) {
-              var cookie = cookies[i].trim();
-              // If this cookie has the name of what we are searching
-              if (cookie.indexOf(name) === 0) {
-                // Return everything after the cookies name
-                return cookie.substring(name.length, cookie.length);
-              }
-            }
-          };
-
-          var renderData = function (content) {
-            if (!content) {
-              $this.hide();
-              return;
-            }
-
-            $this.html(content);
-            if (removeContainer) {
-              $this.find('.ma__page-banner__container').removeClass('ma__page-banner__container');
-            }
-            $(document).trigger('ma:AjaxPattern:Render', [{el: $this}]);
-          };
-
-          var doWhenDataIsReady = function () {
-            renderData(document.prefetchAlertsData[path]);
-            manageEmergencyAlerts();
-            document.prefetchAlertsData[path] = false;
-            if (checkDrupalBehaviors()) {
-              Drupal.behaviors.MassAccordions.create();
-            }
-          };
-
-          // Check if the data is already there.
-          if (document.prefetchAlertsData[path]) {
-            doWhenDataIsReady();
-          }
-          else {
-            // Data is not ready yet.
-            // Lets listen mass_alerts_data_ready event.
-            document.addEventListener('mass_alerts_data_ready', function () {
-              if (document.prefetchAlertsData[path]) {
-                doWhenDataIsReady();
-              }
-            }, false);
-          }
+          });
         }
       });
     }
 
   };
-})(jQueryLike, drupalLike);
+})(jQuery, Drupal, drupalSettings);
