@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.event.field_collections
     - field.field.node.event.field_event_address_type
     - field.field.node.event.field_event_agenda_download
     - field.field.node.event.field_event_capacity
@@ -55,6 +56,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -114,6 +116,7 @@ third_party_settings:
         - field_organizations
         - field_intended_audience
         - field_reusable_label
+        - field_collections
       label: Overview
       region: content
       parent_name: group_event_edit_form
@@ -161,7 +164,7 @@ third_party_settings:
       label: 'Additional Resources (optional)'
       region: content
       parent_name: group_details
-      weight: 110
+      weight: 112
       format_type: fieldset
       format_settings:
         classes: ''
@@ -219,6 +222,17 @@ targetEntityType: node
 bundle: event
 mode: default
 content:
+  field_collections:
+    type: term_reference_tree
+    weight: 133
+    region: content
+    settings:
+      start_minimized: true
+      leaves_only: false
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+    third_party_settings: {  }
   field_event_address_type:
     type: options_buttons
     weight: 102
@@ -227,7 +241,7 @@ content:
     third_party_settings: {  }
   field_event_agenda_download:
     type: inline_entity_form_complex
-    weight: 103
+    weight: 61
     region: content
     settings:
       form_mode: default
@@ -248,7 +262,7 @@ content:
       conditional_fields: {  }
   field_event_capacity:
     type: string_textfield
-    weight: 106
+    weight: 109
     region: content
     settings:
       size: 60
@@ -272,7 +286,7 @@ content:
     third_party_settings: {  }
   field_event_description:
     type: text_textarea
-    weight: 107
+    weight: 110
     region: content
     settings:
       rows: 5
@@ -280,7 +294,7 @@ content:
     third_party_settings: {  }
   field_event_fees:
     type: string_textfield
-    weight: 105
+    weight: 108
     region: content
     settings:
       size: 60
@@ -288,7 +302,7 @@ content:
     third_party_settings: {  }
   field_event_image:
     type: image_image
-    weight: 104
+    weight: 107
     region: content
     settings:
       progress_indicator: throbber
@@ -304,7 +318,7 @@ content:
     third_party_settings: {  }
   field_event_link_sign_up:
     type: link_default
-    weight: 103
+    weight: 106
     region: content
     settings:
       placeholder_url: ''
@@ -332,7 +346,7 @@ content:
     third_party_settings: {  }
   field_event_meeting_agenda_sect:
     type: entity_reference_paragraphs
-    weight: 102
+    weight: 60
     region: content
     settings:
       title: 'Agenda section'
@@ -365,7 +379,7 @@ content:
     third_party_settings: {  }
   field_event_minutes_download:
     type: inline_entity_form_complex
-    weight: 59
+    weight: 58
     region: content
     settings:
       form_mode: default
@@ -448,7 +462,7 @@ content:
             selector: ''
   field_event_rain_date:
     type: string_textfield
-    weight: 102
+    weight: 105
     region: content
     settings:
       size: 60
@@ -586,7 +600,7 @@ content:
     third_party_settings: {  }
   field_event_you_will_need:
     type: text_textarea
-    weight: 109
+    weight: 111
     region: content
     settings:
       rows: 5
