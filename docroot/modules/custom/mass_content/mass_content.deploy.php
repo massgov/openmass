@@ -7,7 +7,6 @@
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\mass_content_moderation\MassModeration;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 use Drush\Drush;
@@ -708,8 +707,7 @@ function mass_content_deploy_date_published(&$sandbox) {
   Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
 
   $query = \Drupal::entityQuery('node');
-  $query->condition('type', ['advisory', 'binder', 'decision', 'executive_order', 'info_details', 'regulation', 'rules'], 'IN');
-
+  $query->condition('type', ['advisory', 'binder', 'decision', 'executive_order', 'info_details', 'regulation', 'rules', 'news'], 'IN');
   if (empty($sandbox)) {
     // Get a list of all nodes of type event.
     $sandbox['progress'] = 0;
@@ -738,26 +736,32 @@ function mass_content_deploy_date_published(&$sandbox) {
     'field_info_details_date_publishe',
     'field_regulation_last_updated',
     'field_rules_effective_date',
-    'field_advisory_date'
+    'field_advisory_date',
+    'field_news_date'
   ];
 
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
     // Set the updated date for events.
     foreach ($field_names as $field_name) {
-      if ($node->hasField($field_name) && $node->hasField('field_date_published') && $node->moderation_state->value != MassModeration::TRASH) {
+      if ($node->hasField($field_name) && $node->hasField('field_date_published')) {
         if (!$node->$field_name->isEmpty()) {
           $published_date = $node->get($field_name)->getValue();
+          if ($field_name == 'field_news_date') {
+            $news_date = $node->get($field_name)->getValue()[0]['value'];
+            $published_date = explode('T', $news_date)[0];
+          }
           $node->set($field_name, NULL);
           $node->set('field_date_published', $published_date);
           // Save the node.
           // Save without updating the last modified date. This requires a core patch
           // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
-          $node->setSyncing(TRUE);
-          $node->save();
         }
       }
     }
+
+    $node->setSyncing(TRUE);
+    $node->save();
     $sandbox['progress']++;
     Drush::logger()->notice(dt('Migrated date field value for the node: @nid', [
       '@nid' => $node->id()
