@@ -89,7 +89,7 @@ class AutomatedPurgingTest extends ExistingSiteBase {
     /** @var \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $queue */
     $queue = \Drupal::service('purge.queue');
 
-    $invalidations = $queue->claim(100);
+    $invalidations = $queue->claim(100, 10);
 
     $matching = array_filter($invalidations, function ($invalidation) use ($type, $expression) {
       return $invalidation->getType() === $type && $invalidation->getExpression() === $expression;
