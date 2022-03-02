@@ -701,7 +701,7 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 /**
  * Migrate Published date field value to the new field.
  */
-function mass_content_deploy_date_published3(&$sandbox) {
+function mass_content_deploy_date_published(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   // Disable entity_hierarchy during this process.
