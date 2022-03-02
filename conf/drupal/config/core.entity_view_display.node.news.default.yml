@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.news.field_collections
+    - field.field.node.news.field_date_published
     - field.field.node.news.field_english_version
     - field.field.node.news.field_image_credit
     - field.field.node.news.field_intended_audience
@@ -64,6 +65,15 @@ content:
       link: true
     third_party_settings: {  }
     weight: 21
+    region: content
+  field_date_published:
+    type: datetime_default
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: medium
+    third_party_settings: {  }
+    weight: 22
     region: content
   field_english_version:
     type: entity_reference_label

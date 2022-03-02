@@ -1,20 +1,20 @@
-uuid: b356f617-ac3c-4e4a-9026-0360852d90cc
+uuid: fb7d6f73-3ff8-4558-b91e-d8eb1f932d46
 langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_news_date
+    - field.storage.node.field_date_published
     - node.type.news
   module:
     - datetime
-id: node.news.field_news_date
-field_name: field_news_date
+id: node.news.field_date_published
+field_name: field_date_published
 entity_type: node
 bundle: news
-label: 'Publish date (Deprecated)'
+label: 'Publish date'
 description: 'Please select the date this item will be released.'
-required: false
-translatable: false
+required: true
+translatable: true
 default_value:
   -
     default_date_type: now
