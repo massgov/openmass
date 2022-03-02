@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.event.field_collections
     - field.field.node.event.field_event_address_type
     - field.field.node.event.field_event_agenda_download
     - field.field.node.event.field_event_capacity
@@ -73,6 +74,14 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 33
+    region: content
+  field_collections:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 35
     region: content
   field_event_address_type:
     type: list_default

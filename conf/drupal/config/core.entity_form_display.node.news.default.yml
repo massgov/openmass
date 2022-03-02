@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.news.field_collections
     - field.field.node.news.field_english_version
     - field.field.node.news.field_image_credit
     - field.field.node.news.field_intended_audience
@@ -37,6 +38,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -53,6 +55,7 @@ third_party_settings:
         - field_english_version
         - field_reusable_label
         - field_intended_audience
+        - field_collections
       label: Overview
       region: content
       parent_name: group_node_edit_form
@@ -146,6 +149,17 @@ targetEntityType: node
 bundle: news
 mode: default
 content:
+  field_collections:
+    type: term_reference_tree
+    weight: 13
+    region: content
+    settings:
+      start_minimized: true
+      leaves_only: false
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+    third_party_settings: {  }
   field_english_version:
     type: entity_reference_autocomplete
     weight: 10
@@ -232,7 +246,7 @@ content:
           - fee
   field_news_location:
     type: string_textfield
-    weight: 30
+    weight: 31
     region: content
     settings:
       size: 60
@@ -240,7 +254,7 @@ content:
     third_party_settings: {  }
   field_news_media_contac:
     type: entity_reference_paragraphs
-    weight: 2
+    weight: 106
     region: content
     settings:
       title: 'Media contact'

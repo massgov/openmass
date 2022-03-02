@@ -9,13 +9,26 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\entity_hierarchy_breadcrumb\HierarchyBasedBreadcrumbBuilder;
 use Drupal\node\Entity\Node;
-use Drupal\node\NodeInterface;
-use SplObjectStorage;
 
 /**
  * Entity hierarchy based breadcrumb builder overrides.
  */
 class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilder {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function applies(RouteMatchInterface $route_match) {
+    if ($this->adminContext->isAdminRoute($route_match->getRouteObject())) {
+      return FALSE;
+    }
+    $route_entity = $this->getEntityFromRouteMatch($route_match);
+    if (!$route_entity || !$route_entity instanceof ContentEntityInterface || !$this->getHierarchyFieldFromEntity($route_entity)) {
+      return FALSE;
+    }
+
+    return TRUE;
+  }
 
   /**
    * {@inheritdoc}
@@ -30,7 +43,6 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
     else {
       $route_entity = $this->getEntityFromRouteMatch($route_match);
     }
-
     $entity_type = $route_entity->getEntityTypeId();
     $storage = $this->storageFactory->get($this->getHierarchyFieldFromEntity($route_entity), $entity_type);
     $ancestors = $storage->findAncestors($this->nodeKeyFactory->fromEntity($route_entity));
@@ -45,7 +57,7 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
       }
       $entity = $ancestor_entities->offsetGet($ancestor_entity);
       // Show just the label for the entity from the route.
-      if ($entity->id() == $route_entity->id() && $entity->id() == $route_match->getParameter('node')->id()) {
+      if ($entity->id() == $route_entity->id() && $route_match->getParameter('node') instanceof ContentEntityInterface && $entity->id() == $route_match->getParameter('node')->id()) {
         // Override from extended class build() method: Use field_short_title if
         // it's set.
         $text = $entity->label();

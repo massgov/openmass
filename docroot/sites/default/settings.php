@@ -195,7 +195,7 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
 
 // phpunit.xml.dist sets -1 for memory_limit so just change for other cli requests.
 if (PHP_SAPI === 'cli' && ini_get('memory_limit')) {
-  ini_set('memory_limit', '1536M');
+  ini_set('memory_limit', '2048M');
 }
 
 $config['entity_usage.settings']['queue_tracking'] = TRUE;
