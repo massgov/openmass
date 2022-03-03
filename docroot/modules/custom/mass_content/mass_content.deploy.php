@@ -707,7 +707,8 @@ function mass_content_deploy_date_published(&$sandbox) {
   Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
 
   $query = \Drupal::entityQuery('node');
-  $query->condition('type', ['advisory', 'binder', 'decision', 'executive_order', 'info_details', 'regulation', 'rules', 'news'], 'IN');
+  // $query->condition('type', ['advisory', 'binder', 'decision', 'executive_order', 'info_details', 'regulation', 'rules', 'news'], 'IN');
+  $query->condition('type', ['news'], 'IN');
   if (empty($sandbox)) {
     // Get a list of all nodes of type event.
     $sandbox['progress'] = 0;
@@ -759,7 +760,7 @@ function mass_content_deploy_date_published(&$sandbox) {
         }
       }
     }
-
+    $node->setNewRevision(FALSE);
     $node->setSyncing(TRUE);
     $node->save();
     $sandbox['progress']++;
@@ -770,7 +771,6 @@ function mass_content_deploy_date_published(&$sandbox) {
 
   // Enable entity_hierarchy after the process is done.
   Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
-
   $memory_cache->deleteAll();
 
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
