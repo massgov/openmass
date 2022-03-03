@@ -67,6 +67,15 @@ content:
     third_party_settings: {  }
     weight: 21
     region: content
+  field_date_published:
+    type: datetime_custom
+    label: above
+    settings:
+      timezone_override: ''
+      date_format: n/d/Y
+    third_party_settings: {  }
+    weight: 10
+    region: content
   field_english_version:
     type: entity_reference_label
     label: above
@@ -96,15 +105,6 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 5
-    region: content
-  field_news_date:
-    type: datetime_custom
-    label: above
-    settings:
-      timezone_override: ''
-      date_format: n/d/Y
-    third_party_settings: {  }
-    weight: 10
     region: content
   field_news_image:
     type: mass_image_multi_style
@@ -224,7 +224,7 @@ content:
     weight: 0
     region: content
 hidden:
-  field_date_published: true
+  field_news_date: true
   field_primary_parent: true
   field_reusable_label: true
   field_state_organization_tax: true

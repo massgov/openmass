@@ -38,14 +38,14 @@ targetEntityType: node
 bundle: news
 mode: press_teaser
 content:
-  field_news_date:
+  field_date_published:
     type: datetime_default
     label: hidden
     settings:
       timezone_override: ''
       format_type: short_date_only
     third_party_settings: {  }
-    weight: 3
+    weight: 2
     region: content
   field_news_image:
     type: image_url
@@ -53,19 +53,19 @@ content:
     settings:
       image_style: news400x225
     third_party_settings: {  }
-    weight: 4
+    weight: 3
     region: content
   field_news_type:
     type: list_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    weight: 2
+    weight: 1
     region: content
   links:
     settings: {  }
     third_party_settings: {  }
-    weight: 1
+    weight: 0
     region: content
   workbench_moderation_control:
     settings: {  }
@@ -77,11 +77,11 @@ hidden:
   content_moderation_control: true
   extra_org_feedback_form: true
   field_collections: true
-  field_date_published: true
   field_english_version: true
   field_image_credit: true
   field_intended_audience: true
   field_news_body: true
+  field_news_date: true
   field_news_lede: true
   field_news_links: true
   field_news_location: true
