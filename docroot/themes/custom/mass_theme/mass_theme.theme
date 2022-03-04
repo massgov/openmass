@@ -3408,7 +3408,7 @@ function mass_theme_preprocess_node_news_full(&$variables) {
 
   $variables['blogpostCollectionHeader'] = [];
   if ($is_blog_post) {
-    /** @todo add here REAL collection information */
+    // @todo add here REAL collection information
     $variables['blogpostCollectionHeader']['decorativeLink']['text'] = "Collection title";
     $variables['blogpostCollectionHeader']['decorativeLink']['href'] = "https://google.com";
     $variables['blogpostCollectionHeader']['image'] = '<img alt="coronavirus image" src="/sites/default/files/styles/embedded_full_width/public/images/2020-03/outbreak-coronavirus-world-462x231px-2.jpg?itok=c-XDSWiV">';
@@ -6086,7 +6086,7 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
   $query
     ->condition('vid', 'collections')
     ->condition('field_url_name', 'eotss-service-catalog')
-    ->range(0,1);
+    ->range(0, 1);
 
   $res = $query->execute();
   if (!$res) {
