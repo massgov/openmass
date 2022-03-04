@@ -2,6 +2,10 @@
  * @file
  */
 
+if (window.NodeList && !NodeList.prototype.forEach) {
+  NodeList.prototype.forEach = Array.prototype.forEach;
+}
+
 // jQueryLike & drupalLike objects were created to avoid modifying the logic
 // to show/hide alerts. Both objects are as light as possible, and need to
 // be loaded really soon on the page.
