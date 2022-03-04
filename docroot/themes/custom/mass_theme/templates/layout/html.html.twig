@@ -33,6 +33,18 @@
     <script>
       document.prefetchAlertsData = {};
 
+      // IE11 compatibility: forEach
+      if (window.NodeList && !NodeList.prototype.forEach) {
+        NodeList.prototype.forEach = Array.prototype.forEach;
+      }
+
+      // IE11 compatibility: includes
+      if (typeof String.prototype.includes != 'function') {
+        String.prototype.includes = function(match) {
+          return this.indexOf(match) !== -1;
+        }
+      }
+
       // See: https://dev.to/adrianbdesigns/how-to-polyfill-javascript-fetch-function-for-internet-explorer-g46
       if (typeof fetch != 'function') {
        // Create Promise polyfill script tag
