@@ -40,6 +40,8 @@ class AkamaiPurger extends \Drupal\akamai\Plugin\Purge\Purger\AkamaiPurger {
 
     // Mass: Added an array_unique() here as quick fix for dupes.
     $urls_to_clear = array_unique($urls_to_clear);
+    // Mass: Add back normalization just in case that caused the earlier errors.
+    $urls_to_clear = $this->client->normalizeUrls($urls_to_clear);
 
     // Mass: Go right to purgeRequest(), bypassing unwanted check in purgeUrls().
     $method = new \ReflectionMethod($this->client, 'purgeRequest');
