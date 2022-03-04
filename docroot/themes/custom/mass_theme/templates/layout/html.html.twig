@@ -112,7 +112,17 @@
 
         xhr.onload = function() {
           document.prefetchAlertsData[data] = this.responseText;
-          document.dispatchEvent(new Event('mass_alerts_data_ready'));
+
+          // See: https://stackoverflow.com/a/49071358/1038565
+          // IE11 dispatch event not working.
+          var event;
+          if(typeof(Event) === 'function') {
+              event = new Event('mass_alerts_data_ready');
+          }else{
+              event = document.createEvent('Event');
+              event.initEvent('mass_alerts_data_ready', true, true);
+          }
+          document.dispatchEvent(event);
         };
 
         xhr.onprogress = function() {};
