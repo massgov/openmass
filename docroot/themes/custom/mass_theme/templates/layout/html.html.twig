@@ -32,6 +32,37 @@
 
     <script>
       document.prefetchAlertsData = {};
+
+      // See: https://dev.to/adrianbdesigns/how-to-polyfill-javascript-fetch-function-for-internet-explorer-g46
+      if (typeof fetch != 'function') {
+       // Create Promise polyfill script tag
+        var promiseScript = document.createElement("script");
+        promiseScript.type = "text/javascript";
+        promiseScript.src =
+            "https://cdn.jsdelivr.net/npm/promise-polyfill@8.1.3/dist/polyfill.min.js";
+
+      // Create Fetch polyfill script tag
+        var fetchScript = document.createElement("script");
+        fetchScript.type = "text/javascript";
+        fetchScript.src =
+            "https://cdn.jsdelivr.net/npm/whatwg-fetch@3.4.0/dist/fetch.umd.min.js";
+
+      // Add polyfills to head element
+        document.head.appendChild(promiseScript);
+        document.head.appendChild(fetchScript);
+
+        var fetchChecker = setInterval(function () {
+            if (typeof fetch == 'function') {
+              clearInterval(fetchChecker);
+              prefetch_alerts("{{ page_alerts_path }}");
+              prefetch_alerts("{{ sitewide_alerts_path }}");
+            }
+        }, 100);
+      } else {
+        prefetch_alerts("{{ page_alerts_path }}");
+        prefetch_alerts("{{ sitewide_alerts_path }}");
+      }
+
       function prefetch_alerts(data) {
         if (!data) {
           return;
@@ -43,9 +74,6 @@
           document.dispatchEvent(new Event('mass_alerts_data_ready'));
         });
       }
-
-      prefetch_alerts("{{ page_alerts_path }}");
-      prefetch_alerts("{{ sitewide_alerts_path }}");
     </script>
 
     <!-- DEPLOYMENT IDENTIFIER: {{ deployment_identifier}} -->
