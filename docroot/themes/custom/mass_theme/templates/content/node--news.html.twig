@@ -59,7 +59,7 @@
   {% set level = level + 1 %}
   <div class="main-content main-content--two">
 
-    {% set type_class = "ma__announcement__page-content--" ~ node.field_news_type.value %}
+    {% set type_class = "ma__announcement__page-content--" ~ (node.field_news_type.value is not iterable ? node.field_news_type.value : '')  %}
     <div class="page-content ma__announcement__page-content {{ type_class }}">
       {% if pageContent.pressStatus %}
         {% set pressStatus = pageContent.pressStatus %}
