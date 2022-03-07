@@ -5,7 +5,9 @@ dependencies:
   config:
     - flag.flag.watch_content
     - system.menu.mass-dashboard
+    - workflows.workflow.campaign_landing_page
     - workflows.workflow.editorial
+    - workflows.workflow.topic_page
   module:
     - content_moderation
     - flag
@@ -567,7 +569,9 @@ display:
           plugin_id: moderation_state_filter
           operator: 'not in'
           value:
+            campaign_landing_page-trash: campaign_landing_page-trash
             editorial-trash: editorial-trash
+            topic_page-trash: topic_page-trash
           group: 1
           exposed: false
           expose:

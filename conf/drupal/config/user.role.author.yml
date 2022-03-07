@@ -28,9 +28,11 @@ dependencies:
     - node.type.rules
     - node.type.service_details
     - node.type.service_page
+    - node.type.topic_page
     - workflows.workflow.campaign_landing_page
     - workflows.workflow.editorial
     - workflows.workflow.media_states
+    - workflows.workflow.topic_page
   module:
     - access_unpublished
     - actions_permissions
@@ -102,7 +104,6 @@ permissions:
   - 'add scheduled transitions node service_details'
   - 'add scheduled transitions node service_page'
   - 'add scheduled transitions node stacked_layout'
-  - 'add scheduled transitions node topic_page'
   - 'clone advisory content'
   - 'clone alert content'
   - 'clone binder content'
@@ -181,6 +182,7 @@ permissions:
   - 'edit any rules content'
   - 'edit any service_details content'
   - 'edit any service_page content'
+  - 'edit any topic_page content'
   - 'edit own advisory content'
   - 'edit own alert content'
   - 'edit own binder content'
@@ -241,7 +243,6 @@ permissions:
   - 'reschedule scheduled transitions node service_details'
   - 'reschedule scheduled transitions node service_page'
   - 'reschedule scheduled transitions node stacked_layout'
-  - 'reschedule scheduled transitions node topic_page'
   - 'set info details page template'
   - 'set service page template'
   - 'setup own tfa'
@@ -264,6 +265,10 @@ permissions:
   - 'use media_states transition send_to_trash'
   - 'use media_states transition to_draft'
   - 'use media_states transition unpublish'
+  - 'use topic_page transition needs_review'
+  - 'use topic_page transition prepublished_draft'
+  - 'use topic_page transition prepublished_needs_review'
+  - 'use topic_page transition to_draft'
   - 'view advisory revisions'
   - 'view alert revisions'
   - 'view all revisions'
