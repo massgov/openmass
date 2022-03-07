@@ -3386,12 +3386,24 @@ function mass_theme_preprocess_node_news_full(&$variables) {
   $variables['is_blog_post'] = $is_blog_post;
 
   $variables['blogpostCollectionHeader'] = [];
-  if ($is_blog_post) {
-    // @todo add here REAL collection information
-    $variables['blogpostCollectionHeader']['decorativeLink']['text'] = "Collection title";
-    $variables['blogpostCollectionHeader']['decorativeLink']['href'] = "https://google.com";
-    $variables['blogpostCollectionHeader']['image'] = '<img alt="coronavirus image" src="/sites/default/files/styles/embedded_full_width/public/images/2020-03/outbreak-coronavirus-world-462x231px-2.jpg?itok=c-XDSWiV">';
-    $variables['blogpostCollectionHeader']['bg_color'] = '#333';
+
+  if ($is_blog_post && isset($node->field_collections) && !$node->field_collections->isEmpty()) {
+    $collection = $node->field_collections[0]->get('entity')->getTarget()->getEntity();
+    $variables['blogpostCollectionHeader']['decorativeLink']['text'] = $collection->label();
+    $variables['blogpostCollectionHeader']['decorativeLink']['href'] = '/collections/' . $collection->field_url_name->value;
+
+    if (isset($collection->field_collection_logo) && !$collection->field_collection_logo->isEmpty()) {
+      $collection_logo = $collection->field_collection_logo[0];
+      /** @var \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator */
+      $file_url_generator = \Drupal::service('file_url_generator');
+      $file_url = $file_url_generator->generateAbsoluteString($collection_logo->entity->uri->value);
+      $alt = $collection_logo->getValue()['alt'] ?? '';
+      $variables['blogpostCollectionHeader']['image'] = '<img alt="' . $alt . '" src="' . $file_url . '">';
+    }
+
+    if (isset($collection->field_header_color) && !$collection->field_header_color->isEmpty()) {
+      $variables['blogpostCollectionHeader']['bg_color'] = $collection->field_header_color->value;
+    }
   }
 
   $ap_conformity = FALSE;
