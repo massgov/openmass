@@ -707,8 +707,8 @@ function mass_content_deploy_date_published(&$sandbox) {
   Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
 
   $query = \Drupal::entityQuery('node');
-  // $query->condition('type', ['advisory', 'binder', 'decision', 'executive_order', 'info_details', 'regulation', 'rules', 'news'], 'IN');
-  $query->condition('type', ['news'], 'IN');
+  $query->condition('type', ['advisory', 'binder', 'decision', 'executive_order', 'info_details', 'regulation', 'rules', 'news'], 'IN');
+
   if (empty($sandbox)) {
     // Get a list of all nodes of type event.
     $sandbox['progress'] = 0;
