@@ -1,8 +1,9 @@
-uuid: 5a606748-9f21-4afe-a805-167c39aaa8df
+uuid: c20c58f0-ffbc-4bdb-bc04-d67e5801a375
 langcode: en
 status: true
 dependencies:
   config:
+    - core.entity_view_mode.node.listing
     - field.field.node.news.field_collections
     - field.field.node.news.field_english_version
     - field.field.node.news.field_image_credit
@@ -34,10 +35,10 @@ dependencies:
     - options
     - text
     - user
-id: node.news.default
+id: node.news.listing
 targetEntityType: node
 bundle: news
-mode: default
+mode: listing
 content:
   computed_related_to:
     type: entity_reference_label
@@ -58,12 +59,12 @@ content:
     weight: 19
     region: content
   field_collections:
-    weight: 21
     type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
+    weight: 21
     region: content
   field_english_version:
     type: entity_reference_label

@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.topic_page.field_collections
     - field.field.node.topic_page.field_image_credit
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
@@ -33,6 +34,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
+    - term_reference_tree
 third_party_settings:
   field_group:
     group_topic_page_edit_form:
@@ -65,6 +67,7 @@ third_party_settings:
         - field_organizations
         - field_intended_audience
         - field_reusable_label
+        - field_collections
       label: Overview
       region: content
       parent_name: group_topic_page_edit_form
@@ -110,6 +113,17 @@ targetEntityType: node
 bundle: topic_page
 mode: default
 content:
+  field_collections:
+    type: term_reference_tree
+    weight: 70
+    region: content
+    settings:
+      start_minimized: true
+      leaves_only: false
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+    third_party_settings: {  }
   field_image_credit:
     type: string_textfield
     weight: 65
