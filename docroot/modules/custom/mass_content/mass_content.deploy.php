@@ -719,7 +719,7 @@ function mass_content_deploy_date_published(&$sandbox) {
 
   $batch_size = 50;
 
-  // $memory_cache = \Drupal::service('entity.memory_cache');
+  $memory_cache = \Drupal::service('entity.memory_cache');
 
   $nids = $query->condition('nid', $sandbox['current'], '>')
     ->sort('nid')
@@ -770,10 +770,12 @@ function mass_content_deploy_date_published(&$sandbox) {
 
   // Enable entity_hierarchy after the process is done.
   Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
-  // $memory_cache->deleteAll();
+  $memory_cache->deleteAll();
 
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
+    // Clear plugin manager caches.
+    \Drupal::getContainer()->get('plugin.cache_clearer')->clearCachedDefinitions();
     return t('All content "Date published" fields have been migrated.');
   }
 }
