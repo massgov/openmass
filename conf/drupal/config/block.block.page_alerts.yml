@@ -4,6 +4,7 @@ status: true
 dependencies:
   module:
     - mass_alerts
+    - node
     - system
   theme:
     - mass_theme
@@ -25,3 +26,43 @@ visibility:
     negate: true
     context_mapping: {  }
     pages: '<front>'
+  'entity_bundle:node':
+    id: 'entity_bundle:node'
+    negate: false
+    context_mapping:
+      node: '@node.node_route_context:node'
+    bundles:
+      action: action
+      advisory: advisory
+      alert: alert
+      binder: binder
+      campaign_landing: campaign_landing
+      contact_information: contact_information
+      curated_list: curated_list
+      decision: decision
+      decision_tree: decision_tree
+      decision_tree_branch: decision_tree_branch
+      decision_tree_conclusion: decision_tree_conclusion
+      error_page: error_page
+      event: event
+      executive_order: executive_order
+      external_data_resource: external_data_resource
+      fee: fee
+      form_page: form_page
+      guide_page: guide_page
+      how_to_page: how_to_page
+      info_details: info_details
+      interstitial: interstitial
+      location: location
+      location_details: location_details
+      news: news
+      org_page: org_page
+      page: page
+      person: person
+      regulation: regulation
+      rules: rules
+      service_details: service_details
+      service_page: service_page
+      sitewide_alert: sitewide_alert
+      stacked_layout: stacked_layout
+      utility_drawer: utility_drawer
