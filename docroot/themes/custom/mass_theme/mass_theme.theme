@@ -7105,11 +7105,9 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
 }
 
 /**
- * Implements hook_preprocess_HOOK().
- *
- * Groups different components together when necessary.
+ * Preprocess paragraph sections from services and organizations.
  */
-function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
+function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
   // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
   $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
   $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
@@ -7117,12 +7115,12 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
 
   $components = [];
   $container = $variables['paragraph'];
-  $paragraphs = Helper::getReferencedEntitiesFromField($container, "field_section_long_form_content");
+  $paragraphs = Helper::getReferencedEntitiesFromField($container, $field);
 
   for ($i = 0; $i < count($paragraphs); $i++) {
     $component = [];
     // If the current component has the "wrapping" field, group it with the following component and move the loop pointer.
-    if (mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
+    if (mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
       $items = [];
       do {
         if (isset($paragraphs[$i])) {
@@ -7131,7 +7129,7 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
 
         $i++;
         // Keep grouping together while the next element has the check.
-      } while (isset($paragraphs[$i]) && mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields));
+      } while (isset($paragraphs[$i]) && mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i], $wrap_fields));
 
       // Once done, also group the following one.
       if (isset($paragraphs[$i])) {
@@ -7155,14 +7153,23 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
     }
     $components[] = $component;
   }
-  $variables["org_components"] = $components;
+  return $components;
+}
 
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Groups different components together when necessary.
+ */
+function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
+  $variables["org_components"] =
+    _mass_theme_preprocess_paragraph_sections($variables, 'field_section_long_form_content');
 }
 
 /**
  * Checks if the paragraph has one of the fields and has a value for it.
  */
-function mass_theme_org_section_long_form_check_wrapping_field($paragraph, $fields) {
+function mass_theme_paragraphs_sections_check_wrapping_field($paragraph, $fields) {
   foreach ($fields as $field) {
     if (isset($paragraph) && $paragraph->hasField($field) && $paragraph->get($field)->getValue()) {
       return TRUE;
