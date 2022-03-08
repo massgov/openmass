@@ -1,5 +1,38 @@
 
 
+## [0.314.0] - March 1, 2022
+
+### Changed
+  - DP-23222: Fetches earlier the request for the block alerts.
+  - DP-23584: CircleCI - omit trigger during build_validate
+  - DP-23882: Improve url purging by removing unwanted normalization.
+  - DP-24122: Avoid browser clientside validation on forms.
+  - DP-24144: Change service content type's parent field to allow more field types.
+  
+### Added
+  - DP-24109: Adds collections to the following content types.
+  - News
+  - Event
+  - Promotional page
+  - Topic Page
+Adds templates for listing display for the added content types.
+  
+### Security
+  - DP-24135: Drupal Core security update.
+  - DP-24172: Remediate current javascript and php security advisories
+  
+### Fixed
+  - DP-24137: Fix breadcrumb visible with parent field to have immediate parent clickable.
+  - DP-24139: Fixed adding state org signees for existing news items.
+  - DP-24158: Fix positioning of alerts and validating node parameter when building alerts.
+  - DP-24177: Removed post-trigger from command parameters to fix backstop commands.
+  - DB-24221: Fix ddev binding to reserved port 88
+  
+### Removed
+  - DP-6250: Removed hq2 site
+  
+
+
 ## [0.313.2] - February 23, 2022
 
 ### Fixed
