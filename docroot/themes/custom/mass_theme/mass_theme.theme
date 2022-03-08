@@ -7167,6 +7167,16 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Groups different components together when necessary.
+ */
+function mass_theme_preprocess_paragraph__service_section(&$variables) {
+  $variables["service_components"] =
+    _mass_theme_preprocess_paragraph_sections($variables, 'field_service_section_content');
+}
+
+/**
  * Checks if the paragraph has one of the fields and has a value for it.
  */
 function mass_theme_paragraphs_sections_check_wrapping_field($paragraph, $fields) {
