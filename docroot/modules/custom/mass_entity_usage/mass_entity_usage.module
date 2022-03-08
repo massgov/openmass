@@ -16,10 +16,7 @@ use Drupal\mayflower\Helper;
  */
 function mass_entity_usage_entity_usage_block_tracking($target_id, $target_type, $source_id, $source_type, $source_langcode, $source_vid, $method, $field_name, $count) {
   // Block tracking of entities with a node source that is unpublished or trash.
-  if (!_mass_entity_usage_tracking_check($source_type, $source_id, $source_vid)) {
-    return TRUE;
-  }
-  return FALSE;
+return !_mass_entity_usage_tracking_check($source_type, $source_id, $source_vid);
 }
 
 /**
