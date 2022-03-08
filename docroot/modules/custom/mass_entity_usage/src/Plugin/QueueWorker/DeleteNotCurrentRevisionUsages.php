@@ -47,10 +47,7 @@ class DeleteNotCurrentRevisionUsages extends QueueWorkerBase implements Containe
     /** @var \Drupal\Core\Entity\ContentEntityBase */
     $entity = $storage->load($id);
 
-    if (
-      !$entity ||
-      !$entity->getEntityType()->isRevisionable()
-    ) {
+    if (!$entity || !$entity->getEntityType()->isRevisionable()) {
       return;
     }
 
