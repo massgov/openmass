@@ -50,7 +50,7 @@ var jQueryLike = function (elemOrSelector, context) {
 
   elem.insertAfter = function (selector) {
     var newNode = createElementFromHTML(elem.outerHTML);
-    jQueryLike(selector)[0].parentNode.insertBefore(newNode, newNode.nextSibling);
+    jQueryLike(selector)[0].after(newNode);
     elem = newNode;
   };
 

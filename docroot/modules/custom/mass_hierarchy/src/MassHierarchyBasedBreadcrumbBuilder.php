@@ -19,7 +19,7 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
    * {@inheritdoc}
    */
   public function applies(RouteMatchInterface $route_match) {
-    if ($this->adminContext->isAdminRoute($route_match->getRouteObject())) {
+    if ($this->adminContext->isAdminRoute($route_match->getRouteObject()) && $route_match->getRouteName() !== 'entity.node.edit_form') {
       return FALSE;
     }
     if ($route_match->getRouteName() == "view.locations.page" && $route_match->getParameter('node')) {
