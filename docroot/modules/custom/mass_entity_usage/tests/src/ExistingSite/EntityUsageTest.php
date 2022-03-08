@@ -21,6 +21,11 @@ class EntityUsageTest extends ExistingSiteBase {
   use MediaCreationTrait;
   use QueueRunnerTrait;
 
+  /**
+   * Administrator that does the tests on the UI.
+   *
+   * @var \Drupal\user\Entity\User
+   */
   private $user;
 
   /**
