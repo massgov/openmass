@@ -4952,7 +4952,7 @@ function mass_theme_preprocess_field(&$variables, $hook) {
   }
 
   // Setup social link icons.
-  if ($element['#field_name'] == 'field_social_links') {
+  if (in_array($element['#field_name'], ['field_services_social_links','field_social_links'])) {
     // Get icons for social links.
     $services = [
       'twitter',
