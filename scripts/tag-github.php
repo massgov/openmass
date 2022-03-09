@@ -11,9 +11,9 @@ use PHLAK\SemVer;
 require dirname(__DIR__) . '/vendor/autoload.php';
 
 // This will grab the commit subject line from the last commit to master branch.
-$branch = exec('git log -1 --pretty=%s');
+$message = exec('git log -1 --pretty=%s');
 
-echo "Last commit subject message:" . " " . $branch . "\n\n";
+echo "Last commit subject message:" . " " . $message . "\n\n";
 
 // Find the most recent tag in GitHub master branch to update.
 $version = new SemVer\Version(`git describe --abbrev=0 --tags`);
@@ -23,16 +23,12 @@ echo "Find the last tag created:" . " " . $version . "\n\n";
 // The tag version will always be major.minor.patch (e.g. 0.235.0)
 
 // If the commit message has the word "release" in it the tag will increment as minor.
-if(stripos($branch, "release") !== false){
+if(stripos($message, "release") !== false){
   $version->incrementMinor();
 }
-// If the commit message has the word "hotfix" in it the tag will increment as patch.
-elseif (stripos($branch, "hotfix") !== false){
-  $version->incrementPatch();
-}
-// If none of those words are found the tag will be unable to increment correctly.
+// Otherwise its a hotfix.
 else {
-  exit( "Unable to increment the Semantic version for the tag.");
+  $version->incrementPatch();
 }
 
 // Display the increment tag from the conditional statement above.
@@ -42,15 +38,13 @@ echo "Here is the new tag " . $version . "\n\n";
 // The following line is looking to see if this is hotfix tag. If so it will take the last commit from today within the CHANGELOG.md.
 // Note if a release happen the same day as hotfix it will take both changes from the CHANGELOG.md and post to the body.
 // The last commit output is moved to the scripts/changelog-body.text to be used by the $markdown
-if(strpos($branch, "hotfix") !== false){
-
+if(stripos($message, "release") !== false){
+  // If this is a release just use the changelog-body.txt that was created from build-changelog.php script (created the release branch)
+  $markdown = file_get_contents('scripts/changelog-body.txt');
+} else {
   // Using git blame for today changes in the CHANGELOG.md and clean the output up before moving it to the scripts/changelog-body.txt.
   exec("git blame -s --since=today -- CHANGELOG.md | grep -v '^\^' | sed -e 's/00000000...//' -e 's/[0-9]..//' > scripts/changelog-body.txt");
   // Then grabbing the content from the changelog-body.txt. Reuse the content for the $markdown in the body.
-  $markdown = file_get_contents('scripts/changelog-body.txt');
-
-} else {
-  // If this is a release just use the changelog-body.txt that was created from build-changelog.php script (created the release branch)
   $markdown = file_get_contents('scripts/changelog-body.txt');
 }
 
