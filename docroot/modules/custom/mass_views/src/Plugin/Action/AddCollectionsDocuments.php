@@ -3,8 +3,10 @@
 namespace Drupal\mass_views\Plugin\Action;
 
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 use Drupal\Core\Session\AccountInterface;
@@ -22,7 +24,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   type = "media"
  * )
  */
-class AddCollectionsDocuments extends ViewsBulkOperationsActionBase {
+class AddCollectionsDocuments extends ViewsBulkOperationsActionBase implements ContainerFactoryPluginInterface {
 
   use StringTranslationTrait;
 
@@ -50,7 +52,8 @@ class AddCollectionsDocuments extends ViewsBulkOperationsActionBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, AccountInterface $account, TimeInterface $time_service) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, AccountInterface $account, TimeInterface $time_service) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
     $this->currentUser = $account;
     $this->timeService = $time_service;
@@ -59,8 +62,11 @@ class AddCollectionsDocuments extends ViewsBulkOperationsActionBase {
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container) {
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
       $container->get('entity_type.manager'),
       $container->get('current_user'),
       $container->get('datetime.time')
