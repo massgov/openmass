@@ -7185,6 +7185,11 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
 
   $variables['current_page'] = end($breadcrumb)['text'];
 
+  if ((strpos(end($breadcrumb)['url'] ?? '', '/collections/')) === 0) {
+    $variables['breadcrumb'] = [];
+    return;
+  }
+
   // Remove current page.
   foreach ($breadcrumb as $key => $link) {
     if ($link['url'] == "") {
