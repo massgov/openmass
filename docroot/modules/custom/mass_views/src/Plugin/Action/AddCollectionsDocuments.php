@@ -22,7 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   type = "media"
  * )
  */
-class AddCollectionsDocuments extends ViewsBulkOperationsActionBase  {
+class AddCollectionsDocuments extends ViewsBulkOperationsActionBase {
 
   use StringTranslationTrait;
 
