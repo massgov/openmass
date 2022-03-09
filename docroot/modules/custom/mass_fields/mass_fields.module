@@ -719,6 +719,7 @@ function mass_fields_entity_field_access($operation, FieldDefinitionInterface $f
     switch ($field_definition->getName()) {
       case 'field_campaign_custom_html':
         return AccessResult::forbiddenIf(!$account->hasPermission("access the custom_html field"));
+
       case 'field_data_flag':
       case 'field_data_format':
       case 'field_data_resource_type':
