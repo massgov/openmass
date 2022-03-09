@@ -7185,6 +7185,7 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
 
   $variables['current_page'] = end($breadcrumb)['text'];
 
+  // Remove breacrumbs from collections by check last URL element.
   if ((strpos(end($breadcrumb)['url'] ?? '', '/collections/')) === 0) {
     $variables['breadcrumb'] = [];
     return;
