@@ -732,14 +732,14 @@ function mass_content_deploy_date_published(&$sandbox) {
 
   // Sets a mapping of content type to "date" fields.
   $date_fields = [
-    'field_binder_date_published',
-    'field_decision_date',
-    'field_executive_order_date',
-    'field_info_details_date_publishe',
-    'field_regulation_last_updated',
-    'field_rules_effective_date',
-    'field_advisory_date',
-    'field_news_date'
+    'binder' => 'field_binder_date_published',
+    'decision' => 'field_decision_date',
+    'executive_order' => 'field_executive_order_date',
+    'info_details' => 'field_info_details_date_publishe',
+    'regulation' => 'field_regulation_last_updated',
+    'rules' => 'field_rules_effective_date',
+    'advisory' => 'field_advisory_date',
+    'news' => 'field_news_date'
   ];
 
   foreach ($nodes as $node) {
