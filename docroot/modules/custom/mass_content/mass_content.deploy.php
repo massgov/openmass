@@ -730,7 +730,8 @@ function mass_content_deploy_date_published(&$sandbox) {
 
   $nodes = $node_storage->loadMultiple($nids);
 
-  $field_names = [
+  // Sets a mapping of content type to "date" fields.
+  $date_fields = [
     'field_binder_date_published',
     'field_decision_date',
     'field_executive_order_date',
@@ -744,7 +745,8 @@ function mass_content_deploy_date_published(&$sandbox) {
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
     // Set the updated date for events.
-    foreach ($field_names as $field_name) {
+    if (in_array($node->bundle(), array_keys($date_fields))) {
+      $field_name = $date_fields[$node->bundle()];
       if ($node->hasField($field_name) && $node->hasField('field_date_published')) {
         if (!$node->$field_name->isEmpty()) {
           $published_date = $node->get($field_name)->getValue();
