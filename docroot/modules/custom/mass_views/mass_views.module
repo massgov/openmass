@@ -8,6 +8,7 @@
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\mass_views\Plugin\views\filter\StemmableCombineFilter;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -170,4 +171,11 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
       _redirect_recursively_alter_query_conditions($condition_group['conditions'], $query, $key_group_conditions);
     }
   }
+}
+
+/**
+ * Implements hook_views_plugins_filter_alter().
+ */
+function mass_views_views_plugins_filter_alter(array &$plugins) {
+  $plugins['views_autocomplete_filters_combine']['class'] = StemmableCombineFilter::class;
 }
