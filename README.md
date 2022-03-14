@@ -12,7 +12,7 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 
 1. Move into the project directory: `cd openmass`
 
-1. Create a `.env` file at the root level of the project by copying the example file shipped with the `mass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
+1. Create a `.env` file in the ~/.ddev dir of the project by copying the example file shipped with the `mass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
     ```
     $ cp .env.example .env
     ```
