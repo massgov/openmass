@@ -720,6 +720,7 @@ function mass_fields_entity_field_access($operation, FieldDefinitionInterface $f
       case 'field_campaign_custom_html':
         return AccessResult::forbiddenIf(!$account->hasPermission("access the custom_html field"));
 
+      // See DP-23754: data hub tagging permissions.
       case 'field_data_flag':
       case 'field_data_format':
       case 'field_data_resource_type':
