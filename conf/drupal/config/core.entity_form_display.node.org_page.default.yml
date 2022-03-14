@@ -42,6 +42,7 @@ dependencies:
     - field.field.node.org_page.field_organizations
     - field.field.node.org_page.field_parent
     - field.field.node.org_page.field_person_bio
+    - field.field.node.org_page.field_primary_parent
     - field.field.node.org_page.field_public_records_link
     - field.field.node.org_page.field_ref_actions_6
     - field.field.node.org_page.field_ref_card_view_6
@@ -52,6 +53,7 @@ dependencies:
     - field.field.node.org_page.field_reusable_label
     - field.field.node.org_page.field_secondary_person_bio
     - field.field.node.org_page.field_short_name
+    - field.field.node.org_page.field_short_title
     - field.field.node.org_page.field_social_links
     - field.field.node.org_page.field_state_organization_tax
     - field.field.node.org_page.field_sub_brand
@@ -67,6 +69,7 @@ dependencies:
     - conditional_fields
     - content_moderation
     - dynamic_entity_reference
+    - entity_hierarchy
     - field_group
     - image
     - link
@@ -82,15 +85,15 @@ third_party_settings:
         - group_content
         - group_feedback
         - group_other
+      label: 'Node Edit Form'
+      region: content
       parent_name: ''
       weight: 1
       format_type: tabs
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         direction: horizontal
-      label: 'Node Edit Form'
-      region: content
     group_banner:
       children:
         - group_organization_name
@@ -99,32 +102,33 @@ third_party_settings:
         - field_bg_narrow
         - field_banner_image
         - field_image_credit
+        - field_primary_parent
         - field_organizations
         - field_reusable_label
+      label: 'Title Banner'
+      region: content
       parent_name: group_node_edit_form
       weight: 20
       format_type: tab
       format_settings:
+        classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-        id: ''
-        classes: ''
-      label: 'Title Banner'
-      region: content
     group_actions:
       children: {  }
+      label: 'Services Offered'
+      region: hidden
       parent_name: ''
       weight: 33
       format_type: tab
       format_settings:
+        classes: ''
+        id: ''
         formatter: closed
         description: 'This large, visual element will help call attention to top services that constituents may need. You can feature up to 3 and list a total of 6 others.'
         required_fields: true
-        id: ''
-        classes: ''
-      label: 'Services Offered'
-      region: hidden
     group_other:
       children:
         - field_more_about_agency_link
@@ -134,17 +138,17 @@ third_party_settings:
         - field_application_login_links
         - field_public_records_link
         - field_get_updates_links
+      label: 'Navigation menu'
+      region: content
       parent_name: group_node_edit_form
       weight: 25
       format_type: tab
       format_settings:
-        description: ''
-        formatter: closed
-        required_fields: true
-        id: ''
         classes: ''
-      label: 'Navigation menu'
-      region: content
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
     group_overview:
       children:
         - field_sub_title
@@ -155,39 +159,40 @@ third_party_settings:
         - field_intended_audience
         - field_parent
         - field_billing_organization
+      label: Overview
+      region: content
       parent_name: group_node_edit_form
       weight: 21
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-      label: Overview
-      region: content
     group_organization_name:
       children:
         - title
+        - field_short_title
         - field_subtype
         - field_person_bio
         - field_secondary_person_bio
         - field_title_sub_text
+      label: 'Organization name'
+      region: content
       parent_name: group_banner
       weight: 7
       format_type: html_element
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         element: div
         show_label: true
         label_element: h3
-        required_fields: true
         attributes: ''
         effect: none
         speed: fast
-      label: 'Organization name'
-      region: content
+        required_fields: true
     group_feedback:
       children:
         - field_constituent_communication
@@ -197,56 +202,60 @@ third_party_settings:
         - field_response_expectations
         - field_urgent_warning
         - field_org_sentence_phrasing
+      label: 'Setup Feedback'
+      region: content
       parent_name: group_node_edit_form
       weight: 24
       format_type: tab
       format_settings:
+        classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-        id: ''
-        classes: ''
-      label: 'Setup Feedback'
-      region: content
     group_content:
       children:
         - field_organization_sections
+      label: Content
+      region: content
       parent_name: group_node_edit_form
       weight: 23
       format_type: tab
-      region: content
       format_settings:
-        id: ''
         classes: ''
-        description: ''
+        id: ''
         formatter: closed
+        description: ''
         required_fields: true
-      label: Content
 id: node.org_page.default
 targetEntityType: node
 bundle: org_page
 mode: default
 content:
   field_application_login_links:
+    type: link_default
     weight: 123
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_approver:
+    type: string_textfield
     weight: 106
+    region: content
     settings:
       size: 40
       placeholder: ''
     third_party_settings:
       maxlength:
         maxlength_js: null
-        maxlength_js_enforce_attribute: true
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce_attribute: true
       conditional_fields:
         aa815e94-ef9e-4e1f-a826-6d0361ccded8:
+          entity_type: node
+          bundle: org_page
           dependee: field_constituent_communication
           settings:
             state: visible
@@ -261,18 +270,18 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: org_page
-    type: string_textfield
-    region: content
   field_banner_image:
-    weight: 12
+    type: image_image
+    weight: 11
+    region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings:
       conditional_fields:
         69ea8f14-56d8-4b66-986e-1dc6102de0d9:
+          entity_type: node
+          bundle: org_page
           dependee: field_subtype
           settings:
             state: visible
@@ -287,18 +296,18 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: org_page
-    type: image_image
-    region: content
   field_bg_narrow:
-    weight: 11
+    type: image_image
+    weight: 10
+    region: content
     settings:
-      preview_image_style: thumbnail
       progress_indicator: throbber
+      preview_image_style: thumbnail
     third_party_settings:
       conditional_fields:
         e5e75831-d61d-4cfe-8926-e269364d6f34:
+          entity_type: node
+          bundle: org_page
           dependee: field_subtype
           settings:
             state: '!visible'
@@ -313,18 +322,18 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: org_page
-    type: image_image
-    region: content
   field_bg_wide:
-    weight: 10
+    type: image_image
+    weight: 9
+    region: content
     settings:
-      preview_image_style: thumbnail
       progress_indicator: throbber
+      preview_image_style: thumbnail
     third_party_settings:
       conditional_fields:
         14d3d7ee-bc6e-491e-9134-bc1bcb861bb9:
+          entity_type: node
+          bundle: org_page
           dependee: field_subtype
           settings:
             state: '!visible'
@@ -339,19 +348,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: org_page
-    type: image_image
-    region: content
   field_billing_organization:
+    type: dynamic_entity_reference_options_select
     weight: 133
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: dynamic_entity_reference_options_select
-    region: content
   field_board_members:
     type: entity_reference_paragraphs
     weight: 56
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -360,29 +366,32 @@ content:
       form_display_mode: default
       default_paragraph_type: ''
     third_party_settings: {  }
-    region: content
   field_career_opportunities:
+    type: link_default
     weight: 122
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_constituent_communication:
+    type: options_select
     weight: 103
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_feedback_com_link:
+    type: link_default
     weight: 107
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings:
       conditional_fields:
         12a8c118-4973-4bd9-be23-4fcc282b5b66:
+          entity_type: node
+          bundle: org_page
           dependee: field_constituent_communication
           settings:
             state: visible
@@ -397,91 +406,88 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: org_page
-    type: link_default
-    region: content
   field_get_updates_links:
+    type: link_default
     weight: 127
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_hide_short_description:
+    type: boolean_checkbox
     weight: 127
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_image_credit:
-    weight: 13
+    type: string_textfield
+    weight: 12
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_intended_audience:
+    type: options_buttons
     weight: 131
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_metatags:
+    type: metatag_firehose
     weight: 2
+    region: content
     settings:
       sidebar: true
     third_party_settings: {  }
-    type: metatag_firehose
-    region: content
   field_more_about_agency_link:
+    type: link_default
     weight: 119
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_more_about_leadership:
+    type: entity_reference_autocomplete
     weight: 120
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_org_directory_page:
+    type: link_default
     weight: 121
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_org_page_thumbnail:
+    type: image_image
     weight: 129
+    region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings: {  }
-    type: image_image
-    region: content
   field_org_sentence_phrasing:
+    type: string_textfield
     weight: 110
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_organization_sections:
     type: entity_reference_paragraphs
     weight: 16
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -490,37 +496,40 @@ content:
       form_display_mode: default
       default_paragraph_type: section_long_form
     third_party_settings: {  }
-    region: content
   field_organizations:
+    type: entity_reference_autocomplete
     weight: 14
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_parent:
-    weight: 132
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
     type: entity_reference_autocomplete
+    weight: 132
     region: content
-  field_person_bio:
-    weight: 23
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  field_person_bio:
+    type: entity_reference_autocomplete
+    weight: 145
+    region: content
+    settings:
+      match_operator: CONTAINS
       match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings:
       conditional_fields:
         20271695-42df-4ce9-87ba-e0d90e432e07:
+          entity_type: node
+          bundle: org_page
           dependee: field_subtype
           settings:
             state: visible
@@ -535,30 +544,39 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: org_page
-    type: entity_reference_autocomplete
+  field_primary_parent:
+    type: entity_reference_hierarchy_autocomplete
+    weight: 13
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
   field_public_records_link:
+    type: link_default
     weight: 124
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_ref_contact_info_1:
     type: entity_reference_autocomplete_tags
     weight: 8
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    region: content
   field_response_expectations:
+    type: string_textarea
     weight: 108
+    region: content
     settings:
       rows: 5
       placeholder: ''
@@ -566,11 +584,13 @@ content:
       maxlength:
         maxlength_js: 300
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
-        maxlength_js_enforce_attribute: true
         maxlength_js_enforce: false
         maxlength_js_truncate_html: false
+        maxlength_js_enforce_attribute: true
       conditional_fields:
         42d24a46-72e8-4134-8f68-0cb40e52d942:
+          entity_type: node
+          bundle: org_page
           dependee: field_constituent_communication
           settings:
             state: visible
@@ -585,30 +605,30 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: org_page
-    type: string_textarea
-    region: content
   field_reusable_label:
+    type: entity_reference_autocomplete
     weight: 15
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_secondary_person_bio:
-    weight: 24
+    type: entity_reference_autocomplete
+    weight: 146
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings:
       conditional_fields:
         cd049f71-6b54-48ff-84e6-810858c53cb9:
+          entity_type: node
+          bundle: org_page
           dependee: field_subtype
           settings:
             state: visible
@@ -623,74 +643,82 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: org_page
-    type: entity_reference_autocomplete
+  field_short_title:
+    type: string_textfield
+    weight: 143
     region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_social_links:
+    type: link_default
     weight: 130
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_state_organization_tax:
+    type: entity_reference_autocomplete
     weight: 3
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings:
       conditional_fields: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_sub_brand:
-    weight: 128
-    settings:
-      preview_image_style: thumbnail
-      progress_indicator: throbber
-    third_party_settings: {  }
     type: image_image
+    weight: 128
     region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
   field_sub_title:
+    type: string_textarea
     weight: 126
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings:
       conditional_fields: {  }
-    type: string_textarea
-    region: content
   field_subtype:
-    weight: 22
+    type: options_select
+    weight: 144
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_title_sub_text:
-    weight: 25
+    type: string_textfield
+    weight: 147
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_urgent_warning:
+    type: boolean_checkbox
     weight: 109
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_verification:
+    type: boolean_checkbox
     weight: 104
+    region: content
     settings:
       display_label: true
     third_party_settings:
       conditional_fields:
         a290caf4-d898-4217-a93c-e99235b4ea6f:
+          entity_type: node
+          bundle: org_page
           dependee: field_constituent_communication
           settings:
             state: visible
@@ -705,28 +733,24 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: org_page
-    type: boolean_checkbox
-    region: content
   moderation_state:
     type: moderation_state_default
     weight: 5
-    settings: {  }
     region: content
+    settings: {  }
     third_party_settings: {  }
   publish_on:
-    weight: 107
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 107
     region: content
-  publish_state:
-    weight: 105
     settings: {  }
     third_party_settings: {  }
+  publish_state:
     type: options_select
+    weight: 105
     region: content
+    settings: {  }
+    third_party_settings: {  }
   scheduler_settings:
     weight: 3
     region: content
@@ -734,7 +758,8 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: 21
+    weight: 142
+    region: content
     settings:
       size: 60
       placeholder: ''
@@ -743,29 +768,28 @@ content:
         maxlength_js: 70
         maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
         maxlength_js_enforce_attribute: false
-    region: content
   uid:
     type: entity_reference_autocomplete
     weight: 0
     region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
   unpublish_on:
-    weight: 108
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 108
     region: content
-  unpublish_state:
-    weight: 106
     settings: {  }
     third_party_settings: {  }
+  unpublish_state:
     type: options_select
+    weight: 106
     region: content
+    settings: {  }
+    third_party_settings: {  }
   url_redirects:
     weight: 4
     region: content

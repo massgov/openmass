@@ -19,15 +19,15 @@ third_party_settings:
     group_fee_edit_form:
       children:
         - group_fee
+      label: 'Fee edit form'
+      region: content
       parent_name: ''
       weight: 0
       format_type: tabs
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         direction: horizontal
-      label: 'Fee edit form'
-      region: content
     group_fee:
       children:
         - title
@@ -36,94 +36,94 @@ third_party_settings:
         - field_fee_unit
         - field_organizations
         - field_reusable_label
+      label: Fee
+      region: content
       parent_name: group_fee_edit_form
       weight: 0
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: open
         description: ''
         required_fields: true
-      label: Fee
-      region: content
 id: node.fee.default
 targetEntityType: node
 bundle: fee
 mode: default
 content:
   field_fee_fee:
+    type: string_textfield
     weight: 2
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_fee_name:
+    type: string_textfield
     weight: 1
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_fee_unit:
-    weight: 3
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
     type: string_textfield
+    weight: 3
     region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_organizations:
+    type: entity_reference_autocomplete
     weight: 4
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_reusable_label:
+    type: entity_reference_autocomplete
     weight: 5
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_state_organization_tax:
+    type: entity_reference_autocomplete
     weight: 6
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   moderation_state:
     type: moderation_state_default
     weight: 10
-    settings: {  }
     region: content
+    settings: {  }
     third_party_settings: {  }
   publish_on:
-    weight: 28
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 28
     region: content
-  publish_state:
-    weight: 26
     settings: {  }
     third_party_settings: {  }
+  publish_state:
     type: options_select
+    weight: 26
     region: content
+    settings: {  }
+    third_party_settings: {  }
   scheduler_settings:
     weight: 2
     region: content
@@ -132,33 +132,33 @@ content:
   title:
     type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    region: content
   uid:
     type: entity_reference_autocomplete
     weight: 1
     region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
   unpublish_on:
-    weight: 29
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 29
     region: content
-  unpublish_state:
-    weight: 27
     settings: {  }
     third_party_settings: {  }
+  unpublish_state:
     type: options_select
+    weight: 27
     region: content
+    settings: {  }
+    third_party_settings: {  }
   url_redirects:
     weight: 9
     region: content

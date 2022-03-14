@@ -21,9 +21,9 @@ default_value_callback: ''
 settings:
   handler: 'default:paragraph'
   handler_settings:
-    negate: 0
     target_bundles:
       media_contact: media_contact
+    negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 55
@@ -67,6 +67,18 @@ settings:
       address:
         weight: 68
         enabled: false
+      adjustment_type:
+        weight: 80
+        enabled: false
+      advisory_issuer:
+        weight: 81
+        enabled: false
+      advisory_section:
+        weight: 82
+        enabled: false
+      answers:
+        weight: 107
+        enabled: false
       callout_alert:
         weight: 69
         enabled: false
@@ -88,37 +100,58 @@ settings:
       contact_info:
         weight: 75
         enabled: false
+      content_card_group:
+        weight: 90
+        enabled: false
+      decision_participants:
+        weight: 91
+        enabled: false
+      decision_section:
+        weight: 92
+        enabled: false
       emergency_alert:
         weight: 76
         enabled: false
-      fax_number:
-        weight: 77
+      event_agenda_section:
+        weight: 119
         enabled: false
-      file_download:
-        weight: 78
-        enabled: false
-      full_bleed:
-        weight: 79
-        enabled: false
-      adjustment_type:
-        weight: 80
-        enabled: false
-      guide_section:
-        weight: 80
+      event_minutes_section:
+        weight: 120
         enabled: false
       external_organization:
         weight: 80
         enabled: false
-      advisory_issuer:
-        weight: 81
+      fax_number:
+        weight: 77
+        enabled: false
+      featured_item:
+        weight: 123
+        enabled: false
+      featured_item_mosaic:
+        weight: 124
+        enabled: false
+      file_download:
+        weight: 78
+        enabled: false
+      file_download_single:
+        weight: 126
+        enabled: false
+      footnotes:
+        weight: 127
+        enabled: false
+      full_bleed:
+        weight: 79
+        enabled: false
+      guide_section:
+        weight: 80
         enabled: false
       guide_section_3up:
         weight: 81
         enabled: false
-      hours:
-        weight: 82
+      homepage_background_images:
+        weight: 131
         enabled: false
-      advisory_section:
+      hours:
         weight: 82
         enabled: false
       icon:
@@ -136,119 +169,14 @@ settings:
       image:
         weight: 87
         enabled: false
-      links:
-        weight: 88
-        enabled: false
-      location_information:
-        weight: 89
-        enabled: false
-      map:
-        weight: 90
-        enabled: false
-      content_card_group:
-        weight: 90
-        enabled: false
-      map_row:
-        weight: 91
-        enabled: false
-      decision_participants:
-        weight: 91
-        enabled: false
-      method:
-        weight: 92
-        enabled: false
-      decision_section:
-        weight: 92
-        enabled: false
-      next_step:
-        weight: 93
-        enabled: false
-      online_email:
-        weight: 94
-        enabled: false
-      phone_number:
-        weight: 95
-        enabled: false
-      pull_quote:
-        weight: 96
-        enabled: false
-      media_contact:
-        enabled: true
-        weight: 96
-      quick_action:
-        weight: 97
-        enabled: false
-      recommended_activity:
-        weight: 98
-        enabled: false
-      related_content:
-        weight: 99
-        enabled: false
-      related_link:
-        weight: 100
-        enabled: false
-      rich_text:
-        weight: 101
-        enabled: false
-      search_band:
-        weight: 102
-        enabled: false
-      section:
-        weight: 103
-        enabled: false
-      section_with_heading:
-        weight: 104
-        enabled: false
-      slideshow:
-        weight: 105
+      image_credit:
+        weight: 138
         enabled: false
       issuer:
         weight: 106
         enabled: false
-      stat:
-        weight: 106
-        enabled: false
-      answers:
-        weight: 107
-        enabled: false
-      subhead:
-        weight: 107
-        enabled: false
-      video:
-        weight: 108
-        enabled: false
-      state_organization:
-        weight: 112
-        enabled: false
-      event_agenda_section:
-        weight: 119
-        enabled: false
-      event_minutes_section:
-        weight: 120
-        enabled: false
-      regulation_section:
-        weight: 120
-        enabled: false
-      featured_item:
-        weight: 123
-        enabled: false
-      featured_item_mosaic:
-        weight: 124
-        enabled: false
-      stacked_band:
-        weight: 126
-        enabled: false
-      file_download_single:
-        weight: 126
-        enabled: false
-      footnotes:
-        weight: 127
-        enabled: false
-      homepage_background_images:
-        weight: 131
-        enabled: false
-      image_credit:
-        weight: 138
+      links:
+        weight: 88
         enabled: false
       links_downloads:
         weight: 141
@@ -265,8 +193,29 @@ settings:
       list_static:
         weight: 145
         enabled: false
+      location_information:
+        weight: 89
+        enabled: false
+      map:
+        weight: 90
+        enabled: false
+      map_row:
+        weight: 91
+        enabled: false
+      media_contact:
+        weight: 96
+        enabled: true
+      method:
+        weight: 92
+        enabled: false
       more_info:
         weight: 151
+        enabled: false
+      next_step:
+        weight: 93
+        enabled: false
+      online_email:
+        weight: 94
         enabled: false
       page:
         weight: 154
@@ -274,11 +223,41 @@ settings:
       page_group:
         weight: 155
         enabled: false
+      phone_number:
+        weight: 95
+        enabled: false
+      pull_quote:
+        weight: 96
+        enabled: false
+      quick_action:
+        weight: 97
+        enabled: false
+      recommended_activity:
+        weight: 98
+        enabled: false
+      regulation_section:
+        weight: 120
+        enabled: false
+      related_content:
+        weight: 99
+        enabled: false
+      related_link:
+        weight: 100
+        enabled: false
+      rich_text:
+        weight: 101
+        enabled: false
       rules_section:
         weight: 164
         enabled: false
       rules_updates:
         weight: 165
+        enabled: false
+      search_band:
+        weight: 102
+        enabled: false
+      section:
+        weight: 103
         enabled: false
       section_heading_text:
         weight: 168
@@ -286,10 +265,31 @@ settings:
       section_long_form:
         weight: 169
         enabled: false
+      section_with_heading:
+        weight: 104
+        enabled: false
+      slideshow:
+        weight: 105
+        enabled: false
+      stacked_band:
+        weight: 126
+        enabled: false
       start_button:
         weight: 173
         enabled: false
+      stat:
+        weight: 106
+        enabled: false
+      state_organization:
+        weight: 112
+        enabled: false
+      subhead:
+        weight: 107
+        enabled: false
       target_pages:
         weight: 177
+        enabled: false
+      video:
+        weight: 108
         enabled: false
 field_type: entity_reference_revisions

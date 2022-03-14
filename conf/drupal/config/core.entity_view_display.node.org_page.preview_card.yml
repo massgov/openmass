@@ -43,6 +43,7 @@ dependencies:
     - field.field.node.org_page.field_organizations
     - field.field.node.org_page.field_parent
     - field.field.node.org_page.field_person_bio
+    - field.field.node.org_page.field_primary_parent
     - field.field.node.org_page.field_public_records_link
     - field.field.node.org_page.field_ref_actions_6
     - field.field.node.org_page.field_ref_card_view_6
@@ -53,6 +54,7 @@ dependencies:
     - field.field.node.org_page.field_reusable_label
     - field.field.node.org_page.field_secondary_person_bio
     - field.field.node.org_page.field_short_name
+    - field.field.node.org_page.field_short_title
     - field.field.node.org_page.field_social_links
     - field.field.node.org_page.field_state_organization_tax
     - field.field.node.org_page.field_sub_brand
@@ -71,26 +73,26 @@ bundle: org_page
 mode: preview_card
 content:
   extra_org_nav_application_login_links:
-    weight: 2
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 2
+    region: content
   field_sub_brand:
-    weight: 0
+    type: image
     label: hidden
     settings:
-      image_style: ''
       image_link: ''
+      image_style: ''
     third_party_settings: {  }
-    type: image
+    weight: 0
     region: content
   field_sub_title:
     type: basic_string
-    weight: 1
-    region: content
     label: above
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
 hidden:
   body: true
   content_moderation_control: true
@@ -147,6 +149,7 @@ hidden:
   field_organizations: true
   field_parent: true
   field_person_bio: true
+  field_primary_parent: true
   field_public_records_link: true
   field_ref_actions_6: true
   field_ref_card_view_6: true
@@ -157,6 +160,7 @@ hidden:
   field_reusable_label: true
   field_secondary_person_bio: true
   field_short_name: true
+  field_short_title: true
   field_social_links: true
   field_state_organization_tax: true
   field_subtype: true

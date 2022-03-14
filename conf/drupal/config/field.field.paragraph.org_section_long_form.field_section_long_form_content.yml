@@ -7,6 +7,7 @@ dependencies:
     - paragraphs.paragraphs_type.about
     - paragraphs.paragraphs_type.callout_link
     - paragraphs.paragraphs_type.caspio_embed
+    - paragraphs.paragraphs_type.collection_search
     - paragraphs.paragraphs_type.featured_item_mosaic
     - paragraphs.paragraphs_type.featured_message
     - paragraphs.paragraphs_type.featured_topics
@@ -43,7 +44,6 @@ default_value_callback: ''
 settings:
   handler: 'default:paragraph'
   handler_settings:
-    negate: 0
     target_bundles:
       about: about
       callout_link: callout_link
@@ -68,6 +68,8 @@ settings:
       tableau_embed: tableau_embed
       video: video
       what_would_you_like_to_do: what_would_you_like_to_do
+      collection_search: collection_search
+    negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 23
@@ -82,8 +84,8 @@ settings:
         weight: 26
         enabled: false
       about:
-        enabled: true
         weight: 0
+        enabled: true
       action_address:
         weight: 27
         enabled: false
@@ -133,8 +135,8 @@ settings:
         weight: 42
         enabled: false
       callout_link:
-        enabled: true
         weight: 1
+        enabled: true
       campaign_features:
         weight: 43
         enabled: false
@@ -142,8 +144,11 @@ settings:
         weight: 44
         enabled: false
       caspio_embed:
-        enabled: true
         weight: 3
+        enabled: true
+      collection_search:
+        weight: 128
+        enabled: true
       completion_time:
         weight: 45
         enabled: false
@@ -196,14 +201,14 @@ settings:
         weight: 61
         enabled: false
       featured_item_mosaic:
-        enabled: true
         weight: 5
+        enabled: true
       featured_message:
-        enabled: true
         weight: 6
-      featured_topics:
         enabled: true
+      featured_topics:
         weight: 7
+        enabled: true
       file_download:
         weight: 62
         enabled: false
@@ -238,17 +243,17 @@ settings:
         weight: 72
         enabled: false
       iframe:
-        enabled: true
         weight: 8
-      image:
         enabled: true
+      image:
         weight: 9
+        enabled: true
       image_credit:
         weight: 73
         enabled: false
       info_details_card_group:
-        enabled: true
         weight: 2
+        enabled: true
       issuer:
         weight: 74
         enabled: false
@@ -277,8 +282,8 @@ settings:
         weight: 81
         enabled: false
       list_board_members:
-        enabled: true
         weight: 10
+        enabled: true
       list_dynamic:
         weight: 82
         enabled: false
@@ -331,26 +336,26 @@ settings:
         weight: 99
         enabled: false
       org_events:
-        enabled: true
         weight: 11
+        enabled: true
       org_locations:
-        enabled: true
         weight: 13
+        enabled: true
       org_news:
-        enabled: true
         weight: 14
-      org_related_orgs:
         enabled: true
+      org_related_orgs:
         weight: 16
+        enabled: true
       org_section_long_form:
         weight: 100
         enabled: false
       organization_contact_logo:
-        enabled: true
         weight: 4
-      organization_grid:
         enabled: true
+      organization_grid:
         weight: 12
+        enabled: true
       page:
         weight: 101
         enabled: false
@@ -361,8 +366,8 @@ settings:
         weight: 103
         enabled: false
       pull_quote:
-        enabled: true
         weight: 15
+        enabled: true
       quick_action:
         weight: 104
         enabled: false
@@ -379,8 +384,8 @@ settings:
         weight: 108
         enabled: false
       rich_text:
-        enabled: true
         weight: 17
+        enabled: true
       rules_section:
         weight: 109
         enabled: false
@@ -408,12 +413,15 @@ settings:
       section_with_heading:
         weight: 117
         enabled: false
+      sitewide_alert_message:
+        weight: 242
+        enabled: false
       slideshow:
         weight: 118
         enabled: false
       social_media:
-        enabled: true
         weight: 18
+        enabled: true
       stacked_band:
         weight: 119
         enabled: false
@@ -421,8 +429,8 @@ settings:
         weight: 120
         enabled: false
       stat:
-        enabled: true
         weight: 19
+        enabled: true
       state_organization:
         weight: 121
         enabled: false
@@ -430,11 +438,11 @@ settings:
         weight: 122
         enabled: false
       tableau_embed:
-        enabled: true
         weight: 20
-      video:
         enabled: true
+      video:
         weight: 21
+        enabled: true
       video_with_header:
         weight: 123
         enabled: false
@@ -442,6 +450,6 @@ settings:
         weight: 124
         enabled: false
       what_would_you_like_to_do:
-        enabled: true
         weight: 22
+        enabled: true
 field_type: entity_reference_revisions

@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.rules.field_collections
     - field.field.node.rules.field_intended_audience
     - field.field.node.rules.field_organizations
+    - field.field.node.rules.field_primary_parent
     - field.field.node.rules.field_reusable_label
     - field.field.node.rules.field_rules_adopted_date
     - field.field.node.rules.field_rules_courts
@@ -26,6 +27,7 @@ dependencies:
     - field.field.node.rules.field_rules_subheading
     - field.field.node.rules.field_rules_type
     - field.field.node.rules.field_rules_updates
+    - field.field.node.rules.field_short_title
     - field.field.node.rules.field_state_organization_tax
     - node.type.rules
   module:
@@ -36,17 +38,17 @@ bundle: rules
 mode: link_and_description
 content:
   extra_node_pager:
-    weight: 1
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
   field_rules_listing_desc:
-    weight: 0
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
     region: content
 hidden:
   computed_related_to: true
@@ -55,6 +57,7 @@ hidden:
   field_collections: true
   field_intended_audience: true
   field_organizations: true
+  field_primary_parent: true
   field_reusable_label: true
   field_rules_adopted_date: true
   field_rules_courts: true
@@ -73,6 +76,7 @@ hidden:
   field_rules_subheading: true
   field_rules_type: true
   field_rules_updates: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true
   links: true

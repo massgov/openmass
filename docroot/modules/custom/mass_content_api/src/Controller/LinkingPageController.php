@@ -86,7 +86,7 @@ class LinkingPageController extends ControllerBase {
       ],
       '#empty' => $this->t('No pages link here.'),
     ];
-    $nid = $this->requestStack->getCurrentRequest()->attributes->get('node');
+    $nid = $this->requestStack->getCurrentRequest()->attributes->get('node')->id();
     $children = $this->descendantManager->getImpact($nid, 'node');
 
     $used_links = [];
@@ -147,6 +147,8 @@ class LinkingPageController extends ControllerBase {
         }
       }
     }
+    $total = count(array_filter($output['linking_nodes'], 'is_numeric', ARRAY_FILTER_USE_KEY));
+    $output['linking_nodes']['#prefix'] = $total . ' total records.';
     return $output;
   }
 

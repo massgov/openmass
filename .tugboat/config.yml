@@ -73,13 +73,17 @@ services:
         # Create the Drupal private and public files directories.
         - mkdir -p "${DOCROOT}/sites/default/files/private"
 
+        #Install Drush Launcher for a more comfortable terminal experience.
+        - wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar
+        - chmod +x drush.phar
+        - sudo mv drush.phar /usr/local/bin/drush
+
       # Commands that import files, databases, or other assets. When an
       # existing preview is refreshed, the build workflow starts here,
       # skipping the init step, because the results of that step will
       # already be present.
       update:
-        # Install/update packages that may have changed since the build stage.
-        - composer install --optimize-autoloader
+        - composer install --optimize-autoloader --no-cache
         - yarn install
         - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
         - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
@@ -97,7 +101,9 @@ services:
       # and update steps, because the results of those are inherited
       # from the base preview.
       build:
-        - composer install --no-interaction --optimize-autoloader
+        # Hopefully more robust when these dirs are created from scratch.
+        - rm -rf vendor docroot/modules/contrib docroot/libraries
+        - composer install --no-interaction --optimize-autoloader --no-cache
         - yarn install
         - PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-refresh-local --skip-db-prep
 

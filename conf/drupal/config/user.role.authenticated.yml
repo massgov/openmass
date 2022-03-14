@@ -1,7 +1,23 @@
 uuid: d39a3969-88fe-4c52-9fe9-702c15044323
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - filter.format.basic_html
+    - filter.format.campaign_landing_basic
+    - filter.format.campaign_landing_restricted
+    - filter.format.rules_of_court_section
+  module:
+    - contact
+    - entity_hierarchy
+    - filter
+    - flag
+    - mass_admin_pages
+    - mass_admin_toolbar
+    - mass_flagging
+    - media
+    - media_entity_download
+    - system
 _core:
   default_config_hash: dJ0L2DNSj5q6XVZAGsuVDpJTh5UeYkIPwKrUOOpr8YI
 id: authenticated
@@ -9,16 +25,12 @@ label: 'Authenticated user'
 weight: -9
 is_admin: false
 permissions:
-  - 'access comments'
   - 'access content'
-  - 'access shortcuts'
   - 'access site-wide contact form'
   - 'download media'
   - 'flag watch_content'
   - 'mass_flagging flag content'
-  - 'post comments'
-  - 'search content'
-  - 'skip comment approval'
+  - 'reorder entity_hierarchy children'
   - 'unflag watch_content'
   - 'use content reports'
   - 'use mass dashboard tabs'

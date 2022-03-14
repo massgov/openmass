@@ -26,6 +26,7 @@ dependencies:
     - field.field.node.service_page.field_location_button_short_desc
     - field.field.node.service_page.field_log_in_links
     - field.field.node.service_page.field_organizations
+    - field.field.node.service_page.field_primary_parent
     - field.field.node.service_page.field_ref_contact_info
     - field.field.node.service_page.field_related_organization_type
     - field.field.node.service_page.field_reusable_label
@@ -47,6 +48,7 @@ dependencies:
     - field.field.node.service_page.field_service_ref_services_6
     - field.field.node.service_page.field_service_video
     - field.field.node.service_page.field_services_social_links
+    - field.field.node.service_page.field_short_title
     - field.field.node.service_page.field_state_organization_tax
     - field.field.node.service_page.field_template
     - node.type.service_page
@@ -60,53 +62,53 @@ bundle: service_page
 mode: token
 content:
   extra_node_all_actions:
+    settings: {  }
+    third_party_settings: {  }
     weight: 2
     region: content
-    settings: {  }
-    third_party_settings: {  }
   field_service_bg_narrow:
-    weight: 5
+    type: image
     label: above
     settings:
-      image_style: ''
       image_link: ''
+      image_style: ''
     third_party_settings: {  }
-    type: image
+    weight: 5
     region: content
   field_service_bg_wide:
-    weight: 4
+    type: image
     label: above
     settings:
-      image_style: ''
       image_link: ''
+      image_style: ''
     third_party_settings: {  }
-    type: image
+    weight: 4
     region: content
   field_service_body:
-    weight: 6
+    type: basic_string
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: basic_string
+    weight: 6
     region: content
   field_service_eligibility_info:
-    weight: 17
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 17
     region: content
   field_service_file:
-    weight: 12
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 12
     region: content
   field_service_key_info_links_6:
-    weight: 16
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -115,18 +117,18 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 16
     region: content
   field_service_lede:
-    weight: 3
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 3
     region: content
   field_service_links:
-    weight: 11
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -135,18 +137,18 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 11
     region: content
   field_service_offered_by:
     type: entity_reference_label
-    weight: 18
-    region: content
     label: above
     settings:
       link: false
     third_party_settings: {  }
+    weight: 18
+    region: content
   field_service_ref_actions:
-    weight: 9
+    type: link_separate
     label: above
     settings:
       trim_length: 80
@@ -155,53 +157,53 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link_separate
+    weight: 9
     region: content
   field_service_ref_actions_2:
-    weight: 8
+    type: link_separate
     label: above
     settings:
       trim_length: 80
-      url_plain: true
       url_only: false
+      url_plain: true
       rel: '0'
       target: '0'
     third_party_settings: {  }
-    type: link_separate
+    weight: 8
     region: content
   field_service_ref_guide_page_1:
-    weight: 13
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 13
     region: content
   field_service_ref_locations:
-    weight: 14
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 14
     region: content
   field_service_ref_services_6:
-    weight: 10
+    type: entity_reference_entity_id
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: entity_reference_entity_id
+    weight: 10
     region: content
   field_service_video:
-    weight: 15
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 15
     region: content
   field_services_social_links:
-    weight: 7
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -210,18 +212,18 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 7
     region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_related_to: true
   content_moderation_control: true
@@ -248,11 +250,13 @@ hidden:
   field_location_button_short_desc: true
   field_log_in_links: true
   field_organizations: true
+  field_primary_parent: true
   field_ref_contact_info: true
   field_related_organization_type: true
   field_reusable_label: true
   field_service_kpi_choice: true
   field_service_metatags: true
+  field_short_title: true
   field_state_organization_tax: true
   field_template: true
   langcode: true

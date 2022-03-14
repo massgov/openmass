@@ -19,56 +19,56 @@ bundle: media_video
 mode: default
 content:
   created:
-    label: hidden
     type: timestamp
-    weight: 2
+    label: hidden
     settings:
       date_format: medium
       custom_date_format: ''
       timezone: ''
     third_party_settings: {  }
+    weight: 2
     region: content
   field_media_video_embed_field:
     type: video_embed_field_video
-    weight: 4
     label: above
     settings:
+      autoplay: true
       responsive: true
       width: 854
       height: 480
-      autoplay: true
     third_party_settings: {  }
+    weight: 4
     region: content
   field_video_description:
-    weight: 5
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 5
     region: content
   name:
-    label: hidden
     type: string
-    weight: 0
+    label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
+    weight: 0
     region: content
   thumbnail:
     type: image
-    weight: 3
     label: hidden
     settings:
-      image_style: thumbnail
       image_link: ''
+      image_style: thumbnail
     third_party_settings: {  }
+    weight: 3
     region: content
   uid:
-    label: hidden
     type: author
-    weight: 1
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 1
     region: content
 hidden:
   field_video_transcript: true

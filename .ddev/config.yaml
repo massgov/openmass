@@ -7,8 +7,8 @@ dbimage: massgov/mysql-sanitized:super
 omit_containers:
   - db
 disable_settings_management: true
-#Avoid conflict on port 80. This is rarely used anyway.
-router_http_port: "88"
+# Avoid conflict on port 80. This is rarely used anyway.
+router_http_port: "81"
 router_https_port: "443"
 xdebug_enabled: false
 project_tld: local
@@ -40,8 +40,8 @@ web_environment:
 hooks:
   post-start:
     # Tugboat CLI
-    - exec: wget https://dashboard.tugboat.qa/cli/linux/tugboat.tar.gz
-    - exec: tar -zxf tugboat.tar.gz -C /usr/local/bin/
+    - exec: curl https://dashboard.tugboat.qa/cli/linux/tugboat.tar.gz > tugboat.tar.gz
+    - exec: tar -zxf tugboat.tar.gz -C /usr/local/bin/ && rm -f tugboat.tar.gz
     # CicleCI CLI
     - exec: curl -fLSs https://raw.githubusercontent.com/CircleCI-Public/circleci-cli/master/install.sh | bash
     # gh install is too slow to be enabled by default as we dont need it. Uncomment or copy to personal config if needed.

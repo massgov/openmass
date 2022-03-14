@@ -536,7 +536,9 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
                 if ($item['title'] !== '' && $item['title'] !== $node->title->value) {
                   $node->set('title', $item['title']);
                 }
-                $build['extra_node_all_actions'][] = $view_builder->view($node, 'title_short_desc');
+                $render_arr = $view_builder->view($node, 'title_short_desc');
+                $render_arr['#cache']['contexts'] = ['url'];
+                $build['extra_node_all_actions'][] = $render_arr;
               }
             }
             else {
@@ -561,7 +563,9 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
                 if ($item['title'] !== '' && $item['title'] !== $node->title->value) {
                   $node->set('title', $item['title']);
                 }
-                $build['extra_node_all_actions'][] = $view_builder->view($node, 'title_short_desc');
+                $render_arr = $view_builder->view($node, 'title_short_desc');
+                $render_arr['#cache']['contexts'] = ['url'];
+                $build['extra_node_all_actions'][] = $render_arr;
               }
             }
             else {
@@ -755,6 +759,76 @@ function mass_fields_form_node_info_details_form_alter(&$form, FormStateInterfac
 }
 
 /**
+ * Restricts fields on topic pages based on field_restrict_link_management.
+ *
+ * Users with create topic page permission will not be restricted.
+ * For users with "edit any topic page" permission
+ * and without "create topic page" permission...
+ * - If the restriction is checked, they wont be able to edit any field.
+ * - If the restriction is unchecked, they will be able to use $allowed_fields:
+ *   - Intended audience
+ *   - Organizations
+ *   - Labels
+ *   - Link groups
+ *   - Workflow states.
+ *   - Action (save/preview)
+ */
+function _mass_fields_form_node_topic_page_edit_restrict_fields(&$form, FormStateInterface $form_state) {
+  $user = \Drupal::currentUser();
+  $user_can_create_topic_page = $user->hasPermission('create topic_page content');
+  if ($user_can_create_topic_page) {
+    return;
+  }
+
+  /** @var \Drupal\node\NodeForm */
+  $form_object = $form_state->getFormObject();
+  /** @var \Drupal\node\Entity\Node */
+  $node = $form_object->getEntity();
+
+  // Setting allowed fields based on the restriction.
+  $restricted = $node->field_restrict_link_management->value ?? FALSE;
+  $allowed_fields = $restricted ? [] : [
+    // We want revisions as well.
+    'revision_log',
+    // These fields are the ones we want to allow.
+    'field_intended_audience',
+    'field_organizations',
+    'field_reusable_label',
+    'field_topic_content_cards',
+    // Workflow.
+    'moderation_state',
+    // Save & preview.
+    'actions',
+  ];
+
+  foreach ($form as $key => &$element) {
+    if (in_array($key, $allowed_fields)) {
+      $element['#disabled'] = FALSE;
+      continue;
+    }
+
+    // Only disabling form elements.
+    if (!is_array($element) || !isset($element['#type'])) {
+      continue;
+    }
+
+    // Token & hidden types are necessary for submission.
+    if (in_array($element['#type'], ['token', 'hidden'])) {
+      continue;
+    }
+
+    $element['#disabled'] = TRUE;
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_fields_form_node_topic_page_edit_form_alter(&$form, FormStateInterface $form_state) {
+  _mass_fields_form_node_topic_page_edit_restrict_fields($form, $form_state);
+}
+
+/**
  * Helper function to avoid duplicate codes.
  */
 function _mass_fields_info_details_enable_flag(&$form, FormStateInterface $form_state) {
@@ -766,9 +840,7 @@ function _mass_fields_info_details_enable_flag(&$form, FormStateInterface $form_
   if (!$user->hasPermission('enable info details fields')) {
     $form['field_details_enable_fields']['#access'] = FALSE;
   }
-  else {
-    $form['field_banner_image']['#attributes']['class'][] = 'js-hide';
-  }
+
   if (isset($form['field_info_details_sections']) && isset($form['field_info_details_sections']['widget'])) {
     // Load the node and get field value form here
     // to avoid loading it inside loop multiple times.
@@ -790,13 +862,11 @@ function _mass_fields_info_details_enable_flag(&$form, FormStateInterface $form_
               $result = $result->andIf($add_more_container['#access']);
             }
             if ($result->isAllowed()) {
-              $form['field_banner_image']['#access'] = $result;
               $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $result;
             }
             elseif (isset($enabled_status)) {
               // Return field value as a result to determine
               // access to the other fields.
-              $form['field_banner_image']['#access'] = $enabled_status;
               $add_more_container["add_more_button_{$restricted_type}"]['#access'] = $enabled_status;
             }
           }

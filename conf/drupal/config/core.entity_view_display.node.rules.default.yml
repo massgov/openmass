@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.rules.field_collections
     - field.field.node.rules.field_intended_audience
     - field.field.node.rules.field_organizations
+    - field.field.node.rules.field_primary_parent
     - field.field.node.rules.field_reusable_label
     - field.field.node.rules.field_rules_adopted_date
     - field.field.node.rules.field_rules_courts
@@ -25,6 +26,7 @@ dependencies:
     - field.field.node.rules.field_rules_subheading
     - field.field.node.rules.field_rules_type
     - field.field.node.rules.field_rules_updates
+    - field.field.node.rules.field_short_title
     - field.field.node.rules.field_state_organization_tax
     - node.type.rules
   module:
@@ -43,53 +45,53 @@ mode: default
 content:
   computed_related_to:
     type: entity_reference_label
-    weight: 25
-    region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
+    weight: 25
+    region: content
   content_moderation_control:
+    settings: {  }
+    third_party_settings: {  }
     weight: 0
     region: content
+  extra_node_pager:
     settings: {  }
     third_party_settings: {  }
-  extra_node_pager:
     weight: 21
     region: content
+  extra_org_feedback_form:
     settings: {  }
     third_party_settings: {  }
-  extra_org_feedback_form:
     weight: 24
     region: content
-    settings: {  }
-    third_party_settings: {  }
   field_intended_audience:
-    weight: 23
+    type: list_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 23
     region: content
   field_organizations:
     type: entity_reference_label
-    weight: 22
-    region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
+    weight: 22
+    region: content
   field_rules_adopted_date:
-    weight: 6
+    type: datetime_default
     label: above
     settings:
-      format_type: medium
       timezone_override: ''
+      format_type: medium
     third_party_settings: {  }
-    type: datetime_default
+    weight: 6
     region: content
   field_rules_courts:
-    weight: 17
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -98,65 +100,65 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 17
     region: content
   field_rules_download:
-    weight: 12
+    type: entity_reference_entity_view
     label: above
     settings:
       view_mode: media_download_link
       link: false
     third_party_settings: {  }
-    type: entity_reference_entity_view
+    weight: 12
     region: content
   field_rules_effective_date:
-    weight: 7
+    type: datetime_default
     label: above
     settings:
-      format_type: medium
       timezone_override: ''
+      format_type: medium
     third_party_settings: {  }
-    type: datetime_default
+    weight: 7
     region: content
   field_rules_footnotes:
-    weight: 11
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 11
     region: content
   field_rules_listing_desc:
-    weight: 19
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 19
     region: content
   field_rules_metatags:
-    weight: 18
+    type: metatag_empty_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: metatag_empty_formatter
+    weight: 18
     region: content
   field_rules_overview:
-    weight: 9
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 9
     region: content
   field_rules_ref_contact:
-    weight: 13
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 13
     region: content
   field_rules_referenced_sources:
-    weight: 5
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -165,10 +167,10 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 5
     region: content
   field_rules_related:
-    weight: 14
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -177,10 +179,10 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 14
     region: content
   field_rules_related_collections:
-    weight: 15
+    type: dynamic_link_separate
     label: above
     settings:
       trim_length: 80
@@ -189,88 +191,90 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: dynamic_link_separate
+    weight: 15
     region: content
   field_rules_section:
     type: entity_reference_revisions_entity_view
-    weight: 10
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 10
     region: content
   field_rules_standing:
-    weight: 3
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 3
     region: content
   field_rules_status:
-    weight: 4
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 4
     region: content
   field_rules_subheading:
-    weight: 16
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 16
     region: content
   field_rules_type:
-    weight: 2
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 2
     region: content
   field_rules_updates:
     type: entity_reference_revisions_entity_view
-    weight: 8
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 8
     region: content
   links:
-    weight: 1
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
   referencing_binders:
     type: entity_reference_entity_view
-    weight: 20
-    region: content
     label: hidden
     settings:
       view_mode: table_of_contents
       link: false
     third_party_settings: {  }
+    weight: 20
+    region: content
   referencing_binders_page_flipper:
     type: entity_reference_label
-    weight: 22
-    region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
-  workbench_moderation_control:
-    weight: 0
+    weight: 22
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   field_collections: true
+  field_primary_parent: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true
   page_next: true

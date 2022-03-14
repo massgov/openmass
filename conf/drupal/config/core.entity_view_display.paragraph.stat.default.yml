@@ -6,6 +6,7 @@ dependencies:
     - field.field.paragraph.stat.field_alignment
     - field.field.paragraph.stat.field_description
     - field.field.paragraph.stat.field_stat
+    - field.field.paragraph.stat.field_stat_wrapping
     - paragraphs.paragraphs_type.stat
   module:
     - options
@@ -15,27 +16,34 @@ bundle: stat
 mode: default
 content:
   field_alignment:
-    weight: 2
+    type: list_key
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: list_key
+    weight: 2
     region: content
   field_description:
-    weight: 1
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 1
     region: content
   field_stat:
-    weight: 0
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
+    region: content
+  field_stat_wrapping:
+    type: list_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 3
     region: content
 hidden:
   created: true

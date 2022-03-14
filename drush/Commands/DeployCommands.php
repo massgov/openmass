@@ -86,14 +86,13 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       'json' => [
         'branch' => $options['ci-branch'],
         'parameters' => [
-          'post-trigger' => FALSE,
           'webhook' => FALSE,
           'ma-backstop' => TRUE,
           'target' => $target,
           'reference' => $reference,
           'list' => $options['list'],
           'viewport' => $options['viewport'],
-          'tugboat' => $options['tugboat'],
+          'tugboat' => $options['tugboat'] ?: '',
         ],
       ],
     ];
@@ -136,7 +135,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       'json' => [
         'branch' => $options['ci-branch'],
         'parameters' => [
-          'post-trigger' => FALSE,
           'webhook' => FALSE,
           'ma-cf-deploy' => TRUE,
           'target' => $target,
@@ -231,7 +229,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       'json' => [
         'branch' => $options['ci-branch'] ?: $git_ref,
         'parameters' => [
-          'post-trigger' => FALSE,
           'webhook' => FALSE,
           'ma-release' => TRUE,
           'target' => $target,
@@ -373,9 +370,9 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $process = Drush::drush($targetRecord, 'cache:tags', [implode(',', $tags)], ['verbose' => TRUE]);
       $process->mustRun();
 
-      // Enqueue purging of notable URLs. Don't use tags to avoid over-purging.
+      // Enqueue purging of notable URLs. Don't use tags to avoid over-purging. Consider using manual purger.
       // Empty path is the homepage
-      $paths = ['', 'orgs/office-of-the-governor', '/media/1268726'];
+      $paths = ['', 'orgs/office-of-the-governor', 'media/1268726'];
       foreach ($domains_web as $domain) {
         foreach ($paths as $path) {
           $expressions[] = 'url ' . 'https://' . $domain . '/' . $path . ',';

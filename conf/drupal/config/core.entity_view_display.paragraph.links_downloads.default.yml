@@ -14,16 +14,16 @@ bundle: links_downloads
 mode: default
 content:
   field_links_downloads_down:
-    weight: 1
+    type: entity_reference_entity_view
     label: hidden
     settings:
       view_mode: media_download_link
       link: false
     third_party_settings: {  }
-    type: entity_reference_entity_view
+    weight: 1
     region: content
   field_links_downloads_link:
-    weight: 0
+    type: dynamic_link_separate
     label: hidden
     settings:
       url_only: false
@@ -32,6 +32,6 @@ content:
       target: 0
       trim_length: ''
     third_party_settings: {  }
-    type: dynamic_link_separate
+    weight: 0
     region: content
 hidden: {  }

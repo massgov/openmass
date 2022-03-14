@@ -24,3 +24,19 @@ mass_admin_pages.updates_block_form:
     _title: 'Updates and Alert messages'
   requirements:
     _permission: 'administer form for updates block'
+
+mass_admin_pages.reports_author_block_form:
+  path: '/admin/edit-blocks/author-reports'
+  defaults:
+    _form: '\Drupal\mass_admin_pages\Form\ReportsAuthor'
+    _title: 'Reports for Authors'
+  requirements:
+    _permission: 'administer form for report authors'
+
+mass_admin_pages.reports:
+  path: '/admin/ma-dash/reports'
+  defaults:
+    _controller: 'Drupal\mass_admin_pages\Controller\ReportsController::build'
+    _title: 'Reports for Authors'
+  requirements:
+    _permission: 'use content reports'

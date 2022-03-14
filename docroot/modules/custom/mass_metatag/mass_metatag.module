@@ -350,13 +350,10 @@ function mass_metatag_page_attachments(array &$attachments) {
   if (\Drupal::currentUser()->isAuthenticated() && \Drupal::service('theme.manager')->getActiveTheme()->getName() == 'mass_admin_theme') {
     $user = Drupal::currentUser();
     $user_entity = User::load($user->id());
-    $field_name = 'field_user_org';
-    if ($user_entity->hasField($field_name)) {
-      $referenced_entities = $user_entity->get($field_name)->referencedEntities();
-      if (count($referenced_entities) == 1) {
-        $user_org_term = array_pop($referenced_entities);
-        $slugified_user_org = _mass_metatag_slugify(trim($user_org_term->getName()));
-      }
+    $referenced_entities = $user_entity->getOrg()->referencedEntities();
+    if (count($referenced_entities) == 1) {
+      $user_org_term = array_pop($referenced_entities);
+      $slugified_user_org = _mass_metatag_slugify(trim($user_org_term->getName()));
     }
 
     // We directly put together the render arrays that create

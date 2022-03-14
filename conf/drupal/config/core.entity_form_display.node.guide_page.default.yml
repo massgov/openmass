@@ -17,7 +17,9 @@ dependencies:
     - field.field.node.guide_page.field_image_credit
     - field.field.node.guide_page.field_intended_audience
     - field.field.node.guide_page.field_organizations
+    - field.field.node.guide_page.field_primary_parent
     - field.field.node.guide_page.field_reusable_label
+    - field.field.node.guide_page.field_short_title
     - field.field.node.guide_page.field_state_organization_tax
     - image.style.large
     - node.type.guide_page
@@ -25,6 +27,7 @@ dependencies:
   module:
     - conditional_fields
     - content_moderation
+    - entity_hierarchy
     - field_group
     - focal_point
     - maxlength
@@ -38,21 +41,23 @@ third_party_settings:
         - group_overview
         - group_sections
         - group_related
+      label: 'Node Edit Form'
+      region: content
       parent_name: ''
       weight: 1
       format_type: tabs
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         direction: horizontal
-      label: 'Node Edit Form'
-      region: content
     group_overview:
       children:
         - title
+        - field_short_title
         - field_guide_page_lede
         - field_guide_page_bg_wide
         - field_image_credit
+        - field_primary_parent
         - field_organizations
         - field_data_flag
         - field_details_data_type
@@ -62,26 +67,28 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+      label: Overview
+      region: content
       parent_name: group_node_edit_form
       weight: 20
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: open
         description: ''
         required_fields: true
-      label: Overview
-      region: content
     group_sections:
       children:
         - field_guide_page_sections
+      label: Sections
+      region: content
       parent_name: group_node_edit_form
       weight: 22
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: |-
           <p>Guides offer a high level overview of a process or service. They are made up of sections that provide detailed context about each phase or stage. Section titles automatically appear at the top of the guide to give direct access to each section.</p>
@@ -92,50 +99,52 @@ third_party_settings:
 
           <p>In general, a guide should have at least 3 sections but not more than 8.</p>
         required_fields: true
-      label: Sections
-      region: content
     group_related:
       children:
         - field_guide_page_related_guides
+      label: Related
+      region: content
       parent_name: group_node_edit_form
       weight: 23
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-      label: Related
-      region: content
 id: node.guide_page.default
 targetEntityType: node
 bundle: guide_page
 mode: default
 content:
   field_collections:
-    weight: 7
+    type: term_reference_tree
+    weight: 11
+    region: content
     settings:
       start_minimized: true
+      leaves_only: false
       select_parents: true
       cascading_selection: 0
       max_depth: 0
-      leaves_only: false
     third_party_settings: {  }
-    type: term_reference_tree
-    region: content
   field_data_flag:
-    weight: 0
+    type: options_buttons
+    weight: 4
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_data_format:
-    weight: 3
+    type: options_buttons
+    weight: 7
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         89f3899c-4168-4a49-a0ed-d350e1640a2e:
+          entity_type: node
+          bundle: guide_page
           dependee: field_data_flag
           settings:
             state: visible
@@ -150,16 +159,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: guide_page
-    type: options_buttons
-    region: content
   field_data_resource_type:
-    weight: 2
+    type: options_buttons
+    weight: 6
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         d9acdc7a-654d-4220-ab9c-5889444ed4a7:
+          entity_type: node
+          bundle: guide_page
           dependee: field_details_data_type
           settings:
             state: visible
@@ -174,21 +183,21 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: guide_page
-    type: options_buttons
-    region: content
   field_data_topic:
-    weight: 4
+    type: term_reference_tree
+    weight: 8
+    region: content
     settings:
       start_minimized: true
-      cascading_selection: 0
-      max_depth: 0
       leaves_only: false
       select_parents: false
+      cascading_selection: 0
+      max_depth: 0
     third_party_settings:
       conditional_fields:
         189c117b-5c03-4553-80eb-8eebe71562f5:
+          entity_type: node
+          bundle: guide_page
           dependee: field_data_flag
           settings:
             state: visible
@@ -203,16 +212,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: guide_page
-    type: term_reference_tree
-    region: content
   field_details_data_type:
-    weight: 1
+    type: options_buttons
+    weight: 5
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         73df8a8c-1115-4d53-b464-06382b3e5a1d:
+          entity_type: node
+          bundle: guide_page
           dependee: field_data_flag
           settings:
             state: visible
@@ -227,48 +236,45 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: guide_page
-    type: options_buttons
-    region: content
   field_guide_page_bg_wide:
-    weight: -3
+    type: image_focal_point
+    weight: 0
+    region: content
     settings:
-      preview_image_style: large
       progress_indicator: throbber
+      preview_image_style: large
       preview_link: true
       offsets: '50,50'
     third_party_settings: {  }
-    type: image_focal_point
-    region: content
   field_guide_page_lede:
-    weight: -4
+    type: string_textarea
+    weight: -1
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: string_textarea
-    region: content
   field_guide_page_metatags:
+    type: metatag_firehose
     weight: 5
+    region: content
     settings:
       sidebar: true
     third_party_settings: {  }
-    type: metatag_firehose
-    region: content
   field_guide_page_related_guides:
+    type: entity_reference_autocomplete
     weight: 56
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_guide_page_sections:
     type: entity_reference_paragraphs
     weight: 37
+    region: content
     settings:
       title: Section
       title_plural: Sections
@@ -277,69 +283,87 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    region: content
   field_image_credit:
-    weight: -2
+    type: string_textfield
+    weight: 1
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_intended_audience:
-    weight: 5
+    type: options_buttons
+    weight: 9
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_organizations:
-    weight: -1
+    type: entity_reference_autocomplete
+    weight: 3
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
+  field_primary_parent:
+    type: entity_reference_hierarchy_autocomplete
+    weight: 2
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
   field_reusable_label:
-    weight: 6
+    type: entity_reference_autocomplete
+    weight: 10
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: entity_reference_autocomplete
+  field_short_title:
+    type: string_textfield
+    weight: -2
     region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_state_organization_tax:
+    type: entity_reference_autocomplete
     weight: 6
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   moderation_state:
     type: moderation_state_default
     weight: 10
-    settings: {  }
     region: content
+    settings: {  }
     third_party_settings: {  }
   publish_on:
-    weight: 53
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 53
     region: content
-  publish_state:
-    weight: 51
     settings: {  }
     third_party_settings: {  }
+  publish_state:
     type: options_select
+    weight: 51
     region: content
+    settings: {  }
+    third_party_settings: {  }
   scheduler_settings:
     weight: 2
     region: content
@@ -347,7 +371,8 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: -5
+    weight: -3
+    region: content
     settings:
       size: 60
       placeholder: ''
@@ -356,29 +381,28 @@ content:
         maxlength_js: 70
         maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
         maxlength_js_enforce_attribute: false
-    region: content
   uid:
     type: entity_reference_autocomplete
     weight: 0
     region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
   unpublish_on:
-    weight: 54
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 54
     region: content
-  unpublish_state:
-    weight: 52
     settings: {  }
     third_party_settings: {  }
+  unpublish_state:
     type: options_select
+    weight: 52
     region: content
+    settings: {  }
+    third_party_settings: {  }
   url_redirects:
     weight: 50
     region: content

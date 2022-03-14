@@ -18,7 +18,9 @@ dependencies:
     - field.field.node.guide_page.field_image_credit
     - field.field.node.guide_page.field_intended_audience
     - field.field.node.guide_page.field_organizations
+    - field.field.node.guide_page.field_primary_parent
     - field.field.node.guide_page.field_reusable_label
+    - field.field.node.guide_page.field_short_title
     - field.field.node.guide_page.field_state_organization_tax
     - node.type.guide_page
   module:
@@ -29,15 +31,15 @@ bundle: guide_page
 mode: teaser
 content:
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_log_in_links: true
   computed_related_to: true
@@ -57,7 +59,9 @@ hidden:
   field_image_credit: true
   field_intended_audience: true
   field_organizations: true
+  field_primary_parent: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true
   referencing_services: true

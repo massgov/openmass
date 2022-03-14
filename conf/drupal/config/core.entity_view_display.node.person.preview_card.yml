@@ -20,6 +20,7 @@ dependencies:
     - field.field.node.person.field_person_role_title
     - field.field.node.person.field_person_type
     - field.field.node.person.field_plain_description
+    - field.field.node.person.field_primary_parent
     - field.field.node.person.field_publish_bio_page
     - field.field.node.person.field_ref_fax
     - field.field.node.person.field_ref_links
@@ -41,23 +42,23 @@ mode: preview_card
 content:
   field_medium_image:
     type: image
-    weight: 1
-    region: content
     label: hidden
     settings:
-      image_style: thumbnail_72x96
       image_link: ''
+      image_style: thumbnail_72x96
     third_party_settings: {  }
+    weight: 1
+    region: content
   position_is_vacant:
     type: boolean
-    weight: 0
-    region: content
     label: hidden
     settings:
       format: boolean
-      format_custom_true: ''
       format_custom_false: ''
+      format_custom_true: ''
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   body: true
   computed_related_to: true
@@ -78,6 +79,7 @@ hidden:
   field_person_role_title: true
   field_person_type: true
   field_plain_description: true
+  field_primary_parent: true
   field_publish_bio_page: true
   field_ref_fax: true
   field_ref_links: true

@@ -24,12 +24,14 @@ dependencies:
     - field.field.node.location.field_organizations
     - field.field.node.location.field_overview
     - field.field.node.location.field_parking
+    - field.field.node.location.field_primary_parent
     - field.field.node.location.field_ref_contact_info
     - field.field.node.location.field_ref_contact_info_1
     - field.field.node.location.field_related_locations
     - field.field.node.location.field_restrictions
     - field.field.node.location.field_reusable_label
     - field.field.node.location.field_services
+    - field.field.node.location.field_short_title
     - field.field.node.location.field_state_organization_tax
     - node.type.location
   module:
@@ -40,20 +42,20 @@ bundle: location
 mode: teaser
 content:
   extra_contact_info_static_map:
-    weight: 100
     settings: {  }
     third_party_settings: {  }
+    weight: 100
     region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_log_in_links: true
   computed_related_locations: true
@@ -83,11 +85,13 @@ hidden:
   field_organizations: true
   field_overview: true
   field_parking: true
+  field_primary_parent: true
   field_ref_contact_info: true
   field_ref_contact_info_1: true
   field_related_locations: true
   field_restrictions: true
   field_reusable_label: true
   field_services: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true

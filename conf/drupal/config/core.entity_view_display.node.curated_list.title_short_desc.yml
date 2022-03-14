@@ -20,8 +20,10 @@ dependencies:
     - field.field.node.curated_list.field_list_directory_section
     - field.field.node.curated_list.field_list_type
     - field.field.node.curated_list.field_organizations
+    - field.field.node.curated_list.field_primary_parent
     - field.field.node.curated_list.field_related_links
     - field.field.node.curated_list.field_reusable_label
+    - field.field.node.curated_list.field_short_title
     - field.field.node.curated_list.field_state_organization_tax
     - node.type.curated_list
   module:
@@ -32,22 +34,22 @@ bundle: curated_list
 mode: title_short_desc
 content:
   extra_node_pager:
-    weight: 100
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 100
+    region: content
   extra_sidebar_contact:
-    weight: 100
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 100
+    region: content
   field_curatedlist_lede:
-    weight: 0
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
     region: content
 hidden:
   computed_log_in_links: true
@@ -69,8 +71,10 @@ hidden:
   field_list_directory_section: true
   field_list_type: true
   field_organizations: true
+  field_primary_parent: true
   field_related_links: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true
   links: true

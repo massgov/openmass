@@ -5,12 +5,14 @@
  * Contains mass_utility.module.
  */
 
+use Drupal\block\BlockViewBuilder;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\link\LinkItemInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
@@ -350,31 +352,72 @@ function mass_utility_form_revision_overview_form_alter(&$form, FormStateInterfa
 
   foreach (Element::children($form['node_revisions_table']) as $idx) {
     $row =& $form['node_revisions_table'][$idx];
-    $vid = $row['select_column_one']['#return_value'];
-
-    if ($revision = $nodeStorage->loadRevision($vid)) {
-      if ($revisionAuthor = $revision->get('revision_uid')->entity) {
-        $title = $revision->getTitle();
-        $nid = $revision->id();
-        $title_nid = "Outreach about Mass.gov revision \"$title\" ($nid)";
-        $contact_url = new Url('entity.user.contact_form', ['user' => $revisionAuthor->id()], [
-          // Set 'query' option for use by Prepopulate contrib module.
-          // Will be used to pre-fill subject in contact form.
-          'query' => [
-            'edit[subject]' => $title_nid,
-          ],
-          // Set 'attributes' option for URL.
-          'attributes' => [
-            'class' => ['button'],
-            'title' => t('Contact the author of this revision.'),
-          ],
-        ]);
-        if (!$contact_url->access(\Drupal::currentUser())) {
-          continue;
-          // Skip adding a contact link for this revision if the user doesn't have the ability to use it.
+    if (isset($row['select_column_one']['#return_value'])) {
+      $vid = $row['select_column_one']['#return_value'];
+      if ($revision = $nodeStorage->loadRevision($vid)) {
+        if ($revisionAuthor = $revision->get('revision_uid')->entity) {
+          $title = $revision->getTitle();
+          $nid = $revision->id();
+          $title_nid = "Outreach about Mass.gov revision \"$title\" ($nid)";
+          $contact_url = new Url('entity.user.contact_form', ['user' => $revisionAuthor->id()], [
+            // Set 'query' option for use by Prepopulate contrib module.
+            // Will be used to pre-fill subject in contact form.
+            'query' => [
+              'edit[subject]' => $title_nid,
+            ],
+            // Set 'attributes' option for URL.
+            'attributes' => [
+              'class' => ['button'],
+              'title' => t('Contact the author of this revision.'),
+            ],
+          ]);
+          if (!$contact_url->access(\Drupal::currentUser())) {
+            continue;
+            // Skip adding a contact link for this revision if the user doesn't have the ability to use it.
+          }
+          $row['revision']['#template'] .= '{{ contact }}';
+          $row['revision']['#context']['contact'] = Link::fromTextAndUrl('Contact this author', $contact_url)
+            ->toString();
         }
-        $row['revision']['#template'] .= '{{ contact }}';
-        $row['revision']['#context']['contact'] = Link::fromTextAndUrl('Contact this author', $contact_url)->toString();
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_help().
+ */
+function mass_utility_help($route_name, RouteMatchInterface $route_match) {
+  if ($route_name === 'entity.node.version_history') {
+    $node = $route_match->getParameter('node');
+    if ($node instanceof Node) {
+      $content_types = [
+        "advisory",
+        "binder",
+        "curated_list",
+        "form_page",
+        "guide_page",
+        "how_to_page",
+        "info_details",
+        "service_page",
+        "service_details",
+        "location",
+        "topic_page",
+        "location_details",
+        "org_page",
+        "person",
+        "news",
+        "event",
+        "decision",
+        "decision_tree",
+        "executive_order",
+        "regulation",
+        "rules",
+        "campaign_landing",
+      ];
+      if (in_array($node->bundle(), $content_types)) {
+        $url = $node->toUrl()->toString();
+        return '<p>' . t('You also may be able to view an <a href="https://wayback.archive-it.org/1101/*/https://www.mass.gov@url" target="_blank">archived version of this page</a>. Published pages are archived weekly through a service that crawls pages on Mass.gov.', ['@url' => $url]) . '</p>';
       }
     }
   }
@@ -584,10 +627,8 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
  */
 function mass_utility_form_node_news_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   foreach ($form['field_news_signees']['widget'] as $delta => $widget) {
-    if (is_numeric($delta)) {
-      if (!empty($form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url'])) {
-        $element = $form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'][0]['value'];
-        $original_path = $element['#default_value'];
+    if (is_numeric($delta) && !empty($form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'])) {
+      if ($original_path = $form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'][0]['value']['#default_value']) {
         $image_path = file_create_url($original_path);
         $form['field_news_signees']['widget'][$delta]['subform']['field_state_org_photo_url']['widget'][0]['#prefix'] = '<p><div class="photo-preview"><img src=' . $image_path . '/></div></p>';
       }
@@ -755,12 +796,14 @@ function mass_utility_get_signee_ajax_callback(array &$form, FormStateInterface 
     if ($node = $storage->load($nid)) {
       $name = $node->getTitle();
       $description = $node->field_sub_title->value;
-      $image_path = $node->field_sub_brand->entity->uri->value;
-      $image = '<img src="' . file_create_url($image_path) . '"/>';
+      if (!empty($node->field_sub_brand->entity->uri->value)) {
+        $image_path = $node->field_sub_brand->entity->uri->value;
+        $image = '<img src="' . file_create_url($image_path) . '"/>';
+        $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"', 'val', [$image_path]));
+        $response->addCommand(new HtmlCommand('#edit-field-news-signees-' . $delta . '-subform-field-state-org-photo-url-wrapper .photo-preview', $image));
+      }
       $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_name][0][value]"', 'val', [$name]));
       $response->addCommand(new InvokeCommand('textarea[name="field_news_signees[' . $delta . '][subform][field_state_org_description][0][value]"', 'val', [$description]));
-      $response->addCommand(new InvokeCommand('input[name="field_news_signees[' . $delta . '][subform][field_state_org_photo_url][0][value]"', 'val', [$image_path]));
-      $response->addCommand(new HtmlCommand('#edit-field-news-signees-' . $delta . '-subform-field-state-org-photo-url-wrapper .photo-preview', $image));
     }
     return $response;
   }

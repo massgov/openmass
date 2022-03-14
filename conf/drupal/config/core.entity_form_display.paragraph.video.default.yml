@@ -17,27 +17,27 @@ bundle: video
 mode: default
 content:
   field_video:
+    type: inline_entity_form_complex
     weight: 0
+    region: content
     settings:
       form_mode: default
+      override_labels: false
       label_singular: ''
       label_plural: ''
       allow_new: true
       allow_existing: true
       match_operator: CONTAINS
-      override_labels: false
       collapsible: false
       collapsed: false
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: video_browser
-    type: inline_entity_form_complex
-    region: content
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   field_video_caption: true

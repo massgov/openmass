@@ -19,8 +19,10 @@ dependencies:
     - field.field.node.curated_list.field_list_directory_section
     - field.field.node.curated_list.field_list_type
     - field.field.node.curated_list.field_organizations
+    - field.field.node.curated_list.field_primary_parent
     - field.field.node.curated_list.field_related_links
     - field.field.node.curated_list.field_reusable_label
+    - field.field.node.curated_list.field_short_title
     - field.field.node.curated_list.field_state_organization_tax
     - node.type.curated_list
   module:
@@ -37,151 +39,151 @@ mode: default
 content:
   computed_related_to:
     type: entity_reference_label
-    weight: 10
-    region: content
     label: above
     settings:
       link: true
     third_party_settings: {  }
+    weight: 10
+    region: content
   content_moderation_control:
+    settings: {  }
+    third_party_settings: {  }
     weight: 0
     region: content
+  extra_node_pager:
     settings: {  }
     third_party_settings: {  }
-  extra_node_pager:
     weight: 13
     region: content
+  extra_org_feedback_form:
     settings: {  }
     third_party_settings: {  }
-  extra_org_feedback_form:
     weight: 16
     region: content
+  extra_sidebar_contact:
     settings: {  }
     third_party_settings: {  }
-  extra_sidebar_contact:
     weight: 11
     region: content
-    settings: {  }
-    third_party_settings: {  }
   field_contact:
-    weight: 14
+    type: entity_reference_entity_view
     label: hidden
     settings:
       view_mode: contact_list
       link: false
     third_party_settings: {  }
-    type: entity_reference_entity_view
+    weight: 14
     region: content
   field_curatedlist_lede:
-    weight: 3
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 3
     region: content
   field_curatedlist_list_section:
     type: entity_reference_revisions_entity_view
-    weight: 4
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 4
     region: content
   field_curatedlist_metatags:
-    weight: 2
+    type: metatag_empty_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: metatag_empty_formatter
+    weight: 2
     region: content
   field_curatedlist_overview:
-    weight: 5
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 5
     region: content
   field_data_flag:
-    weight: 17
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 17
     region: content
   field_data_format:
-    weight: 19
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 19
     region: content
   field_data_resource_type:
-    weight: 22
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 22
     region: content
   field_data_topic:
-    weight: 21
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 21
     region: content
   field_english_version:
-    weight: 20
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 20
     region: content
   field_intended_audience:
-    weight: 8
+    type: list_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 8
     region: content
   field_list_data_type:
-    weight: 18
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 18
     region: content
   field_list_directory_section:
     type: entity_reference_revisions_entity_view
-    weight: 9
     label: above
     settings:
       view_mode: directory
       link: ''
     third_party_settings: {  }
+    weight: 9
     region: content
   field_list_type:
-    weight: 6
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 6
     region: content
   field_organizations:
     type: entity_reference_label
-    weight: 7
-    region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
+    weight: 7
+    region: content
   field_related_links:
-    weight: 15
+    type: dynamic_link_separate
     label: hidden
     settings:
       trim_length: 80
@@ -190,31 +192,33 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: dynamic_link_separate
+    weight: 15
     region: content
   links:
-    weight: 1
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
   referencing_binders:
     type: entity_reference_entity_view
-    weight: 12
-    region: content
     label: hidden
     settings:
       view_mode: table_of_contents
       link: false
     third_party_settings: {  }
-  workbench_moderation_control:
-    weight: 0
+    weight: 12
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   computed_log_in_links: true
   field_collections: true
+  field_primary_parent: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true
   page_next: true

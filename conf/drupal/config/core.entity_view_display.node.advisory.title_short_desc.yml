@@ -20,7 +20,9 @@ dependencies:
     - field.field.node.advisory.field_collections
     - field.field.node.advisory.field_intended_audience
     - field.field.node.advisory.field_organizations
+    - field.field.node.advisory.field_primary_parent
     - field.field.node.advisory.field_reusable_label
+    - field.field.node.advisory.field_short_title
     - field.field.node.advisory.field_state_organization_tax
     - node.type.advisory
   module:
@@ -32,25 +34,25 @@ mode: title_short_desc
 content:
   field_advisory_listing_desc:
     type: string
-    weight: 0
-    region: content
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
+    weight: 0
+    region: content
   referencing_binders_page_flipper:
     type: entity_reference_label
-    weight: 18
-    region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
-  workbench_moderation_control:
-    weight: 0
+    weight: 18
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   computed_related_to: true
   content_moderation_control: true
@@ -72,7 +74,9 @@ hidden:
   field_collections: true
   field_intended_audience: true
   field_organizations: true
+  field_primary_parent: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true
   links: true

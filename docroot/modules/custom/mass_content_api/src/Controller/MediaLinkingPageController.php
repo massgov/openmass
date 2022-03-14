@@ -86,7 +86,7 @@ class MediaLinkingPageController extends ControllerBase {
       ],
       '#empty' => $this->t('No pages link here.'),
     ];
-    $media_id = $this->requestStack->getCurrentRequest()->attributes->get('media');
+    $media_id = $this->requestStack->getCurrentRequest()->attributes->get('media')->id();
     $children = $this->descendantManager->getImpact($media_id, 'media');
     $used_links = [];
     if (!empty($children)) {
@@ -145,6 +145,8 @@ class MediaLinkingPageController extends ControllerBase {
         }
       }
     }
+    $total = count(array_filter($output['linking_nodes'], 'is_numeric', ARRAY_FILTER_USE_KEY));
+    $output['linking_nodes']['#prefix'] = $total . ' total records.';
     return $output;
   }
 

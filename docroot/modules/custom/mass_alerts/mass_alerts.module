@@ -42,9 +42,6 @@ function mass_alerts_get_scope(NodeInterface $node) {
 function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = 'mass_alerts_validate_alert_placement';
   $form['#validate'][] = 'mass_alerts_validate_alert_content';
-
-  // @TODO Remove the code, since we are using new Sitewide Alerts content type.
-  unset($form['field_alert_display']['widget']['#options']['site_wide']);
 }
 
 /**
@@ -53,9 +50,6 @@ function mass_alerts_form_node_alert_form_alter(&$form, FormStateInterface $form
 function mass_alerts_form_node_alert_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = 'mass_alerts_validate_alert_placement';
   $form['#validate'][] = 'mass_alerts_validate_alert_content';
-
-  // @TODO Remove the code, since we are using new Sitewide Alerts content type.
-  unset($form['field_alert_display']['widget']['#options']['site_wide']);
 }
 
 /**
@@ -290,7 +284,11 @@ function mass_alerts_sitewide_alert_send_notifications(EntityInterface $node) {
 function mass_alerts_theme() {
   return [
     'mass_alerts_block' => [
-      'variables' => ['path' => NULL],
+      'variables' => [
+        'path' => NULL,
+        'type' => '',
+        'wait' => TRUE,
+      ],
     ],
     'mass_alerts_sitewide' => [
       'variables' => ['emergencyAlerts' => NULL],
@@ -299,19 +297,4 @@ function mass_alerts_theme() {
       'variables' => ['headerAlerts' => NULL, 'headerTitle' => NULL],
     ],
   ];
-}
-
-/**
- * Implements hook_preprocess_node().
- */
-function mass_alerts_preprocess_node(&$variables) {
-  if ($variables['view_mode'] == 'full') {
-
-    $node = $variables['node'];
-    $alert_settings = [
-      'type' => $node->getType(),
-    ];
-
-    $variables['#attached']['drupalSettings']['mass_alerts']['node'] = $alert_settings;
-  }
 }

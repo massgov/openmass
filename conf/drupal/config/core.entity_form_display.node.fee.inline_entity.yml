@@ -19,15 +19,15 @@ third_party_settings:
     group_fee_edit_form:
       children:
         - group_fee
+      label: 'Fee edit form'
+      region: content
       parent_name: ''
       weight: 0
       format_type: tabs
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         direction: horizontal
-      label: 'Fee edit form'
-      region: content
     group_fee:
       children:
         - title
@@ -36,56 +36,56 @@ third_party_settings:
         - field_fee_unit
         - field_organizations
         - field_reusable_label
+      label: Fee
+      region: content
       parent_name: group_fee_edit_form
       weight: 0
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: open
         description: ''
         required_fields: true
-      label: Fee
-      region: content
 id: node.fee.inline_entity
 targetEntityType: node
 bundle: fee
 mode: inline_entity
 content:
   field_fee_fee:
+    type: string_textfield
     weight: 2
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_fee_name:
+    type: string_textfield
     weight: 1
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_fee_unit:
+    type: string_textfield
     weight: 3
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_organizations:
+    type: entity_reference_autocomplete
     weight: 4
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_reusable_label:
     type: entity_reference_autocomplete
     weight: 5
@@ -106,29 +106,29 @@ content:
   moderation_state:
     type: moderation_state_default
     weight: 100
-    settings: {  }
     region: content
+    settings: {  }
     third_party_settings: {  }
   publish_state:
+    type: options_select
     weight: 101
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   title:
     type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    region: content
   unpublish_state:
+    type: options_select
     weight: 102
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   url_redirects:
     weight: 50
     region: content

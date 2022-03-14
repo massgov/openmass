@@ -19,14 +19,17 @@ dependencies:
     - field.field.node.curated_list.field_list_directory_section
     - field.field.node.curated_list.field_list_type
     - field.field.node.curated_list.field_organizations
+    - field.field.node.curated_list.field_primary_parent
     - field.field.node.curated_list.field_related_links
     - field.field.node.curated_list.field_reusable_label
+    - field.field.node.curated_list.field_short_title
     - field.field.node.curated_list.field_state_organization_tax
     - node.type.curated_list
     - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
+    - entity_hierarchy
     - field_group
     - link
     - maxlength
@@ -41,21 +44,23 @@ third_party_settings:
         - group_overview
         - group_sections
         - group_related
+      label: 'Curated list edit form'
+      region: content
       parent_name: ''
       weight: 0
       format_type: tabs
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         direction: horizontal
-      label: 'Curated list edit form'
-      region: content
     group_overview:
       children:
         - field_list_type
         - title
+        - field_short_title
         - field_curatedlist_lede
         - field_curatedlist_overview
+        - field_primary_parent
         - field_organizations
         - field_data_flag
         - field_data_topic
@@ -67,84 +72,85 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+      label: Overview
+      region: content
       parent_name: group_curated_list_edit_form
       weight: 8
       format_type: tab
       format_settings:
+        classes: ''
+        id: ''
         formatter: open
         description: ''
         required_fields: true
-        id: ''
-        classes: ''
-      label: Overview
-      region: content
     group_sections:
       children:
         - field_curatedlist_list_section
         - field_list_directory_section
+      label: Sections
+      region: content
       parent_name: group_curated_list_edit_form
       weight: 9
       format_type: tab
       format_settings:
-        description: ''
-        formatter: closed
-        required_fields: true
-        id: ''
         classes: ''
-      label: Sections
-      region: content
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
     group_related:
       children:
         - field_contact
         - field_related_links
+      label: Related
+      region: content
       parent_name: group_curated_list_edit_form
       weight: 11
       format_type: tab
       format_settings:
-        description: ''
-        formatter: closed
-        required_fields: true
-        id: ''
         classes: ''
-      label: Related
-      region: content
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
 id: node.curated_list.default
 targetEntityType: node
 bundle: curated_list
 mode: default
 content:
   field_collections:
-    weight: 17
+    type: term_reference_tree
+    weight: 19
+    region: content
     settings:
       start_minimized: true
+      leaves_only: false
       select_parents: true
       cascading_selection: 0
       max_depth: 0
-      leaves_only: false
     third_party_settings: {  }
-    type: term_reference_tree
-    region: content
   field_contact:
-    weight: 102
+    type: entity_reference_autocomplete
+    weight: 109
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_curatedlist_lede:
-    weight: 5
+    type: string_textfield
+    weight: 6
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_curatedlist_list_section:
     type: entity_reference_paragraphs
     weight: 3
+    region: content
     settings:
       title: 'List section'
       title_plural: 'List sections'
@@ -155,6 +161,8 @@ content:
     third_party_settings:
       conditional_fields:
         07644135-f0df-4a8e-8e7a-640aeae23b66:
+          entity_type: node
+          bundle: curated_list
           dependee: field_list_type
           settings:
             state: '!visible'
@@ -169,36 +177,37 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: curated_list
-    region: content
   field_curatedlist_metatags:
+    type: metatag_firehose
     weight: 3
+    region: content
     settings:
       sidebar: true
     third_party_settings: {  }
-    type: metatag_firehose
-    region: content
   field_curatedlist_overview:
-    weight: 6
+    type: text_textarea
+    weight: 7
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_data_flag:
-    weight: 8
+    type: options_buttons
+    weight: 10
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_data_format:
-    weight: 12
+    type: options_buttons
+    weight: 14
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         16cc3026-50f2-49f7-9870-a1685da70880:
+          entity_type: node
+          bundle: curated_list
           dependee: field_data_flag
           settings:
             state: visible
@@ -213,16 +222,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: curated_list
-    type: options_buttons
-    region: content
   field_data_resource_type:
-    weight: 11
+    type: options_buttons
+    weight: 13
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         6ce39db9-237d-4d84-abd8-ea5520caf4fc:
+          entity_type: node
+          bundle: curated_list
           dependee: field_list_data_type
           settings:
             state: visible
@@ -237,21 +246,21 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: curated_list
-    type: options_buttons
-    region: content
   field_data_topic:
-    weight: 9
+    type: term_reference_tree
+    weight: 11
+    region: content
     settings:
       start_minimized: true
+      leaves_only: false
       select_parents: true
       cascading_selection: 0
       max_depth: 0
-      leaves_only: false
     third_party_settings:
       conditional_fields:
         79efe201-9cd8-44f0-a14f-1ed6e45a9d22:
+          entity_type: node
+          bundle: curated_list
           dependee: field_data_flag
           settings:
             state: visible
@@ -266,12 +275,10 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: curated_list
-    type: term_reference_tree
-    region: content
   field_english_version:
-    weight: 14
+    type: entity_reference_autocomplete
+    weight: 16
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -280,6 +287,8 @@ content:
     third_party_settings:
       conditional_fields:
         bf06cb39-b8a0-484d-91e7-e5634db3a237:
+          entity_type: node
+          bundle: curated_list
           dependee: langcode
           settings:
             state: '!visible'
@@ -294,22 +303,22 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: curated_list
-    type: entity_reference_autocomplete
-    region: content
   field_intended_audience:
-    weight: 15
+    type: options_buttons
+    weight: 17
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_list_data_type:
-    weight: 10
+    type: options_buttons
+    weight: 12
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         225673f0-556f-4184-984b-d6c9c3c34402:
+          entity_type: node
+          bundle: curated_list
           dependee: field_data_flag
           settings:
             state: visible
@@ -324,13 +333,10 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: curated_list
-    type: options_buttons
-    region: content
   field_list_directory_section:
     type: entity_reference_paragraphs
     weight: 4
+    region: content
     settings:
       title: 'List section'
       title_plural: 'List sections'
@@ -341,6 +347,8 @@ content:
     third_party_settings:
       conditional_fields:
         b8b97057-8f95-421e-b505-0465753eafa8:
+          entity_type: node
+          bundle: curated_list
           dependee: field_list_type
           settings:
             state: visible
@@ -355,56 +363,72 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: curated_list
-    region: content
   field_list_type:
+    type: options_select
     weight: 3
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_organizations:
-    weight: 7
+    type: entity_reference_autocomplete
+    weight: 9
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
+  field_primary_parent:
+    type: entity_reference_hierarchy_autocomplete
+    weight: 8
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
   field_related_links:
-    weight: 104
+    type: link_default
+    weight: 110
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_reusable_label:
-    weight: 16
+    type: entity_reference_autocomplete
+    weight: 18
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: entity_reference_autocomplete
+  field_short_title:
+    type: string_textfield
+    weight: 5
     region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_state_organization_tax:
+    type: entity_reference_autocomplete
     weight: 4
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   langcode:
     type: language_select
-    weight: 13
+    weight: 15
     region: content
     settings:
       include_locked: false
@@ -412,21 +436,21 @@ content:
   moderation_state:
     type: moderation_state_default
     weight: 6
-    settings: {  }
     region: content
+    settings: {  }
     third_party_settings: {  }
   publish_on:
-    weight: 106
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 106
     region: content
-  publish_state:
-    weight: 104
     settings: {  }
     third_party_settings: {  }
+  publish_state:
     type: options_select
+    weight: 104
     region: content
+    settings: {  }
+    third_party_settings: {  }
   scheduler_settings:
     weight: 4
     region: content
@@ -447,25 +471,25 @@ content:
   uid:
     type: entity_reference_autocomplete
     weight: 1
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
-    region: content
     third_party_settings: {  }
   unpublish_on:
-    weight: 107
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 107
     region: content
-  unpublish_state:
-    weight: 105
     settings: {  }
     third_party_settings: {  }
+  unpublish_state:
     type: options_select
+    weight: 105
     region: content
+    settings: {  }
+    third_party_settings: {  }
   url_redirects:
     weight: 5
     region: content

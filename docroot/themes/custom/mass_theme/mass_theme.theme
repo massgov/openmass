@@ -9,7 +9,6 @@ use Drupal\block\Entity\Block;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
@@ -29,7 +28,6 @@ use Drupal\mass_utility\RelatedToHelper;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -630,7 +628,7 @@ function mass_theme_preprocess_node_org_page(&$variables) {
       $node->field_banner_image->count() === 0) {
       // Set static pageBanner properties to pass to prepare function.
       $pageBanner_options = [
-        "size" => "large",
+        "layout" => "taper",
         "icon" => NULL,
       ];
 
@@ -1364,51 +1362,31 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
     // Set static pageBanner properties to pass to prepare function.
     $pageBanner_options = [
       'icon' => $icon,
-      'color' => '',
+      'color' => 'white',
+      'underline' => TRUE,
     ];
 
-    if (Helper::isFieldPopulated($node, 'field_topic_type')) {
-      $type = Helper::fieldValue($node, 'field_topic_type');
-      if ($type == 'section landing') {
-        $pageBanner_options = array_merge($pageBanner_options, ['size' => 'hero1600x400']);
-      }
-      else {
-        $pageBanner_options = array_merge($pageBanner_options, ['size' => 'columns']);
-      }
-      $pageBanner_options = array_merge($pageBanner_options, ['type' => $type]);
-    }
-    else {
-      $pageBanner_options = array_merge($pageBanner_options, ['size' => 'columns']);
-      $pageBanner_options = array_merge($pageBanner_options, ['type' => 'topic']);
-    }
-
+    $pageBanner_options = array_merge($pageBanner_options, ['type' => 'topic']);
     // Make pageBanner data structure available in twig template.
     $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
+
+    // Make sure images aren't visible in the page banner.
+    unset($variables['pageBanner']['bgWide']);
+    unset($variables['pageBanner']['bgNarrow']);
+
+    // Make expandableContent data structure available in twig template.
     $renderer = \Drupal::service('renderer');
     foreach ($node->field_topic_content_cards as $index => $section) {
       $variables['numOfSections'] = ++$index;
-      $sectionThreeUp_options = [
-        'noCardLinks' => [
-          ($node->field_topic_display_links->value == '1') ? 'topic_page' : [],
-        ],
-        'use4TopLinks' => [
-          'topic_page',
-        ],
-        'useCallout' => [
-          'service_page',
-        ],
-      ];
-
+      $expandableContent_options = [];
       $title_field = Helper::fieldFullView($section->entity, 'field_content_card_category');
       if (!empty($title_field)) {
-        $sectionThreeUp_options += [
-          'heading' => [
-            'title' => $renderer->renderRoot($title_field),
-          ],
+        $expandableContent_options += [
+          'categoryTitle' => htmlspecialchars_decode($renderer->renderRoot($title_field)),
         ];
       }
 
-      $variables['pageContent'][$index]['sectionThreeUp'] = Organisms::prepareSectionThreeUp($section->entity, $sectionThreeUp_options, ['topic_cards' => ['field_content_card_link_cards']], $cache_tags);
+      $variables['pageContent'][$index]['expandableContent'] = Organisms::prepareExpandableContent($section->entity, $expandableContent_options, ['topic_cards' => ['field_content_card_link_cards']], $cache_tags);
     }
 
     $linkList_options = [
@@ -2796,6 +2774,7 @@ function mass_theme_preprocess_node_event(&$variables) {
     'contact' => ['field_event_contact_general'],
     'type' => ['field_event_type_list'],
     'posted_date' => ['field_event_posted_date'],
+    'updated_date' => ['field_updated_date'],
   ];
 
   // Determines which field names to use from the map.
@@ -2823,8 +2802,14 @@ function mass_theme_preprocess_node_event(&$variables) {
 
   if (Helper::isFieldPopulated($node, $fields['posted_date']) && $is_public_meeting) {
     $postedDate = Helper::getMayflowerDate($node->{$fields['posted_date']}->value, ['date_format' => 'F j, Y']);
-    // Converting epoch to DateTime requires '@'.
-    $changedDate = Helper::getMayflowerDate('@' . $node->getChangedTime(), ['date_format' => 'F j, Y']);
+    // Use the value of field_updated_date as the changedDate value.
+    if (Helper::isFieldPopulated($node, $fields['posted_date'])) {
+      $changedDate = Helper::getMayflowerDate($node->{$fields['updated_date']}->value, ['date_format' => 'F j, Y']);
+    }
+    else {
+      // Otherwise, display the posted date as last modified.
+      $changedDate = $postedDate;
+    }
 
     array_shift($postedDate);
     array_shift($changedDate);
@@ -3498,7 +3483,7 @@ function mass_theme_preprocess_node_news_full(&$variables) {
       if (count($body_array) > 1) {
         $body_array[1] = $location . $body_array[1];
       }
-      $body_string = implode($body_array, '<p>');
+      $body_string = implode('<p>', $body_array);
     }
     if (Helper::fieldValue($node, $field['news_type']) == 'press_release') {
       $ap_conformity = TRUE;
@@ -4378,6 +4363,29 @@ function mass_theme_preprocess_field__person_org_role(&$variables) {
 }
 
 /**
+ * Build block early on the page and set a variable for html.html.twig.
+ */
+function mass_theme_block_alert_build(&$variables) {
+  $block_configs = [
+    'sitewide_alerts' => Block::load('sitewide_alerts'),
+    'page_alerts' => Block::load('page_alerts'),
+  ];
+
+  /** @var Drupal\block\Entity\Block $block_config */
+  foreach ($block_configs as $id => $block_config) {
+
+    if (!$block_config->access('view')) {
+      continue;
+    }
+    $block_manager = \Drupal::service('plugin.manager.block');
+    /** @var Drupal\mass_alerts\Plugin\Block\AlertsBlock */
+    $plugin_block = $block_manager->createInstance('mass_alerts_block', $block_config->get('settings'));
+    $path = $plugin_block->build()['#path'];
+    $variables[$id . '_path'] = $path;
+  }
+}
+
+/**
  * Implements hook_preprocess_HOOK().
  *
  * Various global preprocessing.
@@ -4386,6 +4394,8 @@ function mass_theme_preprocess_html(&$variables) {
   if (isset($variables['node_type'])) {
     $node_type = $variables['node_type'];
   }
+
+  mass_theme_block_alert_build($variables);
 
   $variables['optimize_hiding_snippet'] = \Drupal::state()->get('optimize_hiding_snippet', FALSE);
 
@@ -4486,6 +4496,7 @@ function mass_theme_preprocess_page(&$variables) {
         'org_page' => 'ma__org-page',
         'rules' => 'ma__court-rules',
         'service_page' => 'ma__services',
+        'topic_page' => 'ma__topic-page',
       ];
 
       // Send main_class variable to page.
@@ -4932,6 +4943,11 @@ function mass_theme_preprocess_field(&$variables, $hook) {
 
   // The first element of the featured items mosaic needs a slightly different template.
   if ($element['#field_name'] == 'field_featured_item_mosaic_items') {
+    // First image with an image style.
+    $highlight = $variables['items'][0]['content']['#paragraph']->field_featured_item_highlight;
+    $style = ImageStyle::load('featured_item_highlight');
+    $new_image = $style->buildUrl($highlight->entity->getFileUri());
+    $highlight->entity->setFileUri($new_image);
     $variables['items'][0]['content']['#view_mode'] = 'tall';
   }
 
@@ -5182,7 +5198,7 @@ function mass_theme_preprocess_paragraph__org_locations(&$variables) {
     $mappedLocations_options['aside'] = [
       'button' => $paragraph->field_location_button_label->value,
       'paragraph' => [
-        'text' => $paragraph->field_location_button_short_desc->value,
+        'text' => Helper::fieldFullView($paragraph, 'field_location_button_short_desc'),
       ],
     ];
 
@@ -6433,6 +6449,7 @@ function mass_theme_googletranslate_options_languages() {
     'bo' => 'Tibetan',
     'br' => 'Breton',
     'ca' => 'Catalan',
+    'cv' => 'Cape Verdean Creole',
     'co' => 'Corsican',
     'cs' => 'Czech',
     'cy' => 'Welsh',
@@ -6550,7 +6567,8 @@ function mass_theme_googletranslate_options_languages() {
     'xh' => 'Xhosa',
     'yo' => 'Yoruba',
     'zh-CN' => 'Chinese',
-    'zu' => 'Zulu',
+    'zh-TW' => 'Chinese, Traditional',
+    'zu' => 'Zulu'
   ];
   return $language_codes;
 }
@@ -6670,7 +6688,7 @@ function mass_theme_preprocess_media(array &$variables) {
  *   - media: An individual media for display.
  */
 function mass_theme_preprocess_media_document(array &$variables) {
-  /** @var \Drupal\media\Entity\Media $media */
+  /** @var \Drupal\mass_content\Entity\Bundle\media\DocumentBundle $media */
   $media = $variables['elements']['#media'];
   $variables = array_merge($variables, Molecules::prepareDownloadLink($media));
   if ($variables['elements']['#view_mode'] == 'full') {
@@ -6680,7 +6698,7 @@ function mass_theme_preprocess_media_document(array &$variables) {
     $list_table_rows = [];
 
     // Get the attached file from the media entity.
-    if ($media_file_changed_time = media_file_changed_time($media, 'field_upload_file')) {
+    if ($media_file_changed_time = $media->getFileChangedTime()) {
       $list_table_rows[] = [
         'label' => 'Last Updated:',
         'text' => $media_file_changed_time,
@@ -6731,26 +6749,34 @@ function mass_theme_preprocess_media_document(array &$variables) {
 }
 
 /**
- * Get the attached file from the media entity.
+ * Implements hook_preprocess_HOOK().
  *
- * @param \Drupal\media\MediaInterface $entity
- *   Media Entity.
- * @param string $field_name
- *   File upload field name.
- *
- * @return string
- *   Date formatted Y-m-d for the file last changed date.
+ * Prepare collection_search values for template.
  */
-function media_file_changed_time(MediaInterface $entity, $field_name) {
-  $file = $entity->{$field_name}->entity;
-  if (!$file instanceof File) {
-    \Drupal::logger('media.documents')->error('Media bundle is missing file for media entity: @entity_label (@entity_id)', [
-      '@entity_label' => $entity->label(),
-      '@entity_id' => $entity->id(),
-    ]);
-    return '';
+function mass_theme_preprocess_paragraph__collection_search(&$variables) {
+  $variables['searchBoxWithLinks'] = [];
+  $variables['searchBoxWithLinks']['form'] = [];
+
+  $p = $variables['paragraph'];
+  $variables['searchBoxWithLinks']['form']['headingText'] = $p->field_search_heading->value;
+  $variables['searchBoxWithLinks']['form']['submitText'] = t('SEARCH');
+
+  $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
+  $variables['searchBoxWithLinks']['form']['actionUrl'] = $collection_url;
+
+  $variables['searchBoxWithLinks']['secondary']['heading'] = $p->field_secondary_heading->value;
+  $variables['searchBoxWithLinks']['secondary']['firstLink']['href'] = $collection_url;
+  $variables['searchBoxWithLinks']['secondary']['firstLink']['text'] = $p->field_see_all_items_link_text->value;
+
+  $uri = $p->field_secondary_link[0]->uri ?? FALSE;
+  if (!$uri) {
+    return;
   }
-  return DrupalDateTime::createFromTimestamp($entity->{$field_name}->entity->getChangedTime())->format('Y-m-d');
+  $uri_is_external = UrlHelper::isExternal($uri);
+  $variables['searchBoxWithLinks']['secondary']['secondLink']['href'] = $uri_is_external ?
+    $p->field_secondary_link[0]->uri : Url::fromUri($uri);
+  $variables['searchBoxWithLinks']['secondary']['secondLink']['text'] = $uri_is_external ?
+    $p->field_secondary_link[0]->title : $p->field_secondary_link[0]->computed_title;
 }
 
 /**
@@ -6897,6 +6923,9 @@ function mass_theme_build_key_message_component(array &$variables) {
     $variables['button']['text'] = $button['#title'];
     $variables['button']['href'] = $button['#url']->toString();
   }
+
+  $variables['halfImage'] = $paragraph->field_use_half_image->value ?? FALSE;
+
   if (!empty($paragraph->field_text_overlay_color->value)) {
     $variables['textOverlay'] = isset($colors[$paragraph->field_text_overlay_color->value]) ? $colors[$paragraph->field_text_overlay_color->value] : '';
   }
@@ -7053,25 +7082,6 @@ function mass_theme_preprocess_paragraph__featured_content_single_item(&$variabl
 }
 
 /**
- * Display cards or compact cards depending on the settings.
- */
-function mass_theme_preprocess_paragraph__featured_topics(&$variables) {
-  $paragraph = $variables['paragraph'];
-  // If the checkbox is selected, change display mode to card compact.
-  if ($paragraph->field_topic_name_only->value == TRUE) {
-    $field_topics = $variables['content']['field_featured_topics_topics'];
-    $count = $field_topics['#items']->count();
-    if ($count) {
-      for ($i = 0; $i < $count; $i++) {
-        $field_topics[$i]['#view_mode'] = 'card_compact';
-      }
-    }
-
-    $variables['content']['field_featured_topics_topics'] = $field_topics;
-  }
-}
-
-/**
  * Fetch social links from parent org node.
  */
 function mass_theme_preprocess_paragraph__social_media(&$variables) {
@@ -7101,8 +7111,8 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
  */
 function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
   // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
-  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image'];
-  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping'];
+  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
+  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
   $contained = ['rich_text'];
 
   $components = [];
@@ -7115,12 +7125,18 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
     if (mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
       $items = [];
       do {
-        $items[] = $paragraphs[$i];
+        if (isset($paragraphs[$i])) {
+          $items[] = $paragraphs[$i];
+        }
+
         $i++;
         // Keep grouping together while the next element has the check.
       } while (isset($paragraphs[$i]) && mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields));
+
       // Once done, also group the following one.
-      $items[] = $paragraphs[$i];
+      if (isset($paragraphs[$i])) {
+        $items[] = $paragraphs[$i];
+      }
 
       $component = ['group' => 'default', 'items' => $items];
     }
