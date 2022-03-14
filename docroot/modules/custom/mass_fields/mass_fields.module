@@ -724,6 +724,8 @@ function mass_fields_entity_field_access($operation, FieldDefinitionInterface $f
       case 'field_data_format':
       case 'field_data_resource_type':
       case 'field_data_topic':
+      case 'field_details_data_type':
+      case 'field_binder_data_type':
       case 'field_list_data_type':
         return AccessResult::forbiddenIf(!$account->hasPermission("access data flag fields"));
     }
