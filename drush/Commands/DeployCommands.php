@@ -396,6 +396,38 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $this->logger()->success("Purge queue worker complete at $target.");
   }
 
+  /**
+   * Rebuild a branch preview at Tugboat.
+   * @param string $branch
+   *
+   * @command ma:tugboat-rebuild
+   * @aliases ma:tbrb
+   */
+  public function tugboatRebuild(string $branch) {
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'headers' => ["Authorization" => 'Bearer ' . getenv('TUGBOAT_ACCESS_TOKEN')],
+      'json' => [
+        'children' => TRUE,
+        'force' => TRUE,
+      ],
+    ];
+    // @todo deploy the token.
+    if (!$id = $this->getTugboatPreviewForBranch($branch)) {
+      $this->logger()->warning('Tugboat preview for develop not found.');
+      return;
+    }
+    $response = $client->request('POST', "https://api.tugboat.qa/v3/previews/$id/rebuild", $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('Tugboat API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    // $body = json_decode((string)$response->getBody(), TRUE);
+    $this->logger()->success('Tugboat preview rebuild successful.');
+  }
+
   protected function getClient() {
     return Client::factory($this->getConnector());
   }
@@ -417,6 +449,9 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    */
   public function validate(CommandData $commandData) {
+    if (!$commandData->input()->hasArgument('target')) {
+      return;
+    }
     $target = $commandData->input()->getArgument('target');
     $available_targets = ['dev', 'cd', 'test', 'feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prod', 'ra', 'cf', 'global', 'stage', 'tugboat'];
     if (!in_array($target, $available_targets)) {
@@ -450,9 +485,12 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     foreach ($previews as $preview) {
       if ($preview->provider_ref->head->ref == $branch || $preview->provider_id == "refs/heads/$branch") {
         $this->logger()->success("Fetched preview for branch $branch.");
-        return $preview->$property;
+        $return = $preview->$property;
+        break;
       }
     }
+
+    return $return ?: NULL;
   }
 
   /**
@@ -583,31 +621,6 @@ EOT;
    */
   private function getSuccessMessage($body): string {
     return 'Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.';
-  }
-
-  public function tugboatRebuild() {
-    $stack = $this->getStack();
-    $client = new \GuzzleHttp\Client(['handler' => $stack]);
-    $options = [
-      'headers' => ["Authorization" => 'Bearer ' . getenv('TUGBOAT_ACCESS_TOKEN')],
-      'json' => [
-        'children' => TRUE,
-        'force' => TRUE,
-      ],
-    ];
-    // @todo deploy the token.
-    if (!$id = $this->getTugboatPreviewForBranch('develop')) {
-      $this->logger()->warning('Tugboat preview for develop not found.');
-      return;
-    }
-    $response = $client->request('POST', "https://api.tugboat.qa/v3/previews/$id/rebuild", $options);
-    $code = $response->getStatusCode();
-    if ($code >= 400) {
-      throw new \Exception('Tugboat API response was a ' . $code . '. Use -v for more Guzzle information.');
-    }
-
-    $body = json_decode((string)$response->getBody(), TRUE);
-    $this->logger()->success('Tugboat preview rebuild successful.');
   }
 
 }
