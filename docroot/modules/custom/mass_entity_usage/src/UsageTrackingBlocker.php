@@ -10,7 +10,7 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
- * To decide if a entity needs to be tracked by the entity usage
+ * To decide if a entity needs to be tracked by the entity usage.
  */
 class UsageTrackingBlocker {
 
@@ -104,4 +104,5 @@ class UsageTrackingBlocker {
     }
     return TRUE;
   }
+
 }
