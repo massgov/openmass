@@ -1383,7 +1383,7 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
       $title_field = Helper::fieldFullView($section->entity, 'field_content_card_category');
       if (!empty($title_field)) {
         $expandableContent_options += [
-          'categoryTitle' => $renderer->renderRoot($title_field),
+          'categoryTitle' => htmlspecialchars_decode($renderer->renderRoot($title_field)),
         ];
       }
 
