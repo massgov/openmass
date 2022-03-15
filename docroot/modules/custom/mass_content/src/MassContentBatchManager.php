@@ -11,7 +11,7 @@ class MassContentBatchManager {
 
   /**
    * Process the node to migrate date field values.
-   * 
+   *
    * @param $id
    * @param \Drupal\Core\Entity\ContentEntityBase $node
    * @param $operation_details
@@ -95,4 +95,5 @@ class MassContentBatchManager {
       );
     }
   }
+
 }

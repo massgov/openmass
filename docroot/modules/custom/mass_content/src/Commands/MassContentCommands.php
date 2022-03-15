@@ -46,7 +46,7 @@ class MassContentCommands extends DrushCommands {
    * @usage mass-content:migrate-dates foo
    *   foo is the type of node to update.
    */
-  public function migrateDateFields($type = '') {
+  public function migrateDateFields(string $type = '') {
     // Don't spam all the users with content update emails.
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
@@ -82,6 +82,7 @@ class MassContentCommands extends DrushCommands {
     $numOperations = 0;
     $batchId = 1;
     if (!empty($nids)) {
+      $this->output()->writeln("Preparing batches for " . count($nids) . " nodes.");
       foreach ($nids as $nid) {
         // Prepare the operation. Here we could do other operations on nodes.
         $this->output()->writeln("Preparing batch: " . $batchId);
