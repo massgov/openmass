@@ -35,6 +35,7 @@
 
 {{ attach_library('mass_theme/views-view--image-promos') }}
 
+{% if pageHeader is not defined %}
 {%
   set pageHeader = {
     'category': '',
@@ -48,6 +49,7 @@
     'widgets': null,
   }
 %}
+{% endif %}
 
 <div class="main-content main-content--two">
   {% include "@organisms/by-template/page-header.twig" %}

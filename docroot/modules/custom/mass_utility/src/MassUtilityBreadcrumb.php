@@ -1,19 +1,37 @@
 <?php
 
-namespace Drupal\mass_hierarchy;
+namespace Drupal\mass_utility;
 
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Routing\AdminContext;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\entity_hierarchy\Storage\EntityTreeNodeMapperInterface;
+use Drupal\entity_hierarchy\Storage\NestedSetNodeKeyFactory;
+use Drupal\entity_hierarchy\Storage\NestedSetStorageFactory;
 use Drupal\entity_hierarchy_breadcrumb\HierarchyBasedBreadcrumbBuilder;
 use Drupal\node\Entity\Node;
 
 /**
- * Entity hierarchy based breadcrumb builder overrides.
+ * Entity hierarchy breadcrumb alterations for Mass Utility.
  */
-class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilder {
+class MassUtilityBreadcrumb extends HierarchyBasedBreadcrumbBuilder {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(
+    NestedSetStorageFactory $storage_factory,
+    NestedSetNodeKeyFactory $node_key_factory,
+    EntityTreeNodeMapperInterface $mapper,
+    EntityFieldManagerInterface $entity_field_manager,
+    AdminContext $admin_context
+  ) {
+    parent::__construct($storage_factory, $node_key_factory, $mapper, $entity_field_manager, $admin_context);
+  }
 
   /**
    * {@inheritdoc}
@@ -21,9 +39,6 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
   public function applies(RouteMatchInterface $route_match) {
     if ($this->adminContext->isAdminRoute($route_match->getRouteObject()) && $route_match->getRouteName() !== 'entity.node.edit_form') {
       return FALSE;
-    }
-    if ($route_match->getRouteName() == "view.locations.page" && $route_match->getParameter('node')) {
-      return TRUE;
     }
     $route_entity = $this->getEntityFromRouteMatch($route_match);
     if (!$route_entity || !$route_entity instanceof ContentEntityInterface || !$this->getHierarchyFieldFromEntity($route_entity)) {
@@ -40,21 +55,8 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
     $breadcrumb = new Breadcrumb();
     $breadcrumb->addCacheContexts(['route']);
     /** @var \Drupal\Core\Entity\ContentEntityInterface $route_entity */
-    if (isset($route_match->parent_node)) {
-      $route_entity = $route_match->parent_node;
-    }
-    elseif ($route_match->getRouteName() == "view.locations.page") {
-      // Views argument upcasting is still an issue in Drupal core.
-      if (is_numeric($route_match->getParameter('node'))) {
-        $route_entity = Node::load($route_match->getParameter('node'));
-      }
-      else {
-        $route_entity = $route_match->getParameter('node');
-      }
-    }
-    else {
-      $route_entity = $this->getEntityFromRouteMatch($route_match);
-    }
+    $route_entity = $this->getEntityFromRouteMatch($route_match);
+
     $entity_type = $route_entity->getEntityTypeId();
     $storage = $this->storageFactory->get($this->getHierarchyFieldFromEntity($route_entity), $entity_type);
     $ancestors = $storage->findAncestors($this->nodeKeyFactory->fromEntity($route_entity));
@@ -69,25 +71,19 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
       }
       $entity = $ancestor_entities->offsetGet($ancestor_entity);
       // Show just the label for the entity from the route.
-      if ($entity->id() == $route_entity->id() && $route_match->getParameter('node') instanceof ContentEntityInterface && $entity->id() == $route_match->getParameter('node')->id()) {
-        // Override from extended class build() method: Use field_short_title if
-        // it's set.
-        $text = $entity->label();
-        if ($entity instanceof Node
-          && $entity->hasField('field_short_title')
-          && !$entity->get('field_short_title')->isEmpty()) {
-          $text = $entity->get('field_short_title')->value;
-        }
-        $links[] = Link::createFromRoute($text, '<none>');
-      }
-      else {
-        if ($entity->hasField('field_short_title') && !$entity->get('field_short_title')->isEmpty()) {
-          $text = $entity->get('field_short_title')->value;
-          $links[] = Link::fromTextAndUrl($text, $entity->toUrl());
+      if ($entity->id() == $route_entity->id()) {
+        if ($entity instanceof Node && $entity->hasField('field_short_title') && !empty($entity->field_short_title->value)) {
+          $links[] = Link::createFromRoute($entity->field_short_title->value, '<none>');
         }
         else {
-          $links[] = $entity->toLink();
+          $links[] = Link::createFromRoute($entity->label(), '<none>');
         }
+      }
+      elseif ($entity instanceof Node && $entity->hasField('field_short_title') && !empty($entity->field_short_title->value)) {
+        $links[] = Link::createFromRoute($entity->field_short_title->value, 'entity.node.canonical', ['node' => $entity->id()]);
+      }
+      else {
+        $links[] = $entity->toLink();
       }
     }
 
