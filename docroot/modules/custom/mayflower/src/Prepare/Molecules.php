@@ -1623,7 +1623,7 @@ class Molecules {
     $immediateRelease = FALSE;
 
     $map = [
-      'date' => ['field_news_date'],
+      'date' => ['field_date_published'],
       'signees' => ['field_news_signees'],
       'news_type' => ['field_news_type'],
     ];
@@ -1700,7 +1700,7 @@ class Molecules {
 
     $map = [
       'date' => [
-        'field_news_date',
+        'field_date_published',
         'field_event_date',
         'field_date_published',
       ],
