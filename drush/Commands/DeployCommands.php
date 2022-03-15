@@ -55,7 +55,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
   public function backstop($target, $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::OPT]) {
-    if ($target == 'tugboat' && empty($options['tugboat'])) {
+    if ($target == 'tugboat' && $options['tugboat'] === TRUE) {
       $branch = $options['ci-branch'];
       if ($branch == 'develop') {
         $process = $this->processManager()->shell('git rev-parse --abbrev-ref HEAD');
@@ -64,17 +64,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
           throw new \RuntimeException('Unable to determine current branch. Pass --tugboat option.');
         }
       }
-      // Lookup the Preview corresponding to the specified or current branch.
-      $cmd = sprintf('tugboat --json --api-token %s list previews %s', getenv('TUGBOAT_ACCESS_TOKEN'), '' . self::TUGBOAT_REPO . '');
-      $process = $this->processManager()->shell($cmd);
-      $output = $process->mustRun()->getOutput();
-      $previews = json_decode($output);
-      foreach ($previews as $preview) {
-        if ($preview->provider_ref->head->ref == $branch) {
-          $options['tugboat'] = $preview->url;
-          break;
-        }
-      }
+      $options['tugboat'] = $this->getTugboatPreviewForBranch($branch, 'url');
       if (empty($options['tugboat'])) {
         throw new \RuntimeException('Unable to find a matching Tugboat preview. Pass --tugboat option.');
       }
@@ -435,6 +425,37 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   }
 
   /**
+   * Lookup the Preview corresponding to the specified branch.
+   *
+   * @param $branch
+   * @param $property
+   *
+   * @return ?string
+   */
+  public function getTugboatPreviewForBranch(string $branch, string $property = 'id'): ?string {
+    // Get all previews.
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'headers' => ["Authorization" => 'Bearer ' . getenv('TUGBOAT_ACCESS_TOKEN')],
+    ];
+    $repo_id = self::TUGBOAT_REPO;
+    $response = $client->request('GET', "https://api.tugboat.qa/v3/repos/$repo_id/previews", $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('Tugboat API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    $previews = json_decode((string)$response->getBody(), TRUE);
+    foreach ($previews as $preview) {
+      if ($preview->provider_ref->head->ref == $branch || $preview->provider_id == "refs/heads/$branch") {
+        $this->logger()->success("Fetched preview for branch $branch.");
+        return $preview->$property;
+      }
+    }
+  }
+
+  /**
    * Validate the presence of a CircleCI token
    *
    * @hook validate validate-circleci-token
@@ -562,6 +583,31 @@ EOT;
    */
   private function getSuccessMessage($body): string {
     return 'Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.';
+  }
+
+  public function tugboatRebuild() {
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'headers' => ["Authorization" => 'Bearer ' . getenv('TUGBOAT_ACCESS_TOKEN')],
+      'json' => [
+        'children' => TRUE,
+        'force' => TRUE,
+      ],
+    ];
+    // @todo deploy the token.
+    if (!$id = $this->getTugboatPreviewForBranch('develop')) {
+      $this->logger()->warning('Tugboat preview for develop not found.');
+      return;
+    }
+    $response = $client->request('POST', "https://api.tugboat.qa/v3/previews/$id/rebuild", $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('Tugboat API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    $body = json_decode((string)$response->getBody(), TRUE);
+    $this->logger()->success('Tugboat preview rebuild successful.');
   }
 
 }
