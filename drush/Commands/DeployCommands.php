@@ -92,7 +92,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
     }
 
-    $body = json_decode((string)$response->getBody(), TRUE);
+    // $body = json_decode((string)$response->getBody(), TRUE);
     $this->logger()->success($this->getSuccessMessage($body));
   }
 
@@ -425,7 +425,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     }
 
     // $body = json_decode((string)$response->getBody(), TRUE);
-    $this->logger()->success('Tugboat preview rebuild successful.');
+    $this->logger()->success('Tugboat preview rebuild successful id=' . $id);
   }
 
   protected function getClient() {
@@ -483,9 +483,9 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
     $previews = json_decode((string)$response->getBody(), TRUE);
     foreach ($previews as $preview) {
-      if ($preview->provider_ref->head->ref == $branch || $preview->provider_id == "refs/heads/$branch") {
-        $this->logger()->success("Fetched preview for branch $branch.");
-        $return = $preview->$property;
+      if ($preview['provider_ref']['head']['ref'] == $branch || $preview->provider_id == "refs/heads/$branch") {
+        $this->logger()->info("Fetched preview for branch $branch.");
+        $return = $preview[$property];
         break;
       }
     }
