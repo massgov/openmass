@@ -1,0 +1,6 @@
+services:
+  mass_content.commands:
+    class: \Drupal\mass_content\Commands\MassContentCommands
+    arguments: [ '@mass_content.batch_manager' ]
+    tags:
+      - { name: drush.command }
