@@ -1914,7 +1914,7 @@ class Organisms {
               $topic_title = Helper::fieldFullView($topic_group->entity, 'field_content_card_category');
               if (!empty($topic_title)) {
                 $topic_category_heading = [
-                  'title' => $renderer->renderRoot($topic_title)->__toString(),
+                  'title' => \htmlspecialchars_decode($renderer->renderRoot($topic_title)->__toString()),
                 ];
               }
               // Loop through the links and create an array of link data.
