@@ -5,11 +5,8 @@
  * Contains mass_entity_usage.module.
  */
 
-use Drupal\content_moderation\Entity\ContentModerationState;
-use Drupal\content_moderation\Entity\ContentModerationStateInterface;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\mass_content_moderation\MassModeration;
-use Drupal\mayflower\Helper;
+use Drupal\mass_entity_usage\UsageTrackingBlocker;
 
 /**
  * Implements hook_entity_usage_block_tracking().
@@ -33,50 +30,8 @@ function mass_entity_usage_entity_usage_block_tracking($target_id, $target_type,
  *   If true, the content should be tracked. If false, do not track.
  */
 function _mass_entity_usage_tracking_check($entity_type, $id, $vid) {
-  if ($entity_type == 'paragraph') {
-    // Verify the paragraph revision is in the paragraphs_item_field_data table.
-    $query = \Drupal::database()->select('paragraphs_item_field_data', 'pifd');
-    $query->fields('pifd', ['id', 'revision_id']);
-    $query->condition('id', $id);
-    $query->condition('revision_id', $vid);
-    $results = $query->execute()->fetchAll();
-    if (empty($results)) {
-      return FALSE;
-    }
-    // Load the paragraph revision.
-    $paragraph = \Drupal::service('entity_type.manager')->getStorage('paragraph')
-      ->loadByProperties(['id' => $id, 'revision_id' => $vid]);
-    // Get the parent node of the paragraph.
-    $parent_node = Helper::getParentNode(current($paragraph));
-    if (is_null($parent_node)) {
-      return FALSE;
-    }
-    // Check if the parent node should be tracked.
-    return _mass_entity_usage_tracking_check('node', $parent_node->id(), $parent_node->getRevisionId());
-  }
-  if ($entity_type == 'node') {
-    // Load the node.
-    $node = \Drupal::entityTypeManager()->getStorage('node')->loadRevision($vid);
-    // Get the moderation state.
-    $content_moderation_state = ContentModerationState::loadFromModeratedEntity($node);
-    if ($content_moderation_state instanceof ContentModerationStateInterface
-      && !$content_moderation_state->get('moderation_state')->isEmpty()) {
-      $state_name = $content_moderation_state->get('moderation_state')->value;
-      // These states should be not be tracked.
-      $skipped_states = [
-        MassModeration::UNPUBLISHED,
-        MassModeration::PREPUBLISHED_DRAFT,
-        MassModeration::DRAFT,
-        MassModeration::PREPUBLISHED_NEEDS_REVIEW,
-        MassModeration::TRASH,
-      ];
-      // Don't track sources that are in unpublished or trash state.
-      if (in_array($state_name, $skipped_states)) {
-        return FALSE;
-      }
-    }
-  }
-  return TRUE;
+  $tracking_blocker = new UsageTrackingBlocker(\Drupal::database(), \Drupal::service('entity_type.manager'));
+  return $tracking_blocker->check($entity_type, $id, $vid);
 }
 
 /**
