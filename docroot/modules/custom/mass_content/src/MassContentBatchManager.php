@@ -4,7 +4,6 @@ namespace Drupal\mass_content;
 
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Utility\UpdateException;
-use Drush\Drush;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
@@ -27,7 +26,7 @@ class MassContentBatchManager implements ContainerInjectionInterface {
   protected $nodeStorage;
 
   /**
-   * Creates a MassAutoParentsBatchManager object.
+   * Creates a MassContentBatchManager object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
@@ -46,7 +45,7 @@ class MassContentBatchManager implements ContainerInjectionInterface {
   }
 
   /**
-   * Queue parents relationships automatically using a custom table.
+   * Migrate date field values with batch process.
    */
   public function migrateDateFields() {
     $batch = $this->generateBatch();
@@ -54,7 +53,7 @@ class MassContentBatchManager implements ContainerInjectionInterface {
   }
 
   /**
-   * Create a batch to process the custom table relationships.
+   * Create a batch to process.
    *
    * @return array
    *   The batch array.
@@ -81,7 +80,7 @@ class MassContentBatchManager implements ContainerInjectionInterface {
     $batch = [
       'operations' => $operations,
       'finished' => '\Drupal\mass_content\MassContentBatchManager::batchFinished',
-      'title' => 'Queueing relationships from table.',
+      'title' => 'Queueing nodes for field data migration.',
       'progress_message' => 'Processed @current of @total relationships.',
       'error_message' => 'This batch encountered an error.',
     ];
@@ -90,7 +89,7 @@ class MassContentBatchManager implements ContainerInjectionInterface {
   }
 
   /**
-   * Batch operation worker for queueing up parent relationship assignments.
+   * Batch operation for processing the nodes.
    *
    * @param array $batch_group
    *   Array of relationships to assign.

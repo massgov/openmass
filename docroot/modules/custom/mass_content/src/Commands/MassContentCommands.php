@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class MassContentCommands extends DrushCommands {
 
   /**
-   * The Mass Auto Parents batch manager.
+   * The Mass Content batch manager.
    *
    * @var \Drupal\mass_auto_parents\MassAutoParentsBatchManager
    */
@@ -36,7 +36,7 @@ class MassContentCommands extends DrushCommands {
   }
 
   /**
-   * Assign parents automatically based on custom table values.
+   * Migrate date field values.
    *
    * @command mass-content:migrate-dates
    */
