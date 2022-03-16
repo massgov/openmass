@@ -4,13 +4,14 @@ status: true
 dependencies:
   config:
     - field.storage.paragraph.field_service_section_content
-    - paragraphs.paragraphs_type.contact_placeholder
-    - paragraphs.paragraphs_type.flexible_link_group
-    - paragraphs.paragraphs_type.org_events
     - paragraphs.paragraphs_type.campaign_features
     - paragraphs.paragraphs_type.caspio_embed
+    - paragraphs.paragraphs_type.collection_search
+    - paragraphs.paragraphs_type.contact_placeholder
     - paragraphs.paragraphs_type.featured_item_mosaic
+    - paragraphs.paragraphs_type.flexible_link_group
     - paragraphs.paragraphs_type.key_message_section
+    - paragraphs.paragraphs_type.org_events
     - paragraphs.paragraphs_type.org_locations
     - paragraphs.paragraphs_type.pull_quote
     - paragraphs.paragraphs_type.service_section
@@ -34,19 +35,20 @@ settings:
   handler: 'default:paragraph'
   handler_settings:
     target_bundles:
+      caspio_embed: caspio_embed
+      featured_item_mosaic: featured_item_mosaic
       org_events: org_events
       social_media: social_media
       org_locations: org_locations
-      flexible_link_group: flexible_link_group
-      contact_placeholder: contact_placeholder
-      caspio_embed: caspio_embed
-      featured_item_mosaic: featured_item_mosaic
       pull_quote: pull_quote
       stat: stat
       tableau_embed: tableau_embed
       campaign_features: campaign_features
       key_message_section: key_message_section
       video_with_section: video_with_section
+      flexible_link_group: flexible_link_group
+      collection_search: collection_search
+      contact_placeholder: contact_placeholder
     negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
@@ -123,6 +125,9 @@ settings:
         enabled: false
       caspio_embed:
         weight: 3
+        enabled: true
+      collection_search:
+        weight: 156
         enabled: true
       completion_time:
         weight: 45
