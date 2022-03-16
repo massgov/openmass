@@ -1,6 +1,6 @@
 uuid: 2aa84ca2-440e-4c5f-8d91-a5cfc3958cc8
 langcode: en
-status: false
+status: true
 dependencies:
   module:
     - system
@@ -8,7 +8,7 @@ dependencies:
     - mass_theme
 id: breadcrumbs
 theme: mass_theme
-region: header
+region: breadcrumb
 weight: -1
 provider: null
 plugin: system_breadcrumb_block
@@ -17,4 +17,8 @@ settings:
   label: Breadcrumbs
   label_display: '0'
   provider: system
-visibility: {  }
+visibility:
+  request_path:
+    id: request_path
+    negate: true
+    pages: '/user/*'

@@ -7,22 +7,6 @@
 {% extends '@templates/two-column.twig' %}
 
 {% block preContent %}
-  {# Change output format of pageHeader.headerTags.taxonomyTerms to relationship indicator. #}
-  {% if url %}
-    {% include "@molecules/relationship-indicators.twig" with {
-        "relationshipIndicators": {
-          "pageTitle": node.title.value,
-          "primary": {
-            "label": "part of",
-            "tags": [{
-              "href": url,
-              "title": node.title.value
-            }]
-          },
-          "secondary": null
-        },
-    } %}
-  {% endif %}
   {# {% if pageHeader.headerTags.taxonomyTerms or pageHeader.socialLinks.items %} #}
   {% if pageHeader.socialLinks.items %}
     <div class="ma__page-header__tags">

@@ -53,7 +53,10 @@ More information about setup or running Nightcrawler can be found in the [Nightc
   - `pages.json` is the list pages that are tested when Backstop is run. This is the default option. There are currently 39 pages, which is about as many pages as we want the default option to include. If there are too many pages included, the risk of failed test runs increases.
   - `all.json` has additional pages to test a larger number of pages -- for example, additional displays for some content types. There are currently 57 total (this includes the default pages). To use this option, add `--list=all`
 
-###3 Take screen captures of production pages
+### Enable the Backstop docker image for local running.
+`ddev service enable backstop`
+
+### Take screen captures of production pages
 `ahoy  backstop reference --target=prod --list=all`
 
 #### Take screen captures of local pages to compare
@@ -94,7 +97,7 @@ We have [a large suite](https://github.com/massgov/openmass/tree/develop/feature
 
 ### Functional (aka PHPUnit+ExistingSiteTestCase)
 
-These are a 2018 addition to our test capabilities. Here you have a fully bootstrapped Drupal and Mink at your disposal. We extend [Drupal Test Traits](https://github.com/weitzman/drupal-test-traits), an open source project which we founded for this project. [See examples](https://github.com/massgov/openmass/tree/develop/docroot/modules/custom/mass_utility/tests/src/ExistingSite). Read our test suite to learn how to author these tests. These tests live inside modules. A good example is [MediaDeleteTest](https://github.com/massgov/openmass/blob/develop/docroot/modules/custom/mass_media/tests/src/ExistingSite/MediaDeleteTest.php).
+These are a 2018 addition to our test capabilities. Here you have a fully bootstrapped Drupal and Mink at your disposal. We extend [Drupal Test Traits](https://github.com/weitzman/drupal-test-traits), an open source project which we founded for this project. [See examples](https://github.com/massgov/openmass/tree/develop/docroot/modules/custom/mass_utility/tests/src/ExistingSite). Read our test suite to learn how to author these tests. These tests live inside modules. A good example is [MediaDeleteTest](https://github.com/massgov/openmass/blob/develop/docroot/modules/custom/mass_media/tests/src/ExistingSite/MediaDeleteTest.php). Run `ddev service enable chromedriver` to start the `chromedriver` Docker container which is required for these tests.
 
 ### Performance
 

@@ -118,7 +118,7 @@ In the Query toolbar take the old query and new query and compare the time each 
 
 ### Xdebug
 
-Xdebug isn't a profiling tool, but if you know where a problem is happening in your code, you can set breakpoints using XDebug to trace it back. See [.env.example](../.env.example) for setup instructions.
+Xdebug isn't a profiling tool, but if you know where a problem is happening in your code, you can set breakpoints using XDebug to trace it back. See [.env.example](../.ddev/.env.example) for setup instructions.
 
 ### Web Profiler
 
