@@ -15,7 +15,7 @@ loadEnv();
  * Load any .env file. See /.env.example.
  */
 function loadEnv() {
-  $dotenv = new Dotenv(__DIR__);
+  $dotenv = new Dotenv(\Webmozart\PathUtil\Path::join(__DIR__, '.ddev'));
   try {
     $dotenv->load();
   }
