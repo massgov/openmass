@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.link_and_description
+    - field.field.node.news.field_collections
     - field.field.node.news.field_english_version
     - field.field.node.news.field_image_credit
     - field.field.node.news.field_intended_audience
@@ -21,6 +22,7 @@ dependencies:
     - field.field.node.news.field_news_type
     - field.field.node.news.field_news_video
     - field.field.node.news.field_organizations
+    - field.field.node.news.field_primary_parent
     - field.field.node.news.field_reusable_label
     - field.field.node.news.field_state_organization_tax
     - node.type.news
@@ -32,14 +34,15 @@ bundle: news
 mode: link_and_description
 content:
   workbench_moderation_control:
-    weight: 0
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
+  field_collections: true
   field_english_version: true
   field_image_credit: true
   field_intended_audience: true
@@ -57,6 +60,7 @@ hidden:
   field_news_type: true
   field_news_video: true
   field_organizations: true
+  field_primary_parent: true
   field_reusable_label: true
   field_state_organization_tax: true
   langcode: true

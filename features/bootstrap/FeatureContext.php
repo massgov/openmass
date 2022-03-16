@@ -1026,11 +1026,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'submit',
           ),
           array (
-            'field' => 'field-service-bg-narrow',
-            'tag' => 'input',
-            'type' => 'submit',
-          ),
-          array (
             'field' => 'field-service-ref-actions',
             'tag' => 'input',
             'type' => 'text',
@@ -1103,16 +1098,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'field' => 'field-topic-content-cards',
             'tag' => 'paragraphs',
             'type' => 'content-card-group',
-          ),
-          array (
-            'field' => 'field-topic-bg-wide',
-            'tag' => 'input',
-            'type' => 'submit',
-          ),
-          array (
-            'field' => 'field-topic-bg-narrow',
-            'tag' => 'input',
-            'type' => 'submit',
           ),
           array (
             'field' => 'field-topic-ref-icon',

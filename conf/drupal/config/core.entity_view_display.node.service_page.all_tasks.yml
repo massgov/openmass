@@ -62,12 +62,12 @@ bundle: service_page
 mode: all_tasks
 content:
   extra_node_all_actions:
-    weight: 2
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 2
+    region: content
   field_service_ref_actions:
-    weight: 1
+    type: dynamic_link_separate
     label: hidden
     settings:
       trim_length: 80
@@ -76,10 +76,10 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: dynamic_link_separate
+    weight: 1
     region: content
   field_service_ref_actions_2:
-    weight: 0
+    type: dynamic_link_separate
     label: hidden
     settings:
       trim_length: 80
@@ -88,7 +88,7 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: dynamic_link_separate
+    weight: 0
     region: content
 hidden:
   computed_related_to: true

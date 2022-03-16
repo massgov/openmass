@@ -5,6 +5,7 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.campaign_landing.field_campaign_landing_metatags
+    - field.field.node.campaign_landing.field_collections
     - field.field.node.campaign_landing.field_english_version
     - field.field.node.campaign_landing.field_header
     - field.field.node.campaign_landing.field_kpi_ctr_button_links
@@ -28,17 +29,18 @@ bundle: campaign_landing
 mode: teaser
 content:
   content_moderation_control:
+    settings: {  }
+    third_party_settings: {  }
     weight: -20
     region: content
+  links:
     settings: {  }
     third_party_settings: {  }
-  links:
     weight: 100
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   field_campaign_landing_metatags: true
+  field_collections: true
   field_english_version: true
   field_header: true
   field_kpi_ctr_button_links: true

@@ -23,7 +23,7 @@ function mass_entityreference_form_node_form_alter(&$form, FormStateInterface $f
 
   // Get user's organization taxonomy term.
   $user = User::load(\Drupal::currentUser()->id());
-  $org = $user->get('field_user_org');
+  $org = $user->getOrg();
 
   if ($org->first()) {
     $org_item = $org->first()->getValue();

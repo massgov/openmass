@@ -1045,6 +1045,22 @@ function _mass_validation_form_node_topic_page_form_validate(array &$form, FormS
 
   // Verify links have titles.
   _mass_link_validate_paragraph($form_state, 'field_topic_content_cards', ['field_content_card_link_cards']);
+
+  // Verify multiple Link Groups have Category values.
+  if ($form_state->hasValue('field_topic_content_cards')) {
+    $link_groups = $form_state->getValue('field_topic_content_cards');
+    // Don't count the add_more item as a Link Group.
+    unset($link_groups['add_more']);
+    // If there is more than one, validate the Category fields.
+    if (count($link_groups) > 1) {
+      foreach ($link_groups as $key => $link_group) {
+        // If the Category field is empty, set the error for the current field.
+        if (empty($link_group['subform']['field_content_card_category'][0]['value'])) {
+          $form_state->setErrorByName('field_topic_content_cards][' . $key . '][subform][field_content_card_category', t('When there are multiple Link Groups, the Category field is required for each.'));
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -1405,6 +1421,19 @@ function mass_validation_preprocess_input(&$variables) {
       }
     }
   }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function mass_validation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Avoids client-side validation on all the forms in the system.
+  // See: https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
+  // Fields may be not focusable but required, for instance when they are
+  // inside a tab, then browser client-side validation stops the form
+  // submission and shows a console error. The final user doesn't
+  // know what is happening and not able to submit the form.
+  $form['#attributes']['novalidate'] = TRUE;
 }
 
 /**
