@@ -68,10 +68,10 @@
 
   {% set logInButtons = [] %}
   {% if node.field_log_in_links is not empty %}
-    {% for item in node.field_log_in_links['#list'] %}
+    {% for item in node.field_log_in_links %}
       {% set button = {
-          "href": item.values['#url'],
-          "text": item.values['#title'],
+          "href": item.uri,
+          "text": item.title,
           "size": "small",
           "usage": "secondary"
         }
@@ -79,10 +79,6 @@
       {% set logInButtons = logInButtons|merge([button]) %}
     {% endfor %}
   {% endif %}
-
-  {{ kint(node.field_log_in_links) }}
-  {{ kint(node.field_log_in_links.getList()) }}
-  {{ kint(logInButtons) }}
 
   {% include "@organisms/page-banner/page-banner.twig" with {
     "pageBanner": {
