@@ -5,7 +5,7 @@ Feature: Doc deletion
   so I can manage the document files on the site.
 
   Scenario: Verify editors have access to document files and viewing pdfs not jpegs in the view
-    Given I am logged in as a user with the "Doc deletion" role
+    Given I am logged in as a user with the "editor,doc_deletion" role
     And I should have access to "/admin/content/document-files"
     When I go to "/admin/content/document-files"
     And I fill in "edit-uri" with "pdf"

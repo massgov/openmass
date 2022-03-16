@@ -49,6 +49,26 @@
 <div{{ attributes.addClass(classes) }}>
   {% if pageHeader %}
     {% block preContent %}
+      {% set secondaryIndicators = false %}
+      {% if organizations is not empty %}
+        {% set secondaryIndicators = {
+          "icon": "building",
+          "label": "offered by",
+          "groupAfter": 3
+        } %}
+      {% endif %}
+      {% embed "@molecules/relationship-indicators.twig" with {
+        "relationshipIndicators": {
+          "pageTitle": pageHeader.title,
+          "primary": null,
+          "secondary": secondaryIndicators
+        }
+      } %}
+        {% block secondaryRelationship %}
+          {{ organizations }}
+        {% endblock %}
+      {% endembed %}
+      {% set pageHeader = pageHeader|merge({'headerTags': null}) %}
       {% include "@organisms/by-template/page-header.twig" %}
     {% endblock %}
   {% endif %}
