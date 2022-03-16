@@ -47,13 +47,16 @@ class MassContentCommands extends DrushCommands {
    *   foo is the type of node to update.
    */
   public function migrateDateFields(string $type = '') {
-    // Don't spam all the users with content update emails.
-    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
-
-    // Turn off entity_hierarchy writes while processing the item.
-    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
-
-    $memory_cache = \Drupal::service('entity.memory_cache');
+    $date_fields = [
+      'binder' => 'field_binder_date_published',
+      'decision' => 'field_decision_date',
+      'executive_order' => 'field_executive_order_date',
+      'info_details' => 'field_info_details_date_publishe',
+      'regulation' => 'field_regulation_last_updated',
+      'rules' => 'field_rules_effective_date',
+      'advisory' => 'field_advisory_date',
+      'news' => 'field_news_date'
+    ];
 
     // 1. Log the start of the script.
     $this->loggerChannelFactory->get('mass_content')->info('Update nodes batch operations start');
@@ -62,13 +65,13 @@ class MassContentCommands extends DrushCommands {
     $storage = $this->entityTypeManager->getStorage('node');
     try {
       $query = $storage->getQuery();
-      //
       // Check the type of node given as argument, if not, set article as default.
       if (strlen($type) == 0) {
         $query->condition('type', ['advisory', 'binder', 'decision', 'executive_order', 'info_details', 'regulation', 'rules', 'news'], 'IN');
       }
       else {
         $query->condition('type', $type);
+        $query->exists($date_fields[$type]);
       }
 
       $nids = $query->execute();
@@ -113,9 +116,6 @@ class MassContentCommands extends DrushCommands {
     drush_backend_batch_process();
     // 6. Show some information.
     $this->logger()->notice("Batch operations end.");
-    $memory_cache->deleteAll();
-    // Turn on entity_hierarchy writes after processing the item.
-    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
     // 7. Log some information.
     $this->loggerChannelFactory->get('mass_content')->info('Update batch operations end.');
 

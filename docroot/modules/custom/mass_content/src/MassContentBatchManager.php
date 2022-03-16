@@ -14,6 +14,13 @@ class MassContentBatchManager {
    * Process the node to migrate date field values.
    */
   public function processNode($id, ContentEntityBase $node, $operation_details, &$context) {
+    // Don't spam all the users with content update emails.
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    // Turn off entity_hierarchy writes while processing the item.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+    $memory_cache = \Drupal::service('entity.memory_cache');
     // Sets a mapping of content type to "date" fields.
     $date_fields = [
       'binder' => 'field_binder_date_published',
@@ -26,30 +33,38 @@ class MassContentBatchManager {
       'news' => 'field_news_date'
     ];
 
-    if (in_array($node->bundle(), array_keys($date_fields))) {
-      $field_name = $date_fields[$node->bundle()];
-      if ($node->hasField($field_name) && $node->hasField('field_date_published')) {
-        if (!$node->$field_name->isEmpty()) {
+    try {
+      if (in_array($node->bundle(), array_keys($date_fields))) {
+        $field_name = $date_fields[$node->bundle()];
+        if ($node->hasField($field_name) && $node->hasField('field_date_published')) {
+          if (!$node->$field_name->isEmpty()) {
 
-          $published_date = $node->get($field_name)->getValue();
-          if ($field_name == 'field_news_date') {
-            $news_date = $node->get($field_name)->getValue()[0]['value'];
-            $user_timezone = $node->getOwner()->getTimeZone();
-            $date_original = new DrupalDateTime($news_date, 'UTC');
-            $date_original->setTimezone(timezone_open($user_timezone));
-            $converted_date = $date_original->format('Y-m-d');
-            $published_date = explode('T', $converted_date)[0];
+            $published_date = $node->get($field_name)->getValue();
+            if ($field_name == 'field_news_date') {
+              $news_date = $node->get($field_name)->getValue()[0]['value'];
+              $user_timezone = $node->getOwner()->getTimeZone();
+              $date_original = new DrupalDateTime($news_date, 'UTC');
+              $date_original->setTimezone(timezone_open($user_timezone));
+              $converted_date = $date_original->format('Y-m-d');
+              $published_date = explode('T', $converted_date)[0];
 
+            }
+            $node->set($field_name, NULL);
+            $node->set('field_date_published', $published_date);
+            // Save the node.
+            // Save without updating the last modified date. This requires a core patch
+            // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
+            $node->setSyncing(TRUE);
+            $node->save();
+            $memory_cache->deleteAll();
+            // Turn on entity_hierarchy writes after processing the item.
+            \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
           }
-          $node->set($field_name, NULL);
-          $node->set('field_date_published', $published_date);
-          // Save the node.
-          // Save without updating the last modified date. This requires a core patch
-          // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
-          $node->setSyncing(TRUE);
-          $node->save();
         }
       }
+    }
+    catch (\Exception $e) {
+      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
     }
 
     // Store some results for post-processing in the 'finished' callback.
