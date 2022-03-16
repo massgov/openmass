@@ -17,13 +17,11 @@ dependencies:
     - entity_hierarchy
     - field_group
     - image
-    - link
     - text
 third_party_settings:
   field_group:
     group_collection_settings:
       children:
-        - field_landing_page
         - field_primary_parent
         - field_all_collection_breadcrumb
         - field_short_description
@@ -75,14 +73,6 @@ content:
     weight: 9
     region: content
     settings: {  }
-    third_party_settings: {  }
-  field_landing_page:
-    type: link_default
-    weight: 3
-    region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
@@ -144,4 +134,5 @@ content:
       display_label: true
     third_party_settings: {  }
 hidden:
+  field_landing_page: true
   path: true
