@@ -41,12 +41,17 @@ class MassContentCommands extends DrushCommands {
    *   Type of node to update
    *   Argument provided to the drush command.
    *
+   * @param int $limit
+   *   Number of nodes to process
+   *   Argument provided to the drush command.
+   *
    * @command mass-content:migrate-dates
    *
-   * @usage mass-content:migrate-dates foo
-   *   foo is the type of node to update.
+   * @usage mass-content:migrate-dates foo 5000
+   *   foo is the type of node to update,
+   *   5000 is the number of nodes that will be processed.
    */
-  public function migrateDateFields(string $type = '') {
+  public function migrateDateFields(string $type = '', int $limit = 0) {
     $date_fields = [
       'binder' => 'field_binder_date_published',
       'decision' => 'field_decision_date',
@@ -72,6 +77,9 @@ class MassContentCommands extends DrushCommands {
       else {
         $query->condition('type', $type);
         $query->exists($date_fields[$type]);
+      }
+      if ($limit !== 0) {
+        $query->range(0, $limit);
       }
 
       $nids = $query->execute();
