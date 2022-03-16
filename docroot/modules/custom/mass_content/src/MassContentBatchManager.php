@@ -12,13 +12,6 @@ class MassContentBatchManager {
 
   /**
    * Process the node to migrate date field values.
-   *
-   * @param $id
-   * @param \Drupal\Core\Entity\ContentEntityBase $node
-   * @param $operation_details
-   * @param $context
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public function processNode($id, ContentEntityBase $node, $operation_details, &$context) {
     // Sets a mapping of content type to "date" fields.
