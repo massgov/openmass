@@ -29,6 +29,7 @@ use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\DomCrawler\Crawler;
+use Drupal\schema_metatag\SchemaMetatagManager;
 
 /**
  * Implements hook_theme_suggestions_alter().
@@ -1382,7 +1383,7 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
       $title_field = Helper::fieldFullView($section->entity, 'field_content_card_category');
       if (!empty($title_field)) {
         $expandableContent_options += [
-          'categoryTitle' => $renderer->renderRoot($title_field),
+          'categoryTitle' => htmlspecialchars_decode($renderer->renderRoot($title_field)),
         ];
       }
 
@@ -6055,6 +6056,9 @@ function mass_theme_preprocess_views_view_locations_page(&$variables) {
     $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
 
     if ($node) {
+      if ($node->hasField('field_organizations')) {
+        $variables['organizations'] = $node->field_organizations->view();
+      }
       $node_title = $node->label();
       // Set appropriate page title.
       if ($node->getType() == "location") {
@@ -7189,4 +7193,63 @@ function mass_theme_paragraphs_sections_check_wrapping_field($paragraph, $fields
   }
 
   return FALSE;
+}
+
+/**
+ * Remove breadcrumbs for top level pages and generates schema.org metadata.
+ */
+function mass_theme_preprocess_breadcrumb(&$variables) {
+  $breadcrumb = $variables['breadcrumb'];
+  $itemListElement = [];
+
+  $variables['current_page'] = end($breadcrumb)['text'];
+
+  // Remove breacrumbs from collections by check last URL element.
+  if ((strpos(end($breadcrumb)['url'] ?? '', '/collections/')) === 0) {
+    $variables['breadcrumb'] = [];
+    return;
+  }
+
+  // Remove current page.
+  foreach ($breadcrumb as $key => $link) {
+    if ($link['url'] == "") {
+      unset($breadcrumb[$key]);
+    }
+  }
+
+  // Remove breadcrumbs for top level pages
+  if (count($breadcrumb) < 2) {
+    $variables['breadcrumb'] = NULL;
+  }
+  else {
+    foreach ($breadcrumb as $key => $link) {
+      $itemListElement[] = [
+        "@type" => "ListItem",
+        "position" => $key + 1,
+        "item" => [
+          "@id" => $link['url'],
+          "name" => $link['text']
+        ],
+      ];
+    }
+
+    $variables['breadcrumb'] = $breadcrumb;
+
+    // Set up metadata
+    $items = [
+      '@context' => 'https://schema.org/',
+      '@type' => 'BreadcrumbList',
+      'itemListElement' => $itemListElement,
+    ];
+    $jsonld = SchemaMetatagManager::encodeJsonld($items);
+    $variables['#attached']['html_head']['schema_dataset'] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'script',
+        '#value' => $jsonld,
+        '#attributes' => ['type' => 'application/ld+json'],
+      ],
+      'mass_schema_dataset',
+    ];
+  }
 }
