@@ -1,5 +1,20 @@
 
 
+## [0.316.0] - March 15, 2022
+  
+### Changed
+  - DP-23393: Added breadcrumb to page templates and removed "Part of" from node templates.
+  - DP-24230: Release automation - assume its a hotfix release if it isnt a standard release
+  - DP-24257: Backstop pages changes.
+  
+### Fixed
+  - DP-23982: Breadcrumb accessiblity improvements -  add aria descriptions for the expand button and set aria-location for current page.
+  - DP-24104: Cleanup breadcrumb schema and part of in listing content types.
+  - DP-24284: Disable debug cache headers locally by default due to header size limit
+  - DP-24285: Encode special chars when rendering text for topic hierarchy.
+  
+
+
 ## [0.315.0] - March 8, 2022
 
 ### Changed
