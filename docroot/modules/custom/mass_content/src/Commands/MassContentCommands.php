@@ -40,7 +40,6 @@ class MassContentCommands extends DrushCommands {
    * @param string $type
    *   Type of node to update
    *   Argument provided to the drush command.
-   *
    * @param int $limit
    *   Number of nodes to process
    *   Argument provided to the drush command.
