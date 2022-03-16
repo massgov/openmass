@@ -384,9 +384,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     }
 
     if ($is_prod) {
-      // Rebuild all previews at Tugboat.
-      $process = Drush::drush($targetRecord, 'ma:tbrb', ['develop']);
-      $process->mustRun();
       // Log a new deployment at New Relic.
       $this->newRelic($git_ref, getenv('AC_API_USER'), getenv('MASS_NEWRELIC_APPLICATION'), getenv('MASS_NEWRELIC_KEY'));
     }
