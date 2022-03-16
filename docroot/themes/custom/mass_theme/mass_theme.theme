@@ -3378,6 +3378,7 @@ function mass_theme_preprocess_node_service_page(&$variables) {
  * Prepare the variables for the News page.
  */
 function mass_theme_preprocess_node_news_full(&$variables) {
+  /** @var \Drupal\node\Entity\Node $node */
   $node = $variables['node'];
   $sidebar = [];
   $cache_tags = [];
@@ -3389,9 +3390,11 @@ function mass_theme_preprocess_node_news_full(&$variables) {
   $variables['blogpostCollectionHeader'] = [];
 
   if ($is_blog_post && isset($node->field_collections) && !$node->field_collections->isEmpty()) {
+    /** @var \Drupal\taxonomy\Entity\Term $collection */
     $collection = $node->field_collections[0]->get('entity')->getTarget()->getEntity();
     $variables['blogpostCollectionHeader']['decorativeLink']['text'] = $collection->label();
     $variables['blogpostCollectionHeader']['decorativeLink']['href'] = '/collections/' . $collection->field_url_name->value;
+    $cache_tags = array_merge($collection->getCacheTags(), $node->getCacheTags());
 
     if (isset($collection->field_collection_logo) && !$collection->field_collection_logo->isEmpty()) {
       $collection_logo = $collection->field_collection_logo[0];
