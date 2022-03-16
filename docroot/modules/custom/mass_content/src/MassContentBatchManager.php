@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_content;
 
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityBase;
 
 /**
@@ -40,7 +41,12 @@ class MassContentBatchManager {
           $published_date = $node->get($field_name)->getValue();
           if ($field_name == 'field_news_date') {
             $news_date = $node->get($field_name)->getValue()[0]['value'];
-            $published_date = explode('T', $news_date)[0];
+            $user_timezone = $node->getOwner()->getTimeZone();
+            $date_original= new DrupalDateTime($news_date, 'UTC');
+            $date_original->setTimezone(timezone_open($user_timezone));
+            $converted_date = $date_original->format('Y-m-d');
+            $published_date = explode('T', $converted_date)[0];
+
           }
           $node->set($field_name, NULL);
           $node->set('field_date_published', $published_date);
