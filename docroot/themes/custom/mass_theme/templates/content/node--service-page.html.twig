@@ -142,9 +142,6 @@
     {% set image = introSidebar.logo %}
     {% include "@atoms/09-media/image.twig" %}
   {% endif %}
-  {% if flexibleLinkGroup and node.field_log_in_links is not empty %}
-    {{ content.field_log_in_links }}
-  {% endif %}
   {% if introSidebar.social %}
     {% set sidebarHeading = introSidebar.social.sidebarHeading %}
     {% set sidebarHeading = sidebarHeading|merge({'level': level }) %}
