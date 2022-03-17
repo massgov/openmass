@@ -715,8 +715,21 @@ function mass_fields_paragraph_view(array &$build, EntityInterface $entity, Enti
 function mass_fields_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
   // This is being used to hide the custom HTML field from all roles without permission.
   // At this point only Admin have access.
-  if ($field_definition->getName() === 'field_campaign_custom_html' && $operation === 'edit') {
-    return AccessResult::forbiddenIf(!$account->hasPermission("access the custom_html field"));
+  if ($operation === 'edit') {
+    switch ($field_definition->getName()) {
+      case 'field_campaign_custom_html':
+        return AccessResult::forbiddenIf(!$account->hasPermission("access the custom_html field"));
+
+      // See DP-23754: data hub tagging permissions.
+      case 'field_data_flag':
+      case 'field_data_format':
+      case 'field_data_resource_type':
+      case 'field_data_topic':
+      case 'field_details_data_type':
+      case 'field_binder_data_type':
+      case 'field_list_data_type':
+        return AccessResult::forbiddenIf(!$account->hasPermission("access data flag fields"));
+    }
   }
   return AccessResult::neutral();
 }
