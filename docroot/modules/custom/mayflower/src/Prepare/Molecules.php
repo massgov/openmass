@@ -1735,7 +1735,7 @@ class Molecules {
     // Determines which field names to use from the map.
     $fields = Helper::getMappedFields($entity, $map);
 
-    if (!empty($fields['date']) && in_array($entity->label(), $ct_allowed_dates)) {
+    if (!empty($fields['date']) && in_array($entity->bundle(), $ct_allowed_dates)) {
       $date = new DrupalDateTime($entity->{$fields['date']}->value, new \DateTimeZone('America/New_York'));
       $date = $date->format('n/d/Y');
     }
