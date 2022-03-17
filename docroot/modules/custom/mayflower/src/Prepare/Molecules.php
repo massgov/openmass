@@ -1698,9 +1698,21 @@ class Molecules {
     $url = $entity->toURL();
     $text = $entity->getTitle();
 
+    // https://massgov.atlassian.net/browse/DP-24119
+    // We need to keep the content type list to get the same behaviour
+    // for dates, since all the fields in the node are sharing the same
+    // machine name.
+    $ct_allowed_dates = [
+      'decision',
+      'executive_order',
+      'regulation',
+      'event',
+      'advisory',
+      'news'
+    ];
+
     $map = [
       'date' => [
-        'field_date_published',
         'field_event_date',
         'field_date_published',
       ],
@@ -1723,7 +1735,7 @@ class Molecules {
     // Determines which field names to use from the map.
     $fields = Helper::getMappedFields($entity, $map);
 
-    if (!empty($fields['date'])) {
+    if (!empty($fields['date']) && in_array($entity->label(), $ct_allowed_dates)) {
       $date = new DrupalDateTime($entity->{$fields['date']}->value, new \DateTimeZone('America/New_York'));
       $date = $date->format('n/d/Y');
     }
