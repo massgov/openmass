@@ -111,7 +111,11 @@
     {{ page.header | without('mainnavigation', 'mainnavigation_2', 'mainnavigation_3') }}
   </header>
 {% endif %}
-
+{% block breadcrumb %}
+  {% if page.breadcrumb %}
+    {{ page.breadcrumb }}
+  {% endif %}
+{% endblock %}
 {{ page.content }}
 {% if page.footer or page.footer_navigation %}
   {% include directory ~ "/templates/includes/organisms-footer.html.twig" %}
