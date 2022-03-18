@@ -5141,6 +5141,8 @@ function mass_theme_preprocess_paragraph__org_events(&$variables) {
     }
   }
 
+  // To update this section if any event changes.
+  $variables['#cache']['tags'][] = 'node_list:event';
   $variables['events'] = $eventsData;
 }
 
