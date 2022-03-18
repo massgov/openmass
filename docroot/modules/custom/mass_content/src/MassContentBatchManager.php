@@ -42,7 +42,10 @@ class MassContentBatchManager {
             $published_date = $node->get($field_name)->getValue();
             if ($field_name == 'field_news_date') {
               $news_date = $node->get($field_name)->getValue()[0]['value'];
-              $user_timezone = $node->getOwner()->getTimeZone();
+              $user_timezone = 'America/New_York';
+              if (!empty($node->getOwner())) {
+                $user_timezone = $node->getOwner()->getTimeZone();
+              }
               $date_original = new DrupalDateTime($news_date, 'UTC');
               $date_original->setTimezone(timezone_open($user_timezone));
               $converted_date = $date_original->format('Y-m-d');
