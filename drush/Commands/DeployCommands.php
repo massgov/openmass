@@ -55,7 +55,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
   public function backstop($target, $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::OPT]) {
-    if ($target == 'tugboat' && empty($options['tugboat'])) {
+    if ($target == 'tugboat' && $options['tugboat'] === TRUE) {
       $branch = $options['ci-branch'];
       if ($branch == 'develop') {
         $process = $this->processManager()->shell('git rev-parse --abbrev-ref HEAD');
@@ -64,17 +64,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
           throw new \RuntimeException('Unable to determine current branch. Pass --tugboat option.');
         }
       }
-      // Lookup the Preview corresponding to the specified or current branch.
-      $cmd = sprintf('tugboat --json --api-token %s list previews %s', getenv('TUGBOAT_ACCESS_TOKEN'), '' . self::TUGBOAT_REPO . '');
-      $process = $this->processManager()->shell($cmd);
-      $output = $process->mustRun()->getOutput();
-      $previews = json_decode($output);
-      foreach ($previews as $preview) {
-        if ($preview->provider_ref->head->ref == $branch) {
-          $options['tugboat'] = $preview->url;
-          break;
-        }
-      }
+      $options['tugboat'] = $this->getTugboatPreviewForBranch($branch, 'url');
       if (empty($options['tugboat'])) {
         throw new \RuntimeException('Unable to find a matching Tugboat preview. Pass --tugboat option.');
       }
@@ -102,7 +92,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
     }
 
-    $body = json_decode((string)$response->getBody(), TRUE);
+    // $body = json_decode((string)$response->getBody(), TRUE);
     $this->logger()->success($this->getSuccessMessage($body));
   }
 
@@ -393,8 +383,8 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success("Maintenance mode disabled in $target.");
     }
 
-    // Log a new deployment at New Relic.
     if ($is_prod) {
+      // Log a new deployment at New Relic.
       $this->newRelic($git_ref, getenv('AC_API_USER'), getenv('MASS_NEWRELIC_APPLICATION'), getenv('MASS_NEWRELIC_KEY'));
     }
     $done = $this->getTimestamp();
@@ -404,6 +394,38 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
     $process->mustRun();
     $this->logger()->success("Purge queue worker complete at $target.");
+  }
+
+  /**
+   * Rebuild a branch preview at Tugboat.
+   * @param string $branch
+   *
+   * @command ma:tugboat-rebuild
+   * @aliases ma:tbrb
+   */
+  public function tugboatRebuild(string $branch) {
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'headers' => ["Authorization" => 'Bearer ' . getenv('TUGBOAT_ACCESS_TOKEN')],
+      'json' => [
+        'children' => TRUE,
+        'force' => TRUE,
+      ],
+    ];
+    // @todo deploy the token.
+    if (!$id = $this->getTugboatPreviewForBranch($branch)) {
+      $this->logger()->warning('Tugboat preview for develop not found.');
+      return;
+    }
+    $response = $client->request('POST', "https://api.tugboat.qa/v3/previews/$id/rebuild", $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('Tugboat API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    // $body = json_decode((string)$response->getBody(), TRUE);
+    $this->logger()->success('Tugboat preview rebuild successful id=' . $id);
   }
 
   protected function getClient() {
@@ -427,11 +449,48 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    */
   public function validate(CommandData $commandData) {
+    if (!$commandData->input()->hasArgument('target')) {
+      return;
+    }
     $target = $commandData->input()->getArgument('target');
     $available_targets = ['dev', 'cd', 'test', 'feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prod', 'ra', 'cf', 'global', 'stage', 'tugboat'];
     if (!in_array($target, $available_targets)) {
       throw new \Exception('Invalid argument: target. \nYou entered "' . $target . '". Target must be one of: ' . implode(', ', $available_targets));
     }
+  }
+
+  /**
+   * Lookup the Preview corresponding to the specified branch.
+   *
+   * @param $branch
+   * @param $property
+   *
+   * @return ?string
+   */
+  public function getTugboatPreviewForBranch(string $branch, string $property = 'id'): ?string {
+    // Get all previews.
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'headers' => ["Authorization" => 'Bearer ' . getenv('TUGBOAT_ACCESS_TOKEN')],
+    ];
+    $repo_id = self::TUGBOAT_REPO;
+    $response = $client->request('GET', "https://api.tugboat.qa/v3/repos/$repo_id/previews", $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('Tugboat API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    $previews = json_decode((string)$response->getBody(), TRUE);
+    foreach ($previews as $preview) {
+      if ($preview['provider_ref']['head']['ref'] == $branch || $preview->provider_id == "refs/heads/$branch") {
+        $this->logger()->info("Fetched preview for branch $branch.");
+        $return = $preview[$property];
+        break;
+      }
+    }
+
+    return $return ?: NULL;
   }
 
   /**
