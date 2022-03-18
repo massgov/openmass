@@ -281,7 +281,7 @@ jobs:
       # We've adopted the decision at https://architecture.lullabot.com/adr/20211212-config-status-check/.
       - run:
           name: No differences between between config on disk and config in Drupal.
-          command: "[[ $(vendor/bin/drush config:status --format=json --state=Different) == '[]' ]]"
+          command: "[[ $(vendor/bin/drush config:status --format=json --state=Different) == '[]' ]] || exit 1"
       # Ensure files and DTT directories are writable by www-data
       - run: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
@@ -416,6 +416,7 @@ jobs:
         type: string
         default: ""
     working_directory: /home/circleci/code
+    resource_class: large
     docker:
       # Need to use docker image for these steps.
       - image: circleci/python:2.7.14
