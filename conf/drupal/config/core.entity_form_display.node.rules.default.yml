@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.rules.field_collections
+    - field.field.node.rules.field_date_published
     - field.field.node.rules.field_intended_audience
     - field.field.node.rules.field_organizations
     - field.field.node.rules.field_primary_parent
@@ -75,7 +76,7 @@ third_party_settings:
     group_rules_details:
       children:
         - field_rules_adopted_date
-        - field_rules_effective_date
+        - field_date_published
         - field_rules_referenced_sources
         - group_updates
         - group_sections
@@ -155,7 +156,7 @@ mode: default
 content:
   field_collections:
     type: term_reference_tree
-    weight: 69
+    weight: 70
     region: content
     settings:
       start_minimized: true
@@ -163,6 +164,12 @@ content:
       select_parents: true
       cascading_selection: 0
       max_depth: 0
+    third_party_settings: {  }
+  field_date_published:
+    type: datetime_default
+    weight: 11
+    region: content
+    settings: {  }
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
@@ -193,7 +200,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 68
+    weight: 69
     region: content
     settings:
       match_operator: CONTAINS
@@ -235,12 +242,6 @@ content:
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
-  field_rules_effective_date:
-    type: datetime_default
-    weight: 11
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   field_rules_footnotes:
     type: text_textarea
     weight: 16
@@ -259,7 +260,7 @@ content:
     third_party_settings: {  }
   field_rules_metatags:
     type: metatag_firehose
-    weight: 3
+    weight: 2
     region: content
     settings:
       sidebar: true
@@ -284,7 +285,7 @@ content:
     third_party_settings: {  }
   field_rules_referenced_sources:
     type: link_default
-    weight: 12
+    weight: 13
     region: content
     settings:
       placeholder_url: ''
@@ -370,7 +371,7 @@ content:
     third_party_settings: {  }
   field_state_organization_tax:
     type: entity_reference_autocomplete
-    weight: 6
+    weight: 3
     region: content
     settings:
       match_operator: CONTAINS
@@ -380,7 +381,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 10
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -415,7 +416,7 @@ content:
         maxlength_js_enforce_attribute: false
   uid:
     type: entity_reference_autocomplete
-    weight: 2
+    weight: 1
     region: content
     settings:
       match_operator: CONTAINS
@@ -436,12 +437,13 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_rules_effective_date: true
   langcode: true
   path: true
   promote: true
