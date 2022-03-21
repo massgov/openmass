@@ -231,8 +231,8 @@ class Helper {
 
     if ($linkedEntity = Helper::entityFromUrl($url)) {
       $content_type = $linkedEntity->bundle();
-      if (Helper::isFieldPopulated($linkedEntity, 'field_news_date')) {
-        $date = Helper::fieldFullView($linkedEntity, 'field_news_date');
+      if (Helper::isFieldPopulated($linkedEntity, 'field_date_published')) {
+        $date = Helper::fieldFullView($linkedEntity, 'field_date_published');
       }
     }
 
