@@ -281,7 +281,7 @@ jobs:
       # We've adopted the decision at https://architecture.lullabot.com/adr/20211212-config-status-check/.
       - run:
           name: View differences between between config on disk and config in Drupal.
-          command: mkdir -p /tmp/config-export drush -n config:export --diff --destination=/tmp/config-export
+          command: mkdir -p /tmp/config-export && drush -n config:export --diff --destination=/tmp/config-export
       - run:
           name: Ensure no differences between between config on disk and config in Drupal.
           command: "[[ $(drush -n config:status --format=json --state=Different) == '[]' ]] || exit 1"
