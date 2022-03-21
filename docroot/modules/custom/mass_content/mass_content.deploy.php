@@ -738,10 +738,10 @@ function mass_content_deploy_service_page_section_migration10(&$sandbox) {
       case 'custom':
         _mass_content_service_page_migration_custom_link_group($node);
         break;
+
       case 'default':
         _mass_content_service_page_migration_default_link_group($node);
         break;
-
 
     }
 

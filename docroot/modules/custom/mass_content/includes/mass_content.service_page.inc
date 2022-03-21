@@ -54,14 +54,14 @@ function _mass_content_service_page_migration_custom_link_group(&$node) {
       $link_group_links[] = $link_group_link;
     }
 
-
     // Create a new flexible_link_group paragraph.
     $flexible_link_group = Paragraph::create([
       'type' => 'flexible_link_group',
     ]);
 
     $flexible_link_group->set('field_featured', 1);
-    $flexible_link_group->set('field_display_type', 2); // 2 = Buttons.
+    $flexible_link_group->set('field_display_type', 2);
+    // 2 = Buttons.
     $flexible_link_group->set('field_flexible_link_group_title', 'Featured');
     $flexible_link_group->set('field_link_group', $link_group_links);
     $flexible_link_group->save();
@@ -84,8 +84,8 @@ function _mass_content_service_page_migration_custom_link_group(&$node) {
     ]);
 
     $flexible_link_group->set('field_featured', 0);
-    $flexible_link_group->set('field_display_type', 2); // 2 = Buttons.
-
+    $flexible_link_group->set('field_display_type', 2);
+    // 2 = Buttons.
     $flexible_link_group->set('field_flexible_link_group_title', $title);
     $flexible_link_group->set('field_link_group', $values);
     $flexible_link_group->save();
@@ -130,14 +130,14 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
       $link_group_links[] = $link_group_link;
     }
 
-
     // Create a new flexible_link_group paragraph.
     $flexible_link_group = Paragraph::create([
       'type' => 'flexible_link_group',
     ]);
 
     $flexible_link_group->set('field_featured', 1);
-    $flexible_link_group->set('field_display_type', 2); // 2 = Buttons.
+    $flexible_link_group->set('field_display_type', 2);
+    // 2 = Buttons.
     $flexible_link_group->set('field_flexible_link_group_title', 'Top tasks');
     $flexible_link_group->set('field_link_group', $link_group_links);
     $flexible_link_group->save();
@@ -162,14 +162,14 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
       $link_group_links[] = $link_group_link;
     }
 
-
     // Create a new flexible_link_group paragraph.
     $flexible_link_group = Paragraph::create([
       'type' => 'flexible_link_group',
     ]);
 
     $flexible_link_group->set('field_featured', 0);
-    $flexible_link_group->set('field_display_type', 2); // 2 = Buttons.
+    $flexible_link_group->set('field_display_type', 2);
+    // 2 = Buttons.
     $flexible_link_group->set('field_flexible_link_group_title', 'All other tasks');
     $flexible_link_group->set('field_link_group', $link_group_links);
     $flexible_link_group->save();
@@ -194,14 +194,14 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
       $link_group_links[] = $link_group_link;
     }
 
-
     // Create a new flexible_link_group paragraph.
     $key_information_group = Paragraph::create([
       'type' => 'flexible_link_group',
     ]);
 
     $key_information_group->set('field_featured', 0);
-    $key_information_group->set('field_display_type', 2); // 2 = Buttons.
+    $key_information_group->set('field_display_type', 2);
+    // 2 = Buttons.
     $key_information_group->set('field_flexible_link_group_title', '');
     $key_information_group->set('field_link_group', $link_group_links);
     $key_information_group->save();
