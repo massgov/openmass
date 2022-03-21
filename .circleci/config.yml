@@ -280,12 +280,9 @@ jobs:
       - run: cat /proc/meminfo
       # We've adopted the decision at https://architecture.lullabot.com/adr/20211212-config-status-check/.
       - run:
-          name: View any differences between between config on disk and config in Drupal.
+          name: Ensure no differences between between config on disk and config in Drupal.
           # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
           command: drush --no config:export --diff
-      - run:
-          name: Ensure no differences between between config on disk and config in Drupal.
-          command: "[[ $(drush -n config:status --format=json --state=Different) == '[]' ]] || exit 1"
       # Ensure files and DTT directories are writable by www-data
       - run: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
