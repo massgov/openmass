@@ -280,8 +280,9 @@ jobs:
       - run: cat /proc/meminfo
       # We've adopted the decision at https://architecture.lullabot.com/adr/20211212-config-status-check/.
       - run:
-          name: View differences between between config on disk and config in Drupal.
-          command: mkdir -p /tmp/config-export && drush -n config:export --diff --destination=/tmp/config-export
+          name: View any differences between between config on disk and config in Drupal.
+          # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
+          command: drush --no config:export --diff
       - run:
           name: Ensure no differences between between config on disk and config in Drupal.
           command: "[[ $(drush -n config:status --format=json --state=Different) == '[]' ]] || exit 1"
