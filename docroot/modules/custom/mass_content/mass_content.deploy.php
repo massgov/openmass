@@ -696,3 +696,68 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
     return t('All Event "Updated date" fields have been set.');
   }
 }
+
+/**
+ * Migrate data for the service_page sections.
+ */
+function mass_content_deploy_service_page_section_migration10(&$sandbox) {
+  // Include migration functions.
+  require_once __DIR__ . '/includes/mass_content.service_page.inc';
+
+  $query = \Drupal::entityQuery('node');
+  $query->condition('type', 'service_page');
+  $query->condition('nid', '623136');
+
+  if (empty($sandbox)) {
+    // Get a list of all nodes of type org_page.
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  $nids = $query->condition('nid', $sandbox['current'], '>')
+    ->sort('nid')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $memory_cache = \Drupal::service('entity.memory_cache');
+
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+
+  $nodes = $node_storage->loadMultiple($nids);
+
+  foreach ($nodes as $node) {
+    $sandbox['current'] = $node->id();
+
+    $template = $node->field_template->value;
+
+    switch ($template) {
+      case 'custom':
+        _mass_content_service_page_migration_custom_link_group($node);
+        break;
+      case 'default':
+        _mass_content_service_page_migration_default_link_group($node);
+        break;
+
+
+    }
+
+    // Save the node.
+    // Save without updating the last modified date. This requires a core patch
+    // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
+    $node->setSyncing(TRUE);
+    $node->save();
+
+    $sandbox['progress']++;
+  }
+
+  $memory_cache->deleteAll();
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('All Services node data has migrated to the new Sections.');
+  }
+}
