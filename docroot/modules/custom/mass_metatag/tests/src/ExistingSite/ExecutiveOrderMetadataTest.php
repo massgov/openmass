@@ -34,7 +34,7 @@ class ExecutiveOrderMetadataTest extends MetadataTestCase {
       'body' => $this->createTextField('Test Body'),
       'field_executive_order_mass_regis' => '123',
       'field_executive_title' => 'Example Executive Order',
-      'field_executive_order_date' => '2012-12-31',
+      'field_date_published' => '2012-12-31',
       'field_executive_order_overview' => $this->createTextField('Test Overview'),
       'field_state_organization_tax' => $org_term,
       'field_executive_order_issuer' => $issuer_paragraph,
