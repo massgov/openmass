@@ -1531,6 +1531,10 @@ display:
           field: revision_uid
           relationship: none
           group_type: group
+          entity_type: node
+          entity_field: revision_uid
+          plugin_id: standard
+          required: false
           operator: 'not in'
           value:
             campaign_landing_page-trash: campaign_landing_page-trash
@@ -1565,10 +1569,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          entity_field: revision_uid
-          plugin_id: standard
-          required: false
       header: {  }
       footer: {  }
       display_extenders: {  }
