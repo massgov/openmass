@@ -25,15 +25,3 @@ Feature: Service Details Page Content type
     #Visit again we get a HIT
     When I reload the page
     Then the page should be dynamically cached
-
-  @caching
-  Scenario: Verify that a service detail page immediately reflects the pages it is "Related to"
-    Given I am viewing a published "service_details" content with the title "My Service Details"
-    Then I should not see "My related service page"
-    When I create a "service_page" content:
-      | title                          | My related service page |
-      | field_service_eligibility_info | My Service Details      |
-      | moderation_state               | published               |
-    And I reload the page
-    Then I should see "My related service page"
-

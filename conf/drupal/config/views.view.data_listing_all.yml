@@ -20,6 +20,7 @@ dependencies:
     - text
     - user
     - views_autocomplete_filters
+    - views_porter_stemmer
 id: data_listing_all
 label: 'Data Listing All'
 module: views
@@ -796,7 +797,7 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: '<div class="ma__no-results"><h3>No results found</h3><p>Here are a few tips:</p><ul><li>Try clearing filters</li><li>Try moving up a level using the breadcrumb</li></ul></div>'
+            value: '<div class="ma__no-results"><h3>No results found</h3><p>Here are a few tips:</p><ul><li>Try a different keyword</li><li><a href="[view:url]">Clear all filters</a></li><li>Browse by topic without keywords</li></ul><p><a href="https://www.mass.gov/forms/massgov-data-hub-feedback-form" target="_blank">Tell us what you were hoping to find</a> so we can continue to improve the Data Hub.</p></div>'
             format: full_html
           tokenize: false
       sorts:
@@ -1031,6 +1032,7 @@ display:
             autocomplete_raw_suggestion: 1
             autocomplete_raw_dropdown: 1
             autocomplete_dependent: 0
+            stem_query: 1
           is_grouped: false
           group_info:
             label: ''

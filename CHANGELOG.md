@@ -1,5 +1,48 @@
 
 
+## [0.316.0] - March 15, 2022
+  
+### Changed
+  - DP-23393: Added breadcrumb to page templates and removed "Part of" from node templates.
+  - DP-24230: Release automation - assume its a hotfix release if it isnt a standard release
+  - DP-24257: Backstop pages changes.
+  
+### Fixed
+  - DP-23982: Breadcrumb accessiblity improvements -  add aria descriptions for the expand button and set aria-location for current page.
+  - DP-24104: Cleanup breadcrumb schema and part of in listing content types.
+  - DP-24284: Disable debug cache headers locally by default due to header size limit
+  - DP-24285: Encode special chars when rendering text for topic hierarchy.
+  
+
+
+## [0.315.0] - March 8, 2022
+
+### Changed
+  - DP-22639: Changed the fields for the Topic content type and a referenced paragraph type.
+  - DP-22640: Updated the Topic page Link groups display.
+  - DP-23717: - Add collection field to news content type.
+- Add image to collection listing teasers for news content type. 
+  
+### Added
+  - DP-23300: Author & Editor role can edit any Topic Page
+Users that can Edit Any Topic Page but can't create a Topic Page can
+use the following fields when the field_restrict_link_management is
+not checked:
+  - Intended audience
+  - Organizations
+  - Labels
+  - Link groups
+  - Workflow states.
+  - Action (save/preview)
+  - DP-23418: Added Drush Launcher at Tugboat
+  
+### Fixed
+  - DP-24225: Fixing bug - Breadcrumb in header of pages on edit is not correct.
+  - DP-24238: Fixes alerts not showing up on IE11.
+  - DP-9216: Place the more/less contact info button before hidden extra contact info in DOM, so keyboard and AT users can navigate to the revealed content after they hit the button.
+  
+
+
 ## [0.314.0] - March 1, 2022
 
 ### Changed

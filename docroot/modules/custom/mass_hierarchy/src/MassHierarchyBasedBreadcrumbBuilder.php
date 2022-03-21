@@ -22,6 +22,9 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
     if ($this->adminContext->isAdminRoute($route_match->getRouteObject()) && $route_match->getRouteName() !== 'entity.node.edit_form') {
       return FALSE;
     }
+    if ($route_match->getRouteName() == "view.locations.page" && $route_match->getParameter('node')) {
+      return TRUE;
+    }
     $route_entity = $this->getEntityFromRouteMatch($route_match);
     if (!$route_entity || !$route_entity instanceof ContentEntityInterface || !$this->getHierarchyFieldFromEntity($route_entity)) {
       return FALSE;
@@ -39,6 +42,15 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
     /** @var \Drupal\Core\Entity\ContentEntityInterface $route_entity */
     if (isset($route_match->parent_node)) {
       $route_entity = $route_match->parent_node;
+    }
+    elseif ($route_match->getRouteName() == "view.locations.page") {
+      // Views argument upcasting is still an issue in Drupal core.
+      if (is_numeric($route_match->getParameter('node'))) {
+        $route_entity = Node::load($route_match->getParameter('node'));
+      }
+      else {
+        $route_entity = $route_match->getParameter('node');
+      }
     }
     else {
       $route_entity = $this->getEntityFromRouteMatch($route_match);

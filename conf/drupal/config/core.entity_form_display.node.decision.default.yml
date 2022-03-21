@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.decision.field_collections
+    - field.field.node.decision.field_date_published
     - field.field.node.decision.field_decision_date
     - field.field.node.decision.field_decision_docket_number
     - field.field.node.decision.field_decision_download
@@ -47,7 +48,7 @@ third_party_settings:
         - title
         - field_short_title
         - field_decision_ref_type
-        - field_decision_date
+        - field_date_published
         - field_decision_ref_organization
         - field_decision_docket_number
         - field_decision_location
@@ -123,7 +124,7 @@ mode: default
 content:
   field_collections:
     type: term_reference_tree
-    weight: 17
+    weight: 18
     region: content
     settings:
       start_minimized: true
@@ -132,15 +133,15 @@ content:
       cascading_selection: 0
       max_depth: 0
     third_party_settings: {  }
-  field_decision_date:
+  field_date_published:
     type: datetime_default
-    weight: 7
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   field_decision_docket_number:
     type: string_textfield
-    weight: 9
+    weight: 10
     region: content
     settings:
       size: 60
@@ -176,7 +177,7 @@ content:
     third_party_settings: {  }
   field_decision_listing_desc:
     type: string_textfield
-    weight: 12
+    weight: 13
     region: content
     settings:
       size: 60
@@ -184,7 +185,7 @@ content:
     third_party_settings: {  }
   field_decision_location:
     type: string_textfield
-    weight: 10
+    weight: 11
     region: content
     settings:
       size: 60
@@ -199,7 +200,7 @@ content:
     third_party_settings: {  }
   field_decision_overview:
     type: text_textarea
-    weight: 11
+    weight: 12
     region: content
     settings:
       rows: 5
@@ -229,7 +230,7 @@ content:
     third_party_settings: {  }
   field_decision_ref_organization:
     type: entity_reference_autocomplete
-    weight: 8
+    weight: 9
     region: content
     settings:
       match_operator: CONTAINS
@@ -245,7 +246,7 @@ content:
     third_party_settings: {  }
   field_decision_related:
     type: link_default
-    weight: 35
+    weight: 34
     region: content
     settings:
       placeholder_url: ''
@@ -273,13 +274,13 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 15
+    weight: 16
     region: content
     settings: {  }
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 14
+    weight: 15
     region: content
     settings:
       match_operator: CONTAINS
@@ -289,7 +290,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 13
+    weight: 14
     region: content
     settings:
       match_operator: CONTAINS
@@ -300,7 +301,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 16
+    weight: 17
     region: content
     settings:
       match_operator: CONTAINS
@@ -318,7 +319,7 @@ content:
     third_party_settings: {  }
   field_state_organization_tax:
     type: entity_reference_autocomplete
-    weight: 8
+    weight: 3
     region: content
     settings:
       match_operator: CONTAINS
@@ -328,7 +329,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 10
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -384,12 +385,13 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_decision_date: true
   langcode: true
   path: true
   promote: true
