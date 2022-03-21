@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.node.org_page.body
     - field.field.node.org_page.field_about
     - field.field.node.org_page.field_action_set__bg_narrow
     - field.field.node.org_page.field_action_set__bg_wide
@@ -70,20 +69,12 @@ dependencies:
     - link
     - mass_content
     - options
-    - text
     - user
 id: node.org_page.default
 targetEntityType: node
 bundle: org_page
 mode: default
 content:
-  body:
-    type: text_default
-    label: hidden
-    settings: {  }
-    third_party_settings: {  }
-    weight: 1
-    region: content
   computed_event_listing:
     type: entity_reference_entity_view
     label: hidden
