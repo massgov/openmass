@@ -21,7 +21,7 @@ class BacktraceRemovalProcessor {
       // This prevents truncation of log lines that exceed the max length.
       if (isset($record['context']) && isset($record['context']['@backtrace_string'])) {
         $parts = explode("\n", $record['context']['@backtrace_string']);
-        $record['context']['@backtrace_string'] = implode("", array_slice($parts, 0, 5));
+        $record['context']['@backtrace_string'] = implode(" ", array_slice($parts, 0, 5));
       }
     }
 
