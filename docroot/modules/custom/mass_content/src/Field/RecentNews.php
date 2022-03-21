@@ -28,7 +28,7 @@ class RecentNews extends QueryGeneratedEntityReferenceList {
     $query->condition('type', 'news');
     $query->condition('field_news_signees.entity.field_state_org_ref_org.entity.nid', $node->id());
     $query->condition('status', 1);
-    $query->sort('field_news_date', 'DESC');
+    $query->sort('field_date_published', 'DESC');
 
     // Exclude any featured items.
     if ($entity->hasField('field_org_featured_news_items')) {
