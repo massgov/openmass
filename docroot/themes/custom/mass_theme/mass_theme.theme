@@ -1528,7 +1528,7 @@ function mass_theme_preprocess_node_executive_order(&$variables) {
     'type' => ['field_executive_order_adjustment'],
     'body' => ['body'],
     'contact' => ['field_executive_order_contact'],
-    'date' => ['field_executive_order_date'],
+    'date' => ['field_date_published'],
     'issuer' => ['field_executive_order_issuer'],
     'number' => ['field_executive_order_mass_regis'],
     'meta_tags' => ['field_executive_order_metatags'],
@@ -1709,7 +1709,7 @@ function mass_theme_preprocess_node_decision(&$variables) {
   // Create the map of all possible field names to use.
   $map = [
     'contact' => ['field_decision_ref_contact'],
-    'date' => ['field_decision_date'],
+    'date' => ['field_date_published'],
     'number' => ['field_decision_docket_number'],
     'location' => ['field_decision_location'],
     'meta_tags' => ['field_decision_metatags'],
@@ -2027,7 +2027,7 @@ function mass_theme_preprocess_node_regulation(&$variables) {
   // Create the map of all possible field names to use.
   $map = [
     'contact' => ['field_regulation_contact'],
-    'date' => ['field_regulation_last_updated'],
+    'date' => ['field_date_published'],
     'meta_tags' => ['field_regulation_metatags'],
     'overview' => ['field_regulation_short_descr'],
     'publish_state' => ['field_regulation_ref_state_tax'],
@@ -2244,7 +2244,7 @@ function mass_theme_preprocess_node_advisory(&$variables) {
   // Create the map of all possible field names to use.
   $map = [
     'contact' => ['field_advisory_ref_contact'],
-    'date' => ['field_advisory_date'],
+    'date' => ['field_date_published'],
     'issuer' => ['field_advisory_issuer'],
     'meta_tags' => ['field_advisory_metatags'],
     'overview' => ['field_advisory_overview'],
@@ -2484,7 +2484,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
   $map = [
     'contact' => ['field_rules_ref_contact'],
     'adopted_date' => ['field_rules_adopted_date'],
-    'effective_date' => ['field_rules_effective_date'],
+    'effective_date' => ['field_date_published'],
     'publish_state' => ['field_rules_status'],
     'courts' => ['field_rules_courts'],
     'collections' => ['field_rules_related_collections'],
