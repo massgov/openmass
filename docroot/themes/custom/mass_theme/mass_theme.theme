@@ -5115,6 +5115,7 @@ function mass_theme_preprocess_paragraph__org_events(&$variables) {
       ],
     ];
     $max_age = $eventManager->getMaxAge($node);
+    $variables['#cache']['max-age'] = $max_age;
   }
   // If there are not upcoming events, check for past events to render past events link.
   else {
