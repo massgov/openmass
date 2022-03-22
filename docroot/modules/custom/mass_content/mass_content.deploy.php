@@ -761,6 +761,10 @@ function mass_content_deploy_service_page_section_migration(&$sandbox) {
       $sandbox['progress']++;
     }
 
+    Drush::logger()->notice(dt("Processed @count items from @max.", [
+      "@count" => $sandbox['progress'],
+      "@max" => $sandbox['max']
+    ]));
     $memory_cache->deleteAll();
     // Turn on entity_hierarchy writes after processing the item.
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
