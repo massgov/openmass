@@ -1203,6 +1203,14 @@ function mass_utility_pathauto_alias_alter(&$alias, $context) {
   // (2) Published content continues to get regular aliases.
   if (!empty($node_being_aliased)) {
     if (!$node_being_aliased->isPublished()) {
+
+      // Concating hardcoded unblish string doesn't get counted in the
+      // docroot/modules/contrib/pathauto/src/AliasCleaner.php:173
+      // The value with concatenated string sometimes get more
+      // than 255 char which is the maximum.
+      if (strlen($alias . "---unpublished") > 255) {
+        $alias = substr($alias, 0, 241);
+      }
       $alias .= "---unpublished";
     }
   }

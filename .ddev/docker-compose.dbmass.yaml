@@ -7,7 +7,7 @@ version: '3.6'
 services:
   dbmass:
     container_name: ddev-${DDEV_SITENAME}-dbmass
-    image: ${DDEV_DBIMAGE}
+    image: ${MASS_DB_IMAGE-massgov/mysql-sanitized:super}
     ports:
       - 3206:3306
     # These labels ensure this service is discoverable by ddev.

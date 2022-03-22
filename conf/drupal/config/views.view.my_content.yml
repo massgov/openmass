@@ -43,6 +43,7 @@ dependencies:
     - taxonomy.vocabulary.label
     - workflows.workflow.campaign_landing_page
     - workflows.workflow.editorial
+    - workflows.workflow.topic_page
   module:
     - content_moderation
     - flag
@@ -919,6 +920,7 @@ display:
           value:
             campaign_landing_page-trash: campaign_landing_page-trash
             editorial-trash: editorial-trash
+            topic_page-trash: topic_page-trash
           group: 1
           exposed: false
           expose:
@@ -2031,7 +2033,9 @@ display:
           plugin_id: moderation_state_filter
           operator: 'not in'
           value:
+            campaign_landing_page-trash: campaign_landing_page-trash
             editorial-trash: editorial-trash
+            topic_page-trash: topic_page-trash
           group: 1
           exposed: false
           expose:
@@ -2166,6 +2170,7 @@ display:
           value:
             campaign_landing_page-trash: campaign_landing_page-trash
             editorial-trash: editorial-trash
+            topic_page-trash: topic_page-trash
           group: 1
           exposed: false
           expose:

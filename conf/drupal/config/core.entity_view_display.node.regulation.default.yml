@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.regulation.field_collections
+    - field.field.node.regulation.field_date_published
     - field.field.node.regulation.field_intended_audience
     - field.field.node.regulation.field_organizations
     - field.field.node.regulation.field_primary_parent
@@ -45,7 +46,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 21
+    weight: 20
     region: content
   content_moderation_control:
     settings: {  }
@@ -55,10 +56,19 @@ content:
   extra_node_pager:
     settings: {  }
     third_party_settings: {  }
-    weight: 18
+    weight: 17
     region: content
   extra_org_feedback_form:
     settings: {  }
+    third_party_settings: {  }
+    weight: 21
+    region: content
+  field_date_published:
+    type: datetime_default
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: medium
     third_party_settings: {  }
     weight: 22
     region: content
@@ -67,7 +77,7 @@ content:
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    weight: 20
+    weight: 19
     region: content
   field_organizations:
     type: entity_reference_label
@@ -75,7 +85,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 19
+    weight: 18
     region: content
   field_regluation_official_ver:
     type: link
@@ -87,7 +97,7 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    weight: 4
+    weight: 3
     region: content
   field_regulation_agency_cmr:
     type: string
@@ -95,7 +105,7 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 15
+    weight: 14
     region: content
   field_regulation_cmr_chapter:
     type: string
@@ -103,7 +113,7 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 13
+    weight: 12
     region: content
   field_regulation_contact:
     type: entity_reference_label
@@ -111,7 +121,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 7
+    weight: 6
     region: content
   field_regulation_download:
     type: entity_reference_entity_view
@@ -120,16 +130,7 @@ content:
       view_mode: media_download_link
       link: false
     third_party_settings: {  }
-    weight: 9
-    region: content
-  field_regulation_last_updated:
-    type: datetime_default
-    label: above
-    settings:
-      timezone_override: ''
-      format_type: medium
-    third_party_settings: {  }
-    weight: 2
+    weight: 8
     region: content
   field_regulation_link_org:
     type: link
@@ -141,7 +142,7 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    weight: 14
+    weight: 13
     region: content
   field_regulation_listing_desc:
     type: string
@@ -149,14 +150,14 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 16
+    weight: 15
     region: content
   field_regulation_metatags:
     type: metatag_empty_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 10
+    weight: 9
     region: content
   field_regulation_ref_state_tax:
     type: entity_reference_label
@@ -164,7 +165,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 12
+    weight: 11
     region: content
   field_regulation_reg_authority:
     type: link
@@ -176,7 +177,7 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    weight: 3
+    weight: 2
     region: content
   field_regulation_related:
     type: link
@@ -188,7 +189,7 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    weight: 8
+    weight: 7
     region: content
   field_regulation_section:
     type: entity_reference_revisions_entity_view
@@ -197,14 +198,14 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    weight: 6
+    weight: 5
     region: content
   field_regulation_short_descr:
     type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 5
+    weight: 4
     region: content
   field_regulation_title:
     type: string
@@ -212,7 +213,7 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 11
+    weight: 10
     region: content
   links:
     settings: {  }
@@ -226,7 +227,7 @@ content:
       view_mode: table_of_contents
       link: false
     third_party_settings: {  }
-    weight: 17
+    weight: 16
     region: content
   referencing_binders_page_flipper:
     type: entity_reference_label
@@ -244,6 +245,7 @@ content:
 hidden:
   field_collections: true
   field_primary_parent: true
+  field_regulation_last_updated: true
   field_reusable_label: true
   field_short_title: true
   field_state_organization_tax: true
