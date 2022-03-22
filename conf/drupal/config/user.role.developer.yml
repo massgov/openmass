@@ -1,41 +1,110 @@
 uuid: bced1754-406e-43f1-a634-1ddc3f376889
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - filter.format.basic_html
+    - filter.format.full_html
+    - filter.format.restricted_html
+    - filter.format.rules_of_court_section
+    - node.type.action
+    - node.type.advisory
+    - node.type.alert
+    - node.type.contact_information
+    - node.type.curated_list
+    - node.type.decision
+    - node.type.decision_tree
+    - node.type.decision_tree_branch
+    - node.type.decision_tree_conclusion
+    - node.type.error_page
+    - node.type.event
+    - node.type.executive_order
+    - node.type.fee
+    - node.type.guide_page
+    - node.type.how_to_page
+    - node.type.interstitial
+    - node.type.location
+    - node.type.location_details
+    - node.type.org_page
+    - node.type.page
+    - node.type.person
+    - node.type.regulation
+    - node.type.rules
+    - node.type.service_details
+    - node.type.service_page
+    - node.type.stacked_layout
+    - node.type.topic_page
+    - rest.resource.content_metadata_resource
+    - taxonomy.vocabulary.icons
+    - taxonomy.vocabulary.tags
+    - workflows.workflow.editorial
+    - workflows.workflow.media_states
+  module:
+    - block
+    - conditional_fields
+    - config
+    - content_moderation
+    - draggableviews
+    - dropzonejs
+    - embed
+    - entity_browser
+    - field_ui
+    - file
+    - filter
+    - flood_unblock
+    - google_tag
+    - image
+    - mass_admin_toolbar
+    - mass_content_api
+    - mass_feedback_form
+    - mass_fields
+    - mass_search_suppression
+    - mass_validation
+    - media
+    - metatag
+    - node
+    - paragraphs
+    - password_policy
+    - path
+    - pathauto
+    - rabbit_hole
+    - redirect
+    - rest
+    - route_iframes
+    - scheduled_transitions
+    - seckit
+    - security_review
+    - system
+    - taxonomy
+    - tfa
+    - toolbar
+    - tour
+    - views_ui
 id: developer
 label: Developer
 weight: -2
 is_admin: false
 permissions:
-  - 'Administer scheduled transitions'
-  - 'View all scheduled transitions'
   - 'access administration pages'
   - 'access browse_files entity browser pages'
   - 'access browse_files_modal entity browser pages'
   - 'access content'
   - 'access content overview'
-  - 'access contextual links'
-  - 'access devel information'
+  - 'access data flag fields'
   - 'access draggableviews'
   - 'access files overview'
   - 'access flood unblock'
-  - 'access in-place editing'
-  - 'access kint'
   - 'access media overview'
   - 'access media overview'
   - 'access media_browser entity browser pages'
   - 'access media_browser entity browser pages'
-  - 'access schemata data models'
   - 'access security review list'
-  - 'access shortcuts'
   - 'access site in maintenance mode'
   - 'access site reports'
   - 'access toolbar'
   - 'access tour'
   - 'access user profiles'
-  - 'add better descriptions to fields'
   - 'add scheduled transitions media document'
-  - 'add scheduled transitions media media_video'
   - 'add scheduled transitions node action'
   - 'add scheduled transitions node advisory'
   - 'add scheduled transitions node alert'
@@ -47,7 +116,6 @@ permissions:
   - 'add scheduled transitions node decision_tree'
   - 'add scheduled transitions node decision_tree_branch'
   - 'add scheduled transitions node decision_tree_conclusion'
-  - 'add scheduled transitions node error_page'
   - 'add scheduled transitions node event'
   - 'add scheduled transitions node executive_order'
   - 'add scheduled transitions node external_data_resource'
@@ -56,7 +124,6 @@ permissions:
   - 'add scheduled transitions node guide_page'
   - 'add scheduled transitions node how_to_page'
   - 'add scheduled transitions node info_details'
-  - 'add scheduled transitions node interstitial'
   - 'add scheduled transitions node location'
   - 'add scheduled transitions node location_details'
   - 'add scheduled transitions node news'
@@ -69,13 +136,8 @@ permissions:
   - 'add scheduled transitions node service_page'
   - 'add scheduled transitions node stacked_layout'
   - 'add scheduled transitions node topic_page'
-  - 'add scheduled transitions node utility_drawer'
   - 'add special paragraphs to info_details'
   - 'administer account settings'
-  - 'administer better field descriptions settings'
-  - 'administer block_content display'
-  - 'administer block_content fields'
-  - 'administer block_content form display'
   - 'administer blocks'
   - 'administer content types'
   - 'administer display modes'
@@ -96,9 +158,6 @@ permissions:
   - 'administer media types'
   - 'administer menu'
   - 'administer meta tags'
-  - 'administer migrations'
-  - 'administer moderation state transitions'
-  - 'administer moderation states'
   - 'administer node display'
   - 'administer node fields'
   - 'administer node form display'
@@ -110,12 +169,9 @@ permissions:
   - 'administer pathauto'
   - 'administer permissions'
   - 'administer redirects'
-  - 'administer restrict by ip'
   - 'administer route iframe configuration'
   - 'administer route iframe configuration entities'
-  - 'administer scheduler'
   - 'administer seckit'
-  - 'administer shortcuts'
   - 'administer site configuration'
   - 'administer taxonomy'
   - 'administer taxonomy_term display'
@@ -131,10 +187,8 @@ permissions:
   - 'change own username'
   - 'create action content'
   - 'create advisory content'
-  - 'create agency content'
   - 'create contact_information content'
   - 'create curated_list content'
-  - 'create curated_list_page content'
   - 'create decision content'
   - 'create error_page content'
   - 'create executive_order content'
@@ -150,32 +204,24 @@ permissions:
   - 'create person content'
   - 'create regulation content'
   - 'create rules content'
-  - 'create section_landing content'
   - 'create service_details content'
   - 'create service_page content'
   - 'create stacked_layout content'
-  - 'create subtopic content'
-  - 'create topic content'
   - 'create topic_page content'
   - 'create url aliases'
-  - 'customize shortcut links'
   - 'delete action revisions'
   - 'delete advisory revisions'
-  - 'delete agency revisions'
   - 'delete alert revisions'
   - 'delete all revisions'
   - 'delete any action content'
   - 'delete any advisory content'
-  - 'delete any agency content'
   - 'delete any alert content'
   - 'delete any contact_information content'
   - 'delete any curated_list content'
-  - 'delete any curated_list_page content'
   - 'delete any decision content'
   - 'delete any decision_tree content'
   - 'delete any decision_tree_branch content'
   - 'delete any decision_tree_conclusion content'
-  - 'delete any emergency_alerts content'
   - 'delete any error_page content'
   - 'delete any event content'
   - 'delete any executive_order content'
@@ -192,12 +238,9 @@ permissions:
   - 'delete any person content'
   - 'delete any regulation content'
   - 'delete any rules content'
-  - 'delete any section_landing content'
   - 'delete any service_details content'
   - 'delete any service_page content'
   - 'delete any stacked_layout content'
-  - 'delete any subtopic content'
-  - 'delete any topic content'
   - 'delete any topic_page content'
   - 'delete conditional fields'
   - 'delete conditional fields'
@@ -206,7 +249,6 @@ permissions:
   - 'delete decision_tree revisions'
   - 'delete decision_tree_branch revisions'
   - 'delete decision_tree_conclusion revisions'
-  - 'delete emergency_alerts revisions'
   - 'delete error_page revisions'
   - 'delete event revisions'
   - 'delete executive_order revisions'
@@ -221,16 +263,13 @@ permissions:
   - 'delete org_page revisions'
   - 'delete own action content'
   - 'delete own advisory content'
-  - 'delete own agency content'
   - 'delete own alert content'
   - 'delete own contact_information content'
   - 'delete own curated_list content'
-  - 'delete own curated_list_page content'
   - 'delete own decision content'
   - 'delete own decision_tree content'
   - 'delete own decision_tree_branch content'
   - 'delete own decision_tree_conclusion content'
-  - 'delete own emergency_alerts content'
   - 'delete own error_page content'
   - 'delete own event content'
   - 'delete own executive_order content'
@@ -245,34 +284,26 @@ permissions:
   - 'delete own person content'
   - 'delete own regulation content'
   - 'delete own rules content'
-  - 'delete own section_landing content'
   - 'delete own service_details content'
   - 'delete own service_page content'
   - 'delete own stacked_layout content'
-  - 'delete own subtopic content'
-  - 'delete own topic content'
   - 'delete own topic_page content'
   - 'delete page revisions'
   - 'delete person revisions'
   - 'delete regulation revisions'
   - 'delete rules revisions'
-  - 'delete section_landing revisions'
   - 'delete service_details revisions'
   - 'delete service_page revisions'
   - 'delete stacked_layout revisions'
-  - 'delete subtopic revisions'
   - 'delete terms in icons'
   - 'delete terms in tags'
-  - 'delete topic revisions'
   - 'delete topic_page revisions'
   - 'display manage tab'
   - 'dropzone upload files'
   - 'edit any action content'
   - 'edit any advisory content'
-  - 'edit any agency content'
   - 'edit any contact_information content'
   - 'edit any curated_list content'
-  - 'edit any curated_list_page content'
   - 'edit any decision content'
   - 'edit any error_page content'
   - 'edit any executive_order content'
@@ -286,21 +317,16 @@ permissions:
   - 'edit any person content'
   - 'edit any regulation content'
   - 'edit any rules content'
-  - 'edit any section_landing content'
   - 'edit any service_details content'
   - 'edit any service_page content'
   - 'edit any stacked_layout content'
-  - 'edit any subtopic content'
-  - 'edit any topic content'
   - 'edit any topic_page content'
   - 'edit behavior plugin settings'
   - 'edit conditional fields'
   - 'edit own action content'
   - 'edit own advisory content'
-  - 'edit own agency content'
   - 'edit own contact_information content'
   - 'edit own curated_list content'
-  - 'edit own curated_list_page content'
   - 'edit own decision content'
   - 'edit own error_page content'
   - 'edit own executive_order content'
@@ -314,16 +340,12 @@ permissions:
   - 'edit own person content'
   - 'edit own regulation content'
   - 'edit own rules content'
-  - 'edit own section_landing content'
   - 'edit own service_details content'
   - 'edit own service_page content'
   - 'edit own stacked_layout content'
-  - 'edit own subtopic content'
-  - 'edit own topic content'
   - 'edit own topic_page content'
   - 'edit terms in icons'
   - 'edit terms in tags'
-  - 'execute php code'
   - 'export configuration'
   - 'import configuration'
   - 'link to any page'
@@ -331,9 +353,7 @@ permissions:
   - 'notify of path changes'
   - 'rabbit hole bypass node'
   - 'rabbit hole bypass taxonomy_term'
-  - 'require tfa'
   - 'reschedule scheduled transitions media document'
-  - 'reschedule scheduled transitions media media_video'
   - 'reschedule scheduled transitions node action'
   - 'reschedule scheduled transitions node advisory'
   - 'reschedule scheduled transitions node alert'
@@ -345,7 +365,6 @@ permissions:
   - 'reschedule scheduled transitions node decision_tree'
   - 'reschedule scheduled transitions node decision_tree_branch'
   - 'reschedule scheduled transitions node decision_tree_conclusion'
-  - 'reschedule scheduled transitions node error_page'
   - 'reschedule scheduled transitions node event'
   - 'reschedule scheduled transitions node executive_order'
   - 'reschedule scheduled transitions node external_data_resource'
@@ -354,7 +373,6 @@ permissions:
   - 'reschedule scheduled transitions node guide_page'
   - 'reschedule scheduled transitions node how_to_page'
   - 'reschedule scheduled transitions node info_details'
-  - 'reschedule scheduled transitions node interstitial'
   - 'reschedule scheduled transitions node location'
   - 'reschedule scheduled transitions node location_details'
   - 'reschedule scheduled transitions node news'
@@ -367,15 +385,12 @@ permissions:
   - 'reschedule scheduled transitions node service_page'
   - 'reschedule scheduled transitions node stacked_layout'
   - 'reschedule scheduled transitions node topic_page'
-  - 'reschedule scheduled transitions node utility_drawer'
   - 'restful get content_metadata_resource'
   - 'revert action revisions'
   - 'revert advisory revisions'
-  - 'revert agency revisions'
   - 'revert all revisions'
   - 'revert contact_information revisions'
   - 'revert curated_list revisions'
-  - 'revert curated_list_page revisions'
   - 'revert decision revisions'
   - 'revert error_page revisions'
   - 'revert executive_order revisions'
@@ -389,22 +404,16 @@ permissions:
   - 'revert person revisions'
   - 'revert regulation revisions'
   - 'revert rules revisions'
-  - 'revert section_landing revisions'
   - 'revert service_details revisions'
   - 'revert service_page revisions'
   - 'revert stacked_layout revisions'
-  - 'revert subtopic revisions'
-  - 'revert topic revisions'
   - 'revert topic_page revisions'
   - 'run security checks'
-  - 'schedule publishing of nodes'
   - 'select account cancellation method'
   - 'select which pages should suppress the header search'
   - 'set info details page template'
   - 'set service page template'
   - 'setup own tfa'
-  - 'switch shortcut sets'
-  - 'switch users'
   - 'synchronize configuration'
   - 'update any media'
   - 'update any media'
@@ -427,21 +436,14 @@ permissions:
   - 'use text format full_html'
   - 'use text format restricted_html'
   - 'use text format rules_of_court_section'
-  - 'use unpublish transition'
-  - 'use unpublished_to_draft transition'
-  - 'use unpublished_to_publish transition'
-  - 'use unpublished_to_trash transition'
   - 'view action revisions'
   - 'view advisory revisions'
-  - 'view agency revisions'
   - 'view all revisions'
   - 'view all scheduled transitions'
   - 'view any unpublished content'
-  - 'view any unpublished media'
   - 'view conditional fields'
   - 'view contact_information revisions'
   - 'view curated_list revisions'
-  - 'view curated_list_page revisions'
   - 'view decision revisions'
   - 'view descendant api test pages'
   - 'view error_page revisions'
@@ -452,7 +454,6 @@ permissions:
   - 'view latest version'
   - 'view location revisions'
   - 'view location_details revisions'
-  - 'view moderation states'
   - 'view org_page revisions'
   - 'view own unpublished content'
   - 'view own unpublished media'
@@ -462,9 +463,7 @@ permissions:
   - 'view regulation revisions'
   - 'view route iframe pages'
   - 'view rules revisions'
-  - 'view scheduled content'
   - 'view scheduled transitions media document'
-  - 'view scheduled transitions media media_video'
   - 'view scheduled transitions node action'
   - 'view scheduled transitions node advisory'
   - 'view scheduled transitions node alert'
@@ -476,7 +475,6 @@ permissions:
   - 'view scheduled transitions node decision_tree'
   - 'view scheduled transitions node decision_tree_branch'
   - 'view scheduled transitions node decision_tree_conclusion'
-  - 'view scheduled transitions node error_page'
   - 'view scheduled transitions node event'
   - 'view scheduled transitions node executive_order'
   - 'view scheduled transitions node external_data_resource'
@@ -485,7 +483,6 @@ permissions:
   - 'view scheduled transitions node guide_page'
   - 'view scheduled transitions node how_to_page'
   - 'view scheduled transitions node info_details'
-  - 'view scheduled transitions node interstitial'
   - 'view scheduled transitions node location'
   - 'view scheduled transitions node location_details'
   - 'view scheduled transitions node news'
@@ -498,12 +495,8 @@ permissions:
   - 'view scheduled transitions node service_page'
   - 'view scheduled transitions node stacked_layout'
   - 'view scheduled transitions node topic_page'
-  - 'view scheduled transitions node utility_drawer'
-  - 'view section_landing revisions'
   - 'view service_details revisions'
   - 'view service_page revisions'
   - 'view stacked_layout revisions'
-  - 'view subtopic revisions'
   - 'view the administration theme'
-  - 'view topic revisions'
   - 'view topic_page revisions'

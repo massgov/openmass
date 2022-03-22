@@ -4,7 +4,8 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.card
-    - field.field.node.topic_page.field_image_credit
+    - field.field.node.topic_page.field_collections
+    - field.field.node.topic_page.field_display_short_description
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
     - field.field.node.topic_page.field_primary_parent
@@ -33,8 +34,6 @@ mode: card
 content:
   computed_card_links:
     type: dynamic_link_separate
-    weight: 2
-    region: content
     label: hidden
     settings:
       trim_length: ''
@@ -43,23 +42,28 @@ content:
       rel: 0
       target: 0
     third_party_settings: {  }
+    weight: 2
+    region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   content_moderation_control: true
   extra_org_feedback_form: true
+  field_collections: true
+  field_display_short_description: true
   field_image_credit: true
   field_intended_audience: true
   field_organizations: true
   field_primary_parent: true
+  field_restrict_link_management: true
   field_reusable_label: true
   field_short_title: true
   field_state_organization_tax: true

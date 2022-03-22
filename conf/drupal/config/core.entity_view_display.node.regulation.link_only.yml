@@ -5,6 +5,7 @@ dependencies:
   config:
     - core.entity_view_mode.node.link_only
     - field.field.node.regulation.field_collections
+    - field.field.node.regulation.field_date_published
     - field.field.node.regulation.field_intended_audience
     - field.field.node.regulation.field_organizations
     - field.field.node.regulation.field_primary_parent
@@ -35,15 +36,16 @@ bundle: regulation
 mode: link_only
 content:
   extra_node_pager:
-    weight: 0
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
   field_collections: true
+  field_date_published: true
   field_intended_audience: true
   field_organizations: true
   field_primary_parent: true

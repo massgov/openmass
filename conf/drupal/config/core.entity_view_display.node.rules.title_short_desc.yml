@@ -5,6 +5,7 @@ dependencies:
   config:
     - core.entity_view_mode.node.title_short_desc
     - field.field.node.rules.field_collections
+    - field.field.node.rules.field_date_published
     - field.field.node.rules.field_intended_audience
     - field.field.node.rules.field_organizations
     - field.field.node.rules.field_primary_parent
@@ -38,32 +39,33 @@ bundle: rules
 mode: title_short_desc
 content:
   field_rules_listing_desc:
-    weight: 0
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
     region: content
   referencing_binders_page_flipper:
     type: entity_reference_label
-    weight: 22
-    region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
-  workbench_moderation_control:
-    weight: 0
+    weight: 22
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   computed_related_to: true
   content_moderation_control: true
   extra_node_pager: true
   extra_org_feedback_form: true
   field_collections: true
+  field_date_published: true
   field_intended_audience: true
   field_organizations: true
   field_primary_parent: true

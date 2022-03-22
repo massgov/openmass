@@ -1,0 +1,59 @@
+uuid: 92571f42-ddf1-4b00-a1ae-16f2efd11724
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.collection_search.field_collection
+    - field.field.paragraph.collection_search.field_search_heading
+    - field.field.paragraph.collection_search.field_secondary_heading
+    - field.field.paragraph.collection_search.field_secondary_link
+    - field.field.paragraph.collection_search.field_see_all_items_link_text
+    - paragraphs.paragraphs_type.collection_search
+  module:
+    - link
+id: paragraph.collection_search.default
+targetEntityType: paragraph
+bundle: collection_search
+mode: default
+content:
+  field_collection:
+    type: options_select
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_search_heading:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_secondary_heading:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_secondary_link:
+    type: link_default
+    weight: 4
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_see_all_items_link_text:
+    type: string_textfield
+    weight: 3
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

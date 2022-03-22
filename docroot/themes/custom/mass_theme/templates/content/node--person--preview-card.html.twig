@@ -89,7 +89,7 @@
 {% set is_featured_board_member = node.person_is_featured.value %}
 
 {% set name = node.field_person_first_name.value ~ ' ' ~ node.field_person_last_name.value %}
-{% set short_bio = node.field_short_bio.value %}
+{% set short_bio = node.field_short_bio.safe_value %}
 {% set role = node.field_person_role_title.value %}
 {% set show_image = true %}
 
@@ -150,7 +150,7 @@
       {% if is_featured_board_member %}
         <span class="ma__general-teaser__image-wrapper">
           {% set image = {
-            src: file_url(node.field_medium_image.entity.fileuri),
+            src: file_url(node.field_medium_image.entity.fileuri ?? ''),
             alt: node.field_medium_image.alt,
             width: "172",
             height: "228",

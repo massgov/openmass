@@ -6,6 +6,7 @@ dependencies:
     - core.entity_view_mode.node.title_short_desc
     - field.field.node.executive_order.body
     - field.field.node.executive_order.field_collections
+    - field.field.node.executive_order.field_date_published
     - field.field.node.executive_order.field_exec_order_listing_desc
     - field.field.node.executive_order.field_executive_order_adjustment
     - field.field.node.executive_order.field_executive_order_contact
@@ -34,25 +35,25 @@ mode: title_short_desc
 content:
   field_exec_order_listing_desc:
     type: string
-    weight: 0
-    region: content
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
+    weight: 0
+    region: content
   referencing_binders_page_flipper:
     type: entity_reference_label
-    weight: 18
-    region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
-  workbench_moderation_control:
-    weight: 0
+    weight: 18
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   body: true
   computed_related_to: true
@@ -60,6 +61,7 @@ hidden:
   extra_node_pager: true
   extra_org_feedback_form: true
   field_collections: true
+  field_date_published: true
   field_executive_order_adjustment: true
   field_executive_order_contact: true
   field_executive_order_date: true

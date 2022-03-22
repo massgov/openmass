@@ -111,6 +111,11 @@
     {{ page.header | without('mainnavigation', 'mainnavigation_2', 'mainnavigation_3') }}
   </header>
 {% endif %}
+{% block breadcrumb %}
+  {% if page.breadcrumb %}
+    {{ page.breadcrumb }}
+  {% endif %}
+{% endblock %}
 <main role="main" id="main-content" tabindex="-1"{% if main_class %} class="{{ main_class }}"{% endif %}>{# Keeping tabindex for accessibility purposes #}
   <div id="content-alerts"></div>
   {% block preContent %}

@@ -14,39 +14,39 @@ third_party_settings:
       children:
         - field_caspio_data_identifier
         - field_caspio_admin_title
+      label: 'Data page information'
+      region: content
       parent_name: ''
       weight: 20
       format_type: tab
       format_settings:
         label: 'Data page information'
+        classes: ''
+        id: ''
         formatter: open
         description: 'Caspio data pages are used to embed simple data lookup applications for small datasets. If you are interested in using this feature, please make a ServiceNow request so we can evaluate whether it is appropriate.'
-        id: ''
-        classes: ''
         required_fields: false
-      label: 'Data page information'
-      region: content
 id: paragraph.caspio_embed.default
 targetEntityType: paragraph
 bundle: caspio_embed
 mode: default
 content:
   field_caspio_admin_title:
+    type: string_textfield
     weight: 1
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_caspio_data_identifier:
+    type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
 hidden:
   created: true
   status: true

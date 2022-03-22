@@ -16,38 +16,38 @@ bundle: list_item_document
 mode: default
 content:
   field_listitemdoc_desc_manual:
+    type: string_textfield
     weight: 2
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_listitemdoc_desc_type:
+    type: options_select
     weight: 1
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_liststaticdoc_item:
+    type: inline_entity_form_complex
     weight: 0
+    region: content
     settings:
       form_mode: default
+      override_labels: false
       label_singular: ''
       label_plural: ''
+      allow_new: false
       allow_existing: true
+      allow_edit: false
       match_operator: CONTAINS
-      override_labels: false
+      allow_duplicate: false
       collapsible: false
       collapsed: false
-      allow_new: false
-      allow_duplicate: false
-      allow_edit: false
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
-    type: inline_entity_form_complex
-    region: content
   paragraphs_type_help__default:
     weight: -100
     region: content

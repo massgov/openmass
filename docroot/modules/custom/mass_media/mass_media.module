@@ -13,6 +13,7 @@ use Drupal\file\Plugin\Field\FieldWidget\FileWidget;
 use Drupal\Core\Url;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Access\AccessResult;
+use Drupal\mass_content\Entity\Bundle\media\MediaBundle;
 use Drupal\media\MediaInterface;
 use Drupal\file\FileInterface;
 use Drupal\Core\File\FileSystemInterface;
@@ -107,7 +108,7 @@ function mass_media_form_alter(&$form, FormStateInterface $form_state, $form_id)
   // Check if we're editing a media document.
   if ($form_id == "media_document_edit_form") {
     $doc = $form_state->getFormObject()->getEntity();
-    $mod_state = $doc->get('moderation_state')->getValue();
+    $mod_state = $doc->getModerationState()->getValue();
     $mod_state = $mod_state[0]['value'];
 
     if ($mod_state == "restricted") {
@@ -134,12 +135,12 @@ function mass_media_form_alter(&$form, FormStateInterface $form_state, $form_id)
  *
  * Restricts access to restricted content to only the author.
  */
-function mass_media_media_access(EntityInterface $entity, $operation, AccountInterface $account) {
+function mass_media_media_access(MediaBundle $entity, $operation, AccountInterface $account) {
 
   $uid = \Drupal::currentUser()->id();
   $current_user_roles = \Drupal::currentUser()->getRoles();
   if ($entity->bundle() === "document") {
-    $mod_state = $entity->get('moderation_state')->getValue();
+    $mod_state = $entity->getModerationState()->getValue();
     $mod_state = $mod_state[0]['value'];
 
     if ($mod_state == "restricted") {

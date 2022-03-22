@@ -12,9 +12,64 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\mayflower\Prepare\Organisms;
 use Drupal\node\NodeInterface;
 use Drupal\mass_translations\Controller\TranslationsController;
 use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_translations_preprocess_node(&$variables) {
+  $node = $variables['node'];
+
+  // Generate translation links variables.
+  if ($variables["view_mode"] == "full" && $node->hasField('field_english_version')) {
+    $lang_default = Drupal::languageManager()->getCurrentLanguage();
+    $languages = NULL;
+    $node_storage = Drupal::service('entity_type.manager')->getStorage('node');
+    $translations_controller = new TranslationsController($node_storage);
+    $current_url = Drupal::request()->getUri();
+    $lang_codes = Drupal::languageManager()->getLanguages();
+
+    // Get all the translations for this node.
+    $all_translations = $translations_controller->getTranslationLanguages($node, $node_storage, 'field_english_version');
+    // Replace "x-default" with the default language id.
+    $all_translations[$lang_default->getId()] = $all_translations["x-default"];
+    unset($all_translations["x-default"]);
+    // Sort translations in the same order as languages in the UI.
+    $sorted_translations = array_replace($lang_codes, array_flip(array_keys($lang_codes)), $all_translations);
+    // Build links for translations.
+    foreach ($sorted_translations as $language_id => $translation) {
+      if ($translation instanceof NodeInterface) {
+        // Skip any translation that cannot be viewed.
+        $access = $translation->access('view', NULL, TRUE);
+        if (!$access->isAllowed()) {
+          continue;
+        }
+
+        $name = NULL;
+        $predefined = LanguageManager::getStandardLanguageList();
+        // Get the native name for each language.
+        if (isset($predefined[$language_id])) {
+          $name = $predefined[$language_id][1];
+          // Build the translation link.
+          $url = $translation->toUrl('canonical')
+            ->setOption('language', $lang_default)
+            ->setAbsolute()
+            ->toString();
+
+          $languages[] = ["title" => $name, "url" => ($url != $current_url) ? $url : NULL];
+        }
+      }
+    }
+
+    if (count($languages) > 1) {
+      $inlineLinks = Organisms::prepareInlineLinks($languages, ["ariaLabel" => "Available Translations"]);
+      $variables += ["translationLinks" => $inlineLinks];
+    }
+  }
+}
 
 /**
  * Implements hook_page_attachments().
@@ -23,7 +78,7 @@ use Drupal\Core\Entity\EntityInterface;
  */
 function mass_translations_page_attachments(array &$attachments) {
   $cache = CacheableMetadata::createFromRenderArray($attachments);
-  $route_match = \Drupal::routeMatch();
+  $route_match = Drupal::routeMatch();
 
   // If the current route has no parameters, return.
   if (!($route = $route_match->getRouteObject()) || !($parameters = $route->getOption('parameters'))) {
@@ -36,7 +91,7 @@ function mass_translations_page_attachments(array &$attachments) {
       continue;
     }
 
-    $node_storage = \Drupal::service('entity_type.manager')->getStorage('node');
+    $node_storage = Drupal::service('entity_type.manager')->getStorage('node');
     $translations_controller = new TranslationsController($node_storage);
 
     $entity = $route_match->getParameter($name);

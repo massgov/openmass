@@ -11,6 +11,7 @@ dependencies:
     - field.field.node.info_details.field_data_format
     - field.field.node.info_details.field_data_resource_type
     - field.field.node.info_details.field_data_topic
+    - field.field.node.info_details.field_date_published
     - field.field.node.info_details.field_details_data_type
     - field.field.node.info_details.field_details_enable_fields
     - field.field.node.info_details.field_english_version
@@ -41,43 +42,43 @@ bundle: info_details
 mode: teaser
 content:
   extra_node_pager:
+    settings: {  }
+    third_party_settings: {  }
     weight: 5
     region: content
+  extra_sidebar_contact:
     settings: {  }
     third_party_settings: {  }
-  extra_sidebar_contact:
     weight: 4
     region: content
-    settings: {  }
-    third_party_settings: {  }
   field_info_details_header_media:
     type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
     weight: 1
     region: content
-    label: above
-    settings:
-      view_mode: default
-      link: ''
-    third_party_settings: {  }
   field_info_details_sections:
     type: entity_reference_revisions_entity_view
-    weight: 3
-    region: content
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 3
+    region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 2
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_log_in_links: true
   computed_related_to: true
@@ -91,6 +92,7 @@ hidden:
   field_data_format: true
   field_data_resource_type: true
   field_data_topic: true
+  field_date_published: true
   field_details_data_type: true
   field_details_enable_fields: true
   field_english_version: true

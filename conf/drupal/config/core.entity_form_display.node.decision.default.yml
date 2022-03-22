@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.decision.field_collections
+    - field.field.node.decision.field_date_published
     - field.field.node.decision.field_decision_date
     - field.field.node.decision.field_decision_docket_number
     - field.field.node.decision.field_decision_download
@@ -47,7 +48,7 @@ third_party_settings:
         - title
         - field_short_title
         - field_decision_ref_type
-        - field_decision_date
+        - field_date_published
         - field_decision_ref_organization
         - field_decision_docket_number
         - field_decision_location
@@ -58,46 +59,46 @@ third_party_settings:
         - field_intended_audience
         - field_reusable_label
         - field_collections
+      label: Overview
+      region: content
       parent_name: group_decision_edit_form
       weight: 0
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: open
         description: ''
         required_fields: true
-      label: Overview
-      region: content
     group_relate:
       children:
         - field_decision_ref_contact
         - field_decision_related
+      label: Related
+      region: content
       parent_name: group_decision_edit_form
       weight: 2
       format_type: tab
       format_settings:
-        description: ''
-        formatter: closed
-        required_fields: true
-        id: ''
         classes: ''
-      label: Related
-      region: content
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
     group_decision_edit_form:
       children:
         - group_decision_overview
         - group_decision_details_tab
         - group_relate
+      label: 'Decision Edit Form'
+      region: content
       parent_name: ''
       weight: 0
       format_type: tabs
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         direction: horizontal
-      label: 'Decision Edit Form'
-      region: content
     group_decision_details_tab:
       children:
         - field_decision_participants
@@ -105,109 +106,110 @@ third_party_settings:
         - field_decision_section
         - field_decision_footnotes
         - field_decision_download
+      label: Details
+      region: content
       parent_name: group_decision_edit_form
       weight: 1
       format_type: tab
       format_settings:
-        description: ''
-        formatter: closed
-        required_fields: true
-        id: ''
         classes: ''
-      label: Details
-      region: content
+        id: ''
+        formatter: closed
+        description: ''
+        required_fields: true
 id: node.decision.default
 targetEntityType: node
 bundle: decision
 mode: default
 content:
   field_collections:
-    weight: 17
+    type: term_reference_tree
+    weight: 18
+    region: content
     settings:
       start_minimized: true
+      leaves_only: false
       select_parents: true
       cascading_selection: 0
       max_depth: 0
-      leaves_only: false
     third_party_settings: {  }
-    type: term_reference_tree
+  field_date_published:
+    type: datetime_default
+    weight: 8
     region: content
-  field_decision_date:
-    weight: 7
     settings: {  }
     third_party_settings: {  }
-    type: datetime_default
-    region: content
   field_decision_docket_number:
-    weight: 9
+    type: string_textfield
+    weight: 10
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_decision_download:
+    type: inline_entity_form_complex
     weight: 8
+    region: content
     settings:
       form_mode: default
+      override_labels: false
       label_singular: ''
       label_plural: ''
       allow_new: true
       allow_existing: true
+      allow_edit: true
       match_operator: CONTAINS
-      override_labels: false
+      allow_duplicate: false
       collapsible: false
       collapsed: false
-      allow_duplicate: false
       revision: false
-      allow_edit: true
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
-    type: inline_entity_form_complex
-    region: content
   field_decision_footnotes:
+    type: text_textarea
     weight: 7
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_decision_listing_desc:
-    weight: 12
+    type: string_textfield
+    weight: 13
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_decision_location:
-    weight: 10
+    type: string_textfield
+    weight: 11
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_decision_metatags:
+    type: metatag_firehose
     weight: 2
+    region: content
     settings:
       sidebar: true
     third_party_settings: {  }
-    type: metatag_firehose
-    region: content
   field_decision_overview:
-    weight: 11
+    type: text_textarea
+    weight: 12
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_decision_participants:
     type: entity_reference_paragraphs
     weight: 3
+    region: content
     settings:
       title: Participant
       title_plural: Participants
@@ -216,44 +218,44 @@ content:
       form_display_mode: default
       default_paragraph_type: decision_participants
     third_party_settings: {  }
-    region: content
   field_decision_ref_contact:
+    type: entity_reference_autocomplete
     weight: 33
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_decision_ref_organization:
-    weight: 8
+    type: entity_reference_autocomplete
+    weight: 9
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_decision_ref_type:
+    type: options_select
     weight: 6
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_decision_related:
-    weight: 35
+    type: link_default
+    weight: 34
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_decision_section:
     type: entity_reference_paragraphs
     weight: 6
+    region: content
     settings:
       title: Section
       title_plural: Sections
@@ -262,33 +264,34 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    region: content
   field_decision_sources:
+    type: link_default
     weight: 4
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_intended_audience:
-    weight: 15
+    type: options_buttons
+    weight: 16
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_organizations:
-    weight: 14
+    type: entity_reference_autocomplete
+    weight: 15
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_primary_parent:
-    weight: 13
+    type: entity_reference_hierarchy_autocomplete
+    weight: 14
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
@@ -296,54 +299,52 @@ content:
       placeholder: ''
       hide_weight: true
     third_party_settings: {  }
-    type: entity_reference_hierarchy_autocomplete
-    region: content
   field_reusable_label:
-    weight: 16
+    type: entity_reference_autocomplete
+    weight: 17
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_short_title:
+    type: string_textfield
     weight: 5
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_state_organization_tax:
-    weight: 8
+    type: entity_reference_autocomplete
+    weight: 3
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   moderation_state:
     type: moderation_state_default
-    weight: 10
-    settings: {  }
+    weight: 4
     region: content
+    settings: {  }
     third_party_settings: {  }
   publish_on:
-    weight: 53
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 53
     region: content
-  publish_state:
-    weight: 51
     settings: {  }
     third_party_settings: {  }
+  publish_state:
     type: options_select
+    weight: 51
     region: content
+    settings: {  }
+    third_party_settings: {  }
   scheduler_settings:
     weight: 3
     region: content
@@ -364,32 +365,33 @@ content:
   uid:
     type: entity_reference_autocomplete
     weight: 1
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
-    region: content
     third_party_settings: {  }
   unpublish_on:
-    weight: 54
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 54
     region: content
-  unpublish_state:
-    weight: 52
     settings: {  }
     third_party_settings: {  }
+  unpublish_state:
     type: options_select
+    weight: 52
     region: content
+    settings: {  }
+    third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_decision_date: true
   langcode: true
   path: true
   promote: true
