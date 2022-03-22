@@ -700,7 +700,7 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 /**
  * Migrate data for the service_page sections.
  */
-function mass_content_deploy_service_page_section_migration10(&$sandbox) {
+function mass_content_deploy_service_page_section_migration(&$sandbox) {
   // Don't spam all the users with content update emails.
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
@@ -712,7 +712,6 @@ function mass_content_deploy_service_page_section_migration10(&$sandbox) {
 
   $query = \Drupal::entityQuery('node');
   $query->condition('type', 'service_page');
-  $query->condition('nid', '623136');
 
   if (empty($sandbox)) {
     // Get a list of all nodes of type org_page.
@@ -751,6 +750,7 @@ function mass_content_deploy_service_page_section_migration10(&$sandbox) {
           break;
 
       }
+      _mass_content_service_page_cleanup_field_values($node);
 
       // Save the node.
       // Save without updating the last modified date. This requires a core patch
