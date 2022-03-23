@@ -70,6 +70,7 @@ function _mass_content_service_page_migration_custom_link_group(&$node) {
       $old_link_group = Paragraph::load($field_link_group['target_id']);
       $values = $old_link_group->get('field_links_documents')->getValue();
       $title = $old_link_group->get('field_section_title')->getValue();
+      $description = $old_link_group->get('field_description')->getValue();
 
       // Create a new flexible_link_group paragraph.
       $flexible_link_group = Paragraph::create([
@@ -80,6 +81,7 @@ function _mass_content_service_page_migration_custom_link_group(&$node) {
       $flexible_link_group->set('field_display_type', 1);
       // 1 = Links.
       $flexible_link_group->set('field_flexible_link_group_title', $title);
+      $flexible_link_group->set('field_flexible_link_group_desc', $description);
       $flexible_link_group->set('field_link_group', $values);
       $flexible_link_group->save();
       $flexible_link_groups[] = $flexible_link_group;
@@ -93,7 +95,7 @@ function _mass_content_service_page_migration_custom_link_group(&$node) {
   // Set the field values.
   $new_service_section_form_paragraph->set('field_service_section_content', $flexible_link_groups);
   $new_service_section_form_paragraph->set('field_service_section_heading', 'What would you like to do?');
-  $new_service_section_form_paragraph->set('field_hide_heading', 1);
+  $new_service_section_form_paragraph->set('field_hide_heading', 0);
   // Save the new paragraph.
   $new_service_section_form_paragraph->save();
   // Add the new section to the org sections field.
