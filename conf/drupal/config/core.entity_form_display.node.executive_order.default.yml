@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.executive_order.body
     - field.field.node.executive_order.field_collections
+    - field.field.node.executive_order.field_date_published
     - field.field.node.executive_order.field_exec_order_listing_desc
     - field.field.node.executive_order.field_executive_order_adjustment
     - field.field.node.executive_order.field_executive_order_contact
@@ -58,7 +59,7 @@ third_party_settings:
         - field_executive_title
         - field_short_title
         - field_executive_order_number
-        - field_executive_order_date
+        - field_date_published
         - field_executive_order_issuer
         - field_executive_order_mass_regis
         - field_executive_order_adjustment
@@ -117,7 +118,7 @@ mode: default
 content:
   body:
     type: text_textarea_with_summary
-    weight: 36
+    weight: 37
     region: content
     settings:
       rows: 9
@@ -135,6 +136,12 @@ content:
       select_parents: true
       cascading_selection: 0
       max_depth: 0
+    third_party_settings: {  }
+  field_date_published:
+    type: datetime_default
+    weight: 11
+    region: content
+    settings: {  }
     third_party_settings: {  }
   field_exec_order_listing_desc:
     type: string_textfield
@@ -158,7 +165,7 @@ content:
     third_party_settings: {  }
   field_executive_order_contact:
     type: entity_reference_autocomplete
-    weight: 33
+    weight: 22
     region: content
     settings:
       match_operator: CONTAINS
@@ -166,15 +173,9 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_executive_order_date:
-    type: datetime_default
-    weight: 11
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   field_executive_order_downloads:
     type: inline_entity_form_complex
-    weight: 37
+    weight: 38
     region: content
     settings:
       form_mode: default
@@ -213,7 +214,7 @@ content:
     third_party_settings: {  }
   field_executive_order_metatags:
     type: metatag_firehose
-    weight: 3
+    weight: 2
     region: content
     settings:
       sidebar: true
@@ -235,7 +236,7 @@ content:
     third_party_settings: {  }
   field_executive_order_related:
     type: link_default
-    weight: 35
+    weight: 23
     region: content
     settings:
       placeholder_url: ''
@@ -300,7 +301,7 @@ content:
     third_party_settings: {  }
   field_state_organization_tax:
     type: entity_reference_autocomplete
-    weight: 4
+    weight: 3
     region: content
     settings:
       match_operator: CONTAINS
@@ -310,7 +311,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -354,12 +355,13 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 6
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_executive_order_date: true
   langcode: true
   path: true
   promote: true
