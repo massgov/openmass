@@ -194,7 +194,6 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
 }
 
 // Environment indicator. See https://architecture.lullabot.com/adr/20210609-environment-indicator/
-// See: https://pantheon.io/docs/environment-indicator#d8tab-id
 if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   switch ($_ENV['AH_SITE_ENVIRONMENT']) {
     case 'prod':
