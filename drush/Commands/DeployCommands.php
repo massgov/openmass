@@ -375,7 +375,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success("Selective Purge enqueued at $target.");
 
       //  Quick attempt at showing the SHA that the site is using. Could be improved with Acquia Cloud hooks.
-      $process = Drush::drush($targetRecord, 'state:set', ['environment_indicator.current_release', Settings::get('deployment_identifier')]);
+      $process = Drush::drush($targetRecord, 'sset', ['environment_indicator.current_release', Settings::get('deployment_identifier', 'Unknown')]);
       $process->mustRun();
     }
 

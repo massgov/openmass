@@ -195,9 +195,9 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
 
 // Environment indicator. See https://architecture.lullabot.com/adr/20210609-environment-indicator/
 if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
+  $config['environment_indicator.indicator']['name'] = $_ENV['AH_SITE_ENVIRONMENT'];
   switch ($_ENV['AH_SITE_ENVIRONMENT']) {
     case 'prod':
-      $config['environment_indicator.indicator']['name'] = 'Prod';
       // Red-ish background.
       $config['environment_indicator.indicator']['bg_color'] = '#e7131a';
       // White text.
@@ -205,7 +205,6 @@ if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
       break;
 
     case 'test':
-      $config['environment_indicator.indicator']['name'] = 'Stage';
       // Orange-ish background.
       $config['environment_indicator.indicator']['bg_color'] = '#b85c00';
       // White text.
@@ -213,7 +212,6 @@ if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
       break;
 
     default:
-      $config['environment_indicator.indicator']['name'] = 'Feature';
       // Purple-ish background.
       $config['environment_indicator.indicator']['bg_color'] = '#905';
       // White text.
