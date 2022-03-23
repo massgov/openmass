@@ -7,6 +7,7 @@ use AcquiaCloudApi\CloudApi\Connector;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 use Consolidation\SiteProcess\Util\Shell;
+use Drupal\Core\Site\Settings;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\SiteAlias\SiteAliasManagerAwareInterface;
@@ -372,6 +373,10 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $process->mustRun();
 
       $this->logger()->success("Selective Purge enqueued at $target.");
+
+      //  Quick attempt at showing the SHA that the site is using. Could be improved with Acquia Cloud hooks.
+      $process = Drush::drush($targetRecord, 'state:set', ['environment_indicator.current_release', Settings::get('deployment_identifier')]);
+      $process->mustRun();
     }
 
     if ($options['skip-maint'] == FALSE) {

@@ -193,7 +193,47 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   }
 }
 
+// Environment indicator. See https://architecture.lullabot.com/adr/20210609-environment-indicator/
+// See: https://pantheon.io/docs/environment-indicator#d8tab-id
+if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
+  switch ($_ENV['AH_SITE_ENVIRONMENT']) {
+    case 'prod':
+      $config['environment_indicator.indicator']['name'] = 'Prod';
+      // Red-ish background.
+      $config['environment_indicator.indicator']['bg_color'] = '#e7131a';
+      // White text.
+      $config['environment_indicator.indicator']['fg_color'] = '#fff';
+      break;
+
+    case 'test':
+      $config['environment_indicator.indicator']['name'] = 'Stage';
+      // Orange-ish background.
+      $config['environment_indicator.indicator']['bg_color'] = '#b85c00';
+      // White text.
+      $config['environment_indicator.indicator']['fg_color'] = '#fff';
+      break;
+
+    default:
+      $config['environment_indicator.indicator']['name'] = 'Feature';
+      // Purple-ish background.
+      $config['environment_indicator.indicator']['bg_color'] = '#905';
+      // White text.
+      $config['environment_indicator.indicator']['fg_color'] = '#fff';
+      break;
+  }
+}
+else {
+  // We are in local or CI or Tugboat. For simplicity give them all same info for now.
+  $config['environment_indicator.indicator']['name'] = 'Local';
+  // Grey-ish background.
+  $config['environment_indicator.indicator']['bg_color'] = '#505050';
+  // White text.
+  $config['environment_indicator.indicator']['fg_color'] = '#fff';
+}
+
 // phpunit.xml.dist sets -1 for memory_limit so just change for other cli requests.
 if (PHP_SAPI === 'cli' && ini_get('memory_limit')) {
   ini_set('memory_limit', '2048M');
 }
+
+
