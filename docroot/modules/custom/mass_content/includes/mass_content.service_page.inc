@@ -205,7 +205,7 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
   // Set the field values.
   $new_service_section_form_paragraph->set('field_service_section_content', $flexible_link_groups);
   $new_service_section_form_paragraph->set('field_service_section_heading', 'What would you like to do?');
-  $new_service_section_form_paragraph->set('field_hide_heading', 1);
+  $new_service_section_form_paragraph->set('field_hide_heading', 0);
   // Save the new paragraph.
   $new_service_section_form_paragraph->save();
   // Add the new section to the org sections field.
