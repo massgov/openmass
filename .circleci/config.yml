@@ -30,12 +30,12 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v12-{{ checksum "composer.lock" }}
+        - site-composer-v13-{{ checksum "composer.lock" }}
 
   save_composer_cache: &save_composer_cache
     save_cache:
       name: Save Composer cache
-      key: site-composer-v12-{{ checksum "composer.lock" }}
+      key: site-composer-v13-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
   # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
@@ -101,6 +101,11 @@ commands:
         default: "./drush/sites/self.site.yml"
     steps:
       - run: "curl -f -o << parameters.destination >> -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml"
+  enable_cacheability_headers:
+    steps:
+      - run:
+          name: Enable Drupal HTTP debug cacheability headers
+          command: "composer config --json --merge extra.drupal-scaffold.file-mapping '{\"[web-root]/sites/development.services.yml\": \"assets/scaffold/files/development.services.yml\"}'"
 
 # See https://medium.com/labs42/monorepo-with-circleci-conditional-workflows-69e65d3f1bd0
 parameters:
@@ -153,6 +158,7 @@ jobs:
       - image: cimg/php:7.4-node
     steps:
       - checkout
+      - enable_cacheability_headers
       - *restore_composer_cache
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - *save_composer_cache
@@ -167,6 +173,7 @@ jobs:
       - image: cimg/php:7.4-node
     steps:
       - checkout
+      - enable_cacheability_headers
       - *restore_composer_cache
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - run:
@@ -283,9 +290,6 @@ jobs:
           name: Ensure no differences between between config on disk and config in Drupal.
           # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
           command: drush --no config:export --diff
-      - run:
-          name: Enable Drupal HTTP debug_cacheability_headers
-          command: "composer config --json --merge extra.drupal-scaffold.file-mapping '{\"[web-root]/sites/development.services.yml\": \"assets/scaffold/files/development.services.yml\"}'"
       # Ensure files and DTT directories are writable by www-data
       - run: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
