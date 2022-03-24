@@ -220,8 +220,8 @@ if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   }
 }
 else {
-  // We are in local or CI or Tugboat. For simplicity give them all same info for now.
-  $config['environment_indicator.indicator']['name'] = 'Local';
+  // We are in local or CI or Tugboat.
+  $config['environment_indicator.indicator']['name'] = getenv('TUGBOAT_ROOT') ? 'Tugboat' : 'Local';
   // Grey-ish background.
   $config['environment_indicator.indicator']['bg_color'] = '#505050';
   // White text.
