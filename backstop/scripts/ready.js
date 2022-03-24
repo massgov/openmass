@@ -195,6 +195,13 @@ module.exports = async function(page, scenario, vp) {
     }
 
     switch (scenario.label) {
+      case "CampaginLandingHeaderVideo":
+      case "CollectionsFilteredBySubTopic":
+      case "CuratedListPeopleContact":
+      case "EventGeneralPast":
+      case "ServiceDetailsResources":
+        await page.waitFor(1000);
+        break;
       case "InfoDetailsImageWrapLeft":
       case "InfoDetailsImageWrapRight":
       case "InfoDetailsImageNoWrapLeft":
