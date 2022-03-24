@@ -48,7 +48,7 @@ class EventsRendererOrgPages {
     // Gather events associated with this node.
     $eventManager = \Drupal::service('mass_content.event_manager');
     $upcoming = $eventManager->hasUpcoming($this->parentNode);
-    $render = $upcoming ? $this->renderNext() : $this->renderPrevious();
+    $render = $upcoming ? $this->nextEvents() : $this->pastEventsLink();
     // To update if any event changes.
     $render['#cache']['tags'][] = 'node_list:event';
     return $render;
@@ -57,7 +57,7 @@ class EventsRendererOrgPages {
   /**
    * Returns a render array with upcoming events.
    */
-  private function renderNext() {
+  private function nextEvents() {
     // Set the limit on how many events should be displayed on the page. Default
     // to 2 if no limit is set.
     $limit = $this->paragraph->hasField('field_event_quantity') &&
@@ -96,7 +96,7 @@ class EventsRendererOrgPages {
   /**
    * Returns a render array with previous events, if any.
    */
-  private function renderPrevious() {
+  private function pastEventsLink() {
 
     if (!$this->hasPastEvents) {
       return [];
