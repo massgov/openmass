@@ -1,5 +1,43 @@
 
 
+## [0.317.0] - March 22, 2022
+
+### Changed
+  - DP-23372: Add the full URL as a field in the document CSV download file.
+  - DP-23754: Modify Drupal permissions so that only Data admins have data hub tagging permissions.
+  - DP-24119: Consolidate published date fields in various content types.
+  - DP-24231: DDEV 1.19 - Disable seldom used docker services by default. Change DB override
+  - DP-24269: Change "no results" behavior on Data Hub.
+  - DP-24322: Remove ability to put page based alert on topic page.
+  
+### Added
+  - DP-24111: Add bulk feature to add collection information to documents.
+  - DP-24287: Use Tugboat web API in ahoy backstop and add Drush command for rebiulding a Preview
+  
+### Fixed
+  - DP-24315: Add Views Porter Stemmer to Collections and Data Listing Views
+  - DP-24321: Configuration does not export cleanly
+  
+### Security
+  - DP-24348: Minor security upgrade for Drupal core to 9.3.8.
+  
+
+
+## [0.316.0] - March 15, 2022
+  
+### Changed
+  - DP-23393: Added breadcrumb to page templates and removed "Part of" from node templates.
+  - DP-24230: Release automation - assume its a hotfix release if it isnt a standard release
+  - DP-24257: Backstop pages changes.
+  
+### Fixed
+  - DP-23982: Breadcrumb accessiblity improvements -  add aria descriptions for the expand button and set aria-location for current page.
+  - DP-24104: Cleanup breadcrumb schema and part of in listing content types.
+  - DP-24284: Disable debug cache headers locally by default due to header size limit
+  - DP-24285: Encode special chars when rendering text for topic hierarchy.
+  
+
+
 ## [0.315.0] - March 8, 2022
 
 ### Changed

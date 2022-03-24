@@ -42,7 +42,7 @@ class DecisionMetadataTest extends MetadataTestCase {
     $node = $this->createNode([
       'type' => 'decision',
       'title' => 'Test Decision',
-      'field_decision_date' => '2012-12-31',
+      'field_date_published' => '2012-12-31',
       'field_decision_ref_type' => [$decision_type],
       'field_decision_overview' => [
         'value' => 'TestOverview',

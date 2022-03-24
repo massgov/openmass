@@ -23,7 +23,7 @@ class RegulationMetadataTest extends MetadataTestCase {
     ]);
     $node = $this->createNode([
       'type' => 'regulation',
-      'field_regulation_last_updated' => '2012-12-31',
+      'field_date_published' => '2012-12-31',
       'field_regulation_short_descr' => 'Test Short Description',
       'field_regulation_link_org' => [
         'uri' => 'entity:node/' . $org_node->id(),
