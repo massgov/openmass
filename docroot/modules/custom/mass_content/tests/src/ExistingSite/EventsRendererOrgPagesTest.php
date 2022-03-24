@@ -118,7 +118,7 @@ class EventsRendererOrgPagesTest extends ExistingSiteBase {
     while ($current_minute == date('i')) {
       sleep(1);
     };
-    sleep(1);
+    \Drupal::service('cron')->run();
 
     // Check org page again, event should be gone.
     $this->drupalGet($this->org->toUrl());
