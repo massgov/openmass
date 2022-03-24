@@ -7,7 +7,6 @@ use AcquiaCloudApi\CloudApi\Connector;
 use Consolidation\AnnotatedCommand\CommandData;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 use Consolidation\SiteProcess\Util\Shell;
-use Drupal\Core\Site\Settings;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
 use Drush\SiteAlias\SiteAliasManagerAwareInterface;
