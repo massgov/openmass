@@ -35,26 +35,6 @@ function _mass_entity_usage_tracking_check($entity_type, $id, $vid) {
 }
 
 /**
- * Implements hook_entity_insert().
- */
-function mass_entity_usage_entity_insert(EntityInterface $entity) {
-  Drupal::queue('mass_entity_usage_delete_not_current_revision_usages')->createItem([
-    'id' => $entity->id(),
-    'entity_type' => $entity->getEntityType()->id(),
-  ]);
-}
-
-/**
- * Implements hook_entity_update().
- */
-function mass_entity_usage_entity_update(EntityInterface $entity) {
-  Drupal::queue('mass_entity_usage_delete_not_current_revision_usages')->createItem([
-    'id' => $entity->id(),
-    'entity_type' => $entity->getEntityType()->id(),
-  ]);
-}
-
-/**
  * Implements hook_queue_info_alter().
  */
 function mass_entity_usage_queue_info_alter(&$queues) {
