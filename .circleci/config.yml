@@ -278,7 +278,12 @@ jobs:
       - run: drush status
       - run: cat /proc/cpuinfo
       - run: cat /proc/meminfo
-        # Ensure files and DTT directories are writable by www-data
+      # We've adopted the decision at https://architecture.lullabot.com/adr/20211212-config-status-check/.
+      - run:
+          name: Ensure no differences between between config on disk and config in Drupal.
+          # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
+          command: drush --no config:export --diff
+      # Ensure files and DTT directories are writable by www-data
       - run: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
       # Run DTT or Behat test command
@@ -412,6 +417,7 @@ jobs:
         type: string
         default: ""
     working_directory: /home/circleci/code
+    resource_class: xlarge
     docker:
       # Need to use docker image for these steps.
       - image: circleci/python:2.7.14
@@ -555,7 +561,7 @@ workflows:
     triggers:
       - schedule:
           # UTC time-zone
-          cron: "15 18 * * 2"
+          cron: "00 17 * * 2"
           filters:
             branches:
               only:
