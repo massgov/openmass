@@ -7,7 +7,6 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\node\NodeInterface;
 use Drupal\Core\Cache\Cache;
-use phpDocumentor\Reflection\Types\Integer;
 
 /**
  * Lightweight event manager.
@@ -82,7 +81,10 @@ class EventManager {
    */
   private function getUpcomingQuery(NodeInterface $parent) {
     $query = $this->getBaseQuery($parent);
-    $today = new \DateTime('today', new \DateTimezone('America/New_York'));
+    // 'now' is to test upcoming events is working.
+    // 'today' need the server time to change the date to be tested.
+    $relative_time = !defined('PHPUNIT_COMPOSER_INSTALL') ? 'today' : 'now';
+    $today = new \DateTime($relative_time, new \DateTimezone('America/New_York'));
     $today->setTimezone(new \DateTimezone('UTC'));
 
     $query->condition('field_event_date.end_value', $today->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>');
