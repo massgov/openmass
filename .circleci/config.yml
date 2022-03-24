@@ -105,7 +105,7 @@ commands:
     steps:
       - run:
           name: Enable Drupal HTTP debug cacheability headers
-          command: cp docroot/core/assets/scaffold/files/development.services.yml docroot/sites
+          command: cp -f docroot/core/assets/scaffold/files/development.services.yml docroot/sites
 
 # See https://medium.com/labs42/monorepo-with-circleci-conditional-workflows-69e65d3f1bd0
 parameters:
