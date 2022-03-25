@@ -104,7 +104,7 @@
           {% endif %}
         {% endfor %}
       {% endblock %}
-      {% if is_blog_post %}
+      {% if not is_blog_post %}
         {% if pageContent.contactList %}
 
           {% set contactList = pageContent.contactList %}
@@ -122,7 +122,7 @@
         {% include "@organisms/by-author/personal-message.twig" %}
       {% endif %}
     </div>
-    {% if is_blog_post %}
+    {% if not is_blog_post %}
       <aside class="sidebar ma__announcement__sidebar">
         {% if sidebar.contactList %}
           {% set contactList = sidebar.contactList %}
