@@ -714,7 +714,7 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
     $query->condition('type', 'event');
   }
 
-  $order_by_news = $order_by['node__field_news_date_field_news_date_value'] ?? FALSE;
+  $order_by_news = $order_by['node__field_date_published_field_date_published_value'] ?? FALSE;
   if ($order_by_news) {
     $query->condition('type', 'news');
   }
