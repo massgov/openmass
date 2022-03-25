@@ -453,7 +453,7 @@ display:
               plugin_id: default
               advanced:
                 combine: true
-                combine_rewrite: "Title Asc|Alpha by title - ascending\r\nTitle Desc|Alpha by title - descending\r\nPublish date (News) Asc|Publish date (News) - ascending\r\nPublish date (News) Desc|Publish date - descending\r\nStart date (Events) Asc|Event start date - ascending\r\nStart date (Events) Desc|Event start date - descending\r\n"
+                combine_rewrite: "Title Asc|Alpha by title - ascending\r\nTitle Desc|Alpha by title - descending\r\nPublish date (News) Asc|Publish date (News) - ascending\r\nPublish date (News) Desc|Publish date (News) - descending\r\nStart date (Events) Asc|Event start date - ascending\r\nStart date (Events) Desc|Event start date - descending\r\n"
                 reset: false
                 reset_label: ''
                 collapsible: false
@@ -512,10 +512,10 @@ display:
             label: Title
             field_identifier: title
           exposed: true
-        field_news_date_value:
-          id: field_news_date_value
-          table: node__field_news_date
-          field: field_news_date_value
+        field_date_published_value:
+          id: field_date_published_value
+          table: node__field_date_published
+          field: field_date_published_value
           relationship: none
           group_type: group
           admin_label: ''
@@ -523,7 +523,7 @@ display:
           order: ASC
           expose:
             label: 'Publish date (News)'
-            field_identifier: news_date
+            field_identifier: field_date_published_value
           exposed: true
           granularity: second
         field_event_date_value:
