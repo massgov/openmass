@@ -7189,10 +7189,15 @@ function mass_theme_preprocess_select(&$variables) {
     $variables['selectBox']['id'] = $variables['attributes']['name'];
     $variables['selectBox']['name'] = $variables['attributes']['name'];
 
+    /** @var \Symfony\Component\HttpFoundation\Request $request*/
+    $request = \Drupal::request();
+    $sort = $request->query->get('sort_bef_combine');
+
     foreach ($variables['options'] as $option) {
       $variables['selectBox']['options'][] = [
         'value' => $option['value'],
         'text' => $option['label'],
+        'selected' => $sort && $option['value'] === $sort,
       ];
     }
   }
