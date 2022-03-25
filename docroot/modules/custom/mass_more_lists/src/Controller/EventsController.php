@@ -5,12 +5,12 @@ namespace Drupal\mass_more_lists\Controller;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Http\Exception\CacheableNotFoundHttpException;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\mass_content\EventManager;
+use Drupal\mass_hierarchy\MassHierarchyBasedBreadcrumbBuilder;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Drupal\Core\Datetime\DrupalDateTime;
 
 /**
  * Event pages controller.
@@ -19,11 +19,17 @@ class EventsController extends ControllerBase {
 
   private $eventManager;
 
+  protected $breadcrumb;
+
+  protected $routeMatch;
+
   /**
    * {@inheritdoc}
    */
-  public function __construct(EventManager $eventManager) {
+  public function __construct(EventManager $eventManager, MassHierarchyBasedBreadcrumbBuilder $breadcrumb, RouteMatchInterface $routeMatch) {
     $this->eventManager = $eventManager;
+    $this->breadcrumb = $breadcrumb;
+    $this->routeMatch = $routeMatch;
   }
 
   /**
@@ -31,7 +37,9 @@ class EventsController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('mass_content.event_manager')
+      $container->get('mass_content.event_manager'),
+      $container->get('entity_hierarchy.breadcrumb'),
+      $container->get('current_route_match')
     );
   }
 
@@ -54,6 +62,10 @@ class EventsController extends ControllerBase {
           'href' => Url::fromRoute('mass_more_lists.events_past', ['node' => $node->id()])
         ];
       }
+      $breadcrumb = $this->breadcrumb->build($this->routeMatch)->toRenderable();
+      if ($node->hasField('field_organizations')) {
+        $organizations = $node->field_organizations->view();
+      }
       $build = [
         '#title' => $node->bundle() === 'event' ? t('Upcoming events related to @name', ['@name' => $node->label()]) : t('Upcoming events for @name', ['@name' => $node->label()]),
         '#related' => [
@@ -62,6 +74,8 @@ class EventsController extends ControllerBase {
             'href' => $node->toUrl()
           ]
         ],
+        '#breadcrumb' => $breadcrumb,
+        '#organizations' => $organizations,
         '#theme' => 'events_page__upcoming',
         '#events' => $events,
         '#parent' => $node,
@@ -96,6 +110,10 @@ class EventsController extends ControllerBase {
         // This should allow it to invalidate when a future event is finished.
         $metadata->setCacheMaxAge($this->eventManager->getMaxAge($node));
       }
+      $breadcrumb = $this->breadcrumb->build($this->routeMatch)->toRenderable();
+      if ($node->hasField('field_organizations')) {
+        $organizations = $node->field_organizations->view();
+      }
       $build = [
         '#title' => $node->bundle() === 'event' ? t('Past events related to @name', ['@name' => $node->label()]) : t('Past events for @name', ['@name' => $node->label()]),
         '#related' => [
@@ -104,6 +122,8 @@ class EventsController extends ControllerBase {
             'href' => $node->toUrl()
           ]
         ],
+        '#breadcrumb' => $breadcrumb,
+        '#organizations' => $organizations,
         '#theme' => 'events_page__past',
         '#events' => $events,
         '#more_link' => $more_link,

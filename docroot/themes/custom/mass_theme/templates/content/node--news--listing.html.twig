@@ -76,7 +76,7 @@
   "path": "@atoms/11-text/paragraph.twig",
   "data": {
     "paragraph" : {
-      "text": content.field_news_summary ?: ""
+      "text": node.field_how_to_lede.value ?: ""
     }
   }
 }] %}
@@ -92,17 +92,47 @@
 %}
 {% set contents = contents|merge([news_date]) %}
 
+{# Add only the links that exist to the components array. #}
+{% for item in quick_action_links %}
+  {% set decorative_link = {
+    "path": "@atoms/decorative-link.twig",
+    "data": {
+      "decorativeLink": {
+        "href": item.url,
+        "text": item.text,
+        "chevron": true,
+        "label": ""
+      }
+    }
+  } %}
+  {% set contents = contents|merge([decorative_link]) %}
+{% endfor %}
+
 {% include "@molecules/general-teaser.twig" with {
   "generalTeaser" : {
+    "imageAfter": true,
+    "image": {
+      "src": content.field_news_image[0]['565w']['#markup'],
+      "width": "400",
+    },
     "title" : {
       "href": url,
-      "text": label,
+      "text": label|render|striptags|trim,
       "info": "",
       "property": ""
     },
+    "layout": "stacked",
+    "eyebrow": content.field_news_type[0]['#markup'],
     "level": "",
-    "emphasizedText": "",
+    "emphasizedText": [content.field_date_published[0]['#markup'], content.field_organizations[0]['#title']],
     "tags": "",
-    "contents": contents
+    "contents": [{
+      "path": "@atoms/11-text/paragraph.twig",
+      "data": {
+        "paragraph" : {
+          "text": node.field_news_lede.value ?: ""
+        }
+      }
+    }]
   }
 } %}

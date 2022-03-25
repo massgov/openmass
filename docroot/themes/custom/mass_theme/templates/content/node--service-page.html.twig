@@ -29,17 +29,20 @@
   {% endif %}
 
   {# Check if primary indicator content exists. #}
+  {% set primaryIndicators = null %}
+  {% set primaryRelationshipContent = null %}
+  {#
   {% if content.computed_related_to[0] %}
     {% set primaryIndicators = { "label": "part of" } %}
     {% set primaryRelationshipContent = content.computed_related_to %}
-  {% else %}
-    {% set primaryIndicators = null %}
-    {% set primaryRelationshipContent = null %}
   {% endif %}
+  #}
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "label": "offered by"
+      "icon": "building",
+      "label": "offered by",
+      "groupAfter": 3
     } %}
   {% endif %}
 
@@ -62,9 +65,9 @@
   {% set bannerImageNarrow = node.field_service_bg_narrow.entity.fileuri ? file_url(node.field_service_bg_narrow.entity.fileuri) : '' %}
   {# NOTE: At this time a service page node's design does not require the optional page-banner template #}
   {# values for "icon", "primaryLink", and "secondaryLink", so we don't set them. We may in the future. #}
-  {% include "@organisms/by-template/page-banner.twig" with {
+  {% include "@organisms/page-banner/page-banner.twig" with {
     "pageBanner": {
-      "size": bannerImageWide ? "overlay" : "",
+      "layout": bannerImageWide ? "overlay" : "",
       "color": "blue",
       "title": node.label,
       "titleSubText": content.field_title_sub_text,

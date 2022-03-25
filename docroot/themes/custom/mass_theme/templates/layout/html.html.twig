@@ -30,23 +30,8 @@
 <html{{ html_attributes }} >
   <head>
 
-    <script>
-      document.prefetchAlertsData = {};
-      function prefetch_alerts(data) {
-        if (!data) {
-          return;
-        }
-        fetch(data).then(function (response) {
-          return response.text();
-        }).then(function (content) {
-          document.prefetchAlertsData[data] = content;
-          document.dispatchEvent(new Event('mass_alerts_data_ready'));
-        });
-      }
-
-      prefetch_alerts("{{ page_alerts_path }}");
-      prefetch_alerts("{{ sitewide_alerts_path }}");
-    </script>
+    {% include directory ~ "/templates/alerts/polyfills.html.twig" %}
+    {% include directory ~ "/templates/alerts/fetch.html.twig" %}
 
     <!-- DEPLOYMENT IDENTIFIER: {{ deployment_identifier}} -->
     <head-placeholder token="{{ placeholder_token|raw }}">
