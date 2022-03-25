@@ -77,14 +77,14 @@ class UsageTrackingBlockerTest extends ExistingSiteBase {
       'type' => $type,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
-    $check = $tracking_blocker->check('node', $node->id(), $node->getRevisionId());
+    $check = $tracking_blocker->check('node', $node->getRevisionId());
     $this->assertTrue($check);
 
     $node = $this->createNode([
       'type' => $type,
       'moderation_state' => MassModeration::UNPUBLISHED,
     ]);
-    $check = $tracking_blocker->check('node', $node->id(), $node->getRevisionId());
+    $check = $tracking_blocker->check('node', $node->getRevisionId());
     $this->assertFalse($check);
   }
 
@@ -95,11 +95,11 @@ class UsageTrackingBlockerTest extends ExistingSiteBase {
     $tracking_blocker = new UsageTrackingBlocker(\Drupal::database(), \Drupal::service('entity_type.manager'));
 
     $paragraph = $this->createNestedParagraph("Any content", MassModeration::UNPUBLISHED);
-    $check = $tracking_blocker->check('paragraph', $paragraph->id(), $paragraph->getRevisionId());
+    $check = $tracking_blocker->check('paragraph', $paragraph->getRevisionId());
     $this->assertFalse($check);
 
     $paragraph = $this->createNestedParagraph("Any content", MassModeration::PUBLISHED);
-    $check = $tracking_blocker->check('paragraph', $paragraph->id(), $paragraph->getRevisionId());
+    $check = $tracking_blocker->check('paragraph', $paragraph->getRevisionId());
     $this->assertTrue($check);
   }
 
