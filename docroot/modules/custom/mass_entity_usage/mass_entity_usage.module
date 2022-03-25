@@ -31,7 +31,7 @@ function mass_entity_usage_entity_usage_block_tracking($target_id, $target_type,
  */
 function _mass_entity_usage_tracking_check($entity_type, $id, $vid) {
   $tracking_blocker = new UsageTrackingBlocker(\Drupal::database(), \Drupal::service('entity_type.manager'));
-  return $tracking_blocker->check($entity_type, $id, $vid);
+  return $tracking_blocker->check($entity_type, $vid);
 }
 
 /**
