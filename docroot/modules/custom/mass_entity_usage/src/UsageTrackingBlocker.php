@@ -42,9 +42,9 @@ class UsageTrackingBlocker {
   /**
    * Redirects the check (if an entity should tracked) for nodes & paragraphs.
    */
-  public function check($entity_type, $id, $vid) {
+  public function check($entity_type, $vid) {
     if ($entity_type == 'paragraph') {
-      return $this->checkParagraph($id, $vid);
+      return $this->checkParagraph($vid);
     }
 
     if ($entity_type == 'node') {
@@ -56,11 +56,10 @@ class UsageTrackingBlocker {
   /**
    * Checks if a paragraphs should be tracked.
    */
-  protected function checkParagraph($id, $vid) {
+  protected function checkParagraph($vid) {
     // Verify the paragraph revision is in the paragraphs_item_field_data table.
     $query = $this->database->select('paragraphs_item_field_data', 'pifd');
     $query->fields('pifd', ['id', 'revision_id']);
-    $query->condition('id', $id);
     $query->condition('revision_id', $vid);
     $results = $query->execute()->fetchAll();
     if (empty($results)) {
@@ -68,14 +67,14 @@ class UsageTrackingBlocker {
     }
     // Load the paragraph revision.
     $paragraph = $this->entityTypeManager->getStorage('paragraph')
-      ->loadByProperties(['id' => $id, 'revision_id' => $vid]);
+      ->loadByProperties(['revision_id' => $vid]);
     // Get the parent node of the paragraph.
     $parent_node = Helper::getParentNode(current($paragraph));
     if (is_null($parent_node)) {
       return FALSE;
     }
     // Check if the parent node should be tracked.
-    return $this->check('node', $parent_node->id(), $parent_node->getRevisionId());
+    return $this->check('node', $parent_node->getRevisionId());
   }
 
   /**
