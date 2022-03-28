@@ -196,14 +196,14 @@ module.exports = async function(page, scenario, vp) {
 
     switch (scenario.label) {
       case "Homepage Login link (Large sizes)":
-        await page.waitForSelector('div.ma__utility-nav__content', {visible: true, timeout: 0})
+        await page.waitForSelector('div.ma__utility-nav__content', {visible: true})
         await page.evaluate(async function () {
           document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
             // Force the content to be always same.
             e.innerText = 'May. 24th, 2021, 5:00 pm';
           });
         })
-        await page.waitFor(2000);
+        await page.waitFor(5000);
         break;
       case "CampaginLandingHeaderVideo":
       case "CollectionsFilteredBySubTopic":
