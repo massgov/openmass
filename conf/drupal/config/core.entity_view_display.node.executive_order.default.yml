@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.executive_order.body
     - field.field.node.executive_order.field_collections
+    - field.field.node.executive_order.field_date_published
     - field.field.node.executive_order.field_exec_order_listing_desc
     - field.field.node.executive_order.field_executive_order_adjustment
     - field.field.node.executive_order.field_executive_order_contact
@@ -67,6 +68,15 @@ content:
     third_party_settings: {  }
     weight: 20
     region: content
+  field_date_published:
+    type: datetime_default
+    label: above
+    settings:
+      timezone_override: ''
+      format_type: medium
+    third_party_settings: {  }
+    weight: 3
+    region: content
   field_exec_order_listing_desc:
     type: string
     label: above
@@ -91,15 +101,6 @@ content:
       link: true
     third_party_settings: {  }
     weight: 6
-    region: content
-  field_executive_order_date:
-    type: datetime_default
-    label: above
-    settings:
-      timezone_override: ''
-      format_type: medium
-    third_party_settings: {  }
-    weight: 3
     region: content
   field_executive_order_downloads:
     type: entity_reference_entity_view
@@ -215,6 +216,7 @@ content:
     region: content
 hidden:
   field_collections: true
+  field_executive_order_date: true
   field_primary_parent: true
   field_reusable_label: true
   field_short_title: true

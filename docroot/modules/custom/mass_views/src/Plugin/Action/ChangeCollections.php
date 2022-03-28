@@ -16,7 +16,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
  * @Action(
  *   id = "mass_views_change_collections",
  *   label = @Translation("Change Collections"),
- *   type = ""
+ *   type = "node"
  * )
  */
 class ChangeCollections extends ViewsBulkOperationsActionBase {
@@ -152,10 +152,9 @@ class ChangeCollections extends ViewsBulkOperationsActionBase {
   }
 
   /**
-   * Set form_state values based on the selected from the widget.
+   * {@inheritdoc}
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
-    $element = $form['new_collection'];
+  private function getValueFromElement($element, FormStateInterface $form_state) {
     $items = _term_reference_tree_flatten($element, $form_state);
     $value = [];
     if ($element['#max_choices'] != 1) {
@@ -184,9 +183,26 @@ class ChangeCollections extends ViewsBulkOperationsActionBase {
         }
       }
     }
-    if ($element['#required'] && empty($value)) {
+    return $value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+    $element = $form['new_collection'];
+    $value = $this->getValueFromElement($element, $form_state);
+    if (!$form_state->isValidationComplete() && $element['#required'] && empty($value)) {
       $form_state->setError($element, t('%name field is required.', ['%name' => $element['#title']]));
     }
+  }
+
+  /**
+   * Set form_state values based on the selected from the widget.
+   */
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    $element = $form['new_collection'];
+    $value = $this->getValueFromElement($element, $form_state);
     $form_state->setValueForElement($element, $value);
     $form_state->cleanValues();
     foreach ($form_state->getValues() as $key => $value) {

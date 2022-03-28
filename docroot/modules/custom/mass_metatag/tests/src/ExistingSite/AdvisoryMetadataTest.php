@@ -39,7 +39,7 @@ class AdvisoryMetadataTest extends MetadataTestCase {
     $node = $this->createNode([
       'type' => 'advisory',
       'title' => 'Test Advisory',
-      'field_advisory_date' => '2012-12-31',
+      'field_date_published' => '2012-12-31',
       'field_advisory_overview' => 'TestOverview',
       'field_advisory_type_tax' => [$advisory_type],
       'field_state_organization_tax' => [$org_term],

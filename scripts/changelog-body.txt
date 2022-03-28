@@ -1,33 +1,23 @@
 
 
-## [0.314.0] - March 1, 2022
+## [0.317.0] - March 22, 2022
 
 ### Changed
-  - DP-23222: Fetches earlier the request for the block alerts.
-  - DP-23584: CircleCI - omit trigger during build_validate
-  - DP-23882: Improve url purging by removing unwanted normalization.
-  - DP-24122: Avoid browser clientside validation on forms.
-  - DP-24144: Change service content type's parent field to allow more field types.
+  - DP-23372: Add the full URL as a field in the document CSV download file.
+  - DP-23754: Modify Drupal permissions so that only Data admins have data hub tagging permissions.
+  - DP-24119: Consolidate published date fields in various content types.
+  - DP-24231: DDEV 1.19 - Disable seldom used docker services by default. Change DB override
+  - DP-24269: Change "no results" behavior on Data Hub.
+  - DP-24322: Remove ability to put page based alert on topic page.
   
 ### Added
-  - DP-24109: Adds collections to the following content types.
-  - News
-  - Event
-  - Promotional page
-  - Topic Page
-Adds templates for listing display for the added content types.
-  
-### Security
-  - DP-24135: Drupal Core security update.
-  - DP-24172: Remediate current javascript and php security advisories
+  - DP-24111: Add bulk feature to add collection information to documents.
+  - DP-24287: Use Tugboat web API in ahoy backstop and add Drush command for rebiulding a Preview
   
 ### Fixed
-  - DP-24137: Fix breadcrumb visible with parent field to have immediate parent clickable.
-  - DP-24139: Fixed adding state org signees for existing news items.
-  - DP-24158: Fix positioning of alerts and validating node parameter when building alerts.
-  - DP-24177: Removed post-trigger from command parameters to fix backstop commands.
-  - DB-24221: Fix ddev binding to reserved port 88
+  - DP-24315: Add Views Porter Stemmer to Collections and Data Listing Views
+  - DP-24321: Configuration does not export cleanly
   
-### Removed
-  - DP-6250: Removed hq2 site
+### Security
+  - DP-24348: Minor security upgrade for Drupal core to 9.3.8.
   
