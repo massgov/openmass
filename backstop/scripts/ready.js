@@ -191,16 +191,26 @@ module.exports = async function(page, scenario, vp) {
           e.innerText = 'May. 24th, 2021, 5:00 pm';
         });
       })
-      await page.waitFor(5000);
+      await page.waitFor(2000);
     }
 
     switch (scenario.label) {
+      case "Homepage Login link (Large sizes)":
+        await page.waitForSelector('div.ma__utility-nav__content', {visible: true, timeout: 0})
+        await page.evaluate(async function () {
+          document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
+            // Force the content to be always same.
+            e.innerText = 'May. 24th, 2021, 5:00 pm';
+          });
+        })
+        await page.waitFor(2000);
+        break;
       case "CampaginLandingHeaderVideo":
       case "CollectionsFilteredBySubTopic":
       case "CuratedListPeopleContact":
       case "EventGeneralPast":
       case "ServiceDetailsResources":
-        await page.waitFor(5000);
+        await page.waitFor(3000);
         break;
       case "InfoDetailsImageWrapLeft":
       case "InfoDetailsImageWrapRight":
