@@ -191,7 +191,7 @@ module.exports = async function(page, scenario, vp) {
           e.innerText = 'May. 24th, 2021, 5:00 pm';
         });
       })
-      await page.waitFor(3000);
+      await page.waitFor(5000);
     }
 
     switch (scenario.label) {
@@ -200,7 +200,7 @@ module.exports = async function(page, scenario, vp) {
       case "CuratedListPeopleContact":
       case "EventGeneralPast":
       case "ServiceDetailsResources":
-        await page.waitFor(3000);
+        await page.waitFor(5000);
         break;
       case "InfoDetailsImageWrapLeft":
       case "InfoDetailsImageWrapRight":
