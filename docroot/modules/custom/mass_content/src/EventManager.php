@@ -81,8 +81,11 @@ class EventManager {
    */
   private function getUpcomingQuery(NodeInterface $parent) {
     $query = $this->getBaseQuery($parent);
+
     // $time is "now" only when running tests.
-    $time = !isset($_SERVER['BROWSERTEST_OUTPUT_BASE_URL']) ? 'today' : 'now';
+    $testing = \Drupal::request()->getHost() == 'mass-web';
+    $time = !$testing ? 'today' : 'now';
+
     $today = new \DateTime($time, new \DateTimezone('America/New_York'));
     $today->setTimezone(new \DateTimezone('UTC'));
     $query->condition('field_event_date.end_value', $today->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>');
