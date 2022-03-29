@@ -213,14 +213,12 @@ module.exports = async function(page, scenario, vp) {
         break;
       case "Homepage Login link (Large sizes)":
         await page.waitForFunction("document.readyState === 'complete'");
-        await page.evaluate(async function () {
-          page.waitForSelector('div.ma__utility-nav__content', {
-            visible: true,
-            timeout: 0
-          }).then(() =>
-            page.waitFor(3000)
-          )
-        })
+        await page.waitForSelector('div.ma__utility-nav__content', {
+          visible: true,
+          timeout: 0
+        }).then(() =>
+          page.waitFor(3000)
+        )
         break;
       case "Homepage Login link (Mobile)":
         await page.evaluate(async function () {
