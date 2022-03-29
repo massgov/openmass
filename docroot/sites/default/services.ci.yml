@@ -1,0 +1,13 @@
+parameters:
+  monolog.channel_handlers:
+    # 'rotating_file_debug', 'rotating_file_warning'
+    default: []
+  monolog.processors: ['message_placeholder', 'current_user', 'request_uri', 'referer']
+
+services:
+  monolog.handler.rotating_file_debug:
+    class: Monolog\Handler\RotatingFileHandler
+    arguments: ['/tmp/logs/debug.log', 10]
+  monolog.handler.rotating_file_warning:
+    class: Monolog\Handler\RotatingFileHandler
+    arguments: [ '/tmp/logs/warning.log', 10, 300 ]
