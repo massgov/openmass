@@ -796,7 +796,7 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
 
   // Override sort with the sort_bef_combine query parameter.
   if ($res = mass_content_query_collection_all_check_sort_value()) {
-    $order_by =  [$res['key'] => $res['value']];
+    $order_by = [$res['key'] => $res['value']];
   }
 
   // Executes collection_all_media to then get its query.
