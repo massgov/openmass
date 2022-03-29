@@ -218,12 +218,6 @@ module.exports = async function(page, scenario, vp) {
           jQuery(".ma__header__hamburger__utility-nav .ma__utility-nav__items li.ma__utility-nav__item:last-child button.ma__utility-nav__link").click();
         })
         await page.waitForSelector('div.ma__utility-nav__content', {visible: true, timeout: 0})
-        await page.evaluate(async function () {
-          document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
-            // Force the content to be always same.
-            e.innerText = 'May. 24th, 2021, 5:00 pm';
-          });
-        })
         await page.waitFor(10000);
         break;
       case "Homepage Login link (Mobile)":
