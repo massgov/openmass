@@ -3384,6 +3384,28 @@ function mass_theme_preprocess_node_news_full(&$variables) {
   $cache_tags = [];
   $titleContext = NULL;
 
+  if (!$node->field_author->isEmpty()) {
+    /** @var \Drupal\node\Entity\Node */
+    $author = $node->field_author->entity;
+    $first_name = $author->field_person_first_name->value ?? NULL;
+    $last_name = $author->field_person_last_name->value ?? NULL;
+    $separator = $first_name && $last_name ? ' ' : '';
+    $full_name = $first_name . $separator . $last_name;
+    $author_title = $author->field_person_role_title->value ?? NULL;
+
+    $orgs = [];
+    foreach ($author->field_organizations as $org) {
+      $orgs[] = $org->entity->label();
+      $cache_tags = array_merge($cache_tags, $org->entity->getCacheTags());
+    }
+    $author_all_orgs = implode(', ',$orgs);
+
+    $variables['author'] = $full_name;
+    $variables['author_url'] = $author->toUrl();
+    $variables['author_info'] = $author_title . ', ' . $author_all_orgs;
+    $cache_tags = array_merge($cache_tags, $author->getCacheTags());
+  }
+
   $is_blog_post = $node->field_news_type->value === 'blog_post';
   $variables['is_blog_post'] = $is_blog_post;
 
@@ -3394,7 +3416,7 @@ function mass_theme_preprocess_node_news_full(&$variables) {
     $collection = $node->field_collections[0]->get('entity')->getTarget()->getEntity();
     $variables['blogpostCollectionHeader']['decorativeLink']['text'] = $collection->label();
     $variables['blogpostCollectionHeader']['decorativeLink']['href'] = '/collections/' . $collection->field_url_name->value;
-    $cache_tags = array_merge($collection->getCacheTags(), $node->getCacheTags());
+    $cache_tags = array_merge($cache_tags, $collection->getCacheTags(), $node->getCacheTags());
 
     if (isset($collection->field_collection_logo) && !$collection->field_collection_logo->isEmpty()) {
       $collection_logo = $collection->field_collection_logo[0];
@@ -3658,12 +3680,10 @@ function mass_theme_preprocess_node_news_full(&$variables) {
   $variables['pageContent'] = $pageContent;
   $variables['sidebar'] = $sidebar;
 
-  if (!empty($cache_tags)) {
-    // Merge arrays of existing and new cache tags and removes duplicates.
-    $merged_tags = Cache::mergeTags($node->getCacheTags(), $cache_tags);
-    // Add the cache tags to the render array.
-    $variables['#cache']['tags'] = $merged_tags;
-  }
+  // Merge arrays of existing and new cache tags and removes duplicates.
+  $merged_tags = Cache::mergeTags($node->getCacheTags(), $cache_tags ?? []);
+  // Add the cache tags to the render array.
+  $variables['#cache']['tags'] = $merged_tags;
 }
 
 /**

@@ -122,9 +122,40 @@
         {% include "@organisms/by-author/personal-message.twig" %}
       {% endif %}
     </div>
-    {% if not is_blog_post %}
+
+    {% set aside_has_content = (not is_blog_post and sidebar.contactList) or author is not empty %}
+    {% set author_section %}
+      {% if author is not empty %}
+        <section>
+          {% include "@atoms/04-headings/sidebar-heading.twig" with {
+            'sidebarHeading': {
+              'title': 'Author'|t
+            }
+          } %}
+
+          {% include "@molecules/contact-us.twig" with {
+            'contactUs': {
+              'subTitle': {
+                'text': author
+              },
+              'groups': [{
+                "items": [{
+                  "label": author_info,
+                }]
+              }]
+            }
+          } %}
+        </section>
+      {% endif %}
+    {% endset %}
+
+    {% if aside_has_content %}
       <aside class="sidebar ma__announcement__sidebar">
-        {% if sidebar.contactList %}
+        {% if author %}
+          {{ author_section }}
+        {% endif %}
+
+        {% if not is_blog_post and sidebar.contactList %}
           {% set contactList = sidebar.contactList %}
           {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
           {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
@@ -143,6 +174,7 @@
           {% include "@organisms/by-author/event-listing.twig" %}
         {% endif %}
       </aside>
+
     {% endif %}
   </div>
 {% endblock %}
