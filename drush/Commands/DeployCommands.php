@@ -364,7 +364,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       // Empty path is the homepage
       $paths = ['', 'orgs/office-of-the-governor', 'media/1268726'];
       foreach ($paths as $path) {
-        $process = Drush::drush($targetRecord, 'ev', ["\Drupal::service('manual_purger')->purgePath($path);"], ['verbose' => TRUE]);
+        $process = Drush::drush($targetRecord, 'ev', ["\Drupal::service('manual_purger')->purgePath('$path');"], ['verbose' => TRUE]);
         $process->mustRun();
       }
 
