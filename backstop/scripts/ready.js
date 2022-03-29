@@ -218,7 +218,7 @@ module.exports = async function(page, scenario, vp) {
           jQuery(".ma__header__hamburger__utility-nav .ma__utility-nav__items li.ma__utility-nav__item:last-child button.ma__utility-nav__link").click();
         })
         await page.waitForSelector('div.ma__utility-nav__content', {visible: true, timeout: 0})
-        await page.waitFor(10000);
+        await page.waitFor(20000);
         break;
       case "Homepage Login link (Mobile)":
         await page.evaluate(async function () {
