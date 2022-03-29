@@ -120,6 +120,8 @@ class EventsRendererOrgPagesTest extends ExistingSiteBase {
       sleep(1);
     };
 
+    system_cron();
+
     // Check org page again, event should be gone.
     $this->drupalGet($this->org->toUrl());
     $this->checkEventOrgPage(FALSE);
