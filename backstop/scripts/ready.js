@@ -195,17 +195,6 @@ module.exports = async function(page, scenario, vp) {
     }
 
     switch (scenario.label) {
-      case "Homepage Login link (Large sizes)":
-        await page.waitForSelector('div.ma__utility-nav__content', {visible: true, timeout: 0})
-        await page.waitForSelector('span.ma__emergency-alert__time-stamp', {visible: true, timeout: 0})
-        await page.evaluate(async function () {
-          document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
-            // Force the content to be always same.
-            e.innerText = 'May. 24th, 2021, 5:00 pm';
-          });
-        })
-        await page.waitFor(3000);
-        break;
       case "CampaginLandingHeaderVideo":
       case "CollectionsFilteredBySubTopic":
       case "CuratedListPeopleContact":
@@ -220,6 +209,21 @@ module.exports = async function(page, scenario, vp) {
         await page.waitForFunction("document.readyState === 'complete'");
         await page.waitForSelector('form.ma__mass-feedback-form__form', {visible: true, timeout: 0});
         await page.waitForSelector(".ma__figure--x-large img", {visible: true, timeout: 0});
+        await page.waitFor(3000);
+        break;
+      case "Homepage Login link (Large sizes)":
+        await page.waitForFunction("document.readyState === 'complete'");
+        await page.waitForSelector('span.ma__emergency-alert__time-stamp', {visible: true, timeout: 0})
+        await page.evaluate(async function () {
+          jQuery(".ma__header__hamburger__utility-nav .ma__utility-nav__items li.ma__utility-nav__item:last-child button.ma__utility-nav__link").click();
+        })
+        await page.waitForSelector('div.ma__utility-nav__content', {visible: true, timeout: 0})
+        await page.evaluate(async function () {
+          document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
+            // Force the content to be always same.
+            e.innerText = 'May. 24th, 2021, 5:00 pm';
+          });
+        })
         await page.waitFor(3000);
         break;
       case "Homepage Login link (Mobile)":
