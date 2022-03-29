@@ -3,6 +3,7 @@
 namespace Drupal\mass_media\Routing;
 
 use Drupal\Core\Routing\RouteSubscriberBase;
+use Drupal\mass_media\Controller\MassMediaDownloadController;
 use Symfony\Component\Routing\RouteCollection;
 
 /**
@@ -17,7 +18,7 @@ class MassMediaRouteSubscriber extends RouteSubscriberBase {
    */
   protected function alterRoutes(RouteCollection $collection) {
     if ($route = $collection->get('media_entity_download.download')) {
-      $route->setDefault('_controller', '\Drupal\mass_media\Controller\MassMediaDownloadController::download');
+      $route->setDefault('_controller', MassMediaDownloadController::class);
     }
   }
 
