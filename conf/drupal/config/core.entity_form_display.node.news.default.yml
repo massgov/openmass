@@ -3,6 +3,8 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.news.field_collections
+    - field.field.node.news.field_date_published
     - field.field.node.news.field_english_version
     - field.field.node.news.field_image_credit
     - field.field.node.news.field_intended_audience
@@ -37,6 +39,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -44,7 +47,7 @@ third_party_settings:
       children:
         - title
         - field_news_type
-        - field_news_date
+        - field_date_published
         - field_news_lede
         - field_news_summary
         - field_primary_parent
@@ -53,6 +56,7 @@ third_party_settings:
         - field_english_version
         - field_reusable_label
         - field_intended_audience
+        - field_collections
       label: Overview
       region: content
       parent_name: group_node_edit_form
@@ -146,9 +150,26 @@ targetEntityType: node
 bundle: news
 mode: default
 content:
+  field_collections:
+    type: term_reference_tree
+    weight: 14
+    region: content
+    settings:
+      start_minimized: true
+      leaves_only: false
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+    third_party_settings: {  }
+  field_date_published:
+    type: datetime_default
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_english_version:
     type: entity_reference_autocomplete
-    weight: 10
+    weight: 11
     region: content
     settings:
       match_operator: CONTAINS
@@ -184,7 +205,7 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 12
+    weight: 13
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -196,12 +217,6 @@ content:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-  field_news_date:
-    type: datetime_default
-    weight: 4
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   field_news_image:
     type: image_image
     weight: 29
@@ -212,7 +227,7 @@ content:
     third_party_settings: {  }
   field_news_lede:
     type: string_textfield
-    weight: 5
+    weight: 6
     region: content
     settings:
       size: 60
@@ -220,7 +235,7 @@ content:
     third_party_settings: {  }
   field_news_links:
     type: link_default
-    weight: 5
+    weight: 108
     region: content
     settings:
       placeholder_url: ''
@@ -232,7 +247,7 @@ content:
           - fee
   field_news_location:
     type: string_textfield
-    weight: 30
+    weight: 31
     region: content
     settings:
       size: 60
@@ -240,7 +255,7 @@ content:
     third_party_settings: {  }
   field_news_media_contac:
     type: entity_reference_paragraphs
-    weight: 2
+    weight: 106
     region: content
     settings:
       title: 'Media contact'
@@ -252,7 +267,7 @@ content:
     third_party_settings: {  }
   field_news_metatags:
     type: metatag_firehose
-    weight: 5
+    weight: 2
     region: content
     settings:
       sidebar: true
@@ -304,7 +319,7 @@ content:
     third_party_settings: {  }
   field_news_summary:
     type: string_textfield
-    weight: 6
+    weight: 7
     region: content
     settings:
       size: 60
@@ -330,7 +345,7 @@ content:
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 8
+    weight: 9
     region: content
     settings:
       match_operator: CONTAINS
@@ -340,7 +355,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 7
+    weight: 8
     region: content
     settings:
       match_operator: CONTAINS
@@ -351,7 +366,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 11
+    weight: 12
     region: content
     settings:
       match_operator: CONTAINS
@@ -361,7 +376,7 @@ content:
     third_party_settings: {  }
   field_state_organization_tax:
     type: entity_reference_autocomplete
-    weight: 6
+    weight: 3
     region: content
     settings:
       match_operator: CONTAINS
@@ -371,14 +386,14 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 9
+    weight: 10
     region: content
     settings:
       include_locked: false
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 100
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -434,12 +449,13 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_news_date: true
   path: true
   promote: true
   status: true

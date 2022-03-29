@@ -1,18 +1,164 @@
 
 
+## [0.317.0] - March 22, 2022
+
+### Changed
+  - DP-23372: Add the full URL as a field in the document CSV download file.
+  - DP-23754: Modify Drupal permissions so that only Data admins have data hub tagging permissions.
+  - DP-24119: Consolidate published date fields in various content types.
+  - DP-24231: DDEV 1.19 - Disable seldom used docker services by default. Change DB override
+  - DP-24269: Change "no results" behavior on Data Hub.
+  - DP-24322: Remove ability to put page based alert on topic page.
+  
+### Added
+  - DP-24111: Add bulk feature to add collection information to documents.
+  - DP-24287: Use Tugboat web API in ahoy backstop and add Drush command for rebiulding a Preview
+  
+### Fixed
+  - DP-24315: Add Views Porter Stemmer to Collections and Data Listing Views
+  - DP-24321: Configuration does not export cleanly
+  
+### Security
+  - DP-24348: Minor security upgrade for Drupal core to 9.3.8.
+  
+
+
+## [0.316.0] - March 15, 2022
+  
+### Changed
+  - DP-23393: Added breadcrumb to page templates and removed "Part of" from node templates.
+  - DP-24230: Release automation - assume its a hotfix release if it isnt a standard release
+  - DP-24257: Backstop pages changes.
+  
+### Fixed
+  - DP-23982: Breadcrumb accessiblity improvements -  add aria descriptions for the expand button and set aria-location for current page.
+  - DP-24104: Cleanup breadcrumb schema and part of in listing content types.
+  - DP-24284: Disable debug cache headers locally by default due to header size limit
+  - DP-24285: Encode special chars when rendering text for topic hierarchy.
+  
+
+
+## [0.315.0] - March 8, 2022
+
+### Changed
+  - DP-22639: Changed the fields for the Topic content type and a referenced paragraph type.
+  - DP-22640: Updated the Topic page Link groups display.
+  - DP-23717: - Add collection field to news content type.
+- Add image to collection listing teasers for news content type. 
+  
+### Added
+  - DP-23300: Author & Editor role can edit any Topic Page
+Users that can Edit Any Topic Page but can't create a Topic Page can
+use the following fields when the field_restrict_link_management is
+not checked:
+  - Intended audience
+  - Organizations
+  - Labels
+  - Link groups
+  - Workflow states.
+  - Action (save/preview)
+  - DP-23418: Added Drush Launcher at Tugboat
+  
+### Fixed
+  - DP-24225: Fixing bug - Breadcrumb in header of pages on edit is not correct.
+  - DP-24238: Fixes alerts not showing up on IE11.
+  - DP-9216: Place the more/less contact info button before hidden extra contact info in DOM, so keyboard and AT users can navigate to the revealed content after they hit the button.
+  
+
+
+## [0.314.0] - March 1, 2022
+
+### Changed
+  - DP-23222: Fetches earlier the request for the block alerts.
+  - DP-23584: CircleCI - omit trigger during build_validate
+  - DP-23882: Improve url purging by removing unwanted normalization.
+  - DP-24122: Avoid browser clientside validation on forms.
+  - DP-24144: Change service content type's parent field to allow more field types.
+  
+### Added
+  - DP-24109: Adds collections to the following content types.
+  - News
+  - Event
+  - Promotional page
+  - Topic Page
+Adds templates for listing display for the added content types.
+  
+### Security
+  - DP-24135: Drupal Core security update.
+  - DP-24172: Remediate current javascript and php security advisories
+  
+### Fixed
+  - DP-24137: Fix breadcrumb visible with parent field to have immediate parent clickable.
+  - DP-24139: Fixed adding state org signees for existing news items.
+  - DP-24158: Fix positioning of alerts and validating node parameter when building alerts.
+  - DP-24177: Removed post-trigger from command parameters to fix backstop commands.
+  - DB-24221: Fix ddev binding to reserved port 88
+  
+### Removed
+  - DP-6250: Removed hq2 site
+  
+
+
+## [0.313.2] - February 23, 2022
+
+### Fixed
+- DP-24139: Fixed adding state org signees for existing news items.
+
+
+
+## [0.313.1] - February 16, 2022
+
+### Removed
+- Revert recent breadcrumb builder changes
+
+
+
+## [0.313.0] - February 15, 2022
+
+### Changed
+  - DP-23065: - Makes the header image optional on service pages.
+- When there are no BG image the banner height becomes fluid.
+- Hide image background on mobile by default, disable mobile image field on service page.
+
+### Added
+  - DP-24023: Upgrade to Drupal 9.3. Add bundle classes.
+
+### Fixed
+  - DP-24041: Fix breadcrumb visible with parent field to have immediate parent clickable.
+  - DP-24115: Fixed bug related to adding signees on news items when no logo present.
+
+### Security
+  - DP-24045: Update jQuery UI Datepicker Library.
+
+
+
+## [0.312.0] - February 8, 2022
+
+### Changed
+  - DP-23608: Upgrade to Drupal 9.3
+
+### Fixed
+  - DP-24018: Fix the halfImage check bug that results in overlapping content on promo page.
+  - DP-24040: Fix 2 file twig errors
+
+### Removed
+  - DP-24022: Remove entity usage.
+
+
+
 ## [0.311.0] - February 1, 2022
 
 ### Added
   - DP-23663: Adds option to center the content of CSV tables.
   - DP-23669: Add "language bar" links for pages that have  professional translations.
-  
+
 ### Fixed
   - DP-23936: Remove merge choices from rich text for tables.
   - DP-24012: Fixed edge case issue impacting locations.
-  
+
 ### Changed
   - DP-24000: Update Ahoy pull for latest DDEV
-  
+
 
 
 ## [0.310.0] - January 26, 2022
@@ -21,7 +167,7 @@
   - DP-23355: Search collection component for promotional and org pages.
   - DP-23849: Adds autocomplete collections filter to view content and my_content.
   - DP-23909: Add CSV for report of pages with long breadcrumbs.
-  
+
 ### Changed
   - DP-23716: - Modifies collection_all view by adding documents for search.
 - Alters collection_all query and creates a union with the collection_all_media_query.
@@ -29,12 +175,12 @@
   - DP-23840: Change autocomplete link search to show published status.
   - DP-23876: - Entity usage: database updates happen at the end of the transaction so they don’t block anything.
 - Entity usage tracking queue: removed processing out of cron.
-  
+
 ### Fixed
   - DP-23824: Fix bug with parent length calculation for move children.
   - DP-23943: Fixed address type conditional field validation on events.
   - DP-23964: Output safe value for person short bio fields on org pages.
-  
+
 
 
 ## [0.309.0] - January 18, 2022
@@ -43,18 +189,18 @@
   - DP-14784: - Creates a custom VBO action to Restore content from trash.
 - Adds a VBO action field to the Trash view to allow users to restore content.
 - Adds a title to the Trash view.
-  
+
 ### Changed
   - DP-23647: Bypass watch notifications for CLI node saves
   - DP-23677: Requires input on "admin/content" view.
-  
+
 ### Fixed
   - DP-23780: Fix google places autocomplete using enter key to select
   - DP-23873: Patched entity_usage module to eliminate issues on config import.
-  
+
 ### Removed
   - DP-23883: Removed entity usage source entity types for Content, Media, and Taxonomy term. Set to View.
-  
+
 
 
 ## [0.308.0] - January 11, 2022
@@ -65,7 +211,7 @@
 - Added tests for nodes and media by checking the Usage table (Pages Linking Here tab).
 - Removed some deprecated functionality for "Pages linking here".
   - DP-23382: Add report for D2D redirects in Drupal.
-  
+
 ### Fixed
   - DP-22028: Add map zoom level to allow mapped locations to zoom out on mobile.
   - DP-23215: Align stat component(s) in stack row sections, org page, vertically.
@@ -75,7 +221,7 @@
   - Implements hook_entity_update & hook_form_alter.
   - DP-23836: Fixing Invalid argument exception on interal path for link fields.
   - DP-23839: Patched access_unpublish contrib module to eliminate warnings.
-  
+
 ### Changed
   - DP-23730: - Adds field_collections to external_data_resource.
 - Adds field_data_flag to external_data_resource.
@@ -87,7 +233,7 @@
   - DP-23811: Alert title max length reduced to 145 and character countdown added.
   - DP-23818: Allowed parents of service details page expanded to include 8 more types.
   - DP-3904: Stop logging 404 in watchdog
-  
+
 
 
 
@@ -101,21 +247,21 @@
   - DP-23678: Remove Cloudflare, Fix akamai purge in prod
   - DP-23687: Update help text for parent page field.
   - DP-23719: Parent report modifications.
-  
+
 ### Added
   - DP-23359: Add bulk feature to add collection information to content.
   - DP-23630: Hierarchy Tab:
 - Message box when parent-child relationships are not set correctly
 - Changes message for wrong relationships from warning to error
   - DP-23695: Add languages to Google Translate widget.
-  
+
 ### Fixed
   - DP-23561: Change monolog level notice level from string to int to avoid warning messages.
   - DP-23651: Fix halfImage promo page overlap issue.
   - DP-23654: Add tests to ensure back from preview and access links.
   - DP-23691: Checks field_section_long_form_content is not null before trying to access any methods.
   - DP-9880: Fixed image upload requirements and added custom style for display.
-  
+
 ## [0.305.3] - January 3, 2022
 
 - DP-23765 Log purge messages to New Relic and add patch to purge.

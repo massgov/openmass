@@ -9,12 +9,14 @@ dependencies:
     - taxonomy.vocabulary.tx_list_data_type
   module:
     - access_unpublished
+    - mass_fields
     - taxonomy
 id: data_administrator
 label: 'Data Administrator'
 weight: 5
 is_admin: null
 permissions:
+  - 'access data flag fields'
   - 'access taxonomy overview'
   - 'access_unpublished taxonomy_term data_topic'
   - 'access_unpublished taxonomy_term tx_data_resource_type'

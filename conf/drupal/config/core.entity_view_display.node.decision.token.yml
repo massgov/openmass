@@ -5,6 +5,7 @@ dependencies:
   config:
     - core.entity_view_mode.node.token
     - field.field.node.decision.field_collections
+    - field.field.node.decision.field_date_published
     - field.field.node.decision.field_decision_date
     - field.field.node.decision.field_decision_docket_number
     - field.field.node.decision.field_decision_download
@@ -39,14 +40,14 @@ targetEntityType: node
 bundle: decision
 mode: token
 content:
-  field_decision_date:
+  field_date_published:
     type: datetime_default
     label: above
     settings:
       timezone_override: ''
       format_type: medium
     third_party_settings: {  }
-    weight: 2
+    weight: 14
     region: content
   field_decision_docket_number:
     type: string
@@ -54,7 +55,7 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 3
+    weight: 1
     region: content
   field_decision_download:
     type: entity_reference_label
@@ -62,14 +63,14 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 14
+    weight: 12
     region: content
   field_decision_footnotes:
     type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 15
+    weight: 13
     region: content
   field_decision_location:
     type: string
@@ -77,21 +78,21 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 4
+    weight: 2
     region: content
   field_decision_metatags:
     type: metatag_empty_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 9
+    weight: 7
     region: content
   field_decision_overview:
     type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 6
+    weight: 4
     region: content
   field_decision_participants:
     type: entity_reference_revisions_entity_view
@@ -100,7 +101,7 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    weight: 5
+    weight: 3
     region: content
   field_decision_ref_contact:
     type: entity_reference_label
@@ -108,14 +109,14 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 11
+    weight: 9
     region: content
   field_decision_ref_organization:
     type: entity_reference_entity_id
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 12
+    weight: 10
     region: content
   field_decision_ref_type:
     type: entity_reference_label
@@ -123,7 +124,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 13
+    weight: 11
     region: content
   field_decision_related:
     type: link
@@ -135,7 +136,7 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    weight: 8
+    weight: 6
     region: content
   field_decision_section:
     type: entity_reference_revisions_entity_view
@@ -144,7 +145,7 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    weight: 7
+    weight: 5
     region: content
   field_decision_sources:
     type: link
@@ -156,12 +157,12 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    weight: 10
+    weight: 8
     region: content
   links:
     settings: {  }
     third_party_settings: {  }
-    weight: 1
+    weight: 0
     region: content
   workbench_moderation_control:
     settings: {  }
@@ -174,6 +175,7 @@ hidden:
   extra_node_pager: true
   extra_org_feedback_form: true
   field_collections: true
+  field_decision_date: true
   field_decision_listing_desc: true
   field_intended_audience: true
   field_organizations: true

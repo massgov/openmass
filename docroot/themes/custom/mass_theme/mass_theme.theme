@@ -9,7 +9,6 @@ use Drupal\block\Entity\Block;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
@@ -29,8 +28,8 @@ use Drupal\mass_utility\RelatedToHelper;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\DomCrawler\Crawler;
+use Drupal\schema_metatag\SchemaMetatagManager;
 
 /**
  * Implements hook_theme_suggestions_alter().
@@ -630,7 +629,7 @@ function mass_theme_preprocess_node_org_page(&$variables) {
       $node->field_banner_image->count() === 0) {
       // Set static pageBanner properties to pass to prepare function.
       $pageBanner_options = [
-        "size" => "large",
+        "layout" => "taper",
         "icon" => NULL,
       ];
 
@@ -1364,51 +1363,31 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
     // Set static pageBanner properties to pass to prepare function.
     $pageBanner_options = [
       'icon' => $icon,
-      'color' => '',
+      'color' => 'white',
+      'underline' => TRUE,
     ];
 
-    if (Helper::isFieldPopulated($node, 'field_topic_type')) {
-      $type = Helper::fieldValue($node, 'field_topic_type');
-      if ($type == 'section landing') {
-        $pageBanner_options = array_merge($pageBanner_options, ['size' => 'hero1600x400']);
-      }
-      else {
-        $pageBanner_options = array_merge($pageBanner_options, ['size' => 'columns']);
-      }
-      $pageBanner_options = array_merge($pageBanner_options, ['type' => $type]);
-    }
-    else {
-      $pageBanner_options = array_merge($pageBanner_options, ['size' => 'columns']);
-      $pageBanner_options = array_merge($pageBanner_options, ['type' => 'topic']);
-    }
-
+    $pageBanner_options = array_merge($pageBanner_options, ['type' => 'topic']);
     // Make pageBanner data structure available in twig template.
     $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
+
+    // Make sure images aren't visible in the page banner.
+    unset($variables['pageBanner']['bgWide']);
+    unset($variables['pageBanner']['bgNarrow']);
+
+    // Make expandableContent data structure available in twig template.
     $renderer = \Drupal::service('renderer');
     foreach ($node->field_topic_content_cards as $index => $section) {
       $variables['numOfSections'] = ++$index;
-      $sectionThreeUp_options = [
-        'noCardLinks' => [
-          ($node->field_topic_display_links->value == '1') ? 'topic_page' : [],
-        ],
-        'use4TopLinks' => [
-          'topic_page',
-        ],
-        'useCallout' => [
-          'service_page',
-        ],
-      ];
-
+      $expandableContent_options = [];
       $title_field = Helper::fieldFullView($section->entity, 'field_content_card_category');
       if (!empty($title_field)) {
-        $sectionThreeUp_options += [
-          'heading' => [
-            'title' => $renderer->renderRoot($title_field),
-          ],
+        $expandableContent_options += [
+          'categoryTitle' => htmlspecialchars_decode($renderer->renderRoot($title_field)),
         ];
       }
 
-      $variables['pageContent'][$index]['sectionThreeUp'] = Organisms::prepareSectionThreeUp($section->entity, $sectionThreeUp_options, ['topic_cards' => ['field_content_card_link_cards']], $cache_tags);
+      $variables['pageContent'][$index]['expandableContent'] = Organisms::prepareExpandableContent($section->entity, $expandableContent_options, ['topic_cards' => ['field_content_card_link_cards']], $cache_tags);
     }
 
     $linkList_options = [
@@ -1549,7 +1528,7 @@ function mass_theme_preprocess_node_executive_order(&$variables) {
     'type' => ['field_executive_order_adjustment'],
     'body' => ['body'],
     'contact' => ['field_executive_order_contact'],
-    'date' => ['field_executive_order_date'],
+    'date' => ['field_date_published'],
     'issuer' => ['field_executive_order_issuer'],
     'number' => ['field_executive_order_mass_regis'],
     'meta_tags' => ['field_executive_order_metatags'],
@@ -1730,7 +1709,7 @@ function mass_theme_preprocess_node_decision(&$variables) {
   // Create the map of all possible field names to use.
   $map = [
     'contact' => ['field_decision_ref_contact'],
-    'date' => ['field_decision_date'],
+    'date' => ['field_date_published'],
     'number' => ['field_decision_docket_number'],
     'location' => ['field_decision_location'],
     'meta_tags' => ['field_decision_metatags'],
@@ -2048,7 +2027,7 @@ function mass_theme_preprocess_node_regulation(&$variables) {
   // Create the map of all possible field names to use.
   $map = [
     'contact' => ['field_regulation_contact'],
-    'date' => ['field_regulation_last_updated'],
+    'date' => ['field_date_published'],
     'meta_tags' => ['field_regulation_metatags'],
     'overview' => ['field_regulation_short_descr'],
     'publish_state' => ['field_regulation_ref_state_tax'],
@@ -2265,7 +2244,7 @@ function mass_theme_preprocess_node_advisory(&$variables) {
   // Create the map of all possible field names to use.
   $map = [
     'contact' => ['field_advisory_ref_contact'],
-    'date' => ['field_advisory_date'],
+    'date' => ['field_date_published'],
     'issuer' => ['field_advisory_issuer'],
     'meta_tags' => ['field_advisory_metatags'],
     'overview' => ['field_advisory_overview'],
@@ -2505,7 +2484,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
   $map = [
     'contact' => ['field_rules_ref_contact'],
     'adopted_date' => ['field_rules_adopted_date'],
-    'effective_date' => ['field_rules_effective_date'],
+    'effective_date' => ['field_date_published'],
     'publish_state' => ['field_rules_status'],
     'courts' => ['field_rules_courts'],
     'collections' => ['field_rules_related_collections'],
@@ -4386,6 +4365,29 @@ function mass_theme_preprocess_field__person_org_role(&$variables) {
 }
 
 /**
+ * Build block early on the page and set a variable for html.html.twig.
+ */
+function mass_theme_block_alert_build(&$variables) {
+  $block_configs = [
+    'sitewide_alerts' => Block::load('sitewide_alerts'),
+    'page_alerts' => Block::load('page_alerts'),
+  ];
+
+  /** @var Drupal\block\Entity\Block $block_config */
+  foreach ($block_configs as $id => $block_config) {
+
+    if (!$block_config->access('view')) {
+      continue;
+    }
+    $block_manager = \Drupal::service('plugin.manager.block');
+    /** @var Drupal\mass_alerts\Plugin\Block\AlertsBlock */
+    $plugin_block = $block_manager->createInstance('mass_alerts_block', $block_config->get('settings'));
+    $path = $plugin_block->build()['#path'];
+    $variables[$id . '_path'] = $path;
+  }
+}
+
+/**
  * Implements hook_preprocess_HOOK().
  *
  * Various global preprocessing.
@@ -4394,6 +4396,8 @@ function mass_theme_preprocess_html(&$variables) {
   if (isset($variables['node_type'])) {
     $node_type = $variables['node_type'];
   }
+
+  mass_theme_block_alert_build($variables);
 
   $variables['optimize_hiding_snippet'] = \Drupal::state()->get('optimize_hiding_snippet', FALSE);
 
@@ -4494,6 +4498,7 @@ function mass_theme_preprocess_page(&$variables) {
         'org_page' => 'ma__org-page',
         'rules' => 'ma__court-rules',
         'service_page' => 'ma__services',
+        'topic_page' => 'ma__topic-page',
       ];
 
       // Send main_class variable to page.
@@ -6050,6 +6055,9 @@ function mass_theme_preprocess_views_view_locations_page(&$variables) {
     $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
 
     if ($node) {
+      if ($node->hasField('field_organizations')) {
+        $variables['organizations'] = $node->field_organizations->view();
+      }
       $node_title = $node->label();
       // Set appropriate page title.
       if ($node->getType() == "location") {
@@ -6685,7 +6693,7 @@ function mass_theme_preprocess_media(array &$variables) {
  *   - media: An individual media for display.
  */
 function mass_theme_preprocess_media_document(array &$variables) {
-  /** @var \Drupal\media\Entity\Media $media */
+  /** @var \Drupal\mass_content\Entity\Bundle\media\DocumentBundle $media */
   $media = $variables['elements']['#media'];
   $variables = array_merge($variables, Molecules::prepareDownloadLink($media));
   if ($variables['elements']['#view_mode'] == 'full') {
@@ -6695,7 +6703,7 @@ function mass_theme_preprocess_media_document(array &$variables) {
     $list_table_rows = [];
 
     // Get the attached file from the media entity.
-    if ($media_file_changed_time = media_file_changed_time($media, 'field_upload_file')) {
+    if ($media_file_changed_time = $media->getFileChangedTime()) {
       $list_table_rows[] = [
         'label' => 'Last Updated:',
         'text' => $media_file_changed_time,
@@ -6743,29 +6751,6 @@ function mass_theme_preprocess_media_document(array &$variables) {
     }
     $variables['curated_rows'] = $list_table_rows;
   }
-}
-
-/**
- * Get the attached file from the media entity.
- *
- * @param \Drupal\media\MediaInterface $entity
- *   Media Entity.
- * @param string $field_name
- *   File upload field name.
- *
- * @return string
- *   Date formatted Y-m-d for the file last changed date.
- */
-function media_file_changed_time(MediaInterface $entity, $field_name) {
-  $file = $entity->{$field_name}->entity;
-  if (!$file instanceof File) {
-    \Drupal::logger('media.documents')->error('Media bundle is missing file for media entity: @entity_label (@entity_id)', [
-      '@entity_label' => $entity->label(),
-      '@entity_id' => $entity->id(),
-    ]);
-    return '';
-  }
-  return DrupalDateTime::createFromTimestamp($entity->{$field_name}->entity->getChangedTime())->format('Y-m-d');
 }
 
 /**
@@ -7190,4 +7175,63 @@ function mass_theme_org_section_long_form_check_wrapping_field($paragraph, $fiel
   }
 
   return FALSE;
+}
+
+/**
+ * Remove breadcrumbs for top level pages and generates schema.org metadata.
+ */
+function mass_theme_preprocess_breadcrumb(&$variables) {
+  $breadcrumb = $variables['breadcrumb'];
+  $itemListElement = [];
+
+  $variables['current_page'] = end($breadcrumb)['text'];
+
+  // Remove breacrumbs from collections by check last URL element.
+  if ((strpos(end($breadcrumb)['url'] ?? '', '/collections/')) === 0) {
+    $variables['breadcrumb'] = [];
+    return;
+  }
+
+  // Remove current page.
+  foreach ($breadcrumb as $key => $link) {
+    if ($link['url'] == "") {
+      unset($breadcrumb[$key]);
+    }
+  }
+
+  // Remove breadcrumbs for top level pages
+  if (count($breadcrumb) < 2) {
+    $variables['breadcrumb'] = NULL;
+  }
+  else {
+    foreach ($breadcrumb as $key => $link) {
+      $itemListElement[] = [
+        "@type" => "ListItem",
+        "position" => $key + 1,
+        "item" => [
+          "@id" => $link['url'],
+          "name" => $link['text']
+        ],
+      ];
+    }
+
+    $variables['breadcrumb'] = $breadcrumb;
+
+    // Set up metadata
+    $items = [
+      '@context' => 'https://schema.org/',
+      '@type' => 'BreadcrumbList',
+      'itemListElement' => $itemListElement,
+    ];
+    $jsonld = SchemaMetatagManager::encodeJsonld($items);
+    $variables['#attached']['html_head']['schema_dataset'] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'script',
+        '#value' => $jsonld,
+        '#attributes' => ['type' => 'application/ld+json'],
+      ],
+      'mass_schema_dataset',
+    ];
+  }
 }

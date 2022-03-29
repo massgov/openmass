@@ -107,9 +107,6 @@ parameters:
   webhook:
     type: boolean
     default: true
-  post-trigger:
-    type: boolean
-    default: false
 
   # These params for currently used in drush ma:cf-deploy
   ma-cf-deploy:
@@ -150,15 +147,6 @@ parameters:
     type: string
     default: ""
 jobs:
-  trigger_workflows:
-    docker:
-      - image: circleci/node
-    steps:
-      - checkout
-      - run:
-          name: Trigger workflows
-          command: .circleci/circle_trigger.sh
-
   build:
     working_directory: ~/project/code
     docker:
@@ -290,7 +278,12 @@ jobs:
       - run: drush status
       - run: cat /proc/cpuinfo
       - run: cat /proc/meminfo
-        # Ensure files and DTT directories are writable by www-data
+      # We've adopted the decision at https://architecture.lullabot.com/adr/20211212-config-status-check/.
+      - run:
+          name: Ensure no differences between between config on disk and config in Drupal.
+          # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
+          command: drush --no config:export --diff
+      # Ensure files and DTT directories are writable by www-data
       - run: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
       # Run DTT or Behat test command
@@ -427,6 +420,7 @@ jobs:
         type: string
         default: ""
     working_directory: /home/circleci/code
+    resource_class: xlarge
     docker:
       # Need to use docker image for these steps.
       - image: circleci/python:2.7.14
@@ -518,29 +512,8 @@ jobs:
 
 workflows:
   version: 2
-  build_validate:
-    when: << pipeline.parameters.webhook >>
-    jobs:
-      - build:
-          filters:
-            branches:
-              ignore:
-                - /^release\/.*$/
-                - /^hotfix\/.*$/
-                - master
-                - /^mayflower-dev-.*/
-      - validate:
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
-      - trigger_workflows:
-          filters:
-            branches:
-              <<: *branch_ignore
-
   build_test:
-    when: << pipeline.parameters.post-trigger >>
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -591,7 +564,7 @@ workflows:
     triggers:
       - schedule:
           # UTC time-zone
-          cron: "15 18 * * 2"
+          cron: "00 17 * * 2"
           filters:
             branches:
               only:
