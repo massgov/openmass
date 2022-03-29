@@ -81,12 +81,10 @@ class EventManager {
    */
   private function getUpcomingQuery(NodeInterface $parent) {
     $query = $this->getBaseQuery($parent);
-    // 'now' is to test upcoming events is working.
-    // 'today' need the server time to change the date to be tested.
-    $relative_time = !defined('PHPUNIT_COMPOSER_INSTALL') ? 'today' : 'now';
-    $today = new \DateTime($relative_time, new \DateTimezone('America/New_York'));
+    // $time is "now" only when running tests.
+    $time = !isset($_SERVER['BROWSERTEST_OUTPUT_BASE_URL']) ? 'today' : 'now';
+    $today = new \DateTime($time, new \DateTimezone('America/New_York'));
     $today->setTimezone(new \DateTimezone('UTC'));
-
     $query->condition('field_event_date.end_value', $today->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>');
     return $query;
   }

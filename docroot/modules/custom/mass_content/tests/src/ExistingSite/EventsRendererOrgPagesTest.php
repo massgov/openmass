@@ -7,11 +7,14 @@ use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\paragraphs\Entity\Paragraph;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
+use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests EventsRendererOrgPagesTest.
  */
 class EventsRendererOrgPagesTest extends ExistingSiteBase {
+
+  use LoginTrait;
 
   /**
    * Org page.
@@ -19,7 +22,6 @@ class EventsRendererOrgPagesTest extends ExistingSiteBase {
    * @var \Drupal\node\Entity\Node
    */
   private $org;
-
 
   /**
    * Event.
@@ -59,9 +61,9 @@ class EventsRendererOrgPagesTest extends ExistingSiteBase {
    * @see \Drupal\mass_content\EventManager::getUpcomingQuery
    */
   private function createUpcomingEvent() {
-    $upcoming = new DrupalDateTime('now +1 seconds');
+    $upcoming = new DrupalDateTime('now +2 seconds');
+    $this->invalidateUpcomingEvent = new DrupalDateTime('now +4 seconds');
     $upcoming = $upcoming->setTimeZone(new \DateTimeZone('UTC'));
-    $this->upcomingMinute = $upcoming->format('i');
 
     $this->event1 = $this->createNode([
       'title' => $this->randomMachineName(20),
@@ -113,12 +115,10 @@ class EventsRendererOrgPagesTest extends ExistingSiteBase {
     $this->drupalGet($this->org->toUrl());
     $this->checkEventOrgPage(TRUE);
 
-    // Wait for the next minute.
-    $current_minute = date('i');
-    while ($current_minute == date('i')) {
+    $limit = $this->invalidateUpcomingEvent->getTimestamp();
+    while ((new DrupalDateTime('now'))->getTimestamp() < $limit) {
       sleep(1);
     };
-    \Drupal::service('cron')->run();
 
     // Check org page again, event should be gone.
     $this->drupalGet($this->org->toUrl());
