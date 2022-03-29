@@ -217,7 +217,7 @@ module.exports = async function(page, scenario, vp) {
           visible: true,
           timeout: 0
         }).then(() =>
-          page.waitFor(3000)
+          page.waitFor(5000)
         )
         break;
       case "Homepage Login link (Mobile)":
