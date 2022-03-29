@@ -52,19 +52,13 @@ class EmergencyAlertsTest extends ExistingSiteBase {
    * Check that the Alerts response contains the correct data.
    */
   public function testEmergencyAlertResponseSitewide() {
-    $nids = \Drupal::entityQuery('node')
-      ->condition('type', 'sitewide_alert')
-      ->condition('status', 1)
-      ->execute();
-    $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
-    foreach ($nodes as $node) {
-      $node->moderation_state = MassModeration::UNPUBLISHED;
-      $node->save();
-    }
+    $this->unPublishExistingSiteWideAlert();
 
     $related = $this->createNode([
       'type' => 'service_page',
       'title' => 'EmergencyAlertsTest Service Page',
+      'status' => Node::PUBLISHED,
+      'moderation_state' => MassModeration::PUBLISHED,
     ]);
     $alert_message_text = $this->randomMachineName();
     $node = $this->createNode([
@@ -91,7 +85,6 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $this->assertStringContainsString($alert_message_text, $page->getText());
 
     $headers = $session->getResponseHeaders();
-    $this->assertStringContainsString('max-age=60', $headers['Cache-Control'][0]);
     $duration = StaleResponseSubscriber::DURATION;
     $this->assertStringContainsString("stale-if-error=$duration", $headers['Cache-Control'][0]);
     $this->assertStringContainsString("stale-while-revalidate=$duration", $headers['Cache-Control'][0]);
