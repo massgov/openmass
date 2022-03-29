@@ -216,9 +216,11 @@ module.exports = async function(page, scenario, vp) {
         await page.waitForSelector('span.ma__emergency-alert__time-stamp', {visible: true, timeout: 0})
         await page.evaluate(async function () {
           jQuery(".ma__header__hamburger__utility-nav .ma__utility-nav__items li.ma__utility-nav__item:last-child button.ma__utility-nav__link").click();
-        }).then(() => page.waitFor(5000))
-        await page.waitForSelector('div.ma__utility-nav__content', {visible: true, timeout: 0})
-        await page.waitFor(2000);
+        }).then(() =>
+          page.waitFor(3000),
+          page.waitForSelector('div.ma__utility-nav__content', {visible: true, timeout: 0}),
+          page.waitFor(3000)
+        )
         break;
       case "Homepage Login link (Mobile)":
         await page.evaluate(async function () {
