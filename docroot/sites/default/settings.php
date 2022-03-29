@@ -198,34 +198,21 @@ if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   $config['environment_indicator.indicator']['name'] = $_ENV['AH_SITE_ENVIRONMENT'];
   switch ($_ENV['AH_SITE_ENVIRONMENT']) {
     case 'prod':
-      // Red-ish background.
-      $config['environment_indicator.indicator']['bg_color'] = '#e7131a';
-      // White text.
-      $config['environment_indicator.indicator']['fg_color'] = '#fff';
-      break;
-
-    case 'test':
-      // Orange-ish background.
-      $config['environment_indicator.indicator']['bg_color'] = '#b85c00';
-      // White text.
-      $config['environment_indicator.indicator']['fg_color'] = '#fff';
+      // Green background.
+      $config['environment_indicator.indicator']['bg_color'] = '#9CC2AB';
       break;
 
     default:
-      // Purple-ish background.
-      $config['environment_indicator.indicator']['bg_color'] = '#905';
-      // White text.
-      $config['environment_indicator.indicator']['fg_color'] = '#fff';
+      // Gray background.
+      $config['environment_indicator.indicator']['bg_color'] = '#BABABA';
       break;
   }
 }
 else {
   // We are in local or CI or Tugboat.
   $config['environment_indicator.indicator']['name'] = getenv('TUGBOAT_ROOT') ? 'Tugboat' : 'Local';
-  // Grey-ish background.
-  $config['environment_indicator.indicator']['bg_color'] = '#505050';
-  // White text.
-  $config['environment_indicator.indicator']['fg_color'] = '#fff';
+  // Gray background.
+  $config['environment_indicator.indicator']['bg_color'] = '#BABABA';
 }
 
 // phpunit.xml.dist sets -1 for memory_limit so just change for other cli requests.
