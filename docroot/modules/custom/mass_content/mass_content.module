@@ -614,12 +614,50 @@ function mass_content_set_default_event_quantity(array &$form) {
 }
 
 /**
+ * Alters the exposed sort for collection views and sets sort_bef_combine param.
+ */
+function mass_content_form_views_exposed_form_alter__collection_all_page_all(&$form) {
+  // Load collection by url name.
+  $route_match = \Drupal::routeMatch();
+  $collection_param = $route_match->getParameter('collection');
+  $query = \Drupal::entityQuery('taxonomy_term');
+  $query->condition('field_url_name', $collection_param);
+  $ids = $query->execute();
+  $collection_id = reset($ids);
+  $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $collection = $storage->load($collection_id);
+
+  // Filter available sort options.
+  $selected_options = array_column($collection->field_sort_order->getValue(), 'value');
+
+  foreach ($form['sort_bef_combine']['#options'] as $key => $option) {
+    if (in_array($key, $selected_options)) {
+      continue;
+    }
+    unset($form['sort_bef_combine']['#options'][$key]);
+  }
+
+  // Setting default sort option if there no sort option in the url.
+  if (!\Drupal::request()->query->get('sort_bef_combine')) {
+    $first_option = array_keys($form['sort_bef_combine']['#options'])[0];
+    \Drupal::request()->query->set('sort_bef_combine', $first_option);
+  }
+
+  // If only one sort option, hide the sort select control.
+  $form['sort_bef_combine']['#access'] = count($selected_options) != 1;
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
-function mass_content_form_views_exposed_form_alter(&$form, $form_state, $form_id) {
+function mass_content_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if ($form['#id'] == 'views-exposed-form-content-page-1' || $form['#id'] == 'views-exposed-form-my-content-page-1') {
     $form['status_1']['#options'][1] = t('Published');
     $form['status_1']['#options'][0] = t('Unpublished');
+  }
+
+  if ($form['#id'] == 'views-exposed-form-collection-all-page-all') {
+    mass_content_form_views_exposed_form_alter__collection_all_page_all($form);
   }
 }
 
@@ -700,6 +738,43 @@ function mass_content_query_collection_all_media_alter(AlterableInterface $query
 }
 
 /**
+ * Checks sort query value is ok and returns the new sort value for the view.
+ */
+function mass_content_query_collection_all_check_sort_value($value = '') {
+  if (!$value) {
+    $value = \Drupal::request()->query->get('sort_bef_combine');
+  }
+
+  $permitted_values = [
+    'title_ASC',
+    'title_DESC',
+    'field_date_published_value_ASC',
+    'field_date_published_value_DESC',
+    'event_date_ASC',
+    'event_date_DESC',
+  ];
+
+  if (!in_array($value, $permitted_values)) {
+    return [];
+  }
+
+  $available_sorts_in_collection_view = [
+    'title' => 'node_field_data_title',
+    'field_date_published_value' => 'node__field_date_published_field_date_published_value',
+    'event_date' => 'node__field_event_date_field_event_date_value',
+  ];
+
+  // Get the field name and the direction of the sort.
+  $direction = array_reverse(explode('_', $value))[0];
+  $field = str_replace('_' . $direction, '', $value);
+
+  return [
+    'key' => $available_sorts_in_collection_view[$field],
+    'value' => $direction
+  ];
+}
+
+/**
  * Implements hook_query_TAG_alter().
  */
 function mass_content_query_collection_all_alter(AlterableInterface $query) {
@@ -708,7 +783,7 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
   $query->addExpression('\'node\'', 'entity_type');
 
   // Only show types related to the selected sort order.
-  $order_by = $query->getOrderBy();
+  $order_by = &$query->getOrderBy();
   $order_by_event = $order_by['node__field_event_date_field_event_date_value'] ?? FALSE;
   if ($order_by_event) {
     $query->condition('type', 'event');
@@ -717,6 +792,11 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
   $order_by_news = $order_by['node__field_date_published_field_date_published_value'] ?? FALSE;
   if ($order_by_news) {
     $query->condition('type', 'news');
+  }
+
+  // Override sort with the sort_bef_combine query parameter.
+  if ($res = mass_content_query_collection_all_check_sort_value()) {
+    $order_by =  [$res['key'] => $res['value']];
   }
 
   // Executes collection_all_media to then get its query.
