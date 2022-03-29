@@ -207,7 +207,7 @@ jobs:
     steps:
       - attach_workspace: {at: /tmp}
       - run:
-          command '[ -n "$CIRCLE_PULL_REQUEST" ] || DANGER_GITHUB_API_TOKEN=$GITHUB_MASSGOV_BOT_TOKEN yarn danger local --failOnErrors'
+          command: '[ -n "$CIRCLE_PULL_REQUEST" ] || DANGER_GITHUB_API_TOKEN=$GITHUB_MASSGOV_BOT_TOKEN yarn danger local --failOnErrors'
       - run:
           command: 'DANGER_GITHUB_API_TOKEN=$GITHUB_MASSGOV_BOT_TOKEN yarn danger ci --failOnErrors'
 
