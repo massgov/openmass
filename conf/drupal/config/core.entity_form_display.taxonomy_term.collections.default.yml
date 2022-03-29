@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_landing_page
+    - field.field.taxonomy_term.collections.field_sort_order
     - field.field.taxonomy_term.collections.field_url_name
     - taxonomy.vocabulary.collections
   module:
@@ -17,6 +18,7 @@ third_party_settings:
       children:
         - field_landing_page
         - field_all_collection_breadcrumb
+        - field_sort_order
       label: 'Collection Settings'
       region: content
       parent_name: ''
@@ -56,6 +58,12 @@ content:
     settings:
       placeholder_url: ''
       placeholder_title: ''
+    third_party_settings: {  }
+  field_sort_order:
+    type: options_buttons
+    weight: 5
+    region: content
+    settings: {  }
     third_party_settings: {  }
   field_url_name:
     type: string_textfield
