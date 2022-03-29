@@ -224,7 +224,7 @@ module.exports = async function(page, scenario, vp) {
             e.innerText = 'May. 24th, 2021, 5:00 pm';
           });
         })
-        await page.waitFor(3000);
+        await page.waitFor(10000);
         break;
       case "Homepage Login link (Mobile)":
         await page.evaluate(async function () {
