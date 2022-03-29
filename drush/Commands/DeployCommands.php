@@ -362,7 +362,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
       // Enqueue purging of notable URLs. Don't use tags to avoid over-purging.
       // Empty path is the homepage
-      $paths = ['', 'orgs/office-of-the-governor', 'media/1268726'];
+      $paths = ['', '/orgs/office-of-the-governor', '/media/1268726'];
       foreach ($paths as $path) {
         $process = Drush::drush($targetRecord, 'ev', ["\Drupal::service('manual_purger')->purgePath('$path');"], ['verbose' => TRUE]);
         $process->mustRun();
