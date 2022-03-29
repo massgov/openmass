@@ -16,6 +16,9 @@ module.exports = async function(page, scenario, vp) {
         '  animation-delay: 0ms !important;\n' +
         '  animation-duration: 0ms !important;\n' +
         '  transition-duration: 0ms !important;\n' +
+        '  -webkit-transition-duration: 0ms !important;\n' +
+        '  transition-timing-function: unset !important;\n' +
+        '  -webkit-transition-timing-function: unset !important;\n' +
         '  transition-delay: 0ms !important;\n' +
         '}' +
         // Kill Video embeds (show black box instead)
