@@ -203,6 +203,8 @@ module.exports = async function(page, scenario, vp) {
       case "ServiceDetailsResources":
         await page.waitFor(3000);
         break;
+      case "Collections":
+      case "NewsPressStatement":
       case "TopicPageSectionLanding":
         await page.waitForSelector('section.ma__emergency-alerts', {visible: true, timeout: 0})
         await page.waitFor(3000);
@@ -218,16 +220,13 @@ module.exports = async function(page, scenario, vp) {
         break;
       case "Homepage Login link (Large sizes)":
         await page.waitForFunction("document.readyState === 'complete'");
-        await page.waitForSelector('span.ma__emergency-alert__time-stamp', {visible: true, timeout: 0}).then(
-          () =>
-            page.waitFor(5000)
-        )
+        await page.waitForSelector('span.ma__emergency-alert__time-stamp', {visible: true, timeout: 0})
+        await page.waitFor(5000)
         await page.waitForSelector('div.ma__utility-nav__content', {
           visible: true,
           timeout: 0
-        }).then(() =>
-          page.waitFor(5000)
-        )
+        })
+        await page.waitFor(5000)
         break;
       case "Homepage Login link (Mobile)":
         await page.evaluate(async function () {
