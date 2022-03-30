@@ -106,6 +106,10 @@ class EventsRendererOrgPagesTest extends ExistingSiteBase {
    */
   public function testOrgEvents() {
 
+    // To use "now" instead of "today", for upcoming events.
+    $state = $this->kernel->getContainer()->get('state');
+    $state->set('UPCOMING_END_DATE_RELATIVE', TRUE);
+
     // Visit the org page created on setup.
     $this->drupalGet($this->org->toUrl());
 
@@ -120,12 +124,12 @@ class EventsRendererOrgPagesTest extends ExistingSiteBase {
       sleep(1);
     };
 
-    system_cron();
-
     // Check org page again, event should be gone.
     $this->drupalGet($this->org->toUrl());
     $this->checkEventOrgPage(FALSE);
     $this->checkNodeListEventTag();
+
+    $state->set('UPCOMING_END_DATE_RELATIVE', FALSE);
   }
 
 }

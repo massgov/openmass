@@ -7,6 +7,7 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\node\NodeInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\State\StateInterface;
 
 /**
  * Lightweight event manager.
@@ -16,10 +17,25 @@ use Drupal\Core\Cache\Cache;
 class EventManager {
 
   /**
+   * The relative date to use when building upcoming events.
+   *
+   * @var string
+   */
+  private $upcomingEndDateRelative;
+
+  /**
    * Constructor.
    */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(EntityTypeManagerInterface $entityTypeManager, StateInterface $state) {
     $this->entityTypeManager = $entityTypeManager;
+    $this->upcomingEndDateRelative = 'today';
+
+    // $time is "now" only when running tests because we can't wait
+    // one day to test if the event is gone. Injecting the relative
+    // upcoming end date is complex, as well as changing the request time.
+    if ($state->get('UPCOMING_END_DATE_RELATIVE', FALSE)) {
+      $this->upcomingEndDateRelative = 'now';
+    }
   }
 
   /**
@@ -81,18 +97,9 @@ class EventManager {
    */
   private function getUpcomingQuery(NodeInterface $parent) {
     $query = $this->getBaseQuery($parent);
-
-    // $time is "now" only when running tests because we can't wait
-    // one day to test if the event is gone.
-    $testing =
-      \Drupal::request()->getHost() == 'mass-web' ||
-      ($_SERVER['CIRCLECI'] ?? FALSE);
-
-    $time = !$testing ? 'today' : 'now';
-
-    $today = new \DateTime($time, new \DateTimezone('America/New_York'));
-    $today->setTimezone(new \DateTimezone('UTC'));
-    $query->condition('field_event_date.end_value', $today->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>');
+    $upcomingDateEndDate = new \DateTime($this->upcomingEndDateRelative, new \DateTimezone('America/New_York'));
+    $upcomingDateEndDate->setTimezone(new \DateTimezone('UTC'));
+    $query->condition('field_event_date.end_value', $upcomingDateEndDate->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>');
     return $query;
   }
 
