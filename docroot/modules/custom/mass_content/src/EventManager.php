@@ -82,8 +82,12 @@ class EventManager {
   private function getUpcomingQuery(NodeInterface $parent) {
     $query = $this->getBaseQuery($parent);
 
-    // $time is "now" only when running tests.
-    $testing = \Drupal::request()->getHost() == 'mass-web';
+    // $time is "now" only when running tests because we can't wait
+    // one day to test if the event is gone.
+    $testing =
+      \Drupal::request()->getHost() == 'mass-web' ||
+      $_SERVER['CIRCLECI'] ?? FALSE;
+
     $time = !$testing ? 'today' : 'now';
 
     $today = new \DateTime($time, new \DateTimezone('America/New_York'));
