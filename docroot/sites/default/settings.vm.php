@@ -43,10 +43,6 @@ $config['field.field.paragraph.address.field_geofield']['third_party_settings'][
 if(getenv('DOCKER_ENV')) {
   // Docker service configuration.
   $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.docker.yml';
-
-  if (getenv('DOCKER_ENV') == 'ci') {
-    $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.ci.yml';
-  }
 }
 /**
  * Show all error messages with backtrace information, except during Behat runs.
