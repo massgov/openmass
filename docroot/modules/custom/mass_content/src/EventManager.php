@@ -86,7 +86,7 @@ class EventManager {
     // one day to test if the event is gone.
     $testing =
       \Drupal::request()->getHost() == 'mass-web' ||
-      $_SERVER['CIRCLECI'] ?? FALSE;
+      ($_SERVER['CIRCLECI'] ?? FALSE);
 
     $time = !$testing ? 'today' : 'now';
 
