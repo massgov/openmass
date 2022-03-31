@@ -99,6 +99,21 @@ function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, arra
 
   // Allow all data listing views pages to use the same template file.
   if (strpos($view->id(), 'data_listing') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
+
+      // function mass_feedback_form_from_orgs($field_organizations) {
+
+      $route = \Drupal::routeMatch();
+      $topic = $route->getParameter('topic');
+      $query = \Drupal::entityQuery('taxonomy_term');
+      $query->condition('field_url_name', $topic);
+      $id = reset($query->execute());
+      $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+      $term = $storage->load($id);
+
+      // TODO: data listing doesn't have an organizations field, not sure
+      // what feedback form to build here.
+      $variables['feedback_form'] = mass_feedback_form_from_orgs($term->);
+
     $suggestions[] = 'views_view__data_listing';
   }
 
