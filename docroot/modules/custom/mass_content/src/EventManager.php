@@ -17,25 +17,10 @@ use Drupal\Core\State\StateInterface;
 class EventManager {
 
   /**
-   * The relative date to use when building upcoming events.
-   *
-   * @var string
-   */
-  private $upcomingEndDateRelative;
-
-  /**
    * Constructor.
    */
   public function __construct(EntityTypeManagerInterface $entityTypeManager, StateInterface $state) {
     $this->entityTypeManager = $entityTypeManager;
-    $this->upcomingEndDateRelative = 'today';
-
-    // $time is "now" only when running tests because we can't wait
-    // one day to test if the event is gone. Injecting the relative
-    // upcoming end date is complex, as well as changing the request time.
-    if ($state->get('UPCOMING_END_DATE_RELATIVE', FALSE)) {
-      $this->upcomingEndDateRelative = 'now';
-    }
   }
 
   /**
@@ -97,7 +82,7 @@ class EventManager {
    */
   private function getUpcomingQuery(NodeInterface $parent) {
     $query = $this->getBaseQuery($parent);
-    $upcomingDateEndDate = new \DateTime($this->upcomingEndDateRelative, new \DateTimezone('America/New_York'));
+    $upcomingDateEndDate = new \DateTime('today', new \DateTimezone('America/New_York'));
     $upcomingDateEndDate->setTimezone(new \DateTimezone('UTC'));
     $query->condition('field_event_date.end_value', $upcomingDateEndDate->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>');
     return $query;
