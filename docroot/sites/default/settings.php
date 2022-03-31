@@ -193,12 +193,32 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   }
 }
 
+// Environment indicator. See https://architecture.lullabot.com/adr/20210609-environment-indicator/
+if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
+  $config['environment_indicator.indicator']['name'] = $_ENV['AH_SITE_ENVIRONMENT'];
+  switch ($_ENV['AH_SITE_ENVIRONMENT']) {
+    case 'prod':
+      // Green background.
+      $config['environment_indicator.indicator']['bg_color'] = '#9CC2AB';
+      break;
+
+    default:
+      // Gray background.
+      $config['environment_indicator.indicator']['bg_color'] = '#BABABA';
+      break;
+  }
+}
+else {
+  // We are in local or CI or Tugboat.
+  $config['environment_indicator.indicator']['name'] = getenv('TUGBOAT_ROOT') ? 'Tugboat' : 'Local';
+  // Gray background.
+  $config['environment_indicator.indicator']['bg_color'] = '#BABABA';
+}
+
 // phpunit.xml.dist sets -1 for memory_limit so just change for other cli requests.
 if (PHP_SAPI === 'cli' && ini_get('memory_limit')) {
   ini_set('memory_limit', '2048M');
 }
 
 $config['entity_usage.settings']['queue_tracking'] = TRUE;
-
-$settings['mass_entity_usage_delete_not_current_revision_usages'] = 'queue_unique.database';
 $settings['entity_usage_tracker'] = 'queue_unique.database';

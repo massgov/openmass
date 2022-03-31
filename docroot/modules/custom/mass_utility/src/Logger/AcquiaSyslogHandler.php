@@ -3,7 +3,7 @@
 namespace Drupal\mass_utility\Logger;
 
 use Monolog\Formatter\FormatterInterface;
-use Monolog\Formatter\LineFormatter;
+use Monolog\Formatter\JsonFormatter;
 use Monolog\Handler\SyslogHandler;
 use Monolog\Logger;
 
@@ -16,6 +16,7 @@ use Monolog\Logger;
  */
 class AcquiaSyslogHandler extends SyslogHandler {
 
+  // Was used when before we switched to JSONFormatter (3/2022).
   const FORMAT = '%extra.base_url%|%extra.timestamp%|%channel%|%level_name%|%extra.ip%|%extra.request_uri%|%extra.referer%|%extra.uid%|%context.link%|%message%';
 
   /**
@@ -30,7 +31,7 @@ class AcquiaSyslogHandler extends SyslogHandler {
    * {@inheritdoc}
    */
   public function getDefaultFormatter(): FormatterInterface {
-    return new LineFormatter(self::FORMAT);
+    return new JsonFormatter();
   }
 
   /**
