@@ -114,9 +114,12 @@ function mass_feedback_form_node_view(array &$build, EntityInterface $entity, En
   if ($display->getComponent('extra_org_feedback_form')) {
     $entityTypeManager = \Drupal::entityTypeManager();
     $viewBuilder = $entityTypeManager->getViewBuilder('node');
-    if ($entity->bundle() === 'org_page') {
-      $item = $viewBuilder->view($entity, 'feedback');
-    }
+    $item = $entity->bundle() === 'org_page' ?
+      $viewBuilder->view($entity, 'feedback') :
+      mass_feedback_form_from_orgs($entity->field_organizations);
+    $item['#field_name'] = 'extra_org_feedback_form';
+    $build['extra_org_feedback_form'][] = $item;
+  }
     else {
       if ($entity->field_organizations->count() > 0 && !empty($entity->field_organizations[0]->entity)) {
         $item = $viewBuilder->view($entity->field_organizations[0]->entity, 'feedback');
