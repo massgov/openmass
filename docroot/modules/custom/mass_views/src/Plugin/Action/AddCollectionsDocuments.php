@@ -85,7 +85,6 @@ class AddCollectionsDocuments extends ViewsBulkOperationsActionBase implements C
     $vid = $media_storage->getLatestRevisionId($entity->id());
     $create_draft = $vid != $entity->getRevisionId();
 
-    if (is_array($new_collection_id)) {
     if (!empty($entity->field_collections->getValue())) {
       foreach ($new_collection_id as $id) {
         $entity->field_collections->appendItem($id);
@@ -93,7 +92,6 @@ class AddCollectionsDocuments extends ViewsBulkOperationsActionBase implements C
     }
     else {
       $entity->field_collections = $new_collection_id;
-      }
     }
 
     $entity->setNewRevision(TRUE);
