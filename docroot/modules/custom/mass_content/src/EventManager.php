@@ -70,9 +70,7 @@ class EventManager {
    */
   private function getPastQuery(NodeInterface $parent) {
     $query = $this->getBaseQuery($parent);
-    $now = new \DateTime('now', new \DateTimezone('America/New_York'));
-    $now->setTimezone(new \DateTimezone('UTC'));
-
+    $now = new DrupalDateTime('now');
     $query->condition('field_event_date.end_value', $now->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '<=');
     return $query;
   }
@@ -82,8 +80,7 @@ class EventManager {
    */
   private function getUpcomingQuery(NodeInterface $parent) {
     $query = $this->getBaseQuery($parent);
-    $upcomingDateEndDate = new \DateTime('today', new \DateTimezone('America/New_York'));
-    $upcomingDateEndDate->setTimezone(new \DateTimezone('UTC'));
+    $upcomingDateEndDate = new DrupalDateTime('today');
     $query->condition('field_event_date.end_value', $upcomingDateEndDate->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>');
     return $query;
   }
