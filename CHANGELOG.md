@@ -1,5 +1,22 @@
 
 
+## [0.318.0] - March 29, 2022
+
+### Fixed
+  - DP-23425: Add validation for the location listing filter submission - show an error message and prevents form from submitting when the input is not suggested by Google.
+  - DP-24353: Update drupal/devel so webprofiler works
+  - DP-24379: Sitemap is generated using scheduled jobs, no need for cron.
+  
+### Changed
+  - DP-23603: Removed min-height of page header on Guides and Binder pages
+  - DP-24237: Improve url purging by removing unwanted normalization.
+  - DP-24267: Change the short description to be a paragraph instead of a heading.
+  - DP-24360: Remove permissions for anonymous users.
+  - 'access site-wide contact form'
+  - 'use text format restricted_html'
+  
+
+
 ## [0.317.0] - March 22, 2022
 
 ### Changed
