@@ -61,20 +61,9 @@ There are several things to consider when you are profiling:
 
 [Blackfire](https://blackfire.io) is a profiling tool for PHP applications. It lets you execute a web request, then show you all of the functions called during that request, as well as the amount of time each one took.
 
-#### Installing Blackfire
+#### Installing and Running Blackfire
 
-Follow the steps on [Blackfire's Debian/Ubuntu installation page](https://blackfire.io/docs/up-and-running/installation#config-repo-debian). You will need the Blackfire agent, CLI tool, and PHP Probe. While you're at it, create a Blackfire account and register your credentials using the Blackfire CLI.
-
-#### Running Blackfire
-
-To profile a single page, run the following command:
-
-```bash
-# eg: the homepage
-blackfire run https://mass.local/
-```
-
-This will hit the homepage 10 times, averaging the time spent across all runs to make the calculations more accurate.
+Follow the steps on [DDEV Blackfire page](https://ddev.readthedocs.io/en/stable/users/blackfire-profiling/). Configure the variables globally as suggested there. See the Mass.gov Blackfire subscription for credentials.
 
 #### Sequel Pro
 
