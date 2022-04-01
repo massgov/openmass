@@ -275,11 +275,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
     $targetRecord = $this->siteAliasManager()->get('@' . $target);
 
-    // Deploy the new code.
-    $operationResponse = $this->getClient()->switchCode($targetRecord->get('uuid'), $git_ref);
-    $href = $operationResponse->links->notification->href;
-    $this->waitForTaskToComplete(basename($href));
-
     // Copy database, but only for non-prod deploys and when refresh-db is set.
     if (!$is_prod && $options['refresh-db']) {
       // This section resembles ma-refresh-local --db-prep-only. We don't call that
@@ -327,6 +322,11 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $process->mustRun();
       $this->logger()->success("Maintenance mode enabled in $target.");
     }
+
+    // Deploy the new code.
+    $operationResponse = $this->getClient()->switchCode($targetRecord->get('uuid'), $git_ref);
+    $href = $operationResponse->links->notification->href;
+    $this->waitForTaskToComplete(basename($href));
 
     // Run deploy steps.
     $process = Drush::drush($targetRecord, 'deploy', [], ['verbose' => TRUE]);
