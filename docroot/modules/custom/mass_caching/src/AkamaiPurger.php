@@ -39,21 +39,30 @@ class AkamaiPurger extends \Drupal\akamai\Plugin\Purge\Purger\AkamaiPurger {
     $urls_to_clear = $event->data;
 
     // Mass: Added an array_unique() here as quick fix for dupes.
-    $urls_to_clear = array_unique($urls_to_clear);
+    $urls_to_clear = array_unique(array_filter($urls_to_clear));
     // Mass: Add back normalization just in case that caused the earlier errors.
-    $urls_to_clear = $this->client->normalizeUrls($urls_to_clear);
+    // $urls_to_clear = $this->client->normalizeUrls($urls_to_clear);
+
+    // Log if a bad URL is passed.
+    foreach ($urls_to_clear as $key => $url) {
+      if (!is_string($url)) {
+        $this->logger()->warning('Skipping the purge of a non-string: ' . var_export($url, TRUE));
+        unset($urls_to_clear[$key]);
+      }
+    }
 
     // Mass: Go right to purgeRequest(), bypassing unwanted check in purgeUrls().
     $method = new \ReflectionMethod($this->client, 'purgeRequest');
     $method->setAccessible(TRUE);
-    if ($method->invoke($this->client, $urls_to_clear)) {
+    $response = $method->invoke($this->client, $urls_to_clear);
+    if ($response) {
       // Now mark all URLs as cleared.
       foreach ($invalidations as $invalidation) {
         $invalidation->setState(InvalidationInterface::SUCCEEDED);
       }
     }
     else {
-      $msg = 'AkamaiPurger: Failed to purge ' . count($urls_to_clear) . ' url(s): ' . implode(', ', $urls_to_clear);
+      $msg = 'AkamaiPurger: Failed to purge ' . count($urls_to_clear) . ' url(s): ' . implode("\n", $urls_to_clear);
       $this->logger()->error($msg);
     }
   }
