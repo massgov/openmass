@@ -652,6 +652,7 @@ EOT;
     $currentVersion = $this->getClient()
       ->environment($environmentUuid)
       ->configuration
+      ->php
       ->version;
 
     $this->logger()->info("{name} is currently set to PHP {version}", [
