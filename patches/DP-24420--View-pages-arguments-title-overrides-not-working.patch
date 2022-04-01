@@ -1,0 +1,18 @@
+diff --git a/core/modules/views/src/Routing/ViewPageController.php b/core/modules/views/src/Routing/ViewPageController.php
+index d1d4770e7a..97d8da3d1c 100644
+--- a/core/modules/views/src/Routing/ViewPageController.php
++++ b/core/modules/views/src/Routing/ViewPageController.php
+@@ -81,6 +81,13 @@ public function getTitle($view_id, $display_id = 'default') {
+     $view = Views::getView($view_id);
+     $view->setDisplay($display_id);
+ 
++    if (empty($view->build_info)) {
++      $parameters = array_values(\Drupal::routeMatch()->getParameters()->all());
++      unset($parameters[0], $parameters[1]);
++      $view->setArguments($parameters);
++      $view->buildTitle();
++    }
++
+     return ViewsRenderPipelineMarkup::create(Xss::filter($view->getTitle()));
+   }
+ 
