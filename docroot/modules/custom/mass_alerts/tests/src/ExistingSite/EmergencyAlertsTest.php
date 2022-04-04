@@ -85,6 +85,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
     $this->assertStringContainsString($alert_message_text, $page->getText());
 
     $headers = $session->getResponseHeaders();
+    $this->assertStringContainsString('max-age=60', $headers['Cache-Control'][0]);
     $duration = StaleResponseSubscriber::DURATION;
     $this->assertStringContainsString("stale-if-error=$duration", $headers['Cache-Control'][0]);
     $this->assertStringContainsString("stale-while-revalidate=$duration", $headers['Cache-Control'][0]);
