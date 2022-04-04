@@ -48,6 +48,23 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+        3b195a7b-65b1-4d23-ace0-8dfcbb773b4e:
+          entity_type: paragraph
+          bundle: flexible_link_group
+          dependee: field_display_type
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: '1'
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_flexible_link_group_desc:
     type: string_textfield
     weight: 3
@@ -55,7 +72,25 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        18468cf0-5fae-49d3-8b7b-8436200c2e0d:
+          entity_type: paragraph
+          bundle: flexible_link_group
+          dependee: field_display_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: '1'
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_flexible_link_group_title:
     type: string_textfield
     weight: 2
@@ -63,7 +98,25 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        7745ea53-3ecd-420d-b793-64945c5a9017:
+          entity_type: paragraph
+          bundle: flexible_link_group
+          dependee: field_display_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: '1'
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_link_group:
     type: entity_reference_paragraphs
     weight: 5
