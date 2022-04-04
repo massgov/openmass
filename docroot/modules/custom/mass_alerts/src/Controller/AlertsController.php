@@ -71,10 +71,6 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
 
       $emergencyAlerts = [
         'id' => $id,
-        'emergencyHeader' => [
-          'hideText' => $this->t('Hide'),
-          'showText' => $this->t('Show'),
-        ],
       ];
 
       $results['emergencyAlerts'] = $emergencyAlerts;
