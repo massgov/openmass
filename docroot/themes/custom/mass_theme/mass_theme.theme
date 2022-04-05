@@ -7185,6 +7185,18 @@ function mass_theme_preprocess_paragraph__service_section(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
+  ksm(array_keys($variables));
+  // ksm($variables['content']);
+  /** @var \Drupal\paragraphs\Entity\Paragraph */
+  $flexible_lg = $variables['paragraph'];
+  $variables['flexible_link_title'] = $flexible_lg->field_flexible_link_group_title->value;
+}
+
+
+/**
  * Checks if the paragraph has one of the fields and has a value for it.
  */
 function mass_theme_paragraphs_sections_check_wrapping_field($paragraph, $fields) {
