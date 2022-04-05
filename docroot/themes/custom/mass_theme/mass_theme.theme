@@ -7115,12 +7115,14 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
  */
 function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
   // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
-  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
+  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat', 'flexible_link_group'];
   $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
   $contained = ['rich_text'];
 
   $components = [];
+  /** @var \Drupal\paragraphs\Entity\Paragraph */
   $container = $variables['paragraph'];
+  /** @var \Drupal\paragraphs\Entity\Paragraph[] */
   $paragraphs = Helper::getReferencedEntitiesFromField($container, $field);
 
   for ($i = 0; $i < count($paragraphs); $i++) {
