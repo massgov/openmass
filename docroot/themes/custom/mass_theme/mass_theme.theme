@@ -3398,7 +3398,7 @@ function mass_theme_preprocess_node_news_full(&$variables) {
       $orgs[] = $org->entity->label();
       $cache_tags = array_merge($cache_tags, $org->entity->getCacheTags());
     }
-    $author_all_orgs = implode(', ',$orgs);
+    $author_all_orgs = implode(', ', $orgs);
 
     $variables['author'] = $full_name;
     $variables['author_url'] = $author->toUrl();
