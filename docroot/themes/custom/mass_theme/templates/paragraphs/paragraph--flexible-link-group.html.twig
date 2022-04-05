@@ -1,0 +1,142 @@
+{% include "@organisms/by-author/collapsible-content.twig" with {
+  "collapsibleContent": {
+    "compHeading": {
+      "title": "Collapsible Content Extended",
+      "sub": "Somethign called sub",
+      "color": "",
+      "id": "GUID2095-254293851",
+      "centered": "",
+    },
+    "extended": true,
+
+    "description": {
+      "rteElements" : [{
+          "path": "@atoms/11-text/paragraph.twig",
+          "data": {
+            "paragraph" : {
+              "text": "<b>This is a paragraph atom</b>. Lorem ipsum dolor sit amet, consectetur adipisicing elit.  <a href=\"#\">This is a link within a paragraph</a>. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident, nemo? Explicabo itaque possimus dignissimos? Repudiandae tempore, fugit illum? Iure error omnis eveniet eius iste molestias."
+            }
+          }
+      }]
+    },
+
+    "items": [{
+      "expanded": true,
+      "collapsibleHeader": {
+        "title": flexible_link_title,
+        "description": "<b>This is a paragraph atom</b>. Lorem ipsum dolor sit amet, consectetur adipisicing elit.  <a href=\"#\">This is a link within a paragraph</a>. Lorem ipsum dolor sit amet, consectetur adipisicing elit. Provident, nemo? Explicabo itaque possimus dignissimos? Repudiandae tempore, fugit illum? Iure error omnis eveniet eius iste molestias."
+
+      },
+      "more": null,
+      "includes": [{
+        "path": "@atoms/decorative-link.twig",
+        "data": {
+            "decorativeLink": {
+              "text": "Information for MassHealth Applicants",
+              "href": "/"
+            }
+        }
+      },
+        {
+          "path": "@atoms/decorative-link.twig",
+          "data": {
+            "decorativeLink": {
+              "text": "Provider Directory",
+              "href": "/"
+            }
+          }
+        },
+        {
+          "path": "@atoms/decorative-link.twig",
+          "data": {
+            "decorativeLink": {
+              "text": "MassHealth Plans and Enrollment Guide",
+              "href": "/"
+            }
+          }
+        }
+      ]
+    },
+      {
+        "expanded": false,
+        "collapsibleHeader": {
+          "title": "MassHealth Plans"
+        },
+        "more": null,
+        "includes": [{
+          "path": "@atoms/decorative-link.twig",
+          "data": {
+            "decorativeLink": {
+              "text": "Information for MassHealth Applicants",
+              "href": "/"
+            }
+          }
+        },
+          {
+            "path": "@atoms/decorative-link.twig",
+            "data": {
+              "decorativeLink": {
+                "text": "Provider Directory",
+                "href": "/"
+              }
+            }
+          },
+          {
+            "path": "@atoms/decorative-link.twig",
+            "data": {
+              "decorativeLink": {
+                "text": "MassHealth Plans and Enrollment Guide",
+                "href": "/"
+              }
+            }
+          },
+          {
+            "path": "@atoms/decorative-link.twig",
+            "data": {
+              "decorativeLink": {
+                "text": "Provider Directory",
+                "href": "/"
+              }
+            }
+          },
+          {
+            "path": "@atoms/decorative-link.twig",
+            "data": {
+              "decorativeLink": {
+                "text": "MassHealth Plans and Enrollment Guide",
+                "href": "/"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "expanded": false,
+        "collapsibleHeader": {
+          "title": "MassHealth for Providers"
+        },
+        "more": null,
+        "includes": [{
+          "path": "@atoms/decorative-link.twig",
+          "data": {
+            "decorativeLink": {
+              "text": "Information for MassHealth Applicants",
+              "href": "/"
+            }
+          }
+        },
+          {
+            "path": "@atoms/decorative-link.twig",
+            "data": {
+              "decorativeLink": {
+                "text": "Provider Directory",
+                "href": "/"
+              }
+            }
+          }
+        ]
+      }]
+
+
+  }
+} %}
