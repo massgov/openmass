@@ -1,0 +1,299 @@
+diff --git a/conditional_fields.module b/conditional_fields.module
+index 9532f26..476e9a6 100644
+--- a/conditional_fields.module
++++ b/conditional_fields.module
+@@ -5,13 +5,13 @@
+  * Contains conditional_fields.module.
+  */
+ 
++use Drupal\Component\Utility\NestedArray;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Routing\RouteMatchInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Field\FieldDefinitionInterface;
+ use Drupal\Core\Field\WidgetInterface;
+ use Drupal\Core\Url;
+-use Drupal\conditional_fields\ConditionalFieldsFormHelper;
+ use Drupal\conditional_fields\DependencyHelper;
+ 
+ /**
+@@ -96,6 +96,28 @@ function conditional_fields_conditional_fields_alter(&$fields, $entity_type, $bu
+   asort($fields);
+ }
+ 
++/**
++ * Gets the paragraph's bundle from a form field.
++ */
++function conditional_fields_get_paragraph_bundle($field, $form) {
++  $closest_parent = [];
++  $last_subform = FALSE;
++  foreach ($field['#array_parents'] as $index => $parent) {
++    if ($parent === 'subform') {
++      $last_subform = $index;
++    }
++  }
++
++  if (!$last_subform) {
++    return FALSE;
++  }
++
++  $closest_parent = array_slice($field['#array_parents'], 0, $last_subform);
++  $bundle = NestedArray::getValue($form, array_merge($closest_parent, ['#paragraph_type']));
++
++  return $bundle && !is_array($bundle) ? $bundle : FALSE;
++}
++
+ /**
+  * Processes form elements with dependencies.
+  *
+@@ -130,6 +152,7 @@ function conditional_fields_element_after_build($element, FormStateInterface &$f
+   // in entities within entities they might not correspond,
+   // and their dependencies will not be loaded.
+   $build_info = $form_state->getBuildInfo();
++
+   if (method_exists($build_info['callback_object'], 'getEntity')) {
+     $entity = $build_info['callback_object']->getEntity();
+     if ($entity instanceof EntityInterface) {
+@@ -144,6 +167,29 @@ function conditional_fields_element_after_build($element, FormStateInterface &$f
+         $bundle = $bundle->getPluginId();
+       }
+ 
++      $props = [
++        'entity_type' => $entity_type,
++        'bundle' => $bundle,
++        'field_name' => $first_parent,
++      ];
++
++      $is_related_to_paragraph = FALSE;
++      $field_configs = \Drupal::service('entity_type.manager')->getStorage('field_config')->loadByProperties($props);
++      if ($field_configs) {
++        $field_config = reset($field_configs);
++        $settings = $field_config->getSettings();
++        $is_related_to_paragraph = isset($settings['target_type']) && $settings['target_type'] == 'paragraph';
++
++        if ($is_related_to_paragraph) {
++          $entity_type = 'paragraph';
++          $bundle = conditional_fields_get_paragraph_bundle($field, $form);
++
++          if (!$bundle) {
++            return $element;
++          }
++        }
++      }
++
+       $dependencies = conditional_fields_load_dependencies($entity_type, $bundle);
+ 
+       if (!$dependencies) {
+@@ -151,11 +197,45 @@ function conditional_fields_element_after_build($element, FormStateInterface &$f
+       }
+ 
+       $field_name = reset($field['#array_parents']);
++
++      // We the name of the field inside the the paragraph where the
++      // conditions are being applied, instead of the field name where the
++      // paragraph is.
++      if ($is_related_to_paragraph) {
++        foreach ($field['#array_parents'] as $parent) {
++          if (isset($dependencies['dependents'][$parent])) {
++            $field_name = $parent;
++            break;
++          }
++
++          if (isset($dependencies['dependees'][$parent])) {
++            $field_name = $parent;
++            break;
++          }
++        }
++
++        if ($parent != $field_name || $first_parent == $field_name || !isset($field['#type'])) {
++          return $element;
++        }
++      }
++
++      $paragraph_info = [];
++
++      if ($is_related_to_paragraph) {
++        $paragraph_info['entity_type'] = $entity_type;
++        $paragraph_info['bundle'] = $bundle;
++        $paragraph_info['paragraph_field'] = $first_parent;
++        $paragraph_info['array_parents'] = $element['#array_parents'];
++      }
++
+       // Attach dependent.
+       if (isset($dependencies['dependents'][$field_name])) {
+         foreach ($dependencies['dependents'][$field_name] as $id => $dependency) {
+           if (!isset($form['#conditional_fields'][$field_name]['dependees'][$id]) || conditional_fields_is_priority_field($field)) {
+-            conditional_fields_attach_dependency($form, $form_state, ['#field_name' => $dependency['dependee']], $field, $dependency['options'], $id);
++            if ($is_related_to_paragraph) {
++              $paragraph_info['field'] = $field_name;
++            }
++            conditional_fields_attach_dependency($form, $form_state, ['#field_name' => $dependency['dependee']], $field, $dependency['options'], $id, $paragraph_info);
+           }
+         }
+       }
+@@ -163,7 +243,10 @@ function conditional_fields_element_after_build($element, FormStateInterface &$f
+       if (isset($dependencies['dependees'][$field_name])) {
+         foreach ($dependencies['dependees'][$field_name] as $id => $dependency) {
+           if (!isset($form['#conditional_fields'][$field_name]['dependents'][$id]) || conditional_fields_is_priority_field($field)) {
+-            conditional_fields_attach_dependency($form, $form_state, $field, ['#field_name' => $dependency['dependent']], $dependency['options'], $id);
++            if ($is_related_to_paragraph) {
++              $paragraph_info['field'] = $field_name;
++            }
++            conditional_fields_attach_dependency($form, $form_state, $field, ['#field_name' => $dependency['dependent']], $dependency['options'], $id, $paragraph_info);
+           }
+         }
+       }
+@@ -177,10 +260,7 @@ function conditional_fields_element_after_build($element, FormStateInterface &$f
+  * Loads all dependencies from the database for a given bundle.
+  */
+ function conditional_fields_load_dependencies($entity_type, $bundle) {
+-  static $dependency_helper;
+-  if (!isset($dependency_helper)) {
+-    $dependency_helper = new DependencyHelper($entity_type, $bundle);
+-  }
++  $dependency_helper = new DependencyHelper($entity_type, $bundle);
+   return $dependency_helper->getBundleDependencies();
+ }
+ 
+@@ -238,7 +318,7 @@ function conditional_fields_load_dependencies($entity_type, $bundle) {
+  *   Note that you don't need to manually set all these options, since default
+  *   settings are always provided.
+  */
+-function conditional_fields_attach_dependency(&$form, &$form_state, $dependee, $dependent, $options, $id = 0) {
++function conditional_fields_attach_dependency(&$form, &$form_state, $dependee, $dependent, $options, $id = 0, $paragraph_info = []) {
+   module_load_include('inc', 'conditional_fields', 'conditional_fields.api');
+   // The absence of the $id parameter identifies a custom dependency.
+   if (!$id) {
+@@ -267,17 +347,34 @@ function conditional_fields_attach_dependency(&$form, &$form_state, $dependee, $
+   // Attach dependee.
+   // Use the #array_parents property of the dependee instead of #field_parents
+   // since we will need access to the full structure of the widget.
+-  if (isset($dependee['#parents'])) {
+-    $form['#conditional_fields'][$dependee['#parents'][0]]['parents'] = $dependee['#array_parents'];
+-    $form['#conditional_fields'][$dependee['#parents'][0]]['dependents'][$id] = [
++  if (isset($dependee['#array_parents'])) {
++
++    $dependee_index = $dependee['#parents'][0];
++    if ($paragraph_info) {
++      $dependee_index .= '.' . $paragraph_info['field'];
++      $dependent['#field_name'] = $paragraph_info['paragraph_field'] . '.' . $dependent['#field_name'];
++
++      if (isset($form['#conditional_fields'][$dependee_index]['parents'])) {
++        $count = 0;
++        while (isset($form['#conditional_fields'][$dependee_index . $count]['parents'])) {
++          $count++;
++        };
++        $dependee_index .= $count;
++        $dependent['#field_name'] .= $count;
++      }
++    }
++
++    $form['#conditional_fields'][$dependee_index]['is_from_paragraph'] = (bool) $paragraph_info;
++    $form['#conditional_fields'][$dependee_index]['parents'] = $dependee['#array_parents'];
++    $form['#conditional_fields'][$dependee_index]['dependents'][$id] = [
+       'dependent' => $dependent['#field_name'],
+       'options' => $options,
+     ];
+   }
+ 
+   // Attach dependent.
+-  if (!empty($dependent['#parents'])) {
+-    $dependent_parents = $dependent['#parents'];
++  if (!empty($dependent['#array_parents'])) {
++    $dependent_parents = $dependent['#array_parents'];
+     // If the field type is Date, we need to remove the last "date" parent key,
+     // since it is not part of the $form_state value when we validate it.
+     if ($dependent['#type'] == 'date') {
+@@ -288,8 +385,30 @@ function conditional_fields_attach_dependency(&$form, &$form_state, $dependee, $
+     $dependent_parents = $dependent['#field_parents'];
+   }
+   if (isset($dependent_parents)) {
+-    $form['#conditional_fields'][$dependent['#parents'][0]]['field_parents'] = $dependent_parents;
+-    $form['#conditional_fields'][$dependent['#parents'][0]]['dependees'][$id] = [
++    $dependent_index = $dependent['#parents'][0];
++    if ($paragraph_info) {
++      $dependent_index .= '.' . $paragraph_info['field'];
++      $dependee['#field_name'] = $paragraph_info['paragraph_field'] . '.' . $dependee['#field_name'];
++
++      if (isset($form['#conditional_fields'][$dependent_index]['field_parents'])) {
++        $count = 0;
++        while (isset($form['#conditional_fields'][$dependent_index . $count]['field_parents'])) {
++          $count++;
++        }
++        $dependent_index .= $count;
++        $dependee['#field_name'] .= $count;
++      }
++    }
++
++    // This doesn't feel right, but worked.
++    if (isset($options['value_form'][0]['value']) && $paragraph_info) {
++      $options['value_form'] = $options['value_form'][0]['value'];
++    }
++
++    $form['#conditional_fields'][$dependent_index]['is_from_paragraph'] = (bool) $paragraph_info;
++    $form['#conditional_fields'][$dependent_index]['field_parents'] = $dependent_parents;
++    $form['#conditional_fields'][$dependent_index]['array_parents'] = $paragraph_info['array_parents'] ?? [];
++    $form['#conditional_fields'][$dependent_index]['dependees'][$id] = [
+       'dependee' => $dependee['#field_name'],
+       'options' => $options,
+     ];
+diff --git a/src/ConditionalFieldsFormHelper.php b/src/ConditionalFieldsFormHelper.php
+index 02fee9b..cb91f19 100644
+--- a/src/ConditionalFieldsFormHelper.php
++++ b/src/ConditionalFieldsFormHelper.php
+@@ -105,7 +105,10 @@ class ConditionalFieldsFormHelper {
+       }
+       $dependees = $dependent_info['dependees'];
+ 
+-      $dependent_location = array_merge([], [$dependent]);
++      $dependent_location = $dependent_info['is_from_paragraph'] ?
++        $dependent_info['field_parents'] :
++        array_merge([], [$dependent]);
++
+       $dependent_form_field = NestedArray::getValue($this->form, $dependent_location);
+ 
+       $states = $this->processDependeeFields($dependees, $dependent_form_field, $dependent_location, $states);
+@@ -117,8 +120,15 @@ class ConditionalFieldsFormHelper {
+       // Save the modified field back into the form.
+       NestedArray::setValue($this->form, $dependent_location, $dependent_form_field);
+ 
++      $states_location = array_merge($dependent_location, ['#states']);
++
++      $new_states = array_merge(
++        NestedArray::getValue($this->form, $states_location) ?? [],
++        $this->mapStates($states)
++      );
++
+       // Add the #states property to the dependent field.
+-      NestedArray::setValue($this->form, array_merge($dependent_location, ['#states']), $this->mapStates($states));
++      NestedArray::setValue($this->form, $states_location, $new_states);
+     }
+ 
+     return $this;
+@@ -372,7 +382,25 @@ class ConditionalFieldsFormHelper {
+       return;
+     }
+ 
+-    $dependent = $form['#conditional_fields'][reset($element['#array_parents'])];
++    $dependent = $form['#conditional_fields'][reset($element['#array_parents'])] ?? FALSE;
++
++    // Finding conditional field match based on parents.
++    if (!$dependent) {
++      foreach ($form['#conditional_fields'] as $key => $conditional_field) {
++        if (
++            strpos($key, '.') !== FALSE &&
++            isset($conditional_fields['array_parents']) &&
++            empty(array_diff($element['#array_parents'], $conditional_field['array_parents']))) {
++          $dependent = $conditional_field;
++          break;
++        }
++      }
++    }
++
++    // @todo this might be wrong, validation is not being executed.
++    if (!$dependent) {
++      return;
++    }
+ 
+     // Check if this field's dependencies were triggered.
+     $triggered = self::evaluateDependencies($dependent, $form, $form_state);
