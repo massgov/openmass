@@ -7,7 +7,7 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\node\NodeInterface;
 use Drupal\Core\Cache\Cache;
-use phpDocumentor\Reflection\Types\Integer;
+use Drupal\Core\State\StateInterface;
 
 /**
  * Lightweight event manager.
@@ -19,7 +19,7 @@ class EventManager {
   /**
    * Constructor.
    */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(EntityTypeManagerInterface $entityTypeManager, StateInterface $state) {
     $this->entityTypeManager = $entityTypeManager;
   }
 
@@ -70,9 +70,7 @@ class EventManager {
    */
   private function getPastQuery(NodeInterface $parent) {
     $query = $this->getBaseQuery($parent);
-    $now = new \DateTime('now', new \DateTimezone('America/New_York'));
-    $now->setTimezone(new \DateTimezone('UTC'));
-
+    $now = new DrupalDateTime('now');
     $query->condition('field_event_date.end_value', $now->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '<=');
     return $query;
   }
@@ -82,10 +80,8 @@ class EventManager {
    */
   private function getUpcomingQuery(NodeInterface $parent) {
     $query = $this->getBaseQuery($parent);
-    $today = new \DateTime('today', new \DateTimezone('America/New_York'));
-    $today->setTimezone(new \DateTimezone('UTC'));
-
-    $query->condition('field_event_date.end_value', $today->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>');
+    $upcomingDateEndDate = new DrupalDateTime('today');
+    $query->condition('field_event_date.end_value', $upcomingDateEndDate->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>');
     return $query;
   }
 

@@ -18,6 +18,7 @@ dependencies:
     - user
     - views_autocomplete_filters
     - views_bulk_operations
+    - views_porter_stemmer
 _core:
   default_config_hash: '-fJpPBLfGRPa6VPFiBweHcjlSOTqltsw5cbz8VVqXAI'
 id: add_collections_documents
@@ -1389,7 +1390,7 @@ display:
             operator_id: field_collections_target_id_op
             label: 'Collection (filter based on existing)'
             description: ''
-            use_operator: false
+            use_operator: true
             operator: field_collections_target_id_op
             operator_limit_selection: false
             operator_list: {  }
