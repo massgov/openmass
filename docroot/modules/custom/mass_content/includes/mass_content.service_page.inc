@@ -235,5 +235,49 @@ function _mass_content_service_page_cleanup_field_values(&$node) {
   $node->set('field_link_group', []);
   $node->set('field_service_key_info_links_6', []);
   $node->set('field_template', '');
+  $node->set('field_location_button_short_desc', []);
+  $node->set('field_location_button_label', []);
+  $node->set('field_service_ref_locations', []);
+  $node->set('field_related_organization_type', []);
 
+}
+
+/**
+ * Process location fields migration.
+ */
+function _mass_content_service_page_migrate_locations($node) {
+  if (!$node->field_service_ref_locations->isEmpty()) {
+    $field_location_button_short_desc = $node->get('field_location_button_short_desc')
+      ->getValue();
+    $field_location_button_label = $node->get('field_location_button_label')
+      ->getValue();
+    $field_service_ref_locations = $node->get('field_service_ref_locations')
+      ->getValue();
+    $field_related_organization_type = $node->get('field_related_organization_type')
+      ->getValue();
+    // Create a new Organization Locations paragraph.
+    $new_service_locations_paragraph = Paragraph::create([
+      'type' => 'org_locations',
+    ]);
+    // Set the field values.
+    $new_service_locations_paragraph->set('field_location_button_short_desc', $field_location_button_short_desc);
+    $new_service_locations_paragraph->set('field_location_button_label', $field_location_button_label);
+    $new_service_locations_paragraph->set('field_org_ref_locations', $field_service_ref_locations);
+    $new_service_locations_paragraph->set('field_related_organization_type', $field_related_organization_type);
+    // Save the new paragraph.
+    $new_service_locations_paragraph->save();
+
+    // Create a new Service Section paragraph.
+    $new_service_section_form_paragraph = Paragraph::create([
+      'type' => 'service_section',
+    ]);
+    // Set the field values.
+    $new_service_section_form_paragraph->set('field_service_section_content', $new_service_locations_paragraph);
+    $new_service_section_form_paragraph->set('field_service_section_heading', 'Locations');
+    $new_service_section_form_paragraph->set('field_hide_heading', 0);
+    // Save the new paragraph.
+    $new_service_section_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph);
+  }
 }

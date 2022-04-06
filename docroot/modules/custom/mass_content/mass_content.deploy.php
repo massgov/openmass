@@ -750,6 +750,7 @@ function mass_content_deploy_service_page_section_migration(&$sandbox) {
           break;
 
       }
+      _mass_content_service_page_migrate_locations($node);
       _mass_content_service_page_cleanup_field_values($node);
 
       // Save the node.
