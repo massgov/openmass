@@ -1,14 +1,29 @@
 diff --git a/core/modules/views/src/Routing/ViewPageController.php b/core/modules/views/src/Routing/ViewPageController.php
-index d1d4770e7a..97d8da3d1c 100644
+index d1d4770e7a..3aa2a55071 100644
 --- a/core/modules/views/src/Routing/ViewPageController.php
 +++ b/core/modules/views/src/Routing/ViewPageController.php
-@@ -81,6 +81,13 @@ public function getTitle($view_id, $display_id = 'default') {
+@@ -81,6 +81,28 @@ public function getTitle($view_id, $display_id = 'default') {
      $view = Views::getView($view_id);
      $view->setDisplay($display_id);
  
++    // Ensure view has parameters before trying to get the title.
 +    if (empty($view->build_info)) {
++
 +      $parameters = array_values(\Drupal::routeMatch()->getParameters()->all());
++      // First 2 parameters are always the view id and display name.
 +      unset($parameters[0], $parameters[1]);
++
++      // When parameters are upcasted to entities caching fails,
++      //
++      foreach ($parameters as &$parameter) {
++        if (\is_object($parameter) && \method_exists($parameter, 'id')) {
++          $parameter = $parameter->id();
++        }
++        if (!is_string($parameter)) {
++          $parameter = NULL;
++        }
++      }
++
 +      $view->setArguments($parameters);
 +      $view->buildTitle();
 +    }
