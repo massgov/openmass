@@ -7193,7 +7193,7 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
   $variables['flexible_link_title'] = $flexible_lg->field_flexible_link_group_title->value;
   $variables['flexible_link_description'] = $flexible_lg->field_flexible_link_group_desc->value;
   $variables['flexible_links_display_type'] = $flexible_lg->field_display_type->value;
-  $variables['flexible_links_featured'] = $flexible_lg->field_featured->value;
+  $variables['flexible_links_theme'] = ((bool) intval($flexible_lg->field_featured->value)) ? 'blue' : 'white';
   $variables['flexible_link_links'] = [];
 
   /** @todo display type buttons and feature buttons */
