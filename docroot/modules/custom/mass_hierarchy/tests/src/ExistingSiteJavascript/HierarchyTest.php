@@ -118,4 +118,27 @@ class HierarchyTest extends ExistingSiteWebDriverTestBase {
     $this->assertSession()->pageTextContains($child1Node->label());
   }
 
+  /**
+   * Tests node edit erases other revisions other than the current.
+   */
+  public function testNodeEditFormErasesOtherRevisions() {
+    $this->drupalLogin($this->createRandomUser('content_team'));
+    list($parent1Node, $child1Node,) = $this->createParentAndChildren();
+
+    // Save child node.
+    $child1Node->moderation_state = MassModeration::DRAFT;
+    $child1Node->save();
+
+    // Verify it has 2 entries
+    $this->assertEquals(2, $this->countNestedSetFieldPrimaryParentNodeEntries($child1Node->id()));
+    $this->drupalGet('node/' . $child1Node->id() . '/edit');
+    // Verify it has 1 entry.
+    $this->assertEquals(1, $this->countNestedSetFieldPrimaryParentNodeEntries($child1Node->id()));
+
+    // Verify it is still showing in the hierarchy,
+    // hence we delete the draft and not the published version.
+    $this->drupalGet('node/' . $parent1Node->id() . '/children');
+    $this->assertSession()->pageTextContains($child1Node->label());
+  }
+
 }
