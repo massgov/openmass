@@ -112,10 +112,8 @@ function mass_feedback_form_entity_extra_field_info() {
  */
 function mass_feedback_form_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   if ($display->getComponent('extra_org_feedback_form')) {
-    $entityTypeManager = \Drupal::entityTypeManager();
-    $viewBuilder = $entityTypeManager->getViewBuilder('node');
     $item = $entity->bundle() === 'org_page' ?
-      $viewBuilder->view($entity, 'feedback') :
+      mass_feedback_form_build_feedback_form($entity) :
       mass_feedback_form_from_orgs($entity->field_organizations);
     $item['#field_name'] = 'extra_org_feedback_form';
     $build['extra_org_feedback_form'][] = $item;
@@ -126,11 +124,18 @@ function mass_feedback_form_node_view(array &$build, EntityInterface $entity, En
  * Returns a form based on a field with multiple organizations.
  */
 function mass_feedback_form_from_orgs($field_organizations) {
-  $entityTypeManager = \Drupal::entityTypeManager();
-  $viewBuilder = $entityTypeManager->getViewBuilder('node');
   $item = [];
   if ($field_organizations->count() > 0 && !empty($field_organizations[0]->entity)) {
-    $item = $viewBuilder->view($field_organizations[0]->entity, 'feedback');
+    $item = mass_feedback_form_build_feedback_form($field_organizations[0]->entity);
   }
   return $item;
+}
+
+/**
+ * Builds a feedback form based on an Organization node.
+ */
+function mass_feedback_form_build_feedback_form($org_entity) {
+  $entityTypeManager = \Drupal::entityTypeManager();
+  $viewBuilder = $entityTypeManager->getViewBuilder('node');
+  return $viewBuilder->view($org_entity, 'feedback');
 }
