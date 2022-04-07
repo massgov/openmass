@@ -1,0 +1,86 @@
+uuid: df32d154-7d1d-4430-a30a-7dd7bfff8d66
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.listing
+    - field.field.node.executive_order.body
+    - field.field.node.executive_order.field_collections
+    - field.field.node.executive_order.field_date_published
+    - field.field.node.executive_order.field_exec_order_listing_desc
+    - field.field.node.executive_order.field_executive_order_adjustment
+    - field.field.node.executive_order.field_executive_order_contact
+    - field.field.node.executive_order.field_executive_order_date
+    - field.field.node.executive_order.field_executive_order_downloads
+    - field.field.node.executive_order.field_executive_order_issuer
+    - field.field.node.executive_order.field_executive_order_mass_regis
+    - field.field.node.executive_order.field_executive_order_metatags
+    - field.field.node.executive_order.field_executive_order_number
+    - field.field.node.executive_order.field_executive_order_overview
+    - field.field.node.executive_order.field_executive_order_related
+    - field.field.node.executive_order.field_executive_title
+    - field.field.node.executive_order.field_intended_audience
+    - field.field.node.executive_order.field_organizations
+    - field.field.node.executive_order.field_primary_parent
+    - field.field.node.executive_order.field_reusable_label
+    - field.field.node.executive_order.field_short_title
+    - field.field.node.executive_order.field_state_organization_tax
+    - node.type.executive_order
+  module:
+    - user
+id: node.executive_order.listing
+targetEntityType: node
+bundle: executive_order
+mode: listing
+content:
+  field_exec_order_listing_desc:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  referencing_binders_page_flipper:
+    type: entity_reference_label
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 18
+    region: content
+  workbench_moderation_control:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  body: true
+  computed_related_to: true
+  content_moderation_control: true
+  extra_node_pager: true
+  extra_org_feedback_form: true
+  field_collections: true
+  field_date_published: true
+  field_executive_order_adjustment: true
+  field_executive_order_contact: true
+  field_executive_order_date: true
+  field_executive_order_downloads: true
+  field_executive_order_issuer: true
+  field_executive_order_mass_regis: true
+  field_executive_order_metatags: true
+  field_executive_order_number: true
+  field_executive_order_overview: true
+  field_executive_order_related: true
+  field_executive_title: true
+  field_intended_audience: true
+  field_organizations: true
+  field_primary_parent: true
+  field_reusable_label: true
+  field_short_title: true
+  field_state_organization_tax: true
+  langcode: true
+  links: true
+  page_next: true
+  page_previous: true
+  referencing_binders: true

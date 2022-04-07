@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
+    - field.field.node.form_page.field_collections
     - field.field.node.form_page.field_english_version
     - field.field.node.form_page.field_form_embed
     - field.field.node.form_page.field_form_lede
@@ -13,7 +14,9 @@ dependencies:
     - field.field.node.form_page.field_intended_audience
     - field.field.node.form_page.field_metatags
     - field.field.node.form_page.field_organizations
+    - field.field.node.form_page.field_primary_parent
     - field.field.node.form_page.field_reusable_label
+    - field.field.node.form_page.field_short_title
     - field.field.node.form_page.field_state_organization_tax
     - node.type.form_page
   module:
@@ -24,25 +27,26 @@ bundle: form_page
 mode: teaser
 content:
   extra_node_pager:
-    weight: 100
     settings: {  }
     third_party_settings: {  }
+    weight: 100
     region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_log_in_links: true
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
+  field_collections: true
   field_english_version: true
   field_form_embed: true
   field_form_lede: true
@@ -52,7 +56,9 @@ hidden:
   field_intended_audience: true
   field_metatags: true
   field_organizations: true
+  field_primary_parent: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true
   page_next: true

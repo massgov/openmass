@@ -29,17 +29,20 @@
   {% endif %}
 
   {# Check if primary indicator content exists. #}
+  {% set primaryIndicators = null %}
+  {% set primaryRelationshipContent = null %}
+  {#
   {% if content.computed_related_to[0] %}
     {% set primaryIndicators = { "label": "part of" } %}
     {% set primaryRelationshipContent = content.computed_related_to %}
-  {% else %}
-    {% set primaryIndicators = null %}
-    {% set primaryRelationshipContent = null %}
   {% endif %}
+  #}
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "label": "offered by"
+      "icon": "building",
+      "label": "offered by",
+      "groupAfter": 3
     } %}
   {% endif %}
 
@@ -58,22 +61,42 @@
     {% endblock %}
   {% endembed %}
 
-  {% set bannerImageWide = file_url(node.field_service_bg_wide.entity.fileuri) %}
-  {% set bannerImageNarrow = file_url(node.field_service_bg_narrow.entity.fileuri) %}
+  {% set bannerImageWide = node.field_service_bg_wide.entity.fileuri ? file_url(node.field_service_bg_wide.entity.fileuri) : '' %}
+  {% set bannerImageNarrow = node.field_service_bg_narrow.entity.fileuri ? file_url(node.field_service_bg_narrow.entity.fileuri) : '' %}
   {# NOTE: At this time a service page node's design does not require the optional page-banner template #}
   {# values for "icon", "primaryLink", and "secondaryLink", so we don't set them. We may in the future. #}
-  {% include "@organisms/by-template/page-banner.twig" with {
+
+  {% set logInButtons = [] %}
+  {% if node.field_log_in_links is not empty %}
+    {% for item in node.field_log_in_links %}
+      {% set button = {
+          "href": item.uri,
+          "text": item.title,
+          "size": "small",
+          "usage": "primary",
+          "theme": "c-white",
+          "icon": "login"
+        }
+      %}
+      {% set logInButtons = logInButtons|merge([button]) %}
+    {% endfor %}
+  {% endif %}
+
+  {% include "@organisms/page-banner/page-banner.twig" with {
     "pageBanner": {
-      "size": "overlay",
+      "layout": bannerImageWide ? "overlay" : "",
       "color": "blue",
       "title": node.label,
       "titleSubText": content.field_title_sub_text,
       "description": content.field_service_lede,
       "bgWide": bannerImageWide,
       "bgNarrow": bannerImageNarrow,
+      "buttonsLabel": "LOG IN:",
+      "buttons": logInButtons
     }
   } %}
 {% endblock %}
+
 
 {# Increase heading number from the parent heading. #}
 {% set level = level + 1 %}
@@ -119,9 +142,6 @@
   {% if introSidebar.logo %}
     {% set image = introSidebar.logo %}
     {% include "@atoms/09-media/image.twig" %}
-  {% endif %}
-  {% if flexibleLinkGroup and node.field_log_in_links is not empty %}
-    {{ content.field_log_in_links }}
   {% endif %}
   {% if introSidebar.social %}
     {% set sidebarHeading = introSidebar.social.sidebarHeading %}

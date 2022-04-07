@@ -1,0 +1,68 @@
+uuid: 52531420-0969-4646-bcf0-ce77a9d4d8f6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.sitewide_alert_message.field_sitewide_alert_content
+    - field.field.paragraph.sitewide_alert_message.field_sitewide_alert_link
+    - field.field.paragraph.sitewide_alert_message.field_sitewide_alert_link_type
+    - field.field.paragraph.sitewide_alert_message.field_sitewide_alert_message
+    - field.field.paragraph.sitewide_alert_message.field_sitewide_alert_timestamp
+    - paragraphs.paragraphs_type.sitewide_alert_message
+  module:
+    - datetime
+    - link
+    - maxlength
+    - paragraphs
+id: paragraph.sitewide_alert_message.default
+targetEntityType: paragraph
+bundle: sitewide_alert_message
+mode: default
+content:
+  field_sitewide_alert_content:
+    type: entity_reference_paragraphs
+    weight: 4
+    region: content
+    settings:
+      title: 'Details content'
+      title_plural: 'Details content'
+      edit_mode: open
+      add_mode: button
+      form_display_mode: default
+      default_paragraph_type: _none
+    third_party_settings: {  }
+  field_sitewide_alert_link:
+    type: link_default
+    weight: 3
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_sitewide_alert_link_type:
+    type: options_buttons
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_sitewide_alert_message:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 80
+      placeholder: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: 255
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce_attribute: true
+  field_sitewide_alert_timestamp:
+    type: datetime_default
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

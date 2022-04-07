@@ -76,3 +76,23 @@ div.field--widget-entity-reference-paragraphs .description > strong {
 .field--widget-entity-reference-paragraphs .form-radios label {
   word-break: break-word;
 }
+table#field-org-ref-locations-values tr.draggable td.delta-order {
+ max-width: 6rem;
+}
+@media screen and (max-width: 1460px) {
+  table#field-org-ref-locations-values tr.draggable td + td {
+    display: block;
+    min-width: 20rem;
+  }
+  table#field-org-ref-locations-values tr.draggable td.delta-order {
+    display: block;
+    text-align: left;
+  }
+  table#field-org-ref-locations-values tr.draggable td + td > div.form-item {
+    padding-left: 0;
+  }
+}
+
+.paragraphs-add-wrapper input[type=submit] {
+  margin-bottom: 1rem;
+}

@@ -5,6 +5,7 @@
  * Contains mass_content.module.
  */
 
+use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -664,7 +665,225 @@ function mass_content_node_update(EntityInterface $node) {
  * Implements hook_field_widget_WIDGET_TYPE_form_alter().
  */
 function mass_content_field_widget_entity_reference_paragraphs_form_alter(&$element, &$form_state, $context) {
-  if ($element['#paragraph_type'] == 'organization_contact_logo') {
+  if (isset($element['#paragraph_type']) && $element['#paragraph_type'] == 'organization_contact_logo') {
     $element['#suffix'] = "<br/><span class='mass_content__custom-notice'>Contact is required and must be added on the “Title Banner” tab. Logo is optional and is defined on the “Overview” tab.</span>" . $element['#suffix'];
   }
+}
+
+/**
+ * Implements hook_entity_view_mode_alter().
+ */
+function mass_content_entity_view_mode_alter(&$view_mode, $entity, $context) {
+
+  // Display cards or compact cards depending on the settings.
+  if ($entity->getEntityTypeId() == 'paragraph' && $entity->bundle() == 'featured_topics' && $view_mode == 'default') {
+    if ($entity->hasField('field_topic_name_only') && $entity->field_topic_name_only->value == 1) {
+      $view_mode = 'card_compact';
+    }
+  }
+}
+
+/**
+ * Stores/retrieves the altered query for view collection_all_media.
+ */
+function mass_content_query_collection_media($query_arg = NULL) {
+  static $query;
+  $query = $query_arg ?? $query;
+  return $query;
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ */
+function mass_content_query_collection_all_media_alter(AlterableInterface $query) {
+  mass_content_query_collection_media(clone $query);
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ */
+function mass_content_query_collection_all_alter(AlterableInterface $query) {
+  /** @var Drupal\Core\Database\Query\Select $query */
+  // To identify later this result is from a node.
+  $query->addExpression('\'node\'', 'entity_type');
+
+  // Executes collection_all_media to then get its query.
+  views_get_view_result('collection_all_media', 'default');
+
+  /** @var Drupal\Core\Database\Query\Select $media_query */
+  $media_query = mass_content_query_collection_media();
+
+  // Avoids repeated results and syntax errors due to the removal of fields.
+  // This may leave if set on the view, but to ensure it we can set it here.
+  $media_query->distinct(TRUE);
+
+  // To identify later that records from this query are from media.
+  $media_query->addExpression('\'media\'', 'entity_type');
+  $media_query->range(NULL);
+
+  // Removing order by on union select, otherwise we will get a syntax error.
+  $order_by = &$media_query->getOrderBy();
+  $order_by = [];
+
+  // Adding fields.
+  // We must have the same number of columns for the UNION to work.
+  // Currently, we only care about the 2 last fields.
+  // Order of field/columns is important.
+  $fields = &$media_query->getFields();
+  $fields = [];
+  $media_query->addField('media_field_data', 'mid', 'not_used_1');
+  $media_query->addField('media_field_data', 'mid', 'not_used_2');
+
+  // Same alias from the node title to be able to sort nodes and media by title.
+  $media_query->addField('media__field_title', 'field_title_value', 'node_field_data_title');
+  // Last field, on the same column as NID, the alias doesn't matter here
+  // because it is a UNION, the second select doesn't define columns.
+  $media_query->addField('media_field_data', 'mid');
+
+  // Put together nodes and media on the same query.
+  $query->union($media_query);
+}
+
+/**
+ * Implements hook_views_data().
+ */
+function mass_content_views_data() {
+
+  $data = [];
+
+  $data['node']['rendered_entity_mixed'] = [
+    'field' => [
+      'title' => t('Rendered entity mixed'),
+      'help' => t('Renders an node/media in a view mode.'),
+      'id' => 'rendered_entity_mixed',
+    ],
+  ];
+
+  return $data;
+
+}
+
+/**
+ * Implements hook_entity_bundle_info_alter().
+ */
+function mass_content_entity_bundle_info_alter(array &$bundles): void {
+  if (isset($bundles['node']['action'])) {
+    $bundles['node']['action']['class'] = \Drupal\mass_content\Entity\Bundle\node\ActionBundle::class;
+  }
+  if (isset($bundles['node']['advisory'])) {
+    $bundles['node']['advisory']['class'] = \Drupal\mass_content\Entity\Bundle\node\AdvisoryBundle::class;
+  }
+  if (isset($bundles['node']['alert'])) {
+    $bundles['node']['alert']['class'] = \Drupal\mass_content\Entity\Bundle\node\AlertBundle::class;
+  }
+  if (isset($bundles['node']['binder'])) {
+    $bundles['node']['binder']['class'] = \Drupal\mass_content\Entity\Bundle\node\BinderBundle::class;
+  }
+  if (isset($bundles['node']['campaign_landing'])) {
+    $bundles['node']['campaign_landing']['class'] = \Drupal\mass_content\Entity\Bundle\node\CampaignLandingBundle::class;
+  }
+  if (isset($bundles['node']['contact_information'])) {
+    $bundles['node']['contact_information']['class'] = \Drupal\mass_content\Entity\Bundle\node\ContactInformationBundle::class;
+  }
+  if (isset($bundles['node']['curated_list'])) {
+    $bundles['node']['curated_list']['class'] = \Drupal\mass_content\Entity\Bundle\node\CuratedListBundle::class;
+  }
+  if (isset($bundles['node']['decision'])) {
+    $bundles['node']['decision']['class'] = \Drupal\mass_content\Entity\Bundle\node\DecisionBundle::class;
+  }
+  if (isset($bundles['node']['decision_tree'])) {
+    $bundles['node']['decision_tree']['class'] = \Drupal\mass_content\Entity\Bundle\node\DecisionTreeBundle::class;
+  }
+  if (isset($bundles['node']['decision_tree_branch'])) {
+    $bundles['node']['decision_tree_branch']['class'] = \Drupal\mass_content\Entity\Bundle\node\DecisionTreeBranchBundle::class;
+  }
+  if (isset($bundles['node']['decision_tree_conclusion'])) {
+    $bundles['node']['decision_tree_conclusion']['class'] = \Drupal\mass_content\Entity\Bundle\node\DecisionTreeConclusionBundle::class;
+  }
+  if (isset($bundles['node']['error_page'])) {
+    $bundles['node']['error_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\ErrorPageBundle::class;
+  }
+  if (isset($bundles['node']['event'])) {
+    $bundles['node']['event']['class'] = \Drupal\mass_content\Entity\Bundle\node\EventBundle::class;
+  }
+  if (isset($bundles['node']['executive_order'])) {
+    $bundles['node']['executive_order']['class'] = \Drupal\mass_content\Entity\Bundle\node\ExecutiveOrderBundle::class;
+  }
+  if (isset($bundles['node']['external_data_resource'])) {
+    $bundles['node']['external_data_resource']['class'] = \Drupal\mass_content\Entity\Bundle\node\ExternalDataResourceBundle::class;
+  }
+  if (isset($bundles['node']['fee'])) {
+    $bundles['node']['fee']['class'] = \Drupal\mass_content\Entity\Bundle\node\FeeBundle::class;
+  }
+  if (isset($bundles['node']['form_page'])) {
+    $bundles['node']['form_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\FormPageBundle::class;
+  }
+  if (isset($bundles['node']['guide_page'])) {
+    $bundles['node']['guide_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\GuidePageBundle::class;
+  }
+  if (isset($bundles['node']['how_to_page'])) {
+    $bundles['node']['how_to_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\HowToPageBundle::class;
+  }
+  if (isset($bundles['node']['info_details'])) {
+    $bundles['node']['info_details']['class'] = \Drupal\mass_content\Entity\Bundle\node\InfoDetailsBundle::class;
+  }
+  if (isset($bundles['node']['interstitial'])) {
+    $bundles['node']['interstitial']['class'] = \Drupal\mass_content\Entity\Bundle\node\InterstitialBundle::class;
+  }
+  if (isset($bundles['node']['location'])) {
+    $bundles['node']['location']['class'] = \Drupal\mass_content\Entity\Bundle\node\LocationBundle::class;
+  }
+  if (isset($bundles['node']['location_details'])) {
+    $bundles['node']['location_details']['class'] = \Drupal\mass_content\Entity\Bundle\node\LocationDetailsBundle::class;
+  }
+  if (isset($bundles['node']['news'])) {
+    $bundles['node']['news']['class'] = \Drupal\mass_content\Entity\Bundle\node\NewsBundle::class;
+  }
+  if (isset($bundles['node']['org_page'])) {
+    $bundles['node']['org_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\OrgPageBundle::class;
+  }
+  if (isset($bundles['node']['page'])) {
+    $bundles['node']['page']['class'] = \Drupal\mass_content\Entity\Bundle\node\PageBundle::class;
+  }
+  if (isset($bundles['node']['person'])) {
+    $bundles['node']['person']['class'] = \Drupal\mass_content\Entity\Bundle\node\PersonBundle::class;
+  }
+  if (isset($bundles['node']['regulation'])) {
+    $bundles['node']['regulation']['class'] = \Drupal\mass_content\Entity\Bundle\node\RegulationBundle::class;
+  }
+  if (isset($bundles['node']['rules'])) {
+    $bundles['node']['rules']['class'] = \Drupal\mass_content\Entity\Bundle\node\RulesBundle::class;
+  }
+  if (isset($bundles['node']['service_details'])) {
+    $bundles['node']['service_details']['class'] = \Drupal\mass_content\Entity\Bundle\node\ServiceDetailsBundle::class;
+  }
+  if (isset($bundles['node']['service_page'])) {
+    $bundles['node']['service_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\ServicePageBundle::class;
+  }
+  if (isset($bundles['node']['sitewide_alert'])) {
+    $bundles['node']['sitewide_alert']['class'] = \Drupal\mass_content\Entity\Bundle\node\SitewideAlertBundle::class;
+  }
+  if (isset($bundles['node']['stacked_layout'])) {
+    $bundles['node']['stacked_layout']['class'] = \Drupal\mass_content\Entity\Bundle\node\StackedLayoutBundle::class;
+  }
+  if (isset($bundles['node']['topic_page'])) {
+    $bundles['node']['topic_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\TopicPageBundle::class;
+  }
+  if (isset($bundles['node']['utility_drawer'])) {
+    $bundles['node']['utility_drawer']['class'] = \Drupal\mass_content\Entity\Bundle\node\UtilityDrawerBundle::class;
+  }
+
+  // Media
+  if (isset($bundles['media']['document'])) {
+    $bundles['media']['document']['class'] = \Drupal\mass_content\Entity\Bundle\media\DocumentBundle::class;
+  }
+  if (isset($bundles['media']['media_video'])) {
+    $bundles['media']['media_video']['class'] = \Drupal\mass_content\Entity\Bundle\media\MediaVideoBundle::class;
+  }
+
+  // User
+  if (isset($bundles['user']['user'])) {
+    $bundles['user']['user']['class'] = \Drupal\mass_content\Entity\Bundle\user\UserBundle::class;
+  }
+
 }

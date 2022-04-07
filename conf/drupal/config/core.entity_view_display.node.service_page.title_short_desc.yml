@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.title_short_desc
+    - field.field.node.service_page.field_collections
     - field.field.node.service_page.field_data_flag
     - field.field.node.service_page.field_data_format
     - field.field.node.service_page.field_data_resource_type
@@ -25,6 +26,7 @@ dependencies:
     - field.field.node.service_page.field_location_button_short_desc
     - field.field.node.service_page.field_log_in_links
     - field.field.node.service_page.field_organizations
+    - field.field.node.service_page.field_primary_parent
     - field.field.node.service_page.field_ref_contact_info
     - field.field.node.service_page.field_related_organization_type
     - field.field.node.service_page.field_reusable_label
@@ -46,6 +48,7 @@ dependencies:
     - field.field.node.service_page.field_service_ref_services_6
     - field.field.node.service_page.field_service_video
     - field.field.node.service_page.field_services_social_links
+    - field.field.node.service_page.field_short_title
     - field.field.node.service_page.field_state_organization_tax
     - field.field.node.service_page.field_template
     - node.type.service_page
@@ -57,22 +60,23 @@ bundle: service_page
 mode: title_short_desc
 content:
   extra_node_all_actions:
-    weight: 1
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
   field_service_lede:
-    weight: 0
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
     region: content
 hidden:
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
+  field_collections: true
   field_data_flag: true
   field_data_format: true
   field_data_resource_type: true
@@ -94,6 +98,7 @@ hidden:
   field_location_button_short_desc: true
   field_log_in_links: true
   field_organizations: true
+  field_primary_parent: true
   field_ref_contact_info: true
   field_related_organization_type: true
   field_reusable_label: true
@@ -115,6 +120,7 @@ hidden:
   field_service_sub_brand: true
   field_service_video: true
   field_services_social_links: true
+  field_short_title: true
   field_state_organization_tax: true
   field_template: true
   langcode: true

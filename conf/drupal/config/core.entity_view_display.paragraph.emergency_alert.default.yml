@@ -7,10 +7,8 @@ dependencies:
     - field.field.paragraph.emergency_alert.field_emergency_alert_link
     - field.field.paragraph.emergency_alert.field_emergency_alert_link_type
     - field.field.paragraph.emergency_alert.field_emergency_alert_message
-    - field.field.paragraph.emergency_alert.field_emergency_alert_timestamp
     - paragraphs.paragraphs_type.emergency_alert
   module:
-    - datetime
     - entity_reference_revisions
     - link
     - options
@@ -21,15 +19,15 @@ mode: default
 content:
   field_emergency_alert_content:
     type: entity_reference_revisions_entity_view
-    weight: 3
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 3
     region: content
   field_emergency_alert_link:
-    weight: 2
+    type: link
     label: hidden
     settings:
       trim_length: 80
@@ -38,32 +36,24 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 2
     region: content
   field_emergency_alert_link_type:
-    weight: 4
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 4
     region: content
   field_emergency_alert_message:
-    weight: 0
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
-    region: content
-  field_emergency_alert_timestamp:
-    weight: 1
-    label: hidden
-    settings:
-      timezone_override: ''
-      date_format: 'M. jS, Y, g:i a'
-    third_party_settings: {  }
-    type: datetime_custom
+    weight: 0
     region: content
 hidden:
   created: true
+  field_emergency_alert_timestamp: true
   uid: true

@@ -1,0 +1,34 @@
+uuid: 6b889a56-05d0-4230-bee7-f49ec15eb65c
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.paragraph.card_compact
+    - field.field.paragraph.featured_topics.field_featured_topics_topics
+    - field.field.paragraph.featured_topics.field_topic_name_only
+    - paragraphs.paragraphs_type.featured_topics
+id: paragraph.featured_topics.card_compact
+targetEntityType: paragraph
+bundle: featured_topics
+mode: card_compact
+content:
+  field_featured_topics_topics:
+    type: entity_reference_entity_view
+    label: hidden
+    settings:
+      view_mode: card_compact
+      link: false
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_topic_name_only:
+    type: boolean
+    label: hidden
+    settings:
+      format: true-false
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }

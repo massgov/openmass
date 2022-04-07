@@ -4,8 +4,11 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
+    - field.field.node.regulation.field_collections
+    - field.field.node.regulation.field_date_published
     - field.field.node.regulation.field_intended_audience
     - field.field.node.regulation.field_organizations
+    - field.field.node.regulation.field_primary_parent
     - field.field.node.regulation.field_regluation_official_ver
     - field.field.node.regulation.field_regulation_agency_cmr
     - field.field.node.regulation.field_regulation_cmr_chapter
@@ -22,6 +25,7 @@ dependencies:
     - field.field.node.regulation.field_regulation_short_descr
     - field.field.node.regulation.field_regulation_title
     - field.field.node.regulation.field_reusable_label
+    - field.field.node.regulation.field_short_title
     - field.field.node.regulation.field_state_organization_tax
     - node.type.regulation
   module:
@@ -32,22 +36,25 @@ bundle: regulation
 mode: teaser
 content:
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_related_to: true
   content_moderation_control: true
   extra_node_pager: true
   extra_org_feedback_form: true
+  field_collections: true
+  field_date_published: true
   field_intended_audience: true
   field_organizations: true
+  field_primary_parent: true
   field_regluation_official_ver: true
   field_regulation_agency_cmr: true
   field_regulation_cmr_chapter: true
@@ -67,6 +74,7 @@ hidden:
   field_regulation_upcoming_events: true
   field_regulations_metatags: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true
   page_next: true

@@ -1,7 +1,23 @@
 uuid: 720d7adb-2526-46f7-a7b8-97961657ddd4
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - node.type.alert
+    - node.type.sitewide_alert
+    - workflows.workflow.editorial
+  module:
+    - access_unpublished
+    - content_moderation
+    - dropzonejs
+    - entity_browser
+    - node
+    - path
+    - quick_node_clone
+    - scheduled_transitions
+    - system
+    - tfa
+    - toolbar
 id: emergency_alert_publisher
 label: 'Emergency Alert Publisher'
 weight: -6
@@ -10,27 +26,23 @@ permissions:
   - 'access browse_files entity browser pages'
   - 'access browse_files_modal entity browser pages'
   - 'access content overview'
-  - 'access contextual links'
-  - 'access files overview'
-  - 'access in-place editing'
   - 'access site in maintenance mode'
   - 'access toolbar'
+  - 'access_unpublished node sitewide_alert'
+  - 'add scheduled transitions node sitewide_alert'
+  - 'clone alert content'
+  - 'clone sitewide_alert content'
   - 'create alert content'
-  - 'create emergency_alerts content'
-  - 'create site wide alerts'
+  - 'create sitewide_alert content'
   - 'create url aliases'
   - 'dropzone upload files'
   - 'edit any alert content'
-  - 'edit any emergency_alerts content'
+  - 'edit any sitewide_alert content'
   - 'edit own alert content'
-  - 'edit own emergency_alerts content'
-  - 'require tfa'
+  - 'edit own sitewide_alert content'
   - 'revert alert revisions'
-  - 'revert all revisions'
-  - 'revert emergency_alerts revisions'
-  - 'schedule publishing of nodes'
+  - 'revert sitewide_alert revisions'
   - 'setup own tfa'
-  - 'switch shortcut sets'
   - 'use editorial transition move_to_trash'
   - 'use editorial transition needs_review'
   - 'use editorial transition prepublished_draft'
@@ -39,10 +51,7 @@ permissions:
   - 'use editorial transition to_draft'
   - 'use editorial transition unpublish'
   - 'view alert revisions'
-  - 'view all revisions'
-  - 'view emergency_alerts revisions'
   - 'view latest version'
-  - 'view moderation states'
   - 'view own unpublished content'
-  - 'view scheduled content'
+  - 'view sitewide_alert revisions'
   - 'view the administration theme'

@@ -9,28 +9,26 @@ use Drupal\block\Entity\Block;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Html;
-use Drupal\Component\Utility\Unicode;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
+use Drupal\mass_content\EventsRendererOrgPages;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Atoms;
 use Drupal\mayflower\Prepare\Molecules;
 use Drupal\mayflower\Prepare\Organisms;
 use Drupal\mayflower\Prepare\Schemas;
-use Drupal\media\MediaInterface;
 use Drupal\mass_utility\RelatedToHelper;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\DomCrawler\Crawler;
+use Drupal\schema_metatag\SchemaMetatagManager;
 
 /**
  * Implements hook_theme_suggestions_alter().
@@ -514,11 +512,7 @@ function mass_theme_preprocess_node_form_page(&$variables) {
     $sideContent = [];
 
     if (Helper::isFieldPopulated($node, 'field_form_you_will')) {
-      $formRequirements = [
-        'rteTitle' => [
-          'text' => t('You will need:'),
-        ],
-      ];
+      $formRequirements = [];
       // Set up rich text elements for what you need.
       $youWillNeed['rteElements'] = [
         Atoms::prepareTextField($node, 'field_form_you_will'),
@@ -634,7 +628,7 @@ function mass_theme_preprocess_node_org_page(&$variables) {
       $node->field_banner_image->count() === 0) {
       // Set static pageBanner properties to pass to prepare function.
       $pageBanner_options = [
-        "size" => "large",
+        "layout" => "taper",
         "icon" => NULL,
       ];
 
@@ -665,488 +659,650 @@ function mass_theme_preprocess_node_org_page(&$variables) {
  */
 function mass_theme_preprocess_node_location(&$variables) {
   $node = $variables['node'];
-  $cache_tags = [];
 
-  // Get the page title for title context.
-  $page_title = $node->getTitle();
+  if ($variables['elements']['#view_mode'] == 'full') {
+    $cache_tags = [];
 
-  if (Helper::isFieldPopulated($node, 'field_location_type')) {
-    $locationType = $node->field_location_type->value;
-  }
-  else {
-    $locationType = 'general';
-  }
+    // Get the page title for title context.
+    $page_title = $node->getTitle();
 
-  // We need a different Google map config for PL tpls.
-  // $variables['#attached']['library'][] = 'mass_theme/mass-google-map-apis-location';.
-  // Set static actionHeader properties to pass to prepare function.
-  $pageHeader_options = [
-    'divider' => FALSE,
-  ];
+    if (Helper::isFieldPopulated($node, 'field_location_type')) {
+      $locationType = $node->field_location_type->value;
+    }
+    else {
+      $locationType = 'general';
+    }
 
-  // Prepare optional content to pass to pageHeader.
-  $optionalContents = [];
-
-  // Build contact us optional contents.
-  if (Helper::isFieldPopulated($node, 'field_ref_contact_info_1')) {
-    $optionalContents = array_merge($optionalContents, Helper::buildPageHeaderOptionalContentsContactUs($node, 'field_ref_contact_info_1', [], $cache_tags));
-  }
-
-  // If recommended quick actions field is populated, add to optional content.
-  if (Helper::isFieldPopulated($node, 'field_links')) {
-    $optionalContents[] = [
-      'path' => '@organisms/by-author/key-actions.twig',
-      'data' => [
-        'keyActions' => Molecules::prepareKeyActions($node, 'field_links'),
-      ],
+    // We need a different Google map config for PL tpls.
+    // $variables['#attached']['library'][] = 'mass_theme/mass-google-map-apis-location';.
+    // Set static actionHeader properties to pass to prepare function.
+    $pageHeader_options = [
+      'divider' => FALSE,
     ];
-  }
 
-  // Send optional contents as a pageHeader option.
-  $pageHeader_options['optionalContents'] = $optionalContents;
+    // Prepare optional content to pass to pageHeader.
+    $optionalContents = [];
 
-  // Prepare widgets that can be passed to the pageHeader.
-  $widgets = [];
-  if (!$node->field_location_icons->isEmpty() || !$node->field_location_icons_park->isEmpty()) {
-    $widgets[] = [
-      'path' => '@molecules/location-icons.twig',
-      'data' => [
-        'locationIcons' => [
-          'icons' => Molecules::prepareLocationIcons($node),
+    // Build contact us optional contents.
+    if (Helper::isFieldPopulated($node, 'field_ref_contact_info_1')) {
+      $optionalContents = array_merge($optionalContents, Helper::buildPageHeaderOptionalContentsContactUs($node, 'field_ref_contact_info_1', [], $cache_tags));
+    }
+
+    // If recommended quick actions field is populated, add to optional content.
+    if (Helper::isFieldPopulated($node, 'field_links')) {
+      $optionalContents[] = [
+        'path' => '@organisms/by-author/key-actions.twig',
+        'data' => [
+          'keyActions' => Molecules::prepareKeyActions($node, 'field_links'),
         ],
-      ],
-    ];
-  }
-  // iFrames.
-  if ($node->field_iframe->entity) {
-    $widgets[] = [
-      'path' => '@atoms/11-text/raw-html.twig',
-      'data' => [
-        'rawHtml' => [
-          'content' => '<iframe src="' . $node->field_iframe->entity->field_url->uri . '" height="' . $node->field_iframe->entity->field_height->value . '" style="width:100%;"></iframe>',
+      ];
+    }
+
+    // Send optional contents as a pageHeader option.
+    $pageHeader_options['optionalContents'] = $optionalContents;
+
+    // Prepare widgets that can be passed to the pageHeader.
+    $widgets = [];
+    if (!$node->field_location_icons->isEmpty() || !$node->field_location_icons_park->isEmpty()) {
+      $widgets[] = [
+        'path' => '@molecules/location-icons.twig',
+        'data' => [
+          'locationIcons' => [
+            'icons' => Molecules::prepareLocationIcons($node),
+          ],
         ],
-      ],
-    ];
-  }
+      ];
+    }
+    // iFrames.
+    if ($node->field_iframe->entity) {
+      $widgets[] = [
+        'path' => '@atoms/11-text/raw-html.twig',
+        'data' => [
+          'rawHtml' => [
+            'content' => '<iframe src="' . $node->field_iframe->entity->field_url->uri . '" height="' . $node->field_iframe->entity->field_height->value . '" style="width:100%;"></iframe>',
+          ],
+        ],
+      ];
+    }
 
-  // Send widgets as pageHeader option.
-  $pageHeader_options['widgets'] = $widgets;
+    // Send widgets as pageHeader option.
+    $pageHeader_options['widgets'] = $widgets;
 
-  // Prepare the actionHeader data object.
-  $variables['pageHeader'] = Organisms::preparePageHeader($node, $pageHeader_options);
+    // Prepare the actionHeader data object.
+    $variables['pageHeader'] = Organisms::preparePageHeader($node, $pageHeader_options);
 
-  // Prepare the locationBanner data object.
-  $variables['locationBanner'] = Organisms::prepareLocationBanner($node, [], $cache_tags);
+    // Prepare the locationBanner data object.
+    $variables['locationBanner'] = Organisms::prepareLocationBanner($node, [], $cache_tags);
 
-  // Set up pageContent for details section.
-  $pageContent = [];
+    // Set up pageContent for details section.
+    $pageContent = [];
 
-  // Set static details properties.
-  $titleContext = t(' of @title', ['@title' => $page_title]);
-  $variables['details'] = [
-    'titleContext' => $titleContext,
-  ];
-
-  // Set up Sticky Nav with entries corresponding used to details sections.
-  $stickyNav = [];
-
-  // Build what you need section, if that field is populated.
-  if (Helper::isFieldPopulated($node, 'field_overview')) {
+    // Set static details properties.
     $titleContext = t(' of @title', ['@title' => $page_title]);
-    // Set up rich text elements for what you need.
-    $richTextElements = [
-      'richText' => [
-        'rteElements' => [Atoms::prepareTextField($node, 'field_overview')],
-      ],
-    ];
-
-    // Set up section title for heading, sticky nav.
-    $overview_title = t('Overview');
-
-    // Set up heading for what you need.
-    $compHeading_options = [
-      'title' => $overview_title,
+    $variables['details'] = [
       'titleContext' => $titleContext,
-      'sub' => TRUE,
     ];
 
-    $compHeading = Atoms::prepareCompHeading($compHeading_options);
+    // Set up Sticky Nav with entries corresponding used to details sections.
+    $stickyNav = [];
 
-    $pageContent['pageOverview'] = array_merge($compHeading, $richTextElements);
+    // Build what you need section, if that field is populated.
+    if (Helper::isFieldPopulated($node, 'field_overview')) {
+      $titleContext = t(' of @title', ['@title' => $page_title]);
+      // Set up rich text elements for what you need.
+      $richTextElements = [
+        'richText' => [
+          'rteElements' => [Atoms::prepareTextField($node, 'field_overview')],
+        ],
+      ];
 
-    // Set up corresponding sticky nav entry for what you need.
-    $stickyNav[] = $overview_title;
+      // Set up section title for heading, sticky nav.
+      $overview_title = t('Overview');
 
-  }
+      // Set up heading for what you need.
+      $compHeading_options = [
+        'title' => $overview_title,
+        'titleContext' => $titleContext,
+        'sub' => TRUE,
+      ];
 
-  if (Helper::isFieldPopulated($node, 'field_ref_contact_info_1')) {
-    // Cache tags are already gathered earlier.
-    $contact_entities[] = Helper::getReferencedEntitiesFromField($node, 'field_ref_contact_info_1');
+      $compHeading = Atoms::prepareCompHeading($compHeading_options);
 
-    foreach ($contact_entities as $contact) {
+      $pageContent['pageOverview'] = array_merge($compHeading, $richTextElements);
+
+      // Set up corresponding sticky nav entry for what you need.
+      $stickyNav[] = $overview_title;
+
+    }
+
+    if (Helper::isFieldPopulated($node, 'field_ref_contact_info_1')) {
+      // Cache tags are already gathered earlier.
+      $contact_entities[] = Helper::getReferencedEntitiesFromField($node, 'field_ref_contact_info_1');
+
+      foreach ($contact_entities as $contact) {
+        $titleContext = t(' for @title', ['@title' => $page_title]);
+        $contact_entity = $contact[0];
+        // Don't know why this map isn't working.
+        // $contact_fields = Helper::getMappedFields($contact_entity, $contact_map)
+        $hours_content[] = Helper::buildHours($contact_entity->field_ref_hours, 'Hours', $titleContext);
+      }
+
+      $richTextElements = [
+        'rteElements' => $hours_content,
+      ];
+
+      // Set up section title for heading, sticky nav.
+      $hours_title = t('Hours');
+      // Set up heading for what you need.
+      $compHeading_options = [
+        'title' => $hours_title,
+        'titleContext' => $titleContext,
+        'sub' => TRUE,
+      ];
+
+      $compHeading = Atoms::prepareCompHeading($compHeading_options);
+
+      $pageContent['pageHours'] = array_merge($compHeading, $richTextElements);
+
+      // Set up corresponding sticky nav entry for what you need.
+      $stickyNav[] = $hours_title;
+    }
+
+    if (Helper::isFieldPopulated($node, 'field_parking')) {
+      $titleContext = t(' at @title', ['@title' => $page_title]);
+      // Set up rich text elements for what you need.
+      $richTextElements = [
+        'rteElements' => [
+          Atoms::prepareTextField($node, 'field_parking'),
+        ],
+      ];
+
+      // Set up section title for heading, sticky nav.
+      $parking_title = t('Parking');
+
+      // Set up heading for what you need.
+      $compHeading_options = [
+        'title' => $parking_title,
+        'titleContext' => $titleContext,
+        'sub' => TRUE,
+      ];
+
+      $compHeading = Atoms::prepareCompHeading($compHeading_options);
+
+      $pageContent['pageParking'] = array_merge($compHeading, $richTextElements);
+
+      // Set up corresponding sticky nav entry for what you need.
+      $stickyNav[] = $parking_title;
+    }
+
+    if (Helper::isFieldPopulated($node, 'field_location_activity_detail') && $locationType == 'park') {
+      $titleContext = t(' at @title', ['@title' => $page_title]);
+      $imagePromos = Organisms::prepareImagePromos($node->field_location_activity_detail);
+
+      // Set up section title for heading, sticky nav.
+      $activities_title = t('Activities');
+
+      // Set up heading for what you need.
+      $compHeading_options = [
+        'title' => $activities_title,
+        'titleContext' => $titleContext,
+        'sub' => TRUE,
+      ];
+
+      $compHeading = Atoms::prepareCompHeading($compHeading_options);
+
+      $pageContent['pageActivities'] = array_merge($compHeading, $imagePromos);
+
+      // Set up corresponding sticky nav entry for what you need.
+      $stickyNav[] = $activities_title;
+    }
+
+    if (Helper::isFieldPopulated($node, 'field_location_all_activities') && $locationType == 'park') {
+      $titleContext = t(' at @title', ['@title' => $page_title]);
+      // Roll up taxo terms into unordered list.
+      $activities = [];
+      foreach ($node->field_location_all_activities as $activity) {
+        $activities[] = Helper::fieldValue($activity->entity, 'name');
+      }
+
+      // Set up rich text elements for what you need.
+      $richTextElements = [
+        'rteElements' => [
+          [
+            'path' => '@atoms/11-text/raw-html.twig',
+            'data' => [
+              'rawHtml' => [
+                'content' => [
+                  '#theme' => 'item_list',
+                  '#items' => $activities,
+                ],
+              ],
+            ],
+          ],
+        ],
+      ];
+
+      // Set up section title for heading, sticky nav.
+      $allActivities_title = t('All Activities');
+
+      // Set up heading for what you need.
+      $compHeading_options = [
+        'title' => $allActivities_title,
+        'titleContext' => $titleContext,
+        'sub' => TRUE,
+      ];
+
+      $compHeading = Atoms::prepareCompHeading($compHeading_options);
+
+      $pageContent['pageAllActivities'] = array_merge($compHeading, $richTextElements);
+
+      // Set up corresponding sticky nav entry for what you need.
+      $stickyNav[] = $allActivities_title;
+    }
+
+    if (Helper::isFieldPopulated($node, 'field_location_facilities')) {
+      $titleContext = t(' at @title', ['@title' => $page_title]);
+      // Set up rich text elements for what you need.
+      $richTextElements = [
+        'rteElements' => [
+          Atoms::prepareTextField($node, 'field_location_facilities'),
+        ],
+      ];
+
+      // Set up section title for heading, sticky nav.
+      $facilities_title = t('Facilities');
+
+      // Set up heading for what you need.
+      $compHeading_options = [
+        'title' => $facilities_title,
+        'titleContext' => $titleContext,
+        'sub' => TRUE,
+      ];
+
+      $compHeading = Atoms::prepareCompHeading($compHeading_options);
+
+      $pageContent['pageFacilities'] = array_merge($compHeading, $richTextElements);
+
+      // Set up corresponding sticky nav entry for what you need.
+      $stickyNav[] = $facilities_title;
+
+    }
+
+    if (Helper::isFieldPopulated($node, 'field_services')) {
+      $titleContext = t(' at @title', ['@title' => $page_title]);
+      // Set up rich text elements for what you need.
+      $richTextElements = [
+        'rteElements' => [
+          Atoms::prepareTextField($node, 'field_services'),
+        ],
+      ];
+
+      // Set up section title for heading, sticky nav.
+      $services_title = t('Services');
+
+      // Set up heading for what you need.
+      $compHeading_options = [
+        'title' => $services_title,
+        'titleContext' => $titleContext,
+        'sub' => TRUE,
+      ];
+
+      $compHeading = Atoms::prepareCompHeading($compHeading_options);
+
+      $pageContent['pageServices'] = array_merge($compHeading, $richTextElements);
+
+      // Set up corresponding sticky nav entry for what you need.
+      $stickyNav[] = $services_title;
+    }
+
+    if (Helper::isFieldPopulated($node, 'field_accessibility')) {
+      $titleContext = t(' at @title', ['@title' => $page_title]);
+      // Set up rich text elements for what you need.
+      $richTextElements = [
+        'rteElements' => [
+          Atoms::prepareTextField($node, 'field_accessibility'),
+        ],
+      ];
+
+      // Set up section title for heading, sticky nav.
+      $accessibility_title = t('Accessibility');
+
+      // Set up heading for what you need.
+      $compHeading_options = [
+        'title' => $accessibility_title,
+        'titleContext' => $titleContext,
+        'sub' => TRUE,
+      ];
+
+      $compHeading = Atoms::prepareCompHeading($compHeading_options);
+
+      $pageContent['pageAccessibility'] = array_merge($compHeading, $richTextElements);
+
+      // Set up corresponding sticky nav entry for what you need.
+      $stickyNav[] = $accessibility_title;
+    }
+
+    if (Helper::isFieldPopulated($node, 'field_restrictions')) {
+      $titleContext = t(' at @title', ['@title' => $page_title]);
+      // Set up rich text elements for what you need.
+      $richTextElements = [
+        'rteElements' => [
+          Atoms::prepareTextField($node, 'field_restrictions'),
+        ],
+      ];
+
+      // Set up section title for heading, sticky nav.
+      $restrictions_title = t('Restrictions');
+
+      // Set up heading for what you need.
+      $compHeading_options = [
+        'title' => $restrictions_title,
+        'titleContext' => $titleContext,
+        'sub' => TRUE,
+      ];
+
+      $compHeading = Atoms::prepareCompHeading($compHeading_options);
+
+      $pageContent['pageRestrictions'] = array_merge($compHeading, $richTextElements);
+
+      // Set up corresponding sticky nav entry for what you need.
+      $stickyNav[] = $restrictions_title;
+    }
+
+    if (Helper::isFieldPopulated($node, 'field_location_more_information')) {
       $titleContext = t(' for @title', ['@title' => $page_title]);
-      $contact_entity = $contact[0];
-      // Don't know why this map isn't working.
-      // $contact_fields = Helper::getMappedFields($contact_entity, $contact_map)
-      $hours_content[] = Helper::buildHours($contact_entity->field_ref_hours, 'Hours', $titleContext);
+      // Set up rich text elements for what you need.
+      $richTextElements = [
+        'rteElements' => [
+          Atoms::prepareTextField($node, 'field_location_more_information'),
+        ],
+      ];
+
+      // Set up section title for heading, sticky nav.
+      $moreInfo_title = t('More info');
+
+      // Set up heading for what you need.
+      $compHeading_options = [
+        'title' => $moreInfo_title,
+        'titleContext' => $titleContext,
+        'sub' => TRUE,
+      ];
+
+      $compHeading = Atoms::prepareCompHeading($compHeading_options);
+
+      $pageContent['pageMoreInfo'] = array_merge($compHeading, $richTextElements);
+
+      // Set up corresponding sticky nav entry for what you need.
+      $stickyNav[] = $moreInfo_title;
     }
 
-    $richTextElements = [
-      'rteElements' => $hours_content,
+    $more_list = [];
+    $links = [];
+    $nearby = FALSE;
+
+    if (Helper::isFieldPopulated($node, 'computed_related_locations')) {
+      $more_locations = $node->computed_related_locations->getValue();
+
+      foreach ($more_locations as $location) {
+        $more_node = Node::load($location['target_id']);
+        if ($more_node->hasField('field_related_organization_type')) {
+          $nearby = $nearby || $more_node->field_related_organization_type->value;
+        }
+        $links[] = [
+          'href' => Url::fromRoute('mass_map.map_page', ['node' => $more_node->id()]),
+          'text' => $more_node->label() . ' Locations',
+        ];
+      }
+    }
+
+    $titleContext = t(' for @title', ['@title' => $page_title]);
+    $related_prefix = $nearby ? t('Nearby') : t('Related');
+    $related_title = $locationType == 'park' ? t('@prefix parks', ['@prefix' => $related_prefix]) : t('@prefix locations', ['@prefix' => $related_prefix]);
+
+    $suggested_options = [
+      'title' => $related_title,
+      'titleContext' => $titleContext,
+      'style' => 'suggested_pages_230x130',
+      'maxItems' => 3,
     ];
 
-    // Set up section title for heading, sticky nav.
-    $hours_title = t('Hours');
-    // Set up heading for what you need.
+    $suggestedPages = Organisms::prepareSuggestedPages($node, $suggested_options, $cache_tags);
+
     $compHeading_options = [
-      'title' => $hours_title,
+      'title' => $related_title,
       'titleContext' => $titleContext,
       'sub' => TRUE,
     ];
 
     $compHeading = Atoms::prepareCompHeading($compHeading_options);
 
-    $pageContent['pageHours'] = array_merge($compHeading, $richTextElements);
+    if (!empty($suggestedPages)) {
+      $suggestedPages = array_merge($compHeading, $suggestedPages);
+      // Set up corresponding sticky nav entry for what you need.
+      $stickyNav[] = $related_title;
+    }
 
-    // Set up corresponding sticky nav entry for what you need.
-    $stickyNav[] = $hours_title;
-  }
+    $link_list = [];
 
-  if (Helper::isFieldPopulated($node, 'field_parking')) {
-    $titleContext = t(' at @title', ['@title' => $page_title]);
-    // Set up rich text elements for what you need.
-    $richTextElements = [
-      'rteElements' => [
-        Atoms::prepareTextField($node, 'field_parking'),
+    if (!empty($links)) {
+      $titleContext = t(' for @title', ['@title' => $page_title]);
+      $more_title = $locationType == 'park' ? t('More parks') : t('More locations');
+
+      // Set up heading for what you need.
+      $compHeading_options = [
+        'title' => $more_title,
+        'titleContext' => $titleContext,
+        'sub' => TRUE,
+      ];
+
+      $compHeading = Atoms::prepareCompHeading($compHeading_options);
+
+      $link_list = [
+        'links' => $links,
+      ];
+
+      if (empty($suggestedPages)) {
+        $more_list = array_merge($compHeading_options, ['moreLinks' => $link_list]);
+      }
+      else {
+        $link_list = array_merge($compHeading, $link_list);
+        $more_list = ['moreLinks' => $link_list];
+      }
+    }
+
+    $variables['suggestedPages'] = array_merge($suggestedPages, $more_list);
+
+    // Build the sticky nav based on the array of titles.
+    if (!empty($stickyNav)) {
+      $titleContext = $page_title;
+      $variables['stickyNav'] = Molecules::prepareStickyNav($stickyNav, $titleContext);
+    }
+
+    // Prepare the sidebarContacts object.
+    $titleContext = t(' for @title', ['@title' => $page_title]);
+    $sidebarContacts_options = [
+      'heading' => [
+        'type' => 'coloredHeading',
+        'title' => t('Contacts'),
+        'titleContext' => $titleContext,
       ],
+      'display_title' => TRUE,
+      'link_title' => FALSE,
+      'level' => 2,
     ];
 
-    // Set up section title for heading, sticky nav.
-    $parking_title = t('Parking');
+    $variables['pageContent'] = $pageContent;
 
-    // Set up heading for what you need.
-    $compHeading_options = [
-      'title' => $parking_title,
-      'titleContext' => $titleContext,
-      'sub' => TRUE,
-    ];
+    // Prepare the sidebarContact data object.
+    $variables['sidebarContact'] = Organisms::prepareSidebarContact($node, $sidebarContacts_options, $cache_tags);
 
-    $compHeading = Atoms::prepareCompHeading($compHeading_options);
+    $variables['eventListing'] = Organisms::prepareSidebarEvents($node, ['more_link_text' => t('See all events')], [], $cache_tags);
 
-    $pageContent['pageParking'] = array_merge($compHeading, $richTextElements);
-
-    // Set up corresponding sticky nav entry for what you need.
-    $stickyNav[] = $parking_title;
+    if (!empty($cache_tags)) {
+      // Merge arrays of existing and new cache tags and removes duplicates.
+      $merged_tags = Cache::mergeTags($node->getCacheTags(), $cache_tags);
+      // Add the cache tags to the render array.
+      $variables['#cache']['tags'] = $merged_tags;
+    }
   }
 
-  if (Helper::isFieldPopulated($node, 'field_location_activity_detail') && $locationType == 'park') {
-    $titleContext = t(' at @title', ['@title' => $page_title]);
-    $imagePromos = Organisms::prepareImagePromos($node->field_location_activity_detail);
+  if ($variables['elements']['#view_mode'] == 'teaser') {
 
-    // Set up section title for heading, sticky nav.
-    $activities_title = t('Activities');
+    $contacts = [];
 
-    // Set up heading for what you need.
-    $compHeading_options = [
-      'title' => $activities_title,
-      'titleContext' => $titleContext,
-      'sub' => TRUE,
-    ];
-
-    $compHeading = Atoms::prepareCompHeading($compHeading_options);
-
-    $pageContent['pageActivities'] = array_merge($compHeading, $imagePromos);
-
-    // Set up corresponding sticky nav entry for what you need.
-    $stickyNav[] = $activities_title;
-  }
-
-  if (Helper::isFieldPopulated($node, 'field_location_all_activities') && $locationType == 'park') {
-    $titleContext = t(' at @title', ['@title' => $page_title]);
-    // Roll up taxo terms into unordered list.
-    $activities = [];
-    foreach ($node->field_location_all_activities as $activity) {
-      $activities[] = Helper::fieldValue($activity->entity, 'name');
+    if (!empty($node->field_ref_contact_info_1)) {
+      foreach ($node->field_ref_contact_info_1 as $entity) {
+        $n = Node::load($entity->target_id);
+        $address = '';
+        if (!empty($n->field_ref_address->entity->field_address_address)) {
+          $addressEntity = $n->field_ref_address->entity->field_address_address;
+          $address = !empty($addressEntity[0]->address_line1) ? $addressEntity[0]->address_line1 . ', ' : '';
+          $address .= !empty($addressEntity[0]->address_line2) ? $addressEntity[0]->address_line2 . ', ' : '';
+          $address .= !empty($addressEntity[0]->locality) ? $addressEntity[0]->locality : '';
+          $address .= !empty($addressEntity[0]->administrative_area) ? ', ' . $addressEntity[0]->administrative_area : '';
+          $address .= !empty($addressEntity[0]->postal_code) ? ' ' . $addressEntity[0]->postal_code : '';
+        }
+        $phone = $n->field_ref_phone_number->entity;
+        $fax = $n->field_ref_fax_number->entity;
+        $links = $n->field_ref_links->entity;
+        $contacts = [
+          'field_phone' => $phone && $phone->field_phone ? $phone->field_phone->value : NULL,
+          'field_fax' => $fax && $fax->field_fax ? $fax->field_fax->value : NULL,
+          'field_email' => $links && $links->field_email ? $links->field_email->value : NULL,
+          'field_address' => $address,
+        ];
+      }
     }
 
-    // Set up rich text elements for what you need.
-    $richTextElements = [
+    $address_link = isset($contacts['field_address']) ? 'https://maps.google.com/?q=' . urlencode($contacts['field_address']) : '';
+
+    $variables['imagePromo'] = [
+      'location' => [
+        'map' => TRUE,
+        'text' => isset($contacts['field_address']) ? $contacts['field_address'] : '',
+      ],
+      'infoWindow' => [
+        'name'     => '',
+        'phone'    => isset($contacts['field_phone']) ? $contacts['field_phone'] : '',
+        'fax'      => isset($contacts['field_fax']) ? $contacts['field_fax'] : '',
+        'email'    => isset($contacts['field_email']) ? $contacts['field_email'] : '',
+        'address'  => isset($contacts['field_address']) ? $contacts['field_address'] : '',
+        'directions' => $address_link,
+      ],
+      'link' => [
+        'text' => t("Directions"),
+        'href' => $address_link,
+        'info' => ''
+      ]
+    ];
+
+    // Location subtitle.
+    $variables['imagePromo']['title'] = [
+      'text' => $node->getTitle(),
+      'href' => $node->toUrl()->toString(),
+      'type' => '',
+    ];
+
+    $overview = '';
+
+    if (!empty($node->field_overview->value)) {
+      $overview = Helper::fieldFullView($node, 'field_overview');
+    }
+
+    // Get the description for the node.
+    $variables['imagePromo']['description']['richText'] = [
       'rteElements' => [
         [
           'path' => '@atoms/11-text/raw-html.twig',
           'data' => [
             'rawHtml' => [
-              'content' => [
-                '#theme' => 'item_list',
-                '#items' => $activities,
-              ],
+              'content' => $overview,
             ],
           ],
         ],
       ],
     ];
 
-    // Set up section title for heading, sticky nav.
-    $allActivities_title = t('All Activities');
+    $thumbnail = '';
+    if (Helper::isFieldPopulated($node, 'field_bg_narrow') && $node->get('field_bg_narrow')->referencedEntities()) {
+      $thumbnail = Helper::getFieldImageUrl($node, 'thumbnail_190_107', 'field_bg_narrow');
+    }
 
-    // Set up heading for what you need.
-    $compHeading_options = [
-      'title' => $allActivities_title,
-      'titleContext' => $titleContext,
-      'sub' => TRUE,
-    ];
-
-    $compHeading = Atoms::prepareCompHeading($compHeading_options);
-
-    $pageContent['pageAllActivities'] = array_merge($compHeading, $richTextElements);
-
-    // Set up corresponding sticky nav entry for what you need.
-    $stickyNav[] = $allActivities_title;
-  }
-
-  if (Helper::isFieldPopulated($node, 'field_location_facilities')) {
-    $titleContext = t(' at @title', ['@title' => $page_title]);
-    // Set up rich text elements for what you need.
-    $richTextElements = [
-      'rteElements' => [
-        Atoms::prepareTextField($node, 'field_location_facilities'),
-      ],
-    ];
-
-    // Set up section title for heading, sticky nav.
-    $facilities_title = t('Facilities');
-
-    // Set up heading for what you need.
-    $compHeading_options = [
-      'title' => $facilities_title,
-      'titleContext' => $titleContext,
-      'sub' => TRUE,
-    ];
-
-    $compHeading = Atoms::prepareCompHeading($compHeading_options);
-
-    $pageContent['pageFacilities'] = array_merge($compHeading, $richTextElements);
-
-    // Set up corresponding sticky nav entry for what you need.
-    $stickyNav[] = $facilities_title;
-
-  }
-
-  if (Helper::isFieldPopulated($node, 'field_services')) {
-    $titleContext = t(' at @title', ['@title' => $page_title]);
-    // Set up rich text elements for what you need.
-    $richTextElements = [
-      'rteElements' => [
-        Atoms::prepareTextField($node, 'field_services'),
-      ],
-    ];
-
-    // Set up section title for heading, sticky nav.
-    $services_title = t('Services');
-
-    // Set up heading for what you need.
-    $compHeading_options = [
-      'title' => $services_title,
-      'titleContext' => $titleContext,
-      'sub' => TRUE,
-    ];
-
-    $compHeading = Atoms::prepareCompHeading($compHeading_options);
-
-    $pageContent['pageServices'] = array_merge($compHeading, $richTextElements);
-
-    // Set up corresponding sticky nav entry for what you need.
-    $stickyNav[] = $services_title;
-  }
-
-  if (Helper::isFieldPopulated($node, 'field_accessibility')) {
-    $titleContext = t(' at @title', ['@title' => $page_title]);
-    // Set up rich text elements for what you need.
-    $richTextElements = [
-      'rteElements' => [
-        Atoms::prepareTextField($node, 'field_accessibility'),
-      ],
-    ];
-
-    // Set up section title for heading, sticky nav.
-    $accessibility_title = t('Accessibility');
-
-    // Set up heading for what you need.
-    $compHeading_options = [
-      'title' => $accessibility_title,
-      'titleContext' => $titleContext,
-      'sub' => TRUE,
-    ];
-
-    $compHeading = Atoms::prepareCompHeading($compHeading_options);
-
-    $pageContent['pageAccessibility'] = array_merge($compHeading, $richTextElements);
-
-    // Set up corresponding sticky nav entry for what you need.
-    $stickyNav[] = $accessibility_title;
-  }
-
-  if (Helper::isFieldPopulated($node, 'field_restrictions')) {
-    $titleContext = t(' at @title', ['@title' => $page_title]);
-    // Set up rich text elements for what you need.
-    $richTextElements = [
-      'rteElements' => [
-        Atoms::prepareTextField($node, 'field_restrictions'),
-      ],
-    ];
-
-    // Set up section title for heading, sticky nav.
-    $restrictions_title = t('Restrictions');
-
-    // Set up heading for what you need.
-    $compHeading_options = [
-      'title' => $restrictions_title,
-      'titleContext' => $titleContext,
-      'sub' => TRUE,
-    ];
-
-    $compHeading = Atoms::prepareCompHeading($compHeading_options);
-
-    $pageContent['pageRestrictions'] = array_merge($compHeading, $richTextElements);
-
-    // Set up corresponding sticky nav entry for what you need.
-    $stickyNav[] = $restrictions_title;
-  }
-
-  if (Helper::isFieldPopulated($node, 'field_location_more_information')) {
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    // Set up rich text elements for what you need.
-    $richTextElements = [
-      'rteElements' => [
-        Atoms::prepareTextField($node, 'field_location_more_information'),
-      ],
-    ];
-
-    // Set up section title for heading, sticky nav.
-    $moreInfo_title = t('More info');
-
-    // Set up heading for what you need.
-    $compHeading_options = [
-      'title' => $moreInfo_title,
-      'titleContext' => $titleContext,
-      'sub' => TRUE,
-    ];
-
-    $compHeading = Atoms::prepareCompHeading($compHeading_options);
-
-    $pageContent['pageMoreInfo'] = array_merge($compHeading, $richTextElements);
-
-    // Set up corresponding sticky nav entry for what you need.
-    $stickyNav[] = $moreInfo_title;
-  }
-
-  $more_list = [];
-  $links = [];
-  $nearby = FALSE;
-
-  if (Helper::isFieldPopulated($node, 'computed_related_locations')) {
-    $more_locations = $node->computed_related_locations->getValue();
-
-    foreach ($more_locations as $location) {
-      $more_node = Node::load($location['target_id']);
-      if ($more_node->hasField('field_related_organization_type')) {
-        $nearby = $nearby || $more_node->field_related_organization_type->value;
-      }
-      $links[] = [
-        'href' => Url::fromRoute('mass_map.map_page', ['node' => $more_node->id()]),
-        'text' => $more_node->label() . ' Locations',
+    if ($thumbnail) {
+      $variables['imagePromo']['image'] = [
+        'src' => $thumbnail,
+        'alt' => $node->getTitle(),
+        'href' => '#',
       ];
     }
-  }
 
-  $titleContext = t(' for @title', ['@title' => $page_title]);
-  $related_prefix = $nearby ? t('Nearby') : t('Related');
-  $related_title = $locationType == 'park' ? t('@prefix parks', ['@prefix' => $related_prefix]) : t('@prefix locations', ['@prefix' => $related_prefix]);
+    // Get the available location icon taxonomy term names and sprites.
+    $tags = [];
+    if (Helper::isFieldPopulated($node, 'field_location_icons')) {
+      $icons = Helper::getReferencedEntitiesFromField($node, 'field_location_icons');
 
-  $suggested_options = [
-    'title' => $related_title,
-    'titleContext' => $titleContext,
-    'style' => 'suggested_pages_230x130',
-    'maxItems' => 3,
-  ];
+      // Get the icon name (value) for each term.
+      foreach ($icons as $term) {
+        $field_sprite_name = $term->get('field_sprite_name');
+        if ($field_sprite_name->count() > 0) {
+          $sprite_name = $field_sprite_name->first()->getValue();
+          $sprite = $sprite_name['value'];
+        }
 
-  $suggestedPages = Organisms::prepareSuggestedPages($node, $suggested_options, $cache_tags);
-
-  $compHeading_options = [
-    'title' => $related_title,
-    'titleContext' => $titleContext,
-    'sub' => TRUE,
-  ];
-
-  $compHeading = Atoms::prepareCompHeading($compHeading_options);
-
-  if (!empty($suggestedPages)) {
-    $suggestedPages = array_merge($compHeading, $suggestedPages);
-    // Set up corresponding sticky nav entry for what you need.
-    $stickyNav[] = $related_title;
-  }
-
-  $link_list = [];
-
-  if (!empty($links)) {
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $more_title = $locationType == 'park' ? t('More parks') : t('More locations');
-
-    // Set up heading for what you need.
-    $compHeading_options = [
-      'title' => $more_title,
-      'titleContext' => $titleContext,
-      'sub' => TRUE,
-    ];
-
-    $compHeading = Atoms::prepareCompHeading($compHeading_options);
-
-    $link_list = [
-      'links' => $links,
-    ];
-
-    if (empty($suggestedPages)) {
-      $more_list = array_merge($compHeading_options, ['moreLinks' => $link_list]);
+        // For filterable icon/term types, create a tag.
+        // @TODO consider making the accepted values configurable.
+        if (in_array($sprite, ['wheelchair', 'open-now'])) {
+          $title = $term->getName();
+          $tags[] = [
+            "label" => $title,
+            "icon" => $sprite,
+            "id" => $sprite,
+          ];
+        }
+      }
     }
-    else {
-      $link_list = array_merge($compHeading, $link_list);
-      $more_list = ['moreLinks' => $link_list];
+
+    // Add all filterable icon/terms as this listing's imagePromo tags.
+    $variables['imagePromo']['tags'] = $tags;
+
+    if (!$node->field_ref_contact_info_1->isEmpty()) {
+      $contact_information_entity = $node->field_ref_contact_info_1->entity;
+      // Get phone number from the referenced contact info node.
+      if (!empty($contact_information_entity->field_ref_phone_number->entity->field_phone->value)) {
+        $phone = $contact_information_entity->field_ref_phone_number->entity->field_phone->value;
+
+        // Add the phone number to the listing item imagePromo.
+        $variables['imagePromo']['phone'] = [
+          'label' => t('Phone'),
+          'text' => $phone,
+        ];
+      }
+
+      // Get hours from the referenced contact info node.
+      if (!$contact_information_entity->field_ref_hours->isEmpty()) {
+        $hours_paragraph = $contact_information_entity->field_ref_hours->entity;
+        if (!is_null($hours_paragraph) && !isset($hours_paragraph->field_hours_structured->entity)) {
+          $hours = $hours_paragraph->field_hours_structured->view('default');
+          if ($hours) {
+            $hours = \Drupal::service('renderer')->render($hours);
+            $hours = str_replace('<p>', '', $hours);
+            $hours = str_replace('</p>', '|', $hours);
+            $hours = array_map('trim', explode('|', $hours));
+            foreach ($hours as $hour) {
+              if (!$hour) {
+                continue;
+              }
+
+              $hour = array_map('trim', explode('<br>', $hour));
+              $variables['imagePromo']['hours'][] = [
+                'label' => trim($hour[0]),
+                'text' => trim($hour[1]),
+              ];
+            }
+          }
+        }
+      }
     }
-  }
-
-  $variables['suggestedPages'] = array_merge($suggestedPages, $more_list);
-
-  // Build the sticky nav based on the array of titles.
-  if (!empty($stickyNav)) {
-    $titleContext = $page_title;
-    $variables['stickyNav'] = Molecules::prepareStickyNav($stickyNav, $titleContext);
-  }
-
-  // Prepare the sidebarContacts object.
-  $titleContext = t(' for @title', ['@title' => $page_title]);
-  $sidebarContacts_options = [
-    'heading' => [
-      'type' => 'coloredHeading',
-      'title' => t('Contacts'),
-      'titleContext' => $titleContext,
-    ],
-    'display_title' => TRUE,
-    'link_title' => FALSE,
-    'level' => 2,
-  ];
-
-  $variables['pageContent'] = $pageContent;
-
-  // Prepare the sidebarContact data object.
-  $variables['sidebarContact'] = Organisms::prepareSidebarContact($node, $sidebarContacts_options, $cache_tags);
-
-  $variables['eventListing'] = Organisms::prepareSidebarEvents($node, ['more_link_text' => t('See all events')], [], $cache_tags);
-
-  if (!empty($cache_tags)) {
-    // Merge arrays of existing and new cache tags and removes duplicates.
-    $merged_tags = Cache::mergeTags($node->getCacheTags(), $cache_tags);
-    // Add the cache tags to the render array.
-    $variables['#cache']['tags'] = $merged_tags;
   }
 }
 
@@ -1206,51 +1362,31 @@ function mass_theme_preprocess_node_topic_page(&$variables) {
     // Set static pageBanner properties to pass to prepare function.
     $pageBanner_options = [
       'icon' => $icon,
-      'color' => '',
+      'color' => 'white',
+      'underline' => TRUE,
     ];
 
-    if (Helper::isFieldPopulated($node, 'field_topic_type')) {
-      $type = Helper::fieldValue($node, 'field_topic_type');
-      if ($type == 'section landing') {
-        $pageBanner_options = array_merge($pageBanner_options, ['size' => 'hero1600x400']);
-      }
-      else {
-        $pageBanner_options = array_merge($pageBanner_options, ['size' => 'columns']);
-      }
-      $pageBanner_options = array_merge($pageBanner_options, ['type' => $type]);
-    }
-    else {
-      $pageBanner_options = array_merge($pageBanner_options, ['size' => 'columns']);
-      $pageBanner_options = array_merge($pageBanner_options, ['type' => 'topic']);
-    }
-
+    $pageBanner_options = array_merge($pageBanner_options, ['type' => 'topic']);
     // Make pageBanner data structure available in twig template.
     $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
+
+    // Make sure images aren't visible in the page banner.
+    unset($variables['pageBanner']['bgWide']);
+    unset($variables['pageBanner']['bgNarrow']);
+
+    // Make expandableContent data structure available in twig template.
     $renderer = \Drupal::service('renderer');
     foreach ($node->field_topic_content_cards as $index => $section) {
       $variables['numOfSections'] = ++$index;
-      $sectionThreeUp_options = [
-        'noCardLinks' => [
-          ($node->field_topic_display_links->value == '1') ? 'topic_page' : [],
-        ],
-        'use4TopLinks' => [
-          'topic_page',
-        ],
-        'useCallout' => [
-          'service_page',
-        ],
-      ];
-
+      $expandableContent_options = [];
       $title_field = Helper::fieldFullView($section->entity, 'field_content_card_category');
       if (!empty($title_field)) {
-        $sectionThreeUp_options += [
-          'heading' => [
-            'title' => $renderer->renderRoot($title_field),
-          ],
+        $expandableContent_options += [
+          'categoryTitle' => htmlspecialchars_decode($renderer->renderRoot($title_field)),
         ];
       }
 
-      $variables['pageContent'][$index]['sectionThreeUp'] = Organisms::prepareSectionThreeUp($section->entity, $sectionThreeUp_options, ['topic_cards' => ['field_content_card_link_cards']], $cache_tags);
+      $variables['pageContent'][$index]['expandableContent'] = Organisms::prepareExpandableContent($section->entity, $expandableContent_options, ['topic_cards' => ['field_content_card_link_cards']], $cache_tags);
     }
 
     $linkList_options = [
@@ -1391,7 +1527,7 @@ function mass_theme_preprocess_node_executive_order(&$variables) {
     'type' => ['field_executive_order_adjustment'],
     'body' => ['body'],
     'contact' => ['field_executive_order_contact'],
-    'date' => ['field_executive_order_date'],
+    'date' => ['field_date_published'],
     'issuer' => ['field_executive_order_issuer'],
     'number' => ['field_executive_order_mass_regis'],
     'meta_tags' => ['field_executive_order_metatags'],
@@ -1572,7 +1708,7 @@ function mass_theme_preprocess_node_decision(&$variables) {
   // Create the map of all possible field names to use.
   $map = [
     'contact' => ['field_decision_ref_contact'],
-    'date' => ['field_decision_date'],
+    'date' => ['field_date_published'],
     'number' => ['field_decision_docket_number'],
     'location' => ['field_decision_location'],
     'meta_tags' => ['field_decision_metatags'],
@@ -1890,7 +2026,7 @@ function mass_theme_preprocess_node_regulation(&$variables) {
   // Create the map of all possible field names to use.
   $map = [
     'contact' => ['field_regulation_contact'],
-    'date' => ['field_regulation_last_updated'],
+    'date' => ['field_date_published'],
     'meta_tags' => ['field_regulation_metatags'],
     'overview' => ['field_regulation_short_descr'],
     'publish_state' => ['field_regulation_ref_state_tax'],
@@ -2107,7 +2243,7 @@ function mass_theme_preprocess_node_advisory(&$variables) {
   // Create the map of all possible field names to use.
   $map = [
     'contact' => ['field_advisory_ref_contact'],
-    'date' => ['field_advisory_date'],
+    'date' => ['field_date_published'],
     'issuer' => ['field_advisory_issuer'],
     'meta_tags' => ['field_advisory_metatags'],
     'overview' => ['field_advisory_overview'],
@@ -2347,7 +2483,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
   $map = [
     'contact' => ['field_rules_ref_contact'],
     'adopted_date' => ['field_rules_adopted_date'],
-    'effective_date' => ['field_rules_effective_date'],
+    'effective_date' => ['field_date_published'],
     'publish_state' => ['field_rules_status'],
     'courts' => ['field_rules_courts'],
     'collections' => ['field_rules_related_collections'],
@@ -2372,8 +2508,10 @@ function mass_theme_preprocess_node_rules(&$variables) {
   // Related To computed field.
   if (!empty($fields['related_to']) && Helper::isFieldPopulated($node, $fields['related_to'])) {
     if (!empty($fields['collections']) && Helper::isFieldPopulated($node, $fields['collections'])) {
-      $related_to_links = array_filter($variables['content'][$fields['related_to']], "is_numeric", ARRAY_FILTER_USE_KEY);
-      $variables['content'][$fields['collections']] = array_merge($variables['content'][$fields['collections']], $related_to_links);
+      if (isset($variables['content'][$fields['related_to']])) {
+        $related_to_links = array_filter($variables['content'][$fields['related_to']], "is_numeric", ARRAY_FILTER_USE_KEY);
+        $variables['content'][$fields['collections']] = array_merge($variables['content'][$fields['collections']], $related_to_links);
+      }
     }
     else {
       $variables['content'][$fields['collections']] = $variables['content'][$fields['related_to']];
@@ -2636,6 +2774,7 @@ function mass_theme_preprocess_node_event(&$variables) {
     'contact' => ['field_event_contact_general'],
     'type' => ['field_event_type_list'],
     'posted_date' => ['field_event_posted_date'],
+    'updated_date' => ['field_updated_date'],
   ];
 
   // Determines which field names to use from the map.
@@ -2663,8 +2802,14 @@ function mass_theme_preprocess_node_event(&$variables) {
 
   if (Helper::isFieldPopulated($node, $fields['posted_date']) && $is_public_meeting) {
     $postedDate = Helper::getMayflowerDate($node->{$fields['posted_date']}->value, ['date_format' => 'F j, Y']);
-    // Converting epoch to DateTime requires '@'.
-    $changedDate = Helper::getMayflowerDate('@' . $node->getChangedTime(), ['date_format' => 'F j, Y']);
+    // Use the value of field_updated_date as the changedDate value.
+    if (Helper::isFieldPopulated($node, $fields['posted_date'])) {
+      $changedDate = Helper::getMayflowerDate($node->{$fields['updated_date']}->value, ['date_format' => 'F j, Y']);
+    }
+    else {
+      // Otherwise, display the posted date as last modified.
+      $changedDate = $postedDate;
+    }
 
     array_shift($postedDate);
     array_shift($changedDate);
@@ -3208,6 +3353,10 @@ function mass_theme_preprocess_node_service_page(&$variables) {
       ];
   }
 
+  if ($variables['view_mode'] === 'listing') {
+    $variables['featured_tasks_links'] = Helper::separatedLinks($node, 'field_service_ref_actions_2');
+  }
+
   // Make the mappedLocations data structure available in twig template.
   $variables['splitColumns'] = $split_columns;
 
@@ -3334,7 +3483,7 @@ function mass_theme_preprocess_node_news_full(&$variables) {
       if (count($body_array) > 1) {
         $body_array[1] = $location . $body_array[1];
       }
-      $body_string = implode($body_array, '<p>');
+      $body_string = implode('<p>', $body_array);
     }
     if (Helper::fieldValue($node, $field['news_type']) == 'press_release') {
       $ap_conformity = TRUE;
@@ -4214,6 +4363,29 @@ function mass_theme_preprocess_field__person_org_role(&$variables) {
 }
 
 /**
+ * Build block early on the page and set a variable for html.html.twig.
+ */
+function mass_theme_block_alert_build(&$variables) {
+  $block_configs = [
+    'sitewide_alerts' => Block::load('sitewide_alerts'),
+    'page_alerts' => Block::load('page_alerts'),
+  ];
+
+  /** @var Drupal\block\Entity\Block $block_config */
+  foreach ($block_configs as $id => $block_config) {
+
+    if (!$block_config->access('view')) {
+      continue;
+    }
+    $block_manager = \Drupal::service('plugin.manager.block');
+    /** @var Drupal\mass_alerts\Plugin\Block\AlertsBlock */
+    $plugin_block = $block_manager->createInstance('mass_alerts_block', $block_config->get('settings'));
+    $path = $plugin_block->build()['#path'];
+    $variables[$id . '_path'] = $path;
+  }
+}
+
+/**
  * Implements hook_preprocess_HOOK().
  *
  * Various global preprocessing.
@@ -4222,6 +4394,8 @@ function mass_theme_preprocess_html(&$variables) {
   if (isset($variables['node_type'])) {
     $node_type = $variables['node_type'];
   }
+
+  mass_theme_block_alert_build($variables);
 
   $variables['optimize_hiding_snippet'] = \Drupal::state()->get('optimize_hiding_snippet', FALSE);
 
@@ -4322,6 +4496,7 @@ function mass_theme_preprocess_page(&$variables) {
         'org_page' => 'ma__org-page',
         'rules' => 'ma__court-rules',
         'service_page' => 'ma__services',
+        'topic_page' => 'ma__topic-page',
       ];
 
       // Send main_class variable to page.
@@ -4768,6 +4943,11 @@ function mass_theme_preprocess_field(&$variables, $hook) {
 
   // The first element of the featured items mosaic needs a slightly different template.
   if ($element['#field_name'] == 'field_featured_item_mosaic_items') {
+    // First image with an image style.
+    $highlight = $variables['items'][0]['content']['#paragraph']->field_featured_item_highlight;
+    $style = ImageStyle::load('featured_item_highlight');
+    $new_image = $style->buildUrl($highlight->entity->getFileUri());
+    $highlight->entity->setFileUri($new_image);
     $variables['items'][0]['content']['#view_mode'] = 'tall';
   }
 
@@ -4894,73 +5074,9 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
  */
 function mass_theme_preprocess_paragraph__org_events(&$variables) {
   $paragraph = $variables['paragraph'];
-  $node = Helper::getParentNode($paragraph);
-
-  // Gather events associated with this node.
   $eventManager = \Drupal::service('mass_content.event_manager');
-
-  // Determine if there are any past events associated with this node.
-  $is_past_events = $eventManager->hasPast($node);
-
-  $eventsData = [];
-  if ($eventManager->hasUpcoming($node)) {
-    // Set the limit on how many events should be displayed on the page. Default
-    // to 2 if no limit is set.
-    $limit = 2;
-    if ($paragraph->hasField('field_event_quantity') && !$paragraph->field_event_quantity->isEmpty()) {
-      $limit = (int) $paragraph->field_event_quantity->value;
-    }
-    $events = Helper::prepareEvents($eventManager->getUpcoming($node, $limit + 1));
-    $moreButton = '';
-
-    // Display the see all events link if there are either more than the limit
-    // set for upcoming events in Drupal or <=2 upcoming with 1+ past events.
-    if (count($events) > $limit || $is_past_events) {
-      $moreButton = Helper::prepareMoreLink($node, ['text' => t('See all events')]);
-    }
-
-    $eventsData = [
-      'pageContent' => [
-        [
-          'path' => '@organisms/by-author/event-listing.twig',
-          'data' => [
-            'eventListing' => [
-              'grid' => TRUE,
-              'events' => array_splice($events, 0, $limit),
-              'more' => $moreButton,
-            ],
-          ],
-        ],
-      ],
-    ];
-    $max_age = $eventManager->getMaxAge($node);
-  }
-  // If there are not upcoming events, check for past events to render past events link.
-  else {
-    if ($is_past_events) {
-      $eventsData = [
-        'pageContent' => [
-          [
-            'path' => '@organisms/by-author/event-listing.twig',
-            'data' => [
-              'eventListing' => [
-                'grid' => FALSE,
-                'emptyText' => t('No upcoming events scheduled'),
-                'pastMore' => [
-                  "text" => t('See past events'),
-                  "href" => \Drupal::service('path_alias.manager')
-                    ->getAliasByPath('/node/' . $node->id()) . '/events/past',
-                  "chevron" => TRUE,
-                ],
-              ],
-            ],
-          ],
-        ],
-      ];
-    }
-  }
-
-  $variables['events'] = $eventsData;
+  $eventsRender = (new EventsRendererOrgPages($eventManager, $paragraph))->render();
+  $variables = array_merge($variables, $eventsRender);
 }
 
 /**
@@ -5018,7 +5134,7 @@ function mass_theme_preprocess_paragraph__org_locations(&$variables) {
     $mappedLocations_options['aside'] = [
       'button' => $paragraph->field_location_button_label->value,
       'paragraph' => [
-        'text' => $paragraph->field_location_button_short_desc->value,
+        'text' => Helper::fieldFullView($paragraph, 'field_location_button_short_desc'),
       ],
     ];
 
@@ -5861,6 +5977,75 @@ function mass_theme_preprocess_views_view(&$variables) {
 }
 
 /**
+ * Implements template_preprocess_views_view().
+ *
+ * @see mass_theme_theme_suggestions_alter()
+ */
+function mass_theme_preprocess_views_view_locations_page(&$variables) {
+  $view = $variables['view'];
+  $view_result = $view->result;
+
+  if ($nid = $view->args[0]) {
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+
+    if ($node) {
+      if ($node->hasField('field_organizations')) {
+        $variables['organizations'] = $node->field_organizations->view();
+      }
+      $node_title = $node->label();
+      // Set appropriate page title.
+      if ($node->getType() == "location") {
+        $page_title = t('Other locations related to @title', ['@title' => $node_title]);
+      }
+      else {
+        $page_title = $node_title . ' Locations';
+      }
+
+      $variables['pageHeader'] = [
+        'title' => $page_title,
+        'divider' => FALSE,
+        'headerTags' => [
+          'label' => 'More about:',
+          'taxonomyTerms' => [
+            [
+              'href' => $node->toUrl(),
+              'text' => $node_title,
+            ],
+          ],
+        ],
+      ];
+    }
+  }
+
+  $query = \Drupal::request()->query;
+  $variables['helper'] = $query->get('helper') ?: '';
+  $icons = $query->get('icons') ?: 'All';
+  $variables['icons'] = ($icons == 'All') ? FALSE : TRUE;
+
+  if (!empty($view_result)) {
+
+    // Array for mapping Contact entities to corresponding Location entities.
+    $contact_location_map = [];
+
+    $contact_ids = [];
+    foreach ($view_result as $result) {
+      $location = $result->_entity;
+      foreach ($location->field_ref_contact_info_1 as $contactRef) {
+        $contactId = $contactRef->target_id;
+        $contact_ids[] = $contactId;
+        $contact_location_map[$contactId] = $location;
+      }
+    }
+    // Batch load contact entities all at once.
+    $contact_entities = Node::loadMultiple($contact_ids);
+    $variables['leafletMap'] = Molecules::prepareGoogleMapFromContacts($contact_entities, $contact_location_map);
+    if ($node_title) {
+      $variables['leafletMap']['title'] = t('Map for @title', ['@title' => $node_title]);
+    }
+  }
+}
+
+/**
  * Implements template_preprocess_form_element_label().
  */
 function mass_theme_preprocess_form_element_label(&$variables) {
@@ -6077,6 +6262,27 @@ function mass_theme_form_views_exposed_form_alter(&$form, FormStateInterface $fo
       $form['actions']['submit']['#attributes'] = ['data-theming-id' => 'filter-submit'];
     }
   }
+
+  if ($form['#id'] == 'views-exposed-form-locations-page') {
+    $form['helper'] = [
+      '#type' => 'textfield',
+      '#title' => 'Helper',
+      '#size' => 60,
+    ];
+
+    $form['lat'] = [
+      '#type' => 'textfield',
+      '#title' => 'Lat.',
+      '#size' => 60,
+    ];
+
+    $form['lng'] = [
+      '#type' => 'textfield',
+      '#title' => 'Lng.',
+      '#size' => 60,
+    ];
+
+  }
 }
 
 /**
@@ -6182,6 +6388,7 @@ function mass_theme_googletranslate_options_languages() {
     'bo' => 'Tibetan',
     'br' => 'Breton',
     'ca' => 'Catalan',
+    'cv' => 'Cape Verdean Creole',
     'co' => 'Corsican',
     'cs' => 'Czech',
     'cy' => 'Welsh',
@@ -6299,7 +6506,8 @@ function mass_theme_googletranslate_options_languages() {
     'xh' => 'Xhosa',
     'yo' => 'Yoruba',
     'zh-CN' => 'Chinese',
-    'zu' => 'Zulu',
+    'zh-TW' => 'Chinese, Traditional',
+    'zu' => 'Zulu'
   ];
   return $language_codes;
 }
@@ -6419,7 +6627,7 @@ function mass_theme_preprocess_media(array &$variables) {
  *   - media: An individual media for display.
  */
 function mass_theme_preprocess_media_document(array &$variables) {
-  /** @var \Drupal\media\Entity\Media $media */
+  /** @var \Drupal\mass_content\Entity\Bundle\media\DocumentBundle $media */
   $media = $variables['elements']['#media'];
   $variables = array_merge($variables, Molecules::prepareDownloadLink($media));
   if ($variables['elements']['#view_mode'] == 'full') {
@@ -6429,7 +6637,7 @@ function mass_theme_preprocess_media_document(array &$variables) {
     $list_table_rows = [];
 
     // Get the attached file from the media entity.
-    if ($media_file_changed_time = media_file_changed_time($media, 'field_upload_file')) {
+    if ($media_file_changed_time = $media->getFileChangedTime()) {
       $list_table_rows[] = [
         'label' => 'Last Updated:',
         'text' => $media_file_changed_time,
@@ -6480,26 +6688,34 @@ function mass_theme_preprocess_media_document(array &$variables) {
 }
 
 /**
- * Get the attached file from the media entity.
+ * Implements hook_preprocess_HOOK().
  *
- * @param \Drupal\media\MediaInterface $entity
- *   Media Entity.
- * @param string $field_name
- *   File upload field name.
- *
- * @return string
- *   Date formatted Y-m-d for the file last changed date.
+ * Prepare collection_search values for template.
  */
-function media_file_changed_time(MediaInterface $entity, $field_name) {
-  $file = $entity->{$field_name}->entity;
-  if (!$file instanceof File) {
-    \Drupal::logger('media.documents')->error('Media bundle is missing file for media entity: @entity_label (@entity_id)', [
-      '@entity_label' => $entity->label(),
-      '@entity_id' => $entity->id(),
-    ]);
-    return '';
+function mass_theme_preprocess_paragraph__collection_search(&$variables) {
+  $variables['searchBoxWithLinks'] = [];
+  $variables['searchBoxWithLinks']['form'] = [];
+
+  $p = $variables['paragraph'];
+  $variables['searchBoxWithLinks']['form']['headingText'] = $p->field_search_heading->value;
+  $variables['searchBoxWithLinks']['form']['submitText'] = t('SEARCH');
+
+  $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
+  $variables['searchBoxWithLinks']['form']['actionUrl'] = $collection_url;
+
+  $variables['searchBoxWithLinks']['secondary']['heading'] = $p->field_secondary_heading->value;
+  $variables['searchBoxWithLinks']['secondary']['firstLink']['href'] = $collection_url;
+  $variables['searchBoxWithLinks']['secondary']['firstLink']['text'] = $p->field_see_all_items_link_text->value;
+
+  $uri = $p->field_secondary_link[0]->uri ?? FALSE;
+  if (!$uri) {
+    return;
   }
-  return DrupalDateTime::createFromTimestamp($entity->{$field_name}->entity->getChangedTime())->format('Y-m-d');
+  $uri_is_external = UrlHelper::isExternal($uri);
+  $variables['searchBoxWithLinks']['secondary']['secondLink']['href'] = $uri_is_external ?
+    $p->field_secondary_link[0]->uri : Url::fromUri($uri);
+  $variables['searchBoxWithLinks']['secondary']['secondLink']['text'] = $uri_is_external ?
+    $p->field_secondary_link[0]->title : $p->field_secondary_link[0]->computed_title;
 }
 
 /**
@@ -6552,6 +6768,28 @@ function mass_theme_preprocess_paragraph__board_member(&$variables) {
   // to TRUE so the appropriate image size can be used in the template.
   if ($item->getName() == 'field_featured_board_members') {
     $variables['is_featured_board_member'] = TRUE;
+  }
+}
+
+/**
+ * Implements hook_preprocess_node().
+ *
+ * Prepares variables for the Alert pages.
+ */
+function mass_theme_preprocess_node_sitewide_alert(&$variables) {
+
+  $node = $variables['node'];
+
+  // Build related links section, if field is populated.
+  if (Helper::isFieldPopulated($node, 'field_alert_related_links_5')) {
+    // Prepare the linkList data object.
+    $linkList_options = [
+      'heading' => [
+        'title' => t('Related Links'),
+        'type' => 'compHeading',
+      ],
+    ];
+    $variables['linkList'] = Organisms::preparelinkList($node, 'field_alert_related_links_5', $linkList_options);
   }
 }
 
@@ -6624,6 +6862,9 @@ function mass_theme_build_key_message_component(array &$variables) {
     $variables['button']['text'] = $button['#title'];
     $variables['button']['href'] = $button['#url']->toString();
   }
+
+  $variables['halfImage'] = $paragraph->field_use_half_image->value ?? FALSE;
+
   if (!empty($paragraph->field_text_overlay_color->value)) {
     $variables['textOverlay'] = isset($colors[$paragraph->field_text_overlay_color->value]) ? $colors[$paragraph->field_text_overlay_color->value] : '';
   }
@@ -6780,25 +7021,6 @@ function mass_theme_preprocess_paragraph__featured_content_single_item(&$variabl
 }
 
 /**
- * Display cards or compact cards depending on the settings.
- */
-function mass_theme_preprocess_paragraph__featured_topics(&$variables) {
-  $paragraph = $variables['paragraph'];
-  // If the checkbox is selected, change display mode to card compact.
-  if ($paragraph->field_topic_name_only->value == TRUE) {
-    $field_topics = $variables['content']['field_featured_topics_topics'];
-    $count = $field_topics['#items']->count();
-    if ($count) {
-      for ($i = 0; $i < $count; $i++) {
-        $field_topics[$i]['#view_mode'] = 'card_compact';
-      }
-    }
-
-    $variables['content']['field_featured_topics_topics'] = $field_topics;
-  }
-}
-
-/**
  * Fetch social links from parent org node.
  */
 function mass_theme_preprocess_paragraph__social_media(&$variables) {
@@ -6828,8 +7050,8 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
  */
 function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
   // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
-  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image'];
-  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping'];
+  $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
+  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
   $contained = ['rich_text'];
 
   $components = [];
@@ -6842,12 +7064,18 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
     if (mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
       $items = [];
       do {
-        $items[] = $paragraphs[$i];
+        if (isset($paragraphs[$i])) {
+          $items[] = $paragraphs[$i];
+        }
+
         $i++;
         // Keep grouping together while the next element has the check.
       } while (isset($paragraphs[$i]) && mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields));
+
       // Once done, also group the following one.
-      $items[] = $paragraphs[$i];
+      if (isset($paragraphs[$i])) {
+        $items[] = $paragraphs[$i];
+      }
 
       $component = ['group' => 'default', 'items' => $items];
     }
@@ -6881,4 +7109,63 @@ function mass_theme_org_section_long_form_check_wrapping_field($paragraph, $fiel
   }
 
   return FALSE;
+}
+
+/**
+ * Remove breadcrumbs for top level pages and generates schema.org metadata.
+ */
+function mass_theme_preprocess_breadcrumb(&$variables) {
+  $breadcrumb = $variables['breadcrumb'];
+  $itemListElement = [];
+
+  $variables['current_page'] = end($breadcrumb)['text'];
+
+  // Remove breacrumbs from collections by check last URL element.
+  if ((strpos(end($breadcrumb)['url'] ?? '', '/collections/')) === 0) {
+    $variables['breadcrumb'] = [];
+    return;
+  }
+
+  // Remove current page.
+  foreach ($breadcrumb as $key => $link) {
+    if ($link['url'] == "") {
+      unset($breadcrumb[$key]);
+    }
+  }
+
+  // Remove breadcrumbs for top level pages
+  if (count($breadcrumb) < 2) {
+    $variables['breadcrumb'] = NULL;
+  }
+  else {
+    foreach ($breadcrumb as $key => $link) {
+      $itemListElement[] = [
+        "@type" => "ListItem",
+        "position" => $key + 1,
+        "item" => [
+          "@id" => $link['url'],
+          "name" => $link['text']
+        ],
+      ];
+    }
+
+    $variables['breadcrumb'] = $breadcrumb;
+
+    // Set up metadata
+    $items = [
+      '@context' => 'https://schema.org/',
+      '@type' => 'BreadcrumbList',
+      'itemListElement' => $itemListElement,
+    ];
+    $jsonld = SchemaMetatagManager::encodeJsonld($items);
+    $variables['#attached']['html_head']['schema_dataset'] = [
+      [
+        '#type' => 'html_tag',
+        '#tag' => 'script',
+        '#value' => $jsonld,
+        '#attributes' => ['type' => 'application/ld+json'],
+      ],
+      'mass_schema_dataset',
+    ];
+  }
 }

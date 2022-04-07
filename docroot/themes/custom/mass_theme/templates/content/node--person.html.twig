@@ -20,17 +20,20 @@
 {% block preContent %}
 <div class="pre-content">
   {# Check if primary indicator content exists. #}
+  {% set primaryIndicators = null %}
+  {% set primaryRelationshipContent = null %}
+  {#
   {% if content.computed_related_to[0] %}
     {% set primaryIndicators = { "label": "part of" } %}
     {% set primaryRelationshipContent = content.computed_related_to %}
-  {% else %}
-    {% set primaryIndicators = null %}
-    {% set primaryRelationshipContent = null %}
   {% endif %}
+  #}
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "label": "offered by"
+      "icon": "building",
+      "label": "offered by",
+      "groupAfter": 3
     } %}
   {% endif %}
   {% embed "@molecules/relationship-indicators.twig" with {
@@ -83,10 +86,10 @@
     {% set image_width = node.field_person_headshot.width %}
     {% set image_height = node.field_person_headshot.height %}
     {# Only show the download link if image width is greater than 285x380. #}
-    {% if image_width >= 380 and image_height >= 285 %}
+    {% if node.field_person_headshot.entity.fileuri is not null and image_width >= 380 and image_height >= 285 %}
       {% include "@atoms/decorative-link.twig" with {
         decorativeLink: {
-          href: file_url(node.field_person_headshot.entity.fileuri),
+          href: file_url(node.field_person_headshot.entity.fileuri ?? ''),
           text: "Download high-resolution image"|t,
         }
       } %}

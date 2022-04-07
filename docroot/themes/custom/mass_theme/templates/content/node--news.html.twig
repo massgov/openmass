@@ -11,17 +11,20 @@
 
 {% block preContent %}
   {# Check if primary indicator content exists. #}
+  {% set primaryIndicators = null %}
+  {% set primaryRelationshipContent = null %}
+  {#
   {% if content.computed_related_to[0] %}
     {% set primaryIndicators = { "label": "part of" } %}
     {% set primaryRelationshipContent = content.computed_related_to %}
-  {% else %}
-    {% set primaryIndicators = null %}
-    {% set primaryRelationshipContent = null %}
   {% endif %}
+  #}
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "label": "offered by"
+      "icon": "building",
+      "label": "offered by",
+      "groupAfter": 3
     } %}
   {% endif %}
 
@@ -39,6 +42,13 @@
       {{ content.field_organizations }}
     {% endblock %}
   {% endembed %}
+
+  {% if translationLinks %}
+    {% include "@organisms/by-author/inline-links.twig" with {
+      "inlineLinks": translationLinks
+    } %}
+  {% endif %}
+
   {% include "@organisms/by-template/page-header.twig" %}
 {% endblock %}
 

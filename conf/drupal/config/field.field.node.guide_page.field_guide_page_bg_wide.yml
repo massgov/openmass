@@ -13,11 +13,13 @@ entity_type: node
 bundle: guide_page
 label: 'Header image'
 description: 'Use a horizontal image that relates to the overarching theme of the Guide. The image should be a minimum of 1600 x 400 pixels. A white crosshair shows the focal point of the image that should remain in view as the image scales for different browser sizes. Click on any part of the image to change the focal point.'
-required: true
+required: false
 translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:
+  handler: 'default:file'
+  handler_settings: {  }
   file_directory: '[date:custom:Y]-[date:custom:m]'
   file_extensions: 'png gif jpg jpeg'
   max_filesize: ''
@@ -33,6 +35,4 @@ settings:
     title: ''
     width: null
     height: null
-  handler: 'default:file'
-  handler_settings: {  }
 field_type: image

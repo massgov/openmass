@@ -27,88 +27,90 @@ third_party_settings:
       children:
         - field_guide_section_stat
         - field_guide_section_label
+      label: Stat
+      region: content
       parent_name: ''
       weight: 4
       format_type: fieldset
       format_settings:
-        description: ''
         classes: ''
         id: ''
+        description: ''
         required_fields: true
-      label: Stat
-      region: content
     group_additional_resources:
       children:
         - field_guide_section_link
         - field_guide_section_downloads
+      label: 'Additional Resources'
+      region: content
       parent_name: ''
       weight: 7
       format_type: fieldset
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         description: ''
         required_fields: true
-      label: 'Additional Resources'
-      region: content
 id: paragraph.guide_section.default
 targetEntityType: paragraph
 bundle: guide_section
 mode: default
 content:
   field_guide_ref_contacts_3:
+    type: entity_reference_autocomplete
     weight: 22
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_guide_section_alert_text:
+    type: string_textfield
     weight: 5
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_guide_section_body:
+    type: text_textarea
     weight: 3
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_guide_section_downloads:
+    type: inline_entity_form_complex
     weight: 10
+    region: content
     settings:
       form_mode: default
+      override_labels: false
       label_singular: ''
       label_plural: ''
       allow_new: true
       allow_existing: true
       match_operator: CONTAINS
-      override_labels: false
       collapsible: false
       collapsed: false
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
-    type: inline_entity_form_complex
-    region: content
   field_guide_section_label:
+    type: string_textfield
     weight: 6
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_guide_section_link:
+    type: link_default
     weight: 9
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -117,11 +119,10 @@ content:
         internal_link_content_type_blacklist:
           - contact_information
           - fee
-          - legacy_redirects
-    type: link_default
-    region: content
   field_guide_section_links_4:
+    type: link_default
     weight: 6
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -130,38 +131,35 @@ content:
         internal_link_content_type_blacklist:
           - contact_information
           - fee
-          - legacy_redirects
-    type: link_default
-    region: content
   field_guide_section_name:
+    type: string_textfield
     weight: 1
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_guide_section_stat:
+    type: string_textfield
     weight: 5
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_guide_section_time:
+    type: string_textfield
     weight: 2
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   status: true

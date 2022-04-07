@@ -197,22 +197,38 @@
   /**
    * Enable/disable fields on info details.
    *
-   * Hide or show the banner field (field_banner_image)
-   * based on the field_details_enable_fields value.
+   * Hide or show fields based on the field_details_enable_fields value.
    */
   Drupal.behaviors.enableInfoFieldsConditional = {
     attach: function (context) {
       $('.field--name-field-details-enable-fields', context).change(function () {
-        if ($(this).find('input').prop('checked') === false) {
-          $(this).siblings('.field--name-field-banner-image').hide();
-          $(".field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content input[id$='-subform-field-section-long-form-content-add-more-add-more-button-callout-link']").hide();
-          $(".field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content input[id$='-subform-field-section-long-form-content-add-more-add-more-button-info-details-card-group']").hide();
-        }
-        else {
-          $(this).siblings('.field--name-field-banner-image').show();
-          $(".field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content input[id$='-subform-field-section-long-form-content-add-more-add-more-button-callout-link']").show();
-          $(".field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content input[id$='-subform-field-section-long-form-content-add-more-add-more-button-info-details-card-group']").show();
-        }
+        var enabledDetails = $(this).find('input').prop('checked') !== false;
+        var $infoDetails = $('.field--name-field-info-details-sections details#section-content .field--name-field-section-long-form-content');
+        $infoDetails.find("input[id$='-subform-field-section-long-form-content-add-more-add-more-button-callout-link']").toggle(enabledDetails);
+        $infoDetails.find("input[id$='-subform-field-section-long-form-content-add-more-add-more-button-info-details-card-group']").toggle(enabledDetails);
+      }).change();
+    }
+  };
+
+  /**
+   * Conditional fields on events.
+   *
+   * Make administrative area optional when unique option unchecked.
+   */
+  Drupal.behaviors.eventsConditional = {
+    attach: function (context) {
+      $('.field--name-field-event-address-type', context).change(function () {
+        var addressTypeUniqueChecked = $('#edit-field-event-address-type-unique').prop('checked') !== false;
+        $('.field--name-field-address-address').each(function () {
+          $(this).find('.administrative-area').each(function () {
+            if (!addressTypeUniqueChecked) {
+              $(this).removeAttr('required');
+            }
+            else {
+              $(this).attr('required', 'required');
+            }
+          });
+        });
       }).change();
     }
   };

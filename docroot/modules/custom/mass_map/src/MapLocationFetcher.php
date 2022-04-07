@@ -42,6 +42,7 @@ class MapLocationFetcher {
           'name' => 'filter-by-location',
           'type' => 'text',
           'placeholder' => 'City, town, or ZIP code',
+          'errorMsg' => 'Please select an address in the suggesions. Hit ENTER or start typing to show suggesions.'
         ],
       ],
       'tags' => [
@@ -127,7 +128,7 @@ class MapLocationFetcher {
       }
 
       // Location subtitle.
-      if (!$node->field_location_subtitle->isEmpty()) {
+      if (isset($node->field_location_subtitle) && !$node->field_location_subtitle->isEmpty()) {
         $locations['imagePromos']['items'][$key]['location']['subtitle'] = $node->field_location_subtitle->value;
       }
 
@@ -232,7 +233,7 @@ class MapLocationFetcher {
         'info' => ''
       ];
 
-      if (!$node->field_ref_contact_info_1->isEmpty()) {
+      if (isset($node->field_ref_contact_info_1) && !$node->field_ref_contact_info_1->isEmpty()) {
         $contact_information_entity = $node->field_ref_contact_info_1->entity;
         // Get phone number from the referenced contact info node.
         if (!empty($contact_information_entity->field_ref_phone_number->entity->field_phone->value)) {

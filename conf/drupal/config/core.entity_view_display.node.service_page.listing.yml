@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.listing
+    - field.field.node.service_page.field_collections
     - field.field.node.service_page.field_data_flag
     - field.field.node.service_page.field_data_format
     - field.field.node.service_page.field_data_resource_type
@@ -25,6 +26,7 @@ dependencies:
     - field.field.node.service_page.field_location_button_short_desc
     - field.field.node.service_page.field_log_in_links
     - field.field.node.service_page.field_organizations
+    - field.field.node.service_page.field_primary_parent
     - field.field.node.service_page.field_ref_contact_info
     - field.field.node.service_page.field_related_organization_type
     - field.field.node.service_page.field_reusable_label
@@ -46,10 +48,12 @@ dependencies:
     - field.field.node.service_page.field_service_ref_services_6
     - field.field.node.service_page.field_service_video
     - field.field.node.service_page.field_services_social_links
+    - field.field.node.service_page.field_short_title
     - field.field.node.service_page.field_state_organization_tax
     - field.field.node.service_page.field_template
     - node.type.service_page
   module:
+    - link
     - options
     - user
 id: node.service_page.listing
@@ -58,61 +62,74 @@ bundle: service_page
 mode: listing
 content:
   field_data_flag:
-    weight: 2
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 2
     region: content
   field_data_format:
-    weight: 5
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 5
     region: content
   field_data_resource_type:
-    weight: 4
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 4
     region: content
   field_list_data_type:
-    weight: 3
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 3
     region: content
   field_organizations:
     type: entity_reference_label
-    weight: 0
-    region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
+    weight: 0
+    region: content
   field_service_lede:
-    weight: 1
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 1
+    region: content
+  field_service_ref_actions_2:
+    type: link
+    label: hidden
+    settings:
+      trim_length: null
+      url_only: false
+      url_plain: false
+      rel: '0'
+      target: '0'
+    third_party_settings: {  }
+    weight: 6
     region: content
   workbench_moderation_control:
-    weight: 0
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   computed_related_to: true
   content_moderation_control: true
   extra_node_all_actions: true
   extra_org_feedback_form: true
+  field_collections: true
   field_data_topic: true
   field_event_quantity: true
   field_image_credit: true
@@ -129,6 +146,7 @@ hidden:
   field_location_button_label: true
   field_location_button_short_desc: true
   field_log_in_links: true
+  field_primary_parent: true
   field_ref_contact_info: true
   field_related_organization_type: true
   field_reusable_label: true
@@ -143,12 +161,12 @@ hidden:
   field_service_metatags: true
   field_service_offered_by: true
   field_service_ref_actions: true
-  field_service_ref_actions_2: true
   field_service_ref_guide_page_1: true
   field_service_ref_locations: true
   field_service_ref_services_6: true
   field_service_video: true
   field_services_social_links: true
+  field_short_title: true
   field_state_organization_tax: true
   field_template: true
   langcode: true

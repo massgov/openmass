@@ -11,138 +11,38 @@ dependencies:
   module:
     - better_exposed_filters
     - entityreference_filter
+    - mass_content
     - node
     - taxonomy
     - text
     - user
     - views_autocomplete_filters
+    - views_porter_stemmer
 id: collection_all
 label: 'Collection All'
 module: views
-description: ''
+description: 'This view is related to collection_all_media and it is altered via code. Look hook_query_TAG_alter on the mass_content_module.'
 tag: ''
 base_table: node_field_data
 base_field: nid
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: perm
-        options:
-          perm: 'access content'
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          disable_sql_rewrite: false
-          distinct: true
-          disable_automatic_base_fields: true
-          replica: false
-          query_comment: ''
-          query_tags: {  }
-      exposed_form:
-        type: bef
-        options:
-          submit_button: Apply
-          reset_button: true
-          reset_button_label: 'Clear All'
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-          text_input_required: 'Select any filter and click on Apply to see results'
-          text_input_required_format: basic_html
-          bef:
-            general:
-              autosubmit: false
-              autosubmit_exclude_textfield: false
-              autosubmit_textfield_delay: 500
-              autosubmit_hide: false
-              input_required: false
-              allow_secondary: false
-              secondary_label: 'Advanced options'
-              secondary_open: false
-            filter:
-              field_collections_target_id_entityreference_filter:
-                plugin_id: bef
-                advanced:
-                  rewrite:
-                    filter_rewrite_values: ''
-                  collapsible: false
-                  is_secondary: false
-                select_all_none: false
-                select_all_none_nested: false
-                display_inline: 0
-                options_show_only_used: false
-                options_show_only_used_filtered: false
-              title:
-                plugin_id: default
-                advanced:
-                  collapsible: false
-                  is_secondary: false
-                options_show_only_used: false
-                options_show_only_used_filtered: false
-              field_collections_target_id_entityreference_filter_1:
-                plugin_id: bef
-                advanced:
-                  rewrite:
-                    filter_rewrite_values: ''
-                  collapsible: false
-                  is_secondary: false
-                select_all_none: false
-                select_all_none_nested: false
-                display_inline: 0
-                options_show_only_used: false
-                options_show_only_used_filtered: false
-      pager:
-        type: full
-        options:
-          items_per_page: 10
-          offset: 0
-          id: 0
-          total_pages: null
-          tags:
-            previous: ‹‹
-            next: ››
-            first: '« First'
-            last: 'Last »'
-          expose:
-            items_per_page: false
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-          quantity: 9
-      style:
-        type: default
-        options:
-          grouping: {  }
-          row_class: ''
-          default_row_class: true
-          uses_fields: false
-      row:
-        type: fields
-        options:
-          default_field_elements: false
-          inline: {  }
-          separator: ''
-          hide_empty: false
+      title: Collection
       fields:
-        rendered_entity:
-          id: rendered_entity
+        rendered_entity_mixed:
+          id: rendered_entity_mixed
           table: node
-          field: rendered_entity
+          field: rendered_entity_mixed
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          plugin_id: rendered_entity_mixed
           label: ''
           exclude: false
           alter:
@@ -179,14 +79,12 @@ display:
           element_label_colon: false
           element_wrapper_type: ''
           element_wrapper_class: ''
-          element_default_classes: false
+          element_default_classes: true
           empty: ''
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
           view_mode: listing
-          entity_type: node
-          plugin_id: rendered_entity
         title:
           id: title
           table: node_field_data
@@ -194,6 +92,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: field
           label: ''
           exclude: true
           alter:
@@ -249,9 +150,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: title
-          plugin_id: field
         field_short_desc:
           id: field_short_desc
           table: node__field_short_desc
@@ -259,6 +157,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: ''
           exclude: true
           alter:
@@ -313,7 +212,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          plugin_id: field
         field_how_to_lede:
           id: field_how_to_lede
           table: node__field_how_to_lede
@@ -321,6 +219,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: field
           label: ''
           exclude: true
           alter:
@@ -376,7 +275,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          plugin_id: field
         description__value:
           id: description__value
           table: taxonomy_term_field_data
@@ -384,6 +282,9 @@ display:
           relationship: field_collections
           group_type: group
           admin_label: ''
+          entity_type: taxonomy_term
+          entity_field: description
+          plugin_id: field
           label: ''
           exclude: true
           alter:
@@ -438,9 +339,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: taxonomy_term
-          entity_field: description
-          plugin_id: field
         name:
           id: name
           table: taxonomy_term_field_data
@@ -448,6 +346,9 @@ display:
           relationship: field_collections
           group_type: group
           admin_label: ''
+          entity_type: taxonomy_term
+          entity_field: name
+          plugin_id: term_name
           label: ''
           exclude: true
           alter:
@@ -504,23 +405,179 @@ display:
           separator: ', '
           field_api_classes: false
           convert_spaces: false
-          entity_type: taxonomy_term
-          entity_field: name
-          plugin_id: term_name
+      pager:
+        type: full
+        options:
+          offset: 0
+          items_per_page: 10
+          total_pages: null
+          id: 0
+          tags:
+            next: ››
+            previous: ‹‹
+            first: '« First'
+            last: 'Last »'
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          quantity: 9
+      exposed_form:
+        type: bef
+        options:
+          submit_button: Apply
+          reset_button: true
+          reset_button_label: 'Clear All'
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+          text_input_required: 'Select any filter and click on Apply to see results'
+          text_input_required_format: basic_html
+          bef:
+            general:
+              autosubmit: false
+              autosubmit_exclude_textfield: false
+              autosubmit_textfield_delay: 500
+              autosubmit_hide: false
+              input_required: false
+              allow_secondary: false
+              secondary_label: 'Advanced options'
+              secondary_open: false
+            filter:
+              field_collections_target_id_entityreference_filter:
+                plugin_id: bef
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+                select_all_none: false
+                select_all_none_nested: false
+                display_inline: 0
+                options_show_only_used: false
+                options_show_only_used_filtered: false
+              title:
+                plugin_id: default
+                advanced:
+                  collapsible: false
+                  is_secondary: false
+                options_show_only_used: false
+                options_show_only_used_filtered: false
+              field_collections_target_id_entityreference_filter_1:
+                plugin_id: bef
+                advanced:
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+                select_all_none: false
+                select_all_none_nested: false
+                display_inline: 0
+                options_show_only_used: false
+                options_show_only_used_filtered: false
+      access:
+        type: perm
+        options:
+          perm: 'access content'
+      cache:
+        type: tag
+        options: {  }
+      empty:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: '<div class="ma__no-results"><h3>No results found</h3><p>Here are a few tips:</p><ul><li>Try a different keyword</li><li><a href="[view:url]">Clear all filters</a></li><li>Browse by topic without keywords</li></ul><p><a href="https://www.mass.gov/forms/massgov-data-hub-feedback-form" target="_blank">Tell us what you were hoping to find</a> so we can continue to improve the Data Hub.</p></div>'
+            format: full_html
+          tokenize: false
+      sorts:
+        title:
+          id: title
+          table: node_field_data
+          field: title
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: standard
+          order: ASC
+          expose:
+            label: ''
+            field_identifier: title
+          exposed: false
+      arguments:
+        tid:
+          id: tid
+          table: taxonomy_index
+          field: tid
+          relationship: none
+          group_type: group
+          admin_label: 'Content: Has taxonomy term ID (Collection)'
+          plugin_id: taxonomy_index_tid
+          default_action: 'not found'
+          exception:
+            value: all
+            title_enable: false
+            title: All
+          title_enable: true
+          title: '{{ arguments.tid }}'
+          default_argument_type: raw
+          default_argument_options:
+            index: 0
+            use_alias: false
+          default_argument_skip_url: false
+          summary_options:
+            base_path: ''
+            count: true
+            override: false
+            items_per_page: 25
+          summary:
+            sort_order: asc
+            number_of_records: 0
+            format: default_summary
+          specify_validation: true
+          validate:
+            type: mass_taxonomy_term_url_name_into_id_depth_parent
+            fail: 'not found'
+          validate_options:
+            bundles:
+              collections: collections
+            access: '1'
+            operation: view
+            term_depth: '1'
+            term_depth_value: '1'
+            term_parent: 0
+            term_parent_value: ''
+          break_phrase: false
+          add_table: true
+          require_value: false
+          reduce_duplicates: false
       filters:
         status:
-          value: '1'
+          id: status
           table: node_field_data
           field: status
-          plugin_id: boolean
           entity_type: node
           entity_field: status
-          id: status
+          plugin_id: boolean
+          value: '1'
+          group: 1
           expose:
             operator: ''
             operator_limit_selection: false
             operator_list: {  }
-          group: 1
         field_collections_target_id:
           id: field_collections_target_id
           table: node__field_collections
@@ -528,6 +585,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: taxonomy_index_tid
           operator: 'not empty'
           value: {  }
           group: 1
@@ -560,12 +618,11 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           reduce_duplicates: false
-          type: select
-          limit: true
           vid: collections
+          type: select
           hierarchy: true
+          limit: true
           error_message: true
-          plugin_id: taxonomy_index_tid
         field_collections_target_id_entityreference_filter:
           id: field_collections_target_id_entityreference_filter
           table: node__field_collections
@@ -573,6 +630,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: entityreference_filter_view_result
           operator: or
           value: null
           group: 1
@@ -623,7 +681,6 @@ display:
           reference_display: 'taxonomy_term_children:entity_reference'
           reference_arguments: '#1'
           hide_empty_filter: true
-          plugin_id: entityreference_filter_view_result
         combine:
           id: combine
           table: views
@@ -631,6 +688,7 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          plugin_id: views_autocomplete_filters_combine
           operator: allwords
           value: ''
           group: 1
@@ -670,6 +728,7 @@ display:
             autocomplete_raw_suggestion: 1
             autocomplete_raw_dropdown: 1
             autocomplete_dependent: 0
+            stem_query: 1
           is_grouped: false
           group_info:
             label: ''
@@ -688,61 +747,34 @@ display:
             field_how_to_lede: field_how_to_lede
             description__value: description__value
             name: name
-          plugin_id: views_autocomplete_filters_combine
-      sorts:
-        title:
-          id: title
-          table: node_field_data
-          field: title
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: ASC
-          exposed: false
-          expose:
-            label: ''
-          entity_type: node
-          entity_field: title
-          plugin_id: standard
-      header:
-        area:
-          id: area
-          table: views
-          field: area
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: true
-          tokenize: false
-          content:
-            value: '<div class="ma__breadcrumb--views"></div>'
-            format: full_html
-          plugin_id: text
-        result:
-          id: result
-          table: views
-          field: result
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          content: 'Displaying @start - @end of @total'
-          plugin_id: result
-      footer: {  }
-      empty:
-        area:
-          id: area
-          table: views
-          field: area
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: true
-          tokenize: false
-          content:
-            value: '<div class="ma__no-results"><h3>No results found</h3><p>Here are a few tips:</p><ul><li>Try clearing filters</li><li>Try moving up a level using the breadcrumb</li></ul></div>'
-            format: full_html
-          plugin_id: text
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      style:
+        type: default
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+          uses_fields: false
+      row:
+        type: fields
+        options:
+          default_field_elements: false
+          inline: {  }
+          separator: ''
+          hide_empty: false
+      query:
+        type: views_query
+        options:
+          query_comment: ''
+          disable_sql_rewrite: false
+          distinct: true
+          disable_automatic_base_fields: true
+          replica: false
+          query_tags:
+            - collection_all
       relationships:
         field_collections:
           id: field_collections
@@ -751,61 +783,34 @@ display:
           relationship: none
           group_type: group
           admin_label: 'field_collections: Taxonomy term'
-          required: true
           plugin_id: standard
-      arguments:
-        tid:
-          id: tid
-          table: taxonomy_index
-          field: tid
+          required: true
+      header:
+        area:
+          id: area
+          table: views
+          field: area
           relationship: none
           group_type: group
-          admin_label: 'Content: Has taxonomy term ID (Collection)'
-          default_action: 'not found'
-          exception:
-            value: all
-            title_enable: false
-            title: All
-          title_enable: true
-          title: '{{ arguments.tid }}'
-          default_argument_type: raw
-          default_argument_options:
-            index: 0
-            use_alias: false
-          default_argument_skip_url: false
-          summary_options:
-            base_path: ''
-            count: true
-            items_per_page: 25
-            override: false
-          summary:
-            sort_order: asc
-            number_of_records: 0
-            format: default_summary
-          specify_validation: true
-          validate:
-            type: mass_taxonomy_term_url_name_into_id_depth_parent
-            fail: 'not found'
-          validate_options:
-            bundles:
-              collections: collections
-            access: '1'
-            operation: view
-            term_depth: '1'
-            term_depth_value: '1'
-            term_parent: 0
-            term_parent_value: ''
-          break_phrase: false
-          add_table: true
-          require_value: false
-          reduce_duplicates: false
-          plugin_id: taxonomy_index_tid
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: '<div class="ma__breadcrumb--views"></div>'
+            format: full_html
+          tokenize: false
+        result:
+          id: result
+          table: views
+          field: result
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: result
+          empty: false
+          content: 'Displaying @start - @end of @total'
+      footer: {  }
       display_extenders: {  }
-      title: Collection
-      filter_groups:
-        operator: AND
-        groups:
-          1: AND
     cache_metadata:
       max-age: -1
       contexts:
@@ -825,6 +830,7 @@ display:
         - 'config:core.entity_view_display.node.advisory.default'
         - 'config:core.entity_view_display.node.advisory.link_and_description'
         - 'config:core.entity_view_display.node.advisory.link_only'
+        - 'config:core.entity_view_display.node.advisory.listing'
         - 'config:core.entity_view_display.node.advisory.teaser'
         - 'config:core.entity_view_display.node.advisory.title_short_desc'
         - 'config:core.entity_view_display.node.alert.default'
@@ -838,6 +844,8 @@ display:
         - 'config:core.entity_view_display.node.binder.teaser'
         - 'config:core.entity_view_display.node.binder.title_short_desc'
         - 'config:core.entity_view_display.node.campaign_landing.default'
+        - 'config:core.entity_view_display.node.campaign_landing.link_and_description'
+        - 'config:core.entity_view_display.node.campaign_landing.link_only'
         - 'config:core.entity_view_display.node.campaign_landing.teaser'
         - 'config:core.entity_view_display.node.contact_information.application_login_link'
         - 'config:core.entity_view_display.node.contact_information.contact_groups_only'
@@ -851,16 +859,21 @@ display:
         - 'config:core.entity_view_display.node.contact_information.sidebar'
         - 'config:core.entity_view_display.node.contact_information.teaser'
         - 'config:core.entity_view_display.node.curated_list.default'
+        - 'config:core.entity_view_display.node.curated_list.link_and_description'
+        - 'config:core.entity_view_display.node.curated_list.link_only'
         - 'config:core.entity_view_display.node.curated_list.listing'
         - 'config:core.entity_view_display.node.curated_list.teaser'
         - 'config:core.entity_view_display.node.curated_list.title_short_desc'
         - 'config:core.entity_view_display.node.decision.default'
         - 'config:core.entity_view_display.node.decision.link_and_description'
         - 'config:core.entity_view_display.node.decision.link_only'
+        - 'config:core.entity_view_display.node.decision.listing'
         - 'config:core.entity_view_display.node.decision.teaser'
         - 'config:core.entity_view_display.node.decision.title_short_desc'
         - 'config:core.entity_view_display.node.decision.token'
         - 'config:core.entity_view_display.node.decision_tree.default'
+        - 'config:core.entity_view_display.node.decision_tree.link_and_description'
+        - 'config:core.entity_view_display.node.decision_tree.link_only'
         - 'config:core.entity_view_display.node.decision_tree.teaser'
         - 'config:core.entity_view_display.node.decision_tree.title_short_desc'
         - 'config:core.entity_view_display.node.decision_tree_branch.default'
@@ -871,12 +884,15 @@ display:
         - 'config:core.entity_view_display.node.error_page.teaser'
         - 'config:core.entity_view_display.node.event.agenda'
         - 'config:core.entity_view_display.node.event.default'
+        - 'config:core.entity_view_display.node.event.link_and_description'
+        - 'config:core.entity_view_display.node.event.link_only'
         - 'config:core.entity_view_display.node.event.minutes'
         - 'config:core.entity_view_display.node.event.teaser'
         - 'config:core.entity_view_display.node.event.token'
         - 'config:core.entity_view_display.node.executive_order.default'
         - 'config:core.entity_view_display.node.executive_order.link_and_description'
         - 'config:core.entity_view_display.node.executive_order.link_only'
+        - 'config:core.entity_view_display.node.executive_order.listing'
         - 'config:core.entity_view_display.node.executive_order.teaser'
         - 'config:core.entity_view_display.node.executive_order.title_short_desc'
         - 'config:core.entity_view_display.node.executive_order.token'
@@ -888,14 +904,19 @@ display:
         - 'config:core.entity_view_display.node.form_page.default'
         - 'config:core.entity_view_display.node.form_page.link_and_description'
         - 'config:core.entity_view_display.node.form_page.link_only'
+        - 'config:core.entity_view_display.node.form_page.listing'
         - 'config:core.entity_view_display.node.form_page.teaser'
         - 'config:core.entity_view_display.node.form_page.title_short_desc'
         - 'config:core.entity_view_display.node.guide_page.default'
+        - 'config:core.entity_view_display.node.guide_page.link_and_description'
+        - 'config:core.entity_view_display.node.guide_page.link_only'
         - 'config:core.entity_view_display.node.guide_page.listing'
         - 'config:core.entity_view_display.node.guide_page.teaser'
         - 'config:core.entity_view_display.node.guide_page.title_short_desc'
         - 'config:core.entity_view_display.node.guide_page.token'
         - 'config:core.entity_view_display.node.how_to_page.default'
+        - 'config:core.entity_view_display.node.how_to_page.link_and_description'
+        - 'config:core.entity_view_display.node.how_to_page.link_only'
         - 'config:core.entity_view_display.node.how_to_page.listing'
         - 'config:core.entity_view_display.node.how_to_page.teaser'
         - 'config:core.entity_view_display.node.how_to_page.title_short_desc'
@@ -908,21 +929,27 @@ display:
         - 'config:core.entity_view_display.node.info_details.title_short_desc'
         - 'config:core.entity_view_display.node.interstitial.default'
         - 'config:core.entity_view_display.node.interstitial.teaser'
-        - 'config:core.entity_view_display.node.legacy_redirects.default'
-        - 'config:core.entity_view_display.node.legacy_redirects.teaser'
         - 'config:core.entity_view_display.node.location.default'
+        - 'config:core.entity_view_display.node.location.link_and_description'
+        - 'config:core.entity_view_display.node.location.link_only'
+        - 'config:core.entity_view_display.node.location.listing'
         - 'config:core.entity_view_display.node.location.teaser'
         - 'config:core.entity_view_display.node.location.token'
         - 'config:core.entity_view_display.node.location_details.default'
+        - 'config:core.entity_view_display.node.location_details.link_and_description'
+        - 'config:core.entity_view_display.node.location_details.link_only'
         - 'config:core.entity_view_display.node.location_details.teaser'
         - 'config:core.entity_view_display.node.news.default'
+        - 'config:core.entity_view_display.node.news.link_and_description'
+        - 'config:core.entity_view_display.node.news.link_only'
         - 'config:core.entity_view_display.node.news.press_teaser'
         - 'config:core.entity_view_display.node.news.teaser'
         - 'config:core.entity_view_display.node.news.token'
         - 'config:core.entity_view_display.node.org_page.about_details'
-        - 'config:core.entity_view_display.node.org_page.all_services'
         - 'config:core.entity_view_display.node.org_page.default'
         - 'config:core.entity_view_display.node.org_page.feedback'
+        - 'config:core.entity_view_display.node.org_page.link_and_description'
+        - 'config:core.entity_view_display.node.org_page.link_only'
         - 'config:core.entity_view_display.node.org_page.logo_link'
         - 'config:core.entity_view_display.node.org_page.org_nav_featured_services'
         - 'config:core.entity_view_display.node.org_page.org_nav_featured_topics'
@@ -935,33 +962,45 @@ display:
         - 'config:core.entity_view_display.node.person.about_details'
         - 'config:core.entity_view_display.node.person.contact_summary'
         - 'config:core.entity_view_display.node.person.default'
+        - 'config:core.entity_view_display.node.person.link_and_description'
+        - 'config:core.entity_view_display.node.person.link_only'
         - 'config:core.entity_view_display.node.person.preview_card'
         - 'config:core.entity_view_display.node.person.teaser'
         - 'config:core.entity_view_display.node.regulation.default'
         - 'config:core.entity_view_display.node.regulation.link_and_description'
         - 'config:core.entity_view_display.node.regulation.link_only'
+        - 'config:core.entity_view_display.node.regulation.listing'
         - 'config:core.entity_view_display.node.regulation.teaser'
         - 'config:core.entity_view_display.node.regulation.title_short_desc'
         - 'config:core.entity_view_display.node.rules.default'
         - 'config:core.entity_view_display.node.rules.link_and_description'
         - 'config:core.entity_view_display.node.rules.link_only'
+        - 'config:core.entity_view_display.node.rules.listing'
         - 'config:core.entity_view_display.node.rules.teaser'
         - 'config:core.entity_view_display.node.rules.title_short_desc'
         - 'config:core.entity_view_display.node.service_details.default'
+        - 'config:core.entity_view_display.node.service_details.link_and_description'
+        - 'config:core.entity_view_display.node.service_details.link_only'
         - 'config:core.entity_view_display.node.service_details.listing'
         - 'config:core.entity_view_display.node.service_details.teaser'
         - 'config:core.entity_view_display.node.service_details.title_short_desc'
         - 'config:core.entity_view_display.node.service_details.token'
         - 'config:core.entity_view_display.node.service_page.all_tasks'
         - 'config:core.entity_view_display.node.service_page.default'
+        - 'config:core.entity_view_display.node.service_page.link_and_description'
+        - 'config:core.entity_view_display.node.service_page.link_only'
         - 'config:core.entity_view_display.node.service_page.listing'
         - 'config:core.entity_view_display.node.service_page.teaser'
         - 'config:core.entity_view_display.node.service_page.title_short_desc'
         - 'config:core.entity_view_display.node.service_page.token'
+        - 'config:core.entity_view_display.node.sitewide_alert.default'
+        - 'config:core.entity_view_display.node.sitewide_alert.teaser'
         - 'config:core.entity_view_display.node.stacked_layout.default'
         - 'config:core.entity_view_display.node.stacked_layout.teaser'
         - 'config:core.entity_view_display.node.topic_page.card'
         - 'config:core.entity_view_display.node.topic_page.default'
+        - 'config:core.entity_view_display.node.topic_page.link_and_description'
+        - 'config:core.entity_view_display.node.topic_page.link_only'
         - 'config:core.entity_view_display.node.topic_page.teaser'
         - 'config:core.entity_view_display.node.topic_page.token'
         - 'config:core.entity_view_display.node.utility_drawer.default'
@@ -970,9 +1009,9 @@ display:
         - 'config:field.storage.node.field_short_desc'
         - taxonomy_term_list
   page_all:
-    display_plugin: page
     id: page_all
     display_title: Page
+    display_plugin: page
     position: 1
     display_options:
       display_extenders: {  }
@@ -996,6 +1035,7 @@ display:
         - 'config:core.entity_view_display.node.advisory.default'
         - 'config:core.entity_view_display.node.advisory.link_and_description'
         - 'config:core.entity_view_display.node.advisory.link_only'
+        - 'config:core.entity_view_display.node.advisory.listing'
         - 'config:core.entity_view_display.node.advisory.teaser'
         - 'config:core.entity_view_display.node.advisory.title_short_desc'
         - 'config:core.entity_view_display.node.alert.default'
@@ -1009,6 +1049,8 @@ display:
         - 'config:core.entity_view_display.node.binder.teaser'
         - 'config:core.entity_view_display.node.binder.title_short_desc'
         - 'config:core.entity_view_display.node.campaign_landing.default'
+        - 'config:core.entity_view_display.node.campaign_landing.link_and_description'
+        - 'config:core.entity_view_display.node.campaign_landing.link_only'
         - 'config:core.entity_view_display.node.campaign_landing.teaser'
         - 'config:core.entity_view_display.node.contact_information.application_login_link'
         - 'config:core.entity_view_display.node.contact_information.contact_groups_only'
@@ -1022,16 +1064,21 @@ display:
         - 'config:core.entity_view_display.node.contact_information.sidebar'
         - 'config:core.entity_view_display.node.contact_information.teaser'
         - 'config:core.entity_view_display.node.curated_list.default'
+        - 'config:core.entity_view_display.node.curated_list.link_and_description'
+        - 'config:core.entity_view_display.node.curated_list.link_only'
         - 'config:core.entity_view_display.node.curated_list.listing'
         - 'config:core.entity_view_display.node.curated_list.teaser'
         - 'config:core.entity_view_display.node.curated_list.title_short_desc'
         - 'config:core.entity_view_display.node.decision.default'
         - 'config:core.entity_view_display.node.decision.link_and_description'
         - 'config:core.entity_view_display.node.decision.link_only'
+        - 'config:core.entity_view_display.node.decision.listing'
         - 'config:core.entity_view_display.node.decision.teaser'
         - 'config:core.entity_view_display.node.decision.title_short_desc'
         - 'config:core.entity_view_display.node.decision.token'
         - 'config:core.entity_view_display.node.decision_tree.default'
+        - 'config:core.entity_view_display.node.decision_tree.link_and_description'
+        - 'config:core.entity_view_display.node.decision_tree.link_only'
         - 'config:core.entity_view_display.node.decision_tree.teaser'
         - 'config:core.entity_view_display.node.decision_tree.title_short_desc'
         - 'config:core.entity_view_display.node.decision_tree_branch.default'
@@ -1042,12 +1089,15 @@ display:
         - 'config:core.entity_view_display.node.error_page.teaser'
         - 'config:core.entity_view_display.node.event.agenda'
         - 'config:core.entity_view_display.node.event.default'
+        - 'config:core.entity_view_display.node.event.link_and_description'
+        - 'config:core.entity_view_display.node.event.link_only'
         - 'config:core.entity_view_display.node.event.minutes'
         - 'config:core.entity_view_display.node.event.teaser'
         - 'config:core.entity_view_display.node.event.token'
         - 'config:core.entity_view_display.node.executive_order.default'
         - 'config:core.entity_view_display.node.executive_order.link_and_description'
         - 'config:core.entity_view_display.node.executive_order.link_only'
+        - 'config:core.entity_view_display.node.executive_order.listing'
         - 'config:core.entity_view_display.node.executive_order.teaser'
         - 'config:core.entity_view_display.node.executive_order.title_short_desc'
         - 'config:core.entity_view_display.node.executive_order.token'
@@ -1059,14 +1109,19 @@ display:
         - 'config:core.entity_view_display.node.form_page.default'
         - 'config:core.entity_view_display.node.form_page.link_and_description'
         - 'config:core.entity_view_display.node.form_page.link_only'
+        - 'config:core.entity_view_display.node.form_page.listing'
         - 'config:core.entity_view_display.node.form_page.teaser'
         - 'config:core.entity_view_display.node.form_page.title_short_desc'
         - 'config:core.entity_view_display.node.guide_page.default'
+        - 'config:core.entity_view_display.node.guide_page.link_and_description'
+        - 'config:core.entity_view_display.node.guide_page.link_only'
         - 'config:core.entity_view_display.node.guide_page.listing'
         - 'config:core.entity_view_display.node.guide_page.teaser'
         - 'config:core.entity_view_display.node.guide_page.title_short_desc'
         - 'config:core.entity_view_display.node.guide_page.token'
         - 'config:core.entity_view_display.node.how_to_page.default'
+        - 'config:core.entity_view_display.node.how_to_page.link_and_description'
+        - 'config:core.entity_view_display.node.how_to_page.link_only'
         - 'config:core.entity_view_display.node.how_to_page.listing'
         - 'config:core.entity_view_display.node.how_to_page.teaser'
         - 'config:core.entity_view_display.node.how_to_page.title_short_desc'
@@ -1079,21 +1134,27 @@ display:
         - 'config:core.entity_view_display.node.info_details.title_short_desc'
         - 'config:core.entity_view_display.node.interstitial.default'
         - 'config:core.entity_view_display.node.interstitial.teaser'
-        - 'config:core.entity_view_display.node.legacy_redirects.default'
-        - 'config:core.entity_view_display.node.legacy_redirects.teaser'
         - 'config:core.entity_view_display.node.location.default'
+        - 'config:core.entity_view_display.node.location.link_and_description'
+        - 'config:core.entity_view_display.node.location.link_only'
+        - 'config:core.entity_view_display.node.location.listing'
         - 'config:core.entity_view_display.node.location.teaser'
         - 'config:core.entity_view_display.node.location.token'
         - 'config:core.entity_view_display.node.location_details.default'
+        - 'config:core.entity_view_display.node.location_details.link_and_description'
+        - 'config:core.entity_view_display.node.location_details.link_only'
         - 'config:core.entity_view_display.node.location_details.teaser'
         - 'config:core.entity_view_display.node.news.default'
+        - 'config:core.entity_view_display.node.news.link_and_description'
+        - 'config:core.entity_view_display.node.news.link_only'
         - 'config:core.entity_view_display.node.news.press_teaser'
         - 'config:core.entity_view_display.node.news.teaser'
         - 'config:core.entity_view_display.node.news.token'
         - 'config:core.entity_view_display.node.org_page.about_details'
-        - 'config:core.entity_view_display.node.org_page.all_services'
         - 'config:core.entity_view_display.node.org_page.default'
         - 'config:core.entity_view_display.node.org_page.feedback'
+        - 'config:core.entity_view_display.node.org_page.link_and_description'
+        - 'config:core.entity_view_display.node.org_page.link_only'
         - 'config:core.entity_view_display.node.org_page.logo_link'
         - 'config:core.entity_view_display.node.org_page.org_nav_featured_services'
         - 'config:core.entity_view_display.node.org_page.org_nav_featured_topics'
@@ -1106,33 +1167,45 @@ display:
         - 'config:core.entity_view_display.node.person.about_details'
         - 'config:core.entity_view_display.node.person.contact_summary'
         - 'config:core.entity_view_display.node.person.default'
+        - 'config:core.entity_view_display.node.person.link_and_description'
+        - 'config:core.entity_view_display.node.person.link_only'
         - 'config:core.entity_view_display.node.person.preview_card'
         - 'config:core.entity_view_display.node.person.teaser'
         - 'config:core.entity_view_display.node.regulation.default'
         - 'config:core.entity_view_display.node.regulation.link_and_description'
         - 'config:core.entity_view_display.node.regulation.link_only'
+        - 'config:core.entity_view_display.node.regulation.listing'
         - 'config:core.entity_view_display.node.regulation.teaser'
         - 'config:core.entity_view_display.node.regulation.title_short_desc'
         - 'config:core.entity_view_display.node.rules.default'
         - 'config:core.entity_view_display.node.rules.link_and_description'
         - 'config:core.entity_view_display.node.rules.link_only'
+        - 'config:core.entity_view_display.node.rules.listing'
         - 'config:core.entity_view_display.node.rules.teaser'
         - 'config:core.entity_view_display.node.rules.title_short_desc'
         - 'config:core.entity_view_display.node.service_details.default'
+        - 'config:core.entity_view_display.node.service_details.link_and_description'
+        - 'config:core.entity_view_display.node.service_details.link_only'
         - 'config:core.entity_view_display.node.service_details.listing'
         - 'config:core.entity_view_display.node.service_details.teaser'
         - 'config:core.entity_view_display.node.service_details.title_short_desc'
         - 'config:core.entity_view_display.node.service_details.token'
         - 'config:core.entity_view_display.node.service_page.all_tasks'
         - 'config:core.entity_view_display.node.service_page.default'
+        - 'config:core.entity_view_display.node.service_page.link_and_description'
+        - 'config:core.entity_view_display.node.service_page.link_only'
         - 'config:core.entity_view_display.node.service_page.listing'
         - 'config:core.entity_view_display.node.service_page.teaser'
         - 'config:core.entity_view_display.node.service_page.title_short_desc'
         - 'config:core.entity_view_display.node.service_page.token'
+        - 'config:core.entity_view_display.node.sitewide_alert.default'
+        - 'config:core.entity_view_display.node.sitewide_alert.teaser'
         - 'config:core.entity_view_display.node.stacked_layout.default'
         - 'config:core.entity_view_display.node.stacked_layout.teaser'
         - 'config:core.entity_view_display.node.topic_page.card'
         - 'config:core.entity_view_display.node.topic_page.default'
+        - 'config:core.entity_view_display.node.topic_page.link_and_description'
+        - 'config:core.entity_view_display.node.topic_page.link_only'
         - 'config:core.entity_view_display.node.topic_page.teaser'
         - 'config:core.entity_view_display.node.topic_page.token'
         - 'config:core.entity_view_display.node.utility_drawer.default'

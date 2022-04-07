@@ -45,8 +45,8 @@ class NewsController extends ControllerBase {
     $nids = $node_query->condition('type', 'news')
       ->condition('status', 1)
       ->condition('title', '_QA%', 'NOT LIKE')
-      ->condition('field_news_date', $date_cutoff, '>')
-      ->sort('field_news_date', 'DESC')
+      ->condition('field_date_published', $date_cutoff, '>')
+      ->sort('field_date_published', 'DESC')
       ->execute();
 
     /** @var \Drupal\node\NodeInterface[] $entities */
@@ -83,7 +83,7 @@ class NewsController extends ControllerBase {
       // Store this Url object so we can add it as a cacheable dependency later.
       $urls[] = $url = $entity->toUrl('canonical', ['absolute' => TRUE])
         ->toString(TRUE);
-      $published_raw = $entity->get('field_news_date')->getString();
+      $published_raw = $entity->get('field_date_published')->getString();
       $published_local = new DrupalDateTime($published_raw, $utc_timezone);
       $response_array[] = [
         'nid' => (int) $entity->id(),
@@ -98,7 +98,7 @@ class NewsController extends ControllerBase {
     // Add the node_list cache tag so the endpoint results will update when nodes are
     // updated.
     $cache_metadata = new CacheableMetadata();
-    $cache_metadata->setCacheTags(['handy_cache_tags:node:news']);
+    $cache_metadata->setCacheTags(['node_list:news']);
 
     // Create the JSON response object and add the cache metadata and urls.
     $response = new CacheableJsonResponse($response_array);

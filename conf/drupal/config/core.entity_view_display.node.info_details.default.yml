@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.info_details.field_data_format
     - field.field.node.info_details.field_data_resource_type
     - field.field.node.info_details.field_data_topic
+    - field.field.node.info_details.field_date_published
     - field.field.node.info_details.field_details_data_type
     - field.field.node.info_details.field_details_enable_fields
     - field.field.node.info_details.field_english_version
@@ -25,8 +26,10 @@ dependencies:
     - field.field.node.info_details.field_intended_audience
     - field.field.node.info_details.field_organizations
     - field.field.node.info_details.field_page_template
+    - field.field.node.info_details.field_primary_parent
     - field.field.node.info_details.field_reusable_label
     - field.field.node.info_details.field_short_desc
+    - field.field.node.info_details.field_short_title
     - field.field.node.info_details.field_state_organization_tax
     - node.type.info_details
   module:
@@ -45,157 +48,157 @@ mode: default
 content:
   computed_related_to:
     type: entity_reference_label
-    weight: 16
-    region: content
     label: above
     settings:
       link: true
     third_party_settings: {  }
+    weight: 16
+    region: content
   content_moderation_control:
+    settings: {  }
+    third_party_settings: {  }
     weight: 0
     region: content
+  extra_node_pager:
     settings: {  }
     third_party_settings: {  }
-  extra_node_pager:
     weight: 18
     region: content
+  extra_org_feedback_form:
     settings: {  }
     third_party_settings: {  }
-  extra_org_feedback_form:
     weight: 17
     region: content
+  extra_sidebar_contact:
     settings: {  }
     third_party_settings: {  }
-  extra_sidebar_contact:
     weight: 2
     region: content
-    settings: {  }
-    third_party_settings: {  }
   field_banner_image:
-    weight: 23
+    type: image
     label: hidden
     settings:
-      image_style: ''
       image_link: ''
+      image_style: ''
     third_party_settings: {  }
-    type: image
+    weight: 23
     region: content
   field_contact:
-    weight: 4
+    type: entity_reference_entity_view
     label: hidden
     settings:
       view_mode: contact_list
       link: false
     third_party_settings: {  }
-    type: entity_reference_entity_view
+    weight: 4
     region: content
   field_data_flag:
-    weight: 20
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 20
     region: content
   field_data_format:
-    weight: 25
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 25
     region: content
   field_data_resource_type:
-    weight: 22
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 22
     region: content
   field_data_topic:
-    weight: 26
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 26
+    region: content
+  field_date_published:
+    type: datetime_custom
+    label: above
+    settings:
+      timezone_override: ''
+      date_format: 'F j, Y'
+    third_party_settings: {  }
+    weight: 9
     region: content
   field_details_data_type:
-    weight: 21
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 21
     region: content
   field_details_enable_fields:
-    weight: 24
+    type: boolean
     label: above
     settings:
       format: default
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-    type: boolean
+    weight: 24
     region: content
   field_english_version:
-    weight: 27
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 27
     region: content
   field_footnotes:
-    weight: 8
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 8
     region: content
   field_image_credit:
-    weight: 11
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 11
     region: content
   field_info_detail_overview:
-    weight: 19
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
-    region: content
-  field_info_details_date_publishe:
-    weight: 9
-    label: above
-    settings:
-      timezone_override: ''
-      date_format: 'F j, Y'
-    third_party_settings: {  }
-    type: datetime_custom
+    weight: 19
     region: content
   field_info_details_header_media:
     type: entity_reference_revisions_entity_view
-    weight: 3
     label: hidden
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 3
     region: content
   field_info_details_last_updated:
-    weight: 10
+    type: datetime_custom
     label: above
     settings:
       timezone_override: ''
       date_format: 'F j, Y'
     third_party_settings: {  }
-    type: datetime_custom
+    weight: 10
     region: content
   field_info_details_related:
-    weight: 7
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -204,81 +207,84 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 7
     region: content
   field_info_details_sections:
     type: entity_reference_revisions_entity_view
-    weight: 5
     label: hidden
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 5
     region: content
   field_infodetails_metatags:
-    weight: 13
+    type: metatag_empty_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: metatag_empty_formatter
+    weight: 13
     region: content
   field_intended_audience:
-    weight: 15
+    type: list_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 15
     region: content
   field_organizations:
     type: entity_reference_label
-    weight: 14
-    region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
+    weight: 14
+    region: content
   field_state_organization_tax:
-    weight: 12
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 12
     region: content
   links:
-    weight: 1
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
   referencing_binders:
     type: entity_reference_entity_view
-    weight: 6
-    region: content
     label: hidden
     settings:
       view_mode: table_of_contents
       link: false
     third_party_settings: {  }
+    weight: 6
+    region: content
   referencing_binders_page_flipper:
     type: entity_reference_entity_view
-    weight: 7
-    region: content
     label: hidden
     settings:
       view_mode: page_flipper
       link: false
     third_party_settings: {  }
-  workbench_moderation_control:
-    weight: 1
+    weight: 7
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
 hidden:
   computed_log_in_links: true
   field_collections: true
+  field_info_details_date_publishe: true
   field_page_template: true
+  field_primary_parent: true
   field_reusable_label: true
   field_short_desc: true
+  field_short_title: true
   langcode: true
   page_next: true
   page_previous: true

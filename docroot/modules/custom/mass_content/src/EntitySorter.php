@@ -64,31 +64,20 @@ class EntitySorter {
       $type = $object->getType();
       switch ($type) {
         case 'advisory':
-          $date = Helper::fieldValue($object, 'field_advisory_date');
-          break;
-
         case 'binder':
-          $date = Helper::fieldValue($object, 'field_binder_date_published');
-          break;
-
         case 'decision':
-          $date = Helper::fieldValue($object, 'field_decision_date');
+        case 'executive_order':
+        case 'regulation':
+        case 'rules':
+          $date = Helper::fieldValue($object, 'field_date_published');
           break;
 
-        case 'executive_order':
-          $date = Helper::fieldValue($object, 'field_executive_order_date');
+        case 'curated_list':
+          $date = date('Y-d-m', $object->created->value);
           break;
 
         case 'info_details':
           $date = Helper::fieldValue($object, 'field_info_details_last_updated');
-          break;
-
-        case 'regulation':
-          $date = Helper::fieldValue($object, 'field_regulation_last_updated');
-          break;
-
-        case 'rules':
-          $date = Helper::fieldValue($object, 'field_rules_effective_date');
           break;
 
         default:

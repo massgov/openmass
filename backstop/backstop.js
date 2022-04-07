@@ -40,6 +40,10 @@ const scenarios = pages.map(function(page) {
       base = 'https://massgovstg.prod.acquia-sites.com';
       auth = getAuth();
       break;
+    case 'tugboat':
+      const opts = process.argv.filter(arg => arg.match(/^--tugboat=/))
+      base = opts[0].replace('--tugboat=', '');
+      break;
     default:
       base = `https://massgov${target}.prod.acquia-sites.com`;
       auth = getAuth();
@@ -48,6 +52,37 @@ const scenarios = pages.map(function(page) {
   let separator = "?";
   if (url.search !== "") {
     separator = "&";
+  }
+  if (page.screens !== undefined) {
+    if (page.screens.length > 0 && page.viewports === undefined) {
+      page.viewports = page.screens.map(function (screen) {
+        let viewport;
+        switch (screen) {
+          case "desktop":
+            viewport = {
+              "label": "desktop",
+              "width": 1920,
+              "height": 1080
+            };
+            break;
+          case "tablet":
+            viewport = {
+              "label": "tablet",
+              "width": 1024,
+              "height": 768
+            };
+            break;
+          case "mobile":
+            viewport = {
+              "label": "phone",
+              "width": 320,
+              "height": 480
+            };
+            break;
+        }
+        return viewport;
+      });
+    }
   }
   return {
     ...page,

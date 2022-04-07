@@ -631,7 +631,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
   public function assertContentTypeFields($content_type) {
     $this->minkContext->visitPath('node/add/' . $content_type);
     // Test title for everything but person ct
-    $no_title_ct = ['legacy_redirects', 'person', 'executive_order', 'regulation'];
+    $no_title_ct = ['person', 'executive_order', 'regulation'];
     if (!in_array($content_type, $no_title_ct)) {
       $this->minkContext->assertElementOnPage('#edit-title-0-value');
     }
@@ -721,7 +721,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ],
           [
-            'field' => 'field-binder-date-published',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ],
@@ -776,7 +776,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-advisory-date',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -835,7 +835,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-regulation-last-updated',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -928,7 +928,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-decision-date	',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -1026,11 +1026,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'submit',
           ),
           array (
-            'field' => 'field-service-bg-narrow',
-            'tag' => 'input',
-            'type' => 'submit',
-          ),
-          array (
             'field' => 'field-service-ref-actions',
             'tag' => 'input',
             'type' => 'text',
@@ -1103,16 +1098,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'field' => 'field-topic-content-cards',
             'tag' => 'paragraphs',
             'type' => 'content-card-group',
-          ),
-          array (
-            'field' => 'field-topic-bg-wide',
-            'tag' => 'input',
-            'type' => 'submit',
-          ),
-          array (
-            'field' => 'field-topic-bg-narrow',
-            'tag' => 'input',
-            'type' => 'submit',
           ),
           array (
             'field' => 'field-topic-ref-icon',
@@ -1388,7 +1373,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-executive-order-date',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -1438,25 +1423,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
           ),
         );
         break;
-      case "legacy_redirects":
-        $fields = array (
-          array (
-            'field' => 'field-legacy-redirects-ref-conte',
-            'tag' => 'input',
-            'type' => 'text',
-          ),
-          array (
-            'field' => 'field-legacy-redirect-env',
-            'tag' => 'input',
-            'type' => 'radio',
-          ),
-          array (
-            'field' => 'field-legacy-redirects-legacyurl',
-            'tag' => 'input',
-            'type' => 'text',
-          ),
-        );
-        break;
       case "rules":
         $fields = array (
           array (
@@ -1475,7 +1441,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'date',
           ),
           array (
-            'field' => 'field-rules-effective-date',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),

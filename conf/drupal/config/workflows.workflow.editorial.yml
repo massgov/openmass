@@ -21,7 +21,6 @@ dependencies:
     - node.type.guide_page
     - node.type.how_to_page
     - node.type.info_details
-    - node.type.legacy_redirects
     - node.type.location
     - node.type.location_details
     - node.type.news
@@ -32,8 +31,8 @@ dependencies:
     - node.type.rules
     - node.type.service_details
     - node.type.service_page
+    - node.type.sitewide_alert
     - node.type.stacked_layout
-    - node.type.topic_page
   module:
     - content_moderation
 id: editorial
@@ -42,40 +41,40 @@ type: content_moderation
 type_settings:
   states:
     draft:
-      published: false
-      default_revision: false
       label: Draft
       weight: -4
-    needs_review:
       published: false
       default_revision: false
+    needs_review:
       label: 'Needs Review'
       weight: -3
-    prepublished_draft:
       published: false
       default_revision: false
+    prepublished_draft:
       label: 'Prepublished Draft'
       weight: -2
-    prepublished_needs_review:
       published: false
       default_revision: false
+    prepublished_needs_review:
       label: 'Prepublished Needs Review'
       weight: -1
+      published: false
+      default_revision: false
     published:
       label: Published
+      weight: 0
       published: true
       default_revision: true
-      weight: 0
     trash:
-      published: false
-      default_revision: true
       label: Trash
       weight: 1
-    unpublished:
       published: false
       default_revision: true
+    unpublished:
       label: Unpublished
       weight: 2
+      published: false
+      default_revision: true
   transitions:
     move_to_trash:
       label: 'Move to Trash'
@@ -113,8 +112,6 @@ type_settings:
       weight: -1
     publish:
       label: Publish
-      to: published
-      weight: 0
       from:
         - draft
         - needs_review
@@ -122,6 +119,8 @@ type_settings:
         - prepublished_needs_review
         - published
         - unpublished
+      to: published
+      weight: 0
     to_draft:
       label: 'To Draft'
       from:
@@ -159,7 +158,6 @@ type_settings:
       - guide_page
       - how_to_page
       - info_details
-      - legacy_redirects
       - location
       - location_details
       - news
@@ -170,6 +168,6 @@ type_settings:
       - rules
       - service_details
       - service_page
+      - sitewide_alert
       - stacked_layout
-      - topic_page
   default_moderation_state: prepublished_draft

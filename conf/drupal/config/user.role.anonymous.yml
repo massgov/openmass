@@ -1,7 +1,16 @@
 uuid: 963cb6e2-6a18-4249-a6d6-6c1eabdc3334
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - filter.format.restricted_html
+  module:
+    - access_unpublished
+    - contact
+    - filter
+    - media
+    - media_entity_download
+    - system
 _core:
   default_config_hash: j5zLMOdJBqC0bMvSdth5UebkprJB8g_2FXHqhfpJzow
 id: anonymous
@@ -11,17 +20,13 @@ is_admin: false
 permissions:
   - 'access comments'
   - 'access content'
-  - 'access site-wide contact form'
   - 'access_unpublished node action'
   - 'access_unpublished node advisory'
-  - 'access_unpublished node agency'
   - 'access_unpublished node binder'
   - 'access_unpublished node campaign_landing'
   - 'access_unpublished node contact_information'
   - 'access_unpublished node curated_list'
-  - 'access_unpublished node curated_list_page'
   - 'access_unpublished node decision'
-  - 'access_unpublished node emergency_alerts'
   - 'access_unpublished node error_page'
   - 'access_unpublished node event'
   - 'access_unpublished node executive_order'
@@ -39,14 +44,9 @@ permissions:
   - 'access_unpublished node person'
   - 'access_unpublished node regulation'
   - 'access_unpublished node rules'
-  - 'access_unpublished node section_landing'
   - 'access_unpublished node service_details'
   - 'access_unpublished node service_page'
   - 'access_unpublished node stacked_layout'
-  - 'access_unpublished node subtopic'
-  - 'access_unpublished node topic'
   - 'access_unpublished node topic_page'
   - 'download media'
-  - 'search content'
-  - 'use text format restricted_html'
   - 'view media'

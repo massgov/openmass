@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.location.field_accessibility
     - field.field.node.location.field_bg_narrow
     - field.field.node.location.field_bg_wide
+    - field.field.node.location.field_collections
     - field.field.node.location.field_iframe
     - field.field.node.location.field_image_credit
     - field.field.node.location.field_intended_audience
@@ -22,12 +23,14 @@ dependencies:
     - field.field.node.location.field_organizations
     - field.field.node.location.field_overview
     - field.field.node.location.field_parking
+    - field.field.node.location.field_primary_parent
     - field.field.node.location.field_ref_contact_info
     - field.field.node.location.field_ref_contact_info_1
     - field.field.node.location.field_related_locations
     - field.field.node.location.field_restrictions
     - field.field.node.location.field_reusable_label
     - field.field.node.location.field_services
+    - field.field.node.location.field_short_title
     - field.field.node.location.field_state_organization_tax
     - image.style.thumbnail
     - node.type.location
@@ -35,6 +38,7 @@ dependencies:
   module:
     - conditional_fields
     - content_moderation
+    - entity_hierarchy
     - field_group
     - image
     - link
@@ -42,6 +46,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -51,18 +56,19 @@ third_party_settings:
         - group_required_details
         - group_optional_details
         - group_sidebar
+      label: Primary
+      region: content
       parent_name: ''
       weight: 1
       format_type: tabs
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         direction: horizontal
-      label: Primary
-      region: content
     group_header:
       children:
         - title
+        - field_short_title
         - field_location_subtitle
         - field_location_type
         - field_ref_contact_info_1
@@ -71,37 +77,38 @@ third_party_settings:
         - field_iframe
         - field_bg_narrow
         - field_image_credit
+        - field_primary_parent
         - field_organizations
         - field_intended_audience
         - field_reusable_label
+        - field_collections
         - field_bg_wide
+      label: Header
+      region: content
       parent_name: group_primary
       weight: 2
       format_type: tab
       format_settings:
-        label: Header
+        classes: ''
+        id: ''
         formatter: open
         description: '<p>The "Header" and "Features" tabs power the visual banner across the top of your location page. See <a href="http://mayflower.digital.mass.gov/?p=organisms-action-header" target="_blank">here</a> and <a href="http://mayflower.digital.mass.gov/?p=organisms-location-banner" target="_blank">here</a> for an example of what it will look like when completely filled out.</p> <p>Location page titles should be a clear and complete name for the location. Try to keep titles short and avoid abbreviations when possible. Use acronyms only when they are very familiar to the public (e.g. "RMV").</p>'
         required_fields: true
-        id: ''
-        classes: ''
-      label: Header
-      region: content
     group_required_details:
       children:
         - field_overview
         - field_parking
+      label: 'Required Details'
+      region: content
       parent_name: group_primary
       weight: 3
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: 'These details are required to have a location page. If you cannot provide any information for one of the required fields below, please provide constituent-friendly text explaining that.'
         required_fields: true
-      label: 'Required Details'
-      region: content
     group_optional_details:
       children:
         - field_location_facilities
@@ -112,56 +119,68 @@ third_party_settings:
         - field_restrictions
         - field_location_more_information
         - field_related_locations
+      label: 'Optional Details'
+      region: content
       parent_name: group_primary
       weight: 4
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: 'Not all of these fields will be required for every type of location, but you can make your location more dynamic and interesting by providing appropriate information here.'
         required_fields: true
-      label: 'Optional Details'
-      region: content
     group_sidebar:
       children:
         - field_links
         - field_ref_contact_info
+      label: Related
+      region: content
       parent_name: group_primary
       weight: 6
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: 'Provide up to 3 links where a user can perform an action online or download a helpful pdf related to the in-person experience.'
         required_fields: true
-      label: Related
-      region: content
 id: node.location.default
 targetEntityType: node
 bundle: location
 mode: default
 content:
   field_accessibility:
+    type: text_textarea
     weight: 12
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_bg_narrow:
-    weight: 8
+    type: image_image
+    weight: 12
+    region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings: {  }
-    type: image_image
+  field_collections:
+    type: term_reference_tree
+    weight: 18
     region: content
+    settings:
+      start_minimized: true
+      leaves_only: false
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+    third_party_settings: {  }
   field_iframe:
     type: entity_reference_paragraphs
-    weight: 7
+    weight: 11
+    region: content
     settings:
       title: Widget
       title_plural: Widgets
@@ -170,23 +189,24 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    region: content
   field_image_credit:
-    weight: 9
+    type: string_textfield
+    weight: 13
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_intended_audience:
-    weight: 11
+    type: options_buttons
+    weight: 16
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_links:
+    type: link_default
     weight: 7
+    region: content
     settings:
       placeholder_url: ' '
       placeholder_title: ''
@@ -195,12 +215,10 @@ content:
         internal_link_content_type_blacklist:
           - contact_information
           - fee
-          - legacy_redirects
-    type: link_default
-    region: content
   field_location_activity_detail:
     type: entity_reference_paragraphs
     weight: 8
+    region: content
     settings:
       title: 'Recommended Activity'
       title_plural: 'Recommended Activities'
@@ -211,6 +229,8 @@ content:
     third_party_settings:
       conditional_fields:
         152d42c6-174d-4cf0-86d1-6dfe822c760b:
+          entity_type: node
+          bundle: location
           dependee: field_location_type
           settings:
             state: visible
@@ -225,19 +245,20 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: location
-    region: content
   field_location_all_activities:
-    weight: 10
+    type: entity_reference_autocomplete
+    weight: 9
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings:
       conditional_fields:
         96974ea5-45d4-4377-965e-57d874ba2646:
+          entity_type: node
+          bundle: location
           dependee: field_location_type
           settings:
             state: visible
@@ -252,31 +273,31 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: location
-    type: entity_reference_autocomplete
-    region: content
   field_location_facilities:
+    type: text_textarea
     weight: 7
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_location_icons:
-    weight: 5
+    type: options_buttons
+    weight: 9
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields: {  }
-    type: options_buttons
-    region: content
   field_location_icons_park:
-    weight: 6
+    type: options_buttons
+    weight: 10
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         777fe53e-726b-4699-a412-307e401248c8:
+          entity_type: node
+          bundle: location
           dependee: field_location_type
           settings:
             state: visible
@@ -291,121 +312,132 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: location
-    type: options_buttons
-    region: content
   field_location_metatags:
-    weight: 4
+    type: metatag_firehose
+    weight: 3
+    region: content
     settings:
       sidebar: true
     third_party_settings: {  }
-    type: metatag_firehose
-    region: content
   field_location_more_information:
+    type: text_textarea
     weight: 14
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_location_subtitle:
-    weight: 2
+    type: string_textfield
+    weight: 6
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_location_type:
-    weight: 3
+    type: options_select
+    weight: 7
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_organizations:
-    weight: 10
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
     type: entity_reference_autocomplete
-    region: content
-  field_overview:
-    weight: 10
-    settings:
-      rows: 5
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textarea
-    region: content
-  field_parking:
-    weight: 11
-    settings:
-      rows: 5
-      placeholder: ''
-    third_party_settings: {  }
-    type: text_textarea
-    region: content
-  field_ref_contact_info:
-    weight: 8
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
-  field_ref_contact_info_1:
-    weight: 4
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
-  field_related_locations:
     weight: 15
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
+  field_overview:
+    type: string_textarea
+    weight: 12
     region: content
-  field_restrictions:
-    weight: 13
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
+  field_parking:
     type: text_textarea
+    weight: 13
     region: content
-  field_reusable_label:
-    weight: 12
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_primary_parent:
+    type: entity_reference_hierarchy_autocomplete
+    weight: 14
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
+  field_ref_contact_info:
+    type: entity_reference_autocomplete
+    weight: 8
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_ref_contact_info_1:
     type: entity_reference_autocomplete
+    weight: 8
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_related_locations:
+    type: entity_reference_autocomplete
+    weight: 15
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_restrictions:
+    type: text_textarea
+    weight: 13
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_reusable_label:
+    type: entity_reference_autocomplete
+    weight: 17
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_services:
-    weight: 11
+    type: text_textarea
+    weight: 10
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings:
       conditional_fields:
         7ad1e2ab-c858-433b-93cb-4fd8373fcbd2:
+          entity_type: node
+          bundle: location
           dependee: field_location_type
           settings:
             state: visible
@@ -420,38 +452,42 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: location
-    type: text_textarea
+  field_short_title:
+    type: string_textfield
+    weight: 5
     region: content
-  field_state_organization_tax:
-    weight: 6
     settings:
-      match_operator: CONTAINS
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
+  field_state_organization_tax:
     type: entity_reference_autocomplete
+    weight: 4
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 10
-    settings: {  }
+    weight: 5
     region: content
+    settings: {  }
     third_party_settings: {  }
   publish_on:
-    weight: 53
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 53
     region: content
-  publish_state:
-    weight: 51
     settings: {  }
     third_party_settings: {  }
+  publish_state:
     type: options_select
+    weight: 51
     region: content
+    settings: {  }
+    third_party_settings: {  }
   scheduler_settings:
     weight: 2
     region: content
@@ -459,7 +495,8 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: 1
+    weight: 4
+    region: content
     settings:
       size: 60
       placeholder: ''
@@ -468,31 +505,30 @@ content:
         maxlength_js: 70
         maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
         maxlength_js_enforce_attribute: false
-    region: content
   uid:
     type: entity_reference_autocomplete
     weight: 0
     region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
   unpublish_on:
-    weight: 54
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 54
     region: content
-  unpublish_state:
-    weight: 52
     settings: {  }
     third_party_settings: {  }
+  unpublish_state:
     type: options_select
+    weight: 52
     region: content
+    settings: {  }
+    third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }

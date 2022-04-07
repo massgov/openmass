@@ -12,6 +12,51 @@ use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
 
 /**
+ * Acquia Purger and Akamai need conditional disable, so we use plugin alter.
+ *
+ * This alter is added by a patch to purge module. See
+ * https://www.drupal.org/project/purge/issues/2757155#comment-14335663.
+ *
+ * @param array $definitions
+ *   All plugin definitions.
+ */
+function mass_caching_purge_purgers_alter(array &$definitions): void {
+  if (\Drupal::state()->get('mass_caching.purger', FALSE)) {
+    // For now, we enable this purger via State. When disabled, the standard
+    // Akamai purger is active.
+    if (isset($definitions['akamai'])) {
+      $definitions['akamai']['class'] = \Drupal\mass_caching\AkamaiPurger::class;
+    }
+  }
+
+  // Change handled types depending on env. Start with disabled for both purgers.
+  $akamai = $acquia_purge = FALSE;
+
+  $env = getenv('AH_SITE_ENVIRONMENT');
+  if ($env) {
+    // We are in an Acquia env.
+    $acquia_purge = TRUE;
+    if (in_array($env, ['test', 'prod'])) {
+      $akamai = TRUE;
+    }
+  }
+
+  if ($purger = getenv('MASS_PURGERS')) {
+    // Force the specified purger to on. Used for local testing.
+    $$purger = TRUE;
+  }
+
+  foreach (['akamai', 'acquia_purge'] as $name) {
+    // The double dollar sign is deliberate - It refers to one of the bool variables above.
+    // We need to run queue invalidations during testing so that tests pass like AutomatedPurgingTest.
+    if (!$$name && isset($definitions[$name]) && !defined('PHPUNIT_COMPOSER_INSTALL')) {
+      // To disable a purger, make it capable of nothing.
+      $definitions[$name]['types'] = [];
+    }
+  }
+}
+
+/**
  * Implements hook_file_insert().
  *
  * Purge the file's path when a file is created.

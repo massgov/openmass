@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
+    - field.field.node.curated_list.field_collections
     - field.field.node.curated_list.field_contact
     - field.field.node.curated_list.field_curatedlist_lede
     - field.field.node.curated_list.field_curatedlist_list_section
@@ -19,8 +20,10 @@ dependencies:
     - field.field.node.curated_list.field_list_directory_section
     - field.field.node.curated_list.field_list_type
     - field.field.node.curated_list.field_organizations
+    - field.field.node.curated_list.field_primary_parent
     - field.field.node.curated_list.field_related_links
     - field.field.node.curated_list.field_reusable_label
+    - field.field.node.curated_list.field_short_title
     - field.field.node.curated_list.field_state_organization_tax
     - node.type.curated_list
   module:
@@ -31,30 +34,31 @@ bundle: curated_list
 mode: teaser
 content:
   extra_node_pager:
-    weight: 100
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 100
+    region: content
   extra_sidebar_contact:
-    weight: 100
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 100
+    region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_log_in_links: true
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
+  field_collections: true
   field_contact: true
   field_curatedlist_lede: true
   field_curatedlist_list_section: true
@@ -70,8 +74,10 @@ hidden:
   field_list_directory_section: true
   field_list_type: true
   field_organizations: true
+  field_primary_parent: true
   field_related_links: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true
   page_next: true

@@ -1,0 +1,29 @@
+uuid: d1114f6c-815e-4ee8-a6af-057ba3621b19
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_organizations
+    - node.type.org_page
+    - node.type.sitewide_alert
+id: node.sitewide_alert.field_organizations
+field_name: field_organizations
+entity_type: node
+bundle: sitewide_alert
+label: Organization(s)
+description: 'Please choose the organization(s) most closely associated with this Alert. This is used only for filtering in the CMS and does not display on the page.'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      org_page: org_page
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

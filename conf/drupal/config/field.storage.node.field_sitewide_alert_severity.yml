@@ -1,0 +1,27 @@
+uuid: 631e5c1a-3076-488c-b887-f5e78920b818
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_sitewide_alert_severity
+field_name: field_sitewide_alert_severity
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: informational_notice
+      label: Notices
+    -
+      value: emergency_alert
+      label: Alerts
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

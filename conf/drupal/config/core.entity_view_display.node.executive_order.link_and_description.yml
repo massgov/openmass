@@ -5,6 +5,8 @@ dependencies:
   config:
     - core.entity_view_mode.node.link_and_description
     - field.field.node.executive_order.body
+    - field.field.node.executive_order.field_collections
+    - field.field.node.executive_order.field_date_published
     - field.field.node.executive_order.field_exec_order_listing_desc
     - field.field.node.executive_order.field_executive_order_adjustment
     - field.field.node.executive_order.field_executive_order_contact
@@ -19,7 +21,9 @@ dependencies:
     - field.field.node.executive_order.field_executive_title
     - field.field.node.executive_order.field_intended_audience
     - field.field.node.executive_order.field_organizations
+    - field.field.node.executive_order.field_primary_parent
     - field.field.node.executive_order.field_reusable_label
+    - field.field.node.executive_order.field_short_title
     - field.field.node.executive_order.field_state_organization_tax
     - node.type.executive_order
   module:
@@ -30,23 +34,25 @@ bundle: executive_order
 mode: link_and_description
 content:
   extra_node_pager:
-    weight: 1
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
   field_exec_order_listing_desc:
     type: string
-    weight: 0
-    region: content
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   body: true
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
+  field_collections: true
+  field_date_published: true
   field_executive_order_adjustment: true
   field_executive_order_contact: true
   field_executive_order_date: true
@@ -60,7 +66,9 @@ hidden:
   field_executive_title: true
   field_intended_audience: true
   field_organizations: true
+  field_primary_parent: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true
   links: true

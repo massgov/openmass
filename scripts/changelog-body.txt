@@ -1,18 +1,27 @@
 
 
-## [0.299.0] - October 19, 2021
+## [0.319.0] - April 5, 2022
 
-### Changed
-  - DP-21388: Updated Mayflower version to 11.16.2.
-  - DP-23034: Changed HTML semantic from dl``dt to ul``li for better screen reader experience. (MF#1516)
-  
 ### Fixed
-  - DP-23011: Fixed radio buttons mobile styling when selected on mobile (Galaxy S10 with Chrome).
-  - DP-23066: Reduce 5xx errors on Mass.gov and edit.mass.gov
-  - DP-23165: Fixed the 500 error for Content Reports Organization Pages.
-  - DP-23192: Fixed fatal error on Person pages related to organization role logic.
-  - DP-23200: Fixed issue causing How To pages to fail Behat testing.
+  - DP-23508: Don't load Dotenv package on Acquia environments
+  - DP-23508: Moved development dependencies from require to require-dev
+  - DP-24263: Fix image sizes on info details page.
+  - DP-24334: Removed unnecesary if condition, the configuration of an object extending
+ViewsBulkOperationsActionBase will always be an array because when it is
+set it requires an array as parameter.
+  - DP-24336: Add cache tag to update if any event changes on events paragraph.
   
-### Security
-  - DP-23160: update drupal/linkit to 6.0.0-beta3
+### Added
+  - DP-23805: Move login links on service page from the sidebar into the page banner.
+  - DP-24094: Add and configure environment indicator module
+  - DP-24428: Custom Akamai purger
+  
+### Removed
+  - DP-24093: Removed "Show" and "Hide" from the Sitewide alert display.
+  - DP-24413: Hide "Reset to alphabetical" option on the collection admin form.
+  
+### Changed
+  - DP-24237: Improve url purging by removing unwanted normalization.
+  - DP-24384: Send JSON to syslog
+  - DP-24415: View changes related to collections and documents.
   

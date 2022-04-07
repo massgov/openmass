@@ -18,15 +18,19 @@ dependencies:
     - field.field.node.binder.field_binder_serial_number
     - field.field.node.binder.field_binder_short_desc
     - field.field.node.binder.field_binder_volume
+    - field.field.node.binder.field_collections
     - field.field.node.binder.field_contact
     - field.field.node.binder.field_data_flag
     - field.field.node.binder.field_data_format
     - field.field.node.binder.field_data_resource_type
     - field.field.node.binder.field_data_topic
+    - field.field.node.binder.field_date_published
     - field.field.node.binder.field_downloads
     - field.field.node.binder.field_intended_audience
     - field.field.node.binder.field_organizations
+    - field.field.node.binder.field_primary_parent
     - field.field.node.binder.field_reusable_label
+    - field.field.node.binder.field_short_title
     - field.field.node.binder.field_state_organization_tax
     - node.type.binder
   module:
@@ -38,55 +42,55 @@ bundle: binder
 mode: listing
 content:
   field_binder_data_type:
-    weight: 3
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 3
     region: content
   field_binder_short_desc:
-    weight: 1
+    type: basic_string
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: basic_string
+    weight: 1
     region: content
   field_data_flag:
-    weight: 2
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 2
     region: content
   field_data_format:
-    weight: 5
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 5
     region: content
   field_data_resource_type:
-    weight: 4
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 4
     region: content
   field_organizations:
     type: entity_reference_label
-    weight: 0
-    region: content
     label: above
     settings:
       link: true
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   computed_log_in_links: true
   computed_related_to: true
@@ -106,11 +110,15 @@ hidden:
   field_binder_related: true
   field_binder_serial_number: true
   field_binder_volume: true
+  field_collections: true
   field_contact: true
   field_data_topic: true
+  field_date_published: true
   field_downloads: true
   field_intended_audience: true
+  field_primary_parent: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   langcode: true
   links: true

@@ -217,12 +217,13 @@ module.exports = async function(page, scenario, vp) {
         break;
       case "ServiceGroupedLinks":
       case "Service1":
-      case "Service2":
+      case "ExpansionOfAccordions1_toggle":
+      case "ExpansionOfAccordions2_toggle":
         await page.waitForFunction("document.readyState === 'complete'");
-        await page.waitForFunction("document.querySelector('.js-leaflet-map')._leaflet_id > 0");
         await page.evaluate(async function () {
-          await typeof window.L === Object;
-        })
+          jQuery(".js-accordion-link").click();
+        });
+        await page.waitFor(1000);
         break;
     }
 

@@ -8,10 +8,8 @@ dependencies:
     - field.field.paragraph.emergency_alert.field_emergency_alert_link
     - field.field.paragraph.emergency_alert.field_emergency_alert_link_type
     - field.field.paragraph.emergency_alert.field_emergency_alert_message
-    - field.field.paragraph.emergency_alert.field_emergency_alert_timestamp
     - paragraphs.paragraphs_type.emergency_alert
   module:
-    - datetime
     - link
 id: paragraph.emergency_alert.emergency_alert_banner
 targetEntityType: paragraph
@@ -19,7 +17,7 @@ bundle: emergency_alert
 mode: emergency_alert_banner
 content:
   field_emergency_alert_link:
-    weight: 2
+    type: link
     label: hidden
     settings:
       trim_length: 80
@@ -28,27 +26,19 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 2
     region: content
   field_emergency_alert_message:
-    weight: 0
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
-    region: content
-  field_emergency_alert_timestamp:
-    weight: 1
-    label: hidden
-    settings:
-      timezone_override: America/New_York
-      date_format: 'm.d.y, g:i a'
-    third_party_settings: {  }
-    type: datetime_custom
+    weight: 0
     region: content
 hidden:
   created: true
   field_emergency_alert_content: true
   field_emergency_alert_link_type: true
+  field_emergency_alert_timestamp: true
   uid: true

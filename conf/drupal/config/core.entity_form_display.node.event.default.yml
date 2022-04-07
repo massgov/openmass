@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.event.field_collections
     - field.field.node.event.field_event_address_type
     - field.field.node.event.field_event_agenda_download
     - field.field.node.event.field_event_capacity
@@ -33,8 +34,11 @@ dependencies:
     - field.field.node.event.field_event_you_will_need
     - field.field.node.event.field_intended_audience
     - field.field.node.event.field_organizations
+    - field.field.node.event.field_primary_parent
     - field.field.node.event.field_reusable_label
+    - field.field.node.event.field_short_title
     - field.field.node.event.field_state_organization_tax
+    - field.field.node.event.field_updated_date
     - image.style.thumbnail
     - node.type.event
     - workflows.workflow.editorial
@@ -44,6 +48,7 @@ dependencies:
     - datetime
     - datetime_range
     - entity_browser_entity_form
+    - entity_hierarchy
     - field_group
     - image
     - inline_entity_form
@@ -51,6 +56,7 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -63,15 +69,15 @@ third_party_settings:
         - group_event_agenda
         - group_event_meeting_minutes
         - group_related
+      label: 'Event Page Edit Form'
+      region: content
       parent_name: ''
       weight: 2
       format_type: tabs
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         direction: horizontal
-      label: 'Event Page Edit Form'
-      region: content
     group_details:
       children:
         - field_event_rain_date
@@ -82,20 +88,21 @@ third_party_settings:
         - field_event_description
         - field_event_you_will_need
         - group_additional_resources
+      label: Details
+      region: content
       parent_name: group_event_edit_form
-      weight: 21
+      weight: 22
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-      label: Details
-      region: content
     group_overview:
       children:
         - title
+        - field_short_title
         - field_event_type_list
         - field_event_lede
         - field_event_participating_orgs
@@ -103,212 +110,224 @@ third_party_settings:
         - field_event_time
         - field_event_date
         - field_event_posted_date
+        - field_updated_date
         - field_event_public_testimony
+        - field_primary_parent
         - field_organizations
         - field_intended_audience
         - field_reusable_label
+        - field_collections
+      label: Overview
+      region: content
       parent_name: group_event_edit_form
       weight: 20
       format_type: tab
       format_settings:
-        label: Overview
+        classes: ''
+        id: ''
         formatter: open
         description: ''
         required_fields: true
-        id: ''
-        classes: ''
-      label: Overview
-      region: content
     group_contacts:
       children:
         - field_event_contact_general
+      label: Contacts
+      region: content
       parent_name: group_event_edit_form
-      weight: 23
+      weight: 24
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-      label: Contacts
-      region: content
     group_related:
       children:
         - field_event_ref_parents
         - field_event_ref_event_2
+      label: Related
+      region: content
       parent_name: group_event_edit_form
-      weight: 26
+      weight: 27
       format_type: tab
       format_settings:
-        label: Related
+        classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-        id: ''
-        classes: ''
-      label: Related
-      region: content
     group_additional_resources:
       children:
         - field_event_links
         - field_event_ref_downloads
-      parent_name: group_details
-      weight: 109
-      format_type: fieldset
-      format_settings:
-        label: 'Additional Resources (optional)'
-        description: 'Add up to 6 additional resources.'
-        id: additional-resources-tab
-        classes: ''
-        required_fields: false
       label: 'Additional Resources (optional)'
       region: content
+      parent_name: group_details
+      weight: 112
+      format_type: fieldset
+      format_settings:
+        classes: ''
+        id: additional-resources-tab
+        description: 'Add up to 6 additional resources.'
+        required_fields: false
     group_address:
       children:
         - field_event_address_type
         - field_event_ref_contact
         - field_event_ref_unique_address
+      label: Address
+      region: content
       parent_name: group_event_edit_form
-      weight: 22
+      weight: 23
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-      label: Address
-      region: content
     group_event_meeting_minutes:
       children:
         - field_event_meeting_minutes
         - field_event_minutes_download
+      label: Minutes
+      region: content
       parent_name: group_event_edit_form
-      weight: 25
+      weight: 26
       format_type: tab
       format_settings:
-        label: Minutes
+        classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-        id: ''
-        classes: ''
-      label: Minutes
-      region: content
     group_event_agenda:
       children:
         - field_event_meeting_agenda_sect
         - field_event_agenda_download
+      label: Agenda
+      region: content
       parent_name: group_event_edit_form
-      weight: 24
+      weight: 25
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-      label: Agenda
-      region: content
 id: node.event.default
 targetEntityType: node
 bundle: event
 mode: default
 content:
+  field_collections:
+    type: term_reference_tree
+    weight: 133
+    region: content
+    settings:
+      start_minimized: true
+      leaves_only: false
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+    third_party_settings: {  }
   field_event_address_type:
+    type: options_buttons
     weight: 102
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_event_agenda_download:
-    weight: 103
+    type: inline_entity_form_complex
+    weight: 61
+    region: content
     settings:
       form_mode: default
+      override_labels: false
       label_singular: ''
       label_plural: ''
       allow_new: true
       allow_existing: true
+      allow_edit: true
       match_operator: CONTAINS
-      override_labels: false
+      allow_duplicate: false
       collapsible: false
       collapsed: false
-      allow_duplicate: false
       revision: false
-      allow_edit: true
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
       conditional_fields: {  }
-    type: inline_entity_form_complex
-    region: content
   field_event_capacity:
-    weight: 106
+    type: string_textfield
+    weight: 109
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_event_contact_general:
-    weight: 35
+    type: entity_reference_autocomplete
+    weight: 105
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   field_event_date:
-    weight: 56
+    type: daterange_default
+    weight: 125
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: daterange_default
-    region: content
   field_event_description:
-    weight: 107
+    type: text_textarea
+    weight: 110
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_event_fees:
-    weight: 105
+    type: string_textfield
+    weight: 108
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_event_image:
-    weight: 104
+    type: image_image
+    weight: 107
+    region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings: {  }
-    type: image_image
-    region: content
   field_event_lede:
-    weight: 52
+    type: string_textfield
+    weight: 121
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_event_link_sign_up:
-    weight: 103
+    type: link_default
+    weight: 106
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_event_links:
+    type: link_default
     weight: 102
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -317,20 +336,18 @@ content:
         internal_link_content_type_blacklist:
           - contact_information
           - fee
-          - legacy_redirects
-    type: link_default
-    region: content
   field_event_logo:
-    weight: 54
+    type: image_image
+    weight: 123
+    region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings: {  }
-    type: image_image
-    region: content
   field_event_meeting_agenda_sect:
     type: entity_reference_paragraphs
-    weight: 102
+    weight: 60
+    region: content
     settings:
       title: 'Agenda section'
       title_plural: 'Agenda sections'
@@ -340,10 +357,10 @@ content:
       default_paragraph_type: _none
     third_party_settings:
       conditional_fields: {  }
-    region: content
   field_event_meeting_minutes:
     type: entity_reference_paragraphs
     weight: 57
+    region: content
     settings:
       title: 'Minutes section'
       title_plural: 'Minutes sections'
@@ -353,53 +370,56 @@ content:
       default_paragraph_type: _none
     third_party_settings:
       conditional_fields: {  }
-    region: content
   field_event_metatags:
+    type: metatag_firehose
     weight: 1
+    region: content
     settings:
       sidebar: true
     third_party_settings: {  }
-    type: metatag_firehose
-    region: content
   field_event_minutes_download:
-    weight: 59
+    type: inline_entity_form_complex
+    weight: 58
+    region: content
     settings:
       form_mode: default
+      override_labels: false
       label_singular: ''
       label_plural: ''
       allow_new: true
       allow_existing: true
+      allow_edit: true
       match_operator: CONTAINS
-      override_labels: false
+      allow_duplicate: false
       collapsible: false
       collapsed: false
-      allow_duplicate: false
       revision: false
-      allow_edit: true
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
       conditional_fields: {  }
-    type: inline_entity_form_complex
-    region: content
   field_event_participating_orgs:
-    weight: 53
+    type: link_default
+    weight: 122
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings:
       conditional_fields: {  }
-    type: link_default
-    region: content
   field_event_posted_date:
-    weight: 57
+    type: datetime_datelist
+    weight: 126
+    region: content
     settings:
+      increment: 1
       date_order: YMD
       time_type: '12'
-      increment: 1
     third_party_settings:
       conditional_fields:
         d895c354-79d0-47ca-a96a-d11b0e8c2aa5:
+          entity_type: node
+          bundle: event
           dependee: field_event_type_list
           settings:
             state: visible
@@ -414,18 +434,18 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: event
-    type: datetime_datelist
-    region: content
   field_event_public_testimony:
-    weight: 58
+    type: string_textfield
+    weight: 128
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings:
       conditional_fields:
         7ef8bfea-438d-485e-9f71-7fb6224c24f6:
+          entity_type: node
+          bundle: event
           dependee: field_event_type_list
           settings:
             state: visible
@@ -440,28 +460,28 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: event
-    type: string_textfield
-    region: content
   field_event_rain_date:
-    weight: 102
+    type: string_textfield
+    weight: 105
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_event_ref_contact:
+    type: entity_reference_autocomplete
     weight: 103
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings:
       conditional_fields:
         c0b31f59-7f24-419f-bf1c-1c669e65e491:
+          entity_type: node
+          bundle: event
           dependee: field_event_address_type
           settings:
             state: visible
@@ -476,50 +496,50 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: event
-    type: entity_reference_autocomplete
-    region: content
   field_event_ref_downloads:
+    type: inline_entity_form_complex
     weight: 103
+    region: content
     settings:
       form_mode: default
+      override_labels: false
       label_singular: ''
       label_plural: ''
       allow_new: true
       allow_existing: true
+      allow_edit: true
       match_operator: CONTAINS
-      override_labels: false
+      allow_duplicate: false
       collapsible: false
       collapsed: false
-      allow_duplicate: false
       revision: false
-      allow_edit: true
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
-    type: inline_entity_form_complex
-    region: content
   field_event_ref_event_2:
-    weight: 62
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-      match_limit: 10
-    third_party_settings: {  }
     type: entity_reference_autocomplete
+    weight: 116
     region: content
-  field_event_ref_parents:
-    weight: 61
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  field_event_ref_parents:
+    type: entity_reference_autocomplete
+    weight: 115
+    region: content
+    settings:
+      match_operator: CONTAINS
       match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings:
       conditional_fields:
         b53bc81c-083e-4fc2-9205-3c663808fc60:
+          entity_type: node
+          bundle: event
           dependee: field_event_type_list
           settings:
             state: required
@@ -534,13 +554,10 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: event
-    type: entity_reference_autocomplete
-    region: content
   field_event_ref_unique_address:
     type: entity_reference_paragraphs
     weight: 104
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -551,6 +568,8 @@ content:
     third_party_settings:
       conditional_fields:
         fff1c2c2-d79f-4d85-bfb0-134140077a73:
+          entity_type: node
+          bundle: event
           dependee: field_event_address_type
           settings:
             state: visible
@@ -565,85 +584,128 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: event
-    region: content
   field_event_time:
-    weight: 55
+    type: string_textfield
+    weight: 124
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_event_type_list:
-    weight: 51
+    type: options_select
+    weight: 120
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_event_you_will_need:
-    weight: 108
+    type: text_textarea
+    weight: 111
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_intended_audience:
-    weight: 60
+    type: options_buttons
+    weight: 131
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_organizations:
-    weight: 59
+    type: entity_reference_autocomplete
+    weight: 130
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
+  field_primary_parent:
+    type: entity_reference_hierarchy_autocomplete
+    weight: 129
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
   field_reusable_label:
-    weight: 61
+    type: entity_reference_autocomplete
+    weight: 132
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: entity_reference_autocomplete
+  field_short_title:
+    type: string_textfield
+    weight: 119
     region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_state_organization_tax:
+    type: entity_reference_autocomplete
     weight: 4
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
+  field_updated_date:
+    type: datetime_datelist
+    weight: 127
     region: content
+    settings:
+      increment: 1
+      date_order: YMD
+      time_type: '12'
+    third_party_settings:
+      conditional_fields:
+        9d86eb40-59ba-4c31-b947-8400e07e0337:
+          entity_type: node
+          bundle: event
+          dependee: field_event_type_list
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: public_meeting
+            effect: show
+            effect_options: {  }
+            selector: ''
   moderation_state:
     type: moderation_state_default
     weight: 10
-    settings: {  }
     region: content
+    settings: {  }
     third_party_settings: {  }
   publish_on:
-    weight: 112
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 112
     region: content
-  publish_state:
-    weight: 110
     settings: {  }
     third_party_settings: {  }
+  publish_state:
     type: options_select
+    weight: 110
     region: content
+    settings: {  }
+    third_party_settings: {  }
   scheduler_settings:
     weight: 5
     region: content
@@ -651,7 +713,8 @@ content:
     third_party_settings: {  }
   title:
     type: string_textfield
-    weight: 50
+    weight: 118
+    region: content
     settings:
       size: 60
       placeholder: ''
@@ -660,29 +723,28 @@ content:
         maxlength_js: 70
         maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
         maxlength_js_enforce_attribute: false
-    region: content
   uid:
     type: entity_reference_autocomplete
     weight: 0
     region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
   unpublish_on:
-    weight: 113
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 113
     region: content
-  unpublish_state:
-    weight: 111
     settings: {  }
     third_party_settings: {  }
+  unpublish_state:
     type: options_select
+    weight: 111
     region: content
+    settings: {  }
+    third_party_settings: {  }
   url_redirects:
     weight: 50
     region: content

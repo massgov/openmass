@@ -18,30 +18,30 @@ bundle: hours
 mode: default
 content:
   field_hours_description:
-    weight: 4
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 4
     region: content
   field_hours_group_title:
-    weight: 5
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 5
     region: content
   field_hours_structured:
-    weight: 3
+    type: office_hours
     label: hidden
     settings:
-      show_closed: open
-      office_hours_first_day: ''
       day_format: long
       time_format: g
-      grouped: '1'
+      compress: false
+      grouped: true
+      show_closed: open
       closed_format: ''
       separator:
         days: '<br />'
@@ -53,10 +53,10 @@ content:
         position: hide
         open_text: Open
         closed_text: Closed
-      compress: 0
       timezone_field: ''
+      office_hours_first_day: ''
     third_party_settings: {  }
-    type: office_hours
+    weight: 3
     region: content
 hidden:
   created: true

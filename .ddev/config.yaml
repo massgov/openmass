@@ -3,12 +3,11 @@ type: drupal9
 docroot: docroot
 php_version: "7.4"
 webserver_type: apache-fpm
-dbimage: massgov/mysql-sanitized:super
 omit_containers:
   - db
 disable_settings_management: true
-#Avoid conflict on port 80. This is rarely used anyway.
-router_http_port: "88"
+# Avoid conflict on port 80. This is rarely used anyway.
+router_http_port: "81"
 router_https_port: "443"
 xdebug_enabled: false
 project_tld: local
@@ -23,6 +22,7 @@ web_environment:
   - DRUSH_OPTIONS_URI=https://mass.local:$DDEV_ROUTER_HTTPS_PORT
   - DTT_BASE_URL=http://mass-web
   - DTT_API_URL=http://chromedriver:9515
+  - MASS_PURGERS
 #  - BROWSERTEST_OUTPUT_DIRECTORY=/tmp
   - BROWSERTEST_OUTPUT_BASE_URL=https://mass.local:$DDEV_ROUTER_HTTPS_PORT
   # Acquia Cloud - v2
@@ -34,6 +34,6 @@ web_environment:
   # Acquia basic auth.  Needed for tests on Acquia environments.
   - LOWER_ENVIR_AUTH_USER
   - LOWER_ENVIR_AUTH_PASS
-  # For Cloudflare Terraform.
-  - CLOUDFLARE_EMAIL
-  - CLOUDFLARE_TOKEN
+hooks:
+  pre-start:
+    - exec-host: echo "No output is shown during the first container build. It may take a minute to install Tugboat, CircleCI, and GitHub CLI tools."

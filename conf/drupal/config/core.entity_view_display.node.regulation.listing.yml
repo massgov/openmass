@@ -1,0 +1,90 @@
+uuid: 8c0161ca-1c11-4fad-907f-70600a5c5eaa
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.listing
+    - field.field.node.regulation.field_collections
+    - field.field.node.regulation.field_date_published
+    - field.field.node.regulation.field_intended_audience
+    - field.field.node.regulation.field_organizations
+    - field.field.node.regulation.field_primary_parent
+    - field.field.node.regulation.field_regluation_official_ver
+    - field.field.node.regulation.field_regulation_agency_cmr
+    - field.field.node.regulation.field_regulation_cmr_chapter
+    - field.field.node.regulation.field_regulation_contact
+    - field.field.node.regulation.field_regulation_download
+    - field.field.node.regulation.field_regulation_last_updated
+    - field.field.node.regulation.field_regulation_link_org
+    - field.field.node.regulation.field_regulation_listing_desc
+    - field.field.node.regulation.field_regulation_metatags
+    - field.field.node.regulation.field_regulation_ref_state_tax
+    - field.field.node.regulation.field_regulation_reg_authority
+    - field.field.node.regulation.field_regulation_related
+    - field.field.node.regulation.field_regulation_section
+    - field.field.node.regulation.field_regulation_short_descr
+    - field.field.node.regulation.field_regulation_title
+    - field.field.node.regulation.field_reusable_label
+    - field.field.node.regulation.field_short_title
+    - field.field.node.regulation.field_state_organization_tax
+    - node.type.regulation
+  module:
+    - user
+id: node.regulation.listing
+targetEntityType: node
+bundle: regulation
+mode: listing
+content:
+  field_regulation_listing_desc:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  referencing_binders_page_flipper:
+    type: entity_reference_label
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 22
+    region: content
+  workbench_moderation_control:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  computed_related_to: true
+  content_moderation_control: true
+  extra_node_pager: true
+  extra_org_feedback_form: true
+  field_collections: true
+  field_date_published: true
+  field_intended_audience: true
+  field_organizations: true
+  field_primary_parent: true
+  field_regluation_official_ver: true
+  field_regulation_agency_cmr: true
+  field_regulation_cmr_chapter: true
+  field_regulation_contact: true
+  field_regulation_download: true
+  field_regulation_last_updated: true
+  field_regulation_link_org: true
+  field_regulation_metatags: true
+  field_regulation_ref_state_tax: true
+  field_regulation_reg_authority: true
+  field_regulation_related: true
+  field_regulation_section: true
+  field_regulation_short_descr: true
+  field_regulation_title: true
+  field_reusable_label: true
+  field_short_title: true
+  field_state_organization_tax: true
+  langcode: true
+  links: true
+  page_next: true
+  page_previous: true
+  referencing_binders: true

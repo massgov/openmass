@@ -136,7 +136,7 @@
     $input.trigger('autocomplete:suggestionsUpdated', [results]);
   });
   $input.on('keyup', function (event) {
-    if (event.keyCode !== 13 && event.keyCode !== 38 && event.keyCode !== 40) {
+    if (event.key !== 'Enter' && event.key !== 'ArrowUp' && event.key !== 'ArrowDown') {
       ac.update(event.target.value);
     }
   });
@@ -144,9 +144,12 @@
   $input.on('autocomplete:suggestionsUpdated', function (e, suggestionList) {
     var input = $(this);
     var scope = input.parents('.js-suggestions-container');
-    $('[data-suggestions]', scope).html('<div role="listbox"></div>');
+
+    $('[role="listbox"]', scope).remove();
+    $('[data-suggestions]', scope).html('<div role="listbox" id="suggestions-list"></div>');
     $('.js-suggestions-help', scope).empty();
 
+    var $listbox = $('[role="listbox"]', scope);
     var value = input.val();
     var suggestions = [].filter.call(suggestionList.sort(), function (suggestionItem) {
       return !suggestionItem.indexOf(value);
@@ -154,11 +157,11 @@
 
     if (value) {
       $.each(suggestions, function (k, v) {
-        $('[role="listbox"]', scope).append(
+        $listbox.append(
           '<div role="option" tabindex="-1" >' + v + '</div>'
         );
       });
-      $('[role="listbox"]  [role="option"]', scope).each(function () {
+      $listbox.find('[role="option"]', scope).each(function () {
         $(this).attr('id', input.attr('id') + '-' + $(this).index());
       });
       if (suggestions) {
@@ -167,57 +170,128 @@
       }
     }
 
-    input.on('keydown', function (e) {
-      if (e.keyCode === 40) {
-        e.preventDefault();
-        $('[role="listbox"]', scope)
-          .attr('tabindex', '0')
-          .focus();
-        $('[role="listbox"]').attr('aria-activedescendant', $('[role="listbox"] [role="option"]:first-child', scope).attr('id'));
-        $('[role="listbox"] [role="option"]:first-child').addClass('selected');
-        input.val($('.selected').text());
-      }
-      if (e.keyCode === 9) {
-        $('[role="listbox"]', scope).remove();
-      }
-    });
+    $listbox.on('keydown', function (e) {
 
-    $('[role="listbox"]', scope).on('keydown', function (e) {
-      if (e.keyCode === 13) {
+      if (e.key === 'Enter') {
         e.preventDefault();
         e.stopPropagation();
+        input.data('realValue', input.val());
         input.focus();
+        $listbox.remove();
+        return;
       }
+
+      if (e.key === 'Esc') {
+        input.val(input.data('realValue'));
+        input.focus();
+        $listbox.hide();
+        return;
+      }
+
       var newOption;
-      if (e.keyCode === 40) {
+      if (e.key === 'ArrowDown') {
         e.preventDefault();
-        newOption = $('.selected').next();
+        newOption = $('.selected', scope).next();
+
+        if (!newOption.length) {
+          input.focus();
+          $('.selected', scope).removeClass('selected');
+          input.val(input.data('realValue'));
+          return;
+        }
       }
-      if (e.keyCode === 38) {
+
+      if (e.key === 'ArrowUp') {
         e.preventDefault();
-        newOption = $('.selected').prev();
+        newOption = $('.selected', scope).prev();
+
+        if (!newOption.length) {
+          input.focus();
+          $('.selected', scope).removeClass('selected');
+          input.val(input.data('realValue'));
+          return;
+        }
       }
+
       if (newOption && newOption.length) {
-        $('.selected').removeClass('selected');
+        $('.selected', scope).removeClass('selected');
         newOption.addClass('selected');
         $(this).attr('aria-activedescendant', newOption.attr('id'));
-        input.val($('.selected').text());
+        input.val($('.selected', scope).text());
       }
-    });
-
-    $('[role="listbox"]', scope).on('blur', function () {
-      $(this).children().remove();
     });
 
     $('[role="option"]', scope).on('click', function () {
+      input.data('realValue', $(this).text());
       $('[data-suggest]', scope).val($(this).text())
         .focus();
-      $('[role="listbox"]', scope).remove();
+      $listbox.remove();
     });
 
+    $(document).on('mouseenter mouseleave', '[role=option]', function () {
+      $(this).siblings().removeClass('selected');
+      $(this).addClass('selected');
+    });
+
+    // To only attach events once.
+    if (input.data('eventsAttached')) {
+      return;
+    }
+
+    // Events below this line...
+    input.on('keydown', function (e) {
+
+      // Listbox is recreated when suggestions are updated,
+      // hence we need to update the reference.
+      $listbox = $('[role="listbox"]', scope);
+
+      if (e.key === 'Escape') {
+
+        if (input.val() !== '' && ($listbox.length === 0 || !$listbox.is(':visible'))) {
+          input.val('');
+          input.data('realValue', '');
+        }
+
+        e.preventDefault();
+        input.focus();
+        $listbox.hide();
+        return;
+      }
+
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        $listbox.find('.selected', scope).removeClass('selected');
+        $listbox.attr('tabindex', '0').focus();
+        $listbox.attr('aria-activedescendant', $listbox.find('[role="option"]:last-child', scope).attr('id'));
+        $listbox.find('[role="option"]:last-child', scope).addClass('selected');
+        return;
+      }
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        $listbox.find('.selected', scope).removeClass('selected');
+
+        if (e.altKey) {
+          $listbox.show();
+        }
+        else {
+          $listbox.attr('tabindex', '0').focus();
+          $listbox.find('.selected', scope).removeClass('selected');
+          $listbox.attr('aria-activedescendant', $listbox.find('[role="option"]:first-child', scope).attr('id'));
+          $listbox.find('[role="option"]:first-child', scope).addClass('selected');
+          input.data('realValue', input.val());
+          input.val($('.selected', scope).text());
+        }
+        return;
+      }
+
+      if (e.key === 'Tab') {
+        $listbox.remove();
+        return;
+      }
+    });
+
+    input.data('eventsAttached', true);
   });
 
 })(jQuery);
-
-
-

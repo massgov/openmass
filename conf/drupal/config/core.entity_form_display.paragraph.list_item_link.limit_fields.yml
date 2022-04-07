@@ -17,7 +17,9 @@ bundle: list_item_link
 mode: limit_fields
 content:
   field_listitemlink_item:
+    type: link_default
     weight: 0
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
@@ -31,15 +33,12 @@ content:
           - error_page
           - fee
           - interstitial
-          - legacy_redirects
           - utility_drawer
-    type: link_default
-    region: content
   paragraphs_type_help__default:
     weight: -100
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden:
   created: true
   field_listitemlink_desc_manual: true

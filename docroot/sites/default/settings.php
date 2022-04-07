@@ -163,6 +163,12 @@ $config['scheduler.settings']['lightweight_cron_access_key'] = getenv('LIGHTWEIG
 $config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
 $config['geocoder.geocoder_provider.opencage']['configuration']['apiKey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
 
+// Start with stage for all envs. This gets overridden for Prod in settings.acquia.php
+$settings['mass_caching.hosts'] = [
+  'stage.mass.gov',
+  'edit.stage.mass.gov',
+];
+
 // If in an Acquia Cloud environment
 if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   // if in acquia...
@@ -187,7 +193,31 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   }
 }
 
+// Environment indicator. See https://architecture.lullabot.com/adr/20210609-environment-indicator/
+if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
+  $config['environment_indicator.indicator']['name'] = $_ENV['AH_SITE_ENVIRONMENT'];
+  switch ($_ENV['AH_SITE_ENVIRONMENT']) {
+    case 'prod':
+      // Green background.
+      $config['environment_indicator.indicator']['bg_color'] = '#9CC2AB';
+      break;
+
+    default:
+      // Gray background.
+      $config['environment_indicator.indicator']['bg_color'] = '#BABABA';
+      break;
+  }
+}
+else {
+  // We are in local or CI or Tugboat.
+  $config['environment_indicator.indicator']['name'] = getenv('TUGBOAT_ROOT') ? 'Tugboat' : 'Local';
+  // Gray background.
+  $config['environment_indicator.indicator']['bg_color'] = '#BABABA';
+}
+
 // phpunit.xml.dist sets -1 for memory_limit so just change for other cli requests.
 if (PHP_SAPI === 'cli' && ini_get('memory_limit')) {
-  ini_set('memory_limit', '1024M');
+  ini_set('memory_limit', '2048M');
 }
+
+

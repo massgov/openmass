@@ -1,0 +1,95 @@
+uuid: 1b7088dd-f0be-4d2c-9dad-79423f66b08a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.sitewide_alert.field_alert_ref_contact
+    - field.field.node.sitewide_alert.field_alert_related_links_5
+    - field.field.node.sitewide_alert.field_organizations
+    - field.field.node.sitewide_alert.field_reusable_label
+    - field.field.node.sitewide_alert.field_sitewide_alert
+    - field.field.node.sitewide_alert.field_sitewide_alert_severity
+    - field.field.node.sitewide_alert.field_state_organization_tax
+    - node.type.sitewide_alert
+  module:
+    - entity_reference_revisions
+    - link
+    - options
+    - user
+id: node.sitewide_alert.default
+targetEntityType: node
+bundle: sitewide_alert
+mode: default
+content:
+  content_moderation_control:
+    settings: {  }
+    third_party_settings: {  }
+    weight: -20
+    region: content
+  field_alert_ref_contact:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 105
+    region: content
+  field_alert_related_links_5:
+    type: link
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 111
+    region: content
+  field_organizations:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 110
+    region: content
+  field_reusable_label:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 109
+    region: content
+  field_sitewide_alert:
+    type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 112
+    region: content
+  field_sitewide_alert_severity:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 113
+    region: content
+  field_state_organization_tax:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 107
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  langcode: true

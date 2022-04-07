@@ -4,6 +4,8 @@ status: true
 dependencies:
   config:
     - field.field.node.executive_order.body
+    - field.field.node.executive_order.field_collections
+    - field.field.node.executive_order.field_date_published
     - field.field.node.executive_order.field_exec_order_listing_desc
     - field.field.node.executive_order.field_executive_order_adjustment
     - field.field.node.executive_order.field_executive_order_contact
@@ -18,7 +20,9 @@ dependencies:
     - field.field.node.executive_order.field_executive_title
     - field.field.node.executive_order.field_intended_audience
     - field.field.node.executive_order.field_organizations
+    - field.field.node.executive_order.field_primary_parent
     - field.field.node.executive_order.field_reusable_label
+    - field.field.node.executive_order.field_short_title
     - field.field.node.executive_order.field_state_organization_tax
     - node.type.executive_order
     - workflows.workflow.editorial
@@ -26,12 +30,13 @@ dependencies:
     - content_moderation
     - datetime
     - entity_browser_entity_form
+    - entity_hierarchy
     - field_group
     - inline_entity_form
     - link
-    - maxlength
     - metatag
     - paragraphs
+    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -40,69 +45,72 @@ third_party_settings:
         - group_overview
         - group_details
         - group_related
+      label: 'Node Edit Form'
+      region: content
       parent_name: ''
       weight: 0
       format_type: tabs
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         direction: horizontal
-      label: 'Node Edit Form'
-      region: content
     group_overview:
       children:
         - field_executive_title
+        - field_short_title
         - field_executive_order_number
-        - field_executive_order_date
+        - field_date_published
         - field_executive_order_issuer
         - field_executive_order_mass_regis
         - field_executive_order_adjustment
         - field_exec_order_listing_desc
+        - field_primary_parent
         - field_organizations
         - field_intended_audience
         - field_reusable_label
+        - field_collections
+      label: Overview
+      region: content
       parent_name: group_node_edit_form
       weight: 5
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: open
         description: ''
         required_fields: true
-      label: Overview
-      region: content
     group_details:
       children:
         - field_executive_order_overview
         - body
         - field_executive_order_downloads
+      label: Details
+      region: content
       parent_name: group_node_edit_form
       weight: 6
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-      label: Details
-      region: content
     group_related:
       children:
         - field_executive_order_contact
         - field_executive_order_related
+      label: Related
+      region: content
       parent_name: group_node_edit_form
       weight: 7
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: closed
         description: ''
         required_fields: true
-      label: Related
-      region: content
 id: node.executive_order.default
 targetEntityType: node
 bundle: executive_order
@@ -110,25 +118,43 @@ mode: default
 content:
   body:
     type: text_textarea_with_summary
-    weight: 13
+    weight: 37
+    region: content
     settings:
       rows: 9
-      placeholder: ''
       summary_rows: 1
+      placeholder: ''
       show_summary: false
     third_party_settings: {  }
+  field_collections:
+    type: term_reference_tree
+    weight: 20
     region: content
+    settings:
+      start_minimized: true
+      leaves_only: false
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+    third_party_settings: {  }
+  field_date_published:
+    type: datetime_default
+    weight: 11
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_exec_order_listing_desc:
-    weight: 9
+    type: string_textfield
+    weight: 15
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_executive_order_adjustment:
     type: entity_reference_paragraphs
-    weight: 8
+    weight: 14
+    region: content
     settings:
       title: 'Adjustment Type'
       title_plural: 'Adjustment Types'
@@ -137,46 +163,40 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    region: content
   field_executive_order_contact:
-    weight: 33
+    type: entity_reference_autocomplete
+    weight: 22
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
-  field_executive_order_date:
-    weight: 5
-    settings: {  }
-    third_party_settings: {  }
-    type: datetime_default
-    region: content
   field_executive_order_downloads:
-    weight: 14
+    type: inline_entity_form_complex
+    weight: 38
+    region: content
     settings:
       form_mode: default
+      override_labels: false
       label_singular: ''
       label_plural: ''
       allow_new: true
       allow_existing: true
+      allow_edit: true
       match_operator: CONTAINS
-      override_labels: false
+      allow_duplicate: false
       collapsible: false
       collapsed: false
-      allow_duplicate: false
       revision: false
-      allow_edit: true
     third_party_settings:
       entity_browser_entity_form:
         entity_browser_id: media_browser
-    type: inline_entity_form_complex
-    region: content
   field_executive_order_issuer:
     type: entity_reference_paragraphs
-    weight: 6
+    weight: 12
+    region: content
     settings:
       title: Issuer
       title_plural: Issuers
@@ -185,46 +205,47 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    region: content
   field_executive_order_mass_regis:
-    weight: 7
+    type: number
+    weight: 13
+    region: content
     settings:
       placeholder: ''
     third_party_settings: {  }
-    type: number
-    region: content
   field_executive_order_metatags:
-    weight: 4
+    type: metatag_firehose
+    weight: 2
+    region: content
     settings:
       sidebar: true
     third_party_settings: {  }
-    type: metatag_firehose
-    region: content
   field_executive_order_number:
-    weight: 4
+    type: number
+    weight: 10
+    region: content
     settings:
       placeholder: ''
     third_party_settings: {  }
-    type: number
-    region: content
   field_executive_order_overview:
-    weight: 12
+    type: text_textarea
+    weight: 35
+    region: content
     settings:
       rows: 2
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_executive_order_related:
-    weight: 34
+    type: link_default
+    weight: 23
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_executive_title:
-    weight: 3
+    type: string_textfield
+    weight: 8
+    region: content
     settings:
       size: 60
       placeholder: ''
@@ -233,62 +254,79 @@ content:
         maxlength_js: 70
         maxlength_js_label: 'Make sure your page title is specific, unique, and uses words readers would use. Search the CMS to see if other pages have the same title. See the <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/style/best-practices-for-page-titles-and-short-descriptions" target="_blank">knowledge base</a> for tips. When possible, try to keep your page title under 70 characters since search engines will show only the first 70 characters on their result pages. <mark>Current title length: @count characters.</mark>'
         maxlength_js_enforce_attribute: false
-    type: string_textfield
-    region: content
   field_intended_audience:
-    weight: 11
+    type: options_buttons
+    weight: 18
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_buttons
-    region: content
   field_organizations:
-    weight: 10
+    type: entity_reference_autocomplete
+    weight: 17
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
+  field_primary_parent:
+    type: entity_reference_hierarchy_autocomplete
+    weight: 16
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
   field_reusable_label:
-    weight: 12
+    type: entity_reference_autocomplete
+    weight: 19
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
+  field_short_title:
+    type: string_textfield
+    weight: 9
     region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_state_organization_tax:
-    weight: 8
+    type: entity_reference_autocomplete
+    weight: 3
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   moderation_state:
     type: moderation_state_default
-    weight: 10
-    settings: {  }
+    weight: 4
     region: content
+    settings: {  }
     third_party_settings: {  }
   publish_on:
-    weight: 53
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 53
     region: content
-  publish_state:
-    weight: 51
     settings: {  }
     third_party_settings: {  }
+  publish_state:
     type: options_select
+    weight: 51
     region: content
+    settings: {  }
+    third_party_settings: {  }
   scheduler_settings:
     weight: 3
     region: content
@@ -297,32 +335,33 @@ content:
   uid:
     type: entity_reference_autocomplete
     weight: 1
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
-    region: content
     third_party_settings: {  }
   unpublish_on:
-    weight: 54
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_timestamp
+    weight: 54
     region: content
-  unpublish_state:
-    weight: 52
     settings: {  }
     third_party_settings: {  }
+  unpublish_state:
     type: options_select
+    weight: 52
     region: content
+    settings: {  }
+    third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_executive_order_date: true
   langcode: true
   path: true
   promote: true

@@ -11,6 +11,7 @@ dependencies:
     - field.field.paragraph.key_message.field_rich_text_description
     - field.field.paragraph.key_message.field_sub_heading
     - field.field.paragraph.key_message.field_text_overlay_color
+    - field.field.paragraph.key_message.field_use_half_image
     - paragraphs.paragraphs_type.key_message
     - responsive_image.styles.key_message
   module:
@@ -24,21 +25,21 @@ bundle: key_message
 mode: default
 content:
   field_background_color:
-    weight: 5
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 5
     region: content
   field_background_type:
-    weight: 4
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 4
     region: content
   field_button:
-    weight: 3
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -47,46 +48,56 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 3
     region: content
   field_image:
     type: responsive_image
-    weight: 7
-    region: content
     label: hidden
     settings:
       responsive_image_style: key_message
       image_link: ''
     third_party_settings: {  }
+    weight: 7
+    region: content
   field_main_heading:
-    weight: 0
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
     region: content
   field_rich_text_description:
-    weight: 2
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 2
     region: content
   field_sub_heading:
-    weight: 1
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 1
     region: content
   field_text_overlay_color:
-    weight: 6
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 6
+    region: content
+  field_use_half_image:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 8
     region: content
 hidden:
   paragraphs_type_help__default: true

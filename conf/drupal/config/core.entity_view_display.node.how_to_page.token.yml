@@ -28,7 +28,9 @@ dependencies:
     - field.field.node.how_to_page.field_more_info_header
     - field.field.node.how_to_page.field_next_steps_header
     - field.field.node.how_to_page.field_organizations
+    - field.field.node.how_to_page.field_primary_parent
     - field.field.node.how_to_page.field_reusable_label
+    - field.field.node.how_to_page.field_short_title
     - field.field.node.how_to_page.field_state_organization_tax
     - field.field.node.how_to_page.field_what_you_need_header
     - node.type.how_to_page
@@ -43,36 +45,36 @@ bundle: how_to_page
 mode: token
 content:
   extra_node_pager:
-    weight: 100
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 100
+    region: content
   field_how_to_contacts_3:
-    weight: 9
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 9
     region: content
   field_how_to_files:
-    weight: 8
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 8
     region: content
   field_how_to_lede:
-    weight: 3
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 3
     region: content
   field_how_to_link_1:
-    weight: 5
+    type: link_separate
     label: above
     settings:
       trim_length: null
@@ -81,10 +83,10 @@ content:
       rel: '0'
       target: '0'
     third_party_settings: {  }
-    type: link_separate
+    weight: 5
     region: content
   field_how_to_links_5:
-    weight: 10
+    type: link_separate
     label: above
     settings:
       trim_length: null
@@ -93,74 +95,74 @@ content:
       rel: '0'
       target: '0'
     third_party_settings: {  }
-    type: link_separate
+    weight: 10
     region: content
   field_how_to_methods_5:
     type: entity_reference_revisions_entity_view
-    weight: 12
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 12
     region: content
   field_how_to_more_info:
-    weight: 7
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 7
     region: content
   field_how_to_next_steps:
     type: entity_reference_revisions_entity_view
-    weight: 11
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 11
     region: content
   field_how_to_ref_fees:
-    weight: 13
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 13
     region: content
   field_how_to_taxo_action_type:
-    weight: 2
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 2
     region: content
   field_how_to_time:
-    weight: 4
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 4
     region: content
   field_how_to_what_you_need:
-    weight: 6
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 6
     region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_log_in_links: true
   computed_related_to: true
@@ -178,7 +180,9 @@ hidden:
   field_more_info_header: true
   field_next_steps_header: true
   field_organizations: true
+  field_primary_parent: true
   field_reusable_label: true
+  field_short_title: true
   field_state_organization_tax: true
   field_what_you_need_header: true
   langcode: true

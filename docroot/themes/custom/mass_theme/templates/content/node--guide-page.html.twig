@@ -20,17 +20,20 @@
   {% endif %}
 
   {# Check if primary indicator content exists. #}
+  {% set primaryIndicators = null %}
+  {% set primaryRelationshipContent = null %}
+  {#
   {% if content.computed_related_to[0] %}
     {% set primaryIndicators = { "label": "part of" } %}
     {% set primaryRelationshipContent = content.computed_related_to %}
-  {% else %}
-    {% set primaryIndicators = null %}
-    {% set primaryRelationshipContent = null %}
   {% endif %}
+  #}
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "label": "offered by"
+      "icon": "building",
+      "label": "offered by",
+      "groupAfter": 3
     } %}
   {% endif %}
 
@@ -51,8 +54,8 @@
   {% include "@organisms/by-template/illustrated-header.twig" with {
     "illustratedHeader": {
       "bgImage": content.field_guide_page_bg_wide[0],
+      "noImage": content.field_guide_page_bg_wide[0]?false:true,
       "bgCentered": true,
-      "category": "Guide",
       "pageHeader": {
         "title": node.title.value,
         "subTitle": "",
