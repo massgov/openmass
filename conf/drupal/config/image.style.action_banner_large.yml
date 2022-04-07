@@ -1,15 +1,17 @@
 uuid: d7b2caac-4cdc-49ba-b782-7c3e78081b1a
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - focal_point
 name: action_banner_large
 label: 'Action banner large'
 effects:
-  dcaf71ff-7fbb-47ba-b291-391790c57f1c:
-    uuid: dcaf71ff-7fbb-47ba-b291-391790c57f1c
-    id: image_scale_and_crop
-    weight: 1
+  d75fdb5e-e38e-44dc-ad65-1aca8d448eb0:
+    uuid: d75fdb5e-e38e-44dc-ad65-1aca8d448eb0
+    id: focal_point_scale_and_crop
+    weight: 2
     data:
       width: 1100
       height: 400
-      anchor: right-center
+      crop_type: focal_point
