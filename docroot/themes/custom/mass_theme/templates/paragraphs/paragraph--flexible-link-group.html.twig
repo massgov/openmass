@@ -1,19 +1,21 @@
 <div class="flexible_link_group flexible_link_group--{{ flexible_links_display_type }}">
 
-  {% if (flexible_links_display_type == 'links') %}
-    {% set items = [] %}
-    {% for link in flexible_link_links %}
-      {% set item = {
-            "path": "@atoms/decorative-link.twig",
-            "data": {
-              "decorativeLink": {
-                "text": link.text,
-                "href": link.href
-              }
+  {% set items = [] %}
+  {% for link in flexible_link_links %}
+    {% set item = {
+          "path": "@atoms/decorative-link.twig",
+          "data": {
+            "decorativeLink": {
+              "text": link.text,
+              "href": link.href
             }
-      } %}
-      {% set items = items|merge([item])%}
-    {% endfor %}
+          }
+    } %}
+    {% set items = items|merge([item])%}
+  {% endfor %}
+
+
+  {% if (flexible_links_display_type == 'links') %}
     {% include "@organisms/by-author/collapsible-content.twig" with {
       "collapsibleContent": {
         "extended": true,
@@ -29,7 +31,17 @@
     } %}
   {% endif %}
 
-  {% if (flexible_link_description == 'buttons') %}
+  {% if (flexible_links_display_type == 'buttons') %}
+
+    {% for item in items %}
+      {% include "@molecules/callout-link.twig" with {
+        "calloutLink": {
+          "text": item.data.decorativeLink.text,
+          "href": item.data.decorativeLink.url
+        }
+      } %}
+    {% endfor %}
+
 
   {% endif %}
 
