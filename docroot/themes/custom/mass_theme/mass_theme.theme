@@ -109,6 +109,24 @@ function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, arra
 
   // Allow all collection views pages to use the same template file.
   if (strpos($view->id(), 'collection') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
+
+
+    $route = \Drupal::routeMatch();
+    $collection = $route->getParameter('collection');
+
+    // ksm($route->getParameters());
+    // ksm($topic);
+
+    $query = \Drupal::entityQuery('taxonomy_term');
+    $query->condition('field_url_name', $collection);
+    $id = reset($query->execute());
+    $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+    $term = $storage->load($id);
+    ksm($term->label());
+
+    // $variables['feedback_form'] = mass_feedback_form_from_orgs($term->field_organizations);
+
+
     $suggestions[] = 'views_view__data_listing';
   }
 }
