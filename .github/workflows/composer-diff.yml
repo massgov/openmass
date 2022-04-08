@@ -16,12 +16,12 @@ jobs:
 
       - name: Generate composer diff
         id: composer_diff # To reference the output in comment
-        uses: IonBazan/composer-diff-action@v1
+        uses: IonBazan/composer-diff-action@master
 
       - name: Post comment
         uses: marocchino/sticky-pull-request-comment@v2
         # An empty diff result will break this action.
-#        if: ${{ steps.composer_diff.outputs.composer_diff_exit_code != 0 }}
+        if: ${{ steps.composer_diff.outputs.composer_diff_exit_code != 0 }}
         with:
           header: composer-diff # Creates a collapsed comment with the report
           message: |
