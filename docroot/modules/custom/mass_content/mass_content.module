@@ -789,9 +789,21 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
     $query->condition('type', 'event');
   }
 
-  $order_by_news = $order_by['node__field_date_published_field_date_published_value'] ?? FALSE;
-  if ($order_by_news) {
-    $query->condition('type', 'news');
+  $order_by_published_date = $order_by['node__field_date_published_field_date_published_value'] ?? FALSE;
+  if ($order_by_published_date) {
+    $types_with_cosolidated_date_field = [
+      'news',
+      'binder',
+      'decision',
+      'executive_order',
+      'info_details',
+      'news',
+      'regulation',
+      'rules',
+      'advisory',
+      'document',
+    ];
+    $query->condition('type', $types_with_cosolidated_date_field, 'IN');
   }
 
   // Override sort with the sort_bef_combine query parameter.
@@ -834,7 +846,7 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
   $media_query->addField('media_field_data', 'mid', 'extra_column_4');
 
   // If the sort is for news of event do not show media.
-  if ($order_by_event || $order_by_news) {
+  if ($order_by_event || $order_by_published_date) {
     $media_query->condition('mid', -1);
   }
 
