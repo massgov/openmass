@@ -1,23 +1,27 @@
 
 
-## [0.317.0] - March 22, 2022
+## [0.319.0] - April 5, 2022
 
-### Changed
-  - DP-23372: Add the full URL as a field in the document CSV download file.
-  - DP-23754: Modify Drupal permissions so that only Data admins have data hub tagging permissions.
-  - DP-24119: Consolidate published date fields in various content types.
-  - DP-24231: DDEV 1.19 - Disable seldom used docker services by default. Change DB override
-  - DP-24269: Change "no results" behavior on Data Hub.
-  - DP-24322: Remove ability to put page based alert on topic page.
+### Fixed
+  - DP-23508: Don't load Dotenv package on Acquia environments
+  - DP-23508: Moved development dependencies from require to require-dev
+  - DP-24263: Fix image sizes on info details page.
+  - DP-24334: Removed unnecesary if condition, the configuration of an object extending
+ViewsBulkOperationsActionBase will always be an array because when it is
+set it requires an array as parameter.
+  - DP-24336: Add cache tag to update if any event changes on events paragraph.
   
 ### Added
-  - DP-24111: Add bulk feature to add collection information to documents.
-  - DP-24287: Use Tugboat web API in ahoy backstop and add Drush command for rebiulding a Preview
+  - DP-23805: Move login links on service page from the sidebar into the page banner.
+  - DP-24094: Add and configure environment indicator module
+  - DP-24428: Custom Akamai purger
   
-### Fixed
-  - DP-24315: Add Views Porter Stemmer to Collections and Data Listing Views
-  - DP-24321: Configuration does not export cleanly
+### Removed
+  - DP-24093: Removed "Show" and "Hide" from the Sitewide alert display.
+  - DP-24413: Hide "Reset to alphabetical" option on the collection admin form.
   
-### Security
-  - DP-24348: Minor security upgrade for Drupal core to 9.3.8.
+### Changed
+  - DP-24237: Improve url purging by removing unwanted normalization.
+  - DP-24384: Send JSON to syslog
+  - DP-24415: View changes related to collections and documents.
   
