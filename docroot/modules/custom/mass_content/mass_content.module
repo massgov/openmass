@@ -587,6 +587,29 @@ function mass_content_page_attachments(array &$attachments) {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
+function mass_content_form_taxonomy_term_collections_form_alter(array &$form, FormStateInterface $form_state) {
+  $default_sort_widget = &$form['field_default_sort']['widget'][0]['value'];
+  $default_sort_widget['#type'] = 'select';
+  $default_sort_widget['#options'] = $form['field_sort_order']['widget']['#options'];
+  $default_sort_widget['#size'] = 1;
+  $default_sort_widget['#element_validate'][] = 'mass_content_validate_default_sort_option';
+}
+
+/**
+ * Validates sort default option to be one of the selected available sorts.
+ */
+function mass_content_validate_default_sort_option(array &$element, FormStateInterface $form_state) {
+  $selected_sorts = array_column($form_state->getValue('field_sort_order'), 'value');
+  $default_sort = $form_state->getValue('field_default_sort')[0]['value'];
+  if (in_array($default_sort, $selected_sorts)) {
+    return;
+  }
+  $form_state->setError($element, t('The default sort must be one of the sort options.'));
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
 function mass_content_form_node_org_page_edit_form_alter(&$form, FormStateInterface $form_state) {
   mass_content_set_default_event_quantity($form);
 }
