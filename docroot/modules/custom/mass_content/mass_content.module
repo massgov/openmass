@@ -662,7 +662,8 @@ function mass_content_form_views_exposed_form_alter__collection_all_page_all(&$f
 
   // Setting default sort option if there no sort option in the url.
   if (!\Drupal::request()->query->get('sort_bef_combine')) {
-    $first_option = array_keys($form['sort_bef_combine']['#options'])[0] ?? FALSE;
+    $first_option = $collection->field_default_sort->value ??
+      array_keys($form['sort_bef_combine']['#options'])[0] ?? FALSE;
     \Drupal::request()->query->set('sort_bef_combine', $first_option);
   }
 
