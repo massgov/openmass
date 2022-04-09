@@ -18,6 +18,7 @@ dependencies:
     - text
     - user
     - views_autocomplete_filters
+    - views_custom_cache_tag
     - views_porter_stemmer
 id: collection_all
 label: 'Collection All'
@@ -453,7 +454,7 @@ display:
               plugin_id: default
               advanced:
                 combine: true
-                combine_rewrite: "Title Asc|Alpha by title - ascending\r\nTitle Desc|Alpha by title - descending\r\nPublish date (News) Asc|Publish date (News) - ascending\r\nPublish date (News) Desc|Publish date (News) - descending\r\nStart date (Events) Asc|Event start date - ascending\r\nStart date (Events) Desc|Event start date - descending\r\n"
+                combine_rewrite: "Title Asc|Alpha by title - ascending\r\nTitle Desc|Alpha by title - descending\r\nPublish date - Asc|Publish date - ascending\r\nPublish date - Desc|Publish date - descending\r\nStart date (Events) Asc|Event start date - ascending\r\nStart date (Events) Desc|Event start date - descending\r\n"
                 reset: false
                 reset_label: ''
                 collapsible: false
@@ -480,8 +481,9 @@ display:
         options:
           perm: 'access content'
       cache:
-        type: tag
-        options: {  }
+        type: custom_tag
+        options:
+          custom_tag: node_list
       empty:
         area:
           id: area
@@ -522,7 +524,7 @@ display:
           plugin_id: datetime
           order: ASC
           expose:
-            label: 'Publish date (News)'
+            label: 'Publish date -'
             field_identifier: field_date_published_value
           exposed: true
           granularity: second
