@@ -90,7 +90,7 @@ services:
         - PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-import-backup /tmp/database.sql.gz
         - rm -f /tmp/database.sql.gz
         # Set release for env indicator module
-        - drush sset environment_indicator.current_release ${TUGBOAT_GITHUB_HEAD}
+        - drush sset environment_indicator.current_release ${TUGBOAT_GITHUB_HEAD} || true
         # Set file permissions such that Drupal will not complain.
         - chgrp -R www-data "${DOCROOT}/sites/default/files"
         - find "${DOCROOT}/sites/default/files" -type d -exec chmod 2775 {} \;
