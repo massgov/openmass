@@ -828,6 +828,10 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
       'document',
     ];
     $query->condition('type', $types_with_consolidated_date_field, 'IN');
+
+    // Files doesn't have a published date, hence we don't need to make to
+    // make a Union to include media/files results.
+    return;
   }
 
   // Override sort with the sort_bef_combine query parameter.
