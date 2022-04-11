@@ -869,6 +869,10 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
   $fields = [];
   $media_query->addField('media_field_data', 'mid', 'extra_column_1');
   $media_query->addField('media_field_data', 'mid', 'extra_column_2');
+
+  // Same alias from the node title to be able to sort nodes and media by title.
+  $media_query->addField('media__field_title', 'field_title_value', 'node_field_data_title');
+
   $media_query->addField('media_field_data', 'mid', 'extra_column_3');
   $media_query->addField('media_field_data', 'mid', 'extra_column_4');
 
@@ -877,8 +881,6 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
     $media_query->condition('mid', -1);
   }
 
-  // Same alias from the node title to be able to sort nodes and media by title.
-  $media_query->addField('media__field_title', 'field_title_value', 'node_field_data_title');
   // Last field, on the same column as NID, the alias doesn't matter here
   // because it is a UNION, the second select doesn't define columns.
   $media_query->addField('media_field_data', 'mid');
