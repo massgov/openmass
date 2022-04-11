@@ -815,7 +815,7 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
 
   $order_by_published_date = $order_by['node__field_date_published_field_date_published_value'] ?? FALSE;
   if ($order_by_published_date) {
-    $types_with_cosolidated_date_field = [
+    $types_with_consolidated_date_field = [
       'news',
       'binder',
       'decision',
@@ -827,7 +827,7 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
       'advisory',
       'document',
     ];
-    $query->condition('type', $types_with_cosolidated_date_field, 'IN');
+    $query->condition('type', $types_with_consolidated_date_field, 'IN');
   }
 
   // Override sort with the sort_bef_combine query parameter.
