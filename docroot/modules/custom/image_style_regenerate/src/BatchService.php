@@ -5,7 +5,7 @@ namespace Drupal\image_style_regenerate;
 use Drupal\file\Entity\File;
 
 /**
- * Class BatchService
+ * Class BatchService.
  *
  * @package Drupal\image_style_regenerate
  */
@@ -16,6 +16,9 @@ class BatchService {
    *
    * @param int $fid
    *   Id of the file.
+   *
+   * @param int $count
+   *   Count of the files.
    * @param object $context
    *   Context for operations.
    */

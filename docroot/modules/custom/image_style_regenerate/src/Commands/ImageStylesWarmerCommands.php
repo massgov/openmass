@@ -12,6 +12,9 @@ class ImageStylesWarmerCommands extends DrushCommands {
    */
   private $loggerChannelFactory;
 
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(LoggerChannelFactoryInterface $loggerChannelFactory) {
     $this->loggerChannelFactory = $loggerChannelFactory;
   }
@@ -27,7 +30,7 @@ class ImageStylesWarmerCommands extends DrushCommands {
     $this->loggerChannelFactory->get('image_style_regenerate')->info('Image styles warmer loading files.');
 
     $files = \Drupal::entityQuery('file')
-      ->condition('filemime', ['image/jpeg', 'image/jpg', 'image/gif', 'image/png'],'IN')
+      ->condition('filemime', ['image/jpeg', 'image/jpg', 'image/gif', 'image/png'], 'IN')
       ->condition('status', \Drupal\file\FileInterface::STATUS_PERMANENT)
       ->execute();
     if (!empty($files)) {
