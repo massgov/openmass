@@ -83,6 +83,9 @@ class DecisionTokenRendererTest extends TestCase {
     $this->deletedEntityTest($entityTypeManager);
   }
 
+  /**
+   * Common code for testing both deleted media and file entities.
+   */
   private function deletedEntityTest($entityTypeManager): void {
     $fileUrlGenerator = $this->createMock(FileUrlGeneratorInterface::class);
     $renderer = new DecisionTokenRenderer($entityTypeManager, $fileUrlGenerator);

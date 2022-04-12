@@ -6,7 +6,6 @@ namespace Drupal\mass_schema_web_page;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
-use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\node\NodeInterface;
 
@@ -19,6 +18,9 @@ final class DecisionTokenRenderer {
 
   private FileUrlGeneratorInterface $fileUrlGenerator;
 
+  /**
+   * Construct a new DecisionTokenRenderer.
+   */
   public function __construct(EntityTypeManagerInterface $entityTypeManager, FileUrlGeneratorInterface $fileUrlGenerator) {
     $this->entityTypeManager = $entityTypeManager;
     $this->fileUrlGenerator = $fileUrlGenerator;
@@ -86,10 +88,10 @@ final class DecisionTokenRenderer {
    *   The field referencing documents.
    * @param array $replacements
    *   The current array of token replacements.
-   * @param $original
+   * @param string $original
    *   The original token name.
    */
-  private function getEntityReferenceReplacements(EntityReferenceFieldItemListInterface $field, array &$replacements, $original): void {
+  private function getEntityReferenceReplacements(EntityReferenceFieldItemListInterface $field, array &$replacements, string $original): void {
     $filepaths = $this->getFilepaths($field);
     $replacements[$original] = json_encode($filepaths, JSON_THROW_ON_ERROR);
   }
@@ -100,6 +102,7 @@ final class DecisionTokenRenderer {
    * @param \Drupal\Core\Field\EntityReferenceFieldItemListInterface $field
    *
    * @return bool
+   *   TRUE if the field references a Document, FALSE otherwise.
    */
   private function fieldReferencesDocument(EntityReferenceFieldItemListInterface $field): bool {
     $field_definition = $field->getFieldDefinition();
@@ -112,7 +115,7 @@ final class DecisionTokenRenderer {
   /**
    * Return file paths for referenced media.
    *
-   * @param \Drupal\file\Plugin\Field\FieldType\FileFieldItemList $field
+   * @param \Drupal\Core\Field\EntityReferenceFieldItemList $field
    *   The file field to load file paths from.
    *
    * @return array
