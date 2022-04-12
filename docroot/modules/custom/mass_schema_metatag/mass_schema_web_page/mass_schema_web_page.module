@@ -36,7 +36,7 @@ function mass_schema_web_page_tokens($type, $tokens, array $data, array $options
 
     // Only act on decision content.
     if ($entity->bundle() !== 'decision') {
-      return;
+      return [];
     }
 
     // Iterate through all the tokens.
