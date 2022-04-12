@@ -5,6 +5,9 @@ namespace Drupal\image_style_regenerate\Commands;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drush\Commands\DrushCommands;
 
+/**
+ * Class ImageStylesWarmerCommands.
+ */
 class ImageStylesWarmerCommands extends DrushCommands {
 
   /**

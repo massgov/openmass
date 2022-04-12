@@ -13,14 +13,6 @@ class BatchService {
 
   /**
    * Batch process callback.
-   *
-   * @param int $fid
-   *   Id of the file.
-   *
-   * @param int $count
-   *   Count of the files.
-   * @param object $context
-   *   Context for operations.
    */
   public function warmUpFileProcess($fid, $count, &$context) {
     $image_styles_warmer = \Drupal::service('image_style_regenerate.warmer');
