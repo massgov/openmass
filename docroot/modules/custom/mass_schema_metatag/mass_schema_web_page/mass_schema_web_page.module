@@ -55,14 +55,14 @@ function mass_schema_web_page_tokens($type, $tokens, array $data, array $options
       $field_definition = $entity->get($name)->getFieldDefinition();
       $field_type = $field_definition->getType();
       // Logic for handling entity reference fields.
-      if ($field_type == 'entity_reference') {
+      if ($field_type === 'entity_reference') {
         $target_type = $field_definition->getSetting('target_type');
         $handler_settings = $field_definition->getSetting('handler_settings');
         if (!empty($handler_settings['target_bundles'])) {
           $target_bundles = $field_definition->getSetting('handler_settings')['target_bundles'];
           // If the target entity is a media document entity, get the file
           // paths of all the files referenced.
-          if ($target_type == 'media' && in_array('document', array_keys($target_bundles))) {
+          if ($target_type === 'media' && in_array('document', array_keys($target_bundles))) {
             $filepaths = [];
             $values = $entity->get($name)->getValue();
             foreach ($values as $value) {
