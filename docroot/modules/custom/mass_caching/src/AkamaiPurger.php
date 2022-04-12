@@ -52,6 +52,7 @@ class AkamaiPurger extends \Drupal\akamai\Plugin\Purge\Purger\AkamaiPurger {
     }
 
     // json_encode() needs numeric indices without holes.
+    // https://www.sitepoint.com/community/t/json-encode-sometimes-does-or-does-not-add-keys-for-array-elements/116226/2
     $urls_to_clear = array_values($urls_to_clear);
 
     // Mass: Go right to purgeRequest(), bypassing unwanted check in purgeUrls().
