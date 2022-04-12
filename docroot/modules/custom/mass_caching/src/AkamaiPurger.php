@@ -51,6 +51,9 @@ class AkamaiPurger extends \Drupal\akamai\Plugin\Purge\Purger\AkamaiPurger {
       }
     }
 
+    // json_encode() needs numeric indices without holes.
+    $urls_to_clear = array_values($urls_to_clear);
+
     // Mass: Go right to purgeRequest(), bypassing unwanted check in purgeUrls().
     $method = new \ReflectionMethod($this->client, 'purgeRequest');
     $method->setAccessible(TRUE);
