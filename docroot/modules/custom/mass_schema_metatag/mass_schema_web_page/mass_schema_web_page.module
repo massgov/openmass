@@ -62,7 +62,7 @@ function mass_schema_web_page_tokens($type, $tokens, array $data, array $options
           $target_bundles = $field_definition->getSetting('handler_settings')['target_bundles'];
           // If the target entity is a media document entity, get the file
           // paths of all the files referenced.
-          if ($target_type === 'media' && in_array('document', array_keys($target_bundles))) {
+          if ($target_type === 'media' && array_key_exists('document', $target_bundles)) {
             $filepaths = [];
             $values = $entity->get($name)->getValue();
             foreach ($values as $value) {
