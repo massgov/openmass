@@ -1,5 +1,16 @@
 
 
+## [0.320.0] - April 12, 2022
+
+### Added
+  - DP-23508: Support switching PHP versions during Acquia deployments
+  
+### Fixed
+  - DP-24420: Ensure to have build info on View Page Controller before getting the view title.
+  - DP-24527: Fixing the problem with link in Service Page banner not formating correctly.
+  
+
+
 ## [0.319.0] - April 5, 2022
 
 ### Fixed
