@@ -13,38 +13,38 @@
 {% endfor %}
 
 <div class="flexible_link_group flexible_link_group--{{ flexible_links_display_type }}">
+  {% if (flexible_links_display_type == 'links') %}
+    {% include "@organisms/by-author/collapsible-content.twig" with {
+      "collapsibleContent": {
+        "extended": true,
+        "items": [{
+          "collapsibleHeader": {
+            "title": flexible_link_title,
+            "description": flexible_link_description
+          },
+          "expanded": true,
+          "includes" : items
+        }]
+      }
+    } %}
+  {% endif %}
 
-  <section class="ma__action-finder ma__action-finder--no-background ">
-    <div class="ma__action-finder__container">
+  {% if (flexible_links_display_type == 'buttons') %}
+    <div class="ma__action-finder ma__action-finder--no-background ">
+      <div class="ma__action-finder__container">
 
+        {% if ((flexible_link_title ~ flexible_link_description) is not empty) %}
+          <div class="flexible_link_group--header">
+            {% if (flexible_link_title is not empty) %}
+              <h2>{{ flexible_link_title }}</h2>
+            {% endif %}
+            {% if (flexible_link_description is not empty) %}
+              <p>{{ flexible_link_description }}</p>
+            {% endif %}
+          </div>
+        {% endif %}
 
-      {% if flexible_link_title %}
-        <header class="ma__action-finder__header">
-          <h2 class="ma__action-finder__title">
-              {{ flexible_link_title }}
-          </h2>
-        </header>
-      {% endif %}
-
-      {% if (flexible_links_display_type == 'links') %}
-        {% include "@organisms/by-author/collapsible-content.twig" with {
-          "collapsibleContent": {
-            "extended": true,
-            "items": [{
-              "collapsibleHeader": {
-                "title": flexible_link_title,
-                "description": flexible_link_description
-              },
-              "expanded": true,
-              "includes" : items
-            }]
-          }
-        } %}
-      {% endif %}
-
-      {% if (flexible_links_display_type == 'buttons') %}
         <div class="ma__action-finder__items">
-
           {% for item in items %}
             {% include "@molecules/callout-link.twig" with {
               "calloutLink": {
@@ -54,9 +54,8 @@
               }
             } %}
           {% endfor %}
-
         </div>
-      {% endif %}
+      </div>
     </div>
-  </section>
+  {% endif %}
 </div>
