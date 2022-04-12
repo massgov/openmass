@@ -1,0 +1,6 @@
+services:
+  image_style_regenerate.commands:
+    class: \Drupal\image_style_regenerate\Commands\ImageStylesWarmerCommands
+    arguments: [ '@logger.factory' ]
+    tags:
+      - { name: drush.command }
