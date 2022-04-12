@@ -66,15 +66,14 @@ final class DecisionTokenRenderer {
       }
 
       // If the node entity doesn't have the field, continue.
-      if (!$node->hasField($name)) {
-        continue;
+      if ($node->hasField($name)) {
+        $field = $node->get($name);
+        // Logic for handling entity reference fields.
+        if ($field instanceof EntityReferenceFieldItemListInterface && $this->fieldReferencesDocument($field)) {
+          $this->getEntityReferenceReplacements($field, $replacements, $original);
+        }
       }
 
-      $field = $node->get($name);
-      // Logic for handling entity reference fields.
-      if ($field instanceof EntityReferenceFieldItemListInterface && $this->fieldReferencesDocument($field)) {
-        $this->getEntityReferenceReplacements($field, $replacements, $original);
-      }
     }
 
     return $replacements;
