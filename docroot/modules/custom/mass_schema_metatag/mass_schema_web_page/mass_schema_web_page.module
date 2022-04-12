@@ -69,6 +69,9 @@ function mass_schema_web_page_tokens($type, $tokens, array $data, array $options
               if (!empty($value['target_id'])) {
                 // Load the media entity by the target id.
                 $media_entity = Media::load($value['target_id']);
+                if (!$media_entity) {
+                  continue;
+                }
                 // Get the uploaded file values.
                 $files = $media_entity->get('field_upload_file')->getValue();
                 foreach ($files as $file) {
