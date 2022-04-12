@@ -11,6 +11,8 @@ use Drush\Commands\DrushCommands;
 class ImageStylesWarmerCommands extends DrushCommands {
 
   /**
+   * Login channel Factory.
+   *
    * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
    */
   private $loggerChannelFactory;
