@@ -1,0 +1,24 @@
+uuid: 85430d14-7e7d-4d53-90c2-c54559d9a601
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.flexible_link_group_wrapper.field_flexible_links
+    - paragraphs.paragraphs_type.flexible_link_group_wrapper
+  module:
+    - entity_reference_revisions
+id: paragraph.flexible_link_group_wrapper.default
+targetEntityType: paragraph
+bundle: flexible_link_group_wrapper
+mode: default
+content:
+  field_flexible_links:
+    type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden: {  }

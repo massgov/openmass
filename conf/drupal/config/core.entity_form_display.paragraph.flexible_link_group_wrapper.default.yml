@@ -1,0 +1,29 @@
+uuid: e06f3e6b-2e73-41b8-9828-b6e90acad2cc
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.flexible_link_group_wrapper.field_flexible_links
+    - paragraphs.paragraphs_type.flexible_link_group_wrapper
+  module:
+    - paragraphs
+id: paragraph.flexible_link_group_wrapper.default
+targetEntityType: paragraph
+bundle: flexible_link_group_wrapper
+mode: default
+content:
+  field_flexible_links:
+    type: entity_reference_paragraphs
+    weight: 0
+    region: content
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true
