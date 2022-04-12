@@ -60,7 +60,7 @@ final class DecisionTokenRenderer {
 
     // Iterate through all the tokens.
     foreach ($tokens as $name => $original) {
-      // Check for the [entity:field_name] token.
+      // Check for the [field_reference:entity:field_name] token.
       if (strpos($name, ':') !== FALSE) {
         [$name] = explode(':', $name);
       }
