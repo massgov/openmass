@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\mass_schema_web_page\DecisionTokenRenderer;
 use Drupal\media\Entity\Media;
 use Drupal\file\Entity\File;
 
@@ -31,65 +32,12 @@ function mass_schema_web_page_tokens($type, $tokens, array $data, array $options
   $replacements = [];
 
   if ($type === 'node' && !empty($data['node'])) {
-    /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+    /** @var \Drupal\node\NodeInterface $entity */
     $entity = $data['node'];
 
-    // Only act on decision content.
-    if ($entity->bundle() !== 'decision') {
-      return [];
-    }
-
-    // Iterate through all the tokens.
-    foreach ($tokens as $name => $original) {
-      // Check for the [entity:field_name] token.
-      if (strpos($name, ':') !== FALSE) {
-        [$name] = explode(':', $name);
-      }
-
-      // If the node entity doesn't have the field, continue.
-      if (!$entity->hasField($name)) {
-        continue;
-      }
-
-      // Get the field definition and type.
-      $field_definition = $entity->get($name)->getFieldDefinition();
-      $field_type = $field_definition->getType();
-      // Logic for handling entity reference fields.
-      if ($field_type === 'entity_reference') {
-        $target_type = $field_definition->getSetting('target_type');
-        $handler_settings = $field_definition->getSetting('handler_settings');
-        if (!empty($handler_settings['target_bundles'])) {
-          $target_bundles = $field_definition->getSetting('handler_settings')['target_bundles'];
-          // If the target entity is a media document entity, get the file
-          // paths of all the files referenced.
-          if ($target_type === 'media' && array_key_exists('document', $target_bundles)) {
-            $filepaths = [];
-            $values = $entity->get($name)->getValue();
-            foreach ($values as $value) {
-              if (!empty($value['target_id'])) {
-                // Load the media entity by the target id.
-                $media_entity = Media::load($value['target_id']);
-                if (!$media_entity) {
-                  continue;
-                }
-                // Get the uploaded file values.
-                $files = $media_entity->get('field_upload_file')->getValue();
-                foreach ($files as $file) {
-                  if (!empty($file['target_id'])) {
-                    $file_id = $file['target_id'];
-                    // Load the file with the fid.
-                    $file = File::load($file_id);
-                    // Get the file uri and the url path to the file.
-                    $uri = $file->getFileUri();
-                    $filepaths[] = file_create_url($uri);
-                  }
-                }
-              }
-            }
-            $replacements[$original] = json_encode($filepaths);
-          }
-        }
-      }
+    $renderer = new DecisionTokenRenderer(\Drupal::entityTypeManager(), \Drupal::service('file_url_generator'));
+    if ($renderer->isRenderable($entity)) {
+      $replacements = $renderer->getTokens($tokens, $entity);
     }
   }
 
