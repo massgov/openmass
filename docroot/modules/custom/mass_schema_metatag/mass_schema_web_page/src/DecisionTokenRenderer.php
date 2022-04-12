@@ -6,6 +6,7 @@ namespace Drupal\mass_schema_web_page;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
+use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\node\NodeInterface;
 
@@ -44,6 +45,9 @@ final class DecisionTokenRenderer {
    * @param \Drupal\node\NodeInterface $node
    *   The decision node to render tokens from.
    *
+   * @throws \LogicException
+   *   Thrown if the node is not the right content type.
+   *
    * @return array
    *   The array of rendered tokens.
    */
@@ -68,7 +72,7 @@ final class DecisionTokenRenderer {
 
       $field = $node->get($name);
       // Logic for handling entity reference fields.
-      if ($field instanceof EntityReferenceFieldItemListInterface) {
+      if ($field instanceof EntityReferenceFieldItemListInterface && $this->fieldReferencesDocument($field)) {
         $this->getEntityReferenceReplacements($field, $replacements, $original);
       }
     }
@@ -87,10 +91,8 @@ final class DecisionTokenRenderer {
    *   The original token name.
    */
   private function getEntityReferenceReplacements(EntityReferenceFieldItemListInterface $field, array &$replacements, $original): void {
-    if ($this->fieldReferencesDocument($field)) {
-      $filepaths = $this->getFilepaths($field);
-      $replacements[$original] = json_encode($filepaths, JSON_THROW_ON_ERROR);
-    }
+    $filepaths = $this->getFilepaths($field);
+    $replacements[$original] = json_encode($filepaths, JSON_THROW_ON_ERROR);
   }
 
   /**
