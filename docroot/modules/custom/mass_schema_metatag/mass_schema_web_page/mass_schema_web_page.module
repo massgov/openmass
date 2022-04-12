@@ -43,7 +43,7 @@ function mass_schema_web_page_tokens($type, $tokens, array $data, array $options
     foreach ($tokens as $name => $original) {
       // Check for the [entity:field_name] token.
       if (strpos($name, ':') !== FALSE) {
-        list($name) = explode(':', $name);
+        [$name] = explode(':', $name);
       }
 
       // If the node entity doesn't have the field, continue.
