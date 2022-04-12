@@ -115,7 +115,7 @@ final class DecisionTokenRenderer {
   /**
    * Return file paths for referenced media.
    *
-   * @param \Drupal\Core\Field\EntityReferenceFieldItemList $field
+   * @param \Drupal\Core\Field\EntityReferenceFieldItemListInterface $field
    *   The file field to load file paths from.
    *
    * @return array
