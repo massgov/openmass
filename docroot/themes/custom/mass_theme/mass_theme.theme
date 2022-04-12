@@ -2681,9 +2681,11 @@ function mass_theme_preprocess_node_rules(&$variables) {
   // Build contact section, if field is populated.
   if (Helper::isFieldPopulated($node, $fields['contact'])) {
     // Set up options for contact list.
+    $titleContext = t(' for @title', ['@title' => $node->getTitle()]);
     $contactList_options = [
       'heading' => [
         'title' => t("Contact"),
+        'titleContext' => $titleContext,
         'id' => 'contact',
       ],
       'groups' => [
@@ -2706,6 +2708,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
     $sideContent['contactList'] = Organisms::prepareContactList($node, $sidebarContacts_options);
     unset($sideContent['contactList']['compHeading']);
     $sideContent['contactList']['sidebarHeading']['title'] = t('Contact');
+    $sideContent['contactList']['sidebarHeading']['titleContext'] = $titleContext;
     $sideContent['contactList']['viewSpecific'] = TRUE;
   }
 
