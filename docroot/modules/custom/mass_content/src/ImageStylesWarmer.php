@@ -94,7 +94,7 @@ class ImageStylesWarmer implements ImageStylesWarmerInterface {
    * {@inheritdoc}
    */
   public function validateImage(FileInterface $file) {
-    if ($file->isPermanent()) {
+    if ($file->isPermanent() && file_exists($file->getFileUri()) !== FALSE) {
       $image = $this->image->get($file->getFileUri());
       $extensions = implode(' ', $image->getToolkit()->getSupportedExtensions());
       if ($image->isValid() && empty(file_validate_extensions($file, $extensions))) {
