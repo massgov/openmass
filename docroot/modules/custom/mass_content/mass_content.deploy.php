@@ -746,8 +746,6 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
     $fid = $node->get($map[$node->bundle()])->getValue()[0]['target_id'];
     $file = File::load($fid);
     $uri = $file->getFileUri();
-
-
     if (file_exists($uri) && $stream_wrapper_manager->isValidUri($file->getFileUri())) {
       $focal_point = "50,50";
       if ($node->bundle() == 'org_page') {
