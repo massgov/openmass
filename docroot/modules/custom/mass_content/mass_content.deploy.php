@@ -740,13 +740,15 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
 
   $nodes = $node_storage->loadMultiple($nids);
 
+  $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
     $fid = $node->get($map[$node->bundle()])->getValue()[0]['target_id'];
     $file = File::load($fid);
     $uri = $file->getFileUri();
-    $file_path = \Drupal::service('file_system')->realpath($uri);
-    if (is_file($file_path)) {
+
+
+    if (file_exists($uri) && $stream_wrapper_manager->isValidUri($file->getFileUri())) {
       $focal_point = "50,50";
       if ($node->bundle() == 'org_page') {
         $focal_point = "83.25,50";
