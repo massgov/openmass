@@ -745,20 +745,22 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
     $sandbox['current'] = $node->id();
     $fid = $node->get($map[$node->bundle()])->getValue()[0]['target_id'];
     $file = File::load($fid);
-    $uri = $file->getFileUri();
-    if (file_exists($uri) && $stream_wrapper_manager->isValidUri($file->getFileUri())) {
-      $focal_point = "50,50";
-      if ($node->bundle() == 'org_page') {
-        $focal_point = "83.25,50";
+    if ($fid != 12631) {
+      $uri = $file->getFileUri();
+      if (file_exists($uri) && $stream_wrapper_manager->isValidUri($file->getFileUri())) {
+        $focal_point = "50,50";
+        if ($node->bundle() == 'org_page') {
+          $focal_point = "83.25,50";
+        }
+        $file->focal_point = $focal_point;
+        Drush::logger()->notice(dt("uid: @id", [
+          "@id" => $uri,
+        ]));
+        Drush::logger()->notice(dt("Processing file: @id", [
+          "@id" => $file->id(),
+        ]));
+        \Drupal::service('mass_content.image_style_warmer')->warmUp($file);
       }
-      $file->focal_point = $focal_point;
-      Drush::logger()->notice(dt("uid: @id", [
-        "@id" => $uri,
-      ]));
-      Drush::logger()->notice(dt("Processing file: @id", [
-        "@id" => $file->id(),
-      ]));
-      \Drupal::service('mass_content.image_style_warmer')->warmUp($file);
     }
     $sandbox['progress']++;
   }
