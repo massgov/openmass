@@ -701,7 +701,7 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 /**
  * Regenerate Image styles for focal point.
  */
-function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
+function mass_content_deploy_regenerate_image_styles_focal_pointwqdqwqw(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $map = [
@@ -745,7 +745,7 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
     $sandbox['current'] = $node->id();
     $fid = $node->get($map[$node->bundle()])->getValue()[0]['target_id'];
     $file = File::load($fid);
-    if ($fid != 12631) {
+    if (!empty($file)) {
       $uri = $file->getFileUri();
       if (file_exists($uri) && $stream_wrapper_manager->isValidUri($file->getFileUri())) {
         $focal_point = "50,50";
@@ -753,12 +753,6 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
           $focal_point = "83.25,50";
         }
         $file->focal_point = $focal_point;
-        Drush::logger()->notice(dt("uid: @id", [
-          "@id" => $uri,
-        ]));
-        Drush::logger()->notice(dt("Processing file: @id", [
-          "@id" => $file->id(),
-        ]));
         \Drupal::service('mass_content.image_style_warmer')->warmUp($file);
       }
     }
