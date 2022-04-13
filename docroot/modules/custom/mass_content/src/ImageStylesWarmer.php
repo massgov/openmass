@@ -35,13 +35,6 @@ class ImageStylesWarmer implements ImageStylesWarmerInterface {
   protected $imageStyles;
 
   /**
-   * The queue factory.
-   *
-   * @var \Drupal\Core\Queue\QueueFactory
-   */
-  protected $queueFactory;
-
-  /**
    * Constructs a ImageStylesWarmer object.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $file_storage
@@ -94,7 +87,7 @@ class ImageStylesWarmer implements ImageStylesWarmerInterface {
    * {@inheritdoc}
    */
   public function validateImage(FileInterface $file) {
-    if ($file->isPermanent() && file_exists($file->getFileUri()) !== FALSE) {
+    if ($file->isPermanent()) {
       $image = $this->image->get($file->getFileUri());
       $extensions = implode(' ', $image->getToolkit()->getSupportedExtensions());
       if ($image->isValid() && empty(file_validate_extensions($file, $extensions))) {

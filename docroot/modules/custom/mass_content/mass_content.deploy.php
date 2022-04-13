@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\file\Entity\File;
 use Drupal\paragraphs\Entity\Paragraph;
@@ -712,14 +713,15 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
   ];
 
   $query = \Drupal::entityQuery('node');
-  $orcondition = $query->orConditionGroup();
+  $orCondition = $query->orConditionGroup();
   foreach ($map as $ct => $field) {
     $and = $query->andConditionGroup();
     $and->condition('type', $ct);
     $and->exists($field);
-    $orcondition->condition($and);
+    $orCondition->condition($and);
   }
-  $query->condition($orcondition);
+  $query->condition($orCondition);
+  $query->sort('nid');
 
   if (empty($sandbox)) {
     // Get a list of all nodes of type event.
@@ -729,18 +731,19 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
     $sandbox['max'] = $count->count()->execute();
   }
 
-  $batch_size = 50;
+  $batch_size = 100;
 
   $nids = $query->condition('nid', $sandbox['current'], '>')
-    ->sort('nid')
     ->range(0, $batch_size)
     ->execute();
+
+  $memory_cache = \Drupal::service('entity.memory_cache');
 
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
 
   $nodes = $node_storage->loadMultiple($nids);
-
-  $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
+  $focal_point_manager = \Drupal::service('focal_point.manager');
+  $crop_type = \Drupal::config('focal_point.settings')->get('crop_type');
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
     $fid = $node->get($map[$node->bundle()])->getValue()[0]['target_id'];
@@ -749,17 +752,21 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
     if (!empty($width) && !empty($height)) {
       $file = File::load($fid);
       $uri = $file->getFileUri();
-      if (file_exists($uri) && $stream_wrapper_manager->isValidUri($file->getFileUri())) {
+      image_path_flush($uri);
+      if (is_file($uri)) {
         $focal_point = "50,50";
         if ($node->bundle() == 'org_page') {
-          $focal_point = "83.25,50";
+          $focal_point = "83,50";
         }
-        $file->focal_point = $focal_point;
-        \Drupal::service('mass_content.image_style_warmer')->warmUp($file);
+        [$x, $y] = explode(',', $focal_point);
+        $crop = $focal_point_manager->getCropEntity($file, $crop_type);
+        $focal_point_manager->saveCropEntity($x, $y, $width, $height, $crop);
       }
     }
     $sandbox['progress']++;
   }
+
+  $memory_cache->deleteAll();
   Drush::logger()->notice(dt("Processed @count items from @max.", [
     "@count" => $sandbox['progress'],
     "@max" => $sandbox['max']
