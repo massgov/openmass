@@ -753,14 +753,14 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
     if (!empty($width) && !empty($height)) {
       $file = File::load($fid);
       $uri = $file->getFileUri();
-      $styles = ImageStyle::loadMultiple(['action_banner_large', 'hero1600x400_fp']);
-      foreach ($styles as $style) {
-        $style->flush($uri);
-      }
       if (is_file($uri)) {
         $focal_point = "50,50";
         if ($node->bundle() == 'org_page') {
           $focal_point = "83,50";
+        }
+        $styles = ImageStyle::loadMultiple(['action_banner_large', 'hero1600x400_fp']);
+        foreach ($styles as $style) {
+          $style->flush($uri);
         }
         [$x, $y] = explode(',', $focal_point);
         $crop = $focal_point_manager->getCropEntity($file, $crop_type);
