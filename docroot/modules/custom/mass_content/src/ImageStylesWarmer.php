@@ -63,7 +63,7 @@ class ImageStylesWarmer implements ImageStylesWarmerInterface {
   /**
    * {@inheritdoc}
    */
-  public function warmUp(FileInterface $file, $initialImageStyles = []) {
+  public function warmUp(FileInterface $file) {
     $initialImageStyles = ['action_banner_large', 'hero1600x400_fp'];
     $this->doWarmUp($file, $initialImageStyles);
   }
