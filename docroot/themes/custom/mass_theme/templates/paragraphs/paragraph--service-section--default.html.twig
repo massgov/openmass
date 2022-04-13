@@ -1,4 +1,15 @@
 {% set title = content.field_service_section_heading|field_value %}
+
+{% set enhanced_header %}
+  {% if not hide_heading and title is not empty %}
+      <header class="ma__action-finder__header">
+        <h2 class="ma__action-finder__title">
+          {{ title }}
+        </h2>
+      </header>
+  {% endif %}
+{% endset %}
+
 {% set body %}
   {% for service_component in service_components %}
     {% if service_component.group == 'default' %}
@@ -30,27 +41,26 @@
 {% set enhanced_style %}
   <section class="ma__action-finder ma__action-finder--no-background ma__action-finder--blue">
     <div class="ma__action-finder__container">
-      <header class="ma__action-finder__header">
-        <h2 class="ma__action-finder__title">
-          {{ title }}
-        </h2>
-      </header>
-
+      {{ enhanced_header }}
       {{ body|raw }}
-
     </div>
   </section>
+{% endset %}
+
+{% set simple_header %}
+  {% if not hide_heading and title is not empty %}
+      <div class="ma__stacked-row__title">
+        <h2 class="ma__comp-heading">
+          {{ title }}
+        </h2>
+      </div>
+  {% endif %}
 {% endset %}
 
 {% set simple_style %}
   <section class="ma__stacked-row__section  ma__stacked-row__section--borderless ma__stacked-row--restricted no-sidebar">
     <div class="ma__stacked-row__container">
-      <div class="ma__stacked-row__title">
-        <h2 class="ma__comp-heading    " tabindex="-1">
-          {{ title }}
-        </h2>
-      </div>
-
+      {{ simple_header }}
       {{ body|raw }}
     </div>
   </section>

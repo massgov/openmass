@@ -7116,7 +7116,13 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
 function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
   // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
   $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
-  $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
+  $wrap_fields = [
+    'field_tabl_wrapping',
+    'field_iframe_wrapping',
+    'field_image_wrapping',
+    'field_stat_wrapping',
+    'field_flexible_links',
+  ];
   $contained = ['rich_text'];
 
   $components = [];
@@ -7180,9 +7186,12 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
  * Groups different components together when necessary.
  */
 function mass_theme_preprocess_paragraph__service_section(&$variables) {
+  $paragraph = $variables['paragraph'];
+  $variables['section_style'] = $paragraph->field_section_style->value ?? 'simple';
+  $variables['hide_heading'] = ($paragraph->field_hide_heading->value ?? FALSE) === '1';
   $variables["service_components"] =
     _mass_theme_preprocess_paragraph_sections($variables, 'field_service_section_content');
-}
+  }
 
 /**
  * Implements hook_preprocess_HOOK().
