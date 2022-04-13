@@ -701,7 +701,7 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 /**
  * Regenerate Image styles for focal point.
  */
-function mass_content_deploy_regenerate_image_styles_focal_pointwqdqwqw(&$sandbox) {
+function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $map = [
@@ -744,8 +744,10 @@ function mass_content_deploy_regenerate_image_styles_focal_pointwqdqwqw(&$sandbo
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
     $fid = $node->get($map[$node->bundle()])->getValue()[0]['target_id'];
-    $file = File::load($fid);
-    if (!empty($file)) {
+    $width = $node->get($map[$node->bundle()])->getValue()[0]['width'];
+    $height = $node->get($map[$node->bundle()])->getValue()[0]['height'];
+    if (!empty($width) && !empty($height)) {
+      $file = File::load($fid);
       $uri = $file->getFileUri();
       if (file_exists($uri) && $stream_wrapper_manager->isValidUri($file->getFileUri())) {
         $focal_point = "50,50";
