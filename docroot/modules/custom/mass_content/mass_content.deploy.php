@@ -745,7 +745,8 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
     $fid = $node->get($map[$node->bundle()])->getValue()[0]['target_id'];
     $file = File::load($fid);
     $uri = $file->getFileUri();
-    if (file_exists($uri)) {
+    $file_path = \Drupal::service('file_system')->realpath($uri);
+    if (is_file($file_path)) {
       $focal_point = "50,50";
       if ($node->bundle() == 'org_page') {
         $focal_point = "83.25,50";
