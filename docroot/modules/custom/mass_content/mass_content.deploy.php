@@ -698,3 +698,85 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
     return t('All Event "Updated date" fields have been set.');
   }
 }
+
+/**
+ * Regenerate Image styles for focal point.
+ */
+function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  $map = [
+    "org_page" => ["field" => "field_bg_wide", "style" => "action_banner_large"],
+    "service_page" => ["field" => "field_service_bg_wide", "style" => "hero1600x400_fp"],
+    "info_details" => ["field" => "field_banner_image", "style" => "action_banner_large"],
+  ];
+
+  $query = \Drupal::entityQuery('node');
+  $orCondition = $query->orConditionGroup();
+  foreach ($map as $ct => $details) {
+    $and = $query->andConditionGroup();
+    $and->condition('type', $ct);
+    $and->exists($details['field']);
+    $orCondition->condition($and);
+  }
+  $query->condition($orCondition);
+  $query->sort('nid');
+
+  if (empty($sandbox)) {
+    // Get a list of all nodes of type event.
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  $nids = $query->condition('nid', $sandbox['current'], '>')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $memory_cache = \Drupal::service('entity.memory_cache');
+
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+
+  $nodes = $node_storage->loadMultiple($nids);
+  foreach ($nodes as $node) {
+    $sandbox['current'] = $node->id();
+    $key = $map[$node->bundle()]['field'];
+    $field = $node->get($key);
+    $fid = $field->getValue()[0]['target_id'];
+    $width = $field->getValue()[0]['width'];
+    $height = $field->getValue()[0]['height'];
+    if (!empty($width) && !empty($height)) {
+      $file = File::load($fid);
+      $uri = $file->getFileUri();
+      if (is_file($uri)) {
+        // Apply a tiny change to generate image.
+        $focal_point = "51,50";
+        if ($node->bundle() == 'org_page') {
+          $focal_point = "83,50";
+        }
+        $style = ImageStyle::load($map[$node->bundle()]['style']);
+        $derivative_uri = $style->buildUri($uri);
+        if (!is_file($derivative_uri)) {
+          $field->focal_point = $focal_point;
+          $node->setSyncing(TRUE);
+          $node->save();
+        }
+      }
+    }
+    $sandbox['progress']++;
+  }
+
+  $memory_cache->deleteAll();
+  Drush::logger()->notice(dt("Processed @count items from @max.", [
+    "@count" => $sandbox['progress'],
+    "@max" => $sandbox['max']
+  ]));
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('Given images regenerated.');
+  }
+}
