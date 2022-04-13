@@ -11,7 +11,7 @@ use Drupal\file\FileInterface;
 /**
  * Defines an images styles warmer.
  */
-class ImageStylesWarmer implements ImageStylesWarmerInterface {
+class ImageStylesWarmer {
 
   /**
    * The file entity storage.
