@@ -7223,6 +7223,7 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
         $computed_title = $link->get('computed_title')->getValue();
         $links[$index]['text'] = is_array($computed_title) ? $computed_title['#markup'] : $computed_title;
         $links[$index]['href'] = $link->getUrl()->setAbsolute()->toString();
+        $links[$index]['theme'] = $variables['flexible_links_theme'];
         break;
 
       case 'link_group_document':
