@@ -51,8 +51,6 @@ class ImageStylesWarmer implements ImageStylesWarmerInterface {
   /**
    * Constructs a ImageStylesWarmer object.
    *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The config factory.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $file_storage
    *   The file storage.
    * @param \Drupal\Core\Image\ImageFactory $image_factory
@@ -63,8 +61,7 @@ class ImageStylesWarmer implements ImageStylesWarmerInterface {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $file_storage, ImageFactory $image_factory, EntityTypeManagerInterface $image_style_storage) {
-    $this->config = $config_factory->get('image_style_regenerate.settings');
+  public function __construct(EntityTypeManagerInterface $file_storage, ImageFactory $image_factory, EntityTypeManagerInterface $image_style_storage) {
     $this->file = $file_storage->getStorage('file');
     $this->image = $image_factory;
     $this->imageStyles = $image_style_storage->getStorage('image_style');
@@ -97,16 +94,6 @@ class ImageStylesWarmer implements ImageStylesWarmerInterface {
       if (!file_exists($derivative_uri)) {
         $style->createDerivative($image_uri, $derivative_uri);
       }
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function initialWarmUp(FileInterface $file) {
-    $initialImageStyles = $this->config->get('initial_image_styles');
-    if (!empty($initialImageStyles)) {
-      $this->doWarmUp($file, array_keys($initialImageStyles));
     }
   }
 

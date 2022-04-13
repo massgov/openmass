@@ -28,17 +28,6 @@ interface ImageStylesWarmerInterface {
   public function doWarmUp(FileInterface $file, array $image_styles);
 
   /**
-   * Initial warm up of images style from a file.
-   *
-   * @param \Drupal\file\FileInterface $file
-   *   The file for which image styles should be created.
-   *
-   * @deprecated
-   *   Will be removed in upcoming RC release. Please use doWarmUp() instead.
-   */
-  public function initialWarmUp(FileInterface $file);
-
-  /**
    * Validate file as an image file.
    *
    * @param \Drupal\file\FileInterface $file
