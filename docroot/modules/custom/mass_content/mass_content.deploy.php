@@ -6,7 +6,6 @@
  */
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
@@ -703,7 +702,7 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 /**
  * Regenerate Image styles for focal point.
  */
-function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
+function mass_content_deploy_regenerate_image_styles_focal_point11(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $map = [
@@ -732,7 +731,7 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
     $sandbox['max'] = $count->count()->execute();
   }
 
-  $batch_size = 100;
+  $batch_size = 50;
 
   $nids = $query->condition('nid', $sandbox['current'], '>')
     ->range(0, $batch_size)
@@ -743,10 +742,9 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
 
   $nodes = $node_storage->loadMultiple($nids);
-  $focal_point_manager = \Drupal::service('focal_point.manager');
-  $crop_type = \Drupal::config('focal_point.settings')->get('crop_type');
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
+    $field = $node->get($map[$node->bundle()]);
     $fid = $node->get($map[$node->bundle()])->getValue()[0]['target_id'];
     $width = $node->get($map[$node->bundle()])->getValue()[0]['width'];
     $height = $node->get($map[$node->bundle()])->getValue()[0]['height'];
@@ -754,7 +752,7 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
       $file = File::load($fid);
       $uri = $file->getFileUri();
       if (is_file($uri)) {
-        $focal_point = "50,50";
+        $focal_point = "51,51";
         if ($node->bundle() == 'org_page') {
           $focal_point = "83,50";
         }
@@ -762,9 +760,12 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
         foreach ($styles as $style) {
           $style->flush($uri);
         }
-        [$x, $y] = explode(',', $focal_point);
-        $crop = $focal_point_manager->getCropEntity($file, $crop_type);
-        $focal_point_manager->saveCropEntity($x, $y, $width, $height, $crop);
+        $field->focal_point = $focal_point;
+        // Save the node.
+        // Save without updating the last modified date. This requires a core patch
+        // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
+        $node->setSyncing(TRUE);
+        $node->save();
       }
     }
     $sandbox['progress']++;
