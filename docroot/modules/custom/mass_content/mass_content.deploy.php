@@ -721,8 +721,6 @@ function mass_content_deploy_regenrate_image_styles_focal_point11(&$sandbox) {
   }
   $query->condition($orcondition);
 
-
-
   if (empty($sandbox)) {
     // Get a list of all nodes of type event.
     $sandbox['progress'] = 0;
@@ -731,14 +729,12 @@ function mass_content_deploy_regenrate_image_styles_focal_point11(&$sandbox) {
     $sandbox['max'] = $count->count()->execute();
   }
 
-
   $batch_size = 50;
 
   $nids = $query->condition('nid', $sandbox['current'], '>')
     ->sort('nid')
     ->range(0, $batch_size)
     ->execute();
-
 
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
 
