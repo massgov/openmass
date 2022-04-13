@@ -34,9 +34,9 @@ class MassContentBatchManager {
       $field = $node->get($key);
 
       // Apply a tiny change to generate image.
-      $focal_point = "59,50";
+      $focal_point = "51,50";
       if ($node->bundle() == 'org_page') {
-        $focal_point = "89,50";
+        $focal_point = "83,50";
       }
       $style = ImageStyle::load($map[$node->bundle()]['style']);
       $derivative_uri = $style->buildUri($uri);
