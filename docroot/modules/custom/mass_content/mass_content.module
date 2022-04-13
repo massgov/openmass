@@ -887,3 +887,25 @@ function mass_content_entity_bundle_info_alter(array &$bundles): void {
   }
 
 }
+
+/**
+ * Implements hook_ENTITY_insert() for crop entity.
+ */
+function mass_content_crop_insert(EntityInterface $entity) {
+  if ($entity->get('entity_type')->value == 'file') {
+    if ($file = File::load($entity->get('entity_id')->value)) {
+      \Drupal::service('mass_content.image_style_warmer')->warmUp($file);
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_update() for crop entity.
+ */
+function mass_content_crop_update(EntityInterface $entity) {
+  if ($entity->get('entity_type')->value == 'file') {
+    if ($file = File::load($entity->get('entity_id')->value)) {
+      \Drupal::service('mass_content.image_style_warmer')->warmUp($file);
+    }
+  }
+}

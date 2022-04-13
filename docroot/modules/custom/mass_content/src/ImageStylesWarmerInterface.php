@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\image_style_regenerate;
+namespace Drupal\mass_content;
 
 use Drupal\file\FileInterface;
 
