@@ -741,6 +741,7 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
   $nodes = $node_storage->loadMultiple($nids);
 
   foreach ($nodes as $node) {
+    $sandbox['current'] = $node->id();
     $fid = $node->get($map[$node->bundle()])->getValue()[0]['target_id'];
     $file = File::load($fid);
     $uri = $file->getFileUri();
