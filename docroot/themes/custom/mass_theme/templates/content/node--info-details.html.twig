@@ -74,10 +74,10 @@
     } %}
   {% endif %}
   {% if node.field_banner_image is not empty %}
-    {% set bgImage = node.field_banner_image.entity.fileuri ?? '' %}
+    {% set bgImage = node.field_banner_image.entity.fileuri | image_style('action_banner_large') ?? '' %}
     {% include "@organisms/by-template/illustrated-header.twig" with {
       "illustratedHeader": {
-        "bgImage": bgImage | image_style('action_banner_large'),
+        "bgImage": bgImage,
         "category": "",
         "inverted": true,
         "pageHeader": {
