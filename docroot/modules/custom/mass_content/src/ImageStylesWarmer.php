@@ -14,13 +14,6 @@ use Drupal\file\FileInterface;
 class ImageStylesWarmer implements ImageStylesWarmerInterface {
 
   /**
-   * Config factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected $config;
-
-  /**
    * The file entity storage.
    *
    * @var \Drupal\file\FileStorageInterface
