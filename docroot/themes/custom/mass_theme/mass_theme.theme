@@ -7205,8 +7205,6 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
   $variables['flexible_links_theme'] = ((bool) intval($flexible_lg->field_featured->value)) ? 'blue' : 'white';
   $variables['flexible_link_links'] = [];
 
-  /** @todo display type buttons and feature buttons */
-
   $links = &$variables['flexible_link_links'];
   foreach ($flexible_lg->field_link_group as $index => $item) {
     if (empty($item->entity)) {
@@ -7224,8 +7222,9 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
         }
         $computed_title = $link->get('computed_title')->getValue();
         $links[$index]['text'] = is_array($computed_title) ? $computed_title['#markup'] : $computed_title;
-        $links[$index]['href'] = $link->getUrl()->setAbsolute()->toString();;
+        $links[$index]['href'] = $link->getUrl()->setAbsolute()->toString();
         break;
+
       case 'link_group_document':
         if (empty($item->entity->field_file_download_single)) {
           break;
