@@ -9,6 +9,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\file\Entity\File;
+use Drupal\image\Entity\ImageStyle;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 use Drush\Drush;
@@ -752,7 +753,10 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
     if (!empty($width) && !empty($height)) {
       $file = File::load($fid);
       $uri = $file->getFileUri();
-      image_path_flush($uri);
+      $styles = ImageStyle::loadMultiple(['action_banner_large', 'hero1600x400_fp']);
+      foreach ($styles as $style) {
+        $style->flush($uri);
+      }
       if (is_file($uri)) {
         $focal_point = "50,50";
         if ($node->bundle() == 'org_page') {
