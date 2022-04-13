@@ -701,7 +701,7 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 /**
  * Regenerate Image styles for focal point.
  */
-function mass_content_deploy_regenrate_image_styles_focal_point11(&$sandbox) {
+function mass_content_deploy_regenrate_image_styles_focal_point(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $map = [
