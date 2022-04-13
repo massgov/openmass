@@ -750,7 +750,7 @@ function mass_content_deploy_regenrate_image_styles_focal_point11(&$sandbox) {
         $focal_point = "83.25,50";
       }
       $file->focal_point = $focal_point;
-      $image_styles_warmer = \Drupal::service('image_style_regenerate.warmer');
+      $image_styles_warmer = \Drupal::service('mass_content.image_style_warmer');
       $image_styles_warmer->warmUp($file, [
         'action_banner_large',
         'hero1600x400_fp'
@@ -765,6 +765,6 @@ function mass_content_deploy_regenrate_image_styles_focal_point11(&$sandbox) {
 
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
-    return t('All Event "Updated date" fields have been set.');
+    return t('Given images regenerated.');
   }
 }
