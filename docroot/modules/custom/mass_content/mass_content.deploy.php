@@ -729,7 +729,7 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
     $sandbox['max'] = $count->count()->execute();
   }
 
-  $batch_size = 1;
+  $batch_size = 100;
 
   $nids = $query->condition('nid', $sandbox['current'], '>')
     ->sort('nid')
