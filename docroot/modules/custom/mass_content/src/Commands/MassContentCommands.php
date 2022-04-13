@@ -66,7 +66,7 @@ class MassContentCommands extends DrushCommands {
       $query = $storage->getQuery();
       if (!empty($type)) {
         $query->condition('type', $type);
-        // $query->exists($map[$type]);
+        $query->exists($map[$type]);
       }
       else {
         $orCondition = $query->orConditionGroup();
