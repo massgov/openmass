@@ -751,6 +751,9 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
         $focal_point = "83.25,50";
       }
       $file->focal_point = $focal_point;
+      Drush::logger()->notice(dt("uid: @id", [
+        "@id" => $uri,
+      ]));
       Drush::logger()->notice(dt("Processing file: @id", [
         "@id" => $file->id(),
       ]));
