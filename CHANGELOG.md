@@ -1,18 +1,90 @@
+## [0.319.0] - April 5, 2022
+
+### Fixed
+- DP-24237: json_encode() needs numeric indices without holes (custom Akamai purger)
+
+## [0.319.0] - April 5, 2022
+
+### Fixed
+  - DP-23508: Don't load Dotenv package on Acquia environments
+  - DP-23508: Moved development dependencies from require to require-dev
+  - DP-24263: Fix image sizes on info details page.
+  - DP-24334: Removed unnecesary if condition, the configuration of an object extending
+ViewsBulkOperationsActionBase will always be an array because when it is
+set it requires an array as parameter.
+  - DP-24336: Add cache tag to update if any event changes on events paragraph.
+
+### Added
+  - DP-23805: Move login links on service page from the sidebar into the page banner.
+  - DP-24094: Add and configure environment indicator module
+  - DP-24428: Custom Akamai purger
+
+### Removed
+  - DP-24093: Removed "Show" and "Hide" from the Sitewide alert display.
+  - DP-24413: Hide "Reset to alphabetical" option on the collection admin form.
+
+### Changed
+  - DP-24237: Improve url purging by removing unwanted normalization.
+  - DP-24384: Send JSON to syslog
+  - DP-24415: View changes related to collections and documents.
+
+## [0.318.1] - March 29, 2022
+
+  - Revert https://github.com/massgov/openmass/pull/1386/files due to purge failures.
+
+## [0.318.0] - March 29, 2022
+
+### Fixed
+  - DP-23425: Add validation for the location listing filter submission - show an error message and prevents form from submitting when the input is not suggested by Google.
+  - DP-24353: Update drupal/devel so webprofiler works
+  - DP-24379: Sitemap is generated using scheduled jobs, no need for cron.
+
+### Changed
+  - DP-23603: Removed min-height of page header on Guides and Binder pages
+  - DP-24237: Improve url purging by removing unwanted normalization.
+  - DP-24267: Change the short description to be a paragraph instead of a heading.
+  - DP-24360: Remove permissions for anonymous users.
+  - 'access site-wide contact form'
+  - 'use text format restricted_html'
+
+
+
+## [0.317.0] - March 22, 2022
+
+### Changed
+  - DP-23372: Add the full URL as a field in the document CSV download file.
+  - DP-23754: Modify Drupal permissions so that only Data admins have data hub tagging permissions.
+  - DP-24119: Consolidate published date fields in various content types.
+  - DP-24231: DDEV 1.19 - Disable seldom used docker services by default. Change DB override
+  - DP-24269: Change "no results" behavior on Data Hub.
+  - DP-24322: Remove ability to put page based alert on topic page.
+
+### Added
+  - DP-24111: Add bulk feature to add collection information to documents.
+  - DP-24287: Use Tugboat web API in ahoy backstop and add Drush command for rebiulding a Preview
+
+### Fixed
+  - DP-24315: Add Views Porter Stemmer to Collections and Data Listing Views
+  - DP-24321: Configuration does not export cleanly
+
+### Security
+  - DP-24348: Minor security upgrade for Drupal core to 9.3.8.
+
 
 
 ## [0.316.0] - March 15, 2022
-  
+
 ### Changed
   - DP-23393: Added breadcrumb to page templates and removed "Part of" from node templates.
   - DP-24230: Release automation - assume its a hotfix release if it isnt a standard release
   - DP-24257: Backstop pages changes.
-  
+
 ### Fixed
   - DP-23982: Breadcrumb accessiblity improvements -  add aria descriptions for the expand button and set aria-location for current page.
   - DP-24104: Cleanup breadcrumb schema and part of in listing content types.
   - DP-24284: Disable debug cache headers locally by default due to header size limit
   - DP-24285: Encode special chars when rendering text for topic hierarchy.
-  
+
 
 
 ## [0.315.0] - March 8, 2022
@@ -21,8 +93,8 @@
   - DP-22639: Changed the fields for the Topic content type and a referenced paragraph type.
   - DP-22640: Updated the Topic page Link groups display.
   - DP-23717: - Add collection field to news content type.
-- Add image to collection listing teasers for news content type. 
-  
+- Add image to collection listing teasers for news content type.
+
 ### Added
   - DP-23300: Author & Editor role can edit any Topic Page
 Users that can Edit Any Topic Page but can't create a Topic Page can
@@ -35,12 +107,12 @@ not checked:
   - Workflow states.
   - Action (save/preview)
   - DP-23418: Added Drush Launcher at Tugboat
-  
+
 ### Fixed
   - DP-24225: Fixing bug - Breadcrumb in header of pages on edit is not correct.
   - DP-24238: Fixes alerts not showing up on IE11.
   - DP-9216: Place the more/less contact info button before hidden extra contact info in DOM, so keyboard and AT users can navigate to the revealed content after they hit the button.
-  
+
 
 
 ## [0.314.0] - March 1, 2022
@@ -51,7 +123,7 @@ not checked:
   - DP-23882: Improve url purging by removing unwanted normalization.
   - DP-24122: Avoid browser clientside validation on forms.
   - DP-24144: Change service content type's parent field to allow more field types.
-  
+
 ### Added
   - DP-24109: Adds collections to the following content types.
   - News
@@ -59,21 +131,21 @@ not checked:
   - Promotional page
   - Topic Page
 Adds templates for listing display for the added content types.
-  
+
 ### Security
   - DP-24135: Drupal Core security update.
   - DP-24172: Remediate current javascript and php security advisories
-  
+
 ### Fixed
   - DP-24137: Fix breadcrumb visible with parent field to have immediate parent clickable.
   - DP-24139: Fixed adding state org signees for existing news items.
   - DP-24158: Fix positioning of alerts and validating node parameter when building alerts.
   - DP-24177: Removed post-trigger from command parameters to fix backstop commands.
   - DB-24221: Fix ddev binding to reserved port 88
-  
+
 ### Removed
   - DP-6250: Removed hq2 site
-  
+
 
 
 ## [0.313.2] - February 23, 2022
