@@ -754,7 +754,6 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
       if ($fid !== 12976) {
         $file = File::load($fid);
         if ($file instanceof FileInterface) {
-          Drush::logger()->notice($width . ':' . $height . 'fid: ' . $fid);
           $uri = $file->getFileUri();
           if (is_file($uri) && $stream_wrapper_manager->isValidUri($uri)) {
             // Apply a tiny change to generate image.
@@ -771,6 +770,11 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
             }
           }
         }
+      }
+      else {
+        Drush::logger()->notice(json_encode($field->getValue()[0]));
+        Drush::logger()->notice(json_encode($file->id()));
+        Drush::logger()->notice(json_encode($file->getFileUri()));
       }
     }
     $sandbox['progress']++;
