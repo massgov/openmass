@@ -14,7 +14,6 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
-use Drupal\taxonomy\Plugin\views\wizard\TaxonomyTerm;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -591,6 +590,23 @@ function mass_content_page_attachments(array &$attachments) {
  * Implements hook_form_FORM_ID_alter().
  */
 function mass_content_form_taxonomy_term_collections_form_alter(array &$form, FormStateInterface $form_state) {
+  /** @var Drupal\taxonomy\TermForm */
+  $form_object = $form_state->getFormObject();
+
+  /** @var Drupal\taxonomy\Entity\Term */
+  $term = $form_object->getEntity();
+
+  /** @var \Drupal\taxonomy\TermStorage */
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $parents = $term_storage->loadParents($term->id());
+
+  // Show sort options only on top level terms.
+  if (count($parents)) {
+    $form['field_default_sort']['#access'] = FALSE;
+    $form['field_sort_order']['#access'] = FALSE;
+    return;
+  }
+
   $default_sort_widget = &$form['field_default_sort']['widget'][0]['value'];
   $default_sort_widget['#type'] = 'select';
   $default_sort_widget['#options'] = $form['field_sort_order']['widget']['#options'];
