@@ -13,60 +13,6 @@ use Drupal\image\Entity\ImageStyle;
 class MassContentBatchManager {
 
   /**
-   * Process the image generation.
-   */
-  public function processImageGeneration($id, ContentEntityBase $node, $uri, $operation_details, &$context) {
-    // Don't spam all the users with content update emails.
-    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
-
-    // Turn off entity_hierarchy writes while processing the item.
-    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
-
-    $memory_cache = \Drupal::service('entity.memory_cache');
-    $map = [
-      "org_page" => ["field" => "field_bg_wide", "style" => "action_banner_large"],
-      "service_page" => ["field" => "field_service_bg_wide", "style" => "hero1600x400_fp"],
-      "info_details" => ["field" => "field_banner_image", "style" => "action_banner_large"],
-    ];
-
-    try {
-      $key = $map[$node->bundle()]['field'];
-      $field = $node->get($key);
-
-      // Apply a tiny change to generate image.
-      $focal_point = "51,50";
-      if ($node->bundle() == 'org_page') {
-        $focal_point = "83,50";
-      }
-      $style = ImageStyle::load($map[$node->bundle()]['style']);
-      $derivative_uri = $style->buildUri($uri);
-      if (!is_file($derivative_uri)) {
-        $field->focal_point = $focal_point;
-        $node->setSyncing(TRUE);
-        $node->save();
-      }
-
-      $memory_cache->deleteAll();
-      // Turn on entity_hierarchy writes after processing the item.
-      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
-
-    }
-    catch (\Exception $e) {
-      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
-    }
-
-    // Store some results for post-processing in the 'finished' callback.
-    // The contents of 'results' will be available as $results in the
-    // 'finished' function (in this example, batch_example_finished()).
-    $context['results'][] = $id;
-
-    // Optional message displayed under the progressbar.
-    $context['message'] = t('Running Batch "@id" @details',
-      ['@id' => $id, '@details' => $operation_details]
-    );
-  }
-
-  /**
    * Process the node to migrate date field values.
    */
   public function processNode($id, ContentEntityBase $node, $operation_details, &$context) {
