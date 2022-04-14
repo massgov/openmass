@@ -751,22 +751,24 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
     $width = $field->getValue()[0]['width'];
     $height = $field->getValue()[0]['height'];
     if (!empty($width) && !empty($height)) {
-      $file = File::load($fid);
-      if ($file instanceof FileInterface) {
-        Drush::logger()->notice($width . ':' . $height . 'fid: ' . $fid);
-        $uri = $file->getFileUri();
-        if (is_file($uri) && $stream_wrapper_manager->isValidUri($uri)) {
-          // Apply a tiny change to generate image.
-          $focal_point = "51,50";
-          if ($node->bundle() == 'org_page') {
-            $focal_point = "83,50";
-          }
-          $style = ImageStyle::load($map[$node->bundle()]['style']);
-          $derivative_uri = $style->buildUri($uri);
-          if (!is_file($derivative_uri)) {
-            $field->focal_point = $focal_point;
-            $node->setSyncing(TRUE);
-            $node->save();
+      if ($fid !== 12976) {
+        $file = File::load($fid);
+        if ($file instanceof FileInterface) {
+          Drush::logger()->notice($width . ':' . $height . 'fid: ' . $fid);
+          $uri = $file->getFileUri();
+          if (is_file($uri) && $stream_wrapper_manager->isValidUri($uri)) {
+            // Apply a tiny change to generate image.
+            $focal_point = "51,50";
+            if ($node->bundle() == 'org_page') {
+              $focal_point = "83,50";
+            }
+            $style = ImageStyle::load($map[$node->bundle()]['style']);
+            $derivative_uri = $style->buildUri($uri);
+            if (!is_file($derivative_uri)) {
+              $field->focal_point = $focal_point;
+              $node->setSyncing(TRUE);
+              $node->save();
+            }
           }
         }
       }
