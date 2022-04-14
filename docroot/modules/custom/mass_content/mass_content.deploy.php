@@ -751,30 +751,25 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
     $width = $field->getValue()[0]['width'];
     $height = $field->getValue()[0]['height'];
     if (!empty($width) && !empty($height)) {
-      if ($fid !== 12976) {
-        $file = File::load($fid);
-        if ($file instanceof FileInterface) {
-          $uri = $file->getFileUri();
-          if (is_file($uri) && $stream_wrapper_manager->isValidUri($uri)) {
-            // Apply a tiny change to generate image.
-            $focal_point = "51,50";
-            if ($node->bundle() == 'org_page') {
-              $focal_point = "83,50";
-            }
-            $style = ImageStyle::load($map[$node->bundle()]['style']);
-            $derivative_uri = $style->buildUri($uri);
-            if (!is_file($derivative_uri)) {
-              $field->focal_point = $focal_point;
-              $node->setSyncing(TRUE);
-              $node->save();
-            }
+      $file = File::load($fid);
+      $image_factory = \Drupal::service('image.factory');
+      $image = $image_factory->get($file->getFileUri());
+      if ($file instanceof FileInterface && !empty($image->getFileSize())) {
+        $uri = $file->getFileUri();
+        if (is_file($uri) && $stream_wrapper_manager->isValidUri($uri)) {
+          // Apply a tiny change to generate image.
+          $focal_point = "2,50";
+          if ($node->bundle() == 'org_page') {
+            $focal_point = "2,50";
+          }
+          $style = ImageStyle::load($map[$node->bundle()]['style']);
+          $derivative_uri = $style->buildUri($uri);
+          if (!is_file($derivative_uri)) {
+            $field->focal_point = $focal_point;
+            $node->setSyncing(TRUE);
+            $node->save();
           }
         }
-      }
-      else {
-        Drush::logger()->notice(json_encode($field->getValue()[0]));
-        Drush::logger()->notice(json_encode($file->id()));
-        Drush::logger()->notice(json_encode($file->getFileUri()));
       }
     }
     $sandbox['progress']++;
