@@ -752,11 +752,11 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
     $height = $field->getValue()[0]['height'];
     if (!empty($width) && !empty($height)) {
       $file = File::load($fid);
-      $image_factory = \Drupal::service('image.factory');
-      $image = $image_factory->get($file->getFileUri());
-      if ($file instanceof FileInterface && !empty($image->getFileSize())) {
+      if ($file instanceof FileInterface) {
         $uri = $file->getFileUri();
-        if (is_file($uri) && $stream_wrapper_manager->isValidUri($uri)) {
+        $image_factory = \Drupal::service('image.factory');
+        $image = $image_factory->get($uri);
+        if (!empty($image->getFileSize()) && is_file($uri) && $stream_wrapper_manager->isValidUri($uri)) {
           // Apply a tiny change to generate image.
           $focal_point = "51,50";
           if ($node->bundle() == 'org_page') {
