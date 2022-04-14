@@ -13,6 +13,9 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\taxonomy\Plugin\views\wizard\TaxonomyTerm;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_entity_bundle_field_info().
@@ -637,9 +640,9 @@ function mass_content_set_default_event_quantity(array &$form) {
 }
 
 /**
- * Alters the exposed sort for collection views and sets sort_bef_combine param.
+ * Gets the collection based on the current route and field_url_name.
  */
-function mass_content_form_views_exposed_form_alter__collection_all_page_all(&$form) {
+function mass_content_get_collection_from_current_page() {
   // Load collection by url name.
   $route_match = \Drupal::routeMatch();
   $collection_param = $route_match->getParameter('collection');
@@ -649,6 +652,15 @@ function mass_content_form_views_exposed_form_alter__collection_all_page_all(&$f
   $collection_id = reset($ids);
   $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
   $collection = $storage->load($collection_id);
+  return $collection;
+}
+
+/**
+ * Shows only available sort options on collection pages.
+ */
+function mass_content_form_views_exposed_form_alter__collection_all_page_all(&$form) {
+
+  $collection = mass_content_get_collection_from_current_page();
 
   // Filter available sort options.
   $selected_options = array_column($collection->field_sort_order->getValue(), 'value');
@@ -658,13 +670,6 @@ function mass_content_form_views_exposed_form_alter__collection_all_page_all(&$f
       continue;
     }
     unset($form['sort_bef_combine']['#options'][$key]);
-  }
-
-  // Setting default sort option if there no sort option in the url.
-  if (!\Drupal::request()->query->get('sort_bef_combine')) {
-    $first_option = $collection->field_default_sort->value ??
-      array_keys($form['sort_bef_combine']['#options'])[0] ?? FALSE;
-    \Drupal::request()->query->set('sort_bef_combine', $first_option);
   }
 
   // If only one sort option, hide the sort select control.
@@ -1035,4 +1040,31 @@ function mass_content_entity_bundle_info_alter(array &$bundles): void {
     $bundles['user']['user']['class'] = \Drupal\mass_content\Entity\Bundle\user\UserBundle::class;
   }
 
+}
+
+/**
+ * Sets the sort_bef_combine URL parameter to sort Collection views.
+ */
+function mass_content_set_default_sort_from_collection(Term $collection) {
+  if (!$collection) {
+    return;
+  }
+  // Setting default sort option if there no sort option in the url.
+  if (\Drupal::request()->query->get('sort_bef_combine')) {
+    return;
+  }
+  $first_option = $collection->field_default_sort->value;
+  if (!$first_option) {
+    return;
+  }
+  \Drupal::request()->query->set('sort_bef_combine', $first_option);
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function mass_content_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() == 'collection_all') {
+    mass_content_set_default_sort_from_collection(mass_content_get_collection_from_current_page());
+  }
 }
