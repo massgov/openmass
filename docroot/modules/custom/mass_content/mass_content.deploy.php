@@ -759,7 +759,7 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
         Drush::logger()->notice(dt("FID @count , image: @max , node: @node.", [
           "@count" => $fid,
           "@node" => $node->id(),
-          "@max" => json_encode(print_r($image, TRUE))
+          "@max" => json_encode($image->getFileSize())
         ]));
         if (!empty($image->getFileSize()) && is_file($uri) && $stream_wrapper_manager->isValidUri($uri)) {
           // Apply a tiny change to generate image.
