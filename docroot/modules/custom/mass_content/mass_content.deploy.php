@@ -757,22 +757,25 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
         $image_factory = \Drupal::service('image.factory');
         $image = $image_factory->get($uri);
         if (!empty($image->getFileSize()) && is_file($uri) && $stream_wrapper_manager->isValidUri($uri)) {
-          Drush::logger()->notice(dt($image->getWidth() . ':' . $image->getHeight() . "FID @count , image: @max , node: @node.", [
-            "@count" => $fid,
-            "@node" => $node->id(),
-            "@max" => json_encode($image->getFileSize())
-          ]));
-          // Apply a tiny change to generate image.
-          $focal_point = "51,50";
-          if ($node->bundle() == 'org_page') {
-            $focal_point = "83,50";
-          }
-          $style = ImageStyle::load($map[$node->bundle()]['style']);
-          $derivative_uri = $style->buildUri($uri);
-          if (!is_file($derivative_uri)) {
-            $field->focal_point = $focal_point;
-            $node->setSyncing(TRUE);
-            $node->save();
+          if ($image->getToolkit()->getResource()) {
+            Drush::logger()
+              ->notice(dt($image->getWidth() . ':' . $image->getHeight() . "FID @count , image: @max , node: @node.", [
+                "@count" => $fid,
+                "@node" => $node->id(),
+                "@max" => json_encode($image->getFileSize())
+              ]));
+            // Apply a tiny change to generate image.
+            $focal_point = "51,50";
+            if ($node->bundle() == 'org_page') {
+              $focal_point = "83,50";
+            }
+            $style = ImageStyle::load($map[$node->bundle()]['style']);
+            $derivative_uri = $style->buildUri($uri);
+            if (!is_file($derivative_uri)) {
+              $field->focal_point = $focal_point;
+              $node->setSyncing(TRUE);
+              $node->save();
+            }
           }
         }
       }
