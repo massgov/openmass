@@ -703,7 +703,7 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 /**
  * Regenerate Image styles for focal point.
  */
-function mass_content_deploy_regenerate_image_styles_focal_point11222(&$sandbox) {
+function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
   $map = [
@@ -742,6 +742,7 @@ function mass_content_deploy_regenerate_image_styles_focal_point11222(&$sandbox)
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
 
   $nodes = $node_storage->loadMultiple($nids);
+  $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
     $key = $map[$node->bundle()]['field'];
@@ -749,13 +750,12 @@ function mass_content_deploy_regenerate_image_styles_focal_point11222(&$sandbox)
     $fid = $field->getValue()[0]['target_id'];
     $width = $field->getValue()[0]['width'];
     $height = $field->getValue()[0]['height'];
-    Drush::logger()->notice($width . ':' . $height);
     if (!empty($width) && !empty($height)) {
       $file = File::load($fid);
       if ($file instanceof FileInterface) {
-        Drush::logger()->notice($width . ':' . $height);
+        Drush::logger()->notice($width . ':' . $height . 'fid: ' . $fid);
         $uri = $file->getFileUri();
-        if (is_file($uri)) {
+        if (is_file($uri) && $stream_wrapper_manager->isValidUri($uri)) {
           // Apply a tiny change to generate image.
           $focal_point = "51,50";
           if ($node->bundle() == 'org_page') {
