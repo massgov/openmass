@@ -757,7 +757,7 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
         $image_factory = \Drupal::service('image.factory');
         $image = $image_factory->get($uri);
         if (!empty($image->getFileSize()) && is_file($uri) && $stream_wrapper_manager->isValidUri($uri)) {
-          Drush::logger()->notice(dt($width. ':' . $height ."FID @count , image: @max , node: @node.", [
+          Drush::logger()->notice(dt($width . ':' . $height ."FID @count , image: @max , node: @node.", [
             "@count" => $fid,
             "@node" => $node->id(),
             "@max" => json_encode($image->getFileSize())
