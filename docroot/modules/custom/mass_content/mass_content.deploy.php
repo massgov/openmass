@@ -756,12 +756,12 @@ function mass_content_deploy_regenerate_image_styles_focal_point(&$sandbox) {
         $uri = $file->getFileUri();
         $image_factory = \Drupal::service('image.factory');
         $image = $image_factory->get($uri);
-        Drush::logger()->notice(dt("FID @count , image: @max , node: @node.", [
-          "@count" => $fid,
-          "@node" => $node->id(),
-          "@max" => json_encode($image->getFileSize())
-        ]));
         if (!empty($image->getFileSize()) && is_file($uri) && $stream_wrapper_manager->isValidUri($uri)) {
+          Drush::logger()->notice(dt("FID @count , image: @max , node: @node.", [
+            "@count" => $fid,
+            "@node" => $node->id(),
+            "@max" => json_encode($image->getFileSize())
+          ]));
           // Apply a tiny change to generate image.
           $focal_point = "51,50";
           if ($node->bundle() == 'org_page') {
