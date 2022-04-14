@@ -1,8 +1,12 @@
 {% set title = content.field_service_section_heading|field_value %}
+{% set title_visibility_class = hide_heading ? 'visually-hidden' : '' %}
+{% set section_class = 'service_section' %}
+{% set section_title_visibility_class = hide_heading ? section_class ~ '--no-title' : '' %}
+{% set section_style_class = section_class ~ '--' ~ section_style %}
 
 {% set enhanced_header %}
-  {% if not hide_heading and title is not empty %}
-      <header class="ma__action-finder__header">
+  {% if title is not empty %}
+      <header class="ma__action-finder__header {{ title_visibility_class }}">
         <h2 class="ma__action-finder__title">
           {{ title }}
         </h2>
@@ -48,8 +52,8 @@
 {% endset %}
 
 {% set simple_header %}
-  {% if not hide_heading and title is not empty %}
-      <div class="ma__stacked-row__title">
+  {% if title is not empty %}
+      <div class="ma__stacked-row__title {{ title_visibility_class }}">
         <h2 class="ma__comp-heading">
           {{ title }}
         </h2>
@@ -66,4 +70,6 @@
   </section>
 {% endset %}
 
-{{ section_style == 'simple' ? simple_style|raw : enhanced_style|raw }}
+<div class="{{ section_class }} {{ section_title_visibility_class }} {{ section_style_class }}">
+  {{ section_style == 'simple' ? simple_style|raw : enhanced_style|raw }}
+</div>
