@@ -600,8 +600,13 @@ function mass_content_form_taxonomy_term_collections_form_alter(array &$form, Fo
   $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
   $parents = $term_storage->loadParents($term->id());
 
+  /** @var \Drupal\taxonomy\TermForm */
+  $term_form = $form_state->getFormObject();
+  /** @var \Drupal\taxonomy\Entity\Term */
+  $term = $term_form->getEntity();
+
   // Show sort options only on top level terms.
-  if (count($parents)) {
+  if (count($parents) || $term->isNew()) {
     $form['field_default_sort']['#access'] = FALSE;
     $form['field_sort_order']['#access'] = FALSE;
     return;
