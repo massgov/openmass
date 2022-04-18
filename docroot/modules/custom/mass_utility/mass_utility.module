@@ -116,6 +116,8 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
       '#markup' => Link::fromTextAndUrl('Need to give someone access to your unpublished work? Learn how.', $temporary_url)->toString(),
       '#weight' => -30,
     ];
+
+    $form['access_unpublished_settings']['duration']['#options'][3628800] = t('6 weeks'); 
   }
 
   // Changed the help text for the campaign landing page for the unpublish date only.
