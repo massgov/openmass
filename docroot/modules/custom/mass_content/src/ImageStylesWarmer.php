@@ -2,10 +2,8 @@
 
 namespace Drupal\mass_content;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Image\ImageFactory;
-use Drupal\Core\Queue\QueueFactory;
 use Drupal\file\FileInterface;
 
 /**

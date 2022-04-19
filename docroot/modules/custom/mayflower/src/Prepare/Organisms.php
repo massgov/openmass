@@ -2,7 +2,6 @@
 
 namespace Drupal\mayflower\Prepare;
 
-use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\mayflower\Helper;
 use Drupal\Component\Utility\UrlHelper;

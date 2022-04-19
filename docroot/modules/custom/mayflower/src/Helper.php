@@ -2,8 +2,6 @@
 
 namespace Drupal\mayflower;
 
-use Drupal\Core\Cache\CacheableMetadata;
-use Drupal\Core\Image\Image;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\file\Entity\File;
