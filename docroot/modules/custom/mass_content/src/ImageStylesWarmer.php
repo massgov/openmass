@@ -57,7 +57,7 @@ class ImageStylesWarmer {
    * {@inheritdoc}
    */
   public function warmUp(FileInterface $file) {
-    $initialImageStyles = ['action_banner_large', 'hero1600x400_fp'];
+    $initialImageStyles = ['action_banner_large_focal_point', 'hero1600x400_fp'];
     $this->doWarmUp($file, $initialImageStyles);
   }
 

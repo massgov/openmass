@@ -2,6 +2,7 @@
 
 namespace Drupal\mayflower\Prepare;
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\mayflower\Helper;
 use Drupal\Component\Utility\UrlHelper;
@@ -663,6 +664,9 @@ class Organisms {
     // @todo consider passing the image style in as an option.
     // Use action_banner_* as default pageBanner image styles.
     $image_style_wide = 'action_banner_large';
+    if ($entity->bundle() === 'org_page') {
+      $image_style_wide = 'action_banner_large_focal_point';
+    }
     $image_style_narrow = 'action_banner_small';
 
     // Get pageBanner size, use as flag to determine image style.
