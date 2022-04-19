@@ -9,6 +9,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
+use Drush\Drush;
 
 /**
  * Migrate iframe paragraph fields.
@@ -693,5 +694,92 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
     return t('All Event "Updated date" fields have been set.');
+  }
+}
+
+/**
+ * Migrate data for the service_page sections.
+ */
+function mass_content_deploy_service_page_section_migration(&$sandbox) {
+  // Don't spam all the users with content update emails.
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  // Turn off entity_hierarchy writes while processing the item.
+  \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+  // Include migration functions.
+  require_once __DIR__ . '/includes/mass_content.service_page.inc';
+
+  $query = \Drupal::entityQuery('node');
+  $query->condition('type', 'service_page');
+
+  if (empty($sandbox)) {
+    // Get a list of all nodes of type org_page.
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  $nids = $query->condition('nid', $sandbox['current'], '>')
+    ->sort('nid')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $memory_cache = \Drupal::service('entity.memory_cache');
+
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+
+  $nodes = $node_storage->loadMultiple($nids);
+
+  try {
+    foreach ($nodes as $node) {
+      $sandbox['current'] = $node->id();
+
+      $template = $node->field_template->value;
+
+      switch ($template) {
+        case 'custom':
+          _mass_content_service_page_migration_custom_link_group($node);
+          break;
+
+        case 'default':
+          _mass_content_service_page_migration_default_link_group($node);
+          break;
+
+      }
+      _mass_content_service_page_cleanup_field_values($node);
+
+      // Save the node.
+      // Save without updating the last modified date. This requires a core patch
+      // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
+      $node->setSyncing(TRUE);
+      $node->save();
+
+      $sandbox['progress']++;
+    }
+
+    Drush::logger()->notice(dt("Processed @count items from @max.", [
+      "@count" => $sandbox['progress'],
+      "@max" => $sandbox['max']
+    ]));
+    $memory_cache->deleteAll();
+    // Turn on entity_hierarchy writes after processing the item.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+  }
+  catch (\Exception $e) {
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+  }
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    // Clear plugin manager caches.
+    \Drupal::getContainer()->get('plugin.cache_clearer')->clearCachedDefinitions();
+
+    // Turn on entity_hierarchy writes after processing the item.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    return t('All Services node data has migrated to the new Sections.');
   }
 }
