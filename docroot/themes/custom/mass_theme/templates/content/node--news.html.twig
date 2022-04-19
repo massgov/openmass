@@ -20,7 +20,7 @@
   {% endif %}
   #}
   {% set secondaryIndicators = false %}
-  {% if content.field_organizations is not empty %}
+  {% if content.field_organizations is not empty and not is_blog_post %}
     {% set secondaryIndicators = {
       "icon": "building",
       "label": "offered by",
