@@ -7,12 +7,8 @@
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\file\Entity\File;
-use Drupal\image\Entity\ImageStyle;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
-use Drush\Drush;
-use Drupal\file\FileInterface;
 
 /**
  * Migrate iframe paragraph fields.
