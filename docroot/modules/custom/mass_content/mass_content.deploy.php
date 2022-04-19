@@ -767,9 +767,6 @@ function mass_content_deploy_service_page_section_migration(&$sandbox) {
   if ($sandbox['#finished'] >= 1) {
     // Clear plugin manager caches.
     \Drupal::getContainer()->get('plugin.cache_clearer')->clearCachedDefinitions();
-
-    // Turn on entity_hierarchy writes after processing the item.
-    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
     return t('All Services node data has migrated to the new Sections.');
   }
 }
