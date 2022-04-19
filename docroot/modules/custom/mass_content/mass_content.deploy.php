@@ -704,9 +704,6 @@ function mass_content_deploy_service_page_section_migration(&$sandbox) {
   // Don't spam all the users with content update emails.
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
-  // Turn off entity_hierarchy writes while processing the item.
-  \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
-
   // Include migration functions.
   require_once __DIR__ . '/includes/mass_content.service_page.inc';
 
@@ -734,44 +731,37 @@ function mass_content_deploy_service_page_section_migration(&$sandbox) {
 
   $nodes = $node_storage->loadMultiple($nids);
 
-  try {
-    foreach ($nodes as $node) {
-      $sandbox['current'] = $node->id();
+  foreach ($nodes as $node) {
+    $sandbox['current'] = $node->id();
 
-      $template = $node->field_template->value;
+    $template = $node->field_template->value;
 
-      switch ($template) {
-        case 'custom':
-          _mass_content_service_page_migration_custom_link_group($node);
-          break;
+    switch ($template) {
+      case 'custom':
+        _mass_content_service_page_migration_custom_link_group($node);
+        break;
 
-        case 'default':
-          _mass_content_service_page_migration_default_link_group($node);
-          break;
+      case 'default':
+        _mass_content_service_page_migration_default_link_group($node);
+        break;
 
-      }
-      _mass_content_service_page_cleanup_field_values($node);
-
-      // Save the node.
-      // Save without updating the last modified date. This requires a core patch
-      // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
-      $node->setSyncing(TRUE);
-      $node->save();
-
-      $sandbox['progress']++;
     }
+    _mass_content_service_page_cleanup_field_values($node);
 
-    Drush::logger()->notice(dt("Processed @count items from @max.", [
-      "@count" => $sandbox['progress'],
-      "@max" => $sandbox['max']
-    ]));
-    $memory_cache->deleteAll();
-    // Turn on entity_hierarchy writes after processing the item.
-    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    // Save the node.
+    // Save without updating the last modified date. This requires a core patch
+    // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
+    $node->setSyncing(TRUE);
+    $node->save();
+
+    $sandbox['progress']++;
   }
-  catch (\Exception $e) {
-    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
-  }
+
+  Drush::logger()->notice(dt("Processed @count items from @max.", [
+    "@count" => $sandbox['progress'],
+    "@max" => $sandbox['max']
+  ]));
+  $memory_cache->deleteAll();
 
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
