@@ -122,6 +122,7 @@ class Helper {
               }
             }
             break;
+
           case 'service_page':
             if ($style_name == 'hero1600x400_fp') {
               $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
@@ -133,6 +134,7 @@ class Helper {
               }
             }
             break;
+
           default:
             $url = $style->buildUrl($uri);
             break;
