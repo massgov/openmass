@@ -1,4 +1,9 @@
-## [0.319.0] - April 5, 2022
+## [0.319.2] - April 21, 2022
+
+### Changed
+- DP-24428: Chunk URLs in our custom purger
+
+## [0.319.1] - April 5, 2022
 
 ### Fixed
 - DP-24237: json_encode() needs numeric indices without holes (custom Akamai purger)
