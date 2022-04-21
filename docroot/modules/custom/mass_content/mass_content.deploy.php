@@ -657,7 +657,7 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
     $sandbox['max'] = $count->count()->execute();
   }
 
-  $batch_size = 50;
+  $batch_size = 5;
 
   $nids = $query->condition('nid', $sandbox['current'], '>')
     ->sort('nid')
