@@ -1,3 +1,33 @@
+## [0.319.0] - April 5, 2022
+
+### Fixed
+- DP-24237: json_encode() needs numeric indices without holes (custom Akamai purger)
+
+## [0.319.0] - April 5, 2022
+
+### Fixed
+  - DP-23508: Don't load Dotenv package on Acquia environments
+  - DP-23508: Moved development dependencies from require to require-dev
+  - DP-24263: Fix image sizes on info details page.
+  - DP-24334: Removed unnecesary if condition, the configuration of an object extending
+ViewsBulkOperationsActionBase will always be an array because when it is
+set it requires an array as parameter.
+  - DP-24336: Add cache tag to update if any event changes on events paragraph.
+
+### Added
+  - DP-23805: Move login links on service page from the sidebar into the page banner.
+  - DP-24094: Add and configure environment indicator module
+  - DP-24428: Custom Akamai purger
+
+### Removed
+  - DP-24093: Removed "Show" and "Hide" from the Sitewide alert display.
+  - DP-24413: Hide "Reset to alphabetical" option on the collection admin form.
+
+### Changed
+  - DP-24237: Improve url purging by removing unwanted normalization.
+  - DP-24384: Send JSON to syslog
+  - DP-24415: View changes related to collections and documents.
+
 ## [0.318.1] - March 29, 2022
 
   - Revert https://github.com/massgov/openmass/pull/1386/files due to purge failures.
