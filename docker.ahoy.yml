@@ -12,7 +12,7 @@ commands:
   stop:
     cmd: ddev pause "$@"
   pull:
-    cmd: ddev delete --omit-snapshot -y && ahoy up
+    cmd: ddev delete images --omit-snapshot -y && ahoy up
   refresh:
     cmd: ahoy exec "scripts/ma-refresh-local -dpo && vendor/bin/drush sql:sanitize -y"
   updatedb:
