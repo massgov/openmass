@@ -1086,7 +1086,7 @@ function _mass_validation_form_node_news_form_validate(array &$form, FormStateIn
   $media_contact = $form_state->getValue('field_news_media_contac');
   unset($media_contact['add_more']);
   $news_type = reset($news_type);
-  $news_type = $news_type['value'];
+  $news_type = $news_type['value'] ?? '';
   $required_news_types = [
     'press_release',
     'press_statement',
