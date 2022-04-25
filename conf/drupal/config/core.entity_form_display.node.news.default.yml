@@ -294,7 +294,25 @@ content:
       add_mode: dropdown
       form_display_mode: default
       default_paragraph_type: _none
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        6b04449c-2d2a-4f88-814d-dac9a190aa78:
+          entity_type: node
+          bundle: news
+          dependee: field_news_type
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: blog_post
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_news_metatags:
     type: metatag_firehose
     weight: 2
