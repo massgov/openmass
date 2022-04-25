@@ -128,4 +128,94 @@ class MassContentCommands extends DrushCommands {
 
   }
 
+  /**
+   * Migrate Service data.
+   *
+   * @param int $limit
+   *   Number of nodes to process
+   *   Argument provided to the drush command.
+   *
+   * @command mass-content:migrate-service
+   *
+   * @usage mass-content:migrate-service 1000
+   *   1000 is the number of nodes that will be processed.
+   */
+  public function migrateServiceData(int $limit = 0) {
+    $fields = [
+      'field_service_ref_actions_2',
+      'field_link_group',
+      'field_service_ref_actions',
+      'field_service_key_info_links_6',
+      'field_template'
+    ];
+    // 1. Log the start of the script.
+    $this->loggerChannelFactory->get('mass_content')->info('Update nodes batch operations start');
+
+    // 2. Retrieve all nodes of this type.
+    $storage = $this->entityTypeManager->getStorage('node');
+    try {
+      $query = $storage->getQuery();
+      $query->condition('type', 'service_page');
+      if ($limit !== 0) {
+        $orCondition = $query->orConditionGroup();
+        foreach ($fields as $field) {
+          $and = $query->andConditionGroup();
+          $and->exists($field);
+          $orCondition->condition($and);
+        }
+        $query->condition($orCondition);
+        $query->sort('nid');
+        $query->range(0, $limit);
+      }
+
+      $nids = $query->execute();
+    }
+    catch (\Exception $e) {
+      $this->output()->writeln($e);
+      $this->loggerChannelFactory->get('mass_content')->error('Error found @e', ['@e' => $e]);
+    }
+    // 3. Create the operations array for the batch.
+    $operations = [];
+    $numOperations = 0;
+    $batchId = 1;
+    if (!empty($nids)) {
+      $this->output()->writeln("Preparing batches for " . count($nids) . " nodes.");
+      foreach ($nids as $nid) {
+        // Prepare the operation. Here we could do other operations on nodes.
+        $this->output()->writeln("Preparing batch: " . $batchId);
+        $operations[] = [
+          '\Drupal\mass_content\MassContentBatchManager::processServiceNode',
+          [
+            $batchId,
+            $storage->load($nid),
+            t('Updating node @nid', ['@nid' => $nid]),
+          ],
+        ];
+        $batchId++;
+        $numOperations++;
+      }
+    }
+    else {
+      $this->logger()->warning('No nodes of this type @type', ['@type' => 'service_page']);
+    }
+    // 4. Create the batch.
+    $batch = [
+      'title' => t('Updating @num node(s)', ['@num' => $numOperations]),
+      'operations' => $operations,
+      'finished' => '\Drupal\mass_content\MassContentBatchManager::processNodeFinished',
+    ];
+    // 5. Add batch operations as new batch sets.
+    batch_set($batch);
+    // 6. Process the batch sets.
+    drush_backend_batch_process();
+    // 6. Show some information.
+    $this->logger()->notice("Batch operations end.");
+    // 7. Log some information.
+    $this->loggerChannelFactory->get('mass_content')->info('Update batch operations end.');
+    \Drupal::getContainer()->get('plugin.cache_clearer')->clearCachedDefinitions();
+
+    // Turn on entity_hierarchy writes after processing the item.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+  }
+
 }
