@@ -10,10 +10,10 @@
 {# Build list table one row at a time. #}
 {% set table_rows = [] %}
 {# Build published date row. #}
-{% if content.field_info_details_date_publishe.0 %}
+{% if content.field_date_published.0 %}
   {% set table_rows = table_rows|merge([{
-    "label": node.field_info_details_date_publishe.fieldDefinition.label ~ ':',
-    "text": (content.field_info_details_date_publishe.0)
+    "label": node.field_date_published.fieldDefinition.label ~ ':',
+    "text": (content.field_date_published.0)
   }]) %}
 {% endif %}
 

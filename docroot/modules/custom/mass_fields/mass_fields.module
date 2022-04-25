@@ -445,7 +445,9 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
 
   if ($display->getComponent('extra_org_nav_contact_us') && !empty($build['field_ref_contact_info_1'])) {
     // Whether there is a location listings page.
-    $has_location_listing_page = !$entity->field_org_ref_locations->isEmpty();
+    $has_location_listing_page =
+      $entity->field_org_ref_locations ?? FALSE &&
+      !$entity->field_org_ref_locations->isEmpty();
     // The org page's location listing URL.
     $location_listings_url = Url::fromRoute('mass_map.map_page', ['node' => $entity->id()])->toString();
 
@@ -715,8 +717,21 @@ function mass_fields_paragraph_view(array &$build, EntityInterface $entity, Enti
 function mass_fields_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
   // This is being used to hide the custom HTML field from all roles without permission.
   // At this point only Admin have access.
-  if ($field_definition->getName() === 'field_campaign_custom_html' && $operation === 'edit') {
-    return AccessResult::forbiddenIf(!$account->hasPermission("access the custom_html field"));
+  if ($operation === 'edit') {
+    switch ($field_definition->getName()) {
+      case 'field_campaign_custom_html':
+        return AccessResult::forbiddenIf(!$account->hasPermission("access the custom_html field"));
+
+      // See DP-23754: data hub tagging permissions.
+      case 'field_data_flag':
+      case 'field_data_format':
+      case 'field_data_resource_type':
+      case 'field_data_topic':
+      case 'field_details_data_type':
+      case 'field_binder_data_type':
+      case 'field_list_data_type':
+        return AccessResult::forbiddenIf(!$account->hasPermission("access data flag fields"));
+    }
   }
   return AccessResult::neutral();
 }

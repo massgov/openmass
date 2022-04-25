@@ -1203,6 +1203,14 @@ function mass_utility_pathauto_alias_alter(&$alias, $context) {
   // (2) Published content continues to get regular aliases.
   if (!empty($node_being_aliased)) {
     if (!$node_being_aliased->isPublished()) {
+
+      // Concating hardcoded unblish string doesn't get counted in the
+      // docroot/modules/contrib/pathauto/src/AliasCleaner.php:173
+      // The value with concatenated string sometimes get more
+      // than 255 char which is the maximum.
+      if (strlen($alias . "---unpublished") > 255) {
+        $alias = substr($alias, 0, 241);
+      }
       $alias .= "---unpublished";
     }
   }
@@ -1353,4 +1361,13 @@ function mass_utility_path_alias_update(PathAliasInterface $path) {
       }
     }
   }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function mass_utility_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Hide "Reset to alphabetical" option on the
+  // collection admin form (https://massgov.atlassian.net/browse/DP-24413).
+  $form['actions']['reset_alphabetical']['#access'] = FALSE;
 }

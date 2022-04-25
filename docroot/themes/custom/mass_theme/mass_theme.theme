@@ -11,19 +11,18 @@ use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
+use Drupal\mass_content\EventsRendererOrgPages;
 use Drupal\mayflower\Helper;
 use Drupal\mayflower\Prepare\Atoms;
 use Drupal\mayflower\Prepare\Molecules;
 use Drupal\mayflower\Prepare\Organisms;
 use Drupal\mayflower\Prepare\Schemas;
-use Drupal\media\MediaInterface;
 use Drupal\mass_utility\RelatedToHelper;
 use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
@@ -1528,7 +1527,7 @@ function mass_theme_preprocess_node_executive_order(&$variables) {
     'type' => ['field_executive_order_adjustment'],
     'body' => ['body'],
     'contact' => ['field_executive_order_contact'],
-    'date' => ['field_executive_order_date'],
+    'date' => ['field_date_published'],
     'issuer' => ['field_executive_order_issuer'],
     'number' => ['field_executive_order_mass_regis'],
     'meta_tags' => ['field_executive_order_metatags'],
@@ -1709,7 +1708,7 @@ function mass_theme_preprocess_node_decision(&$variables) {
   // Create the map of all possible field names to use.
   $map = [
     'contact' => ['field_decision_ref_contact'],
-    'date' => ['field_decision_date'],
+    'date' => ['field_date_published'],
     'number' => ['field_decision_docket_number'],
     'location' => ['field_decision_location'],
     'meta_tags' => ['field_decision_metatags'],
@@ -2027,7 +2026,7 @@ function mass_theme_preprocess_node_regulation(&$variables) {
   // Create the map of all possible field names to use.
   $map = [
     'contact' => ['field_regulation_contact'],
-    'date' => ['field_regulation_last_updated'],
+    'date' => ['field_date_published'],
     'meta_tags' => ['field_regulation_metatags'],
     'overview' => ['field_regulation_short_descr'],
     'publish_state' => ['field_regulation_ref_state_tax'],
@@ -2244,7 +2243,7 @@ function mass_theme_preprocess_node_advisory(&$variables) {
   // Create the map of all possible field names to use.
   $map = [
     'contact' => ['field_advisory_ref_contact'],
-    'date' => ['field_advisory_date'],
+    'date' => ['field_date_published'],
     'issuer' => ['field_advisory_issuer'],
     'meta_tags' => ['field_advisory_metatags'],
     'overview' => ['field_advisory_overview'],
@@ -2484,7 +2483,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
   $map = [
     'contact' => ['field_rules_ref_contact'],
     'adopted_date' => ['field_rules_adopted_date'],
-    'effective_date' => ['field_rules_effective_date'],
+    'effective_date' => ['field_date_published'],
     'publish_state' => ['field_rules_status'],
     'courts' => ['field_rules_courts'],
     'collections' => ['field_rules_related_collections'],
@@ -5075,75 +5074,10 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
  */
 function mass_theme_preprocess_paragraph__org_events(&$variables) {
   $paragraph = $variables['paragraph'];
-
-  /** @var \Drupal\node\Entity\Node $node */
-  $node = Helper::getParentNode($paragraph);
-
   // Gather events associated with this node.
   $eventManager = \Drupal::service('mass_content.event_manager');
-
-  // Determine if there are any past events associated with this node.
-  $is_past_events = $eventManager->hasPast($node);
-
-  $eventsData = [];
-  if ($eventManager->hasUpcoming($node)) {
-    // Set the limit on how many events should be displayed on the page. Default
-    // to 2 if no limit is set.
-    $limit = 2;
-    if ($paragraph->hasField('field_event_quantity') && !$paragraph->field_event_quantity->isEmpty()) {
-      $limit = (int) $paragraph->field_event_quantity->value;
-    }
-    $events = Helper::prepareEvents($eventManager->getUpcoming($node, $limit + 1));
-    $moreButton = '';
-
-    // Display the see all events link if there are either more than the limit
-    // set for upcoming events in Drupal or <=2 upcoming with 1+ past events.
-    if (count($events) > $limit || $is_past_events) {
-      $moreButton = Helper::prepareMoreLink($node, ['text' => t('See all events')]);
-    }
-
-    $eventsData = [
-      'pageContent' => [
-        [
-          'path' => '@organisms/by-author/event-listing.twig',
-          'data' => [
-            'eventListing' => [
-              'grid' => TRUE,
-              'events' => array_splice($events, 0, $limit),
-              'more' => $moreButton,
-            ],
-          ],
-        ],
-      ],
-    ];
-    $max_age = $eventManager->getMaxAge($node);
-  }
-  // If there are not upcoming events, check for past events to render past events link.
-  else {
-    if ($is_past_events) {
-      $eventsData = [
-        'pageContent' => [
-          [
-            'path' => '@organisms/by-author/event-listing.twig',
-            'data' => [
-              'eventListing' => [
-                'grid' => FALSE,
-                'emptyText' => t('No upcoming events scheduled'),
-                'pastMore' => [
-                  "text" => t('See past events'),
-                  "href" => \Drupal::service('path_alias.manager')
-                    ->getAliasByPath('/node/' . $node->id()) . '/events/past',
-                  "chevron" => TRUE,
-                ],
-              ],
-            ],
-          ],
-        ],
-      ];
-    }
-  }
-
-  $variables['events'] = $eventsData;
+  $eventsRender = (new EventsRendererOrgPages($eventManager, $paragraph))->render();
+  $variables = array_merge($variables, $eventsRender);
 }
 
 /**

@@ -723,7 +723,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ],
           [
-            'field' => 'field-binder-date-published',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ],
@@ -778,7 +778,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-advisory-date',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -837,7 +837,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-regulation-last-updated',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -930,7 +930,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-decision-date	',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -1360,7 +1360,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-executive-order-date',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -1428,7 +1428,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'date',
           ),
           array (
-            'field' => 'field-rules-effective-date',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
