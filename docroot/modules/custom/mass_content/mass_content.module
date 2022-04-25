@@ -707,8 +707,15 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
   // To identify later this result is from a node.
   $query->addExpression('\'node\'', 'entity_type');
 
+  $collection_name = \Drupal::routeMatch()->getParameter('collection');
+  $collection_id = NULL;
+  if ($collection_name) {
+    $res = Drupal::entityQuery('taxonomy_term')->condition('field_url_name', $collection_name)->execute();
+    $collection_id = reset($res);
+  }
+
   // Executes collection_all_media to then get its query.
-  views_get_view_result('collection_all_media', 'default');
+  views_get_view_result('collection_all_media', 'default', $collection_id);
 
   /** @var Drupal\Core\Database\Query\Select $media_query */
   $media_query = mass_content_query_collection_media();
@@ -742,6 +749,8 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
 
   // Put together nodes and media on the same query.
   $query->union($media_query);
+
+  ksm($query->__toString());
 }
 
 /**
