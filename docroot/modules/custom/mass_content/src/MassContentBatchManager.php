@@ -92,7 +92,7 @@ class MassContentBatchManager {
     \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
 
     // Include migration functions.
-    require_once __DIR__ . '../includes/mass_content.service_page.inc';
+    require_once __DIR__ . '/../includes/mass_content.service_page.inc';
 
     try {
 
