@@ -156,15 +156,15 @@ class MassContentCommands extends DrushCommands {
     try {
       $query = $storage->getQuery();
       $query->condition('type', 'service_page');
+      $orCondition = $query->orConditionGroup();
+      foreach ($fields as $field) {
+        $and = $query->andConditionGroup();
+        $and->exists($field);
+        $orCondition->condition($and);
+      }
+      $query->condition($orCondition);
+      $query->sort('nid');
       if ($limit !== 0) {
-        $orCondition = $query->orConditionGroup();
-        foreach ($fields as $field) {
-          $and = $query->andConditionGroup();
-          $and->exists($field);
-          $orCondition->condition($and);
-        }
-        $query->condition($orCondition);
-        $query->sort('nid');
         $query->range(0, $limit);
       }
 
