@@ -749,8 +749,6 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
 
   // Put together nodes and media on the same query.
   $query->union($media_query);
-
-  ksm($query->__toString());
 }
 
 /**
