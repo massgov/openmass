@@ -728,8 +728,6 @@ function mass_content_deploy_service_page_section_migration(&$sandbox) {
     ->range(0, $batch_size)
     ->execute();
 
-  $memory_cache = \Drupal::service('entity.memory_cache');
-
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
 
   $nodes = $node_storage->loadMultiple($nids);
@@ -765,7 +763,6 @@ function mass_content_deploy_service_page_section_migration(&$sandbox) {
       "@count" => $sandbox['progress'],
       "@max" => $sandbox['max']
     ]));
-    $memory_cache->deleteAll();
     // Turn on entity_hierarchy writes after processing the item.
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
   }
