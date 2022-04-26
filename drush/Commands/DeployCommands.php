@@ -64,9 +64,11 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
   public function backstop($target, $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::OPT]) {
-    if ($target == 'tugboat' && $options['tugboat'] === TRUE) {
+    // If --tugboat is specified without a specific URL, or --tugboat is
+    // omitted, automatically determine the preview for the branch.
+    if ($target === 'tugboat' && ($options['tugboat'] === TRUE || is_null($options['tugboat']))) {
       $branch = $options['ci-branch'];
-      if ($branch == 'develop') {
+      if ($branch === 'develop') {
         $process = $this->processManager()->shell('git rev-parse --abbrev-ref HEAD');
         $branch = trim($process->mustRun()->getOutput());
         if (empty($branch)) {
