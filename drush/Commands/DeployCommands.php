@@ -59,12 +59,10 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @aliases ma-backstop
    * @validate-circleci-token
    *
-   * @return string
-   *   A URL for viewing the build.
    * @throws \Exception
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
-  public function backstop(string $target, string $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::OPT]) {
+  public function backstop(string $target, string $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::OPT]): void {
     // If --tugboat is specified without a specific URL, or --tugboat is
     // omitted, automatically determine the preview for the branch.
     if ($target === 'tugboat' && ($options['tugboat'] === TRUE || is_null($options['tugboat']))) {
