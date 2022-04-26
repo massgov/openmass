@@ -5,10 +5,12 @@ namespace Drush\Commands;
 use AcquiaCloudApi\CloudApi\Client;
 use AcquiaCloudApi\CloudApi\Connector;
 use Consolidation\AnnotatedCommand\CommandData;
+use Consolidation\SiteAlias\SiteAlias;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 use Consolidation\SiteProcess\Util\Shell;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
+use Drush\Log\DrushLoggerManager;
 use Drush\SiteAlias\SiteAliasManagerAwareInterface;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
@@ -21,6 +23,13 @@ use Webmozart\PathUtil\Path;
 class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInterface {
 
   use SiteAliasManagerAwareTrait;
+
+  /**
+   * Set the PHP version to use when deploying to Acquia environments.
+   *
+   * @const string
+   */
+  public const PHP_VERSION = '7.4';
 
   var $site = 'prod:massgov';
 
@@ -323,9 +332,14 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success("Maintenance mode enabled in $target.");
     }
 
+    // We need to set the PHP version before we deploy the code, as the new
+    // artifacts may have changes dependent on the PHP version.
+    $this->setPhpVersion($targetRecord, self::PHP_VERSION);
+
     // Deploy the new code.
     $operationResponse = $this->getClient()->switchCode($targetRecord->get('uuid'), $git_ref);
     $href = $operationResponse->links->notification->href;
+    /** @noinspection PhpParamsInspection */
     $this->waitForTaskToComplete(basename($href));
 
     // Run deploy steps.
@@ -618,6 +632,70 @@ EOT;
    */
   private function getSuccessMessage($body): string {
     return 'Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.';
+  }
+
+  /**
+   * Set the PHP version on a given Acquia environment.
+   *
+   * Acquia treats the PHP version as a setting in the environment, and not
+   * configuration as a part of a build.
+   *
+   * @param \Consolidation\SiteAlias\SiteAlias $targetRecord
+   * @param string $version
+   *
+   * @return void
+   * @throws \Exception
+   */
+  private function setPhpVersion(SiteAlias $targetRecord, string $version): void {
+    $environmentUuid = $targetRecord->get('uuid');
+
+    $currentVersion = $this->getClient()
+      ->environment($environmentUuid)
+      ->configuration
+      ->php
+      ->version;
+
+    $this->logger()->info("{name} is currently set to PHP {version}", [
+      'name' => $targetRecord->name(),
+      'version'=> $currentVersion,
+    ]);
+
+    if ($version !== $currentVersion) {
+      $this->logger()->info("Switching {name} to PHP {version}", [
+        'name' => $targetRecord->name(),
+        'version'=> $version,
+      ]);
+      $modifyResponse = $this->getClient()
+        ->modifyEnvironment($environmentUuid, [
+          'version' => $version,
+        ]);
+      /** @noinspection PhpParamsInspection */
+      $this->waitForTaskToComplete(basename($modifyResponse->links->notification->href));
+    }
+  }
+
+  /**
+   * Return the Drush logger, and fail if it does not exist.
+   *
+   * The parent logger() method is typehinted to optionally return a
+   * DrushLoggerManager. That means that every call to logger() should check
+   * against NULL before calling methods. Rather than rewrite all of our typical
+   * Drush code that in practice should only fail if things are Horribly Broken,
+   * this method implements a stricter typehint and throws a useful exception if
+   * a logger is not set.
+   *
+   * @throws \RuntimeException
+   *   Thrown when a Drush logger is not set.
+   *
+   * @return \Drush\Log\DrushLoggerManager
+   */
+  protected function logger(): DrushLoggerManager {
+    $logger = parent::logger();
+    if (!$logger) {
+      throw new \RuntimeException('No Drush logger is available, but one should always be present.');
+    }
+
+    return $logger;
   }
 
 }

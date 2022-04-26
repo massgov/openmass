@@ -1,3 +1,28 @@
+
+## [0.320.0] - April 26, 2022
+
+### Removed
+  - DP-23217: Remove outdated fields from org_pages
+  
+### Added
+  - DP-23508: Support switching PHP versions during Acquia deployments
+  
+### Changed
+  - DP-24125: Improve cache hit rate for dynamic page cache
+  - DP-24363: Update entity_hierarchy and its patch to allow enabling of webprofiler.
+  - DP-24545: 6 weeks links duration for unpublished access links.
+  
+### Fixed
+  - DP-24335: Fix hamburger menu horizontal scrolling in IOS.
+  - DP-24420: Ensure to have build info on View Page Controller before getting the view title.
+  - DP-24485: Make header hamburger menu translatable by Google.
+  - DP-24527: Fixing the problem with link in Service Page banner not formating correctly.
+  - DP-24557: Fixes null method exceptions on decisions when media entities are deleted
+  - DP-24657: Sends taxonomy term id to the collection_all_media view.
+  
+### Security
+  - DP-24632: Drupal core security updates.
+  
 ## [0.319.2] - April 21, 2022
 
 ### Changed
