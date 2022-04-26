@@ -1,28 +1,8 @@
 
-
 ## [0.320.0] - April 26, 2022
 
 ### Removed
-  - DP-23217: Remove updated fields from org_pages
-- field_org_featured_message
-- field_org_featured_items
-- field_ref_contact_info_1
-- body
-- field_org_our_orgs
-- field_links_actions_3
-- field_ref_actions_6
-- field_ref_card_view_6
-- field_org_featured_news_items
-- field_number_of_news_items
-- field_org_show_news_images
-- field_event_quantity
-- field_location_button_short_desc
-- field_location_button_label
-- field_org_ref_locations
-- field_related_organization_type
-- field_ref_orgs
-- field_about
-- field_boards
+  - DP-23217: Remove outdated fields from org_pages
   
 ### Added
   - DP-23508: Support switching PHP versions during Acquia deployments
@@ -43,7 +23,12 @@
 ### Security
   - DP-24632: Drupal core security updates.
   
-## [0.319.0] - April 5, 2022
+## [0.319.2] - April 21, 2022
+
+### Changed
+- DP-24428: Chunk URLs in our custom purger
+
+## [0.319.1] - April 5, 2022
 
 ### Fixed
 - DP-24237: json_encode() needs numeric indices without holes (custom Akamai purger)
