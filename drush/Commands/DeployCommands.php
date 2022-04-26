@@ -43,6 +43,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    *
    * @param string $target Target environment. Recognized values: prod, test, local, tugboat, feature[N].
    * @param string $reference Reference environment. Recognized values: prod, test, local, tugboat, feature[N].
+   *
    * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
    * @option tugboat A Tugboat URL which should be used as target. You must also pass 'tugboat' as target. When omitted, the most recent Preview for the current branch is assumed.
    * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
@@ -63,7 +64,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
-  public function backstop($target, $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::OPT]) {
+  public function backstop(string $target, string $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::OPT]) {
     // If --tugboat is specified without a specific URL, or --tugboat is
     // omitted, automatically determine the preview for the branch.
     if ($target === 'tugboat' && ($options['tugboat'] === TRUE || is_null($options['tugboat']))) {
