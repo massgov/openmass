@@ -65,19 +65,8 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   public function backstop(string $target, string $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::OPT]): void {
     // If --tugboat is specified without a specific URL, or --tugboat is
     // omitted, automatically determine the preview for the branch.
-    if ($target === 'tugboat' && ($options['tugboat'] === TRUE || is_null($options['tugboat']))) {
-      $branch = $options['ci-branch'];
-      if ($branch === 'develop') {
-        $process = $this->processManager()->shell('git rev-parse --abbrev-ref HEAD');
-        $branch = trim($process->mustRun()->getOutput());
-        if (empty($branch)) {
-          throw new \RuntimeException('Unable to determine current branch. Pass --tugboat option.');
-        }
-      }
-      $options['tugboat'] = $this->getTugboatPreviewForBranch($branch, 'url');
-      if (empty($options['tugboat'])) {
-        throw new \RuntimeException('Unable to find a matching Tugboat preview. Pass --tugboat option.');
-      }
+    if ($target === 'tugboat') {
+      $tugboat_url = $this->getTugboatUrl($options['tugboat'], $options['ci-branch']);
     }
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
@@ -92,7 +81,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
           'reference' => $reference,
           'list' => $options['list'],
           'viewport' => $options['viewport'],
-          'tugboat' => $options['tugboat'] ?: '',
+          'tugboat' => $tugboat_url ?: '',
         ],
       ],
     ];
@@ -697,6 +686,38 @@ EOT;
     }
 
     return $logger;
+  }
+
+  /**
+   * Fetch the tugboat URL based on --target and --ci-branch.
+   *
+   * @param mixed $tugboat_url_option
+   *   The value passed in --tugboat=<value>, TRUE when passing --tugboat, and
+   *   FALSE when --tugboat is omitted.
+   * @param string $ci_branch
+   *   The branch being built.
+   *
+   * @return string
+   *   The Tugboat URL to test against.
+   */
+  private function getTugboatUrl($tugboat_url_option, string $ci_branch): string {
+    if ($tugboat_url_option === TRUE || empty($tugboat_url_option)) {
+      $branch = $ci_branch;
+      if ($branch === 'develop') {
+        $process = $this->processManager()
+          ->shell('git rev-parse --abbrev-ref HEAD');
+        $branch = trim($process->mustRun()->getOutput());
+        if (empty($branch)) {
+          throw new \RuntimeException('Unable to determine current branch. Pass --tugboat option.');
+        }
+      }
+      $tugboat_url_option = $this->getTugboatPreviewForBranch($branch, 'url');
+      if (empty($tugboat_url_option)) {
+        throw new \RuntimeException('Unable to find a matching Tugboat preview. Pass --tugboat option.');
+      }
+    }
+
+    return $tugboat_url_option;
   }
 
 }
