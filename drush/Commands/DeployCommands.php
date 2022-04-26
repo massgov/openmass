@@ -55,7 +55,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @usage drush ma:backstop tugboat prod --ci-branch=feature/XYZ
    *   Run backstop against feature/XYZ's preview at Tugboat and compare against Production.
    * @usage drush ma:backstop tugboat prod --tugboat=https://pr1111-zswa06zr1auucl5hkruj76bdcprszykl.tugboat.qa/
-   *   Run backstop against the the sepcified preview at Tugboat and compare against Production.
+   *   Run backstop against the specified preview at Tugboat and compare against Production.
    * @aliases ma-backstop
    * @validate-circleci-token
    *
