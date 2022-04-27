@@ -39,27 +39,9 @@
           {% endblock %}
         {% endembed %}
       {% else %}
-        {% set display_type = service_component[0].field_display_type.0.value %}
-
-        {% if opened_flexible_links_display_type_links_tag and display_type != 'links' %}
-          {% set opened_flexible_links_display_type_links_tag = false %}
-          </div>
-        {% endif %}
-
-        {% if not opened_flexible_links_display_type_links_tag and display_type == 'links' %}
-          {% set opened_flexible_links_display_type_links_tag = true %}
-          <div class="flexible_link_group flexible_link_group--links-wrapper">
-        {% endif %}
-
         {{ service_component[0]|view }}
       {% endif %}
     {% endfor %}
-
-    {% if opened_flexible_links_display_type_links_tag %}
-      {% set opened_flexible_links_display_type_links_tag = false %}
-      </div>
-    {% endif %}
-
   {% endblock %}
 
 {% endembed %}

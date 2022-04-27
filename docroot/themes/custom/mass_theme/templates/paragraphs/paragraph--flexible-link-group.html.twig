@@ -1,65 +1,55 @@
-{% set items = [] %}
-{% for link in flexible_link_links %}
-  {% set item = {
-        "path": "@atoms/decorative-link.twig",
-        "data": {
-          "decorativeLink": {
-            "text": link.text,
-            "href": link.href
-          }
-        }
-  } %}
-  {% set items = items|merge([item])%}
-{% endfor %}
-
-<div class="flexible_link_group flexible_link_group--{{ flexible_links_display_type }}">
-
-  <section class="ma__action-finder ma__action-finder--no-background ">
-    <div class="ma__action-finder__container">
-
-
-      {% if (flexible_links_display_type == 'links') %}
-        {% include "@organisms/by-author/collapsible-content.twig" with {
-          "collapsibleContent": {
-            "extended": true,
-            "items": [{
-              "collapsibleHeader": {
-                "title": flexible_link_title,
-                "description": flexible_link_description
-              },
-              "expanded": true,
-              "includes" : items
-            },
-
-{
-              "collapsibleHeader": {
-                "title": flexible_link_title,
-                "description": flexible_link_description
-              },
-              "expanded": true,
-              "includes" : items
-            }
-
-            ]
-          }
-        } %}
-      {% endif %}
-
-      {% if (flexible_links_display_type == 'buttons') %}
-        <div class="ma__action-finder__items">
-
-          {% for item in items %}
-            {% include "@molecules/callout-link.twig" with {
-              "calloutLink": {
-                "text": item.data.decorativeLink.text,
-                "href": item.data.decorativeLink.url,
-                "theme": flexible_links_theme
+{% if (display_type == 'links') %}
+  {% set items = [] %}
+  {% for flexible_link in flexible_links_group %}
+    {% set links = [] %}
+    {% for link in flexible_link.links %}
+      {% set content = {
+            "path": "@atoms/decorative-link.twig",
+            "data": {
+              "decorativeLink": {
+                "text": link.text,
+                "href": link.href
               }
-            } %}
-          {% endfor %}
+            }
+      } %}
+      {% set links = links|merge([content]) %}
+    {% endfor %}
 
-        </div>
-      {% endif %}
-    </div>
-  </section>
-</div>
+    {% set item  = {
+        "collapsibleHeader": {
+            "title": flexible_link.title,
+            "description": flexible_link.description
+          },
+          "expanded": true,
+          "includes" : links
+        }
+    %}
+
+    {% set items = items|merge([item]) %}
+  {% endfor %}
+
+  {% include "@organisms/by-author/collapsible-content.twig" with {
+    "collapsibleContent": {
+      "extended": true,
+      "items": items
+    }
+  } %}
+{% endif %}
+
+{% if (display_type == 'buttons') %}
+
+  {% set items = flexible_links_group.0.links %}
+
+  <div class="ma__sections-3up__container">
+    {% for item in items %}
+      {% include "@molecules/callout-link.twig" with {
+        "calloutLink": {
+          "text": item.text,
+          "href": item.href,
+          "theme": flexible_links_group.0.theme
+        }
+      } %}
+    {% endfor %}
+  </div>
+
+{% endif %}

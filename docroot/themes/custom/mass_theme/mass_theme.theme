@@ -7116,6 +7116,45 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
 function mass_theme_preprocess_paragraph__service_section(&$variables) {
   $variables["service_components"] =
     _mass_theme_preprocess_paragraph_sections($variables, 'field_service_section_content');
+
+
+  $links_group = [];
+  foreach ($variables['service_components'] as $key => &$service_component) {
+
+    /** @var Drupal\paragraphs\Entity\Paragraph */
+    $service_component_paragraph = &$service_component[0];
+    if (
+      is_object($service_component_paragraph) &&
+      $service_component_paragraph->getType() == 'flexible_link_group' &&
+      $service_component_paragraph->field_display_type->value == 'links'
+      ) {
+        $links_group[$key] = $service_component;
+    } else {
+      // Join contiguous flexible link groups with display type link into the
+      // same element.
+      if (count($links_group) > 1) {
+        $first = array_keys($links_group)[0];
+        foreach ($links_group as $key => $link_group) {
+          if ($key == $first) {
+            continue;
+          }
+
+          $variables['service_components'][$first][0]->subsequent_links[] = $link_group[0];
+
+          // Empty elements included previously.
+          $variables['service_components'][$key] = FALSE;
+        }
+      }
+      $links_group = [];
+    }
+  }
+
+  // Removing elements included previously.
+  foreach ($variables['service_components'] as $key => &$service_component) {
+    if ($service_component === FALSE) {
+      unset($variables['service_components'][$key]);
+    }
+  }
 }
 
 /**
@@ -7124,42 +7163,49 @@ function mass_theme_preprocess_paragraph__service_section(&$variables) {
 function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
   /** @var \Drupal\paragraphs\Entity\Paragraph */
   $flexible_lg = $variables['paragraph'];
-  $variables['flexible_link_title'] = $flexible_lg->field_flexible_link_group_title->value;
-  $variables['flexible_link_description'] = $flexible_lg->field_flexible_link_group_desc->value;
-  $variables['flexible_links_display_type'] = $flexible_lg->field_display_type->value;
-  $variables['flexible_links_theme'] = ((bool) intval($flexible_lg->field_featured->value)) ? 'blue' : 'white';
-  $variables['flexible_link_links'] = [];
 
-  /** @todo display type buttons and feature buttons */
+  $all_flexible_links = array_merge([$flexible_lg], $flexible_lg->subsequent_links ?? []);
 
-  $links = &$variables['flexible_link_links'];
-  foreach ($flexible_lg->field_link_group as $index => $item) {
-    if (empty($item->entity)) {
-      continue;
-    }
-    switch ($item->entity->bundle()) {
-      case 'link_group_link':
-        if (empty($item->entity->field_link_group_link)) {
+  unset($flexible_lg->subsequent_links);
+
+  foreach ($all_flexible_links as $key => $flexible_lg) {
+
+    $base = 'flexible_links_group';
+    $variables['display_type'] = $flexible_lg->field_display_type->value;
+    $variables[$base][$key]['title'] = $flexible_lg->field_flexible_link_group_title->value;
+    $variables[$base][$key]['description'] = $flexible_lg->field_flexible_link_group_desc->value;
+    $variables[$base][$key]['theme'] = ((bool) intval($flexible_lg->field_featured->value)) ? 'blue' : 'white';
+    $variables[$base][$key]['links'] = [];
+
+    $links = &$variables[$base][$key]['links'];
+    foreach ($flexible_lg->field_link_group as $index => $item) {
+      if (empty($item->entity)) {
+        continue;
+      }
+      switch ($item->entity->bundle()) {
+        case 'link_group_link':
+          if (empty($item->entity->field_link_group_link)) {
+            break;
+          }
+          /** @var \Drupal\mass_content\Field\FieldType\DynamicLinkItem */
+          $link = $item->entity->field_link_group_link[0];
+          if (empty($link->get('computed_title'))) {
+            break;
+          }
+          $computed_title = $link->get('computed_title')->getValue();
+          $links[$index]['text'] = is_array($computed_title) ? $computed_title['#markup'] : $computed_title;
+          $links[$index]['href'] = $link->getUrl()->setAbsolute()->toString();;
           break;
-        }
-        /** @var \Drupal\mass_content\Field\FieldType\DynamicLinkItem */
-        $link = $item->entity->field_link_group_link[0];
-        if (empty($link->get('computed_title'))) {
+        case 'link_group_document':
+          if (empty($item->entity->field_file_download_single)) {
+            break;
+          }
+          /** @var Drupal\mass_content\Entity\Bundle\media\DocumentBundle */
+          $file = $item->entity->field_file_download_single[0]->entity;
+          $links[$index]['href'] = $file->toURL()->setAbsolute()->toString();
+          $links[$index]['text'] = $file->label();
           break;
-        }
-        $computed_title = $link->get('computed_title')->getValue();
-        $links[$index]['text'] = is_array($computed_title) ? $computed_title['#markup'] : $computed_title;
-        $links[$index]['href'] = $link->getUrl()->setAbsolute()->toString();;
-        break;
-      case 'link_group_document':
-        if (empty($item->entity->field_file_download_single)) {
-          break;
-        }
-        /** @var Drupal\mass_content\Entity\Bundle\media\DocumentBundle */
-        $file = $item->entity->field_file_download_single[0]->entity;
-        $links[$index]['href'] = $file->toURL()->setAbsolute()->toString();
-        $links[$index]['text'] = $file->label();
-        break;
+      }
     }
   }
 }
