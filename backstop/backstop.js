@@ -2,6 +2,19 @@
 const opt = process.argv.filter(arg=>arg.match(/^--list=/))
 const file = opt.length ? opt[0].replace('--list=', '') : 'page';
 
+// When running many browsers at once, individual browser instances may become
+// blocked for a very long time. The typical navigation timeout is 30 seconds.
+// By extending it to 5 minutes, we allow tests to pass even if some of them
+// are very slow. This allows us to crank up the concurrency to a high number,
+// as we don't care about performance or 95th percentiles in screenshot tests.
+// Note it's still possible we have an actual performance or locking issue in
+// the app code. However, given we haven't had production outages or reports of
+// "random" slowness after deployments it seems unlikely. Unfortunately, the
+// waitTimeout setting isn't currently documented upstream, but we can see it
+// in use:
+// https://github.com/garris/BackstopJS/blob/c2de5b3a29d9485054461563c6992602569e357c/core/util/runPuppet.js#L83
+const waitTimeout = 5 * 60 * 1000
+
 let pages;
 
 switch (file) {
@@ -143,6 +156,7 @@ module.exports = {
     "engineFlags": [],
     "engineOptions": {
         "ignoreHTTPSErrors": true,
+        "waitTimeout": waitTimeout,
         "args": [
             "--no-sandbox",
             "--disable-setuid-sandbox",
