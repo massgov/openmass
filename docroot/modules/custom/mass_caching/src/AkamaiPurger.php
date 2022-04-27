@@ -58,16 +58,22 @@ class AkamaiPurger extends \Drupal\akamai\Plugin\Purge\Purger\AkamaiPurger {
     // Mass: Go right to purgeRequest(), bypassing unwanted check in purgeUrls().
     $method = new \ReflectionMethod($this->client, 'purgeRequest');
     $method->setAccessible(TRUE);
-    $response = $method->invoke($this->client, $urls_to_clear);
-    if ($response) {
-      // Now mark all URLs as cleared.
-      foreach ($invalidations as $invalidation) {
-        $invalidation->setState(InvalidationInterface::SUCCEEDED);
+
+    // Chunk the urls in order to avoid timeouts due to edgeworker.
+    foreach (array_chunk($urls_to_clear, 6) as $chunk) {
+      $response = $method->invoke($this->client, $chunk);
+      if ($response) {
+        // Now mark all URLs as cleared.
+        foreach ($invalidations as $key => $invalidation) {
+          if (in_array($invalidation->getUrl()->toString(), $chunk)) {
+            $invalidation->setState(InvalidationInterface::SUCCEEDED);
+          }
+        }
       }
-    }
-    else {
-      $msg = 'AkamaiPurger: Failed to purge ' . count($urls_to_clear) . ' url(s): ' . implode("\n", $urls_to_clear);
-      $this->logger()->error($msg);
+      else {
+        $msg = 'AkamaiPurger: Failed to purge ' . count($chunk) . ' url(s): ' . implode("\n", $chunk);
+        $this->logger()->error($msg);
+      }
     }
   }
 
