@@ -4257,7 +4257,7 @@ function mass_theme_preprocess_node_stacked_layout(&$variables) {
           'href' => $item->toUrl(),
           'text' => $item->getTitle(),
           'image' => Helper::getFieldImageUrl($item, 'thumbnail_130x160', 'field_photo'),
-          'label' => trim($item->get('field_label')->value) == 'Guide' ? 'Guide:' : '',
+          'label' => trim($item->get('field_label')->value) == 'Guide' ? t('Guide:') : '',
         ],
       ];
     }

@@ -36,7 +36,7 @@ class MapController extends ControllerBase {
       $page_title = $this->t('Other locations related to @title', ['@title' => $node_title]);
     }
     else {
-      $page_title = $node_title . ' Locations';
+      $page_title = $this->t('@title Locations', ['@title' => $node_title]);
     }
 
     $pageHeader = [

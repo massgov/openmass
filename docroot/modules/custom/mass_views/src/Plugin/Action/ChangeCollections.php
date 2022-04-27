@@ -75,7 +75,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase {
       $node_latest->save();
     }
 
-    return $this->t('Updated collections for') . ' ' . $entity->label() . ' - ' . $entity->id();
+    return $this->t('Updated collections for @label - @id', ['@label' => $entity->label(), '@id' => $entity->id()]);
   }
 
   /**

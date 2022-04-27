@@ -40,7 +40,7 @@ class RestoreAction extends ViewsBulkOperationsActionBase {
     $entity->setRevisionLogMessage('Unpublished with "Restore item from trash" action.');
     $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
     $entity->save();
-    return $this->t('Restored: ') . ' ' . $entity->label() . ' - ' . $entity->id();
+    return $this->t('Restored: @label - @id', ['@label' => $entity->label(), '@id' => $entity->id()]);
   }
 
   /**
