@@ -164,7 +164,7 @@ module.exports = {
             "--ignore-certificate-errors"
         ]
     },
-    "asyncCaptureLimit": 16,
+    "asyncCaptureLimit": 8,
     "asyncCompareLimit": 8,
     "debug": false,
     "debugWindow": false
