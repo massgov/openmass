@@ -63,7 +63,7 @@
     description_display == 'invisible' ? 'visually-hidden',
   ]
 %}
-<div{{ attributes.addClass(classes) }}>
+<div{{ attributes.addClass(classes)}} id="edit-{{ name|clean_id }}">
   {% if label_display in ['before', 'invisible'] %}
     {{ label }}
   {% endif %}
