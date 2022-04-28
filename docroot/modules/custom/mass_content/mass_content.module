@@ -886,7 +886,7 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
   $media_query->addExpression('\'media\'', 'entity_type');
   $media_query->range(NULL);
 
-  // Removing order by from the media query because we are gpoing to make
+  // Removing order by from the media query because we are going to make
   // a union and not removing it would produce a syntax error.
   $order_by = &$media_query->getOrderBy();
   $order_by = [];
