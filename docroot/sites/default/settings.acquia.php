@@ -113,7 +113,6 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
       $config['media_entity_download.settings']['external_file_storage'] = 0;
       // Override for Prod.
       $settings['mass_caching.hosts'] = ['edit.mass.gov', 'www.mass.gov'];
-      $config['entity_usage.settings']['local_task_enabled_entity_types'] = ['view'];
       $config['akamai.settings']['disabled'] = FALSE;
       $config['akamai.settings']['basepath'] = 'https://www.mass.gov';
       $config['akamai.settings']['domain']['staging'] = FALSE;
