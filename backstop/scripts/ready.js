@@ -124,10 +124,31 @@ module.exports = async function(page, scenario, vp) {
         '}'
     });
 
-    await page.evaluate(function (url) {
-      if(!window.jQuery) {
-        throw new Error(`jQuery was not found. This is usually caused by the server returning a 500 response. Please check ${url} in your browser.`);
+    // The Tugboat preview is suspended. While Tugboat returns HTTP 418 in this
+    // state, the page goes through several steps before finishing. Notably, the
+    // title tag will contain something like "Tugboat - Preview is...", which
+    // we can wait for. If the server doesn't respond with a mass.gov page in
+    // 30 seconds, this will time out.
+    // https://github.com/puppeteer/puppeteer/issues/1703
+    if (new RegExp('.*tugboat.qa.*').test(page.url())) {
+      try {
+        await page.waitForFunction("new RegExp('.*Tugboat.*').test(document.title) !== true")
       }
+      catch (e) {
+          throw new Error(`${e.constructor.name}: Tugboat did not load the preview. Please check ${page.url()} in your browser to see if the preview is marked as failed.`)
+        }
+    }
+
+    // Since we're waiting on the page, the above can pass early, before jQuery
+    // and other JS has had a chance to initialize.
+    try {
+      await page.waitForFunction("typeof window.jQuery == 'function'")
+    }
+    catch (e) {
+      throw new Error(`${e.constructor.name}: jQuery was not found. This is usually caused by the server returning a 500 response. Please check ${page.url()} in your browser.`)
+    }
+
+    await page.evaluate(function (url) {
       // Disable jQuery animation for any future calls.
       jQuery.fx.off = true;
       // Immediately complete any in-progress animations.
