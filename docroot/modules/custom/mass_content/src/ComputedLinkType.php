@@ -60,11 +60,9 @@ class ComputedLinkType extends StringData {
           $list = FieldConfig::loadByName('node', 'event', 'field_event_type_list')->getSetting('allowed_values');
 
           // Don't show the type if the type is "general_event".
-          if (in_array($type, $list)) {
+          $type = NULL;
+          if (in_array($type, $list) && $type !== 'general_event') {
             $type = $list[$type];
-            if ($type === 'general_event') {
-              $type = NULL;
-            }
           }
           break;
 
