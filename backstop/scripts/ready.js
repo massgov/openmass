@@ -134,7 +134,6 @@ module.exports = async function (page, scenario, vp) {
   // title tag will contain something like "Tugboat - Preview is...", which
   // we can wait for. If the server doesn't respond with a mass.gov page in
   // 30 seconds, this will time out.
-  // https://github.com/puppeteer/puppeteer/issues/1703
   if (new RegExp('.*tugboat.qa.*').test(page.url())) {
     try {
       await page.waitForFunction("new RegExp('.*Tugboat.*').test(document.title) !== true")
