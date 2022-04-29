@@ -7117,6 +7117,9 @@ function mass_theme_preprocess_paragraph__service_section(&$variables) {
   $variables["service_components"] =
     _mass_theme_preprocess_paragraph_sections($variables, 'field_service_section_content');
 
+  /** @var \Drupal\paragraphs\Entity\Paragraph */
+  $container = $variables['paragraph'];
+  $variables['section_style'] = $container->field_section_style->value;
 
   $links_group = [];
   foreach ($variables['service_components'] as $key => &$service_component) {
