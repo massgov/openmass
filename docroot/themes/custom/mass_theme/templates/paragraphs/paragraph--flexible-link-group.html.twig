@@ -3,15 +3,27 @@
   {% for flexible_link in flexible_links_group %}
     {% set links = [] %}
     {% for link in flexible_link.links %}
-      {% set content = {
-            "path": "@atoms/decorative-link.twig",
-            "data": {
-              "decorativeLink": {
-                "text": link.text,
-                "href": link.href
-              }
+      {% set content = link.download_link ?
+        {
+          "path": "@atoms/11-text/raw-html.twig",
+          "data": {
+            "rawHtml": {
+              "content": link.download_link
             }
-      } %}
+          }
+        }
+      :
+        {
+          "path": "@atoms/decorative-link.twig",
+          "data": {
+            "decorativeLink": {
+              "text": link.text,
+              "href": link.href
+            }
+          }
+        }
+      %}
+
       {% set links = links|merge([content]) %}
     {% endfor %}
 
