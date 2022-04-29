@@ -7180,6 +7180,7 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
     $variables[$base][$key]['description'] = $flexible_lg->field_flexible_link_group_desc->value;
     $variables[$base][$key]['theme'] = ((bool) intval($flexible_lg->field_featured->value)) ? 'blue' : 'white';
     $variables[$base][$key]['links'] = [];
+    $variables[$base][$key]['expanded'] = (bool) intval($flexible_lg->field_group_expanded->value);
 
     $links = &$variables[$base][$key]['links'];
     foreach ($flexible_lg->field_link_group as $index => $item) {
