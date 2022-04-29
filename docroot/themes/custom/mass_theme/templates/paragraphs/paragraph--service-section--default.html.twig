@@ -9,9 +9,10 @@
 
 {# // @TODO hide the title, overflow hidden to service section  #}
 
-{% set section_bg_color_class = section_style == 'enhanced' ? 'ma__colored-header-from-left--bg-wrapper' : '' %}
+{% set section_style_class = section_style == 'enhanced' ? 'service-section--enhanced' : '' %}
+{% set hide_title_class = hide_heading ? 'service-section--hidden-title' : '' %}
 
-<div class="service-section {{ section_bg_color_class }}">
+<div class="service-section {{ section_style_class }} {{ hide_title_class }}">
 
   {% embed "@organisms/by-author/stacked-row-section.twig" with {
     "stackedRowSection": heading,
@@ -24,14 +25,12 @@
 
     {% block stackRowTitle %}
       {% if section_style == 'enhanced' %}
-        <div class="ma__container">
-          {% include "@atoms/04-headings/colored-heading-from-left.twig" with {
-            "coloredHeadingFromLeft": {
-              "bgColor": "blue",
-              "title": (content.field_service_section_heading|field_value)
-            }}
-          %}
-        </div>
+        {% include "@atoms/04-headings/colored-heading-from-left.twig" with {
+          "coloredHeadingFromLeft": {
+            "bgColor": "blue",
+            "title": (content.field_service_section_heading|field_value)
+          }}
+        %}
       {% else %}
         <div class="ma__stacked-row__container">
           <div class="ma__stacked-row__title">

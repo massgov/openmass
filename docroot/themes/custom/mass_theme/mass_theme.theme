@@ -7120,6 +7120,7 @@ function mass_theme_preprocess_paragraph__service_section(&$variables) {
   /** @var \Drupal\paragraphs\Entity\Paragraph */
   $container = $variables['paragraph'];
   $variables['section_style'] = $container->field_section_style->value;
+  $variables['hide_heading'] = $container->field_hide_heading->value;
 
   $links_group = [];
   foreach ($variables['service_components'] as $key => &$service_component) {
