@@ -133,10 +133,10 @@ module.exports = async function (page, scenario, vp) {
   // state, the page goes through several steps before finishing. Notably, the
   // title tag will contain something like "Tugboat - Preview is...", which
   // we can wait for. If the server doesn't respond with a mass.gov page in
-  // 30 seconds, this will time out.
+  // 60 seconds, this will time out.
   if (new RegExp('.*tugboat.qa.*').test(page.url())) {
     try {
-      await page.waitForFunction("new RegExp('.*Tugboat.*').test(document.title) !== true")
+      await page.waitForFunction("new RegExp('.*Tugboat.*').test(document.title) !== true", {timeout: 60 * 1000})
     }
     catch (e) {
       throw new Error(`${e.constructor.name}: Tugboat did not load the preview. Please check ${page.url()} in your browser to see if the preview is marked as failed.`)
