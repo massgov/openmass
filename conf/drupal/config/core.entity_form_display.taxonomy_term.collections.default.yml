@@ -4,7 +4,9 @@ status: true
 dependencies:
   config:
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
+    - field.field.taxonomy_term.collections.field_default_sort
     - field.field.taxonomy_term.collections.field_landing_page
+    - field.field.taxonomy_term.collections.field_sort_order
     - field.field.taxonomy_term.collections.field_url_name
     - taxonomy.vocabulary.collections
   module:
@@ -17,6 +19,8 @@ third_party_settings:
       children:
         - field_landing_page
         - field_all_collection_breadcrumb
+        - field_sort_order
+        - field_default_sort
       label: 'Collection Settings'
       region: content
       parent_name: ''
@@ -49,6 +53,14 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_default_sort:
+    type: string_textfield
+    weight: 6
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_landing_page:
     type: link_default
     weight: 3
@@ -56,6 +68,12 @@ content:
     settings:
       placeholder_url: ''
       placeholder_title: ''
+    third_party_settings: {  }
+  field_sort_order:
+    type: options_buttons
+    weight: 5
+    region: content
+    settings: {  }
     third_party_settings: {  }
   field_url_name:
     type: string_textfield
