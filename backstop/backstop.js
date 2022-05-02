@@ -42,6 +42,9 @@ const scenarios = pages.map(function(page) {
       break;
     case 'tugboat':
       const opts = process.argv.filter(arg => arg.match(/^--tugboat=/))
+      if (opts.length < 1) {
+        throw '--tugboat must be specified with a preview URL if --target=tugboat is set.'
+      }
       base = opts[0].replace('--tugboat=', '');
       break;
     default:
@@ -150,7 +153,7 @@ module.exports = {
             "--ignore-certificate-errors"
         ]
     },
-    "asyncCaptureLimit": 2,
+    "asyncCaptureLimit": 4,
     "asyncCompareLimit": 3,
     "debug": false,
     "debugWindow": false

@@ -191,7 +191,7 @@ module.exports = async function(page, scenario, vp) {
           e.innerText = 'May. 24th, 2021, 5:00 pm';
         });
       })
-      await page.waitFor(1000);
+      await page.waitForTimeout(1000);
     }
 
     switch (scenario.label) {
@@ -202,7 +202,7 @@ module.exports = async function(page, scenario, vp) {
         await page.waitForFunction("document.readyState === 'complete'");
         await page.waitForSelector('form.ma__mass-feedback-form__form', {visible: true, timeout: 0});
         await page.waitForSelector(".ma__figure--x-large img", {visible: true, timeout: 0});
-        await page.waitFor(3000);
+        await page.waitForTimeout(3000);
         break;
       case "Homepage Login link (Mobile)":
         await page.evaluate(async function () {
@@ -213,7 +213,7 @@ module.exports = async function(page, scenario, vp) {
         break;
       case "InfoDetails1":
         await page.waitForFunction("document.querySelector('div.csv-table') === null");
-        await page.waitFor(1000);
+        await page.waitForTimeout(1000);
         break;
       case "ServiceGroupedLinks":
       case "Service1":
@@ -223,7 +223,7 @@ module.exports = async function(page, scenario, vp) {
         await page.evaluate(async function () {
           jQuery(".js-accordion-link").click();
         });
-        await page.waitFor(1000);
+        await page.waitForTimeout(1000);
         break;
     }
 
@@ -237,5 +237,5 @@ module.exports = async function(page, scenario, vp) {
     // by weird network conditions, slow JS, etc, but if we need an extra
     // delay after page load, it probably indicates there's a problem with
     // performance.
-    // await page.waitFor(2000);
+    // await page.waitForTimeout(2000);
 }
