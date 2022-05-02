@@ -1,5 +1,5 @@
 diff --git a/conditional_fields.module b/conditional_fields.module
-index 9532f26..4020f89 100644
+index 9532f26..3a9a29a 100644
 --- a/conditional_fields.module
 +++ b/conditional_fields.module
 @@ -5,13 +5,13 @@
@@ -139,10 +139,10 @@ index 9532f26..4020f89 100644
 + */
 +function conditional_fields_get_simpler_id($id) {
 +  if ($pos = strrpos($id, '-0-value') !== FALSE) {
-+    $id = substr($id, 0, $pos);
++    return substr($id, 0, $pos);
 +  }
 +  if ($pos = strrpos($id, '-value')) {
-+    $id = substr($id, 0, $pos);
++    return substr($id, 0, $pos);
 +  }
 +  return $id;
 +}
@@ -224,7 +224,7 @@ index 9532f26..4020f89 100644
        'options' => $options,
      ];
 diff --git a/src/ConditionalFieldsFormHelper.php b/src/ConditionalFieldsFormHelper.php
-index 02fee9b..077bf8a 100644
+index 02fee9b..36a448b 100644
 --- a/src/ConditionalFieldsFormHelper.php
 +++ b/src/ConditionalFieldsFormHelper.php
 @@ -3,6 +3,7 @@
@@ -290,7 +290,7 @@ index 02fee9b..077bf8a 100644
      }
  
      return $this;
-@@ -127,11 +153,23 @@ class ConditionalFieldsFormHelper {
+@@ -127,11 +153,17 @@ class ConditionalFieldsFormHelper {
    /**
     * Determine and register dependee field effects.
     */
@@ -307,16 +307,10 @@ index 02fee9b..077bf8a 100644
 +        $dependee = $base_name . HTML::getId($dependee);
 +      }
 +
-+
-+
-+      $cf = $this->form['#conditional_fields'];
-+
-+      $did = $dependent_form_field['#id'];
-+
        if (empty($this->form['#conditional_fields'][$dependee])) {
          continue;
        }
-@@ -372,7 +410,15 @@ class ConditionalFieldsFormHelper {
+@@ -372,7 +404,15 @@ class ConditionalFieldsFormHelper {
        return;
      }
  
@@ -333,7 +327,7 @@ index 02fee9b..077bf8a 100644
  
      // Check if this field's dependencies were triggered.
      $triggered = self::evaluateDependencies($dependent, $form, $form_state);
-@@ -385,33 +431,60 @@ class ConditionalFieldsFormHelper {
+@@ -385,33 +425,60 @@ class ConditionalFieldsFormHelper {
            if (($result && $state == 'visible' && $triggered) || (!$result && $state == '!visible' && !$triggered)) {
              $return = TRUE;
            }
@@ -401,7 +395,7 @@ index 02fee9b..077bf8a 100644
              }
            }
          }
-@@ -432,27 +505,9 @@ class ConditionalFieldsFormHelper {
+@@ -432,27 +499,9 @@ class ConditionalFieldsFormHelper {
        $form_state_addition['reset'] = TRUE;
      }
  
@@ -432,7 +426,7 @@ index 02fee9b..077bf8a 100644
      $fiel_state_values_count = count($form_state->getValue('conditional_fields_untriggered_dependents'));
      $form_state->setValue([
        'conditional_fields_untriggered_dependents',
-@@ -476,19 +531,30 @@ class ConditionalFieldsFormHelper {
+@@ -476,19 +525,30 @@ class ConditionalFieldsFormHelper {
     *   Evaluated dependencies array.
     */
    protected static function evaluateDependencies(array $dependent, array $form, FormStateInterface $form_state, $grouping = TRUE) {
@@ -466,7 +460,7 @@ index 02fee9b..077bf8a 100644
  
        // We have the parents of the field, but depending on the entity type and
        // the widget type, they may include additional elements that are actually
-@@ -496,7 +562,14 @@ class ConditionalFieldsFormHelper {
+@@ -496,7 +556,14 @@ class ConditionalFieldsFormHelper {
        // structure and use the parents only up to that depth.
        $dependee_parents_keys = array_flip($dependee_parents);
        $dependee_parent = NestedArray::getValue($form, array_slice($dependee_parents, 0, $dependee_parents_keys[$dependee]));
@@ -482,7 +476,7 @@ index 02fee9b..077bf8a 100644
  
        // Remove the language key.
        if (isset($dependee_parent[$dependee]['#language'], $values[$dependee_parent[$dependee]['#language']])) {
-@@ -512,7 +585,7 @@ class ConditionalFieldsFormHelper {
+@@ -512,7 +579,7 @@ class ConditionalFieldsFormHelper {
      }
  
      if ($grouping) {
@@ -491,7 +485,7 @@ index 02fee9b..077bf8a 100644
      }
  
      return $evaluated_dependees;
-@@ -553,28 +626,57 @@ class ConditionalFieldsFormHelper {
+@@ -553,28 +620,57 @@ class ConditionalFieldsFormHelper {
      }
  
      $untriggered_dependents_errors = [];
