@@ -7109,6 +7109,27 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
 }
 
 /**
+ * Join contiguous flexible link groups, type links, into the same element.
+ */
+function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_group, &$variables) {
+  if (count($links_group) < 2) {
+    return;
+  }
+  $first = array_keys($links_group)[0];
+  foreach ($links_group as $key => $link_group) {
+    if ($key == $first) {
+      continue;
+    }
+
+    $variables['service_components'][$first][0]->subsequent_links[] = $link_group[0];
+
+    // Empty elements included previously.
+    $variables['service_components'][$key] = FALSE;
+  }
+  $links_group = [];
+}
+
+/**
  * Implements hook_preprocess_HOOK().
  *
  * Groups different components together when necessary.
@@ -7124,7 +7145,6 @@ function mass_theme_preprocess_paragraph__service_section(&$variables) {
 
   $links_group = [];
   foreach ($variables['service_components'] as $key => &$service_component) {
-
     /** @var Drupal\paragraphs\Entity\Paragraph */
     $service_component_paragraph = &$service_component[0];
     if (
@@ -7134,24 +7154,11 @@ function mass_theme_preprocess_paragraph__service_section(&$variables) {
       ) {
         $links_group[$key] = $service_component;
     } else {
-      // Join contiguous flexible link groups with display type link into the
-      // same element.
-      if (count($links_group) > 1) {
-        $first = array_keys($links_group)[0];
-        foreach ($links_group as $key => $link_group) {
-          if ($key == $first) {
-            continue;
-          }
-
-          $variables['service_components'][$first][0]->subsequent_links[] = $link_group[0];
-
-          // Empty elements included previously.
-          $variables['service_components'][$key] = FALSE;
-        }
-      }
-      $links_group = [];
+      _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables);
     }
   }
+
+  _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables);
 
   // Removing elements included previously.
   foreach ($variables['service_components'] as $key => &$service_component) {
