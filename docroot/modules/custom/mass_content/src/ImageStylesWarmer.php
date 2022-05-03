@@ -62,7 +62,7 @@ class ImageStylesWarmer {
   /**
    * {@inheritdoc}
    */
-  public function doWarmUp(FileInterface $file, array $image_styles) {
+  private function doWarmUp(FileInterface $file, array $image_styles): void {
     if (empty($image_styles) || !$this->validateImage($file)) {
       return;
     }
