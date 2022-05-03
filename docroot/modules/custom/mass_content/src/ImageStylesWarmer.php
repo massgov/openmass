@@ -71,7 +71,7 @@ class ImageStylesWarmer {
     /* @var \Drupal\Core\Image\Image $image */
     /* @var \Drupal\image\Entity\ImageStyle $style */
 
-    // Create image derivatives if they not already exists.
+    // Create image derivatives if they do not already exist.
     $styles = $this->imageStyles->loadMultiple($image_styles);
     $image_uri = $file->getFileUri();
     foreach ($styles as $style) {
