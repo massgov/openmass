@@ -1,0 +1,39 @@
+uuid: 5b2bc4e3-9afc-4b15-9aa2-988f35e20ab2
+langcode: en
+status: true
+dependencies:
+  module:
+    - options
+    - taxonomy
+id: taxonomy_term.field_sort_order
+field_name: field_sort_order
+entity_type: taxonomy_term
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: title_ASC
+      label: 'Alpha by title - ascending'
+    -
+      value: title_DESC
+      label: 'Alpha by title - descending'
+    -
+      value: field_date_published_value_ASC
+      label: 'Publish date - ascending'
+    -
+      value: field_date_published_value_DESC
+      label: 'Publish date - descending'
+    -
+      value: event_date_ASC
+      label: 'Event start date - ascending'
+    -
+      value: event_date_DESC
+      label: 'Event start date - descending'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -81,6 +81,17 @@
   }
 }] %}
 
+{% set news_date = {
+    "path": "@atoms/11-text/raw-html.twig",
+    "data": {
+      "rawHtml" : {
+        "content" :  content.field_news_date|render
+      }
+    }
+  }
+%}
+{% set contents = contents|merge([news_date]) %}
+
 {# Add only the links that exist to the components array. #}
 {% for item in quick_action_links %}
   {% set decorative_link = {
