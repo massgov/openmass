@@ -5,12 +5,12 @@ dependencies:
   config:
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_collection_logo
+    - field.field.taxonomy_term.collections.field_default_sort
     - field.field.taxonomy_term.collections.field_header_color
+    - field.field.taxonomy_term.collections.field_landing_page
     - field.field.taxonomy_term.collections.field_organizations
     - field.field.taxonomy_term.collections.field_primary_parent
     - field.field.taxonomy_term.collections.field_short_description
-    - field.field.taxonomy_term.collections.field_default_sort
-    - field.field.taxonomy_term.collections.field_landing_page
     - field.field.taxonomy_term.collections.field_sort_order
     - field.field.taxonomy_term.collections.field_url_name
     - image.style.thumbnail
@@ -19,6 +19,7 @@ dependencies:
     - entity_hierarchy
     - field_group
     - image
+    - link
     - text
 third_party_settings:
   field_group:
@@ -26,12 +27,12 @@ third_party_settings:
       children:
         - field_primary_parent
         - field_all_collection_breadcrumb
+        - field_sort_order
         - field_short_description
+        - field_header_color
+        - field_default_sort
         - field_collection_logo
         - field_organizations
-        - field_header_color
-        - field_sort_order
-        - field_default_sort
       label: 'Collection Settings'
       region: content
       parent_name: ''
@@ -66,21 +67,37 @@ content:
     third_party_settings: {  }
   field_collection_logo:
     type: image_image
-    weight: 7
+    weight: 10
     region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings: {  }
+  field_default_sort:
+    type: string_textfield
+    weight: 9
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_header_color:
     type: options_select
-    weight: 9
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_landing_page:
+    type: link_default
+    weight: 3
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 8
+    weight: 11
     region: content
     settings:
       match_operator: CONTAINS
@@ -101,23 +118,7 @@ content:
     third_party_settings: {  }
   field_short_description:
     type: string_textfield
-    weight: 6
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_default_sort:
-    type: string_textfield
-    weight: 6
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_landing_page:
-    type: link_default
-    weight: 3
+    weight: 7
     region: content
     settings:
       size: 60
@@ -125,7 +126,7 @@ content:
     third_party_settings: {  }
   field_sort_order:
     type: options_buttons
-    weight: 5
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -160,5 +161,4 @@ content:
       display_label: true
     third_party_settings: {  }
 hidden:
-  field_landing_page: true
   path: true

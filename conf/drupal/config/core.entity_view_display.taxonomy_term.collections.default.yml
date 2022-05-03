@@ -5,15 +5,15 @@ dependencies:
   config:
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_collection_logo
+    - field.field.taxonomy_term.collections.field_default_sort
     - field.field.taxonomy_term.collections.field_header_color
     - field.field.taxonomy_term.collections.field_landing_page
     - field.field.taxonomy_term.collections.field_organizations
     - field.field.taxonomy_term.collections.field_primary_parent
     - field.field.taxonomy_term.collections.field_short_description
+    - field.field.taxonomy_term.collections.field_sort_order
     - field.field.taxonomy_term.collections.field_url_name
     - taxonomy.vocabulary.collections
-    - field.field.taxonomy_term.collections.field_default_sort
-    - field.field.taxonomy_term.collections.field_sort_order
   module:
     - entity_hierarchy
     - image
@@ -32,11 +32,6 @@ content:
     third_party_settings: {  }
     weight: -2
     region: content
-  field_header_color:
-    type: list_default
-    label: above
-    settings: {  }
-    third_party_settings: {  }
   field_default_sort:
     type: string
     label: above
@@ -45,12 +40,12 @@ content:
     third_party_settings: {  }
     weight: -3
     region: content
-  field_sort_order:
+  field_header_color:
     type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: -4
+    weight: null
     region: content
   field_organizations:
     type: entity_reference_label
@@ -76,6 +71,13 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: -3
+    region: content
+  field_sort_order:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: -4
     region: content
 hidden:
   description: true
