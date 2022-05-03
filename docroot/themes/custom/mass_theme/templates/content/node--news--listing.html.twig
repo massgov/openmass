@@ -108,6 +108,8 @@
   {% set contents = contents|merge([decorative_link]) %}
 {% endfor %}
 
+{% set eyebrow = content.field_news_type[0]['#markup'] != 'Blog Post' ? content.field_news_type[0]['#markup']  : '' %}
+
 {% include "@molecules/general-teaser.twig" with {
   "generalTeaser" : {
     "imageAfter": true,
