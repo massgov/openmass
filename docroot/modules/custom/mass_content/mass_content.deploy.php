@@ -9,7 +9,6 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
-use Drush\Drush;
 
 /**
  * Migrate iframe paragraph fields.
