@@ -9,6 +9,8 @@ parameters:
   # Apache configuration.
   # https://www.drupal.org/project/drupal/issues/2844620
   http.response.debug_cacheability_headers: false
+  twig.config:
+    debug: true
 services:
   cache.backend.null:
     class: Drupal\Core\Cache\NullBackendFactory
