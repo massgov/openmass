@@ -6061,7 +6061,8 @@ function mass_theme_preprocess_views_view_locations_page(&$variables) {
 function mass_theme_preprocess_form_element_label(&$variables) {
   // Add a class to the form element label for a views exposed filter title
   // field.
-  if ($variables['element']['#id'] === 'edit-title') {
+  $labels_id = ['edit-title', 'edit-sort-bef-combine'];
+  if (in_array($variables['element']['#id'], $labels_id)) {
     $variables['attributes']['class'][] = 'ma__sidebar-heading ma__legend';
   }
 }
@@ -7119,6 +7120,32 @@ function mass_theme_org_section_long_form_check_wrapping_field($paragraph, $fiel
   }
 
   return FALSE;
+}
+
+/**
+ * Implements hook_theme_preprocess_hook().
+ */
+function mass_theme_preprocess_select(&$variables) {
+  if ($variables['attributes']['name'] == 'sort_bef_combine') {
+    $variables['selectBox'] = [];
+    $variables['selectBox']['label'] = '';
+
+    $variables['selectBox']['required'] = TRUE;
+    $variables['selectBox']['id'] = $variables['attributes']['name'];
+    $variables['selectBox']['name'] = $variables['attributes']['name'];
+
+    /** @var \Symfony\Component\HttpFoundation\Request $request*/
+    $request = \Drupal::request();
+    $sort = $request->query->get('sort_bef_combine');
+
+    foreach ($variables['options'] as $option) {
+      $variables['selectBox']['options'][] = [
+        'value' => $option['value'],
+        'text' => $option['label'],
+        'selected' => $sort && $option['value'] === $sort,
+      ];
+    }
+  }
 }
 
 /**
