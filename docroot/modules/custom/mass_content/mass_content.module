@@ -609,6 +609,7 @@ function mass_content_form_taxonomy_term_collections_form_alter(array &$form, Fo
   if (count($parents) || $term->isNew()) {
     $form['field_default_sort']['#access'] = FALSE;
     $form['field_sort_order']['#access'] = FALSE;
+    $form['field_primary_parent']['#access'] = FALSE;
     return;
   }
 
