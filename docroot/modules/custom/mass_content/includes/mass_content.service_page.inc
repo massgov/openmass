@@ -254,7 +254,30 @@ function _mass_content_service_page_migration_locations(&$node) {
     ]);
     // Set the field values.
     $new_service_section_form_paragraph->set('field_service_section_content', $location_p);
-    $new_service_section_form_paragraph->set('field_service_section_heading', 'Locations ');
+    $new_service_section_form_paragraph->set('field_service_section_heading', 'Locations');
+    $new_service_section_form_paragraph->set('field_hide_heading', 0);
+    // Save the new paragraph.
+    $new_service_section_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph);
+  }
+}
+
+function _mass_content_service_page_add_contact_information(&$node) {
+  if (!$node->field_ref_contact_info->isEmpty()) {
+    $contact = Paragraph::create([
+      'type' => 'contact_placeholder',
+    ]);
+    $contact->save();
+
+
+    // Create a new Service Section paragraph.
+    $new_service_section_form_paragraph = Paragraph::create([
+      'type' => 'service_section',
+    ]);
+    // Set the field values.
+    $new_service_section_form_paragraph->set('field_service_section_content', $contact);
+    $new_service_section_form_paragraph->set('field_service_section_heading', 'Contact Information');
     $new_service_section_form_paragraph->set('field_hide_heading', 0);
     // Save the new paragraph.
     $new_service_section_form_paragraph->save();
