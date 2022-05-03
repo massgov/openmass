@@ -108,6 +108,7 @@ class MassContentBatchManager {
           break;
 
       }
+      _mass_content_service_page_migration_locations($node);
       _mass_content_service_page_cleanup_field_values($node);
 
       // Save the node.

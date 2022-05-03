@@ -146,7 +146,8 @@ class MassContentCommands extends DrushCommands {
       'field_link_group',
       'field_service_ref_actions',
       'field_service_key_info_links_6',
-      'field_template'
+      'field_template',
+      'field_service_ref_locations'
     ];
     // 1. Log the start of the script.
     $this->loggerChannelFactory->get('mass_content')->info('Update nodes batch operations start');

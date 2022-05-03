@@ -225,6 +225,44 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
   _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph_key);
 }
 
+function _mass_content_service_page_migration_locations(&$node) {
+  if (!$node->field_service_ref_locations->isEmpty()) {
+    $location_p = Paragraph::create([
+      'type' => 'org_locations',
+    ]);
+    // Get the field value.
+    $locations = $node->get('field_service_ref_locations')->getValue();
+    $location_p->set('field_org_ref_locations', $locations);
+    if (!$node->field_location_button_label->isEmpty()) {
+      $location_p->set('field_location_button_label', $node->get('field_location_button_label')
+        ->getValue());
+    }
+    if (!$node->field_location_button_short_desc->isEmpty()) {
+      $location_p->set('field_location_button_short_desc', $node->get('field_location_button_short_desc')
+        ->getValue());
+    }
+    if (!$node->field_related_organization_type->isEmpty()) {
+      $location_p->set('field_related_organization_type', $node->get('field_related_organization_type')
+        ->getValue());
+    }
+    $location_p->save();
+
+
+    // Create a new Service Section paragraph.
+    $new_service_section_form_paragraph = Paragraph::create([
+      'type' => 'service_section',
+    ]);
+    // Set the field values.
+    $new_service_section_form_paragraph->set('field_service_section_content', $location_p);
+    $new_service_section_form_paragraph->set('field_service_section_heading', 'Locations ');
+    $new_service_section_form_paragraph->set('field_hide_heading', 0);
+    // Save the new paragraph.
+    $new_service_section_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph);
+  }
+}
+
 /**
  * Cleanup old values from the fields.
  */
@@ -235,5 +273,9 @@ function _mass_content_service_page_cleanup_field_values(&$node) {
   $node->set('field_link_group', []);
   $node->set('field_service_key_info_links_6', []);
   $node->set('field_template', '');
+  $node->set('field_service_ref_locations', []);
+  $node->set('field_related_organization_type', '');
+  $node->set('field_location_button_short_desc', '');
+  $node->set('field_location_button_label', '');
 
 }
