@@ -4,14 +4,33 @@ status: true
 dependencies:
   config:
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
+    - field.field.taxonomy_term.collections.field_default_sort
     - field.field.taxonomy_term.collections.field_landing_page
+    - field.field.taxonomy_term.collections.field_sort_order
     - field.field.taxonomy_term.collections.field_url_name
     - taxonomy.vocabulary.collections
+  module:
+    - options
 id: taxonomy_term.collections.default
 targetEntityType: taxonomy_term
 bundle: collections
 mode: default
-content: {  }
+content:
+  field_default_sort:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: -3
+    region: content
+  field_sort_order:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: -4
+    region: content
 hidden:
   description: true
   field_all_collection_breadcrumb: true
