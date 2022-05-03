@@ -22,6 +22,11 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
     if ($this->adminContext->isAdminRoute($route_match->getRouteObject()) && $route_match->getRouteName() !== 'entity.node.edit_form') {
       return FALSE;
     }
+
+    if ($route_match->getRouteName() == 'view.collection_all.page_all') {
+      return TRUE;
+    }
+
     if ($route_match->getRouteName() == "view.locations.page" && $route_match->getParameter('node')) {
       return TRUE;
     }
@@ -51,6 +56,17 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
       else {
         $route_entity = $route_match->getParameter('node');
       }
+    }
+    elseif ($route_match->getRouteName() == "view.collection_all.page_all") {
+      $collection = mass_content_get_collection_from_current_page();
+      /** @var \Drupal\entity_hierarchy\Plugin\Field\FieldType\EntityReferenceHierarchyFieldItemList */
+      $field_primary_parent = $collection->field_primary_parent;
+      /** @var \Drupal\node\Entity\Node[] */
+      $referenced_entities = $field_primary_parent->referencedEntities();
+      if (!$referenced_entities) {
+        return $breadcrumb->setLinks([]);
+      }
+      $route_entity = end($referenced_entities);
     }
     else {
       $route_entity = $this->getEntityFromRouteMatch($route_match);
