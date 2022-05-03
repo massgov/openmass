@@ -8,7 +8,6 @@ dependencies:
     - field.field.node.org_page.field_application_login_links
     - field.field.node.org_page.field_approver
     - field.field.node.org_page.field_banner_image
-    - field.field.node.org_page.field_bg_narrow
     - field.field.node.org_page.field_bg_wide
     - field.field.node.org_page.field_billing_organization
     - field.field.node.org_page.field_career_opportunities
@@ -44,7 +43,7 @@ dependencies:
     - field.field.node.org_page.field_title_sub_text
     - field.field.node.org_page.field_urgent_warning
     - field.field.node.org_page.field_verification
-    - image.style.action_banner_small
+    - image.style.action_finder
     - image.style.organization_logo
     - node.type.org_page
   module:
@@ -176,20 +175,12 @@ content:
     third_party_settings: {  }
     weight: 23
     region: content
-  field_bg_narrow:
-    type: image_url
-    label: hidden
-    settings:
-      image_style: action_banner_small
-    third_party_settings: {  }
-    weight: 4
-    region: content
   field_bg_wide:
     type: image
     label: hidden
     settings:
       image_link: ''
-      image_style: action_banner_large
+      image_style: action_banner_large_focal_point
     third_party_settings: {  }
     weight: 3
     region: content
