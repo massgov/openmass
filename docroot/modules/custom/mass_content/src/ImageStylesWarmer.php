@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Drupal\mass_content;
@@ -53,7 +54,7 @@ class ImageStylesWarmer {
   }
 
   /**
-   * {@inheritdoc}
+   * Declares warmUp method to be called outside of the class.
    */
   public function warmUp(FileInterface $file): void {
     $initialImageStyles = ['action_banner_large_focal_point', 'hero1600x400_fp'];
@@ -61,15 +62,17 @@ class ImageStylesWarmer {
   }
 
   /**
-   * {@inheritdoc}
+   * Declares doWarmUp method for internal usage within the class.
+   *
+   * This method generated image styles.
    */
   private function doWarmUp(FileInterface $file, array $image_styles): void {
     if (!$this->validateImage($file) || empty($image_styles)) {
       return;
     }
 
-    /* @var \Drupal\Core\Image\Image $image */
-    /* @var \Drupal\image\Entity\ImageStyle $style */
+    /** @var \Drupal\Core\Image\Image $image */
+    /** @var \Drupal\image\Entity\ImageStyle $style */
 
     // Create image derivatives if they do not already exist.
     $styles = $this->imageStyles->loadMultiple($image_styles);
@@ -83,7 +86,7 @@ class ImageStylesWarmer {
   }
 
   /**
-   * {@inheritdoc}
+   * Declares validateImage method, to check if the file is in the system.
    */
   private function validateImage(FileInterface $file): bool {
     if ($file->isPermanent()) {

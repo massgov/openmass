@@ -1009,19 +1009,3 @@ function mass_content_update_8016(&$sandbox) {
     }
   }
 }
-
-/**
- * Delete field_bg_narrow from Organization content type.
- */
-function mass_content_update_8017(&$sandbox) {
-  $properties = [
-    'entity_type' => 'node',
-    'bundle' => 'org_page',
-    'field_name' => 'field_bg_narrow',
-  ];
-  $field = \Drupal::service('entity_type.manager')->getStorage('field_config')->loadByProperties($properties);
-  if ($field) {
-    $field = reset($field);
-    $field->delete();
-  }
-}
