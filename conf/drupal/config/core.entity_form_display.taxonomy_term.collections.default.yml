@@ -25,24 +25,69 @@ third_party_settings:
   field_group:
     group_collection_settings:
       children:
-        - field_primary_parent
-        - field_all_collection_breadcrumb
-        - field_sort_order
-        - field_short_description
-        - field_header_color
-        - field_default_sort
-        - field_collection_logo
-        - field_organizations
+        - group_sort_settings
+        - group_top_banner
+        - group_hierarchy_and_breadcrumb
       label: 'Collection Settings'
       region: content
       parent_name: ''
-      weight: 3
+      weight: 4
       format_type: tab
       format_settings:
         classes: ''
         id: ''
         formatter: closed
         description: 'These settings only need to be defined for the top level collection term. They don''t need to be set for topics or sub topics.'
+        required_fields: true
+    group_sort_settings:
+      children:
+        - field_default_sort
+        - field_sort_order
+      label: 'Default sort and available sort options'
+      region: content
+      parent_name: group_collection_settings
+      weight: 19
+      format_type: details
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        open: true
+        description: ''
+        required_fields: true
+    group_top_banner:
+      children:
+        - field_collection_logo
+        - field_header_color
+        - field_short_description
+      label: 'Top banner'
+      region: content
+      parent_name: group_collection_settings
+      weight: 20
+      format_type: details
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        open: true
+        description: ''
+        required_fields: true
+    group_hierarchy_and_breadcrumb:
+      children:
+        - field_primary_parent
+        - field_organizations
+        - field_all_collection_breadcrumb
+      label: 'Hierarchy and Breadcrumb'
+      region: hidden
+      parent_name: group_collection_settings
+      weight: 18
+      format_type: details
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        open: true
+        description: ''
         required_fields: true
 id: taxonomy_term.collections.default
 targetEntityType: taxonomy_term
@@ -59,7 +104,7 @@ content:
     third_party_settings: {  }
   field_all_collection_breadcrumb:
     type: string_textfield
-    weight: 5
+    weight: 17
     region: content
     settings:
       size: 60
@@ -67,7 +112,7 @@ content:
     third_party_settings: {  }
   field_collection_logo:
     type: image_image
-    weight: 10
+    weight: 21
     region: content
     settings:
       progress_indicator: throbber
@@ -75,7 +120,7 @@ content:
     third_party_settings: {  }
   field_default_sort:
     type: string_textfield
-    weight: 9
+    weight: 12
     region: content
     settings:
       size: 60
@@ -83,7 +128,7 @@ content:
     third_party_settings: {  }
   field_header_color:
     type: options_select
-    weight: 8
+    weight: 22
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -97,7 +142,7 @@ content:
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
-    weight: 11
+    weight: 16
     region: content
     settings:
       match_operator: CONTAINS
@@ -107,7 +152,7 @@ content:
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
-    weight: 4
+    weight: 15
     region: content
     settings:
       match_operator: CONTAINS
@@ -118,7 +163,7 @@ content:
     third_party_settings: {  }
   field_short_description:
     type: string_textfield
-    weight: 7
+    weight: 23
     region: content
     settings:
       size: 60
@@ -126,7 +171,7 @@ content:
     third_party_settings: {  }
   field_sort_order:
     type: options_buttons
-    weight: 6
+    weight: 13
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -140,7 +185,7 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 4
+    weight: 5
     region: content
     settings:
       include_locked: true
@@ -155,7 +200,7 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    weight: 5
+    weight: 6
     region: content
     settings:
       display_label: true
