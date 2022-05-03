@@ -1,4 +1,28 @@
 
+
+## [0.321.0] - May 3, 2022
+
+### Changed
+  - DP-24080: Move entity usage processing to a queue.
+  - DP-24669: Add user.mail to config_ignore.
+  - DP-24690: Upgrade config_ignore module
+  
+### Added
+  - DP-24109: Adds collections to the following content types.
+  - News
+  - Event
+  - Promotional page
+  - Topic Page
+Adds templates for listing display for the added content types.
+  - DP-24432: Add "Did you find" feedback form to promotional page.
+  - DP-24477: Add focal point to banner images on certain content types.
+  
+### Fixed
+  - DP-24666: Fix missing ext-json requirement in composer.json
+  - DP-24676: Fix unexpected General_Event eyebrow issue.
+  - DP-24691: Fix ahoy pull for developers
+  
+
 ## [0.320.0] - April 26, 2022
 
 ### Removed
