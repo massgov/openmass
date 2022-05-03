@@ -1,4 +1,37 @@
 
+## [0.320.0] - April 26, 2022
+
+### Removed
+  - DP-23217: Remove outdated fields from org_pages
+  
+### Added
+  - DP-23508: Support switching PHP versions during Acquia deployments
+  
+### Changed
+  - DP-24125: Improve cache hit rate for dynamic page cache
+  - DP-24363: Update entity_hierarchy and its patch to allow enabling of webprofiler.
+  - DP-24545: 6 weeks links duration for unpublished access links.
+  
+### Fixed
+  - DP-24335: Fix hamburger menu horizontal scrolling in IOS.
+  - DP-24420: Ensure to have build info on View Page Controller before getting the view title.
+  - DP-24485: Make header hamburger menu translatable by Google.
+  - DP-24527: Fixing the problem with link in Service Page banner not formating correctly.
+  - DP-24557: Fixes null method exceptions on decisions when media entities are deleted
+  - DP-24657: Sends taxonomy term id to the collection_all_media view.
+  
+### Security
+  - DP-24632: Drupal core security updates.
+  
+## [0.319.2] - April 21, 2022
+
+### Changed
+- DP-24428: Chunk URLs in our custom purger
+
+## [0.319.1] - April 5, 2022
+
+### Fixed
+- DP-24237: json_encode() needs numeric indices without holes (custom Akamai purger)
 
 ## [0.319.0] - April 5, 2022
 
@@ -10,21 +43,21 @@
 ViewsBulkOperationsActionBase will always be an array because when it is
 set it requires an array as parameter.
   - DP-24336: Add cache tag to update if any event changes on events paragraph.
-  
+
 ### Added
   - DP-23805: Move login links on service page from the sidebar into the page banner.
   - DP-24094: Add and configure environment indicator module
   - DP-24428: Custom Akamai purger
-  
+
 ### Removed
   - DP-24093: Removed "Show" and "Hide" from the Sitewide alert display.
   - DP-24413: Hide "Reset to alphabetical" option on the collection admin form.
-  
+
 ### Changed
   - DP-24237: Improve url purging by removing unwanted normalization.
   - DP-24384: Send JSON to syslog
   - DP-24415: View changes related to collections and documents.
-  
+
 ## [0.318.1] - March 29, 2022
 
   - Revert https://github.com/massgov/openmass/pull/1386/files due to purge failures.

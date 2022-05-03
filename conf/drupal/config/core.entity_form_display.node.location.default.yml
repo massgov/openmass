@@ -32,7 +32,7 @@ dependencies:
     - field.field.node.location.field_services
     - field.field.node.location.field_short_title
     - field.field.node.location.field_state_organization_tax
-    - image.style.thumbnail
+    - image.style.large
     - node.type.location
     - workflows.workflow.editorial
   module:
@@ -40,7 +40,7 @@ dependencies:
     - content_moderation
     - entity_hierarchy
     - field_group
-    - image
+    - focal_point
     - link
     - mass_validation
     - maxlength
@@ -159,12 +159,14 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_bg_narrow:
-    type: image_image
+    type: image_focal_point
     weight: 12
     region: content
     settings:
       progress_indicator: throbber
-      preview_image_style: thumbnail
+      preview_image_style: large
+      preview_link: true
+      offsets: '50,50'
     third_party_settings: {  }
   field_collections:
     type: term_reference_tree
