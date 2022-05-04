@@ -3426,9 +3426,8 @@ function mass_theme_preprocess_node_news_full(&$variables) {
       $variables['blogpostCollectionHeader']['image'] = '<img alt="' . $alt . '" src="' . $file_url . '">';
     }
 
-    if (isset($collection->field_header_color) && !$collection->field_header_color->isEmpty()) {
-      $variables['blogpostCollectionHeader']['bg_color'] = $collection->field_header_color->value;
-    }
+    $variables['blogpostCollectionHeader']['bg_color'] = $collection->field_header_color->value ?? '#FFF';
+    $variables['blogpostCollectionHeader']['dark_font'] = $variables['blogpostCollectionHeader']['bg_color'] === '#FFF';
   }
 
   $ap_conformity = FALSE;
