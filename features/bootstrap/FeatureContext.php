@@ -1559,11 +1559,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'submit',
           ],
           [
-            'field' => 'field-bg-narrow',
-            'tag' => 'input',
-            'type' => 'submit',
-          ],
-          [
             'field' => 'field-banner-image',
             'tag' => 'input',
             'type' => 'submit',
