@@ -680,6 +680,9 @@ function mass_content_get_collection_from_current_page() {
   $query->condition('field_url_name', $collection_param);
   $ids = $query->execute();
   $collection_id = reset($ids);
+  if (!$collection_id) {
+    return FALSE;
+  }
   $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
   $collection = $storage->load($collection_id);
   return $collection;
@@ -691,6 +694,10 @@ function mass_content_get_collection_from_current_page() {
 function mass_content_form_views_exposed_form_alter__collection_all_page_all(&$form) {
 
   $collection = mass_content_get_collection_from_current_page();
+
+  if (!$collection) {
+    return;
+  }
 
   // Filter available sort options.
   $selected_options = array_column($collection->field_sort_order->getValue(), 'value');
@@ -1075,7 +1082,7 @@ function mass_content_entity_bundle_info_alter(array &$bundles): void {
 /**
  * Sets the sort_bef_combine URL parameter to sort Collection views.
  */
-function mass_content_set_default_sort_from_collection(Term $collection) {
+function mass_content_set_default_sort_from_collection($collection) {
   if (!$collection) {
     return;
   }
