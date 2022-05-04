@@ -68,7 +68,9 @@ class SimilarTitlesWorker extends QueueWorkerBase implements ContainerFactoryPlu
         }
         $matching_characters = similar_text($title, $compare_title, $percent);
         if ($percent > 80) {
-          $this->database->upsert('mass_admin_pages_similar_titles')->fields([
+          $this->database->upsert('mass_admin_pages_similar_titles')
+            ->key('nid')
+            ->fields([
             'nid' => $nid,
             'title' => $title,
             'other_nid' => $compare_nid,
