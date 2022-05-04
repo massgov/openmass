@@ -19,7 +19,6 @@ dependencies:
     - entity_hierarchy
     - field_group
     - image
-    - link
     - text
 third_party_settings:
   field_group:
@@ -31,7 +30,7 @@ third_party_settings:
       label: 'Collection Settings'
       region: content
       parent_name: ''
-      weight: 4
+      weight: 3
       format_type: tab
       format_settings:
         classes: ''
@@ -78,9 +77,9 @@ third_party_settings:
         - field_organizations
         - field_all_collection_breadcrumb
       label: 'Hierarchy and Breadcrumb'
-      region: hidden
+      region: content
       parent_name: group_collection_settings
-      weight: 18
+      weight: 21
       format_type: details
       format_settings:
         classes: ''
@@ -132,14 +131,6 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_landing_page:
-    type: link_default
-    weight: 3
-    region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
-    third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
     weight: 16
@@ -185,7 +176,7 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 5
+    weight: 4
     region: content
     settings:
       include_locked: true
@@ -200,10 +191,11 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    weight: 6
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
 hidden:
+  field_landing_page: true
   path: true
