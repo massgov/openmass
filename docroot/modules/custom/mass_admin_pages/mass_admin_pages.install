@@ -6,8 +6,95 @@
  */
 
 /**
+ * Implements hook_schema().
+ */
+function mass_admin_pages_schema() {
+  $schema['mass_admin_pages_similar_titles'] = [
+    'description' => 'Stores the similar titles report.',
+    'fields' => [
+      'nid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'title' => [
+        'type' => 'varchar',
+        'size' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'other_nid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'other_title' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+    ],
+    'primary key' => [
+      'nid',
+      'other_nid',
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
  * Add empty update hook to trigger cache rebuild prior to config import.
  */
 function mass_admin_pages_update_8001() {
   // No-op.
+}
+
+/**
+ * Add a table to store similar titles calculations.
+ */
+function mass_admin_pages_update_8002() {
+  $schema['mass_admin_pages_similar_titles'] = [
+    'description' => 'Stores the similar titles report.',
+    'fields' => [
+      'nid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'title' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'other_nid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'other_title' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+      'percent' => [
+        'type' => 'float',
+        'not null' => TRUE,
+        'default' => 0,
+      ]
+    ],
+    'primary key' => [
+      'nid',
+      'other_nid',
+    ],
+  ];
+  /** @noinspection NullPointerExceptionInspection */
+  \Drupal::database()->schema()->createTable('mass_admin_pages_similar_titles', $schema['mass_admin_pages_similar_titles']);
 }

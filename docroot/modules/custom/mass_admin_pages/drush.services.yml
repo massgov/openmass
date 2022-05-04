@@ -1,0 +1,6 @@
+services:
+  mass_admin_pages.similar_titles:
+    class: \Drupal\mass_admin_pages\Commands\SimilarTitles
+    arguments: ['@entity_type.manager', '@entity.memory_cache', '@state', '@queue']
+    tags:
+      - { name: drush.command }
