@@ -54,13 +54,7 @@ class SimilarTitles extends DrushCommands {
 
     // Limit to published nodes of the given content types.
     $query->condition($this->entityTypeManager->getDefinition('node')->getKey('bundle'), [
-      'campaign_landing',
-      'guide_page',
       'how_to_page',
-      'info_details',
-      'location',
-      'org_page',
-      'service_details',
       'service_page',
       'topic_page',
     ], 'IN');
