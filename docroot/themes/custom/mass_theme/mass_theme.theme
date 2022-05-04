@@ -6051,12 +6051,13 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
   $view_builder = \Drupal::entityTypeManager()->getViewBuilder('taxonomy_term');
   $build = $view_builder->build($view_builder->view($term));
   $variables['term'] = $term;
-  $variables['bg_color'] = $term->field_header_color->value;
+  $variables['bg_color'] = $term->field_header_color->value ?: '#FFF';
   $variables['content'] = $build;
   $variables['collection']['title'] = $term->label();
   $variables['collection']['description'] = $build['field_short_description'];
   $variables['collection']['image'] = $build['field_collection_logo'];
-  $variables['collection']['bg_color'] = $term->field_header_color->value;
+  $variables['collection']['bg_color'] = $variables['bg_color'];
+  $variables['collection']['dark_font'] = $variables['bg_color'] === '#FFF';
 }
 
 /**
