@@ -67,15 +67,19 @@ form.views-exposed-form > * + * {
   margin: -1px 0 0;
 }
 
+@media (min-width: 911px) {
+  #filters {
+    background: transparent;
+    border: none;
+    padding: 0;
+  }
+}
+
 #filters.show {
   display: block;
 }
 
 #filters.hide {
-  display: none;
-}
-
-#filters--desktop {
   display: none;
 }
 
@@ -85,21 +89,17 @@ form.views-exposed-form > * + * {
     display: none;
   }
 
-  #filters.show {
-    display: none;
+  #filters.hide {
+    display: block;
   }
 
-  #filters--desktop {
-    display: block;
+  #filters.show {
+    display: none;
   }
 }
 
 .data-listing-wrapper .sidebar {
   padding-bottom: 20px;
-}
-
-#filters--desktop {
-  margin-top: 0;
 }
 
 .data-listing-wrapper .ma__general-teaser {
