@@ -129,7 +129,7 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       'moderation_state' => 'published',
     ]);
 
-    // Created transition to 6 days.
+    // Create transition to 6 days.
     $workflow = 'campaign_landing_page';
     $transition = ScheduledTransition::create([]);
     $datetime = (new DrupalDateTime("now + 6 days"))->getPhpDateTime();
