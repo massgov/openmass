@@ -225,6 +225,9 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
   _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph_key);
 }
 
+/**
+ * Migrate locations related data.
+ */
 function _mass_content_service_page_migration_locations(&$node) {
   if (!$node->field_service_ref_locations->isEmpty()) {
     $location_p = Paragraph::create([
@@ -247,7 +250,6 @@ function _mass_content_service_page_migration_locations(&$node) {
     }
     $location_p->save();
 
-
     // Create a new Service Section paragraph.
     $new_service_section_form_paragraph = Paragraph::create([
       'type' => 'service_section',
@@ -263,13 +265,15 @@ function _mass_content_service_page_migration_locations(&$node) {
   }
 }
 
+/**
+ * Create empty contact placeholder paragraph.
+ */
 function _mass_content_service_page_add_contact_information(&$node) {
   if (!$node->field_ref_contact_info->isEmpty()) {
     $contact = Paragraph::create([
       'type' => 'contact_placeholder',
     ]);
     $contact->save();
-
 
     // Create a new Service Section paragraph.
     $new_service_section_form_paragraph = Paragraph::create([
