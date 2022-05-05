@@ -19,19 +19,12 @@ class MassContentCommands extends DrushCommands {
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   private $entityTypeManager;
-  /**
-   * Logger service.
-   *
-   * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
-   */
-  private $loggerChannelFactory;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager, LoggerChannelFactoryInterface $loggerChannelFactory) {
+  public function __construct(EntityTypeManagerInterface $entityTypeManager) {
     $this->entityTypeManager = $entityTypeManager;
-    $this->loggerChannelFactory = $loggerChannelFactory;
   }
 
   /**
@@ -150,7 +143,7 @@ class MassContentCommands extends DrushCommands {
       'field_service_ref_locations'
     ];
     // 1. Log the start of the script.
-    $this->loggerChannelFactory->get('mass_content')->info('Update nodes batch operations start');
+    $this->logger()->info('Update nodes batch operations start');
 
     // 2. Retrieve all nodes of this type.
     $storage = $this->entityTypeManager->getStorage('node');
@@ -173,7 +166,7 @@ class MassContentCommands extends DrushCommands {
     }
     catch (\Exception $e) {
       $this->output()->writeln($e);
-      $this->loggerChannelFactory->get('mass_content')->error('Error found @e', ['@e' => $e]);
+      $this->logger()->error('Error found @e', ['@e' => $e->getMessage()]);
     }
     // 3. Create the operations array for the batch.
     $operations = [];
@@ -212,7 +205,7 @@ class MassContentCommands extends DrushCommands {
     // 6. Show some information.
     $this->logger()->notice("Batch operations end.");
     // 7. Log some information.
-    $this->loggerChannelFactory->get('mass_content')->info('Update batch operations end.');
+    $this->logger()->info('Update batch operations end.');
     \Drupal::getContainer()->get('plugin.cache_clearer')->clearCachedDefinitions();
 
     // Turn on entity_hierarchy writes after processing the item.
