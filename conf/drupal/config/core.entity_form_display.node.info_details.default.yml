@@ -31,7 +31,7 @@ dependencies:
     - field.field.node.info_details.field_short_desc
     - field.field.node.info_details.field_short_title
     - field.field.node.info_details.field_state_organization_tax
-    - image.style.thumbnail
+    - image.style.large
     - node.type.info_details
     - workflows.workflow.editorial
   module:
@@ -40,7 +40,7 @@ dependencies:
     - datetime
     - entity_hierarchy
     - field_group
-    - image
+    - focal_point
     - link
     - mass_validation
     - maxlength
@@ -163,12 +163,14 @@ bundle: info_details
 mode: default
 content:
   field_banner_image:
-    type: image_image
+    type: image_focal_point
     weight: 9
     region: content
     settings:
       progress_indicator: throbber
-      preview_image_style: thumbnail
+      preview_image_style: large
+      preview_link: true
+      offsets: '50,50'
     third_party_settings: {  }
   field_collections:
     type: term_reference_tree

@@ -663,6 +663,9 @@ class Organisms {
     // @todo consider passing the image style in as an option.
     // Use action_banner_* as default pageBanner image styles.
     $image_style_wide = 'action_banner_large';
+    if ($entity->bundle() === 'org_page') {
+      $image_style_wide = 'action_banner_large_focal_point';
+    }
     $image_style_narrow = 'action_banner_small';
 
     // Get pageBanner size, use as flag to determine image style.
@@ -670,7 +673,9 @@ class Organisms {
 
     // Use helper function to get the image url of a given image style.
     $pageBanner['bgWide'] = Helper::getFieldImageUrl($entity, $image_style_wide, $fields['bg_wide']);
-    $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, $fields['bg_narrow']);
+    if ($entity->bundle() !== 'org_page') {
+      $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, $fields['bg_narrow']);
+    }
 
     if ($options['type'] == 'section landing') {
       // Manually specified since we have potentially 4 image fields on topic_page.
