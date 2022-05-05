@@ -59,12 +59,12 @@ class ComputedLinkType extends StringData {
           // grab the human-readable label from the field based on the key.
           $list = FieldConfig::loadByName('node', 'event', 'field_event_type_list')->getSetting('allowed_values');
 
-          // Don't show the type if the type is "general_event".
           if (in_array($type, $list)) {
             $type = $list[$type];
-            if ($type === 'general_event') {
-              $type = NULL;
-            }
+          }
+          if ($type === 'general_event') {
+            // Don't show the type if the type is "general_event".
+            $type = NULL;
           }
           break;
 
