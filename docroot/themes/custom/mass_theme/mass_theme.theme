@@ -7162,9 +7162,10 @@ function mass_theme_preprocess_paragraph__service_section(&$variables) {
       is_object($service_component_paragraph) &&
       $service_component_paragraph->getType() == 'flexible_link_group' &&
       $service_component_paragraph->field_display_type->value == 'links'
-      ) {
-        $links_group[$key] = $service_component;
-    } else {
+    ) {
+      $links_group[$key] = $service_component;
+    }
+    else {
       _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables);
     }
   }
@@ -7217,8 +7218,9 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
           }
           $computed_title = $link->get('computed_title')->getValue();
           $links[$index]['text'] = is_array($computed_title) ? $computed_title['#markup'] : $computed_title;
-          $links[$index]['href'] = $link->getUrl()->setAbsolute()->toString();;
+          $links[$index]['href'] = $link->getUrl()->setAbsolute()->toString();
           break;
+
         case 'link_group_document':
           if (empty($item->entity->field_file_download_single)) {
             break;
