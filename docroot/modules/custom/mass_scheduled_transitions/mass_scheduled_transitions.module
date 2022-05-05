@@ -24,7 +24,6 @@ const MASS_SCHEDULED_TRANSITIONS_OPTIONS = [
 ];
 define('MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION', '14 months');
 define('MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION', '6 months');
-define('MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_DEFAULT_DURATION', '180 days');
 define('MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION', '14 days');
 
 /**
@@ -69,10 +68,6 @@ function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $n
   if ($node->bundle() == 'alert') {
     $duration = MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION;
     $workflow = 'editorial';
-  }
-  elseif ($node->bundle() == 'campaign_landing') {
-    $duration = MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_DEFAULT_DURATION;
-    $workflow = 'campaign_landing_page';
   }
   else {
     // We don't care about you.
