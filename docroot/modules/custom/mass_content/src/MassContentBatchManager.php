@@ -98,6 +98,7 @@ class MassContentBatchManager {
 
       $template = $node->field_template->value;
 
+      _mass_content_service_page_add_social_links($node);
       switch ($template) {
         case 'custom':
           _mass_content_service_page_migration_custom_link_group($node);

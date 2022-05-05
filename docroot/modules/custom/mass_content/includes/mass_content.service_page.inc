@@ -291,6 +291,31 @@ function _mass_content_service_page_add_contact_information(&$node) {
 }
 
 /**
+ * Add social links section.
+ */
+function _mass_content_service_page_add_social_links(&$node) {
+  if (!$node->field_services_social_links->isEmpty()) {
+    $social_media = Paragraph::create([
+      'type' => 'social_media',
+    ]);
+    $social_media->save();
+
+    // Create a new Service Section paragraph.
+    $new_service_section_form_paragraph = Paragraph::create([
+      'type' => 'service_section',
+    ]);
+    // Set the field values.
+    $new_service_section_form_paragraph->set('field_service_section_content', $social_media);
+    $new_service_section_form_paragraph->set('field_service_section_heading', 'Social');
+    $new_service_section_form_paragraph->set('field_hide_heading', 0);
+    // Save the new paragraph.
+    $new_service_section_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph);
+  }
+}
+
+/**
  * Cleanup old values from the fields.
  */
 function _mass_content_service_page_cleanup_field_values(&$node) {

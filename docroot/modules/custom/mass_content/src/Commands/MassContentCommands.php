@@ -138,7 +138,8 @@ class MassContentCommands extends DrushCommands {
       'field_service_ref_actions',
       'field_service_key_info_links_6',
       'field_template',
-      'field_service_ref_locations'
+      'field_service_ref_locations',
+      'field_services_social_links'
     ];
     // 1. Log the start of the script.
     $this->logger()->info('Update nodes batch operations start');
