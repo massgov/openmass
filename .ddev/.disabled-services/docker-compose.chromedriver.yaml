@@ -6,13 +6,24 @@
 version: '3.6'
 services:
   chromedriver:
-    image:  previousnext/chrome-headless:65
+    image: seleniarm/standalone-chromium:4.1.4-20220429
+    shm_size: 2gb
     container_name: ddev-${DDEV_SITENAME}-chromedriver
+    expose:
+      - 7900
+    ports:
+      - 5900:5900
+    environment:
+      - VIRTUAL_HOST=$DDEV_HOSTNAME
+      - HTTPS_EXPOSE=7900:7900
+      - HTTP_EXPOSE=7910:7900
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT
     external_links:
       - ddev-router:${DDEV_SITENAME}.${DDEV_TLD}
+    volumes:
+      - ".:/mnt/ddev_config"
 
   web:
     links:
@@ -24,7 +35,6 @@ services:
       # - SIMPLETEST_DB=sqlite://tmp/test.sqlite
       #
       # Note: Do not modify the base URL value.
-      - DTT_API_URL=http://chromedriver:9222
       - BROWSERTEST_OUTPUT_DIRECTORY=/tmp
       - BROWSERTEST_OUTPUT_BASE_URL=${DDEV_PRIMARY_URL}
-#      - MINK_DRIVER_ARGS_WEBDRIVER=["chrome", {"browserName":"chrome","chromeOptions":{"args":["--disable-gpu","--headless", "--no-sandbox"]}}, "http://chromedriver:9515"]
+      - DTT_MINK_DRIVER_ARGS=["chrome", null, "http://chromedriver:4444"]
