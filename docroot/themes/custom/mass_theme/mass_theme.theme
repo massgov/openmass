@@ -3284,19 +3284,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_service_ref_services_6')) {
     $titleContext = t(' to @title', ['@title' => $page_title]);
     // Set up link list static options.
-    // @TODO consider making the title the field label value.
-    $num_ref_services = count($node->field_service_ref_services_6->getValue());
-    // Creates 'more' link when more than 6 services are referenced.
-    $more = [];
-    if ($num_ref_services > 6) {
-      $text_ref_services = t("See all @count", ['@count' => $num_ref_services]);
-      $more = [
-        'href' => $node->toUrl()->toString() . '/related',
-        'text' => $text_ref_services,
-        'chevron' => TRUE,
-        'labelContext' => t('related services for the @label', ['@label' => $node->label()]),
-      ];
-    }
     $linkList_options = [
       'heading' => [
         'title' => t('Related Services'),
@@ -3305,8 +3292,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
         'level' => 2,
       ],
       'stacked' => TRUE,
-      'maxItems' => 6,
-      'more' => $more,
     ];
 
     // Populate the first column.
