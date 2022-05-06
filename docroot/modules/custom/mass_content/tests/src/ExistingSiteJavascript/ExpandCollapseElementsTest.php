@@ -3,12 +3,12 @@
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Behat\Mink\Element\NodeElement;
-use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 
 /**
  * Test Expandible/Collapsible elements.
  */
-class ExpandCollapseElementsTest extends ExistingSiteWebDriverTestBase {
+class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
 
   /**
    * Loads a node based on its title.

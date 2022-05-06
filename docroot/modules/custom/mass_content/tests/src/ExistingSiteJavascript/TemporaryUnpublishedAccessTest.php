@@ -5,7 +5,7 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 use Drupal\file\Entity\File;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\user\Entity\User;
-use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
@@ -15,7 +15,7 @@ use weitzman\LoginTrait\LoginTrait;
  * `$form_state->getValue('field_primary_parent')` returns a non-empty
  * array even if it doesn't have a value.
  */
-class TemporaryUnpublishedAccessTest extends ExistingSiteWebDriverTestBase {
+class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase {
 
   use LoginTrait;
 

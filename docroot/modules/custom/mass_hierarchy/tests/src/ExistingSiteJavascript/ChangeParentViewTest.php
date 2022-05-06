@@ -3,13 +3,13 @@
 namespace Drupal\Tests\mass_hierarchy\ExistingSite;
 
 use Drupal\user\Entity\User;
-use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests move children action in the change_parents views.
  */
-class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
+class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
 
   use LoginTrait;
 
