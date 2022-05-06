@@ -1,14 +1,12 @@
 ---
-# Docker-ChromeDriver configuration for DDEV-Local.
-# There is one item that must be configured in this file in order for it to
-# work, please see below.
+# Selenium Chrome configuration for DDEV-Local.
 
 version: '3.6'
 services:
-  chromedriver:
+  selenium-chrome:
     image: seleniarm/standalone-chromium:4.1.4-20220429
     shm_size: 2gb
-    container_name: ddev-${DDEV_SITENAME}-chromedriver
+    container_name: ddev-${DDEV_SITENAME}-selenium-chrome
     expose:
       - 7900
     ports:
@@ -27,14 +25,9 @@ services:
 
   web:
     links:
-      - chromedriver
+      - selenium-chrome
     environment:
-      # *** One of these must be uncommented ***
-      # In order for the system to work, one of these must be uncommented so
-      # that the test system can connect to the database.
-      # - SIMPLETEST_DB=sqlite://tmp/test.sqlite
-      #
-      # Note: Do not modify the base URL value.
       - BROWSERTEST_OUTPUT_DIRECTORY=/tmp
+      # Note: Do not modify the base URL value.
       - BROWSERTEST_OUTPUT_BASE_URL=${DDEV_PRIMARY_URL}
-      - DTT_MINK_DRIVER_ARGS=["chrome", null, "http://chromedriver:4444"]
+      - DTT_MINK_DRIVER_ARGS=["chrome", null, "http://selenium-chrome:4444"]
