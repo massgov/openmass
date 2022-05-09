@@ -9,7 +9,8 @@
    cacheResult="true">
   <php>
     <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
-    <env name="DTT_MINK_DRIVER_ARGS" value="['chrome', {'chromeOptions': {'args': ['disable-dev-shm-usage']}}, 'http://localhost:4444/wd/hub']"/>
+    <!-- Note you must use double quotes for the interior of this JSON blob. -->
+    <env name="DTT_MINK_DRIVER_ARGS" value='["chrome", {"chromeOptions": {"args": ["disable-dev-shm-usage"]}}, "http://localhost:4444/wd/hub"]'/>
     <!-- Do not limit the amount of memory tests take to run. -->
     <ini name="memory_limit" value="-1"/>
   </php>
