@@ -427,7 +427,7 @@ jobs:
     resource_class: xlarge
     docker:
       # Need to use docker image for these steps.
-      - image: circleci/python:2.7.14
+      - image: circleci/python:3.10
     steps:
       - checkout
       - run: cp .circleci/backstop/docker-compose.yml .
