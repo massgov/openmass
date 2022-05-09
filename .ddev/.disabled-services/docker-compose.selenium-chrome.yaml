@@ -5,7 +5,6 @@ version: '3.6'
 services:
   selenium-chrome:
     image: seleniarm/standalone-chromium:4.1.4-20220429
-    shm_size: 3gb
     container_name: ddev-${DDEV_SITENAME}-selenium-chrome
     expose:
       # The internal noVNC port, which operates over HTTP so it can be exposed
@@ -33,4 +32,7 @@ services:
       - BROWSERTEST_OUTPUT_DIRECTORY=/tmp
       # Note: Do not modify the base URL value.
       - BROWSERTEST_OUTPUT_BASE_URL=${DDEV_PRIMARY_URL}
-      - DTT_MINK_DRIVER_ARGS=["chrome", null, "http://selenium-chrome:4444"]
+      # Use disable-dev-shm-usage instead of setting shm_usage
+      # https://developers.google.com/web/tools/puppeteer/troubleshooting#tips
+      # The format of chromeOptions is defined at https://chromedriver.chromium.org/capabilities
+      - 'DTT_MINK_DRIVER_ARGS=["chrome", {"chromeOptions": {"args": ["disable-dev-shm-usage"]}}, "http://selenium-chrome:4444"]'
