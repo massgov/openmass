@@ -24,14 +24,15 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
    */
   private function testAccordion(NodeElement $accordion) {
     $session = $this->getSession();
-    $accordion_link = $accordion->find('css', '.js-accordion-link');
 
     // Get the accordion state, then click on it.
     $initial_state = $accordion->hasClass('is-open');
+
+    $accordion_link = $accordion->find('css', '.js-accordion-link');
     $accordion_link->click();
     $session->wait(1000);
 
-    // Check the accordion collased/expanded state was toggled.
+    // Check the accordion collapsed/expanded state was toggled.
     $this->assertTrue($initial_state != $accordion->hasClass('is-open'));
   }
 
