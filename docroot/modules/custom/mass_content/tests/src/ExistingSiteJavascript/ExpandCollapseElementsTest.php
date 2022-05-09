@@ -52,6 +52,13 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
       if ($accordion_link->isVisible()) {
         $this->testAccordion($accordion_link);
       }
+      elseif ($accordion_link->hasClass('ma__toc--hierarchy__accordion')) {
+        // This is special handling for the accordion inside of the "This is a
+        // part of" menu.
+        $page->find('css', '.ma__toc__toc__toggle')->click();
+        $this->testAccordion($accordion_link);
+        $page->findAll('css', '.ma__toc__toc__toggle')[1]->click();
+      }
     }
   }
 
