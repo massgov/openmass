@@ -5118,6 +5118,14 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
           ],
         ],
       ];
+
+      // Bubble cache tag to the current render. Based on https://www.drupal.org/project/drupal/issues/2557815.
+      // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+      $renderer = \Drupal::service('renderer');
+      if ($renderer->hasRenderContext()) {
+        $build = ['#cache' => ['tags' => ['node_list:news']]];
+        $renderer->render($build);
+      }
     }
   }
 }
