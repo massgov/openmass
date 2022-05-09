@@ -47,7 +47,11 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
     $page = $session->getPage();
     $accordion_links = $page->findAll('css', '.js-accordion');
     foreach ($accordion_links as $accordion_link) {
-      $this->testAccordion($accordion_link);
+      // Symfony's CSS selector doesn't support :visible, so we use this to
+      // filter out accordions inside hidden menus.
+      if ($accordion_link->isVisible()) {
+        $this->testAccordion($accordion_link);
+      }
     }
   }
 
