@@ -6,7 +6,7 @@ use Behat\Mink\Element\NodeElement;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 
 /**
- * Test Expandible/Collapsible elements.
+ * Test Expandable/Collapsible elements.
  */
 class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
 
