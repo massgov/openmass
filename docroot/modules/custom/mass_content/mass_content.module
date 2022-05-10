@@ -862,8 +862,8 @@ function _mass_content_collection_all_only_future_events(QueryPluginBase $query)
       ],
       [
         'field' =>
-          "DATE_FORMAT((node__field_event_date.field_event_date_value + " .  $offset_interval . "), '%Y-%m-%d\T%H:%i:%s') > " .
-          "DATE_FORMAT(('" . $now_formatted . "'), '%Y-%m-%d\T%H:%i:%s')",
+        "DATE_FORMAT((node__field_event_date.field_event_date_value + " . $offset_interval . "), '%Y-%m-%d\T%H:%i:%s') > " .
+        "DATE_FORMAT(('" . $now_formatted . "'), '%Y-%m-%d\T%H:%i:%s')",
         'value' => [],
         'operator' => 'formula',
       ]
