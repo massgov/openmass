@@ -687,8 +687,10 @@ function mass_content_get_collection_from_current_page() {
  * Shows only available sort options on collection pages.
  */
 function mass_content_form_views_exposed_form_alter__collection_all_page_all(&$form) {
-
   $collection = mass_content_get_collection_from_current_page();
+  if (!$collection) {
+    return;
+  }
 
   // Filter available sort options.
   $selected_options = array_column($collection->field_sort_order->getValue(), 'value');
@@ -1152,6 +1154,9 @@ function mass_content_set_default_sort_from_collection(Term $collection) {
  */
 function mass_content_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
   if ($view->id() == 'collection_all') {
-    mass_content_set_default_sort_from_collection(mass_content_get_collection_from_current_page());
+    $collection = mass_content_get_collection_from_current_page();
+    if ($collection) {
+      mass_content_set_default_sort_from_collection($collection);
+    }
   }
 }
