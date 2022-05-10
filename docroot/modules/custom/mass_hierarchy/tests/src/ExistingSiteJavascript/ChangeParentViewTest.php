@@ -260,7 +260,7 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
     // clickable element. We haven't found any core tests showing how to
     // work around this, so instead we simply re-fetch the page.
     // https://stackoverflow.com/questions/59669474/why-is-this-element-not-interactable-python-selenium
-    $this->drupalGet('node/' . $parent2Node->id() . '/edit');
+    $this->drupalGet('node/' . $child1Node->id() . '/edit');
 
     // Check it has the second parent.
     $this->assertSession()->fieldValueEquals('Parent page', $parent2Node->label() . ' (' . $parent2Node->id() . ')');
