@@ -90,14 +90,21 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase
     // Ensure we have a parent page.
     $this->getCurrentPage()->fillField('Parent page', 'About the Massachusetts Court System');
     $this->getCurrentPage()->pressButton('Save');
-    $this->clickLink('Edit');
+
+    // This code used to call $this->clickLink('Edit'). However,
+    // template_preprocess_menu_local_task() adds a hidden span marked as
+    // visually hidden with the active tab labelled. Chrome refuses to click the
+    // edit link via automation, because <span> is not supposed to be a
+    // clickable element. We haven't found any core tests showing how to
+    // work around this, so instead we simply re-fetch the page.
+    $this->drupalGet('node/' . $node->id() . '/edit');
     $this->generateLink();
 
     // Ensure we don't have a parent page.
-    $this->clickLink('Edit');
+    $this->drupalGet('node/' . $node->id() . '/edit');
     $this->getCurrentPage()->fillField('Parent page', '');
     $this->getCurrentPage()->pressButton('Save');
-    $this->clickLink('Edit');
+    $this->drupalGet('node/' . $node->id() . '/edit');
     $this->generateLink();
   }
 
