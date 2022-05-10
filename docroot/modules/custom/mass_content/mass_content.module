@@ -844,6 +844,14 @@ function _mass_content_collection_all_only_future_events(QueryPluginBase $query)
     return;
   }
 
+  $now = \Drupal::time()->getCurrentTime();
+  /** @var \Drupal\Core\Datetime\DateFormatter */
+  $date_formatter_service = \Drupal::service('date.formatter');
+  /** @var DateTimeZone */
+  $timezone = (new \DateTimeZone(date_default_timezone_get()));
+  $offset_interval = 'INTERVAL ' . date('Z') . ' SECOND ';
+  $now_formatted = $date_formatter_service->format($now, 'custom', 'Y-m-d\T:00:00:00', $timezone->getName());
+
   $query->where[] = [
     'type' => 'OR',
     'conditions' => [
@@ -853,7 +861,9 @@ function _mass_content_collection_all_only_future_events(QueryPluginBase $query)
         'operator' => 'IS NULL'
       ],
       [
-        'field' => "DATE_FORMAT((node__field_event_date.field_event_date_value + INTERVAL -14400 SECOND), '%Y-%m-%d\T%H:%i:%s') > DATE_FORMAT(('2022-05-04T04:00:00' + INTERVAL -14400 SECOND), '%Y-%m-%d\T%H:%i:%s')",
+        'field' =>
+          "DATE_FORMAT((node__field_event_date.field_event_date_value + " .  $offset_interval . "), '%Y-%m-%d\T%H:%i:%s') > " .
+          "DATE_FORMAT(('" . $now_formatted . "'), '%Y-%m-%d\T%H:%i:%s')",
         'value' => [],
         'operator' => 'formula',
       ]
