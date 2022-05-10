@@ -6,6 +6,7 @@
  */
 
 use Drupal\block\Entity\Block;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Html;
@@ -5113,19 +5114,16 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
           [
             'path' => '@organisms/by-author/press-listing.twig',
             'data' => [
-              'pressListing' => Organisms::preparePressListing($paragraph, 'field_org_featured_news_items', $pressListing_options, $secondaryItems, $cache_tags),
+              'pressListing' => $press_listing,
             ],
           ],
         ],
       ];
 
-      // Bubble cache tag to the current render. Based on https://www.drupal.org/project/drupal/issues/2557815.
+      // Bubble cache tag to the current render. Based on template_preprocess_pager()
       // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
-      $renderer = \Drupal::service('renderer');
-      if ($renderer->hasRenderContext()) {
-        $build = ['#cache' => ['tags' => ['node_list:news']]];
-        $renderer->render($build);
-      }
+      (new CacheableMetadata())->addCacheTags($cache_tags)
+        ->applyTo($variables);
     }
   }
 }
