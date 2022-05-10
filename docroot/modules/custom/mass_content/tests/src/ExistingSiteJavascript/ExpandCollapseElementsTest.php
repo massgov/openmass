@@ -4,14 +4,11 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Behat\Mink\Element\NodeElement;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\DrupalTestTraits\ScreenShotTrait;
 
 /**
  * Test Expandable/Collapsible elements.
  */
 class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use ScreenShotTrait;
 
   /**
    * Loads a node based on its title.
@@ -32,7 +29,6 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
     $initial_state = $accordion->hasClass('is-open');
 
     $accordion_link = $accordion->find('css', '.js-accordion-link');
-    $this->captureScreenshot();
     $accordion_link->click();
     $session->wait(1000);
 
