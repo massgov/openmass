@@ -3426,18 +3426,9 @@ function mass_theme_preprocess_node_news_full(&$variables) {
     $variables['blogpostCollectionHeader']['decorativeLink']['text'] = $collection->label();
     $variables['blogpostCollectionHeader']['decorativeLink']['href'] = '/collections/' . $collection->field_url_name->value;
     $cache_tags = array_merge($cache_tags, $collection->getCacheTags(), $node->getCacheTags());
-
-    if (isset($collection->field_collection_logo) && !$collection->field_collection_logo->isEmpty()) {
-      $collection_logo = $collection->field_collection_logo[0];
-      /** @var \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator */
-      $file_url_generator = \Drupal::service('file_url_generator');
-      $file_url = $file_url_generator->generateAbsoluteString($collection_logo->entity->uri->value);
-      $alt = $collection_logo->getValue()['alt'] ?? '';
-      $variables['blogpostCollectionHeader']['image'] = '<img alt="' . $alt . '" src="' . $file_url . '">';
-    }
-
     $variables['blogpostCollectionHeader']['bg_color'] = $collection->field_header_color->value ?? '#FFF';
     $variables['blogpostCollectionHeader']['dark_font'] = $variables['blogpostCollectionHeader']['bg_color'] === '#FFF';
+    _mass_theme_populate_collection_image_from_collection($collection, $variables['blogpostCollectionHeader']);
   }
 
   $ap_conformity = FALSE;
@@ -6033,6 +6024,26 @@ function mass_theme_preprocess_views_view(&$variables) {
 }
 
 /**
+ * Populates $variables for a collection header image from a $collection_term.
+ */
+function _mass_theme_populate_collection_image_from_collection($collection_term, &$variables) {
+  if (!isset($collection_term->field_collection_logo) || $collection_term->field_collection_logo->isEmpty()) {
+    return;
+  }
+
+  $collection_logo = $collection_term->field_collection_logo[0] ?? FALSE;
+  $file_url_generator = \Drupal::service('file_url_generator');
+  $file_url = $file_url_generator->generateAbsoluteString($collection_logo->entity->uri->value);
+  $variables['image'] = ['src' => $file_url];
+
+  $alt = $collection_logo->getValue()['alt'] ?? FALSE;
+  if (!$alt) {
+    return;
+  }
+  $variables['image']['alt'] = $alt;
+}
+
+/**
  * Adds variables to views-view--data-listing.html.
  */
 function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
@@ -6064,9 +6075,9 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
   $variables['content'] = $build;
   $variables['collection']['title'] = $term->label();
   $variables['collection']['description'] = $build['field_short_description'];
-  $variables['collection']['image'] = $build['field_collection_logo'];
   $variables['collection']['bg_color'] = $variables['bg_color'];
   $variables['collection']['dark_font'] = $variables['bg_color'] === '#FFF';
+  _mass_theme_populate_collection_image_from_collection($term, $variables['collection']);
 }
 
 /**
