@@ -62,6 +62,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
         // This is special handling for the accordion inside of the "This is a
         // part of" menu.
         $page->find('css', '.ma__toc__toc__toggle')->click();
+        $session->wait(30000, "jQuery('.ma__toc--overlay__container.is-open').length === 1");
         $this->testAccordion($accordion_link);
         $page->findAll('css', '.ma__toc__toc__toggle')[1]->click();
       }
