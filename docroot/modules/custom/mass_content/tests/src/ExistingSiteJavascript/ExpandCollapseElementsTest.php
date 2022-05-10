@@ -4,14 +4,11 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Behat\Mink\Element\NodeElement;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\DrupalTestTraits\ScreenShotTrait;
 
 /**
  * Test Expandable/Collapsible elements.
  */
 class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use ScreenShotTrait;
 
   /**
    * Loads a node based on its title.
@@ -32,7 +29,6 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
     $initial_state = $accordion->hasClass('is-open');
 
     $accordion_link = $accordion->find('css', '.js-accordion-link');
-    $this->captureScreenshot();
     $accordion_link->click();
 
     // Wait up to 30 seconds for the accordion to open. Unfortunately, there's
@@ -43,7 +39,6 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
     $session->wait(30000, $wait_for_open);
 
     // Check the accordion collapsed/expanded state was toggled.
-    $this->captureScreenshot();
     $this->assertTrue($initial_state != $accordion->hasClass('is-open'));
   }
 
@@ -55,7 +50,6 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
     $this->drupalGet('node/' . $nid);
     // Wait for async notifications to be processed.
     $session->wait(2000);
-    $this->captureScreenshot();
     $page = $session->getPage();
     $accordion_links = $page->findAll('css', '.js-accordion');
     foreach ($accordion_links as $accordion_link) {
