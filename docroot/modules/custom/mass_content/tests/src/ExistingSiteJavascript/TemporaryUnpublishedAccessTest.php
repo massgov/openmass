@@ -97,6 +97,7 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase
     // edit link via automation, because <span> is not supposed to be a
     // clickable element. We haven't found any core tests showing how to
     // work around this, so instead we simply re-fetch the page.
+    // https://stackoverflow.com/questions/59669474/why-is-this-element-not-interactable-python-selenium
     $this->drupalGet('node/' . $node->id() . '/edit');
     $this->generateLink();
 
