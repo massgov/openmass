@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\mass_hierarchy\ExistingSite;
+namespace Drupal\Tests\mass_hierarchy\ExistingSiteJavascript;
 
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
