@@ -31,8 +31,10 @@ $config['media_entity_download.settings']['external_file_storage'] = 1;
 $config['autologout.settings']['timeout'] = 9999999;
 $config['autologout.settings']['max_timeout'] = 9999999;
 // Routes mail to PHP's sendmail_path which then routes to Mailhog.
-$config['mailsystem.settings']['defaults']['sender'] = 'php_mail';
-$config['mailsystem.settings']['defaults']['formatter'] = 'php_mail';
+if (!getenv('MASS_MAILCHIMP')) {
+  $config['mailsystem.settings']['defaults']['sender'] = 'php_mail';
+  $config['mailsystem.settings']['defaults']['formatter'] = 'php_mail';
+}
 // Development geocoder overrides:
 // Use the dummy "random" geocoder plugin in in development environments.
 // This avoids overwhelming our production credentials for things like tests.
