@@ -3,7 +3,7 @@
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\file\Entity\File;
-use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
@@ -51,6 +51,13 @@ class TemporaryUnpublishedAccessTest extends ExistingSiteSelenium2DriverTestBase
       'title' => 'Test',
       'field_topic_lede' => 'Short description',
       'field_topic_bg_wide' => $image,
+      'field_topic_content_cards' => Paragraph::create([
+        'type' => 'content_card_group',
+        'field_content_card_link_cards' => [
+          'uri' => 'http://test.card.example.com',
+          'title' => 'Test Card',
+        ]
+      ]),
       'field_organizations' => [$org_node],
       'moderation_state' => 'unpublished',
       'status' => 0,
