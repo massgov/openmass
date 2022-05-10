@@ -34,7 +34,13 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
     $accordion_link = $accordion->find('css', '.js-accordion-link');
     $this->captureScreenshot();
     $accordion_link->click();
-    $session->wait(1000);
+
+    // Wait up to 30 seconds for the accordion to open. Unfortunately, there's
+    // no unique identifier to pass into JS beyond the XPath, but luckily
+    // all browsers except IE11 support it, even if it's in maintenance mode
+    // only.
+    $wait_for_open = sprintf('document.evaluate("%s", document, null, XPathResult.ANY_TYPE, null ).iterateNext().classList.contains("is-open")', $accordion->getXpath());
+    $session->wait(30000, $wait_for_open);
 
     // Check the accordion collapsed/expanded state was toggled.
     $this->captureScreenshot();
