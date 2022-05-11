@@ -1,4 +1,39 @@
 
+
+## [0.321.0] - May 10, 2022
+
+### Added
+  - DP-17093: Upgrade from Mandrill to Mailchimp Transaction module
+  - DP-24109: Adds collections to the following content types.
+  - News
+  - Event
+  - Promotional page
+  - Topic Page
+Adds templates for listing display for the added content types.
+  - DP-24432: Add "Did you find" feedback form to promotional page.
+  - DP-24477: Add focal point to banner images on certain content types.
+  
+### Changed
+  - DP-23216: Adjust required field in org page component "what would you like to do".
+  - DP-24080: Move entity usage processing to a queue.
+  - DP-24668: Upgrade to BackstopJS 6.0.4
+  - DP-24669: Add user.mail to config_ignore.
+  - DP-24690: Upgrade config_ignore module
+  - DP-9273: Set image links' images in org page as decorative.
+  
+### Fixed
+  - DP-24273: Accessiblity improvements to in-page alerts.
+  - DP-24350: Fix feedback button position and display when using Google Translate.
+  - DP-24666: Fix missing ext-json requirement in composer.json
+  - DP-24676: Fix unexpected General_Event eyebrow issue.
+  - DP-24691: Fix ahoy pull for developers
+  - DP-24698: Fix Backstop failing when Tugboat is suspended
+  - DP-24731: More specific conditions for GTM.
+  
+### Security
+  - DP-24814: Quick node clone module update.
+  
+
 ## [0.320.0] - April 26, 2022
 
 ### Removed

@@ -11,6 +11,7 @@ dependencies:
     - field.field.taxonomy_term.collections.field_organizations
     - field.field.taxonomy_term.collections.field_primary_parent
     - field.field.taxonomy_term.collections.field_short_description
+    - field.field.taxonomy_term.collections.field_show_only_future_events
     - field.field.taxonomy_term.collections.field_sort_order
     - field.field.taxonomy_term.collections.field_url_name
     - image.style.thumbnail
@@ -27,6 +28,11 @@ third_party_settings:
         - group_sort_settings
         - group_top_banner
         - group_hierarchy_and_breadcrumb
+        - field_landing_page
+        - field_all_collection_breadcrumb
+        - field_sort_order
+        - field_default_sort
+        - field_show_only_future_events
       label: 'Collection Settings'
       region: content
       parent_name: ''
@@ -103,7 +109,7 @@ content:
     third_party_settings: {  }
   field_all_collection_breadcrumb:
     type: string_textfield
-    weight: 17
+    weight: 6
     region: content
     settings:
       size: 60
@@ -119,7 +125,7 @@ content:
     third_party_settings: {  }
   field_default_sort:
     type: string_textfield
-    weight: 12
+    weight: 8
     region: content
     settings:
       size: 60
@@ -160,9 +166,16 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_show_only_future_events:
+    type: boolean_checkbox
+    weight: 9
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_sort_order:
     type: options_buttons
-    weight: 13
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -176,7 +189,7 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 4
+    weight: 5
     region: content
     settings:
       include_locked: true
@@ -191,7 +204,7 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    weight: 5
+    weight: 6
     region: content
     settings:
       display_label: true

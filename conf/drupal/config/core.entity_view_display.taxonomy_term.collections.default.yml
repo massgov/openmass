@@ -11,6 +11,7 @@ dependencies:
     - field.field.taxonomy_term.collections.field_organizations
     - field.field.taxonomy_term.collections.field_primary_parent
     - field.field.taxonomy_term.collections.field_short_description
+    - field.field.taxonomy_term.collections.field_show_only_future_events
     - field.field.taxonomy_term.collections.field_sort_order
     - field.field.taxonomy_term.collections.field_url_name
     - taxonomy.vocabulary.collections
@@ -71,6 +72,15 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: -3
+  field_show_only_future_events:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: -2
     region: content
   field_sort_order:
     type: list_default
