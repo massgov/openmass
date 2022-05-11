@@ -13,8 +13,6 @@ class ExpandCollapseElementsTest extends ExistingSiteWebDriverTestBase {
   /**
    * Tests a single accordion for a given page, located at a CSS selector.
    *
-   * @dataProvider accordionDataProvider
-   *
    * @param string $path
    *   The path of the page to load.
    * @param string $css_selector
@@ -24,9 +22,9 @@ class ExpandCollapseElementsTest extends ExistingSiteWebDriverTestBase {
    *   such as opening a parent accordion or menu. This closure takes a single
    *   Session parameter.
    *
-   * @return void
+   * @dataProvider accordionDataProvider
    */
-  public function testAccordion(string $path, string $css_selector, \Closure $before_function = null): void {
+  public function testAccordion(string $path, string $css_selector, \Closure $before_function = NULL): void {
     $session = $this->getSession();
     $this->drupalGet($path);
     if ($before_function) {
@@ -49,6 +47,7 @@ class ExpandCollapseElementsTest extends ExistingSiteWebDriverTestBase {
     // all browsers except IE11 support it, even if it's in maintenance mode
     // only.
     // This is significantly faster than the below API call.
+    // @codingStandardsIgnoreLine
     // $this->assertSession()->waitForElementVisible('xpath', $accordion->getXpath());
     $accordion_xpath = str_replace('"', '\"', $accordion->getXpath());
     if ($initial_state_open) {
@@ -101,15 +100,16 @@ class ExpandCollapseElementsTest extends ExistingSiteWebDriverTestBase {
       '_QAG Request Help with a Computer Problem Accordion in Table of Contents' => [
         'how-to/qag-request-help-with-a-computer-problem',
         '.ma__toc--hierarchy__accordion.js-accordion',
-        function(Session $session): void {
+        function (Session $session): void {
           // Open up the Table of Contents containing the accordion.
           $page = $session->getPage();
+          // @codingStandardsIgnoreLine
           /** @noinspection NullPointerExceptionInspection */
           $page->find('css', '.ma__toc__toc__toggle')->click();
           if (!$session->wait(30000, "jQuery('.ma__toc--overlay__container.is-open').is(':visible')")) {
             $this->fail('The Table of Contents overlay did not become visible');
           }
-        }
+        },
       ],
       '_QAG Request Help with a Computer Problem Notices and Alerts' => [
         'how-to/qag-request-help-with-a-computer-problem',
