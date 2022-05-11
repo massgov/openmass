@@ -25,14 +25,10 @@ third_party_settings:
   field_group:
     group_collection_settings:
       children:
-        - group_sort_settings
         - group_top_banner
         - group_hierarchy_and_breadcrumb
+        - group_sort_settings
         - field_landing_page
-        - field_all_collection_breadcrumb
-        - field_sort_order
-        - field_default_sort
-        - field_show_only_future_events
       label: 'Collection Settings'
       region: content
       parent_name: ''
@@ -46,12 +42,13 @@ third_party_settings:
         required_fields: true
     group_sort_settings:
       children:
-        - field_default_sort
         - field_sort_order
-      label: 'Default sort and available sort options'
+        - field_default_sort
+        - field_show_only_future_events
+      label: 'Sorting and Results'
       region: content
       parent_name: group_collection_settings
-      weight: 19
+      weight: 12
       format_type: details
       format_settings:
         classes: ''
@@ -68,7 +65,7 @@ third_party_settings:
       label: 'Top banner'
       region: content
       parent_name: group_collection_settings
-      weight: 20
+      weight: 10
       format_type: details
       format_settings:
         classes: ''
@@ -79,13 +76,13 @@ third_party_settings:
         required_fields: true
     group_hierarchy_and_breadcrumb:
       children:
+        - field_all_collection_breadcrumb
         - field_primary_parent
         - field_organizations
-        - field_all_collection_breadcrumb
       label: 'Hierarchy and Breadcrumb'
       region: content
       parent_name: group_collection_settings
-      weight: 21
+      weight: 11
       format_type: details
       format_settings:
         classes: ''
