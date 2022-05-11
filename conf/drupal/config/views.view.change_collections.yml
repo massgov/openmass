@@ -7,16 +7,19 @@ dependencies:
     - node.type.binder
     - node.type.curated_list
     - node.type.decision
+    - node.type.event
     - node.type.executive_order
     - node.type.form_page
     - node.type.guide_page
     - node.type.how_to_page
     - node.type.info_details
     - node.type.location
+    - node.type.news
     - node.type.regulation
     - node.type.rules
     - node.type.service_details
     - node.type.service_page
+    - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
     - workflows.workflow.campaign_landing_page
     - workflows.workflow.editorial
@@ -29,6 +32,7 @@ dependencies:
     - user
     - views_autocomplete_filters
     - views_bulk_operations
+    - views_porter_stemmer
 id: change_collections
 label: 'Change Collections'
 module: views
@@ -1754,12 +1758,14 @@ display:
             binder: binder
             curated_list: curated_list
             decision: decision
+            event: event
             executive_order: executive_order
             form_page: form_page
             guide_page: guide_page
             how_to_page: how_to_page
             info_details: info_details
             location: location
+            news: news
             regulation: regulation
             rules: rules
             service_page: service_page
@@ -2273,6 +2279,67 @@ display:
             group_items: {  }
           reduce_duplicates: false
           vid: label
+          type: textfield
+          hierarchy: false
+          limit: true
+          error_message: true
+        field_collections_target_id:
+          id: field_collections_target_id
+          table: node__field_collections
+          field: field_collections_target_id
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: taxonomy_index_tid
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_collections_target_id_op
+            label: 'Collection (filter based on existing)'
+            description: ''
+            use_operator: true
+            operator: field_collections_target_id_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: field_collections_target_id
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
+              d2d_redirect_manager: '0'
+              external_data_resource_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          vid: collections
           type: textfield
           hierarchy: false
           limit: true
