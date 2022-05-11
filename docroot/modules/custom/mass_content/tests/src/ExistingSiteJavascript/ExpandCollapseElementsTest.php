@@ -4,14 +4,11 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Behat\Mink\Session;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\DrupalTestTraits\ScreenShotTrait;
 
 /**
  * Test Expandable/Collapsible elements.
  */
 class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
-
-  use ScreenShotTrait;
 
   /**
    * Tests a single accordion for a given page, located at a CSS selector.
@@ -43,7 +40,6 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
     // Get the accordion state, then click on it.
     $initial_state_open = $accordion->hasClass('is-open');
     $accordion_link = $accordion->find('css', '.js-accordion-link');
-    $this->assertSession()->waitForElementVisible('css', '.js-accordion-link');
     $accordion_link->click();
 
     // Wait up to 30 seconds for the accordion to open. Unfortunately, there's
@@ -112,6 +108,9 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
           $page->find('css', '.ma__toc__toc__toggle')->click();
           if (!$session->wait(30000, "jQuery('.ma__toc--overlay__container.is-open').is(':visible')")) {
             $this->fail('The Table of Contents overlay did not become visible');
+          }
+          if (!$session->wait(30000, "jQuery('.js-accordion-link').is(':visible')")) {
+            $this->fail('The accordion link did not become visible');
           }
         },
       ],
