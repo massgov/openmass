@@ -43,7 +43,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
     // Get the accordion state, then click on it.
     $initial_state_open = $accordion->hasClass('is-open');
     $accordion_link = $accordion->find('css', '.js-accordion-link');
-    $this->captureScreenshot();
+    $this->assertSession()->waitForElementVisible('css', '.js-accordion-link');
     $accordion_link->click();
 
     // Wait up to 30 seconds for the accordion to open. Unfortunately, there's
