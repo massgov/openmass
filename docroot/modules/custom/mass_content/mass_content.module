@@ -639,7 +639,7 @@ function mass_content_form_taxonomy_term_collections_form_alter(array &$form, Fo
  * Validates sort default option to be one of the selected available sorts.
  */
 function mass_content_validate_default_sort_option(array &$element, FormStateInterface $form_state) {
-  $selected_sorts = $form_state->getValue('field_sort_order');
+  $selected_sorts = array_column($form_state->getValue('field_sort_order'), 'value');
   $default_sort = $form_state->getValue('field_default_sort')[0]['value'];
 
   if (in_array($default_sort, $selected_sorts)) {
