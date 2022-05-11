@@ -49,7 +49,7 @@ services:
       init:
         # Install imagick
         - apt-get install -y libmagickwand-dev
-        - pecl install imagick -y
+        - echo '' | pecl install imagick
         - docker-php-ext-enable imagick
         # Install opcache
         - docker-php-ext-install opcache
