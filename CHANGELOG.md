@@ -1,18 +1,16 @@
+## [0.321.1] - May 12, 2022
 
+### Changed
+- DP-24906: Add new mailchimp text format and use to formail mails
 
 ## [0.321.0] - May 10, 2022
 
 ### Added
   - DP-17093: Upgrade from Mandrill to Mailchimp Transaction module
-  - DP-24109: Adds collections to the following content types.
-  - News
-  - Event
-  - Promotional page
-  - Topic Page
-Adds templates for listing display for the added content types.
+  - DP-24109: Adds collections to the several content types.
   - DP-24432: Add "Did you find" feedback form to promotional page.
   - DP-24477: Add focal point to banner images on certain content types.
-  
+
 ### Changed
   - DP-23216: Adjust required field in org page component "what would you like to do".
   - DP-24080: Move entity usage processing to a queue.
@@ -20,7 +18,7 @@ Adds templates for listing display for the added content types.
   - DP-24669: Add user.mail to config_ignore.
   - DP-24690: Upgrade config_ignore module
   - DP-9273: Set image links' images in org page as decorative.
-  
+
 ### Fixed
   - DP-24273: Accessiblity improvements to in-page alerts.
   - DP-24350: Fix feedback button position and display when using Google Translate.
@@ -29,24 +27,24 @@ Adds templates for listing display for the added content types.
   - DP-24691: Fix ahoy pull for developers
   - DP-24698: Fix Backstop failing when Tugboat is suspended
   - DP-24731: More specific conditions for GTM.
-  
+
 ### Security
   - DP-24814: Quick node clone module update.
-  
+
 
 ## [0.320.0] - April 26, 2022
 
 ### Removed
   - DP-23217: Remove outdated fields from org_pages
-  
+
 ### Added
   - DP-23508: Support switching PHP versions during Acquia deployments
-  
+
 ### Changed
   - DP-24125: Improve cache hit rate for dynamic page cache
   - DP-24363: Update entity_hierarchy and its patch to allow enabling of webprofiler.
   - DP-24545: 6 weeks links duration for unpublished access links.
-  
+
 ### Fixed
   - DP-24335: Fix hamburger menu horizontal scrolling in IOS.
   - DP-24420: Ensure to have build info on View Page Controller before getting the view title.
@@ -54,10 +52,10 @@ Adds templates for listing display for the added content types.
   - DP-24527: Fixing the problem with link in Service Page banner not formating correctly.
   - DP-24557: Fixes null method exceptions on decisions when media entities are deleted
   - DP-24657: Sends taxonomy term id to the collection_all_media view.
-  
+
 ### Security
   - DP-24632: Drupal core security updates.
-  
+
 ## [0.319.2] - April 21, 2022
 
 ### Changed
