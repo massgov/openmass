@@ -3,12 +3,12 @@
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Behat\Mink\Session;
-use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 
 /**
  * Test Expandable/Collapsible elements.
  */
-class ExpandCollapseElementsTest extends ExistingSiteWebDriverTestBase {
+class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
 
   /**
    * Tests a single accordion for a given page, located at a CSS selector.
