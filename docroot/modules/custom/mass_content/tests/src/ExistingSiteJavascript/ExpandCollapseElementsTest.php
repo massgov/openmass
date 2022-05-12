@@ -30,8 +30,8 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
     if ($before_function) {
       // We can't use $this->getSession() in the closure because PHPUnit creates
       // a new object in between gathering data provider test cases and running
-      // the test.
-      $before_function($session);
+      // the test. Instead, we bind $this to $me as a function parameter.
+      $before_function($this);
     }
 
     $page = $session->getPage();
@@ -48,7 +48,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
     // only.
     // This is significantly faster than the below API call.
     // @codingStandardsIgnoreLine
-    // $this->assertSession()->waitForElementVisible('xpath', $accordion->getXpath());
+    // if (!$this->assertSession()->waitForElementVisible('xpath', $accordion->getXpath())) {
     $accordion_xpath = str_replace('"', '\"', $accordion->getXpath());
     if ($initial_state_open) {
       $wait_for = sprintf('document.evaluate("%s", document, null, XPathResult.ANY_TYPE, null ).iterateNext().classList.contains("is-open") == false', $accordion_xpath);
@@ -85,7 +85,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
    *     - The path of the page to test accordions on.
    *     - A CSS selector to locate the accordion with.
    *     - An optional function to call before running the test case, accepting
-   *       a Session parameter.
+   *       a reference to the test object.
    */
   public function accordionDataProvider(): array {
     return [
@@ -100,15 +100,19 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
       '_QAG Request Help with a Computer Problem Accordion in Table of Contents' => [
         'how-to/qag-request-help-with-a-computer-problem',
         '.ma__toc--hierarchy__accordion.js-accordion',
-        function (Session $session): void {
+        function (ExpandCollapseElementsTest $me): void {
           // Open up the Table of Contents containing the accordion.
+          $session = $me->getSession();
           $page = $session->getPage();
           // @codingStandardsIgnoreLine
           /** @noinspection NullPointerExceptionInspection */
           $page->find('css', '.ma__toc__toc__toggle')->click();
-          if (!$session->wait(30000, "jQuery('.ma__toc--overlay__container.is-open').is(':visible')")) {
-            $this->fail('The Table of Contents overlay did not become visible');
-          }
+          // CSS :visible seems to be true during the menu fade in, but before
+          // the elements are clickable. We defer to the slower implementation
+          // to let the browser determine when an element is ready to interact
+          // with. In particular, this triggers in CI where interactive latency
+          // is not prioritized.
+          $me->assertSession()->waitForElementVisible('css', '#overlay-toc-518191 > div.ma__toc--overlay__content > div > ul > li.ma__toc--hierarchy__accordion.js-accordion');
         },
       ],
       '_QAG Request Help with a Computer Problem Notices and Alerts' => [
