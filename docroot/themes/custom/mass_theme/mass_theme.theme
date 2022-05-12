@@ -91,6 +91,27 @@ function mass_theme_theme_suggestions_image_style_alter(array &$suggestions, arr
 }
 
 /**
+ * Get the collection term from the current collection term page.
+ */
+function _mass_theme_get_collection_term_from_current_page() {
+  $route = \Drupal::routeMatch();
+  $collection = $route->getParameter('collection');
+  if (empty($collection)) {
+    return FALSE;
+  }
+  $query = \Drupal::entityQuery('taxonomy_term');
+  $query->condition('field_url_name', $collection);
+  $res = $query->execute();
+  if (!$res) {
+    return FALSE;
+  }
+  $id = reset($res);
+  $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $term = $storage->load($id);
+  return $term;
+}
+
+/**
  * Implements hook_theme_suggestions_HOOK_alter().
  */
 function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, array &$variables) {
@@ -109,24 +130,8 @@ function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, arra
 
   // Allow all collection views pages to use the same template file.
   if (strpos($view->id(), 'collection') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
-
-
-    $route = \Drupal::routeMatch();
-    $collection = $route->getParameter('collection');
-
-    // ksm($route->getParameters());
-    // ksm($topic);
-
-    $query = \Drupal::entityQuery('taxonomy_term');
-    $query->condition('field_url_name', $collection);
-    $id = reset($query->execute());
-    $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
-    $term = $storage->load($id);
-    ksm($term->label());
-
-    // $variables['feedback_form'] = mass_feedback_form_from_orgs($term->field_organizations);
-
-
+    $term = _mass_theme_get_collection_term_from_current_page();
+    $variables['feedback_form'] = mass_feedback_form_from_orgs($term->field_organizations);
     $suggestions[] = 'views_view__data_listing';
   }
 }
