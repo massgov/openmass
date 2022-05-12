@@ -616,6 +616,15 @@ function mass_content_form_taxonomy_term_collections_form_alter(array &$form, Fo
   if (count($parents) || $term->isNew()) {
     $form['field_default_sort']['#access'] = FALSE;
     $form['field_sort_order']['#access'] = FALSE;
+    $form['field_primary_parent']['#access'] = FALSE;
+    $form['field_landing_page']['#access'] = FALSE;
+    $form['field_collection_logo']['#access'] = FALSE;
+    $form['field_all_collection_breadcrumb']['#access'] = FALSE;
+    $form['field_short_description']['#access'] = FALSE;
+    $form['field_header_color']['#access'] = FALSE;
+    $form['field_organizations']['#access'] = FALSE;
+    $form['field_collection_logo']['#access'] = FALSE;
+    $form['field_show_only_future_events']['#access'] = FALSE;
     return;
   }
 
@@ -632,6 +641,7 @@ function mass_content_form_taxonomy_term_collections_form_alter(array &$form, Fo
 function mass_content_validate_default_sort_option(array &$element, FormStateInterface $form_state) {
   $selected_sorts = array_column($form_state->getValue('field_sort_order'), 'value');
   $default_sort = $form_state->getValue('field_default_sort')[0]['value'];
+
   if (in_array($default_sort, $selected_sorts)) {
     return;
   }
@@ -678,6 +688,9 @@ function mass_content_get_collection_from_current_page() {
   $query->condition('field_url_name', $collection_param);
   $ids = $query->execute();
   $collection_id = reset($ids);
+  if (!$collection_id) {
+    return FALSE;
+  }
   $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
   $collection = $storage->load($collection_id);
   return $collection;
@@ -688,6 +701,10 @@ function mass_content_get_collection_from_current_page() {
  */
 function mass_content_form_views_exposed_form_alter__collection_all_page_all(&$form) {
   $collection = mass_content_get_collection_from_current_page();
+  if (!$collection) {
+    return;
+  }
+
   if (!$collection) {
     return;
   }
@@ -1144,7 +1161,7 @@ function mass_content_crop_update(EntityInterface $entity) {
 /**
  * Sets the sort_bef_combine URL parameter to sort Collection views.
  */
-function mass_content_set_default_sort_from_collection(Term $collection) {
+function mass_content_set_default_sort_from_collection($collection) {
   if (!$collection) {
     return;
   }
