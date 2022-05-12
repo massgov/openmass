@@ -125,7 +125,7 @@ function mass_feedback_form_node_view(array &$build, EntityInterface $entity, En
  * Returns a form based on a field with multiple organizations.
  */
 function mass_feedback_form_from_orgs($field_organizations) {
-  if ($field_organizations->count() < 1 || !empty($field_organizations[0]->entity)) {
+  if ($field_organizations->count() < 1 || empty($field_organizations[0]->entity)) {
     return [];
   }
   return mass_feedback_form_build_feedback_form($field_organizations[0]->entity);
