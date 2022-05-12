@@ -141,7 +141,9 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
       // testing it as well.
       '_QAG Request Help with a Sidebar Contact' => [
         'how-to/qag-request-help-with-a-computer-problem',
-        '.ma__contact-us.js-accordion',
+        // We need to use this long selector to avoid hitting the hidden contact
+        // block.
+        '#main-content > div.main-content.main-content--two > aside > div.ma__details__sidebar-contact > section > section',
       ],
     ];
   }
