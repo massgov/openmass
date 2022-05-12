@@ -123,7 +123,11 @@
       {% endif %}
     </div>
 
-    {% set aside_has_content = (not is_blog_post and sidebar.contactList) or author is not empty %}
+    {% set aside_has_content =
+      (not is_blog_post and sidebar.contactList) or
+      (author is not empty and is_blog_post)
+    %}
+
     {% set author_section %}
       {% if author is not empty %}
         <section>
