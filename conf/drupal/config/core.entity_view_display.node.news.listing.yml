@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.listing
+    - field.field.node.news.field_author
     - field.field.node.news.field_collections
     - field.field.node.news.field_date_published
     - field.field.node.news.field_english_version
@@ -105,6 +106,15 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 5
+    region: content
+  field_news_date:
+    type: datetime_custom
+    label: above
+    settings:
+      timezone_override: ''
+      date_format: n/d/Y
+    third_party_settings: {  }
+    weight: 10
     region: content
   field_news_image:
     type: mass_image_multi_style
@@ -224,6 +234,7 @@ content:
     weight: 0
     region: content
 hidden:
+  field_author: true
   field_news_date: true
   field_primary_parent: true
   field_reusable_label: true

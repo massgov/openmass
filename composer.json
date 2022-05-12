@@ -131,6 +131,7 @@
         }
     ],
     "require": {
+        "ext-json": "*",
         "christian-riesen/base32": "^1.3.1",
         "ckeditor/liststyle": "4.11.1",
         "components/highlightjs": "9.7.*",
@@ -152,12 +153,11 @@
         "drupal/better_exposed_filters": "^5.0@beta",
         "drupal/cache_metrics": "^2",
         "drupal/ckeditor_liststyle": "^1.4",
-        "drupal/cloudflare": "^1.0@alpha",
         "drupal/components": "^2.4",
         "drupal/composer_deploy": "^1.4",
         "drupal/conditional_fields": "^4.0@alpha",
         "drupal/config_filter": "^2.2",
-        "drupal/config_ignore": "2.x-dev",
+        "drupal/config_ignore": "3.x-dev",
         "drupal/core-composer-scaffold": "^9.3",
         "drupal/core-project-message": "^9.3",
         "drupal/core-recommended": "^9.3",
@@ -195,6 +195,7 @@
         "drupal/key": "^1.10",
         "drupal/key_value_field": "1.x-dev",
         "drupal/linkit": "^6",
+        "drupal/mailchimp_transactional": "^1",
         "drupal/mandrill": "^1.2",
         "drupal/maxlength": "^1.0@RC",
         "drupal/media_entity_download": "2.x-dev",
@@ -213,6 +214,7 @@
         "drupal/private_files_download_permission": "^3",
         "drupal/purge": "^3",
         "drupal/purge_queues": "^1",
+        "drupal/queue_unique": "^2.2",
         "drupal/quick_node_clone": "^1.11",
         "drupal/rabbit_hole": "^1",
         "drupal/real_aes": "^2",
@@ -256,7 +258,7 @@
     "require-dev": {
         "behat/behat": "^3",
         "behat/mink-extension": "^2.2",
-        "dmore/chrome-mink-driver": "^2.6",
+        "behat-chrome/chrome-mink-driver": "^2.6",
         "drupal/core-dev": "^9.3",
         "drupal/devel": "^4",
         "drupal/devel_entity_updates": "^3.0",
@@ -332,8 +334,14 @@
                 "Avoid warnings when getting permissions for roles that do not have permissions and are not administrators": "patches/DP-23561-avoid-warnings-on-roles-without-permissions.patch",
                 "2845144 - User can't reference unpublished content even when they have access to it" : "https://www.drupal.org/files/issues/2021-06-09/2845144_52.patch",
                 "Link error The internal path component is invalid (https://www.drupal.org/project/drupal/issues/2943135)":  "https://www.drupal.org/files/issues/2021-12-01/2943135-31.patch",
-                "Improve error message on unrouted URLs (https://www.drupal.org/project/drupal/issues/3013802#comment-14456001)": "https://www.drupal.org/files/issues/2022-03-24/3013802-22.patch"
+                "Improve error message on unrouted URLs (https://www.drupal.org/project/drupal/issues/3013802#comment-14456001)": "https://www.drupal.org/files/issues/2022-03-24/3013802-22.patch",
+                "Ensure to have build info on View Page Controller before getting the view title" : "patches/DP-24420--View-pages-arguments-title-overrides-not-working--2.patch"
             },
+
+            "drupal/conditional_fields": {
+                "2902164 - \"Controlled by\" fields inside a Paragraph don't work": "patches/conditional-fields-and-paragraphs-2902164--using-ids--v6.patch"
+            },
+
             "ckeditor/liststyle": {
                 "Change code from styles to type": "https://www.drupal.org/files/issues/2019-01-02/ckeditor_liststyle-styles-to-type-2874952-4-do-not-test.patch"
             },
@@ -349,7 +357,7 @@
             },
             "drupal/entity_hierarchy": {
                 "Hidden Weight field causes extra space in the form": "patches/entity_hierarchy-weight-widget-space-3245879-2.patch",
-                "Fatal error on node/{nid}/media #3034602": "https://www.drupal.org/files/issues/2021-11-25/issue-3034602_fatal_error_on_getCandidateFields.patch",
+                "Fatal error on node/{nid}/media #3034602": "https://www.drupal.org/files/issues/2022-04-08/issue_3034602_15_node_nid_media.patch",
                 "Async support & save only changed, based on https://www.drupal.org/files/issues/2021-05-06/3178313-tree-editor-3.patch) but only save parent changes when saving on the children tab": "patches/DP-23411_node-hierarchy-async-support-save-only-changed--v4.patch"
             },
             "drupal/entity_usage": {
@@ -357,7 +365,7 @@
                 "3007752 - Entity usage list does not scale (https://www.drupal.org/project/entity_usage/issues/3007752)": "patches/entity_usage-usage_list_scale-3007752-17.patch",
                 "Hides language column and shows bundle" : "patches/entity-usage--hide-language--show-bundle.patch",
                 "3254437 - Delete queue items for `entity_usage_regenerate_queue` when `running drush entity-usage:recreate`  ": "https://www.drupal.org/files/issues/2021-12-14/issue-3254437--remove-items-from-queue-before-recreating-it.patch",
-                "3015287 - Allow usage records to be registered in background" : "https://www.drupal.org/files/issues/2019-07-22/3015287-12.patch",
+                "3015287 - A queue for entity usage tracking and processing" : "https://www.drupal.org/files/issues/2022-02-14/3015287-entity-usage-tracker-queue.patch",
                 "Getting the base fields is not supported for entity type (https://www.drupal.org/project/entity_usage/issues/3101451)": "https://www.drupal.org/files/issues/2019-12-24/3101451-3.patch"
             },
             "drupal/geocoder": {
@@ -417,7 +425,7 @@
                 "Remove the select/deselect all results within VBO": "patches/DP-11179-hide-select-all-results-from-views.patch"
             },
             "drupal/quick_node_clone": {
-                "2979426 - Ensures per-content type permissions are respected": "https://www.drupal.org/files/issues/2021-03-10/2979426-27.patch"
+                "2979426 - Ensures per-content type permissions are respected": "https://www.drupal.org/files/issues/2022-05-05/quick_node_clone-permissions_not_respected-2979426-34.patch"
             },
             "drupal/views_bulk_edit": {
                 "Fix Required fields to really not be required": "https://www.drupal.org/files/issues/2020-11-20/3024419-invalid-form-control-24.patch"

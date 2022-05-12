@@ -50,7 +50,7 @@ dependencies:
     - field.field.node.service_page.field_short_title
     - field.field.node.service_page.field_state_organization_tax
     - field.field.node.service_page.field_template
-    - image.style.thumbnail
+    - image.style.large
     - node.type.service_page
     - workflows.workflow.editorial
   module:
@@ -59,7 +59,7 @@ dependencies:
     - entity_browser_entity_form
     - entity_hierarchy
     - field_group
-    - image
+    - focal_point
     - inline_entity_form
     - link
     - maxlength
@@ -708,12 +708,14 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_service_bg_wide:
-    type: image_image
+    type: image_focal_point
     weight: 73
     region: content
     settings:
       progress_indicator: throbber
-      preview_image_style: thumbnail
+      preview_image_style: large
+      preview_link: true
+      offsets: '50,50'
     third_party_settings: {  }
   field_service_body:
     type: string_textarea

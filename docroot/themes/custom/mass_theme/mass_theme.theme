@@ -1487,6 +1487,11 @@ function mass_theme_preprocess_node_info_details(&$variables) {
     $variables['tableauEmbeded'] = FALSE;
     $variables['cardGroup'] = FALSE;
 
+    // Prepare field_banner_image, if it's populated.
+    if (Helper::isFieldPopulated($node, 'field_banner_image')) {
+      $variables['bgImage'] = Helper::getFieldImageUrl($node, 'action_banner_large_focal_point', 'field_banner_image');
+    }
+
     foreach ($node->get('field_info_details_sections')->referencedEntities() as $section) {
       $ref_entities = $section->get('field_section_long_form_content')->referencedEntities();
       foreach ($ref_entities as $index => $entity) {
@@ -3178,6 +3183,11 @@ function mass_theme_preprocess_node_service_page(&$variables) {
 
   }
 
+  // Prepare field_service_bg_wide, if it's populated.
+  if (Helper::isFieldPopulated($node, 'field_service_bg_wide')) {
+    $variables['bannerImageWide'] = Helper::getFieldImageUrl($node, 'hero1600x400_fp', 'field_service_bg_wide');
+  }
+
   // Prepare the First Time? key actions component, if field is populated.
   if (Helper::isFieldPopulated($node, 'field_service_ref_guide_page_1') || Helper::isFieldPopulated($node, 'field_service_eligibility_info')) {
 
@@ -3401,10 +3411,49 @@ function mass_theme_preprocess_node_service_page(&$variables) {
  * Prepare the variables for the News page.
  */
 function mass_theme_preprocess_node_news_full(&$variables) {
+  /** @var \Drupal\node\Entity\Node $node */
   $node = $variables['node'];
   $sidebar = [];
   $cache_tags = [];
   $titleContext = NULL;
+
+  if (!$node->field_author->isEmpty()) {
+    /** @var \Drupal\node\Entity\Node */
+    $author = $node->field_author->entity;
+    $first_name = $author->field_person_first_name->value ?? NULL;
+    $last_name = $author->field_person_last_name->value ?? NULL;
+    $separator = $first_name && $last_name ? ' ' : '';
+    $full_name = $first_name . $separator . $last_name;
+    $author_title = $author->field_person_role_title->value ?? NULL;
+
+    $orgs = [];
+    foreach ($author->field_organizations as $org) {
+      $orgs[] = $org->entity->label();
+      $cache_tags = array_merge($cache_tags, $org->entity->getCacheTags());
+    }
+    $author_all_orgs = implode(', ', $orgs);
+
+    $variables['author'] = $full_name;
+    $variables['author_url'] = $author->toUrl();
+    $variables['author_info'] = $author_title . ', ' . $author_all_orgs;
+    $cache_tags = array_merge($cache_tags, $author->getCacheTags());
+  }
+
+  $is_blog_post = $node->field_news_type->value === 'blog_post';
+  $variables['is_blog_post'] = $is_blog_post;
+
+  $variables['blogpostCollectionHeader'] = [];
+
+  if ($is_blog_post && isset($node->field_collections) && !$node->field_collections->isEmpty()) {
+    /** @var \Drupal\taxonomy\Entity\Term $collection */
+    $collection = $node->field_collections[0]->get('entity')->getTarget()->getEntity();
+    $variables['blogpostCollectionHeader']['decorativeLink']['text'] = $collection->label();
+    $variables['blogpostCollectionHeader']['decorativeLink']['href'] = '/collections/' . $collection->field_url_name->value;
+    $cache_tags = array_merge($cache_tags, $collection->getCacheTags(), $node->getCacheTags());
+    $variables['blogpostCollectionHeader']['bg_color'] = $collection->field_header_color->value ?? '#FFF';
+    $variables['blogpostCollectionHeader']['dark_font'] = $variables['blogpostCollectionHeader']['bg_color'] === '#FFF';
+    _mass_theme_populate_collection_image_from_collection($collection, $variables['blogpostCollectionHeader']);
+  }
 
   $ap_conformity = FALSE;
 
@@ -3654,12 +3703,10 @@ function mass_theme_preprocess_node_news_full(&$variables) {
   $variables['pageContent'] = $pageContent;
   $variables['sidebar'] = $sidebar;
 
-  if (!empty($cache_tags)) {
-    // Merge arrays of existing and new cache tags and removes duplicates.
-    $merged_tags = Cache::mergeTags($node->getCacheTags(), $cache_tags);
-    // Add the cache tags to the render array.
-    $variables['#cache']['tags'] = $merged_tags;
-  }
+  // Merge arrays of existing and new cache tags and removes duplicates.
+  $merged_tags = Cache::mergeTags($node->getCacheTags(), $cache_tags ?? []);
+  // Add the cache tags to the render array.
+  $variables['#cache']['tags'] = $merged_tags;
 }
 
 /**
@@ -6001,6 +6048,63 @@ function mass_theme_preprocess_views_view(&$variables) {
 }
 
 /**
+ * Populates $variables for a collection header image from a $collection_term.
+ */
+function _mass_theme_populate_collection_image_from_collection($collection_term, &$variables) {
+  if (!isset($collection_term->field_collection_logo) || $collection_term->field_collection_logo->isEmpty()) {
+    return;
+  }
+
+  $collection_logo = $collection_term->field_collection_logo[0] ?? FALSE;
+  $file_url_generator = \Drupal::service('file_url_generator');
+  $file_url = $file_url_generator->generateAbsoluteString($collection_logo->entity->uri->value);
+  $variables['image'] = ['src' => $file_url];
+
+  $alt = $collection_logo->getValue()['alt'] ?? FALSE;
+  if (!$alt) {
+    return;
+  }
+  $variables['image']['alt'] = $alt;
+}
+
+/**
+ * Adds variables to views-view--data-listing.html.
+ */
+function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
+  $collection = \Drupal::routeMatch()->getParameter('collection');
+  if (!$collection) {
+    return;
+  }
+
+  // Get collection terms matching the field_url_name
+  $query = Drupal::entityQuery('taxonomy_term');
+  $query
+    ->condition('vid', 'collections')
+    ->condition('field_url_name', $collection)
+    ->range(0, 1);
+
+  $res = $query->execute();
+  if (!$res) {
+    return;
+  }
+
+  $tid = reset($res);
+  $term = Term::load($tid);
+
+  /** @var \Drupal\Core\Entity\EntityViewBuilder $view_builder */
+  $view_builder = \Drupal::entityTypeManager()->getViewBuilder('taxonomy_term');
+  $build = $view_builder->build($view_builder->view($term));
+  $variables['term'] = $term;
+  $variables['bg_color'] = $term->field_header_color->value ?: '#FFF';
+  $variables['content'] = $build;
+  $variables['collection']['title'] = $term->label();
+  $variables['collection']['description'] = $build['field_short_description'];
+  $variables['collection']['bg_color'] = $variables['bg_color'];
+  $variables['collection']['dark_font'] = $variables['bg_color'] === '#FFF';
+  _mass_theme_populate_collection_image_from_collection($term, $variables['collection']);
+}
+
+/**
  * Implements template_preprocess_views_view().
  *
  * @see mass_theme_theme_suggestions_alter()
@@ -6075,7 +6179,8 @@ function mass_theme_preprocess_views_view_locations_page(&$variables) {
 function mass_theme_preprocess_form_element_label(&$variables) {
   // Add a class to the form element label for a views exposed filter title
   // field.
-  if ($variables['element']['#id'] === 'edit-title') {
+  $labels_id = ['edit-title', 'edit-sort-bef-combine'];
+  if (in_array($variables['element']['#id'], $labels_id)) {
     $variables['attributes']['class'][] = 'ma__sidebar-heading ma__legend';
   }
 }
@@ -7133,6 +7238,32 @@ function mass_theme_org_section_long_form_check_wrapping_field($paragraph, $fiel
   }
 
   return FALSE;
+}
+
+/**
+ * Implements hook_theme_preprocess_hook().
+ */
+function mass_theme_preprocess_select(&$variables) {
+  if ($variables['attributes']['name'] == 'sort_bef_combine') {
+    $variables['selectBox'] = [];
+    $variables['selectBox']['label'] = '';
+
+    $variables['selectBox']['required'] = TRUE;
+    $variables['selectBox']['id'] = $variables['attributes']['name'];
+    $variables['selectBox']['name'] = $variables['attributes']['name'];
+
+    /** @var \Symfony\Component\HttpFoundation\Request $request*/
+    $request = \Drupal::request();
+    $sort = $request->query->get('sort_bef_combine');
+
+    foreach ($variables['options'] as $option) {
+      $variables['selectBox']['options'][] = [
+        'value' => $option['value'],
+        'text' => $option['label'],
+        'selected' => $sort && $option['value'] === $sort,
+      ];
+    }
+  }
 }
 
 /**
