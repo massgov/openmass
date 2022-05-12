@@ -33,8 +33,8 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
     if ($before_function) {
       // We can't use $this->getSession() in the closure because PHPUnit creates
       // a new object in between gathering data provider test cases and running
-      // the test.
-      $before_function($session);
+      // the test. Instead, we bind $this to $me as a function parameter.
+      $before_function($this);
     }
 
     $page = $session->getPage();
@@ -88,7 +88,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
    *     - The path of the page to test accordions on.
    *     - A CSS selector to locate the accordion with.
    *     - An optional function to call before running the test case, accepting
-   *       a Session parameter.
+   *       a reference to the test object.
    */
   public function accordionDataProvider(): array {
     return [
@@ -103,17 +103,18 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
       '_QAG Request Help with a Computer Problem Accordion in Table of Contents' => [
         'how-to/qag-request-help-with-a-computer-problem',
         '.ma__toc--hierarchy__accordion.js-accordion',
-        function (Session $session): void {
+        function (ExpandCollapseElementsTest $me): void {
           // Open up the Table of Contents containing the accordion.
+          $session = $me->getSession();
           $page = $session->getPage();
           // @codingStandardsIgnoreLine
           /** @noinspection NullPointerExceptionInspection */
           $page->find('css', '.ma__toc__toc__toggle')->click();
           if (!$session->wait(30000, "jQuery('.ma__toc--overlay__container.is-open').is(':visible')")) {
-            $this->fail('The Table of Contents overlay did not become visible');
+            $me->fail('The Table of Contents overlay did not become visible');
           }
           if (!$session->wait(30000, "jQuery('.js-accordion-link').is(':visible')")) {
-            $this->fail('The accordion link did not become visible');
+            $me->fail('The accordion link did not become visible');
           }
           $this->captureScreenshot();
         },
