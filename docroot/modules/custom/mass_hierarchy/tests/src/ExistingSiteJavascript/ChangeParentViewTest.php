@@ -253,7 +253,15 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
     $this->getCurrentPage()->pressButton('Revert');
 
     // Edit the node.
-    $this->getCurrentPage()->clickLink('Edit');
+    // This code used to call $this->clickLink('Edit'). However,
+    // template_preprocess_menu_local_task() adds a hidden span marked as
+    // visually hidden with the active tab labelled. Chrome refuses to click the
+    // edit link via automation, because <span> is not supposed to be a
+    // clickable element. We haven't found any core tests showing how to
+    // work around this, so instead we simply re-fetch the page.
+    // https://stackoverflow.com/questions/59669474/why-is-this-element-not-interactable-python-selenium
+    $this->drupalGet('node/' . $child1Node->id() . '/edit');
+
     // Check it has the second parent.
     $this->assertSession()->fieldValueEquals('Parent page', $parent2Node->label() . ' (' . $parent2Node->id() . ')');
   }
