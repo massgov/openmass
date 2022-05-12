@@ -51,7 +51,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
     // only.
     // This is significantly faster than the below API call.
     // @codingStandardsIgnoreLine
-    // $this->assertSession()->waitForElementVisible('xpath', $accordion->getXpath());
+    // if (!$this->assertSession()->waitForElementVisible('xpath', $accordion->getXpath())) {
     $accordion_xpath = str_replace('"', '\"', $accordion->getXpath());
     if ($initial_state_open) {
       $wait_for = sprintf('document.evaluate("%s", document, null, XPathResult.ANY_TYPE, null ).iterateNext().classList.contains("is-open") == false', $accordion_xpath);
