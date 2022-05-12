@@ -123,7 +123,11 @@ function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, arra
     // From https://massgov.atlassian.net/browse/DP-24422?focusedCommentId=268990
     // The Data view can use the organization:
     // Executive Office of Technology Services and Security.
-    $org = $storage->load(31866);
+    $res = $storage->loadByProperties([
+      'title' => 'Executive Office of Technology Services and Security',
+      'type' => 'org_page'
+    ]);
+    $org = reset($res);
     $variables['feedback_form'] = mass_feedback_form_build_feedback_form($org);
     $suggestions[] = 'views_view__data_listing';
   }
