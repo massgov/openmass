@@ -4,11 +4,14 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Behat\Mink\Session;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use weitzman\DrupalTestTraits\ScreenShotTrait;
 
 /**
  * Test Expandable/Collapsible elements.
  */
 class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
+
+  use ScreenShotTrait;
 
   /**
    * Tests a single accordion for a given page, located at a CSS selector.
@@ -112,6 +115,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
           if (!$session->wait(30000, "jQuery('.js-accordion-link').is(':visible')")) {
             $this->fail('The accordion link did not become visible');
           }
+          $this->captureScreenshot();
         },
       ],
       '_QAG Request Help with a Computer Problem Notices and Alerts' => [
