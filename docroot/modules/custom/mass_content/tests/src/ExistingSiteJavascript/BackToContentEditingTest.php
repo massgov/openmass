@@ -82,8 +82,8 @@ class BackToContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
     $this->getCurrentPage()->pressButton('Preview');
     // Back to editing.
     $this->clickLink('Back to content editing');
-    // No fatals.
-    $this->assertSession()->statusCodeEquals(200);
+    $title = $this->getSession()->getPage()->find('css', 'h1')->getText();
+    $this->assertEqual($title, 'EDIT TOPIC PAGE Test');
   }
 
 }
