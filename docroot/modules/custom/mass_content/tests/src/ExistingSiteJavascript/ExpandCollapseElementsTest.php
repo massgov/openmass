@@ -138,13 +138,12 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
       // narrow viewports. Since the code inside is the same, and we haven't
       // seen regressions with it, we don't bother changing the viewport and
       // testing it as well.
-      // @todo Disabled pending https://massgov.atlassian.net/browse/DP-24885.
-      // @codingStandardsIgnoreStart
-//      '_QAG Request Help with a Sidebar Contact' => [
-//        'how-to/qag-request-help-with-a-computer-problem',
-//        '.ma__contact-us.js-accordion',
-//      ],
-      // @codingStandardsIgnoreStop
+      '_QAG Request Help with a Sidebar Contact' => [
+        'how-to/qag-request-help-with-a-computer-problem',
+        // We need to use this long selector to avoid hitting the hidden contact
+        // block.
+        '#main-content > div.main-content.main-content--two > aside > div.ma__details__sidebar-contact > section > section',
+      ],
     ];
   }
 
