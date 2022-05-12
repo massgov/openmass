@@ -112,6 +112,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
           if (!$session->wait(30000, "jQuery('#overlay-toc-518191 > div.ma__toc--overlay__content > div > ul > li.ma__toc--hierarchy__accordion.js-accordion').is(':visible')")) {
             $me->fail('The accordion link did not become visible');
           }
+          $me->assertSession()->waitForElementVisible('css', '#overlay-toc-518191 > div.ma__toc--overlay__content > div > ul > li.ma__toc--hierarchy__accordion.js-accordion');
         },
       ],
       '_QAG Request Help with a Computer Problem Notices and Alerts' => [
