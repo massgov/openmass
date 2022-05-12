@@ -106,12 +106,11 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
           // @codingStandardsIgnoreLine
           /** @noinspection NullPointerExceptionInspection */
           $page->find('css', '.ma__toc__toc__toggle')->click();
-          if (!$session->wait(30000, "jQuery('.ma__toc--overlay__container.is-open').is(':visible')")) {
-            $me->fail('The Table of Contents overlay did not become visible');
-          }
-          if (!$session->wait(30000, "jQuery('#overlay-toc-518191 > div.ma__toc--overlay__content > div > ul > li.ma__toc--hierarchy__accordion.js-accordion').is(':visible')")) {
-            $me->fail('The accordion link did not become visible');
-          }
+          // CSS :visible seems to be true during the menu fade in, but before
+          // the elements are clickable. We defer to the slower implementation
+          // to let the browser determine when an element is ready to interact
+          // with. In particular, this triggers in CI where interactive latency
+          // is not prioritized.
           $me->assertSession()->waitForElementVisible('css', '#overlay-toc-518191 > div.ma__toc--overlay__content > div > ul > li.ma__toc--hierarchy__accordion.js-accordion');
         },
       ],
