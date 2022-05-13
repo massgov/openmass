@@ -121,13 +121,6 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
       t('6 weeks');
   }
 
-  // Changed the help text for the campaign landing page for the unpublish date only.
-  if ($node->getType() == 'campaign_landing') {
-    if (isset($form['unpublish_on']['widget'][0]['value']['#description'])) {
-      $form['unpublish_on']['widget'][0]['value']['#description'] = t('An unpublish date within the next 14 months must be provided.');
-    }
-  }
-
   // Add Organization Stakeholders field to 'advanced' vertical tabs group.
   if (isset($form['field_state_organization_tax'])) {
     $form['organization_stakeholders'] = [
