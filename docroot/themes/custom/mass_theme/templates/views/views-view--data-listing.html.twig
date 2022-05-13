@@ -40,21 +40,23 @@
 {% set primaryIndicators = { "label": "part of" } %}
 {% set secondaryIndicators = { "label":  term.field_organizations is not empty ? "offered by" : "" } %}
 
-{% embed "@molecules/relationship-indicators.twig" with {
-  "relationshipIndicators": {
-    "pageTitle": node.label,
-    "secondary": secondaryIndicators,
-    "borderless": true
-  }
-} %}
+{% if term.field_organizations is not empty %}
+  {% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "pageTitle": node.label,
+      "secondary": secondaryIndicators,
+      "borderless": true
+    }
+  } %}
 
-  {% block primaryRelationship %}
-    {{ primaryRelationshipContent }}
-  {% endblock %}
-  {% block secondaryRelationship %}
-    {{ content.field_organizations }}
-  {% endblock %}
-{% endembed %}
+    {% block primaryRelationship %}
+      {{ primaryRelationshipContent }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+  {% endembed %}
+{% endif %}
 
 {%
   set classes = [
