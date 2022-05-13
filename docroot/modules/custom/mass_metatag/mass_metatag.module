@@ -463,16 +463,24 @@ function mass_metatag_dataformat(array &$attachments) {
  */
 function mass_metatag_datalayer_meta() {
   return [
-    'field_organizations'
+    'field_organizations',
   ];
 }
 
 /**
- * Implements hook_datalayer_meta_alter().
- *
- * Change the output of entityField_organizations to include title.
+ * Implements hook_datalayer_alter().
  */
-function mass_metatag_datalayer_alter(&$data_layer) {
+ function mass_metatag_datalayer_alter(&$data_layer) {
+
+  // Add identifier on feedback forms for collection pages.
+  $collection_term = mass_content_get_collection_from_current_page();
+  if ($collection_term && !empty($collection_term->field_primary_parent)) {
+    $parent_value = $collection_term->field_primary_parent[0]->getValue();
+    $parent_id = $parent_value['target_id'] ?? FALSE;
+    $data_layer['entityIdentifier'] = $parent_id ?: $data_layer['entityIdentifier'];
+  }
+
+  // Change the output of entityField_organizations to include title.
   if (isset($data_layer['entityField_organizations'])) {
     $ids = explode(', ', $data_layer['entityField_organizations']);
     $organizations = [];
