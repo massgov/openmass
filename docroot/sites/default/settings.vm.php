@@ -18,8 +18,6 @@ $databases['default']['default'] = array(
   'pdo' => [PDO::ATTR_TIMEOUT => 60],
 );
 
-$settings['container_yamls'][] = $app_root . '/sites/development.services.yml';
-
 $settings['hash_salt'] = 'temporary';
 $settings['file_public_path'] = 'sites/default/files';
 $settings['file_private_path'] = 'sites/default/files/private';
@@ -42,10 +40,14 @@ if (!getenv('MASS_MAILCHIMP')) {
 $config['field.field.paragraph.address.field_geofield']['third_party_settings']['geocoder_field']['plugins'] = ['random'];
 
 
-if(getenv('DOCKER_ENV')) {
+if (getenv('DOCKER_ENV')) {
   // Docker service configuration.
   $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.docker.yml';
 }
+if (getenv('DOCKER_ENV') === 'devel') {
+  $settings['container_yamls'][] = $app_root . '/sites/development.services.yml';
+}
+
 /**
  * Show all error messages with backtrace information, except during Behat runs.
  * Those would fail dynamic page cache tests (at minimum).
