@@ -65,7 +65,7 @@
   ]
 %}
 
-{% if collection.bg_color is not empty %}
+{% if collection.description|render is not empty or collection.bg_color != "#FFF" %}
 
   {% set collection_content %}
     <div class="collection-header__title">
@@ -90,7 +90,7 @@
   administrators and content administrators are the only users that
   can edit Collection term names.
   #}
-  {% if collection.bg_color is empty %}
+  {% if collection.description|render is empty and collection.bg_color == "#FFF" %}
     <h1>{{ title|raw }}</h1>
   {% endif %}
 
