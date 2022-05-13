@@ -15,6 +15,9 @@ use Drupal\mailchimp_transactional\Plugin\Mail\Mail;
  */
 class MassMail extends Mail {
 
+  /**
+   * @inheritDoc
+   */
   public function format(array $message) {
     // Join the body array into one string.
     if (is_array($message['body'])) {
