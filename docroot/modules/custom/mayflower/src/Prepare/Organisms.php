@@ -523,6 +523,7 @@ class Organisms {
     $pressList = [];
     $moreLink = '';
     $i = 0;
+    $cache_tags[] = 'node_list:news';
 
     // Get field values.
     $field_values = $entity->get($field);
