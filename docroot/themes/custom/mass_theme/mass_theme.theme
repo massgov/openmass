@@ -5797,6 +5797,9 @@ function mass_theme_preprocess_paragraph__contact_group(&$variables) {
  */
 function mass_theme_preprocess_paragraph__contact_info(&$variables) {
   $paragraph = $variables['paragraph'];
+  // Ensure contact changes invalidate this render.
+  (new CacheableMetadata())->addCacheableDependency($paragraph)
+    ->applyTo($variables);
   $field_address = $paragraph->get('field_address');
 
   if ($field_address->count() > 0) {
