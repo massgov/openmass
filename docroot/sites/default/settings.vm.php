@@ -2,6 +2,7 @@
 
 use Drupal\KernelTests\Core\Entity\EntityQueryTest;
 use Drupal\node\Entity\Node;
+use Drupal\mass_utility\DebugCachability;
 
 $databases = array();
 $databases['default']['default'] = array(
@@ -48,7 +49,11 @@ if (getenv('DOCKER_ENV') === 'devel') {
   $settings['container_yamls'][] = $app_root . '/sites/development.services.yml';
 }
 
-if (isset($GLOBALS['request']) && $GLOBALS['request']->headers->get('X-Request-Debug-Cachability-Headers', FALSE)) {
+// Manually require this file so we can share the constant. At this point,
+// Drupal is not bootstrapped enough to know what modules are enabled, so
+// technically we can only autoload classes in /vendor/.
+require_once __DIR__ . '../../../../docroot/modules/custom/mass_utility/src/DebugCachability.php';
+if (isset($GLOBALS['request']) && $GLOBALS['request']->headers->get(DebugCachability::HEADER, FALSE)) {
   $settings['container_yamls'][] = $app_root . '/sites/debug_cacheability_headers.services.yml';
 }
 

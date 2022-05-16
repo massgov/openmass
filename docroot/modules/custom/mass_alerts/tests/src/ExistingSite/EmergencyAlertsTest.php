@@ -5,6 +5,7 @@ namespace Drupal\Tests\mass_alerts\ExistingSite;
 use Drupal\dynamic_page_cache\EventSubscriber\DynamicPageCacheSubscriber;
 use Drupal\mass_caching\EventSubscriber\StaleResponseSubscriber;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\mass_utility\DebugCachability;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\User;
@@ -47,7 +48,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
       'moderation_state' => 'published',
     ]);
 
-    $this->getSession()->setRequestHeader('X-Request-Debug-Cachability-Headers', 1);
+    (new DebugCachability())->requestDebugCachabilityHeaders($this->getSession());
   }
 
   /**
