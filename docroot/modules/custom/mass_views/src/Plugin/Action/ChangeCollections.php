@@ -37,6 +37,8 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
 
   /**
    * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
    */
   protected $currentUser;
 
