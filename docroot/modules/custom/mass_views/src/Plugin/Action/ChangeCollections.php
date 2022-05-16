@@ -52,10 +52,10 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
    *
    * @param Drupal\Core\Session\AccountInterface $currentUser
    *   The current user.
-   * @param \Drupal\Component\Datetime\TimeInterface $time_service
-   +   The datetime.time service.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   * The entity type manager.
+   *   The entity type manager.
    */
   public function __construct(AccountInterface $currentUser, TimeInterface $time, EntityTypeManagerInterface $entity_type_manager) {
     $this->currentUser = $currentUser;
