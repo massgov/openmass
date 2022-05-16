@@ -53,8 +53,11 @@ class EventsRendererOrgPages {
     $render = $upcoming ? $this->nextEvents() : $this->pastEventsLink();
     // To update if any event changes.
     $render['#cache']['tags'][] = 'node_list:event';
-    // Expire every 12 hours so that past events are removed.
-    $render['#cache']['max-age'] = 3600*12;
+    // Expire at the end of every day, so that upcoming is not stale.
+    $today      = new \DateTime('now');
+    $tomorrow   = new \DateTime('tomorrow');
+    $difference = strtotime('tomorrow')-strtotime('now');
+    $render['#cache']['max-age'] = $difference;
     return $render;
   }
 
