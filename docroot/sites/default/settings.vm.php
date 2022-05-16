@@ -48,6 +48,10 @@ if (getenv('DOCKER_ENV') === 'devel') {
   $settings['container_yamls'][] = $app_root . '/sites/development.services.yml';
 }
 
+if (isset($GLOBALS['request']) && $GLOBALS['request']->headers->get('X-Request-Debug-Cachability-Headers', FALSE)) {
+  $settings['container_yamls'][] = $app_root . '/sites/debug_cacheability_headers.services.yml';
+}
+
 /**
  * Show all error messages with backtrace information, except during Behat runs.
  * Those would fail dynamic page cache tests (at minimum).

@@ -46,6 +46,8 @@ class EmergencyAlertsTest extends ExistingSiteBase {
       'status' => 1,
       'moderation_state' => 'published',
     ]);
+
+    $this->getSession()->setRequestHeader('X-Request-Debug-Cachability-Headers', 1);
   }
 
   /**
