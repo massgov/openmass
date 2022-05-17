@@ -639,7 +639,8 @@ function mass_theme_preprocess_node_org_page(&$variables) {
     }
     foreach (['field_banner_image', 'field_bg_wide'] as $field) {
       if (!$node->$field->isEmpty()) {
-        $cache_tags = Cache::mergeTags($cache_tags, $node->$field->entity->getCacheTags());
+        (new CacheableMetadata())->addCacheableDependency($field->entity)
+          ->applyTo($variables);
       }
     }
     if (!empty($cache_tags)) {
