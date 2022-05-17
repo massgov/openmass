@@ -1290,6 +1290,7 @@ function mass_theme_preprocess_node_location(&$variables) {
             $hours = str_replace('</p>', '|', $hours);
             $hours = array_map('trim', explode('|', $hours));
             foreach ($hours as $hour) {
+              $hour = trim(strip_tags($hour, '<br>'));
               if (!$hour) {
                 continue;
               }
@@ -3412,7 +3413,12 @@ function mass_theme_preprocess_node_news_full(&$variables) {
 
     $variables['author'] = $full_name;
     $variables['author_url'] = $author->toUrl();
-    $variables['author_info'] = $author_title . ', ' . $author_all_orgs;
+    $variables['author_info'] = $author_title;
+    if ($author_title) {
+      $variables['author_info'] .= ', ' . $author_all_orgs;
+    }
+    $variables['author_info'] .= $author_all_orgs;
+
     $cache_tags = array_merge($cache_tags, $author->getCacheTags());
   }
 
