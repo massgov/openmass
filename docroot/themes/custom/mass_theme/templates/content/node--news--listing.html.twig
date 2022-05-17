@@ -108,6 +108,8 @@
   {% set contents = contents|merge([decorative_link]) %}
 {% endfor %}
 
+{% set eyebrow = content.field_news_type[0]['#markup'] != 'Blog Post' ? content.field_news_type[0]['#markup']  : '' %}
+
 {% include "@molecules/general-teaser.twig" with {
   "generalTeaser" : {
     "imageAfter": true,
@@ -117,12 +119,12 @@
     },
     "title" : {
       "href": url,
-      "text": label|render|striptags|trim,
+      "text": label,
       "info": "",
       "property": ""
     },
     "layout": "stacked",
-    "eyebrow": content.field_news_type[0]['#markup'],
+    "eyebrow": eyebrow,
     "level": "",
     "emphasizedText": [content.field_date_published[0]['#markup'], content.field_organizations[0]['#title']],
     "tags": "",
