@@ -40,7 +40,7 @@
         "info": ""
       } %}
     {% endif %}
-    {% set bannerImage = file_url(node.field_banner_image.entity.fileuri ?? '') %}
+    {% set bannerImage = node.field_banner_image ? node.field_banner_image | file_url : '' %}
     {% set subtext = node.field_title_sub_text is not empty ? node.field_title_sub_text.value : '' %}
     {% include "@organisms/page-banner/page-banner.twig" with {
       "pageBanner": {
