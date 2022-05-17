@@ -123,13 +123,15 @@
       {% endif %}
     </div>
 
+    {% set show_blogpost_author = author is not empty and is_blog_post %}
+
     {% set aside_has_content =
       (not is_blog_post and sidebar.contactList) or
-      (author is not empty and is_blog_post)
+      show_blogpost_author
     %}
 
     {% set author_section %}
-      {% if author is not empty %}
+      {% if show_blogpost_author %}
         <section>
           {% include "@atoms/04-headings/sidebar-heading.twig" with {
             'sidebarHeading': {
