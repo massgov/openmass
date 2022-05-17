@@ -15,6 +15,15 @@ use Drupal\mailchimp_transactional\Plugin\Mail\Mail;
  */
 class MassMail extends Mail {
 
+  /**
+   * Concatenate and wrap the email body for either plain-text or HTML emails.
+   *
+   * @param array $message
+   *   A message array, as described in hook_mail_alter().
+   *
+   * @return array
+   *   The formatted $message.
+   */
   public function format(array $message) {
     // Join the body array into one string.
     if (is_array($message['body'])) {

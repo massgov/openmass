@@ -6,6 +6,7 @@
  */
 
 use Drupal\block\Entity\Block;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Html;
@@ -1289,6 +1290,7 @@ function mass_theme_preprocess_node_location(&$variables) {
             $hours = str_replace('</p>', '|', $hours);
             $hours = array_map('trim', explode('|', $hours));
             foreach ($hours as $hour) {
+              $hour = trim(strip_tags($hour, '<br>'));
               if (!$hour) {
                 continue;
               }
@@ -3387,10 +3389,54 @@ function mass_theme_preprocess_node_service_page(&$variables) {
  * Prepare the variables for the News page.
  */
 function mass_theme_preprocess_node_news_full(&$variables) {
+  /** @var \Drupal\node\Entity\Node $node */
   $node = $variables['node'];
   $sidebar = [];
   $cache_tags = [];
   $titleContext = NULL;
+
+  if (!$node->field_author->isEmpty()) {
+    /** @var \Drupal\node\Entity\Node */
+    $author = $node->field_author->entity;
+    $first_name = $author->field_person_first_name->value ?? NULL;
+    $last_name = $author->field_person_last_name->value ?? NULL;
+    $separator = $first_name && $last_name ? ' ' : '';
+    $full_name = $first_name . $separator . $last_name;
+    $author_title = $author->field_person_role_title->value ?? NULL;
+
+    $orgs = [];
+    foreach ($author->field_organizations as $org) {
+      $orgs[] = $org->entity->label();
+      $cache_tags = array_merge($cache_tags, $org->entity->getCacheTags());
+    }
+    $author_all_orgs = implode(', ', $orgs);
+
+    $variables['author'] = $full_name;
+    $variables['author_url'] = $author->toUrl();
+    $variables['author_info'] = $author_title;
+    if ($author_title) {
+      $variables['author_info'] .= ', ' . $author_all_orgs;
+    }
+    $variables['author_info'] .= $author_all_orgs;
+
+    $cache_tags = array_merge($cache_tags, $author->getCacheTags());
+  }
+
+  $is_blog_post = $node->field_news_type->value === 'blog_post';
+  $variables['is_blog_post'] = $is_blog_post;
+
+  $variables['blogpostCollectionHeader'] = [];
+
+  if ($is_blog_post && isset($node->field_collections) && !$node->field_collections->isEmpty()) {
+    /** @var \Drupal\taxonomy\Entity\Term $collection */
+    $collection = $node->field_collections[0]->get('entity')->getTarget()->getEntity();
+    $variables['blogpostCollectionHeader']['decorativeLink']['text'] = $collection->label();
+    $variables['blogpostCollectionHeader']['decorativeLink']['href'] = '/collections/' . $collection->field_url_name->value;
+    $cache_tags = array_merge($cache_tags, $collection->getCacheTags(), $node->getCacheTags());
+    $variables['blogpostCollectionHeader']['bg_color'] = $collection->field_header_color->value ?? '#FFF';
+    $variables['blogpostCollectionHeader']['dark_font'] = $variables['blogpostCollectionHeader']['bg_color'] === '#FFF';
+    _mass_theme_populate_collection_image_from_collection($collection, $variables['blogpostCollectionHeader']);
+  }
 
   $ap_conformity = FALSE;
 
@@ -3640,12 +3686,10 @@ function mass_theme_preprocess_node_news_full(&$variables) {
   $variables['pageContent'] = $pageContent;
   $variables['sidebar'] = $sidebar;
 
-  if (!empty($cache_tags)) {
-    // Merge arrays of existing and new cache tags and removes duplicates.
-    $merged_tags = Cache::mergeTags($node->getCacheTags(), $cache_tags);
-    // Add the cache tags to the render array.
-    $variables['#cache']['tags'] = $merged_tags;
-  }
+  // Merge arrays of existing and new cache tags and removes duplicates.
+  $merged_tags = Cache::mergeTags($node->getCacheTags(), $cache_tags ?? []);
+  // Add the cache tags to the render array.
+  $variables['#cache']['tags'] = $merged_tags;
 }
 
 /**
@@ -5113,11 +5157,16 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
           [
             'path' => '@organisms/by-author/press-listing.twig',
             'data' => [
-              'pressListing' => Organisms::preparePressListing($paragraph, 'field_org_featured_news_items', $pressListing_options, $secondaryItems, $cache_tags),
+              'pressListing' => $press_listing,
             ],
           ],
         ],
       ];
+
+      // Bubble cache tag to the current render. Based on template_preprocess_pager()
+      // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+      (new CacheableMetadata())->addCacheTags($cache_tags)
+        ->applyTo($variables);
     }
   }
 }
@@ -5754,6 +5803,9 @@ function mass_theme_preprocess_paragraph__contact_group(&$variables) {
  */
 function mass_theme_preprocess_paragraph__contact_info(&$variables) {
   $paragraph = $variables['paragraph'];
+  // Ensure contact changes invalidate this render.
+  (new CacheableMetadata())->addCacheableDependency($paragraph)
+    ->applyTo($variables);
   $field_address = $paragraph->get('field_address');
 
   if ($field_address->count() > 0) {
@@ -5984,6 +6036,63 @@ function mass_theme_preprocess_views_view(&$variables) {
   if (function_exists($function)) {
     $function($variables);
   }
+}
+
+/**
+ * Populates $variables for a collection header image from a $collection_term.
+ */
+function _mass_theme_populate_collection_image_from_collection($collection_term, &$variables) {
+  if (!isset($collection_term->field_collection_logo) || $collection_term->field_collection_logo->isEmpty()) {
+    return;
+  }
+
+  $collection_logo = $collection_term->field_collection_logo[0] ?? FALSE;
+  $file_url_generator = \Drupal::service('file_url_generator');
+  $file_url = $file_url_generator->generateAbsoluteString($collection_logo->entity->uri->value);
+  $variables['image'] = ['src' => $file_url];
+
+  $alt = $collection_logo->getValue()['alt'] ?? FALSE;
+  if (!$alt) {
+    return;
+  }
+  $variables['image']['alt'] = $alt;
+}
+
+/**
+ * Adds variables to views-view--data-listing.html.
+ */
+function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
+  $collection = \Drupal::routeMatch()->getParameter('collection');
+  if (!$collection) {
+    return;
+  }
+
+  // Get collection terms matching the field_url_name
+  $query = Drupal::entityQuery('taxonomy_term');
+  $query
+    ->condition('vid', 'collections')
+    ->condition('field_url_name', $collection)
+    ->range(0, 1);
+
+  $res = $query->execute();
+  if (!$res) {
+    return;
+  }
+
+  $tid = reset($res);
+  $term = Term::load($tid);
+
+  /** @var \Drupal\Core\Entity\EntityViewBuilder $view_builder */
+  $view_builder = \Drupal::entityTypeManager()->getViewBuilder('taxonomy_term');
+  $build = $view_builder->build($view_builder->view($term));
+  $variables['term'] = $term;
+  $variables['bg_color'] = $term->field_header_color->value ?: '#FFF';
+  $variables['content'] = $build;
+  $variables['collection']['title'] = $term->label();
+  $variables['collection']['description'] = $build['field_short_description'];
+  $variables['collection']['bg_color'] = $variables['bg_color'];
+  $variables['collection']['dark_font'] = $variables['bg_color'] === '#FFF';
+  _mass_theme_populate_collection_image_from_collection($term, $variables['collection']);
 }
 
 /**
