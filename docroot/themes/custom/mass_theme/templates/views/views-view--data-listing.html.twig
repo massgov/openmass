@@ -36,9 +36,11 @@
 
 {{ attach_library('mass_theme/views-view--data-listing') }}
 
+{% set banner_style = collection.description|render is not empty or collection.bg_color != "#FFF" %}
+
 {% set primaryRelationshipContent = content.field_primary_parent %}
 {% set primaryIndicators = { "label": "part of" } %}
-{% set secondaryIndicators = {
+{% set secondaryIndicators = banner_style ? {} : {
     "label":  term.field_organizations is not empty ? "offered by" : "",
     "icon": "building",
     "groupAfter": 3
@@ -72,8 +74,7 @@
   ]
 %}
 
-{% if collection.description|render is not empty or collection.bg_color != "#FFF" %}
-
+{% if banner_style %}
   {% set collection_content %}
     <div class="collection-header__title">
       {{ collection.title }}
@@ -97,8 +98,8 @@
   administrators and content administrators are the only users that
   can edit Collection term names.
   #}
-  {% if collection.description|render is empty and collection.bg_color == "#FFF" %}
-    <h1>{{ title|raw }}</h1>
+  {% if not banner_style %}
+    <h1>{{ title }}</h1>
   {% endif %}
 
   <aside class="sidebar">

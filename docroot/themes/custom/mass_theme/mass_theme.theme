@@ -7264,10 +7264,18 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
     }
   }
 
-  $is_collection_page = (bool) mass_content_get_collection_from_current_page();
+  $collection_page = mass_content_get_collection_from_current_page();
+
+  $variables['borderless'] = FALSE;
+
+  if ((bool) $collection_page) {
+    $variables['borderless'] = (bool)
+      ($collection_page->field_short_description->value ||
+      $collection_page->field_header_color->value);
+  }
 
   // Remove breadcrumbs for top level pages
-  if (count($breadcrumb) < 2 && !$is_collection_page) {
+  if (count($breadcrumb) < 2 && !((bool) $collection_page)) {
     $variables['breadcrumb'] = NULL;
   }
   else {
