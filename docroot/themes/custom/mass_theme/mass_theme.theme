@@ -637,7 +637,11 @@ function mass_theme_preprocess_node_org_page(&$variables) {
       $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
 
     }
-
+    foreach (['field_banner_image', 'field_bg_wide'] as $field) {
+      if (!$node->$field->isEmpty()) {
+        $cache_tags = Cache::mergeTags($cache_tags, $node->$field->entity->getCacheTags());
+      }
+    }
     if (!empty($cache_tags)) {
       // Merge arrays of existing and new cache tags and removes duplicates.
       $merged_tags = Cache::mergeTags($node->getCacheTags(), $cache_tags);
