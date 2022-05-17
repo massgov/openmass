@@ -6,6 +6,7 @@
  */
 
 use Drupal\block\Entity\Block;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\Component\Utility\Html;
@@ -1289,6 +1290,7 @@ function mass_theme_preprocess_node_location(&$variables) {
             $hours = str_replace('</p>', '|', $hours);
             $hours = array_map('trim', explode('|', $hours));
             foreach ($hours as $hour) {
+              $hour = trim(strip_tags($hour, '<br>'));
               if (!$hour) {
                 continue;
               }
@@ -3411,7 +3413,12 @@ function mass_theme_preprocess_node_news_full(&$variables) {
 
     $variables['author'] = $full_name;
     $variables['author_url'] = $author->toUrl();
-    $variables['author_info'] = $author_title . ', ' . $author_all_orgs;
+    $variables['author_info'] = $author_title;
+    if ($author_title) {
+      $variables['author_info'] .= ', ' . $author_all_orgs;
+    }
+    $variables['author_info'] .= $author_all_orgs;
+
     $cache_tags = array_merge($cache_tags, $author->getCacheTags());
   }
 
@@ -5151,11 +5158,16 @@ function mass_theme_preprocess_paragraph__org_news(&$variables) {
           [
             'path' => '@organisms/by-author/press-listing.twig',
             'data' => [
-              'pressListing' => Organisms::preparePressListing($paragraph, 'field_org_featured_news_items', $pressListing_options, $secondaryItems, $cache_tags),
+              'pressListing' => $press_listing,
             ],
           ],
         ],
       ];
+
+      // Bubble cache tag to the current render. Based on template_preprocess_pager()
+      // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+      (new CacheableMetadata())->addCacheTags($cache_tags)
+        ->applyTo($variables);
     }
   }
 }
@@ -5792,6 +5804,9 @@ function mass_theme_preprocess_paragraph__contact_group(&$variables) {
  */
 function mass_theme_preprocess_paragraph__contact_info(&$variables) {
   $paragraph = $variables['paragraph'];
+  // Ensure contact changes invalidate this render.
+  (new CacheableMetadata())->addCacheableDependency($paragraph)
+    ->applyTo($variables);
   $field_address = $paragraph->get('field_address');
 
   if ($field_address->count() > 0) {
