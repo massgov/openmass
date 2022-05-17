@@ -7278,8 +7278,7 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
   $variables['borderless'] = FALSE;
 
   if ((bool) $collection_page) {
-    $variables['borderless'] = (bool)
-      ($collection_page->field_short_description->value ||
+    $variables['borderless'] = (bool) ($collection_page->field_short_description->value ||
       $collection_page->field_header_color->value);
   }
 
