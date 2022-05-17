@@ -480,6 +480,25 @@ function mass_metatag_datalayer_alter(&$data_layer) {
     $data_layer['entityIdentifier'] = $parent_id ?: $data_layer['entityIdentifier'];
   }
 
+  $route_match = \Drupal::routeMatch();
+  $collection_params = $route_match->getParameters();
+  $view_id = $collection_params->get('view_id');
+  $display_id = $collection_params->get('display_id');
+  if ($view_id == 'data_listing_all' && $display_id == 'page_all') {
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    // From https://massgov.atlassian.net/browse/DP-24422?focusedCommentId=268990
+    // The Data view can use the organization:
+    // Executive Office of Technology Services and Security.
+    $res = $storage->loadByProperties([
+      'title' => 'Executive Office of Technology Services and Security',
+      'type' => 'org_page'
+    ]);
+    $org = reset($res);
+
+    // @TODO: entityIdentifier value???
+    // $data_layer['entityIdentifier'] = $org->id() ?: $data_layer['entityIdentifier'];
+  }
+
   // Change the output of entityField_organizations to include title.
   if (isset($data_layer['entityField_organizations'])) {
     $ids = explode(', ', $data_layer['entityField_organizations']);
