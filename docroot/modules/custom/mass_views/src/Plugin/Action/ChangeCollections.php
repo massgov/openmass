@@ -14,13 +14,13 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Allows to change Collections field value.
+ * Allows to add Collections field value.
  *
  * @see https://www.drupal.org/docs/contributed-modules/views-bulk-operations-vbo/creating-a-new-action#s-2-action-class
  *
  * @Action(
  *   id = "mass_views_change_collections",
- *   label = @Translation("Change Collections"),
+ *   label = @Translation("Add Collections"),
  *   type = "node"
  * )
  */
@@ -59,7 +59,8 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
-  public function __construct(AccountInterface $currentUser, TimeInterface $time, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, AccountInterface $currentUser, TimeInterface $time, EntityTypeManagerInterface $entity_type_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->currentUser = $currentUser;
     $this->time = $time;
     $this->entityTypeManager = $entity_type_manager;
@@ -70,6 +71,9 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
       $container->get('current_user'),
       $container->get('datetime.time'),
       $container->get('entity_type.manager')
@@ -184,7 +188,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
 
       $form['#list'] = $this->context['list'];
 
-      $form['actions']['submit']['#value'] = $this->t('Change collections');
+      $form['actions']['submit']['#value'] = $this->t('Add collections');
 
       $form['new_collection'] = [
         '#type' => 'checkbox_tree',
