@@ -54,10 +54,10 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
    *
    * @param array $configuration
    *   The configuration.
-   * @param $plugin_id
-   *   The Plugin ID.
-   * @param $plugin_definition
-   *   The Plugin definition.
+   * @param string $plugin_id
+   *   The plugin_id for the formatter.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
    * @param Drupal\Core\Session\AccountInterface $currentUser
    *   The current user.
    * @param \Drupal\Component\Datetime\TimeInterface $time
