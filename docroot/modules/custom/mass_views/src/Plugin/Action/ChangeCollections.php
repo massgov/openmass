@@ -113,7 +113,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
 
     $entity->setNewRevision();
     $entity->setRevisionUserId($this->currentUser->id());
-    $entity->setRevisionLogMessage('Revision created with "Move Collections" feature.');
+    $entity->setRevisionLogMessage('Revision created with "Add Collections" feature.');
     $entity->setRevisionCreationTime($this->time->getRequestTime());
     $entity->save();
 
@@ -123,7 +123,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
       $node_latest = $node_storage->loadRevision($vid);
       $node_latest->setNewRevision(TRUE);
       $node_latest->setRevisionUserId($this->currentUser->id());
-      $node_latest->setRevisionLogMessage('Revision created with "Move Collections" feature.');
+      $node_latest->setRevisionLogMessage('Revision created with "Add Collections" feature.');
       $node_latest->setRevisionCreationTime($this->time->getRequestTime());
       if (is_array($new_collection_id)) {
         if (!empty($node_latest->field_collections->getValue())) {
