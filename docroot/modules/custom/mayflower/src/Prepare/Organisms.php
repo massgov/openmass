@@ -1881,7 +1881,6 @@ class Organisms {
    *   Returns structured array.
    */
   public static function prepareExpandableContent($entities, array $options = [], array $field_map = NULL, array &$cache_tags = []) {
-    $renderer = \Drupal::service('renderer');
     $sections = [];
     $fields = [];
 
@@ -1920,7 +1919,7 @@ class Organisms {
               $topic_title = Helper::fieldFullView($topic_group->entity, 'field_content_card_category');
               if (!empty($topic_title)) {
                 $topic_category_heading = [
-                  'title' => \htmlspecialchars_decode($renderer->renderRoot($topic_title)->__toString()),
+                  'title' => $topic_title,
                 ];
               }
               // Loop through the links and create an array of link data.
