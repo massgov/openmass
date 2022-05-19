@@ -1908,7 +1908,7 @@ class Organisms {
           // If the entity is a topic_page, include Link Groups and links.
           if (!empty($entity) && $entity->bundle() == 'topic_page') {
             $topic_heading = [
-              'text' => $entity->label(),
+              'text' => trim($sections[$key]['text']) ?: $entity->label(),
             ];
             $link_items = [];
             // Loop through the Topic Link Groups.
