@@ -5,6 +5,7 @@ namespace Drupal\mayflower\Prepare;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\mayflower\Helper;
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\node\Entity\Node;
 
@@ -1904,6 +1905,8 @@ class Organisms {
           $params = $url->getRouteParameters();
           $entity_type = key($params);
           $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($params[$entity_type]);
+          $cache_tags = Cache::mergeTags($entity->getCacheTags(), $cache_tags);
+
           // If the entity is a topic_page, include Link Groups and links.
           if (!empty($entity) && $entity->bundle() == 'topic_page') {
             $topic_heading = [
@@ -1912,6 +1915,8 @@ class Organisms {
             $link_items = [];
             // Loop through the Topic Link Groups.
             foreach ($entity->field_topic_content_cards as $topic_group) {
+              $cache_tags = Cache::mergeTags($topic_group->entity->getCacheTags(), $cache_tags);
+
               // Initialize the heading and link arrays for this Link Group.
               $topic_category_heading = [];
               $topic_links = [];
