@@ -1,3 +1,44 @@
+
+
+## [0.322.0] - May 17, 2022
+
+### Added
+  - DP-24108: - Blog post added to News type
+- Add parent pages to Collections
+- Add "Organizations" to Collections
+- Collections view with full breadcrumb
+- Modified Blog post header for News
+  
+### Changed
+  - DP-24326: - Not require unpublished date for promotional pages
+- KPI fields not required on promo pages
+- Delete role campaign_landing_page_publisher
+  - DP-24890: - node.external_data_resource.field_data_format on external_data_resource not required.
+- external_data_resource update on name,  description and "use this content type for"
+  - DP-24928: Label for external data resource content type is now External link for Collections
+  
+### Fixed
+  - DP-24569: - Events listed in the collection, “Thu, 04/28/2022 - 18:00” should be “Thursday, April 28, 2022 - 6:00 p.m.”
+- Optional collection field for authors to check a box and then only events that are today or in the future will be shown.
+- Removed duplicated filters on Collection pages.
+- Improvements to change_collections view.
+  - DP-24802: When development mode is enabled, the extra markup breaks the mechanism
+for getting the label and the hours.
+  - DP-24808: News listing on org pages should update when a new news item is posted.
+  - DP-24846: Do not show author on news that are not blogpost type.
+  - DP-24876: - Permissions for authors and editors to use the collections field.
+- Removing external_data_resource_manager role.
+  - DP-24877: Refactor Accordion tests to fix concurrency issues
+  - DP-24884: Fix hardcoding wait and missing required field in TemporaryUnpublishedAccessTest
+  - DP-24917: Avoid cache staleness in org page.
+  
+### Security
+  - DP-24687: Update packages. Fixes Dependabot alert security issues.
+  - DP-24913: Re-added security update for quick_node_clone.
+  
+### Removed
+  - DP-24860: Remove margin bottom override on campaign pages to allow consistent spacing above feedback form on Mass.gov.
+  
 ## [0.321.1] - May 12, 2022
 
 ### Changed
