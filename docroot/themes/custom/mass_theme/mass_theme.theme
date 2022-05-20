@@ -7320,6 +7320,11 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
  * Fixes sort_bef_combine filter on collection pages.
  */
 function _mass_theme_override_sort_bef_combine(&$item, $default_sort) {
+  // Pagers may have no items.
+  if (!$item) {
+    return;
+  }
+
   // Ex. Pages are an array of items.
   if (!isset($item['href'])) {
     foreach ($item as &$inner_item) {
