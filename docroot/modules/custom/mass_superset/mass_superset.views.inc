@@ -63,6 +63,51 @@ function mass_superset_views_data() {
     ],
   ];
 
+  $data['mass_superset_data']['nos_per_1000'] = [
+    'title' => t('Nos per 1000'),
+    'help' => t('The number of No responses per 1000.'),
+    'field' => [
+      'id' => 'numeric',
+      'float' => TRUE,
+    ],
+  ];
+
+  $data['mass_superset_data']['eject_rate'] = [
+    'title' => t('Eject Rate'),
+    'help' => t('The eject rate.'),
+    'field' => [
+      'id' => 'numeric',
+      'float' => TRUE,
+    ],
+  ];
+
+  $data['mass_superset_data']['rate_of_traffic_to_children'] = [
+    'title' => t('Traffic to Children'),
+    'help' => t('The rate of traffic to children.'),
+    'field' => [
+      'id' => 'numeric',
+      'float' => TRUE,
+    ],
+  ];
+
+  $data['mass_superset_data']['broken_links'] = [
+    'title' => t('Broken Links'),
+    'help' => t('The number of broken links.'),
+    'field' => [
+      'id' => 'numeric',
+      'float' => FALSE,
+    ],
+  ];
+
+  $data['mass_superset_data']['grade_level'] = [
+    'title' => t('Reading Level'),
+    'help' => t('The grade reading level.'),
+    'field' => [
+      'id' => 'numeric',
+      'float' => FALSE,
+    ],
+  ];
+
   $data['snooze'] = [];
   $data['snooze']['table'] = [];
   $data['snooze']['table']['group'] = t('Snooze data');
