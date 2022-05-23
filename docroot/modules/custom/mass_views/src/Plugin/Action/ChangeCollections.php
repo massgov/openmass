@@ -27,6 +27,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase {
    * {@inheritdoc}
    */
   public function execute($entity = NULL) {
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
     $config = $this->getConfiguration();
     $new_collection_id = $config['new_collection'];
