@@ -16,13 +16,13 @@ services:
       # VNC access for a traditional VNC client like macOS "Screen Sharing".
       - "5900:5900"
       - "7910:7900"
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: $DDEV_APPROOT
 #    environment:
 #      - VIRTUAL_HOST=$DDEV_HOSTNAME
 #      - HTTPS_EXPOSE=7900:7900
 #      - HTTP_EXPOSE=7910:7900
-#    labels:
-#      com.ddev.site-name: ${DDEV_SITENAME}
-#      com.ddev.approot: $DDEV_APPROOT
 #    external_links:
 #      - ddev-router:${DDEV_SITENAME}.${DDEV_TLD}
     volumes:
