@@ -3286,19 +3286,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_service_ref_services_6')) {
     $titleContext = t(' to @title', ['@title' => $page_title]);
     // Set up link list static options.
-    // @TODO consider making the title the field label value.
-    $num_ref_services = count($node->field_service_ref_services_6->getValue());
-    // Creates 'more' link when more than 6 services are referenced.
-    $more = [];
-    if ($num_ref_services > 6) {
-      $text_ref_services = t("See all @count", ['@count' => $num_ref_services]);
-      $more = [
-        'href' => $node->toUrl()->toString() . '/related',
-        'text' => $text_ref_services,
-        'chevron' => TRUE,
-        'labelContext' => t('related services for the @label', ['@label' => $node->label()]),
-      ];
-    }
     $linkList_options = [
       'heading' => [
         'title' => t('Related Services'),
@@ -3307,8 +3294,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
         'level' => 2,
       ],
       'stacked' => TRUE,
-      'maxItems' => 6,
-      'more' => $more,
     ];
 
     // Populate the first column.
@@ -3413,7 +3398,12 @@ function mass_theme_preprocess_node_news_full(&$variables) {
 
     $variables['author'] = $full_name;
     $variables['author_url'] = $author->toUrl();
-    $variables['author_info'] = $author_title . ', ' . $author_all_orgs;
+    $variables['author_info'] = $author_title;
+    if ($author_title) {
+      $variables['author_info'] .= ', ' . $author_all_orgs;
+    }
+    $variables['author_info'] .= $author_all_orgs;
+
     $cache_tags = array_merge($cache_tags, $author->getCacheTags());
   }
 
@@ -5798,6 +5788,9 @@ function mass_theme_preprocess_paragraph__contact_group(&$variables) {
  */
 function mass_theme_preprocess_paragraph__contact_info(&$variables) {
   $paragraph = $variables['paragraph'];
+  // Ensure contact changes invalidate this render.
+  (new CacheableMetadata())->addCacheableDependency($paragraph)
+    ->applyTo($variables);
   $field_address = $paragraph->get('field_address');
 
   if ($field_address->count() > 0) {
