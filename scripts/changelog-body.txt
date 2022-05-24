@@ -1,35 +1,41 @@
 
 
-## [0.321.0] - May 10, 2022
+## [0.322.0] - May 17, 2022
 
 ### Added
-  - DP-17093: Upgrade from Mandrill to Mailchimp Transaction module
-  - DP-24109: Adds collections to the following content types.
-  - News
-  - Event
-  - Promotional page
-  - Topic Page
-Adds templates for listing display for the added content types.
-  - DP-24432: Add "Did you find" feedback form to promotional page.
-  - DP-24477: Add focal point to banner images on certain content types.
+  - DP-24108: - Blog post added to News type
+- Add parent pages to Collections
+- Add "Organizations" to Collections
+- Collections view with full breadcrumb
+- Modified Blog post header for News
   
 ### Changed
-  - DP-23216: Adjust required field in org page component "what would you like to do".
-  - DP-24080: Move entity usage processing to a queue.
-  - DP-24668: Upgrade to BackstopJS 6.0.4
-  - DP-24669: Add user.mail to config_ignore.
-  - DP-24690: Upgrade config_ignore module
-  - DP-9273: Set image links' images in org page as decorative.
+  - DP-24326: - Not require unpublished date for promotional pages
+- KPI fields not required on promo pages
+- Delete role campaign_landing_page_publisher
+  - DP-24890: - node.external_data_resource.field_data_format on external_data_resource not required.
+- external_data_resource update on name,  description and "use this content type for"
+  - DP-24928: Label for external data resource content type is now External link for Collections
   
 ### Fixed
-  - DP-24273: Accessiblity improvements to in-page alerts.
-  - DP-24350: Fix feedback button position and display when using Google Translate.
-  - DP-24666: Fix missing ext-json requirement in composer.json
-  - DP-24676: Fix unexpected General_Event eyebrow issue.
-  - DP-24691: Fix ahoy pull for developers
-  - DP-24698: Fix Backstop failing when Tugboat is suspended
-  - DP-24731: More specific conditions for GTM.
+  - DP-24569: - Events listed in the collection, “Thu, 04/28/2022 - 18:00” should be “Thursday, April 28, 2022 - 6:00 p.m.”
+- Optional collection field for authors to check a box and then only events that are today or in the future will be shown.
+- Removed duplicated filters on Collection pages.
+- Improvements to change_collections view.
+  - DP-24802: When development mode is enabled, the extra markup breaks the mechanism
+for getting the label and the hours.
+  - DP-24808: News listing on org pages should update when a new news item is posted.
+  - DP-24846: Do not show author on news that are not blogpost type.
+  - DP-24876: - Permissions for authors and editors to use the collections field.
+- Removing external_data_resource_manager role.
+  - DP-24877: Refactor Accordion tests to fix concurrency issues
+  - DP-24884: Fix hardcoding wait and missing required field in TemporaryUnpublishedAccessTest
+  - DP-24917: Avoid cache staleness in org page.
   
 ### Security
-  - DP-24814: Quick node clone module update.
+  - DP-24687: Update packages. Fixes Dependabot alert security issues.
+  - DP-24913: Re-added security update for quick_node_clone.
+  
+### Removed
+  - DP-24860: Remove margin bottom override on campaign pages to allow consistent spacing above feedback form on Mass.gov.
   
