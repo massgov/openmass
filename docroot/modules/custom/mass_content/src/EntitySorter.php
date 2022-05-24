@@ -50,6 +50,17 @@ class EntitySorter {
   }
 
   /**
+   * Sets a time format that avoid ambiguos date strings.
+   *
+   * To avoid potential ambiguity, it's best to use ISO 8601 (YYYY-MM-DD) dates
+   * or DateTime::createFromFormat() when possible.
+   * @see https://www.php.net/manual/en/function.strtotime.php
+   */
+  protected function formatDateValue($date) {
+    return date(\DATE_ISO8601, strtotime($date));
+  }
+
+  /**
    * Extract a date value from an entity.
    *
    * @param object $object
@@ -70,27 +81,30 @@ class EntitySorter {
         case 'regulation':
         case 'rules':
           $date = Helper::fieldValue($object, 'field_date_published');
+          $date = $this->formatDateValue($date);
           break;
 
         case 'curated_list':
-          $date = date('Y-d-m', $object->created->value);
+          $date = $this->formatDateValue(\DATE_ISO8601, $object->created->value);
           break;
 
         case 'info_details':
           $date = Helper::fieldValue($object, 'field_info_details_last_updated');
+          $date = $this->formatDateValue($date);
           break;
 
         default:
-          $date = date('Y-d-m', $object->changed->value);
+          $date = date(\DATE_ISO8601, $object->changed->value);
       }
     }
     elseif ($object instanceof Media) {
       $date = Helper::fieldValue($object, 'field_start_date');
+      $date = $this->formatDateValue($date);
     }
 
     // If the date field is empty for any type, fallback to the last changed date.
     if (empty($date)) {
-      $date = date('Y-d-m', $object->changed->value);
+      $date = $this->formatDateValue($object->changed->value);
     }
 
     return $date;
