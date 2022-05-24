@@ -3286,19 +3286,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_service_ref_services_6')) {
     $titleContext = t(' to @title', ['@title' => $page_title]);
     // Set up link list static options.
-    // @TODO consider making the title the field label value.
-    $num_ref_services = count($node->field_service_ref_services_6->getValue());
-    // Creates 'more' link when more than 6 services are referenced.
-    $more = [];
-    if ($num_ref_services > 6) {
-      $text_ref_services = t("See all @count", ['@count' => $num_ref_services]);
-      $more = [
-        'href' => $node->toUrl()->toString() . '/related',
-        'text' => $text_ref_services,
-        'chevron' => TRUE,
-        'labelContext' => t('related services for the @label', ['@label' => $node->label()]),
-      ];
-    }
     $linkList_options = [
       'heading' => [
         'title' => t('Related Services'),
@@ -3307,8 +3294,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
         'level' => 2,
       ],
       'stacked' => TRUE,
-      'maxItems' => 6,
-      'more' => $more,
     ];
 
     // Populate the first column.
@@ -7266,12 +7251,6 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
 
   $variables['current_page'] = end($breadcrumb)['text'];
 
-  // Remove breacrumbs from collections by check last URL element.
-  if ((strpos(end($breadcrumb)['url'] ?? '', '/collections/')) === 0) {
-    $variables['breadcrumb'] = [];
-    return;
-  }
-
   // Remove current page.
   foreach ($breadcrumb as $key => $link) {
     if ($link['url'] == "") {
@@ -7279,8 +7258,17 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
     }
   }
 
+  $collection_page = mass_content_get_collection_from_current_page();
+
+  $variables['borderless'] = FALSE;
+
+  if ((bool) $collection_page) {
+    $variables['borderless'] = (bool) ($collection_page->field_short_description->value ||
+      $collection_page->field_header_color->value);
+  }
+
   // Remove breadcrumbs for top level pages
-  if (count($breadcrumb) < 2) {
+  if (count($breadcrumb) < 2 && !((bool) $collection_page)) {
     $variables['breadcrumb'] = NULL;
   }
   else {
