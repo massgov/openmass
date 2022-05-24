@@ -97,7 +97,7 @@ const scenarios = pages.map(function(page) {
 
 function getAuth() {
   // Trim leading and trailing quotes off of the auth variables.
-  // This works around docker-compose's handling of environmnent
+  // This works around docker-compose's handling of environment
   // variables with quotes.
   return {
     username: process.env.LOWER_ENVIR_AUTH_USER.replace(/(^["']|["']$)/g, ''),
