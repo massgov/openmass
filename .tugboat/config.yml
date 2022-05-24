@@ -50,6 +50,7 @@ services:
         - sudo apt update
         # Install imagick
         - apt-get install -y libmagickwand-dev
+        # Avoid prompts. https://stackoverflow.com/a/33647515
         - echo '' | pecl install imagick
         - docker-php-ext-enable imagick
         # Install opcache
