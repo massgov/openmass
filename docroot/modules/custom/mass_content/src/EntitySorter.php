@@ -85,7 +85,7 @@ class EntitySorter {
           break;
 
         case 'curated_list':
-          $date = $this->formatDateValue(\DATE_ISO8601, $object->created->value);
+          $date = $this->formatDateValue($object->created->value);
           break;
 
         case 'info_details':
@@ -94,7 +94,7 @@ class EntitySorter {
           break;
 
         default:
-          $date = date(\DATE_ISO8601, $object->changed->value);
+          $date = $this->formatDateValue($object->changed->value);
       }
     }
     elseif ($object instanceof Media) {
