@@ -4,14 +4,14 @@ namespace Drupal\Tests\mass_hierarchy\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\user\Entity\User;
-use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
 use Drupal\Tests\Traits\Core\CronRunTrait;
 
 /**
  * Tests Hierachy tab.
  */
-class HierarchyTest extends ExistingSiteWebDriverTestBase {
+class HierarchyTest extends ExistingSiteSelenium2DriverTestBase {
 
   use LoginTrait;
 
