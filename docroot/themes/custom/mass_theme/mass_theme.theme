@@ -7251,12 +7251,6 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
 
   $variables['current_page'] = end($breadcrumb)['text'];
 
-  // Remove breacrumbs from collections by check last URL element.
-  if ((strpos(end($breadcrumb)['url'] ?? '', '/collections/')) === 0) {
-    $variables['breadcrumb'] = [];
-    return;
-  }
-
   // Remove current page.
   foreach ($breadcrumb as $key => $link) {
     if ($link['url'] == "") {
@@ -7264,8 +7258,17 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
     }
   }
 
+  $collection_page = mass_content_get_collection_from_current_page();
+
+  $variables['borderless'] = FALSE;
+
+  if ((bool) $collection_page) {
+    $variables['borderless'] = (bool) ($collection_page->field_short_description->value ||
+      $collection_page->field_header_color->value);
+  }
+
   // Remove breadcrumbs for top level pages
-  if (count($breadcrumb) < 2) {
+  if (count($breadcrumb) < 2 && !((bool) $collection_page)) {
     $variables['breadcrumb'] = NULL;
   }
   else {
