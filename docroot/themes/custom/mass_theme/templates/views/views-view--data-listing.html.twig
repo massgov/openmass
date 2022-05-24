@@ -36,7 +36,7 @@
 
 {{ attach_library('mass_theme/views-view--data-listing') }}
 
-{% set banner_style = collection.description|render is not empty or collection.bg_color != "#FFF" %}
+{% set banner_style = collection is not empty and (collection.description|render is not empty or collection.bg_color != "#FFF") %}
 
 {% set primaryRelationshipContent = content.field_primary_parent %}
 {% set primaryIndicators = { "label": "part of" } %}
@@ -86,7 +86,7 @@
     {% endif %}
   {% endset %}
 
-  {% set collection = collection|merge({"content" : collection_content}) %}
+  {% set collection = (collection ?:[])|merge({"content" : collection_content}) %}
 
   {% include "@organisms/by-template/collection-header.twig" %}
 {% endif %}
