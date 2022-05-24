@@ -86,7 +86,7 @@
     {% endif %}
   {% endset %}
 
-  {% set collection = (collection ?:[])|merge({"content" : collection_content}) %}
+  {% set collection = (collection ?: [])|merge({"content" : collection_content}) %}
 
   {% include "@organisms/by-template/collection-header.twig" %}
 {% endif %}
