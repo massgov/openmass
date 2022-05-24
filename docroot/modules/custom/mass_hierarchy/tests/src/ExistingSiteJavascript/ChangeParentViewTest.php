@@ -251,10 +251,11 @@ class ChangeParentViewTest extends ExistingSiteWebDriverTestBase {
     $this->drupalGet('node/' . $child1Node->id() . '/revisions/' . $latest_vid . '/revert');
     $this->htmlOutput();
     $this->getCurrentPage()->pressButton('Revert');
-
     // Edit the node.
     $this->getCurrentPage()->clickLink('Edit');
+    $this->htmlOutput();
     // Check it has the second parent.
+
     $this->assertSession()->fieldValueEquals('Parent page', $parent2Node->label() . ' (' . $parent2Node->id() . ')');
   }
 
