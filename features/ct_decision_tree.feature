@@ -10,5 +10,5 @@ Feature: Decision Tree Content type
       | field-campaign-logo          | input      | submit        | false      |
       | field-description            | textarea   | text          | false      |
       | field-disclaimer             | input      | text          | false      |
-      | field-service-ref-services-6 | input      | text          | true       |
+      | field-service-ref-services-6 | input      | text          | false      |
       | field-start-button           | paragraphs | start-button  | false      |

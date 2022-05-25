@@ -4,23 +4,31 @@ status: true
 dependencies:
   config:
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
+    - field.field.taxonomy_term.collections.field_collection_logo
     - field.field.taxonomy_term.collections.field_default_sort
+    - field.field.taxonomy_term.collections.field_header_color
     - field.field.taxonomy_term.collections.field_landing_page
+    - field.field.taxonomy_term.collections.field_organizations
+    - field.field.taxonomy_term.collections.field_primary_parent
+    - field.field.taxonomy_term.collections.field_short_description
+    - field.field.taxonomy_term.collections.field_show_only_future_events
     - field.field.taxonomy_term.collections.field_sort_order
     - field.field.taxonomy_term.collections.field_url_name
+    - image.style.thumbnail
     - taxonomy.vocabulary.collections
   module:
+    - entity_hierarchy
     - field_group
-    - link
+    - image
     - text
 third_party_settings:
   field_group:
     group_collection_settings:
       children:
+        - group_top_banner
+        - group_hierarchy_and_breadcrumb
+        - group_sort_settings
         - field_landing_page
-        - field_all_collection_breadcrumb
-        - field_sort_order
-        - field_default_sort
       label: 'Collection Settings'
       region: content
       parent_name: ''
@@ -31,6 +39,57 @@ third_party_settings:
         id: ''
         formatter: closed
         description: 'These settings only need to be defined for the top level collection term. They don''t need to be set for topics or sub topics.'
+        required_fields: true
+    group_sort_settings:
+      children:
+        - field_sort_order
+        - field_default_sort
+        - field_show_only_future_events
+      label: 'Sorting and Results'
+      region: content
+      parent_name: group_collection_settings
+      weight: 12
+      format_type: details
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        open: true
+        description: ''
+        required_fields: true
+    group_top_banner:
+      children:
+        - field_collection_logo
+        - field_header_color
+        - field_short_description
+      label: 'Top banner'
+      region: content
+      parent_name: group_collection_settings
+      weight: 10
+      format_type: details
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        open: true
+        description: ''
+        required_fields: true
+    group_hierarchy_and_breadcrumb:
+      children:
+        - field_all_collection_breadcrumb
+        - field_primary_parent
+        - field_organizations
+      label: 'Hierarchy and Breadcrumb'
+      region: content
+      parent_name: group_collection_settings
+      weight: 11
+      format_type: details
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        open: true
+        description: ''
         required_fields: true
 id: taxonomy_term.collections.default
 targetEntityType: taxonomy_term
@@ -47,31 +106,73 @@ content:
     third_party_settings: {  }
   field_all_collection_breadcrumb:
     type: string_textfield
-    weight: 4
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_default_sort:
-    type: string_textfield
     weight: 6
     region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_landing_page:
-    type: link_default
-    weight: 3
+  field_collection_logo:
+    type: image_image
+    weight: 21
     region: content
     settings:
-      placeholder_url: ''
-      placeholder_title: ''
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+  field_default_sort:
+    type: string_textfield
+    weight: 8
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_header_color:
+    type: options_select
+    weight: 22
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_organizations:
+    type: entity_reference_autocomplete
+    weight: 16
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_primary_parent:
+    type: entity_reference_hierarchy_autocomplete
+    weight: 15
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+      hide_weight: true
+    third_party_settings: {  }
+  field_short_description:
+    type: string_textfield
+    weight: 23
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_show_only_future_events:
+    type: boolean_checkbox
+    weight: 9
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   field_sort_order:
     type: options_buttons
-    weight: 5
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -85,7 +186,7 @@ content:
     third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 4
+    weight: 5
     region: content
     settings:
       include_locked: true
@@ -100,10 +201,11 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    weight: 5
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
 hidden:
+  field_landing_page: true
   path: true
