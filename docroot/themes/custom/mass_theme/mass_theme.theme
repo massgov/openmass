@@ -5996,7 +5996,7 @@ function mass_theme_preprocess_file_link(&$variables) {
  */
 function mass_theme_preprocess_views_view(&$variables) {
   $view = $variables['view'];
-  $variables['title'] = $view->getTitle();
+  $variables['title'] = ['#markup' => $view->getTitle()];
   $variables['row_count'] = 0;
   $variables['filter_value'] = '';
 
