@@ -14,13 +14,6 @@ use Drupal\media\Entity\Media;
 class EntitySorter {
 
   /**
-   * Constructor.
-   */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager) {
-    $this->entityTypeManager = $entityTypeManager;
-  }
-
-  /**
    * Sorts an array of entities.
    *
    * @param array $entities
@@ -54,10 +47,11 @@ class EntitySorter {
    *
    * To avoid potential ambiguity, it's best to use ISO 8601 (YYYY-MM-DD) dates
    * or DateTime::createFromFormat() when possible.
+   *
    * @see https://www.php.net/manual/en/function.strtotime.php
    */
-  protected function formatDateValue($date) {
-    return date(\DATE_ISO8601, strtotime($date));
+  protected function formatDateValue($date, $convert_to_time = 1) {
+    return date(\DATE_ISO8601, $convert_to_time ? strtotime($date) : $date);
   }
 
   /**
@@ -85,7 +79,7 @@ class EntitySorter {
           break;
 
         case 'curated_list':
-          $date = $this->formatDateValue($object->created->value);
+          $date = $this->formatDateValue($object->created->value, 0);
           break;
 
         case 'info_details':
@@ -94,7 +88,7 @@ class EntitySorter {
           break;
 
         default:
-          $date = $this->formatDateValue($object->changed->value);
+          $date = $this->formatDateValue($object->changed->value, 0);
       }
     }
     elseif ($object instanceof Media) {
@@ -104,7 +98,7 @@ class EntitySorter {
 
     // If the date field is empty for any type, fallback to the last changed date.
     if (empty($date)) {
-      $date = $this->formatDateValue($object->changed->value);
+      $date = $this->formatDateValue($object->changed->value, 0);
     }
 
     return $date;
@@ -124,13 +118,9 @@ class EntitySorter {
    *   Returns 0, -1 or 1.
    */
   protected function compareDates($a, $b, $direction = 'desc') {
-    $a_date = $this->getDateValue($a);
-    $b_date = $this->getDateValue($b);
-    if (empty($a_date) || empty($b_date)) {
-      return 0;
-    }
-    $a_time = strtotime($a_date);
-    $b_time = strtotime($b_date);
+    $a_time = $this->getDateValue($a);
+    $b_time = $this->getDateValue($b);
+
     if ($a_time === $b_time) {
       return 0;
     }
