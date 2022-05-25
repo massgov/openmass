@@ -1033,11 +1033,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-service-links',
-            'tag' => 'input',
-            'type' => 'text',
-          ),
-          array (
             'field' => 'field-service-sections',
             'tag' => 'paragraphs',
             'type' => '',
