@@ -4,6 +4,7 @@ namespace Drupal\mass_content;
 
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityBase;
+use Drush\Drush;
 
 /**
  * Manages Mass Content batch processing.
@@ -111,6 +112,7 @@ class MassContentBatchManager {
       }
       _mass_content_service_page_add_contact_information($node);
       _mass_content_service_page_migration_locations($node);
+      _mass_content_service_page_migrate_additional_resources($node);
       _mass_content_service_page_cleanup_field_values($node);
 
       // Save the node.

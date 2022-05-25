@@ -122,25 +122,21 @@ class MassContentCommands extends DrushCommands {
   /**
    * Migrate Service data.
    *
+   * @param int $offset
+   *   Offset number of node to start processing
+   *   Argument provided to the drush command.
+   *
    * @param int $limit
    *   Number of nodes to process
    *   Argument provided to the drush command.
    *
    * @command mass-content:migrate-service
    *
-   * @usage mass-content:migrate-service 1000
-   *   1000 is the number of nodes that will be processed.
+   * @usage mass-content:migrate-service 1000 500
+   *   1000 is the offset where to start processing.
+   *   500 is the number of nodes that will be processed.
    */
-  public function migrateServiceData(int $limit = 0) {
-    $fields = [
-      'field_service_ref_actions_2',
-      'field_link_group',
-      'field_service_ref_actions',
-      'field_service_key_info_links_6',
-      'field_template',
-      'field_service_ref_locations',
-      'field_services_social_links'
-    ];
+  public function migrateServiceData(int $offset, int $limit) {
     // 1. Log the start of the script.
     $this->logger()->info('Update nodes batch operations start');
 
@@ -149,17 +145,8 @@ class MassContentCommands extends DrushCommands {
     try {
       $query = $storage->getQuery();
       $query->condition('type', 'service_page');
-      $orCondition = $query->orConditionGroup();
-      foreach ($fields as $field) {
-        $and = $query->andConditionGroup();
-        $and->exists($field);
-        $orCondition->condition($and);
-      }
-      $query->condition($orCondition);
       $query->sort('nid');
-      if ($limit !== 0) {
-        $query->range(0, $limit);
-      }
+      $query->range($offset, $limit);
 
       $nids = $query->execute();
     }

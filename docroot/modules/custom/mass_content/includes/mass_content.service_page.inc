@@ -6,6 +6,7 @@
  */
 
 use Drupal\paragraphs\Entity\Paragraph;
+use Drush\Drush;
 
 /**
  * Add a new service pages paragraph to the service sections field.
@@ -316,6 +317,70 @@ function _mass_content_service_page_add_social_links(&$node) {
 }
 
 /**
+ * Migrate additional resources section.
+ */
+function _mass_content_service_page_migrate_additional_resources(&$node) {
+  $link_groups = [];
+  if (!$node->field_service_links->isEmpty()) {
+    // Get the field value.
+    $field_service_links = $node->get('field_service_links')->getValue();
+    foreach ($field_service_links as $link) {
+      // Create a new link_group_link paragraph.
+      $link_group_link = Paragraph::create([
+        'type' => 'link_group_link',
+      ]);
+
+      $link_group_link->set('field_link_group_link', $link);
+      $link_group_link->save();
+      $link_groups[] = $link_group_link;
+    }
+  }
+
+  if (!$node->field_service_file->isEmpty()) {
+    // Get the field value.
+    $field_service_file = $node->get('field_service_file')->getValue();
+
+    foreach ($field_service_file as $file) {
+      // Create a new link_group_document paragraph.
+      $link_group_document = Paragraph::create([
+        'type' => 'link_group_document',
+      ]);
+
+      $link_group_document->set('field_file_download_single', $file);
+      $link_group_document->save();
+      $link_groups[] = $link_group_document;
+    }
+  }
+  
+  if (!empty($link_groups)) {
+    // Create a new flexible_link_group paragraph.
+    $additional_resources = Paragraph::create([
+      'type' => 'flexible_link_group',
+    ]);
+
+    $additional_resources->set('field_featured', 0);
+    $additional_resources->set('field_display_type', 1);
+    // 1 = Links.
+    $additional_resources->set('field_flexible_link_group_title', '');
+    $additional_resources->set('field_link_group', $link_groups);
+    $additional_resources->save();
+
+    // Create a new Service Section paragraph.
+    $new_service_section_form_paragraph = Paragraph::create([
+      'type' => 'service_section',
+    ]);
+    // Set the field values.
+    $new_service_section_form_paragraph->set('field_service_section_content', $additional_resources);
+    $new_service_section_form_paragraph->set('field_service_section_heading', 'Additional Resources');
+    $new_service_section_form_paragraph->set('field_hide_heading', 0);
+    // Save the new paragraph.
+    $new_service_section_form_paragraph->save();
+    // Add the new section to the org sections field.
+    _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph);
+  }
+}
+
+/**
  * Cleanup old values from the fields.
  */
 function _mass_content_service_page_cleanup_field_values(&$node) {
@@ -329,5 +394,7 @@ function _mass_content_service_page_cleanup_field_values(&$node) {
   $node->set('field_related_organization_type', '');
   $node->set('field_location_button_short_desc', '');
   $node->set('field_location_button_label', '');
+  $node->set('field_service_links', []);
+  $node->set('field_service_file', []);
 
 }
