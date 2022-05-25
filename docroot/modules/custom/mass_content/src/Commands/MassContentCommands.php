@@ -125,7 +125,6 @@ class MassContentCommands extends DrushCommands {
    * @param int $offset
    *   Offset number of node to start processing
    *   Argument provided to the drush command.
-   *
    * @param int $limit
    *   Number of nodes to process
    *   Argument provided to the drush command.
