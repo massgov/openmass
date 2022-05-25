@@ -92,18 +92,51 @@ function mass_theme_theme_suggestions_image_style_alter(array &$suggestions, arr
 }
 
 /**
+ * Get the collection term from the current collection term page.
+ */
+function _mass_theme_get_collection_term_from_current_page() {
+  $route = \Drupal::routeMatch();
+  $collection = $route->getParameter('collection');
+  if (empty($collection)) {
+    return FALSE;
+  }
+  $query = \Drupal::entityQuery('taxonomy_term');
+  $query->condition('field_url_name', $collection);
+  $res = $query->execute();
+  if (!$res) {
+    return FALSE;
+  }
+  $id = reset($res);
+  $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $term = $storage->load($id);
+  return $term;
+}
+
+/**
  * Implements hook_theme_suggestions_HOOK_alter().
  */
-function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
+function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, array &$variables) {
   $view = $variables['view'];
 
   // Allow all data listing views pages to use the same template file.
   if (strpos($view->id(), 'data_listing') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    // From https://massgov.atlassian.net/browse/DP-24422?focusedCommentId=268990
+    // The Data view can use the organization:
+    // Executive Office of Technology Services and Security.
+    $res = $storage->loadByProperties([
+      'title' => 'Executive Office of Technology Services and Security',
+      'type' => 'org_page'
+    ]);
+    $org = reset($res);
+    $variables['feedback_form'] = mass_feedback_form_build_feedback_form($org);
     $suggestions[] = 'views_view__data_listing';
   }
 
   // Allow all collection views pages to use the same template file.
   if (strpos($view->id(), 'collection') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
+    $term = _mass_theme_get_collection_term_from_current_page();
+    $variables['feedback_form'] = mass_feedback_form_from_orgs($term->field_organizations);
     $suggestions[] = 'views_view__data_listing';
   }
 }
