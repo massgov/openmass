@@ -351,7 +351,7 @@ function _mass_content_service_page_migrate_additional_resources(&$node) {
       $link_groups[] = $link_group_document;
     }
   }
-  
+
   if (!empty($link_groups)) {
     // Create a new flexible_link_group paragraph.
     $additional_resources = Paragraph::create([
