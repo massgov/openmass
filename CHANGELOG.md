@@ -1,5 +1,31 @@
 
 
+## [0.323.0] - May 24, 2022
+
+### Changed
+  - DP-24306: Upgrade to the latest Chrome image for tests
+  - DP-24794: - Removes "Related Services" number of links limitation on the service page..
+- Limits related services to 12 and updates field description.
+- Removes related display, 'related' sub path not used anymore for services.
+  - DP-24891: Improve performance of collection bulk tagging views.
+  - DP-24915: Only load development services on locals
+  - DP-24946: - Modify news_curated_list to not show blogpost news on News Org pages.
+- Modify RecentNews to not show blogpost news on Org pages.
+  - DP-24950: Collection filters to /admin/ma-dash/documents and its CSV export.
+  - DP-24951: Modify "no results" language for collections feature.
+  - DP-24952: Disable watch emails when using collection features.
+  
+### Fixed
+  - DP-24909: - Fixes on collection header title.
+- Showing the banner style only if the description or bg color is not empty.
+- Fix breadcrumb not appearing on collection term pages.
+- Improving breacrumb cacheability by adding entities from the hierarchy.
+  - DP-24939: This corrects editor permissions for promotional pages. Change already made in production directly.
+  - DP-24947: - Modify collection pager to make it work with sort.
+- Collection content filtered by topic pass the topic ID to collection media view.
+  
+
+
 ## [0.322.0] - May 17, 2022
 
 ### Added

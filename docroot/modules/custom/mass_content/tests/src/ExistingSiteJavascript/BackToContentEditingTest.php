@@ -6,13 +6,13 @@ use Drupal\file\Entity\File;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\Tests\paragraphs\FunctionalJavascript\ParagraphsTestBaseTrait;
 use Drupal\user\Entity\User;
-use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Ensures access links for unpublished content are generated properly.
  */
-class BackToContentEditingTest extends ExistingSiteWebDriverTestBase {
+class BackToContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
 
   use LoginTrait;
   use ParagraphsTestBaseTrait;
@@ -82,8 +82,8 @@ class BackToContentEditingTest extends ExistingSiteWebDriverTestBase {
     $this->getCurrentPage()->pressButton('Preview');
     // Back to editing.
     $this->clickLink('Back to content editing');
-    // No fatals.
-    $this->assertSession()->statusCodeEquals(200);
+    $title = $this->getSession()->getPage()->find('css', 'h1')->getText();
+    $this->assertEqual($title, 'EDIT TOPIC PAGE Test');
   }
 
 }
