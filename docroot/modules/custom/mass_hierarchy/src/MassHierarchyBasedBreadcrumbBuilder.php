@@ -59,6 +59,7 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
     }
     elseif ($route_match->getRouteName() == "view.collection_all.page_all") {
       $collection = mass_content_get_collection_from_current_page();
+      $breadcrumb->addCacheableDependency($collection);
       /** @var \Drupal\entity_hierarchy\Plugin\Field\FieldType\EntityReferenceHierarchyFieldItemList */
       $field_primary_parent = $collection->field_primary_parent;
       /** @var \Drupal\node\Entity\Node[] */
@@ -71,6 +72,8 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
     else {
       $route_entity = $this->getEntityFromRouteMatch($route_match);
     }
+
+    $breadcrumb->addCacheableDependency($route_entity);
     $entity_type = $route_entity->getEntityTypeId();
     $storage = $this->storageFactory->get($this->getHierarchyFieldFromEntity($route_entity), $entity_type);
     $ancestors = $storage->findAncestors($this->nodeKeyFactory->fromEntity($route_entity));
@@ -84,6 +87,8 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
         continue;
       }
       $entity = $ancestor_entities->offsetGet($ancestor_entity);
+      $breadcrumb->addCacheableDependency($entity);
+
       // Show just the label for the entity from the route.
       if ($entity->id() == $route_entity->id() && $route_match->getParameter('node') instanceof ContentEntityInterface && $entity->id() == $route_match->getParameter('node')->id()) {
         // Override from extended class build() method: Use field_short_title if

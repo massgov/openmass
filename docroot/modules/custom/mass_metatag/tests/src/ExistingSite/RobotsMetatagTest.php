@@ -76,13 +76,6 @@ class RobotsMetatagTest extends ExistingSiteBase {
     $this->assertStringContainsString('noindex', $content);
     $this->assertStringContainsString('follow', $content);
 
-    // Check robots metatag on related page.
-    $session->visit('/node/' . $service_page->id() . '/related');
-    $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Page loads');
-    $content = $session->getPage()->find('xpath', '//meta[@name="robots"]')->getAttribute('content');
-    $this->assertStringContainsString('noindex', $content);
-    $this->assertStringContainsString('follow', $content);
-
     // Check robots metatag on resources page.
     $session->visit('/node/' . $service_page->id() . '/resources');
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Page loads');
