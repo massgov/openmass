@@ -54,7 +54,7 @@
     'size': paragraph.field_csvtable_display_size.value,
     'class': 'ma__csvtable',
     'ariaLive': 'polite',
-    'caption': caption,
+    'caption': caption|render|striptags|trim ? caption : '',
     'skiplink': {
       'add': false,
       'text': "embedded content"
