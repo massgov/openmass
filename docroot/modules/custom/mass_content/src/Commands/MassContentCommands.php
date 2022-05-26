@@ -164,7 +164,7 @@ class MassContentCommands extends DrushCommands {
     $res = $query->execute();
     $nodes = $storage->loadMultiple($res);
     $result = [];
-    foreach($nodes as $node){
+    foreach ($nodes as $node) {
       foreach ($node->get('field_event_ref_parents')->getValue() as $target) {
         $t_node = $storage->load($target['target_id']);
         if ($t_node->bundle() == 'service_page') {
