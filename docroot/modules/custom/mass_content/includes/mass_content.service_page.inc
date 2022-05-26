@@ -381,6 +381,29 @@ function _mass_content_service_page_migrate_additional_resources(&$node) {
 }
 
 /**
+ * Add events section.
+ */
+function _mass_content_service_page_add_event_section(&$node) {
+  $event = Paragraph::create([
+    'type' => 'org_events',
+  ]);
+  $event->save();
+
+  // Create a new Service Section paragraph.
+  $new_service_section_form_paragraph = Paragraph::create([
+    'type' => 'service_section',
+  ]);
+  // Set the field values.
+  $new_service_section_form_paragraph->set('field_service_section_content', $event);
+  $new_service_section_form_paragraph->set('field_service_section_heading', 'Upcoming Events');
+  $new_service_section_form_paragraph->set('field_hide_heading', 0);
+  // Save the new paragraph.
+  $new_service_section_form_paragraph->save();
+  // Add the new section to the org sections field.
+  _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph);
+}
+
+/**
  * Cleanup old values from the fields.
  */
 function _mass_content_service_page_cleanup_field_values(&$node) {

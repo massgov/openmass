@@ -85,7 +85,7 @@ class MassContentBatchManager {
   /**
    * Process the service_page node to migrate data.
    */
-  public function processServiceNode($id, ContentEntityBase $node, $operation_details, &$context) {
+  public function processServiceNode($id, ContentEntityBase $node, array $service_with_events, $operation_details, &$context) {
     // Don't spam all the users with content update emails.
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
@@ -112,6 +112,9 @@ class MassContentBatchManager {
       }
       _mass_content_service_page_add_contact_information($node);
       _mass_content_service_page_migration_locations($node);
+      if (in_array($node->id(), $service_with_events)) {
+        _mass_content_service_page_add_event_section($node);
+      }
       _mass_content_service_page_migrate_additional_resources($node);
       _mass_content_service_page_cleanup_field_values($node);
 

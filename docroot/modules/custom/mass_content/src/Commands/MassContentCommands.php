@@ -2,8 +2,10 @@
 
 namespace Drupal\mass_content\Commands;
 
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drush\Commands\DrushCommands;
 
 /**
@@ -153,6 +155,25 @@ class MassContentCommands extends DrushCommands {
       $this->output()->writeln($e);
       $this->logger()->error('Error found @e', ['@e' => $e->getMessage()]);
     }
+
+    $now = new DrupalDateTime('now');
+    $query = \Drupal::entityQuery('node')
+      ->condition('type', 'event')
+      ->exists('field_event_ref_parents')
+      ->condition('field_event_date', $now->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT), '>=');
+    $res = $query->execute();
+    $nodes = $storage->loadMultiple($res);
+    $result = [];
+    foreach($nodes as $node){
+      foreach ($node->get('field_event_ref_parents')->getValue() as $target) {
+        $t_node = $storage->load($target['target_id']);
+        if ($t_node->bundle() == 'service_page') {
+          $result[] = $t_node->id();
+        }
+      }
+    }
+    $service_with_events = array_unique($result);
+
     // 3. Create the operations array for the batch.
     $operations = [];
     $numOperations = 0;
@@ -167,6 +188,7 @@ class MassContentCommands extends DrushCommands {
           [
             $batchId,
             $storage->load($nid),
+            $service_with_events,
             t('Updating node @nid', ['@nid' => $nid]),
           ],
         ];
