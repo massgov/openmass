@@ -34,7 +34,7 @@ class EntitySorterTest extends ExistingSiteBase {
 
     $this->entitySorter = new EntitySorter();
     $this->entitiesForSorting = $this->createEntitiesForSorting();
-    $this->expectedIndexesAsc = [1, 7, 8, 11, 5, 3, 4, 9, 12, 6, 10, 2];
+    $this->expectedIndexesAsc = [1, 7, 8, 11, 5, 3, 4, 9, 12, 6, 10, 2, 13];
   }
 
   /**
