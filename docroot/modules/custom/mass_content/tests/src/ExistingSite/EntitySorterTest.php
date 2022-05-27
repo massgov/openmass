@@ -182,4 +182,22 @@ class EntitySorterTest extends ExistingSiteBase {
     $this->assertEquals($indexes, array_reverse($this->expectedIndexesAsc), "Sort DESC is not correct");
   }
 
+  /**
+   * Ensure date sorts preserves the order if dates are the same.
+   */
+  public function testOrderIsPreservedWhenDatesAreEqual() {
+
+    $same_date = '2022-01-01';
+
+    $this->entitiesForSorting = [];
+    $this->entitiesForSorting[] = $this->createMediaWithFieldStartDate($same_date);
+    $this->entitiesForSorting[] = $this->createNodeWithSpecificCreatedValue('curated_list', $same_date);
+    $this->entitiesForSorting[] = $this->createNodeWithFieldDatePublished('advisory', $same_date);
+
+    $this->entitySorter->sortEntities($this->entitiesForSorting, 'asc');
+    $indexes = $this->getIndexesFromEntities($this->entitiesForSorting);
+
+    $this->assertEquals($indexes, [14, 15, 16], "Order is not preserved when dates are equal");
+  }
+
 }
