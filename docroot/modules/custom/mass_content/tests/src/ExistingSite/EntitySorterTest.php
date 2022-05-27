@@ -156,6 +156,11 @@ class EntitySorterTest extends ExistingSiteBase {
     $entities[] = $this->createMediaWithFieldStartDate('2011-03-24');
     $entities[] = $this->createMediaWithFieldStartDate('2015-12-19');
 
+    $entities[] = $this->createNodeWithFieldDatePublished('advisory', '2021-05-25');
+    $entities[] = $this->createNodeWithFieldDatePublished('binder', '2012-02-12');
+    $entities[] = $this->createNodeWithFieldDatePublished('decision', '2017-04-13');
+    $entities[] = $this->createNodeWithFieldDatePublished('rules', '2099-04-01');
+
     return $entities;
   }
 
