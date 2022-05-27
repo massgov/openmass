@@ -96,7 +96,7 @@ function mass_superset_views_data() {
       'help' => t('Limit pages to those with a certain eject rate.'),
       'field' => 'eject_rate',
       'id' => 'numeric',
-    ],    
+    ],
   ];
 
   $data['mass_superset_data']['rate_of_traffic_to_children'] = [
@@ -111,7 +111,7 @@ function mass_superset_views_data() {
       'help' => t('Limit pages to those with a certain rate of traffic to children.'),
       'field' => 'rate_of_traffic_to_children',
       'id' => 'numeric',
-    ],      
+    ],
   ];
 
   $data['mass_superset_data']['broken_links'] = [
@@ -126,7 +126,7 @@ function mass_superset_views_data() {
       'help' => t('Limit pages to those with a certain rate of broken links.'),
       'field' => 'broken_links',
       'id' => 'numeric',
-    ],       
+    ],
   ];
 
   $data['mass_superset_data']['grade_level'] = [
@@ -141,7 +141,7 @@ function mass_superset_views_data() {
       'help' => t('Limit pages to those with a certain reading level.'),
       'field' => 'grade_level',
       'id' => 'numeric',
-    ],      
+    ],
   ];
 
   $data['snooze'] = [];
