@@ -186,7 +186,6 @@ class EntitySorterTest extends ExistingSiteBase {
    * Ensure date sorts preserves the order if dates are the same.
    */
   public function testOrderIsPreservedWhenDatesAreEqual() {
-
     $same_date = '2022-01-01';
 
     $this->entitiesForSorting = [];
