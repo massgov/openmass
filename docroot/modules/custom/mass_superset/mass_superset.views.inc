@@ -38,6 +38,12 @@ function mass_superset_views_data() {
     'field' => [
       'id' => 'numeric',
     ],
+    'filter' => [
+      'title' => t('Page views'),
+      'help' => t('Limit pages to those with a certain number of pageviews.'),
+      'field' => 'pageviews',
+      'id' => 'numeric',
+    ],
   ];
 
   $data['mass_superset_data']['score'] = [
@@ -70,6 +76,12 @@ function mass_superset_views_data() {
       'id' => 'numeric',
       'float' => TRUE,
     ],
+    'filter' => [
+      'title' => t('Nos per 1000'),
+      'help' => t('Limit pages to those with a certain number of Nos per 1000.'),
+      'field' => 'nos_per_1000',
+      'id' => 'numeric',
+    ],
   ];
 
   $data['mass_superset_data']['eject_rate'] = [
@@ -79,6 +91,12 @@ function mass_superset_views_data() {
       'id' => 'numeric',
       'float' => TRUE,
     ],
+    'filter' => [
+      'title' => t('Eject Rate'),
+      'help' => t('Limit pages to those with a certain eject rate.'),
+      'field' => 'eject_rate',
+      'id' => 'numeric',
+    ],    
   ];
 
   $data['mass_superset_data']['rate_of_traffic_to_children'] = [
@@ -88,6 +106,12 @@ function mass_superset_views_data() {
       'id' => 'numeric',
       'float' => TRUE,
     ],
+    'filter' => [
+      'title' => t('Traffic to Children'),
+      'help' => t('Limit pages to those with a certain rate of traffic to children.'),
+      'field' => 'rate_of_traffic_to_children',
+      'id' => 'numeric',
+    ],      
   ];
 
   $data['mass_superset_data']['broken_links'] = [
@@ -97,6 +121,12 @@ function mass_superset_views_data() {
       'id' => 'numeric',
       'float' => FALSE,
     ],
+    'filter' => [
+      'title' => t('Broken Links'),
+      'help' => t('Limit pages to those with a certain rate of broken links.'),
+      'field' => 'broken_links',
+      'id' => 'numeric',
+    ],       
   ];
 
   $data['mass_superset_data']['grade_level'] = [
@@ -106,6 +136,12 @@ function mass_superset_views_data() {
       'id' => 'numeric',
       'float' => FALSE,
     ],
+    'filter' => [
+      'title' => t('Reading Level'),
+      'help' => t('Limit pages to those with a certain reading level.'),
+      'field' => 'grade_level',
+      'id' => 'numeric',
+    ],      
   ];
 
   $data['snooze'] = [];
