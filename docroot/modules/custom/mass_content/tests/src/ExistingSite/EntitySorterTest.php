@@ -134,20 +134,6 @@ class EntitySorterTest extends ExistingSiteBase {
   }
 
   /**
-   * Creates a standard object with changed value.
-   */
-  private function createObjectWithChangedValue($date) {
-    $title = $this->generateTitle(__FUNCTION__ . ' - ' . $date);
-    $date = \strtotime($date);
-
-    $object = new stdClass();
-    $object->title = $title;
-    $object->changed = new stdClass();
-    $object->changed->value = $date;
-    return $this->wrapEntity($object);
-  }
-
-  /**
    * Creates multiple entities with date, unsorted.
    */
   private function createEntitiesForSorting() {
@@ -169,10 +155,6 @@ class EntitySorterTest extends ExistingSiteBase {
     $entities[] = $this->createMediaWithFieldStartDate('2010-02-04');
     $entities[] = $this->createMediaWithFieldStartDate('2011-03-24');
     $entities[] = $this->createMediaWithFieldStartDate('2015-12-19');
-
-    $entities[] = $this->createObjectWithChangedValue('2021-05-25');
-    $entities[] = $this->createObjectWithChangedValue('2012-01-01');
-    $entities[] = $this->createObjectWithChangedValue('2017-04-13');
 
     return $entities;
   }
