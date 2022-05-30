@@ -690,6 +690,7 @@ class Organisms {
     // @todo determine how to handle options vs field value (check existence, order of importance, etc.)
     $pageBanner['icon'] = $options['icon'];
     $pageBanner['color'] = array_key_exists('color', $options) ? $options['color'] : '';
+    $pageBanner['size'] = array_key_exists('size', $options) ? $options['size'] : '';
     $pageBanner['underline'] = array_key_exists('underline', $options) ? $options['underline'] : FALSE;
 
     $pageBanner['title'] = $entity->{$fields['title']}->value;
