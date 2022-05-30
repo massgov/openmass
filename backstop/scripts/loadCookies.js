@@ -14,7 +14,12 @@ module.exports = async (page, scenario) => {
   // Override the domain based on what we are testing.
   const url = new URL(scenario.url);
   cookies = cookies.map(cookie => {
-    cookie.domain = "." + url.host;
+    if (url.host === 'mass-web') {
+      cookie.domain = "mass-web";
+    }
+    else {
+      cookie.domain = "." + url.host;
+    }
     return cookie;
   });
 
