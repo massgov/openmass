@@ -95,6 +95,7 @@ function mass_theme_theme_suggestions_image_style_alter(array &$suggestions, arr
  * Implements hook_theme_suggestions_HOOK_alter().
  */
 function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, array $variables) {
+  /** @var \Drupal\views\ViewExecutable $view */
   $view = $variables['view'];
 
   // Allow all data listing views pages to use the same template file.
@@ -3286,19 +3287,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
   if (Helper::isFieldPopulated($node, 'field_service_ref_services_6')) {
     $titleContext = t(' to @title', ['@title' => $page_title]);
     // Set up link list static options.
-    // @TODO consider making the title the field label value.
-    $num_ref_services = count($node->field_service_ref_services_6->getValue());
-    // Creates 'more' link when more than 6 services are referenced.
-    $more = [];
-    if ($num_ref_services > 6) {
-      $text_ref_services = t("See all @count", ['@count' => $num_ref_services]);
-      $more = [
-        'href' => $node->toUrl()->toString() . '/related',
-        'text' => $text_ref_services,
-        'chevron' => TRUE,
-        'labelContext' => t('related services for the @label', ['@label' => $node->label()]),
-      ];
-    }
     $linkList_options = [
       'heading' => [
         'title' => t('Related Services'),
@@ -3307,8 +3295,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
         'level' => 2,
       ],
       'stacked' => TRUE,
-      'maxItems' => 6,
-      'more' => $more,
     ];
 
     // Populate the first column.
@@ -6011,7 +5997,7 @@ function mass_theme_preprocess_file_link(&$variables) {
  */
 function mass_theme_preprocess_views_view(&$variables) {
   $view = $variables['view'];
-  $variables['title'] = $view->getTitle();
+  $variables['title'] = ['#markup' => $view->getTitle()];
   $variables['row_count'] = 0;
   $variables['filter_value'] = '';
 
@@ -7395,12 +7381,6 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
 
   $variables['current_page'] = end($breadcrumb)['text'];
 
-  // Remove breacrumbs from collections by check last URL element.
-  if ((strpos(end($breadcrumb)['url'] ?? '', '/collections/')) === 0) {
-    $variables['breadcrumb'] = [];
-    return;
-  }
-
   // Remove current page.
   foreach ($breadcrumb as $key => $link) {
     if ($link['url'] == "") {
@@ -7408,8 +7388,19 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
     }
   }
 
+  $collection_page = mass_content_get_collection_from_current_page();
+
+  $variables['borderless'] = FALSE;
+
+  if ((bool) $collection_page) {
+    $variables['borderless'] = (bool) (
+      $collection_page->field_short_description->value ||
+      $collection_page->field_header_color->value
+    );
+  }
+
   // Remove breadcrumbs for top level pages
-  if (count($breadcrumb) < 2) {
+  if (count($breadcrumb) < 2 && !((bool) $collection_page)) {
     $variables['breadcrumb'] = NULL;
   }
   else {
@@ -7443,4 +7434,43 @@ function mass_theme_preprocess_breadcrumb(&$variables) {
       'mass_schema_dataset',
     ];
   }
+}
+
+/**
+ * Fixes sort_bef_combine filter on collection pages.
+ */
+function _mass_theme_override_sort_bef_combine(&$item, $default_sort) {
+  // Pagers may have no items.
+  if (!$item) {
+    return;
+  }
+
+  // Ex. Pages are an array of items.
+  if (!isset($item['href'])) {
+    foreach ($item as &$inner_item) {
+      _mass_theme_override_sort_bef_combine($inner_item, $default_sort);
+    }
+    return;
+  }
+
+  // Parsing query string parameters and overriding default sort.
+  parse_str(ltrim($item['href'], '?'), $params);
+  $params['sort_bef_combine'] = $default_sort;
+
+  // Unneeded parameters.
+  unset($params['sort_by']);
+  unset($params['sort_order']);
+
+  // Building query string again.
+  $item['href'] = '?' . http_build_query($params);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_theme_preprocess_pager__collection_all(&$variables) {
+  $collection = mass_content_get_collection_from_current_page();
+  $param = \Drupal::request()->query->get('sort_bef_combine');
+  $default_sort = $param ?? $collection->field_default_sort->value ?? 'title_ASC';
+  _mass_theme_override_sort_bef_combine($variables['items'], $default_sort);
 }
