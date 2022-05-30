@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class LogInLinksBuilder {
 
+  protected const MAX_ANCESTORS = 5;
   /**
    * Drupal\mass_content_api\DescendantManagerInterface definition.
    *
@@ -30,6 +31,52 @@ class LogInLinksBuilder {
   public function __construct(DescendantManagerInterface $descendant_manager) {
     $this->descendantManager = $descendant_manager;
   }
+
+
+  protected function getLoginLinks($entity, $max_level = SELF::MAX_ANCESTORS) {
+    // No login links found and we have reached the max number of ancestors
+    // to look for them. Bye!
+    if ($max_level <= 0) {
+      return [];
+    }
+
+
+    $bundle = $entity->bundle();
+
+    // If page is service or organization, try to get direct links.
+    if (in_array($bundle, ['service_page', 'org_page'])) {
+      $login_links_fields_per_bundle = [
+        'service_page' => 'field_login_links',
+        'org_page' => 'field_application_login_links',
+      ];
+      $field = $login_links_fields_per_bundle[$bundle];
+      $login_links = $entity->$field;
+      if ($login_links) {
+        $list = [];
+        foreach ($login_links as $login_link) {
+          $list[] =  $login_link;
+        }
+        return $list;
+      } else {
+        // @TODO: look for joe's answer to https://massgov.atlassian.net/browse/DP-24810?focusedCommentId=274110
+          $refs = $entity->field_primary_parent->referencedEntities();
+          $parent_entity = $refs[0] ?? FALSE;
+          if ($parent_entity) {
+            return $this->getLoginLinks($parent_entity, --$max_level);
+          }
+      }
+    // Not org page or service page.
+    } else {
+      $refs = $entity->field_primary_parent->referencedEntities();
+      $parent_entity = $refs[0] ?? FALSE;
+      if ($parent_entity) {
+        return $this->getLoginLinks($parent_entity, --$max_level);
+      }
+    }
+
+    return [];
+  }
+
 
   /**
    * Build the list of contextual log in links for the current page.
@@ -62,10 +109,14 @@ class LogInLinksBuilder {
       // themselves. Otherwise, get the links from the computed log in link
       // field.
       if (in_array($bundle, array_keys($manual_field_mapping))) {
-        $list_links = $node->get($manual_field_mapping[$bundle]);
+
+        $list_links = $this->getLoginLinks($node);
+
+        // $list_links = $node->get($manual_field_mapping[$bundle]);
       }
       else {
-        $list_links = $node->get('computed_log_in_links');
+        $list_links = $this->getLoginLinks($node);
+        // $list_links = $node->get('computed_log_in_links');
       }
       foreach ($list_links as $link) {
         $uri = $link->uri;
@@ -102,9 +153,9 @@ class LogInLinksBuilder {
             ],
             'links' => $links,
           ],
-          '#cache' => [
-            'tags' => $cache_tags,
-          ],
+          // '#cache' => [
+          //   'tags' => $cache_tags,
+          // ],
         ];
       }
     }
