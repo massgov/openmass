@@ -252,7 +252,7 @@ index 0000000..d503bb6
 +  /**
 +   * {@inheritdoc}
 +   */
-+  public function styleOriginalPath(string $uri, bool $style_only = TRUE) {
++  public function styleOriginalPath($uri, $style_only = TRUE) {
 +    $scheme = StreamWrapperManager::getScheme($uri);
 +    if ($scheme) {
 +      $path = StreamWrapperManager::getTarget($uri);
