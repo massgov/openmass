@@ -41,11 +41,6 @@ assert_options(ASSERT_ACTIVE, TRUE);
 $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/development.services.yml';
 
 /**
- * Enable cache tag headers.
- */
-# $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/debug_cacheability_headers.services.yml';
-
-/**
  * Show all error messages, with backtrace information.
  *
  * In case the error level could not be fetched from the database, as for
