@@ -17,7 +17,8 @@ module.exports = async function (page, scenario, vp) {
   // state, the page goes through several steps before finishing. Notably, the
   // title tag will contain something like "Tugboat - Preview is...", which
   // we can wait for. If the server doesn't respond with a mass.gov page in
-  // 60 seconds, this will time out.
+  // 60 seconds, this will time out. To manually suspend a preview for testing,
+  // use `tugboat suspend <id>` at the command line.
   if (new RegExp('.*tugboat.qa.*').test(page.url())) {
     try {
       await page.waitForFunction("new RegExp('.*Tugboat.*').test(document.title) !== true", {timeout: 60 * 1000})
