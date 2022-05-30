@@ -36,25 +36,34 @@
 
 {{ attach_library('mass_theme/views-view--data-listing') }}
 
+{% set banner_style = collection is not empty and (collection.description|render is not empty or collection.bg_color != "#FFF") %}
+
 {% set primaryRelationshipContent = content.field_primary_parent %}
 {% set primaryIndicators = { "label": "part of" } %}
-{% set secondaryIndicators = { "label":  term.field_organizations is not empty ? "offered by" : "" } %}
-
-{% embed "@molecules/relationship-indicators.twig" with {
-  "relationshipIndicators": {
-    "pageTitle": node.label,
-    "secondary": secondaryIndicators,
-    "borderless": true
+{% set secondaryIndicators = banner_style ? {} : {
+    "label":  term.field_organizations is not empty ? "offered by" : "",
+    "icon": "building",
+    "groupAfter": 3
   }
-} %}
+%}
 
-  {% block primaryRelationship %}
-    {{ primaryRelationshipContent }}
-  {% endblock %}
-  {% block secondaryRelationship %}
-    {{ content.field_organizations }}
-  {% endblock %}
-{% endembed %}
+{% if term.field_organizations is not empty %}
+  {% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "pageTitle": title,
+      "secondary": secondaryIndicators,
+      "borderless": true
+    }
+  } %}
+
+    {% block primaryRelationship %}
+      {{ primaryRelationshipContent }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+  {% endembed %}
+{% endif %}
 
 {%
   set classes = [
@@ -65,8 +74,7 @@
   ]
 %}
 
-{% if collection.bg_color is not empty %}
-
+{% if banner_style %}
   {% set collection_content %}
     <div class="collection-header__title">
       {{ collection.title }}
@@ -78,7 +86,7 @@
     {% endif %}
   {% endset %}
 
-  {% set collection = collection|merge({"content" : collection_content}) %}
+  {% set collection = (collection ?: [])|merge({"content" : collection_content}) %}
 
   {% include "@organisms/by-template/collection-header.twig" %}
 {% endif %}
@@ -90,8 +98,8 @@
   administrators and content administrators are the only users that
   can edit Collection term names.
   #}
-  {% if collection.bg_color is empty %}
-    <h1>{{ title|raw }}</h1>
+  {% if not banner_style %}
+    <h1>{{ title }}</h1>
   {% endif %}
 
   <aside class="sidebar">

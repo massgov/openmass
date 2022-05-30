@@ -938,11 +938,15 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
     $order_by = [$res['key'] => $res['value']];
   }
 
-  // Get the TermID passed to collection_all view.
+  // Get the Collection ID passed to collection_all view.
   $collection_id = $query->getArguments()[':taxonomy_index_tid'] ?? NULL;
 
+  // Get the Topic ID passed to collection_all view.
+  $topic_id = $query->getArguments()[':node__field_collections_field_collections_target_id_entityreference_filter'] ?? NULL;
+
   // Executes collection_all_media to then get its query.
-  views_get_view_result('collection_all_media', 'default', $collection_id);
+  // Pass Topic ID if any, if not, pass Collection ID.
+  views_get_view_result('collection_all_media', 'default', $topic_id ?? $collection_id);
 
   /** @var Drupal\Core\Database\Query\Select $media_query */
   $media_query = mass_content_query_collection_media();

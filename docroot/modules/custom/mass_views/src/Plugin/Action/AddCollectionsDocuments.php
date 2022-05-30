@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @Action(
  *   id = "mass_views_add_documents_collections",
- *   label = @Translation("Add Collections to Documents"),
+ *   label = @Translation("Add documents to a collection"),
  *   type = "media"
  * )
  */
