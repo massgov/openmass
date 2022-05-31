@@ -4,7 +4,6 @@ namespace Drupal\mass_content;
 
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Url;
-use Drupal\mass_content_api\DescendantManagerInterface;
 use Drupal\node\NodeInterface;
 
 /**
@@ -12,23 +11,7 @@ use Drupal\node\NodeInterface;
  */
 class LogInLinksBuilder {
 
-  protected const MAX_ANCESTORS = 5;
-  /**
-   * Drupal\mass_content_api\DescendantManagerInterface definition.
-   *
-   * @var \Drupal\mass_content_api\DescendantManagerInterface
-   */
-  protected $descendantManager;
-
-  /**
-   * Constructor.
-   *
-   * @param \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager
-   *   The descendant manager service.
-   */
-  public function __construct(DescendantManagerInterface $descendant_manager) {
-    $this->descendantManager = $descendant_manager;
-  }
+  public const MAX_ANCESTORS = 5;
 
   /**
    * Searches for contextual login links on current node and its ancestors.
