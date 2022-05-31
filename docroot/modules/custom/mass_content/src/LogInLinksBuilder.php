@@ -11,7 +11,7 @@ use Drupal\node\NodeInterface;
  */
 class LogInLinksBuilder {
 
-  public const MAX_ANCESTORS = 5;
+  public const MAX_ANCESTORS = 6;
 
   /**
    * Searches for contextual login links on current node and its ancestors.
