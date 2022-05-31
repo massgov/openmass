@@ -33,7 +33,7 @@ class LogInLinksBuilder {
   /**
    * Searches for contextual login links on current node and its ancestors.
    */
-  public function getContextualLoginLinks($entity, &$entities_hierarchy = [], $max_level = SELF::MAX_ANCESTORS) {
+  public function getContextualLoginLinks($entity, &$entities_hierarchy = [], $max_level = self::MAX_ANCESTORS) {
     // No login links found and we have reached the max number of ancestors
     // to look for them. Bye!
     if ($max_level <= 0) {
@@ -55,7 +55,7 @@ class LogInLinksBuilder {
         $list = [];
         // Collecting links.
         foreach ($login_links as $login_link) {
-          $list[] =  $login_link;
+          $list[] = $login_link;
         }
         return $list;
       }
@@ -65,7 +65,6 @@ class LogInLinksBuilder {
     $entities_hierarchy[] = $entity;
     return $parent_entity ? $this->getContextualLoginLinks($parent_entity, $entities_hierarchy, --$max_level) : [];
   }
-
 
   /**
    * Build the list of contextual log in links for the current page.
@@ -87,7 +86,7 @@ class LogInLinksBuilder {
 
       // Adding cache tags of all the ancestors needed to build the links.
       foreach ($entities_hierarchy as $entity) {
-        $cache_tags[] = 'node:'. $entity->id();
+        $cache_tags[] = 'node:' . $entity->id();
       }
 
       foreach ($list_links as $link) {
