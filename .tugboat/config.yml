@@ -47,7 +47,13 @@ services:
     commands:
       # Commands that set up the basic preview infrastructure
       init:
-        # Install opcache and imagemagick.
+        - sudo apt update
+        # Install imagick
+        - apt-get install -y libmagickwand-dev
+        # Avoid prompts. https://stackoverflow.com/a/33647515
+        - echo '' | pecl install imagick
+        - docker-php-ext-enable imagick
+        # Install opcache
         - docker-php-ext-install opcache
         # Needed for image styles.
         - a2enmod headers rewrite
