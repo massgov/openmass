@@ -1,0 +1,702 @@
+diff --git a/src/DownloadManager.php b/src/DownloadManager.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..d503bb6f5f440b496641ae388d7277e60e0178bd
+--- /dev/null
++++ b/src/DownloadManager.php
+@@ -0,0 +1,233 @@
++<?php
++
++namespace Drupal\stage_file_proxy;
++
++use Drupal\Component\Utility\UrlHelper;
++use Drupal\Core\Config\ConfigFactoryInterface;
++use Drupal\Core\File\FileSystemInterface;
++use Drupal\Core\Lock\LockBackendInterface;
++use Drupal\Core\StreamWrapper\PublicStream;
++use Drupal\Core\StreamWrapper\StreamWrapperManager;
++use Drupal\Core\Utility\Error;
++use GuzzleHttp\Client;
++use GuzzleHttp\Exception\GuzzleException;
++use Psr\Log\LoggerInterface;
++
++/**
++ * Download manager.
++ *
++ * @internal
++ */
++final class DownloadManager implements DownloadManagerInterface {
++
++  /**
++   * The HTTP client.
++   *
++   * @var \GuzzleHttp\Client
++   */
++  private Client $client;
++
++  /**
++   * The file system.
++   *
++   * @var \Drupal\Core\File\FileSystemInterface
++   */
++  private FileSystemInterface $fileSystem;
++
++  /**
++   * The logger.
++   *
++   * @var \Psr\Log\LoggerInterface
++   */
++  private LoggerInterface $logger;
++
++  /**
++   * The config factory.
++   *
++   * @var \Drupal\Core\Config\ConfigFactoryInterface
++   */
++  private ConfigFactoryInterface $configFactory;
++
++  /**
++   * @var \Drupal\Core\Lock\LockBackendInterface
++   */
++  private LockBackendInterface $lock;
++
++  /**
++   * {@inheritdoc}
++   */
++  public function __construct(Client $client, FileSystemInterface $file_system, LoggerInterface $logger, ConfigFactoryInterface $config_factory, LockBackendInterface $lock) {
++    $this->client = $client;
++    $this->fileSystem = $file_system;
++    $this->logger = $logger;
++    $this->configFactory = $config_factory;
++    $this->lock = $lock;
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function fetch(string $server, string $remote_file_dir, string $relative_path, array $options): bool {
++    $url = $server . '/' . UrlHelper::encodePath($remote_file_dir . '/' . $relative_path);
++    $lock_id = 'stage_file_proxy:' . md5($url);
++    while(!$this->lock->acquire($lock_id)) {
++      $this->lock->wait($lock_id, 1);
++    }
++
++    try {
++      // Fetch remote file.
++      $options['Connection'] = 'close';
++      $response = $this->client->get($url, $options);
++
++      $result = $response->getStatusCode();
++      if ($result != 200) {
++        $this->logger->warning('HTTP error @errorcode occurred when trying to fetch @remote.', [
++          '@errorcode' => $result,
++          '@remote' => $url,
++        ]);
++        $this->lock->release($lock_id);
++        return FALSE;
++      }
++
++      // Prepare local target directory and save downloaded file.
++      $file_dir = $this->filePublicPath();
++      $destination = $file_dir . '/' . dirname($relative_path);
++      if (!$this->fileSystem->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
++        $this->logger->error('Unable to prepare local directory @path.', ['@path' => $destination]);
++        $this->lock->release($lock_id);
++        return FALSE;
++      }
++
++      $destination = str_replace('///', '//', "$destination/") . $this->fileSystem->basename($relative_path);
++
++      $response_headers = $response->getHeaders();
++      $content_length = array_shift($response_headers['Content-Length']);
++      $response_data = $response->getBody()->getContents();
++      if (isset($content_length) && strlen($response_data) != $content_length) {
++        $this->logger->error('Incomplete download. Was expecting @content-length bytes, actually got @data-length.', [
++          '@content-length' => $content_length,
++          '@data-length' => $content_length,
++        ]);
++        $this->lock->release($lock_id);
++        return FALSE;
++      }
++
++      if ($this->writeFile($destination, $response_data)) {
++        $this->lock->release($lock_id);
++        return TRUE;
++      }
++      $this->logger->error('@remote could not be saved to @path.', ['@remote' => $url, '@path' => $destination]);
++      $this->lock->release($lock_id);
++      return FALSE;
++    }
++    catch (GuzzleException $e) {
++      $this->logger->error(
++        'Stage File Proxy encountered an error when retrieving file @url. @message in %function (line %line of %file).',
++        Error::decodeException($e) + ['@url' => $url]);
++      $this->lock->release($lock_id);
++      return FALSE;
++    }
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function filePublicPath(): string {
++    return PublicStream::basePath();
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function styleOriginalPath($uri, $style_only = TRUE) {
++    $scheme = StreamWrapperManager::getScheme($uri);
++    if ($scheme) {
++      $path = StreamWrapperManager::getTarget($uri);
++    }
++    else {
++      $path = $uri;
++      $scheme = $this->configFactory->get('system.file')->get('default_scheme');
++    }
++
++    // It is a styles path, so we extract the different parts.
++    if (strpos($path, 'styles') === 0) {
++      // Then the path is like styles/[style_name]/[schema]/[original_path].
++      return preg_replace('/styles\/.*\/(.*)\/(.*)/U', '$1://$2', $path);
++    }
++    // Else it seems to be the original.
++    elseif ($style_only == FALSE) {
++      return "$scheme://$path";
++    }
++    else {
++      return FALSE;
++    }
++  }
++
++  /**
++   * Use write & rename instead of write.
++   *
++   * Perform the replace operation. Since there could be multiple processes
++   * writing to the same file, the best option is to create a temporary file in
++   * the same directory and then rename it to the destination. A temporary file
++   * is needed if the directory is mounted on a separate machine; thus ensuring
++   * the rename command stays local.
++   *
++   * @param string $destination
++   *   A string containing the destination location.
++   * @param string $data
++   *   A string containing the contents of the file.
++   *
++   * @return bool
++   *   True if write was successful. False if write or rename failed.
++   */
++  private function writeFile($destination, $data) {
++    // Get a temporary filename in the destination directory.
++    $dir = $this->fileSystem->dirname($destination) . '/';
++    $temporary_file = $this->fileSystem->tempnam($dir, 'stage_file_proxy_');
++    $temporary_file_copy = $temporary_file;
++
++    // Get the extension of the original filename and append it to the temp file
++    // name. Preserves the mime type in different stream wrapper
++    // implementations.
++    $parts = pathinfo($destination);
++    $extension = '.' . $parts['extension'];
++    if ($extension === '.gz') {
++      $parts = pathinfo($parts['filename']);
++      $extension = '.' . $parts['extension'] . $extension;
++    }
++    // Move temp file into the destination dir if not in there.
++    // Add the extension on as well.
++    $temporary_file = str_replace(substr($temporary_file, 0, strpos($temporary_file, 'stage_file_proxy_')), $dir, $temporary_file) . $extension;
++
++    // Preform the rename, adding the extension to the temp file.
++    if (!@rename($temporary_file_copy, $temporary_file)) {
++      // Remove if rename failed.
++      @unlink($temporary_file_copy);
++      return FALSE;
++    }
++
++    // Save to temporary filename in the destination directory.
++    $filepath = $this->fileSystem->saveData($data, $temporary_file, FileSystemInterface::EXISTS_REPLACE);
++
++    // Perform the rename operation if the write succeeded.
++    if ($filepath) {
++      if (!@rename($filepath, $destination)) {
++        // Unlink and try again for windows. Rename on windows does not replace
++        // the file if it already exists.
++        @unlink($destination);
++        if (!@rename($filepath, $destination)) {
++          // Remove temporary_file if rename failed.
++          @unlink($filepath);
++        }
++      }
++    }
++
++    // Final check; make sure file exists & is not empty.
++    $result = FALSE;
++    if (file_exists($destination) & filesize($destination) != 0) {
++      $result = TRUE;
++    }
++    return $result;
++  }
++
++}
+diff --git a/src/DownloadManagerInterface.php b/src/DownloadManagerInterface.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..9530050f3d48675edd62a1df41e900f2af6bf257
+--- /dev/null
++++ b/src/DownloadManagerInterface.php
+@@ -0,0 +1,49 @@
++<?php
++declare(strict_types=1);
++
++namespace Drupal\stage_file_proxy;
++
++/**
++ * Interface for DownloadManagers.
++ */
++interface DownloadManagerInterface {
++
++  /**
++   * Downloads a remote file and saves it to the local files directory.
++   *
++   * @param string $server
++   *   The origin server URL.
++   * @param string $remote_file_dir
++   *   The relative path to the files directory on the origin server.
++   * @param string $relative_path
++   *   The path to the requested resource relative to the files directory.
++   * @param array $options
++   *   Options for the request.
++   *
++   * @return bool
++   *   Returns true if the content was downloaded, otherwise false.
++   */
++  public function fetch(string $server, string $remote_file_dir, string $relative_path, array $options): bool;
++
++  /**
++   * Helper to retrieve the file directory.
++   */
++  public function filePublicPath(): string;
++
++  /**
++   * Retrieves original path for a styled image.
++   *
++   * @param string $uri
++   *   A uri or path (may be prefixed with scheme).
++   * @param bool $style_only
++   *   Indicates if, the function should only return paths retrieved from style
++   *   paths. Defaults to TRUE.
++   *
++   * @return bool|mixed|string
++   *   A file URI pointing to the given original image.
++   *   If $style_only is set to TRUE and $uri is no style-path, FALSE is
++   *   returned.
++   */
++  public function styleOriginalPath(string $uri, bool $style_only = TRUE);
++
++}
+diff --git a/src/EventSubscriber/ProxySubscriber.php b/src/EventSubscriber/ProxySubscriber.php
+index 8be00c66647ce783ed9780f3c924a1af11ec5e19..4787921d1ca66ef5864d0d1d687e497f00fe3885 100644
+--- a/src/EventSubscriber/ProxySubscriber.php
++++ b/src/EventSubscriber/ProxySubscriber.php
+@@ -17,6 +17,8 @@ use Symfony\Component\HttpKernel\KernelEvents;
+ 
+ /**
+  * Stage file proxy subscriber for controller requests.
++ *
++ * @deprecated in 8.x-1.3, will be removed in 2.0.
+  */
+ class ProxySubscriber implements EventSubscriberInterface {
+ 
+diff --git a/src/EventSubscriber/StageFileProxySubscriber.php b/src/EventSubscriber/StageFileProxySubscriber.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..392fe2d9b532d3efc2c5ce20ca82f0e62a1eeeca
+--- /dev/null
++++ b/src/EventSubscriber/StageFileProxySubscriber.php
+@@ -0,0 +1,212 @@
++<?php
++
++namespace Drupal\stage_file_proxy\EventSubscriber;
++
++use Drupal\Component\Utility\UrlHelper;
++use Drupal\Core\Config\ConfigFactoryInterface;
++use Drupal\Core\StreamWrapper\StreamWrapperManager;
++use Drupal\Core\Url;
++use Drupal\stage_file_proxy\DownloadManagerInterface;
++use Drupal\stage_file_proxy\EventDispatcher\AlterExcludedPathsEvent;
++use Drupal\stage_file_proxy\FetchManagerInterface;
++use Psr\Log\LoggerInterface;
++use Symfony\Component\EventDispatcher\EventDispatcherInterface;
++use Symfony\Component\EventDispatcher\EventSubscriberInterface;
++use Symfony\Component\HttpFoundation\RequestStack;
++use Symfony\Component\HttpKernel\Event\GetResponseEvent;
++use Symfony\Component\HttpKernel\KernelEvents;
++
++/**
++ * Stage file proxy subscriber for controller requests.
++ */
++class StageFileProxySubscriber implements EventSubscriberInterface {
++
++  /**
++   * The manager used to fetch the file against.
++   *
++   * @var \Drupal\stage_file_proxy\DownloadManagerInterface
++   */
++  protected $manager;
++
++  /**
++   * The logger.
++   *
++   * @var \Psr\Log\LoggerInterface
++   */
++  protected $logger;
++
++  /**
++   * The event dispatcher.
++   *
++   * @var \Symfony\Component\EventDispatcher\EventDispatcherInterface
++   */
++  protected $eventDispatcher;
++
++  /**
++   * The configuration factory.
++   *
++   * @var \Drupal\Core\Config\ConfigFactoryInterface
++   */
++  protected $configFactory;
++
++  /**
++   * The request stack.
++   *
++   * @var \Symfony\Component\HttpFoundation\RequestStack
++   */
++  protected $requestStack;
++
++  /**
++   * Construct the FetchManager.
++   *
++   * @param \Drupal\stage_file_proxy\DownloadManagerInterface $manager
++   *   The manager used to fetch the file against.
++   * @param \Psr\Log\LoggerInterface $logger
++   *   The logger interface.
++   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
++   *   The event dispatcher.
++   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
++   *   The config factory.
++   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
++   *   The request stack.
++   */
++  public function __construct(DownloadManagerInterface $manager, LoggerInterface $logger, EventDispatcherInterface $event_dispatcher, ConfigFactoryInterface $config_factory, RequestStack $request_stack) {
++    $this->manager = $manager;
++    $this->logger = $logger;
++    $this->eventDispatcher = $event_dispatcher;
++    $this->configFactory = $config_factory;
++    $this->requestStack = $request_stack;
++  }
++
++  /**
++   * Fetch the file from it's origin.
++   *
++   * @param \Symfony\Component\HttpKernel\Event\GetResponseEvent $event
++   *   The event to process.
++   */
++  public function checkFileOrigin(GetResponseEvent $event) {
++    $config = $this->configFactory->get('stage_file_proxy.settings');
++
++    // Get the origin server.
++    $server = $config->get('origin');
++
++    // Quit if no origin given.
++    if (!$server) {
++      return;
++    }
++
++    // Quit if we are the origin, ignore http(s).
++    if (preg_replace('#^[a-z]*://#u', '', $server) === $event->getRequest()->getHost()) {
++      return;
++    }
++
++    $file_dir = $this->manager->filePublicPath();
++    $request_path = $event->getRequest()->getPathInfo();
++
++    $request_path = mb_substr($request_path, 1);
++
++    if (strpos($request_path, '' . $file_dir) !== 0) {
++      return;
++    }
++
++    // Disallow directory traversal.
++    if (in_array('..', explode('/', $request_path))) {
++      return;
++    }
++
++    // Moving to parent directory is insane here, so prevent that.
++    if (in_array('..', explode('/', $request_path))) {
++      return;
++    }
++
++    $alter_excluded_paths_event = new AlterExcludedPathsEvent([]);
++    $this->eventDispatcher->dispatch('stage_file_proxy.alter_excluded_paths', $alter_excluded_paths_event);
++    $excluded_paths = $alter_excluded_paths_event->getExcludedPaths();
++    foreach ($excluded_paths as $excluded_path) {
++      if (strpos($request_path, $excluded_path) !== FALSE) {
++        return;
++      }
++    }
++
++    // Note if the origin server files location is different. This
++    // must be the exact path for the remote site's public file
++    // system path, and defaults to the local public file system path.
++    $remote_file_dir = trim($config->get('origin_dir'));
++    if (!$remote_file_dir) {
++      $remote_file_dir = $file_dir;
++    }
++
++    $request_path = rawurldecode($request_path);
++    // Path relative to file directory. Used for hotlinking.
++    $relative_path = mb_substr($request_path, mb_strlen($file_dir) + 1);
++    // If file is fetched and use_imagecache_root is set, original is used.
++    $paths = [$relative_path];
++
++    // Webp support.
++    $is_webp = FALSE;
++    if (strpos($relative_path, '.webp')) {
++      $paths[] = str_replace('.webp', '', $relative_path);
++      $is_webp = TRUE;
++    }
++
++    foreach ($paths as $relative_path) {
++      $fetch_path = $relative_path;
++
++      // Is this imagecache? Request the root file and let imagecache resize.
++      // We check this first so locally added files have precedence.
++      $original_path = $this->manager->styleOriginalPath($relative_path, TRUE);
++      if ($original_path && !$is_webp) {
++        if (file_exists($original_path)) {
++          // Imagecache can generate it without our help.
++          return;
++        }
++        if ($config->get('use_imagecache_root')) {
++          // Config says: Fetch the original.
++          $fetch_path = StreamWrapperManager::getTarget($original_path);
++        }
++      }
++
++      $query = $this->requestStack->getCurrentRequest()->query->all();
++      $query_parameters = UrlHelper::filterQueryParameters($query);
++      $options = [
++        'verify' => $config->get('verify'),
++      ];
++
++      if ($config->get('hotlink')) {
++
++        $location = Url::fromUri("$server/$remote_file_dir/$relative_path", [
++          'query' => $query_parameters,
++          'absolute' => TRUE,
++        ])->toString();
++
++      }
++      elseif ($this->manager->fetch($server, $remote_file_dir, $fetch_path, $options)) {
++        // Refresh this request & let the web server work out mime type, etc.
++        $location = Url::fromUri('base://' . $request_path, [
++          'query' => $query_parameters,
++          'absolute' => TRUE,
++        ])->toString();
++        // Avoid redirection caching in upstream proxies.
++        header("Cache-Control: must-revalidate, no-cache, post-check=0, pre-check=0, private");
++      }
++
++      if (isset($location)) {
++        header("Location: $location");
++        exit;
++      }
++    }
++  }
++
++  /**
++   * Registers the methods in this class that should be listeners.
++   *
++   * @return array
++   *   An array of event listener definitions.
++   */
++  public static function getSubscribedEvents() {
++    // Priority 240 is after ban middleware but before page cache.
++    $events[KernelEvents::REQUEST][] = ['checkFileOrigin', 240];
++    return $events;
++  }
++
++}
+diff --git a/src/FetchManager.php b/src/FetchManager.php
+index f0a4ddf1c1208b42b59b6c933a6f185c77c9fd11..d005cbe6f5f0649fbd719112106ef0f6d9d9b757 100644
+--- a/src/FetchManager.php
++++ b/src/FetchManager.php
+@@ -5,6 +5,7 @@ namespace Drupal\stage_file_proxy;
+ use Drupal\Component\Utility\UrlHelper;
+ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\File\FileSystemInterface;
++use Drupal\Core\Lock\LockBackendInterface;
+ use Drupal\Core\StreamWrapper\PublicStream;
+ use Drupal\Core\StreamWrapper\StreamWrapperManager;
+ use Drupal\Core\Utility\Error;
+@@ -45,6 +46,11 @@ class FetchManager implements FetchManagerInterface {
+    */
+   protected $configFactory;
+ 
++  /**
++   * @var \Drupal\stage_file_proxy\DownloadManager
++   */
++  protected DownloadManager $downloadManager;
++
+   /**
+    * {@inheritdoc}
+    */
+@@ -53,94 +59,28 @@ class FetchManager implements FetchManagerInterface {
+     $this->fileSystem = $file_system;
+     $this->logger = $logger;
+     $this->configFactory = $config_factory;
++    $this->downloadManager = new DownloadManager($client, $file_system, $logger, $config_factory, \Drupal::lock());
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+   public function fetch($server, $remote_file_dir, $relative_path, array $options) {
+-    $url = $server . '/' . UrlHelper::encodePath($remote_file_dir . '/' . $relative_path);
+-    try {
+-      // Fetch remote file.
+-      $options['Connection'] = 'close';
+-      $response = $this->client->get($url, $options);
+-
+-      $result = $response->getStatusCode();
+-      if ($result != 200) {
+-        $this->logger->warning('HTTP error @errorcode occurred when trying to fetch @remote.', [
+-          '@errorcode' => $result,
+-          '@remote' => $url,
+-        ]);
+-        return FALSE;
+-      }
+-
+-      // Prepare local target directory and save downloaded file.
+-      $file_dir = $this->filePublicPath();
+-      $destination = $file_dir . '/' . dirname($relative_path);
+-      if (!$this->fileSystem->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
+-        $this->logger->error('Unable to prepare local directory @path.', ['@path' => $destination]);
+-        return FALSE;
+-      }
+-
+-      $destination = str_replace('///', '//', "$destination/") . $this->fileSystem->basename($relative_path);
+-
+-      $response_headers = $response->getHeaders();
+-      $content_length = array_shift($response_headers['Content-Length']);
+-      $response_data = $response->getBody()->getContents();
+-      if (isset($content_length) && strlen($response_data) != $content_length) {
+-        $this->logger->error('Incomplete download. Was expecting @content-length bytes, actually got @data-length.', [
+-          '@content-length' => $content_length,
+-          '@data-length' => $content_length,
+-        ]);
+-        return FALSE;
+-      }
+-
+-      if ($this->writeFile($destination, $response_data)) {
+-        return TRUE;
+-      }
+-      $this->logger->error('@remote could not be saved to @path.', ['@remote' => $url, '@path' => $destination]);
+-      return FALSE;
+-    }
+-    catch (GuzzleException $e) {
+-      $this->logger->error(
+-        'Stage File Proxy encountered an error when retrieving file @url. @message in %function (line %line of %file).',
+-        Error::decodeException($e) + ['@url' => $url]);
+-      return FALSE;
+-    }
++    return $this->downloadManager->fetch($server, $remote_file_dir, $relative_path, $options);
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+   public function filePublicPath() {
+-    return PublicStream::basePath();
++    return $this->downloadManager->filePublicPath();
+   }
+ 
+   /**
+    * {@inheritdoc}
+    */
+-  public function styleOriginalPath($uri, $style_only = TRUE) {
+-    $scheme = StreamWrapperManager::getScheme($uri);
+-    if ($scheme) {
+-      $path = StreamWrapperManager::getTarget($uri);
+-    }
+-    else {
+-      $path = $uri;
+-      $scheme = $this->configFactory->get('system.file')->get('default_scheme');
+-    }
+-
+-    // It is a styles path, so we extract the different parts.
+-    if (strpos($path, 'styles') === 0) {
+-      // Then the path is like styles/[style_name]/[schema]/[original_path].
+-      return preg_replace('/styles\/.*\/(.*)\/(.*)/U', '$1://$2', $path);
+-    }
+-    // Else it seems to be the original.
+-    elseif ($style_only == FALSE) {
+-      return "$scheme://$path";
+-    }
+-    else {
+-      return FALSE;
+-    }
++  public function styleOriginalPath(string $uri, bool $style_only = TRUE) {
++    return $this->downloadManager->styleOriginalPath();
+   }
+ 
+   /**
+@@ -157,6 +97,9 @@ class FetchManager implements FetchManagerInterface {
+    * @param string $data
+    *   A string containing the contents of the file.
+    *
++   * @deprecated Deprecated in 8.x-1.3, will be removed in 2.0. This function is
++   *   no longer used by Stage File Proxy itself.
++   *
+    * @return bool
+    *   True if write was successful. False if write or rename failed.
+    */
+diff --git a/src/FetchManagerInterface.php b/src/FetchManagerInterface.php
+index 49a1d019dc7bf351b9863169905a5e8288744a01..f847a73eea3a2ee8a6f0ba4d4c301ffe45cb08df 100644
+--- a/src/FetchManagerInterface.php
++++ b/src/FetchManagerInterface.php
+@@ -9,6 +9,9 @@ use Psr\Log\LoggerInterface;
+ 
+ /**
+  * Interface for FetchManager.
++ *
++ * @deprecated Deprecated in 8.x-1.3, will be removed in 2.0. Use
++ *   \Drupal\stage_file_proxy\DownloadManagerInterface instead.
+  */
+ interface FetchManagerInterface {
+ 
+diff --git a/stage_file_proxy.services.yml b/stage_file_proxy.services.yml
+index c170fff426db4c013ebd34356dc1944185699294..53641166997b6cf374fbaafb23076162384547b1 100644
+--- a/stage_file_proxy.services.yml
++++ b/stage_file_proxy.services.yml
+@@ -1,12 +1,22 @@
+ services:
++  stage_file_proxy.download_manager:
++    class: Drupal\stage_file_proxy\DownloadManager
++    arguments: ['@http_client', '@file_system', '@logger.channel.stage_file_proxy', '@config.factory', '@lock']
++
+   stage_file_proxy.fetch_manager:
++    deprecated: 'The "%service_id% service is deprecated. Use "stage_file_proxy.download_manager" instead'
+     class: Drupal\stage_file_proxy\FetchManager
+     arguments: ['@http_client', '@file_system', '@logger.channel.stage_file_proxy', '@config.factory']
+ 
+-  stage_file_proxy.subscriber:
+-    class: Drupal\stage_file_proxy\EventSubscriber\ProxySubscriber
++  stage_file_proxy.proxy_subscriber:
++    class: Drupal\stage_file_proxy\EventSubscriber\StageFileProxySubscriber
+     tags:
+       - { name: event_subscriber }
++    arguments: ['@stage_file_proxy.download_manager', '@logger.channel.stage_file_proxy', '@event_dispatcher', '@config.factory', '@request_stack']
++
++  stage_file_proxy.subscriber:
++    class: Drupal\stage_file_proxy\EventSubscriber\ProxySubscriber
++    deprecated: 'The "%service_id% service is deprecated. Use "stage_file_proxy.proxy_subscriber" instead'
+     arguments: ['@stage_file_proxy.fetch_manager', '@logger.channel.stage_file_proxy', '@event_dispatcher', '@config.factory', '@request_stack']
+ 
+   logger.channel.stage_file_proxy:

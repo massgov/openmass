@@ -2,7 +2,7 @@ ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
 # Install Tugboat CLI.
-RUN curl https://dashboard.tugboatqa.com/cli/linux/tugboat.tar.gz > tugboat.tar.gz && \
+RUN curl -L https://dashboard.tugboatqa.com/cli/linux/tugboat.tar.gz > tugboat.tar.gz && \
   tar -zxf tugboat.tar.gz -C /usr/local/bin/ && rm -f tugboat.tar.gz
 
 # Install CircleCI CLI.
