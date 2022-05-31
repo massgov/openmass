@@ -33,7 +33,7 @@ class LogInLinksBuilder {
   /**
    * Searches for contextual login links on current node and its ancestors.
    */
-  public function getContextualLoginLinks($entity, $max_level = SELF::MAX_ANCESTORS) {
+  public function getContextualLoginLinks($entity, &$entities_hierarchy = [], $max_level = SELF::MAX_ANCESTORS) {
     // No login links found and we have reached the max number of ancestors
     // to look for them. Bye!
     if ($max_level <= 0) {
@@ -62,7 +62,8 @@ class LogInLinksBuilder {
     }
     $refs = $entity->field_primary_parent->referencedEntities();
     $parent_entity = $refs[0] ?? FALSE;
-    return $parent_entity ? $this->getContextualLoginLinks($parent_entity, --$max_level) : [];
+    $entities_hierarchy[] = $entity;
+    return $parent_entity ? $this->getContextualLoginLinks($parent_entity, $entities_hierarchy, --$max_level) : [];
   }
 
 
@@ -77,18 +78,17 @@ class LogInLinksBuilder {
   public function buildContextualLogInLinks(array &$build, NodeInterface $node) {
     $links = $list_links = $cache_tags = [];
 
-    // Gather all the parent pages and set their ids as cache tags against
-    // this child page. This way if a link is added to the parent page it'll
-    // trickle down to the child page.
-    $this->getParentCacheTags($cache_tags, $node->id());
-
     if (
       $node->hasField('field_log_in_links') ||
       $node->hasField('field_application_login_links') ||
       $node->hasField('computed_log_in_links')
       ) {
+      $list_links = $this->getContextualLoginLinks($node, $entities_hierarchy);
 
-      $list_links = $this->getContextualLoginLinks($node);
+      // Adding cache tags of all the ancestors needed to build the links.
+      foreach ($entities_hierarchy as $entity) {
+        $cache_tags[] = 'node:'. $entity->id();
+      }
 
       foreach ($list_links as $link) {
         $uri = $link->uri;
@@ -129,27 +129,6 @@ class LogInLinksBuilder {
             'tags' => $cache_tags,
           ],
         ];
-      }
-    }
-  }
-
-  /**
-   * Adds the node cache tags for parent services pages to the render array.
-   *
-   * @param array $cache_tags
-   *   The cache tags array.
-   * @param int $node_id
-   *   The node id of the current page.
-   */
-  protected function getParentCacheTags(array &$cache_tags, $node_id) {
-    // Find all parent service pages up to 3 levels.
-    $parents = $this->descendantManager->getParents($node_id, 3);
-
-    foreach ($parents as $parent_level) {
-      foreach ($parent_level as $parent) {
-        if ($parent['type'] == 'service_page') {
-          $cache_tags[] = 'node:' . $parent['id'];
-        }
       }
     }
   }
