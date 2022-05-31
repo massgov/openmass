@@ -43,30 +43,30 @@ class LogInLinksBuilderTest extends ExistingSiteBase {
   }
 
   /**
+   * Checks contextual login links data.
+   */
+  private function checkLinksData($links, $generated_links) {
+    $this->assertCount(count($links), $generated_links,
+      "Different number of links found."
+    );
+
+    foreach ($generated_links as $index => $generated_link) {
+      $this->assertEquals($generated_link->title, $links[$index]['title'],
+        "Title is not equal at position $index");
+
+      $this->assertEquals($generated_link->uri, $links[$index]['uri'],
+        "URI is different at positoin $index");
+    }
+  }
+
+  /**
    * Checks contextual logins links from LogInLinksBuilder and UI.
    */
   private function checkContextualLogInLinks($node, $links) {
     $llb = new LogInLinksBuilder();
     $generated_links = $llb->getContextualLoginLinks($node);
 
-    $this->assertCount(count($links), $generated_links,
-      "Different number of links found."
-    );
-
-    $different_link_found = FALSE;
-    foreach ($generated_links as $index => $generated_link) {
-      if ($generated_link->uri != $links[$index]['uri']) {
-        $different_link_found = TRUE;
-        break;
-      }
-    }
-
-    if (isset($index)) {
-      $this->assertEquals(FALSE, $different_link_found,
-        "Different link found at position: $index"
-      );
-    }
-
+    $this->checkLinksData($links, $generated_links);
     $this->checkLinksRendered($node, $links);
   }
 
