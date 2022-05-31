@@ -167,7 +167,7 @@ class LogInLinksBuilderTest extends ExistingSiteBase {
     $org_1 = $this->createOrganizationWithLinks(self::LINKS_1);
     $node_1 = $this->createNodeWithParent($org_1, 'news');
     $node_2 = $this->createNodeWithParent($node_1, 'advisory');
-    $node_3 = $this->createNodeWithParent($node_2, 'person');
+    $node_3 = $this->createNodeWithParent($node_2, 'topic_page');
     $node_4 = $this->createNodeWithParent($node_3, 'service_page');
     $node_5 = $this->createNodeWithParent($node_4, 'service_page');
     $this->checkContextualLogInLinks($node_5, self::LINKS_1);
