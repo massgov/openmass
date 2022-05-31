@@ -65,6 +65,7 @@ class LogInLinksBuilder {
       $node->hasField('field_application_login_links') ||
       $node->hasField('computed_log_in_links')
       ) {
+      $entities_hierarchy = [];
       $list_links = $this->getContextualLoginLinks($node, $entities_hierarchy);
 
       // Adding cache tags of all the ancestors needed to build the links.
