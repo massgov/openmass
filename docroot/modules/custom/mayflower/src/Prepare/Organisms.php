@@ -1905,11 +1905,10 @@ class Organisms {
           $params = $url->getRouteParameters();
           $entity_type = key($params);
           $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($params[$entity_type]);
-          $entity_cache_tags = $entity ? $entity->getCacheTags() : [];
-          $cache_tags = Cache::mergeTags($entity_cache_tags, $cache_tags);
 
           // If the entity is a topic_page, include Link Groups and links.
           if (!empty($entity) && $entity->bundle() == 'topic_page') {
+            $cache_tags = Cache::mergeTags($entity->getCacheTags(), $cache_tags);
             $topic_heading = [
               'text' => trim($sections[$key]['text']) ?: $entity->label(),
             ];
