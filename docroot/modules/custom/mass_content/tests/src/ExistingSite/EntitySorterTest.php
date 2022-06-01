@@ -9,6 +9,8 @@ use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
  * Tests EntitySorter.
+ *
+ * @group existing-site
  */
 class EntitySorterTest extends ExistingSiteBase {
 
