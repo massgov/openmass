@@ -162,9 +162,6 @@
   {% set custom = (node.field_template.value == "custom" and linkGroups) %}
   {% set seeAll = false %}
 
-  {% if contactList %}
-    {% include "@organisms/by-author/contact-list.twig" %}
-  {% endif %}
   {% if default and splitColumns %}
     {% set moreInfo = "More Information"|t %}
     {# The "More Information" should only show if the split columns are being used. #}
