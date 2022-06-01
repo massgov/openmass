@@ -168,13 +168,7 @@ class Molecules {
           $alt = $options['alt'];
         }
 
-        $ariaHidden = '';
-        if ($options['ariaHidden']) {
-          $ariaHidden = $options['ariaHidden'];
-        }
-        else {
-          $ariaHidden = '';
-        }
+        $ariaHidden = $options['ariaHidden'] ?? '';
 
         $imagePromo['image'] = [
           'src' => $src,
