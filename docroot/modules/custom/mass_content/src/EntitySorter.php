@@ -50,7 +50,7 @@ class EntitySorter {
    *
    * @see https://www.php.net/manual/en/function.strtotime.php
    */
-  protected function formatDateValue($date, $convert_to_time = 1) {
+  protected function formatDateValue(string $date, bool $convert_to_time = TRUE) {
     return date(\DATE_ISO8601, $convert_to_time ? strtotime($date) : $date);
   }
 
@@ -79,7 +79,7 @@ class EntitySorter {
           break;
 
         case 'curated_list':
-          $date = $this->formatDateValue($object->created->value, 0);
+          $date = $this->formatDateValue($object->created->value, FALSE);
           break;
 
         case 'info_details':
@@ -88,7 +88,7 @@ class EntitySorter {
           break;
 
         default:
-          $date = $this->formatDateValue($object->changed->value, 0);
+          $date = $this->formatDateValue($object->changed->value, FALSE);
       }
     }
     elseif ($object instanceof Media) {
@@ -98,7 +98,7 @@ class EntitySorter {
 
     // If the date field is empty for any type, fallback to the last changed date.
     if (empty($date)) {
-      $date = $this->formatDateValue($object->changed->value, 0);
+      $date = $this->formatDateValue($object->changed->value, FALSE);
     }
 
     return $date;
