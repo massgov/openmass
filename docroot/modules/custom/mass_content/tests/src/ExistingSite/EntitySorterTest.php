@@ -14,9 +14,9 @@ class EntitySorterTest extends ExistingSiteBase {
 
   use MediaCreationTrait;
 
-  private $entitiesForSorting;
-  private $expectedIndexesAsc;
-  private $expectedIndexesDesc;
+  private array $entitiesForSorting;
+  private array $expectedIndexesAsc;
+  private array $expectedIndexesDesc;
 
   /**
    * The class to test.
