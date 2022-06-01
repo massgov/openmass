@@ -1,0 +1,16 @@
+diff --git a/src/FetchManager.php b/src/FetchManager.php
+index f0a4ddf1c1208b42b59b6c933a6f185c77c9fd11..947361f0064564fee0c074adb2b550a1fd549eca 100644
+--- a/src/FetchManager.php
++++ b/src/FetchManager.php
+@@ -202,9 +202,9 @@ class FetchManager implements FetchManagerInterface {
+       }
+     }
+ 
+-    // Final check; make sure file exists & is not empty.
++    // Final check; make sure file exists and is not empty.
+     $result = FALSE;
+-    if (file_exists($destination) & filesize($destination) != 0) {
++    if (file_exists($destination) && filesize($destination) > 0) {
+       $result = TRUE;
+     }
+     return $result;
