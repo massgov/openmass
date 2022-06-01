@@ -3,7 +3,6 @@
 namespace Drupal\mass_content;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\node\Entity\Node;
 use Drupal\mayflower\Helper;
 use Drupal\media\Entity\Media;
@@ -51,7 +50,9 @@ class EntitySorter {
    * @see https://www.php.net/manual/en/function.strtotime.php
    */
   protected function formatDateValue(string $date, bool $convert_to_time = TRUE) {
-    return date(\DATE_ISO8601, $convert_to_time ? strtotime($date) : $date);
+    /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
+    $date_formatter = \Drupal::service('date.formatter');
+    return $date_formatter->format($convert_to_time ? strtotime($date) : $date, 'custom', \DATE_ISO8601);
   }
 
   /**
