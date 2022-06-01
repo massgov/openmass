@@ -4,7 +4,6 @@ namespace Drupal\Tests\mass_content\ExistingSite;
 
 use Drupal\mass_content\EntitySorter;
 use Drupal\node\Entity\Node;
-use stdClass;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
@@ -50,7 +49,7 @@ class EntitySorterTest extends ExistingSiteBase {
    * EntitySorter expects entities to be wrapped.
    */
   private function wrapEntity($entity) {
-    $object = new stdClass();
+    $object = new \stdClass();
     $object->entity = $entity;
     return $object;
   }
