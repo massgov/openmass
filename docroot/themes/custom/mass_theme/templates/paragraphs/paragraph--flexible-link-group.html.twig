@@ -64,7 +64,12 @@
   {% endfor %}
 
   {% set calloutLinksThreeUp = {
-    'calloutLinksThreeUp': {'calloutLinks': calloutLinks}
+    'calloutLinksThreeUp': {
+      "headingText": flexible_links_group.0.title,
+      "headingDescription": flexible_links_group.0.description,
+      "headingLevel": "3",
+      'calloutLinks': calloutLinks
+    }
   } %}
 
   <div class="ma__stacked-row__container">
