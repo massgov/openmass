@@ -52,16 +52,23 @@
 
   {% set items = flexible_links_group.0.links %}
 
-  <div class="ma__sections-3up__container">
-    {% for item in items %}
-      {% include "@molecules/callout-link.twig" with {
-        "calloutLink": {
-          "text": item.text,
-          "href": item.href,
-          "theme": flexible_links_group.0.theme
-        }
-      } %}
-    {% endfor %}
+  {% set calloutLinks = [] %}
+  {% for item in items %}
+    {% set calloutLink = {
+        "text": item.text,
+        "href": item.href,
+        "theme": flexible_links_group.0.theme
+      }
+    %}
+    {% set calloutLinks = calloutLinks|merge([calloutLink]) %}
+  {% endfor %}
+
+  {% set calloutLinksThreeUp = {
+    'calloutLinksThreeUp': {'calloutLinks': calloutLinks}
+  } %}
+
+  <div class="ma__stacked-row__container">
+    {% include "@organisms/by-author/callout-links-three-up.twig" with calloutLinksThreeUp %}
   </div>
 
 {% endif %}
