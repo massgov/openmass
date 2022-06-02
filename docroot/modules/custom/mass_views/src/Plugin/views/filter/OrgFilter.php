@@ -49,7 +49,8 @@ class OrgFilter extends FilterPluginBase {
       $org_table_alias = $this->query->ensureTable('node__field_organizations', $this->relationship, $join);
 
       $p1 = $this->placeholder() . '[]';
-      $snippet = "$nid_alias.nid = $p1 OR $org_table_alias.field_organizations_target_id = $p1";
+
+      $snippet = "$nid_alias.nid " . $this->operator . " $p1 OR $org_table_alias.field_organizations_target_id " . $this->operator . " $p1";
       $this->query->addWhereExpression($this->options['group'], $snippet, [$p1 => $value]);
     }
   }
@@ -67,6 +68,29 @@ class OrgFilter extends FilterPluginBase {
       }, $this->value);
     }
     return NULL;
+  }
+
+  public function operatorOptions($which = 'title') {
+    $options = [];
+    $operators = [
+      '!=' => [
+        'title' => $this->t('Is empty (NULL)'),
+        'method' => 'opEmpty',
+        'short' => $this->t('empty'),
+        'values' => 0,
+      ],
+      '=' => [
+        'title' => $this->t('Is not empty (NOT NULL)'),
+        'method' => 'opEmpty',
+        'short' => $this->t('not empty'),
+        'values' => 0,
+      ],
+    ];
+    foreach ($operators as $id => $info) {
+      $options[$id] = $info[$which];
+    }
+
+    return $options;
   }
 
 }
