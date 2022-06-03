@@ -3,7 +3,6 @@
 namespace Drupal\mass_content;
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\node\Entity\Node;
 use Drupal\mayflower\Helper;
 use Drupal\media\Entity\Media;
@@ -12,13 +11,6 @@ use Drupal\media\Entity\Media;
  * Provides various sorting methods for lists of entities.
  */
 class EntitySorter {
-
-  /**
-   * Constructor.
-   */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager) {
-    $this->entityTypeManager = $entityTypeManager;
-  }
 
   /**
    * Sorts an array of entities.
@@ -50,6 +42,20 @@ class EntitySorter {
   }
 
   /**
+   * Sets a time format that avoid ambiguos date strings.
+   *
+   * To avoid potential ambiguity, it's best to use ISO 8601 (YYYY-MM-DD) dates
+   * or DateTime::createFromFormat() when possible.
+   *
+   * @see https://www.php.net/manual/en/function.strtotime.php
+   */
+  protected function formatDateValue(string $date, bool $convert_to_time = TRUE) {
+    /** @var \Drupal\Core\Datetime\DateFormatterInterface $date_formatter */
+    $date_formatter = \Drupal::service('date.formatter');
+    return $date_formatter->format($convert_to_time ? strtotime($date) : $date, 'custom', \DATE_ISO8601);
+  }
+
+  /**
    * Extract a date value from an entity.
    *
    * @param object $object
@@ -70,27 +76,30 @@ class EntitySorter {
         case 'regulation':
         case 'rules':
           $date = Helper::fieldValue($object, 'field_date_published');
+          $date = $this->formatDateValue($date);
           break;
 
         case 'curated_list':
-          $date = date('Y-d-m', $object->created->value);
+          $date = $this->formatDateValue($object->created->value, FALSE);
           break;
 
         case 'info_details':
           $date = Helper::fieldValue($object, 'field_info_details_last_updated');
+          $date = $this->formatDateValue($date);
           break;
 
         default:
-          $date = date('Y-d-m', $object->changed->value);
+          $date = $this->formatDateValue($object->changed->value, FALSE);
       }
     }
     elseif ($object instanceof Media) {
       $date = Helper::fieldValue($object, 'field_start_date');
+      $date = $this->formatDateValue($date);
     }
 
     // If the date field is empty for any type, fallback to the last changed date.
     if (empty($date)) {
-      $date = date('Y-d-m', $object->changed->value);
+      $date = $this->formatDateValue($object->changed->value, FALSE);
     }
 
     return $date;
@@ -110,13 +119,9 @@ class EntitySorter {
    *   Returns 0, -1 or 1.
    */
   protected function compareDates($a, $b, $direction = 'desc') {
-    $a_date = $this->getDateValue($a);
-    $b_date = $this->getDateValue($b);
-    if (empty($a_date) || empty($b_date)) {
-      return 0;
-    }
-    $a_time = strtotime($a_date);
-    $b_time = strtotime($b_date);
+    $a_time = $this->getDateValue($a);
+    $b_time = $this->getDateValue($b);
+
     if ($a_time === $b_time) {
       return 0;
     }
