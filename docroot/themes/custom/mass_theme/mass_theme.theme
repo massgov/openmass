@@ -3145,23 +3145,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
     $intro_page_content['video'] = Atoms::prepareVideo($node->field_service_video->entity, $video_options);
   }
 
-  // Prepare the Contact Us field, if it's populated.
-  if (Helper::isFieldPopulated($node, 'field_ref_contact_info')) {
-    // Set up options for contact list.
-    $contact_list_options = [
-      'heading' => [
-        'title' => t("Contact Information"),
-      ],
-      'groups' => [
-        'accordion' => TRUE,
-        'isExpanded' => FALSE,
-      ],
-    ];
-    // Prepare the contactList data object.
-    $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options, $cache_tags);
-
-  }
-
   // Prepare field_service_bg_wide, if it's populated.
   if (Helper::isFieldPopulated($node, 'field_service_bg_wide')) {
     $variables['bannerImageWide'] = Helper::getFieldImageUrl($node, 'hero1600x400_fp', 'field_service_bg_wide');
@@ -7148,6 +7131,30 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
   $variables['org_contact'] = $node->get('field_ref_contact_info_1')->view('contact_us');
   $variables['org_logo'] = $node->get('field_sub_brand')->view('logo_link');
 
+}
+
+/**
+ * Fetch contact info from parent service node.
+ */
+function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
+  $paragraph = $variables['paragraph'];
+  $node = Helper::getParentNode($paragraph);
+
+  // Prepare the Contact Us field, if it's populated.
+  if (Helper::isFieldPopulated($node, 'field_ref_contact_info')) {
+    // Set up options for contact list.
+    $contact_list_options = [
+      'heading' => [
+        'title' => t("Contact Information"),
+      ],
+      'groups' => [
+        'accordion' => TRUE,
+        'isExpanded' => FALSE,
+      ],
+    ];
+    // Prepare the contactList data object.
+    $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options);
+  }
 }
 
 /**
