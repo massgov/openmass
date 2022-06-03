@@ -44,15 +44,21 @@ class DynamicListByLabel extends QueryGeneratedDynamicEntityReferenceList {
       'service_details',
       'topic_page',
     ];
+
+    // At least one sort is required to avoid results moving around.
+    // @see https://stackoverflow.com/a/23782691/1038565
+
     $queries = [];
     $queries['node'] = \Drupal::entityQuery('node')
       ->condition('field_reusable_label.entity.tid', $term_ids, 'IN')
       ->condition('type', $types, 'IN')
-      ->condition('status', 1);
+      ->condition('status', 1)
+      ->sort('nid', 'ASC');
 
     $queries['media'] = \Drupal::entityQuery('media')
       ->condition('field_document_label.entity.tid', $term_ids, 'IN')
-      ->condition('status', 1);
+      ->condition('status', 1)
+      ->sort('vid', 'ASC');
 
     return $queries;
   }
