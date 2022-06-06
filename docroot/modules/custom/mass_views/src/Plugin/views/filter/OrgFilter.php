@@ -73,16 +73,16 @@ class OrgFilter extends FilterPluginBase {
   public function operatorOptions($which = 'title') {
     $options = [];
     $operators = [
-      '!=' => [
-        'title' => $this->t('Is empty (NULL)'),
+      '=' => [
+        'title' => $this->t('Equals'),
         'method' => 'opEmpty',
-        'short' => $this->t('empty'),
+        'short' => $this->t('equals'),
         'values' => 0,
       ],
-      '=' => [
-        'title' => $this->t('Is not empty (NOT NULL)'),
+      '!=' => [
+        'title' => $this->t('Doesn’t equal'),
         'method' => 'opEmpty',
-        'short' => $this->t('not empty'),
+        'short' => $this->t('doesn’t equal'),
         'values' => 0,
       ],
     ];
