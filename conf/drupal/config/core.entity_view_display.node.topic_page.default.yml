@@ -3,7 +3,9 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.topic_page.field_collections
     - field.field.node.topic_page.field_image_credit
+    - field.field.node.topic_page.field_display_short_description
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
     - field.field.node.topic_page.field_primary_parent
@@ -24,7 +26,6 @@ dependencies:
     - node.type.topic_page
   module:
     - entity_reference_revisions
-    - image
     - metatag
     - options
     - user
@@ -43,13 +44,21 @@ content:
     third_party_settings: {  }
     weight: 16
     region: content
+  field_collections:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 17
+    region: content
   field_image_credit:
     type: string
     label: above
     settings:
-      link_to_entity: false
+      link: true
     third_party_settings: {  }
-    weight: 9
+    weight: 17
     region: content
   field_intended_audience:
     type: list_default
@@ -66,24 +75,6 @@ content:
     third_party_settings: {  }
     weight: 14
     region: content
-  field_topic_bg_narrow:
-    type: image
-    label: above
-    settings:
-      image_link: ''
-      image_style: hero800x400
-    third_party_settings: {  }
-    weight: 5
-    region: content
-  field_topic_bg_wide:
-    type: image
-    label: above
-    settings:
-      image_link: ''
-      image_style: hero820x460
-    third_party_settings: {  }
-    weight: 4
-    region: content
   field_topic_content_cards:
     type: entity_reference_revisions_entity_view
     label: above
@@ -91,17 +82,7 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    weight: 8
-    region: content
-  field_topic_display_links:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 7
+    weight: 5
     region: content
   field_topic_lede:
     type: string
@@ -134,31 +115,6 @@ content:
     third_party_settings: {  }
     weight: 6
     region: content
-  field_topic_section_bg_narrow:
-    type: image
-    label: above
-    settings:
-      image_link: ''
-      image_style: ''
-    third_party_settings: {  }
-    weight: 12
-    region: content
-  field_topic_section_bg_wide:
-    type: image
-    label: above
-    settings:
-      image_link: ''
-      image_style: ''
-    third_party_settings: {  }
-    weight: 11
-    region: content
-  field_topic_type:
-    type: list_default
-    label: above
-    settings: {  }
-    third_party_settings: {  }
-    weight: 10
-    region: content
   links:
     settings: {  }
     third_party_settings: {  }
@@ -171,9 +127,18 @@ content:
     region: content
 hidden:
   computed_card_links: true
+  field_display_short_description: true
+  field_image_credit: true
   field_primary_parent: true
+  field_restrict_link_management: true
   field_reusable_label: true
   field_short_title: true
   field_state_organization_tax: true
+  field_topic_bg_narrow: true
+  field_topic_bg_wide: true
+  field_topic_display_links: true
   field_topic_ref_content_cards: true
+  field_topic_section_bg_narrow: true
+  field_topic_section_bg_wide: true
+  field_topic_type: true
   langcode: true

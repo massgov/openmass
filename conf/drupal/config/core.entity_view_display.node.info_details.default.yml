@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.info_details.field_data_format
     - field.field.node.info_details.field_data_resource_type
     - field.field.node.info_details.field_data_topic
+    - field.field.node.info_details.field_date_published
     - field.field.node.info_details.field_details_data_type
     - field.field.node.info_details.field_details_enable_fields
     - field.field.node.info_details.field_english_version
@@ -30,12 +31,13 @@ dependencies:
     - field.field.node.info_details.field_short_desc
     - field.field.node.info_details.field_short_title
     - field.field.node.info_details.field_state_organization_tax
+    - image.style.action_banner_large
     - node.type.info_details
   module:
     - datetime
     - entity_reference_revisions
-    - image
     - link
+    - mass_formatters
     - metatag
     - options
     - text
@@ -74,11 +76,10 @@ content:
     weight: 2
     region: content
   field_banner_image:
-    type: image
+    type: image_safe_string_url
     label: hidden
     settings:
-      image_link: ''
-      image_style: ''
+      image_style: action_banner_large
     third_party_settings: {  }
     weight: 23
     region: content
@@ -120,6 +121,15 @@ content:
       link: true
     third_party_settings: {  }
     weight: 26
+    region: content
+  field_date_published:
+    type: datetime_custom
+    label: above
+    settings:
+      timezone_override: ''
+      date_format: 'F j, Y'
+    third_party_settings: {  }
+    weight: 9
     region: content
   field_details_data_type:
     type: entity_reference_label
@@ -168,15 +178,6 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 19
-    region: content
-  field_info_details_date_publishe:
-    type: datetime_custom
-    label: above
-    settings:
-      timezone_override: ''
-      date_format: 'F j, Y'
-    third_party_settings: {  }
-    weight: 9
     region: content
   field_info_details_header_media:
     type: entity_reference_revisions_entity_view
@@ -278,6 +279,7 @@ content:
 hidden:
   computed_log_in_links: true
   field_collections: true
+  field_info_details_date_publishe: true
   field_page_template: true
   field_primary_parent: true
   field_reusable_label: true

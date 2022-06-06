@@ -28,7 +28,7 @@ class RulesMetadataTest extends MetadataTestCase {
       'type' => 'rules',
       'title' => 'Test Rules',
       'field_state_organization_tax' => [$org_term],
-      'field_rules_effective_date' => '2012-12-31',
+      'field_date_published' => '2012-12-31',
       'field_rules_overview' => 'TestOverview',
       'field_rules_type' => $rule_type,
       'field_organizations' => [$org_node],

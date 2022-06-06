@@ -30,7 +30,7 @@ class SchemaWebPageReleasedEvent extends SchemaNameBase {
    */
   public function form(array $element = []) {
     $form = parent::form($element);
-    $form['#attributes']['placeholder'] = '[node:field_decision_date]';
+    $form['#attributes']['placeholder'] = '[node:field_date_published]';
     return $form;
   }
 

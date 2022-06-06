@@ -375,6 +375,7 @@ function _mass_validation_service_page_sections_validate(array &$form, FormState
       if (!is_int($key)) {
         continue;
       }
+      _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $key, 'field_service_sections', 'field_service_section_content');
       _mass_validation_validate_mosaic_items($form_state, $paragraph);
     }
   }
@@ -1071,6 +1072,22 @@ function _mass_validation_form_node_topic_page_form_validate(array &$form, FormS
 
   // Verify links have titles.
   _mass_link_validate_paragraph($form_state, 'field_topic_content_cards', ['field_content_card_link_cards']);
+
+  // Verify multiple Link Groups have Category values.
+  if ($form_state->hasValue('field_topic_content_cards')) {
+    $link_groups = $form_state->getValue('field_topic_content_cards');
+    // Don't count the add_more item as a Link Group.
+    unset($link_groups['add_more']);
+    // If there is more than one, validate the Category fields.
+    if (count($link_groups) > 1) {
+      foreach ($link_groups as $key => $link_group) {
+        // If the Category field is empty, set the error for the current field.
+        if (empty($link_group['subform']['field_content_card_category'][0]['value'])) {
+          $form_state->setErrorByName('field_topic_content_cards][' . $key . '][subform][field_content_card_category', t('When there are multiple Link Groups, the Category field is required for each.'));
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -1096,7 +1113,7 @@ function _mass_validation_form_node_news_form_validate(array &$form, FormStateIn
   $media_contact = $form_state->getValue('field_news_media_contac');
   unset($media_contact['add_more']);
   $news_type = reset($news_type);
-  $news_type = $news_type['value'];
+  $news_type = $news_type['value'] ?? '';
   $required_news_types = [
     'press_release',
     'press_statement',
@@ -1148,7 +1165,7 @@ function mass_validation_org_page_alter_helper(array &$form) {
 /**
  * Validates mosaic items to be 5 and Hightlight image for the first item.
  */
-function _mass_validation_validate_mosaic_items(FormStateInterface &$form_state, &$paragraph) {
+function _mass_validation_validate_mosaic_items(FormStateInterface $form_state, &$paragraph) {
   if (!isset($paragraph['subform']['field_featured_item_mosaic_items'])) {
     return;
   }
@@ -1173,6 +1190,28 @@ function _mass_validation_validate_mosaic_items(FormStateInterface &$form_state,
 }
 
 /**
+ * Validates caspio items to have a URL to caspio.com.
+ */
+function _mass_validation_validate_caspio(FormStateInterface $form_state, $paragraph, $section_key, $paragraph_key, $field_wrapper, $field) {
+  if (!isset($paragraph['subform']['field_caspio_data_identifier'])) {
+    return;
+  }
+
+  foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
+    if (empty($caspioId)) {
+      continue;
+    }
+    if (preg_match('/^http(s)?:\/\/\w+\.caspio\.(com)(\/.*|$)/', $caspioId['value'])) {
+      continue;
+    }
+    $form_state->setErrorByName(
+      $field_wrapper . '][' . $section_key . '][subform][' . $field . '][' . $paragraph_key . '][subform][field_caspio_data_identifier][0][value',
+      t('Only caspio.com URL allowed. See help text for this field.')
+    );
+  }
+}
+
+/**
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_org_page_form_validate(array &$form, FormStateInterface $form_state) {
@@ -1185,15 +1224,7 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
       if (isset($section['subform']['field_section_long_form_content'])) {
         $paragraphs = $section['subform']['field_section_long_form_content'];
         foreach ($paragraphs as $paragraph_key => $paragraph) {
-          if (isset($paragraph['subform']['field_caspio_data_identifier'])) {
-            foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
-              if (!empty($caspioId)) {
-                if (!preg_match('/^http(s)?:\/\/\w+\.caspio\.(com)(\/.*|$)/', $caspioId['value'])) {
-                  $form_state->setErrorByName('field_organization_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform][field_caspio_data_identifier', t('Only caspio.com URL allowed. See help text for this field.'));
-                }
-              }
-            }
-          }
+          _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $paragraph_key, 'field_organization_sections', 'field_section_long_form_content');
           _mass_validation_validate_mosaic_items($form_state, $paragraph);
         }
       }
@@ -1443,6 +1474,19 @@ function mass_validation_preprocess_input(&$variables) {
 }
 
 /**
+ * Implements hook_form_alter().
+ */
+function mass_validation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Avoids client-side validation on all the forms in the system.
+  // See: https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
+  // Fields may be not focusable but required, for instance when they are
+  // inside a tab, then browser client-side validation stops the form
+  // submission and shows a console error. The final user doesn't
+  // know what is happening and not able to submit the form.
+  $form['#attributes']['novalidate'] = TRUE;
+}
+
+/**
  * Implements hook_form_FORM_ID_alter() for the FORM_ID() form.
  */
 function mass_validation_form_node_contact_information_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -1490,67 +1534,6 @@ function _mass_validation_form_node_contact_information_form_validate(array &$fo
     $form_state->setError($form, t('At least one contact detail field should be filled out (address, fax number, hours, links, or phone number).'));
   }
 
-}
-
-/**
- * Implements hook_field_widget_WIDGET_TYPE_form_alter().
- *
- * Since conditional fields via the module don't yet work for forms injected
- * via ajax, this is a work around for the campaign landing pages.
- */
-function mass_validation_field_widget_paragraphs_form_alter(array &$element, FormStateInterface &$form_state, $context) {
-  // Apply the following logic to both Key Message paragraph types.
-  $paragraph_types = [
-    'key_message',
-    'key_message_section',
-  ];
-  if (in_array($element['#paragraph_type'], $paragraph_types)) {
-    $form = &$element['subform'];
-    $layout = '';
-    $field_status = [];
-    if (isset($element['#prefix'])) {
-      $prefix = '#' . str_replace(['<div id="', '">'], '', $element['#prefix']) . ' ';
-    }
-
-    // Handle show/hide of the image field when the background color selected
-    // is "Solid color".
-    $bgd_style = 'color';
-    if (isset($form['field_background_type'])) {
-      $bgd_style = $form['field_background_type']['widget']['#default_value'];
-      $field_status['field_background_type'] = [
-        'field_image' => [
-          'visible' => 'image',
-        ],
-        'field_text_overlay_color' => [
-          'visible' => 'image',
-        ],
-        'field_section_text_overlay_color' => [
-          'visible' => 'image',
-        ],
-        'field_background_color' => [
-          'visible' => 'color',
-        ],
-        'field_section_background_color' => [
-          'visible' => 'color',
-        ],
-      ];
-    }
-    // Apply default load states and then the actual States API state value
-    // so that changes made by the user to the content layout field will show
-    // or hide the appropriate fields once the paragraph is loaded.
-    foreach ($field_status as $trigger_field_name => $state_field) {
-      foreach ($state_field as $field_name => $state) {
-        $form[$field_name]['#states'] = [
-          'visible' => [
-            $prefix . ':input[name*="' . $trigger_field_name . '"]' => ['value' => $state['visible']],
-          ],
-        ];
-        if ($layout !== $state['visible']) {
-          $form[$field_name]['#attributes']['style'] = 'display:none;';
-        }
-      }
-    }
-  }
 }
 
 /**

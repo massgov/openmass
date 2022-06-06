@@ -14,9 +14,17 @@
     },
     create: function (context) {
       $('.js-accordion', context).once('massAccordionCreate').each(function (index) {
+        // To ensure applying js-accordion only once.
+        // Mayflower adds js-accordion as data, so we
+        // check if this data was applied or not.
+        if ($(this).data('js-accordion')) {
+          return;
+        }
+        $(this).data('js-accordion', 1);
+
         var $el = $(this);
-        var $link = $el.find('.js-accordion-link');
-        var $content = $el.find('.js-accordion-content');
+        var $link = $el.find('.js-accordion-link').eq(0);
+        var $content = $el.find('.js-accordion-content').eq(0);
         var id = $content.attr('id') || 'accordion' + (index + 1);
         var active = checkActive($el);
         var open = $el.hasClass('is-open');

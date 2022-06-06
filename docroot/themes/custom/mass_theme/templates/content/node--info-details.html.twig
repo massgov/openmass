@@ -10,10 +10,10 @@
 {# Build list table one row at a time. #}
 {% set table_rows = [] %}
 {# Build published date row. #}
-{% if content.field_info_details_date_publishe.0 %}
+{% if content.field_date_published.0 %}
   {% set table_rows = table_rows|merge([{
-    "label": node.field_info_details_date_publishe.fieldDefinition.label ~ ':',
-    "text": (content.field_info_details_date_publishe.0)
+    "label": node.field_date_published.fieldDefinition.label ~ ':',
+    "text": (content.field_date_published.0)
   }]) %}
 {% endif %}
 
@@ -35,17 +35,20 @@
   {% endif %}
 
   {# Check if primary indicator content exists. #}
+  {% set primaryIndicators = null %}
+  {% set primaryRelationshipContent = null %}
+  {#
   {% if content.computed_related_to[0] %}
     {% set primaryIndicators = { "label": "part of" } %}
     {% set primaryRelationshipContent = content.computed_related_to %}
-  {% else %}
-    {% set primaryIndicators = null %}
-    {% set primaryRelationshipContent = null %}
   {% endif %}
+  #}
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "label": "offered by"
+      "icon": "building",
+      "label": "offered by",
+      "groupAfter": 3
     } %}
   {% endif %}
 
@@ -70,9 +73,7 @@
       "inlineLinks": translationLinks
     } %}
   {% endif %}
-
   {% if node.field_banner_image is not empty %}
-    {% set bgImage = file_url(node.field_banner_image.entity.fileuri ?? '') %}
     {% include "@organisms/by-template/illustrated-header.twig" with {
       "illustratedHeader": {
         "bgImage": bgImage,

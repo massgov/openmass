@@ -30,12 +30,12 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v12-{{ checksum "composer.lock" }}
+        - site-composer-v14-{{ checksum "composer.lock" }}
 
   save_composer_cache: &save_composer_cache
     save_cache:
       name: Save Composer cache
-      key: site-composer-v12-{{ checksum "composer.lock" }}
+      key: site-composer-v14-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
   # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
@@ -87,7 +87,7 @@ executors:
         command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
       - image: memcached:1-alpine
         command: memcached -m 128
-      - image: previousnext/chrome-headless:65
+      - image: seleniarm/standalone-chromium:4.1.4-20220429
 
 commands:
   git_configure_user:
@@ -101,15 +101,17 @@ commands:
         default: "./drush/sites/self.site.yml"
     steps:
       - run: "curl -f -o << parameters.destination >> -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml"
+  enable_cacheability_headers:
+    steps:
+      - run:
+          name: Enable Drupal HTTP debug cacheability headers
+          command: cp -f docroot/core/assets/scaffold/files/development.services.yml docroot/sites
 
 # See https://medium.com/labs42/monorepo-with-circleci-conditional-workflows-69e65d3f1bd0
 parameters:
   webhook:
     type: boolean
     default: true
-  post-trigger:
-    type: boolean
-    default: false
 
   # These params for currently used in drush ma:cf-deploy
   ma-cf-deploy:
@@ -150,15 +152,6 @@ parameters:
     type: string
     default: ""
 jobs:
-  trigger_workflows:
-    docker:
-      - image: circleci/node
-    steps:
-      - checkout
-      - run:
-          name: Trigger workflows
-          command: .circleci/circle_trigger.sh
-
   build:
     working_directory: ~/project/code
     docker:
@@ -169,6 +162,7 @@ jobs:
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
       - *save_composer_cache
       - *yarn_install
+      - enable_cacheability_headers
       - persist_to_workspace:
           root: ..
           paths: [code]
@@ -186,6 +180,7 @@ jobs:
           command: composer -n require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
       - *save_composer_cache
       - *yarn_install
+      - enable_cacheability_headers
       - persist_to_workspace:
           root: ..
           paths: [code]
@@ -259,7 +254,7 @@ jobs:
       # Make sure changelogs are parseable by PHP (since build-changelog.php requires that).
       - run: php scripts/directory-yaml-parse.php
       # Lint javascript
-      - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
+      - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: vendor/bin/phpcs -v -n -s
 
@@ -290,7 +285,12 @@ jobs:
       - run: drush status
       - run: cat /proc/cpuinfo
       - run: cat /proc/meminfo
-        # Ensure files and DTT directories are writable by www-data
+      # We've adopted the decision at https://architecture.lullabot.com/adr/20211212-config-status-check/.
+      - run:
+          name: Ensure no differences between between config on disk and config in Drupal.
+          # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
+          command: drush --no config:export --diff
+      # Ensure files and DTT directories are writable by www-data
       - run: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
       - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
       # Run DTT or Behat test command
@@ -424,6 +424,7 @@ jobs:
         type: string
         default: ""
     working_directory: /home/circleci/code
+    resource_class: xlarge
     docker:
       # Need to use docker image for these steps.
       - image: circleci/python:2.7.14
@@ -515,29 +516,8 @@ jobs:
 
 workflows:
   version: 2
-  build_validate:
-    when: << pipeline.parameters.webhook >>
-    jobs:
-      - build:
-          filters:
-            branches:
-              ignore:
-                - /^release\/.*$/
-                - /^hotfix\/.*$/
-                - master
-                - /^mayflower-dev-.*/
-      - validate:
-          requires: [build]
-          filters:
-            branches:
-              <<: *branch_ignore
-      - trigger_workflows:
-          filters:
-            branches:
-              <<: *branch_ignore
-
   build_test:
-    when: << pipeline.parameters.post-trigger >>
+    when: << pipeline.parameters.webhook >>
     jobs:
       - build:
           filters:
@@ -588,7 +568,7 @@ workflows:
     triggers:
       - schedule:
           # UTC time-zone
-          cron: "15 18 * * 2"
+          cron: "00 17 * * 2"
           filters:
             branches:
               only:

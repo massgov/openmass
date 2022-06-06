@@ -10,8 +10,10 @@ use Drupal\DrupalExtension\Context\DrupalContext;
 use Drupal\Core\Url;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
+use Drupal\node\Entity\Node;
 use GuzzleHttp\Psr7\Uri;
 use Webmozart\PathUtil\Path;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Defines application features from the specific context.
@@ -721,7 +723,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ],
           [
-            'field' => 'field-binder-date-published',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ],
@@ -776,7 +778,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-advisory-date',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -835,7 +837,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-regulation-last-updated',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -928,7 +930,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-decision-date	',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -1026,32 +1028,12 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'submit',
           ),
           array (
-            'field' => 'field-service-bg-narrow',
-            'tag' => 'input',
-            'type' => 'submit',
-          ),
-          array (
-            'field' => 'field-service-ref-actions',
-            'tag' => 'input',
-            'type' => 'text',
-          ),
-          array (
             'field' => 'field-service-file',
             'tag' => 'input',
             'type' => 'submit',
           ),
           array (
-            'field' => 'field-service-ref-actions-2',
-            'tag' => 'input',
-            'type' => 'text',
-          ),
-          array (
             'field' => 'field-service-ref-guide-page-1',
-            'tag' => 'input',
-            'type' => 'text',
-          ),
-          array (
-            'field' => 'field-service-key-info-links-6',
             'tag' => 'input',
             'type' => 'text',
           ),
@@ -1103,16 +1085,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'field' => 'field-topic-content-cards',
             'tag' => 'paragraphs',
             'type' => 'content-card-group',
-          ),
-          array (
-            'field' => 'field-topic-bg-wide',
-            'tag' => 'input',
-            'type' => 'submit',
-          ),
-          array (
-            'field' => 'field-topic-bg-narrow',
-            'tag' => 'input',
-            'type' => 'submit',
           ),
           array (
             'field' => 'field-topic-ref-icon',
@@ -1388,7 +1360,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-executive-order-date',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -1456,7 +1428,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'date',
           ),
           array (
-            'field' => 'field-rules-effective-date',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -1570,11 +1542,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
           ],
           [
             'field' => 'field-bg-wide',
-            'tag' => 'input',
-            'type' => 'submit',
-          ],
-          [
-            'field' => 'field-bg-narrow',
             'tag' => 'input',
             'type' => 'submit',
           ],
@@ -2111,6 +2078,40 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
       }
     }
 
+  }
+
+  /**
+   * Helper function to lookup the last created node by type/title.
+   */
+  public function getLastNodeByTitle($type, $title) {
+    /** @var \Drupal\Core\Config\Entity\Query\Query $query */
+    $query = \Drupal::entityQuery('node');
+    $query->condition('type', $type);
+    $query->condition('title', $title);
+    $query->range(0, 1);
+    $query->sort('nid', 'DESC');
+    $exec = $query->execute();
+    $nid = reset($exec);
+    return Node::load($nid);
+  }
+
+  /**
+   * @Given I add events in the service section to :title
+   */
+  public function addEventsInTheServiceSection($title) {
+    $service_node = $this->getLastNodeByTitle('service_page', $title);
+    $event = Paragraph::create([
+      'type' => 'org_events',
+      'field_event_quantity' => 2,
+    ]);
+    $service_section = Paragraph::create([
+      'type' => 'service_section',
+      'field_service_section_content' => [$event],
+      'field_hide_heading' => FALSE,
+      'field_service_section_heading' => 'The service section heading',
+    ]);
+    $service_node->field_service_sections = [$service_section];
+    $service_node->save();
   }
 
   /**

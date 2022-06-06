@@ -29,17 +29,20 @@
   {% endif %}
 
   {# Check if primary indicator content exists. #}
+  {% set primaryIndicators = null %}
+  {% set primaryRelationshipContent = null %}
+  {#
   {% if content.computed_related_to[0] %}
     {% set primaryIndicators = { "label": "part of" } %}
     {% set primaryRelationshipContent = content.computed_related_to %}
-  {% else %}
-    {% set primaryIndicators = null %}
-    {% set primaryRelationshipContent = null %}
   {% endif %}
+  #}
   {% set secondaryIndicators = false %}
   {% if content.field_organizations is not empty %}
     {% set secondaryIndicators = {
-      "label": "offered by"
+      "icon": "building",
+      "label": "offered by",
+      "groupAfter": 3
     } %}
   {% endif %}
 
@@ -58,22 +61,41 @@
     {% endblock %}
   {% endembed %}
 
-  {% set bannerImageWide = file_url(node.field_service_bg_wide.entity.fileuri ?? '') %}
-  {% set bannerImageNarrow = file_url(node.field_service_bg_narrow.entity.fileuri ?? '') %}
+  {% set bannerImageNarrow = node.field_service_bg_narrow.entity.fileuri ? file_url(node.field_service_bg_narrow.entity.fileuri) : '' %}
   {# NOTE: At this time a service page node's design does not require the optional page-banner template #}
   {# values for "icon", "primaryLink", and "secondaryLink", so we don't set them. We may in the future. #}
-  {% include "@organisms/by-template/page-banner.twig" with {
+
+  {% set logInButtons = [] %}
+  {% if node.field_log_in_links is not empty %}
+    {% for item in node.field_log_in_links %}
+      {% set button = {
+          "href": item.url,
+          "text": item.title,
+          "size": "small",
+          "usage": "primary",
+          "theme": "c-white",
+          "icon": "login"
+        }
+      %}
+      {% set logInButtons = logInButtons|merge([button]) %}
+    {% endfor %}
+  {% endif %}
+
+  {% include "@organisms/page-banner/page-banner.twig" with {
     "pageBanner": {
-      "size": "overlay",
+      "layout": bannerImageWide ? "overlay" : "",
       "color": "blue",
       "title": node.label,
       "titleSubText": content.field_title_sub_text,
       "description": content.field_service_lede,
       "bgWide": bannerImageWide,
       "bgNarrow": bannerImageNarrow,
+      "buttonsLabel": "LOG IN:",
+      "buttons": logInButtons
     }
   } %}
 {% endblock %}
+
 
 {# Increase heading number from the parent heading. #}
 {% set level = level + 1 %}
@@ -120,9 +142,6 @@
     {% set image = introSidebar.logo %}
     {% include "@atoms/09-media/image.twig" %}
   {% endif %}
-  {% if flexibleLinkGroup and node.field_log_in_links is not empty %}
-    {{ content.field_log_in_links }}
-  {% endif %}
   {% if introSidebar.social %}
     {% set sidebarHeading = introSidebar.social.sidebarHeading %}
     {% set sidebarHeading = sidebarHeading|merge({'level': level }) %}
@@ -138,100 +157,11 @@
 
   {{ content.field_service_sections }}
 
-  {% set featuredTasks = node.field_service_ref_actions_2 is not empty %}
-  {% set allTasks = node.field_service_ref_actions is not empty %}
-  {% set linkGroups = node.field_link_group is not empty %}
+  {% set linkGroups = false %}
   {% set default = (node.field_template is empty or node.field_template.value == "default") %}
   {% set custom = (node.field_template.value == "custom" and linkGroups) %}
   {% set seeAll = false %}
-  {% if default and (content.field_service_ref_actions['#items']|length > 6) %}
-    {% set seeAll =  {
-      "type": "internal",
-      "href": url ~ "/tasks",
-      "text": "See all " ~ (content.field_service_ref_actions['#items']|length + content.field_service_ref_actions_2['#items']|length),
-      "info": "",
-      "labelContext": "of the what would you like to do section"|t
-    } %}
-  {% endif %}
-  {% if (default or custom) and (featuredTasks or allTasks or linkGroups) %}
-  {% if (default) %}
-    {% set featuredHeading = 'Top tasks' %}
-  {% else %}
-    {% set featuredHeading = 'Featured' %}
-  {% endif %}
-    {% embed "@organisms/by-author/action-finder.twig" with {
-      "actionFinder": {
-        "title": "What would you like to do?"|t,
-        "featuredHeading": featuredHeading,
-        "generalHeading": "All other tasks"|t,
-        "featuredLinks": featuredTasks,
-        "links": default and allTasks,
-        "linkLists": custom and linkGroups,
-        "seeAll": seeAll
-      }
-    } %}
-      {% block featuredLinksList %}
-        {{ content.field_service_ref_actions_2 }}
-      {% endblock %}
-      {% block actionFinderLinksList %}
-        {{ content.field_service_ref_actions }}
-      {% endblock %}
-      {% block linkLists %}
-        {{ content.field_link_group }}
-      {% endblock %}
-    {% endembed %}
-  {% endif %}
-  {# What you need to know #}
-  {% if not flexibleLinkGroup and node.field_service_key_info_links_6 is not empty %}
-    {# Prepare seeAll link. #}
-    {% set publishedLinkCount = 0 %}
-    {# Get number of published items. #}
-    {% set itemCount = node.field_service_key_info_links_6|length %}
-    {% if itemCount < 1 %}
-      {% set links = '' %}
-    {% else %}
-      {% set links = [] %}
-      {% set lastIndex = itemCount -1 %}
-      {% for i in 0..lastIndex %}
-        {% set keyInfoLink = content.field_service_key_info_links_6[i] %}
-        {% set href = keyInfoLink['#url_title'] %}
-        {% if '/node/' in href or href ends with '---unpublished' %}
-          {# DO NOTHING if referenced item is NULL or unpublished state. #}
-        {% else %}
-          {% set publishedLinkCount = publishedLinkCount + 1 %}
-          {% if publishedLinkCount < 7 %}
-            {% set text = keyInfoLink['#title']['#markup'] ? keyInfoLink['#title']['#markup'] : keyInfoLink['#title'] %}
-            {% set links = links|merge([{
-              "text": text,
-              "href": href
-            }]) %}
-          {% endif %}
-        {% endif %}
-      {% endfor %}
-    {% endif %}
-    {# Prepare See all link. #}
-    {% set seeAll = false %}
-    {% if publishedLinkCount > 6 %}
-      {% set text = "See all " ~ publishedLinkCount %}
-      {% set seeAll = {
-        "text": text,
-        "labelContext": titleContextOf,
-        "href": url ~ "/need-to-know"
-      } %}
-    {% endif %}
-    {% include "@organisms/by-author/action-finder.twig" with {
-      "actionFinder": {
-        "title": "What you need to know"|t,
-        "featuredHeading": "",
-        "generalHeading": "",
-        "hideFilter": true,
-        "titleContext": titleContextAbout,
-        "seeAll": seeAll,
-        "featuredLinks": "",
-        "links": links
-      }
-    } %}
-  {% endif %}
+
   {% if contactList %}
     {% include "@organisms/by-author/contact-list.twig" %}
   {% endif %}

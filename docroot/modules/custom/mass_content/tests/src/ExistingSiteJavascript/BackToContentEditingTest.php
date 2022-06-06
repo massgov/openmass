@@ -3,16 +3,19 @@
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\file\Entity\File;
+use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\Tests\paragraphs\FunctionalJavascript\ParagraphsTestBaseTrait;
 use Drupal\user\Entity\User;
-use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Ensures access links for unpublished content are generated properly.
  */
-class BackToContentEditingTest extends ExistingSiteWebDriverTestBase {
+class BackToContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
 
   use LoginTrait;
+  use ParagraphsTestBaseTrait;
 
   /**
    * Creates and returns a unpublished topic page node.
@@ -33,9 +36,17 @@ class BackToContentEditingTest extends ExistingSiteWebDriverTestBase {
       'type' => 'topic_page',
       'title' => 'Test',
       'field_topic_lede' => 'Short description',
-      'field_topic_bg_wide' => $image,
       'field_organizations' => [$org_node],
       'moderation_state' => 'unpublished',
+      'field_topic_content_cards' => [
+        Paragraph::create([
+          'type' => 'content_card_group',
+          'field_content_card_link_cards' => [
+            'uri' => 'http://test.card',
+            'title' => 'Test Card',
+          ]
+        ])
+      ],
       'status' => 0,
     ]);
 
@@ -71,8 +82,8 @@ class BackToContentEditingTest extends ExistingSiteWebDriverTestBase {
     $this->getCurrentPage()->pressButton('Preview');
     // Back to editing.
     $this->clickLink('Back to content editing');
-    // No fatals.
-    $this->assertSession()->statusCodeEquals(200);
+    $title = $this->getSession()->getPage()->find('css', 'h1')->getText();
+    $this->assertEqual($title, 'EDIT TOPIC PAGE Test');
   }
 
 }

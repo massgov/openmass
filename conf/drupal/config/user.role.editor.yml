@@ -14,6 +14,8 @@ dependencies:
     - node.type.decision_tree_branch
     - node.type.decision_tree_conclusion
     - node.type.event
+    - node.type.executive_order
+    - node.type.external_data_resource
     - node.type.fee
     - node.type.form_page
     - node.type.guide_page
@@ -28,9 +30,11 @@ dependencies:
     - node.type.rules
     - node.type.service_details
     - node.type.service_page
+    - node.type.topic_page
     - workflows.workflow.campaign_landing_page
     - workflows.workflow.editorial
     - workflows.workflow.media_states
+    - workflows.workflow.topic_page
   module:
     - access_unpublished
     - actions_permissions
@@ -39,6 +43,7 @@ dependencies:
     - draggableviews
     - dropzonejs
     - entity_browser
+    - environment_indicator
     - mass_admin_toolbar
     - mass_content_api
     - mass_hierarchy
@@ -65,6 +70,7 @@ permissions:
   - 'access content'
   - 'access content overview'
   - 'access draggableviews'
+  - 'access environment indicator'
   - 'access media overview'
   - 'access media_browser entity browser pages'
   - 'access toolbar'
@@ -103,7 +109,6 @@ permissions:
   - 'add scheduled transitions node service_details'
   - 'add scheduled transitions node service_page'
   - 'add scheduled transitions node stacked_layout'
-  - 'add scheduled transitions node topic_page'
   - 'administer nodes'
   - 'clone advisory content'
   - 'clone alert content'
@@ -116,6 +121,7 @@ permissions:
   - 'clone decision_tree_branch content'
   - 'clone decision_tree_conclusion content'
   - 'clone event content'
+  - 'clone external_data_resource content'
   - 'clone fee content'
   - 'clone form_page content'
   - 'clone guide_page content'
@@ -141,6 +147,7 @@ permissions:
   - 'create decision_tree_branch content'
   - 'create decision_tree_conclusion content'
   - 'create event content'
+  - 'create external_data_resource content'
   - 'create fee content'
   - 'create form_page content'
   - 'create guide_page content'
@@ -169,6 +176,8 @@ permissions:
   - 'edit any decision_tree_branch content'
   - 'edit any decision_tree_conclusion content'
   - 'edit any event content'
+  - 'edit any executive_order content'
+  - 'edit any external_data_resource content'
   - 'edit any fee content'
   - 'edit any form_page content'
   - 'edit any guide_page content'
@@ -183,6 +192,7 @@ permissions:
   - 'edit any rules content'
   - 'edit any service_details content'
   - 'edit any service_page content'
+  - 'edit any topic_page content'
   - 'edit own advisory content'
   - 'edit own alert content'
   - 'edit own binder content'
@@ -194,6 +204,7 @@ permissions:
   - 'edit own decision_tree_branch content'
   - 'edit own decision_tree_conclusion content'
   - 'edit own event content'
+  - 'edit own external_data_resource content'
   - 'edit own fee content'
   - 'edit own form_page content'
   - 'edit own guide_page content'
@@ -210,7 +221,9 @@ permissions:
   - 'edit own service_page content'
   - 'execute mass_content_moderation_restore_action all'
   - 'execute mass_hierarchy_change_parent all'
+  - 'execute mass_views_add_documents_collections media'
   - 'execute mass_views_change_collections all'
+  - 'execute mass_views_change_collections node'
   - 'mass_hierarchy - change parent on move children tab'
   - 'mass_hierarchy - move items in the hierarchy'
   - 'rabbit hole administer node'
@@ -246,11 +259,11 @@ permissions:
   - 'reschedule scheduled transitions node service_details'
   - 'reschedule scheduled transitions node service_page'
   - 'reschedule scheduled transitions node stacked_layout'
-  - 'reschedule scheduled transitions node topic_page'
   - 'revert advisory revisions'
   - 'revert alert revisions'
   - 'revert all revisions'
   - 'revert binder revisions'
+  - 'revert campaign_landing revisions'
   - 'revert contact_information revisions'
   - 'revert curated_list revisions'
   - 'revert decision revisions'
@@ -258,6 +271,7 @@ permissions:
   - 'revert decision_tree_branch revisions'
   - 'revert decision_tree_conclusion revisions'
   - 'revert event revisions'
+  - 'revert external_data_resource revisions'
   - 'revert fee revisions'
   - 'revert form_page revisions'
   - 'revert guide_page revisions'
@@ -272,15 +286,19 @@ permissions:
   - 'revert rules revisions'
   - 'revert service_details revisions'
   - 'revert service_page revisions'
+  - 'set collection tags'
   - 'set info details page template'
   - 'set service page template'
   - 'setup own tfa'
   - 'update any media'
   - 'update media'
+  - 'use campaign_landing_page transition move_to_trash'
   - 'use campaign_landing_page transition needs_review'
   - 'use campaign_landing_page transition prepublished_draft'
   - 'use campaign_landing_page transition prepublished_needs_review'
+  - 'use campaign_landing_page transition publish'
   - 'use campaign_landing_page transition to_draft'
+  - 'use campaign_landing_page transition unpublish'
   - 'use change collections'
   - 'use editorial transition move_to_trash'
   - 'use editorial transition needs_review'
@@ -297,6 +315,11 @@ permissions:
   - 'use media_states transition send_to_trash'
   - 'use media_states transition to_draft'
   - 'use media_states transition unpublish'
+  - 'use topic_page transition needs_review'
+  - 'use topic_page transition prepublished_draft'
+  - 'use topic_page transition prepublished_needs_review'
+  - 'use topic_page transition publish'
+  - 'use topic_page transition to_draft'
   - 'view advisory revisions'
   - 'view alert revisions'
   - 'view all revisions'
@@ -313,6 +336,7 @@ permissions:
   - 'view decision_tree_conclusion revisions'
   - 'view descendant api test pages'
   - 'view event revisions'
+  - 'view external_data_resource revisions'
   - 'view fee revisions'
   - 'view form_page revisions'
   - 'view guide_page revisions'

@@ -1,12 +1,21 @@
 <?php
 
-use Behat\MinkExtension\Context\RawMinkContext;
 use Drupal\acquia_purge\Hash;
+use Drupal\mass_utility\DebugCachability;
 
 class MassCachingContext extends \Behat\MinkExtension\Context\RawMinkContext {
 
   const TAG_HEADER = 'X-Drupal-Cache-Tags';
   const DYNAMIC_CACHE_HEADER = 'X-Drupal-Dynamic-Cache';
+
+  /**
+   * Request cache debugging headers from the backend.
+   *
+   * @BeforeStep
+   */
+  public function requestDebugCachabilityHeaders(): void {
+    (new DebugCachability())->requestDebugCachabilityHeaders($this->getSession());
+  }
 
   /**
    * Reset the database cache tag invalidators "seen" cache.

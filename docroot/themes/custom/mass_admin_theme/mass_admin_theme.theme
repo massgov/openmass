@@ -246,10 +246,23 @@ function mass_admin_theme_preprocess_input__submit(array &$variables) {
         "field-location-details-sections",
         "field-guide-page-sections",
         "field-service-video",
-        "field-service-file"
+        "field-service-file",
       ];
+
+      $needles_regex = [
+        '/service-sections.*subform.*field-service.*actions-ief-reference-save/',
+      ];
+
       foreach ($needles as $needle) {
         if (strpos($variables['attributes']['id'], $needle) !== FALSE) {
+          $variables['attributes']['class'][] = 'visually-hidden';
+        }
+      }
+
+      foreach ($needles_regex as $needle_regex) {
+        $matches = [];
+        preg_match($needle_regex, $variables['attributes']['id'], $matches);
+        if ($matches) {
           $variables['attributes']['class'][] = 'visually-hidden';
         }
       }

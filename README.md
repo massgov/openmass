@@ -12,7 +12,7 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 
 1. Move into the project directory: `cd openmass`
 
-1. Create a `.env` file at the root level of the project by copying the example file shipped with the `mass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
+1. Create a `.env` file in the ~/.ddev dir of the project by copying the example file shipped with the `mass` repo. This file contains more options; we suggest that you review it and adjust accordingly. Note that the `.env` file is ignored in `.gitignore`; and will not be tracked or pushed to Github.
     ```
     $ cp .env.example .env
     ```
@@ -49,9 +49,10 @@ If the Docker section above is unappealing, its easy to run mass.gov natively on
 ###### Notes
 - The site is browseable at https://mass.local
 - It takes a few minutes for the `dbmass` container start up.
-- [You may override ddev config locally](https://ddev.readthedocs.io/en/stable/users/extend/config_yaml/). For example, create a `.ddev/config.personal.yml` file and add a line `dbimage: massgov/mysql-sanitized:latest` to use our less sanitized DB.
-- Similarly, rename [.ddev/config.arm.yaml.example](https://github.com/massgov/openmass/blob/develop/.ddev/config.arm.yaml.example) to config.arm.yaml in order to use ARM containers suitable for the Apple M1 Macs.
+- [You may override ddev config locally](https://ddev.readthedocs.io/en/stable/users/extend/config_yaml/). create a `.ddev/config.personal.yml` file and add whatever you need.
+- Similarly, rename [.ddev/.env.example](https://github.com/massgov/openmass/blob/develop/.ddev/.env.example) to `.env` in order to use ARM containers suitable for the Apple M1 Macs. This is also how you specify the less sanitized variant of our database.
 - Since we use a custom `dbmass` service and not DDEV's usual `db`, some DDEV DB commands will not work here. @todo try to improve this.
+- Use `ddev service enable backstop` to start the backstop image locally. Same for `selenium-chrome`.
 - Mass Digital team members: see additional information at [Mass Digital Developers](https://github.com/massgov/massgov-internal-docs/blob/master/development-massgov-team.md).
 
 ## Pull Requests

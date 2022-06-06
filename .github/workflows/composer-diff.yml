@@ -1,0 +1,34 @@
+# See https://github.com/marketplace/actions/composer-diff
+name: Composer Diff
+on:
+  pull_request:
+    paths:
+      - 'composer.lock'
+jobs:
+  composer-diff:
+    name: Composer Diff
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # Required to make it possible to compare with PR base branch
+
+      - name: Generate composer diff
+        id: composer_diff # To reference the output in comment
+        # Use master branch until next release.
+        uses: IonBazan/composer-diff-action@master
+
+      - name: Post comment
+        uses: marocchino/sticky-pull-request-comment@v2
+        # An empty diff result will break this action.
+        if: ${{ steps.composer_diff.outputs.composer_diff_exit_code != 0 }}
+        with:
+          header: composer-diff # Creates a collapsed comment with the report
+          message: |
+            <details>
+            <summary>Composer package changes</summary>
+
+            ${{ steps.composer_diff.outputs.composer_diff }}
+
+            </details>
