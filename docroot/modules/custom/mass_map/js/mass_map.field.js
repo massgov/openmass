@@ -29,7 +29,7 @@
 
         // Go over list of locations,.
         for (var key in locations.googleMap.markers) {
-          if (locations.googleMap.markers.hasOwnProperty(key)) {
+          if (Object.prototype.hasOwnProperty.call(locations.googleMap.markers, key)) {
             var infoWindowData = infoWindow(locations.googleMap.markers[key].infoWindow);
             // Set the marker of the location.
             var marker = new google.maps.Marker({

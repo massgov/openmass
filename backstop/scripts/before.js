@@ -1,5 +1,8 @@
 
 module.exports = async (page, scenario, vp) => {
+    // Load cookies from scripts/cookies.js by default.
+    await require('./loadCookies')(page, scenario);
+
     if (scenario.auth) {
       await page.authenticate(scenario.auth)
     }

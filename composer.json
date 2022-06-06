@@ -195,6 +195,7 @@
         "drupal/key": "^1.10",
         "drupal/key_value_field": "1.x-dev",
         "drupal/linkit": "^6",
+        "drupal/mailchimp_transactional": "^1",
         "drupal/mandrill": "^1.2",
         "drupal/maxlength": "^1.0@RC",
         "drupal/media_entity_download": "2.x-dev",
@@ -214,7 +215,7 @@
         "drupal/purge": "^3",
         "drupal/purge_queues": "^1",
         "drupal/queue_unique": "^2.2",
-        "drupal/quick_node_clone": "^1.11",
+        "drupal/quick_node_clone": "^1.15",
         "drupal/rabbit_hole": "^1",
         "drupal/real_aes": "^2",
         "drupal/redirect": "^1",
@@ -337,6 +338,11 @@
                 "Ensure to have build info on View Page Controller before getting the view title" : "patches/DP-24420--View-pages-arguments-title-overrides-not-working--2.patch",
                 "Third option for the CKEditor 4 \"Language\" button: `enabled` (in addition to `un` and `all`) (https://www.drupal.org/project/drupal/issues/3192734)" : "https://www.drupal.org/files/issues/2022-04-10/add_available_langs_as_ck_langs-3192734-17.patch"
             },
+
+            "drupal/conditional_fields": {
+                "2902164 - \"Controlled by\" fields inside a Paragraph don't work": "patches/conditional-fields-and-paragraphs-2902164--using-ids--v6.patch"
+            },
+
             "ckeditor/liststyle": {
                 "Change code from styles to type": "https://www.drupal.org/files/issues/2019-01-02/ckeditor_liststyle-styles-to-type-2874952-4-do-not-test.patch"
             },
@@ -424,6 +430,9 @@
             },
             "drupal/views_bulk_edit": {
                 "Fix Required fields to really not be required": "https://www.drupal.org/files/issues/2020-11-20/3024419-invalid-form-control-24.patch"
+            },
+            "drupal/stage_file_proxy": {
+                "Merged patches fixing backstop issues": "patches/stage_file_proxy/3282524-3282542-3283162-merged.patch"
             }
         },
         "composer-exit-on-patch-failure": true,

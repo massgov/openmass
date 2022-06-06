@@ -22,9 +22,8 @@ const MASS_SCHEDULED_TRANSITIONS_OPTIONS = [
   ScheduledTransition::OPTION_RECREATE_NON_DEFAULT_HEAD => TRUE,
   ScheduledTransition::OPTION_LATEST_REVISION => TRUE
 ];
-define('MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION', '14 months');
+
 define('MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION', '6 months');
-define('MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_DEFAULT_DURATION', '180 days');
 define('MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION', '14 days');
 
 /**
@@ -70,10 +69,6 @@ function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $n
     $duration = MASS_SCHEDULED_TRANSITIONS_ALERT_DEFAULT_DURATION;
     $workflow = 'editorial';
   }
-  elseif ($node->bundle() == 'campaign_landing') {
-    $duration = MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_DEFAULT_DURATION;
-    $workflow = 'campaign_landing_page';
-  }
   else {
     // We don't care about you.
     return;
@@ -104,11 +99,11 @@ function mass_scheduled_transitions_enforce_mandatory_unpublish(NodeInterface $n
  */
 function mass_scheduled_transitions_scheduled_transition_access(EntityInterface $transition, $operation) {
   $entity = $transition->getEntity();
-  if ($operation != 'delete' || !$entity->isPublished() || !in_array($entity->bundle(), ['alert', 'campaign_landing'])) {
+  if ($operation != 'delete' || !$entity->isPublished() || !in_array($entity->bundle(), ['alert'])) {
     return;
   }
 
-  $duration_string = $entity->bundle() == 'alert' ? MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION : MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION;
+  $duration_string = MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION;
   $duration = (new DrupalDateTime('now +' . $duration_string))->getTimestamp();
   $transitions = mass_scheduled_transitions_load_by_host_entity($entity, FALSE, MassModeration::UNPUBLISHED);
   unset($transitions[$transition->id()]);
@@ -119,7 +114,7 @@ function mass_scheduled_transitions_scheduled_transition_access(EntityInterface 
     }
   }
   if ($fail) {
-    return AccessResult::forbidden('Alerts or promo page requires an imminent unpublish transition');
+    return AccessResult::forbidden('Alert requires an imminent unpublish transition');
   }
 }
 
@@ -181,8 +176,8 @@ function mass_scheduled_transitions_form_scheduled_transition_reschedule_form_al
   $scheduled_transition = $form_state->getFormObject()->getEntity();
   $host_entity = $scheduled_transition->getEntity();
   $html_date_format = DateFormat::load('html_date')->getPattern();
-  if (in_array($host_entity->bundle(), ['alert', 'campaign_landing'])) {
-    $duration = $host_entity->bundle() == 'alert' ? MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION : MASS_SCHEDULED_TRANSITIONS_CAMPAIGN_LANDING_MAX_DURATION;
+  if (in_array($host_entity->bundle(), ['alert'])) {
+    $duration = MASS_SCHEDULED_TRANSITIONS_ALERT_MAX_DURATION;
     $max_time = (new DrupalDateTime("now +" . $duration))->format($html_date_format);
     $form['date']['#attributes']['max'] = $max_time;
   }

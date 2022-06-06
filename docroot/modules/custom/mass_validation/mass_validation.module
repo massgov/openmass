@@ -1086,7 +1086,7 @@ function _mass_validation_form_node_news_form_validate(array &$form, FormStateIn
   $media_contact = $form_state->getValue('field_news_media_contac');
   unset($media_contact['add_more']);
   $news_type = reset($news_type);
-  $news_type = $news_type['value'];
+  $news_type = $news_type['value'] ?? '';
   $required_news_types = [
     'press_release',
     'press_statement',
@@ -1484,67 +1484,6 @@ function _mass_validation_form_node_contact_information_form_validate(array &$fo
     $form_state->setError($form, t('At least one contact detail field should be filled out (address, fax number, hours, links, or phone number).'));
   }
 
-}
-
-/**
- * Implements hook_field_widget_WIDGET_TYPE_form_alter().
- *
- * Since conditional fields via the module don't yet work for forms injected
- * via ajax, this is a work around for the campaign landing pages.
- */
-function mass_validation_field_widget_paragraphs_form_alter(array &$element, FormStateInterface &$form_state, $context) {
-  // Apply the following logic to both Key Message paragraph types.
-  $paragraph_types = [
-    'key_message',
-    'key_message_section',
-  ];
-  if (in_array($element['#paragraph_type'], $paragraph_types)) {
-    $form = &$element['subform'];
-    $layout = '';
-    $field_status = [];
-    if (isset($element['#prefix'])) {
-      $prefix = '#' . str_replace(['<div id="', '">'], '', $element['#prefix']) . ' ';
-    }
-
-    // Handle show/hide of the image field when the background color selected
-    // is "Solid color".
-    $bgd_style = 'color';
-    if (isset($form['field_background_type'])) {
-      $bgd_style = $form['field_background_type']['widget']['#default_value'];
-      $field_status['field_background_type'] = [
-        'field_image' => [
-          'visible' => 'image',
-        ],
-        'field_text_overlay_color' => [
-          'visible' => 'image',
-        ],
-        'field_section_text_overlay_color' => [
-          'visible' => 'image',
-        ],
-        'field_background_color' => [
-          'visible' => 'color',
-        ],
-        'field_section_background_color' => [
-          'visible' => 'color',
-        ],
-      ];
-    }
-    // Apply default load states and then the actual States API state value
-    // so that changes made by the user to the content layout field will show
-    // or hide the appropriate fields once the paragraph is loaded.
-    foreach ($field_status as $trigger_field_name => $state_field) {
-      foreach ($state_field as $field_name => $state) {
-        $form[$field_name]['#states'] = [
-          'visible' => [
-            $prefix . ':input[name*="' . $trigger_field_name . '"]' => ['value' => $state['visible']],
-          ],
-        ];
-        if ($layout !== $state['visible']) {
-          $form[$field_name]['#attributes']['style'] = 'display:none;';
-        }
-      }
-    }
-  }
 }
 
 /**

@@ -128,11 +128,19 @@ class UnpublishRemindersTest extends ExistingSiteBase {
       'changed' => strtotime('-9 days'),
       'moderation_state' => 'published',
     ]);
-    // Edit the auto-created transition to 6 days.
-    $transitions = mass_scheduled_transitions_load_by_host_entity($node, FALSE, MassModeration::UNPUBLISHED);
-    $transition = current($transitions);
-    $date = new DrupalDateTime('+ 6 days');
-    $transition->setTransitionDate($date->getPhpDateTime())->save();
+
+    // Create transition to 6 days.
+    $workflow = 'campaign_landing_page';
+    $transition = ScheduledTransition::create([]);
+    $datetime = (new DrupalDateTime("now + 6 days"))->getPhpDateTime();
+    $transition->setTransitionDate($datetime)
+      ->setAuthor($this->author)
+      ->setState(Workflow::load($workflow), MassModeration::UNPUBLISHED)
+      ->setEntity($node)
+      // 0 means 'latest'.
+      ->setEntityRevisionId(0)
+      ->setOptions([MASS_SCHEDULED_TRANSITIONS_OPTIONS])
+      ->save();
 
     // Look at upcoming transitions and enqueue the emails.
     mass_unpublish_reminders_cron();
