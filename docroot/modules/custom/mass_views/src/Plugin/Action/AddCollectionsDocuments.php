@@ -20,7 +20,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @Action(
  *   id = "mass_views_add_documents_collections",
- *   label = @Translation("Add Collections to Documents"),
+ *   label = @Translation("Add documents to a collection"),
  *   type = "media"
  * )
  */
@@ -77,6 +77,7 @@ class AddCollectionsDocuments extends ViewsBulkOperationsActionBase implements C
    * {@inheritdoc}
    */
   public function execute($entity = NULL) {
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
     $config = $this->getConfiguration();
     $new_collection_id = $config['new_collection'];
