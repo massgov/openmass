@@ -3,9 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.node.decision_tree.field_bg_narrow
-    - field.field.node.decision_tree.field_bg_wide
-    - field.field.node.decision_tree.field_campaign_logo
     - field.field.node.decision_tree.field_decision_tree_metatags
     - field.field.node.decision_tree.field_description
     - field.field.node.decision_tree.field_disclaimer
@@ -16,14 +13,12 @@ dependencies:
     - field.field.node.decision_tree.field_short_title
     - field.field.node.decision_tree.field_start_button
     - field.field.node.decision_tree.field_state_organization_tax
-    - image.style.thumbnail
     - node.type.decision_tree
     - workflows.workflow.editorial
   module:
     - content_moderation
     - entity_hierarchy
     - field_group
-    - image
     - maxlength
     - metatag
     - paragraphs
@@ -72,30 +67,6 @@ targetEntityType: node
 bundle: decision_tree
 mode: default
 content:
-  field_bg_narrow:
-    type: image_image
-    weight: 8
-    region: content
-    settings:
-      progress_indicator: throbber
-      preview_image_style: thumbnail
-    third_party_settings: {  }
-  field_bg_wide:
-    type: image_image
-    weight: 7
-    region: content
-    settings:
-      progress_indicator: throbber
-      preview_image_style: thumbnail
-    third_party_settings: {  }
-  field_campaign_logo:
-    type: image_image
-    weight: 9
-    region: content
-    settings:
-      progress_indicator: throbber
-      preview_image_style: thumbnail
-    third_party_settings: {  }
   field_decision_tree_metatags:
     type: metatag_firehose
     weight: 2
