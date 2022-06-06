@@ -70,6 +70,9 @@ class OrgFilter extends FilterPluginBase {
     return NULL;
   }
 
+  /**
+   * Provide simple equality operator.
+   */
   public function operatorOptions($which = 'title') {
     $options = [];
     $operators = [
