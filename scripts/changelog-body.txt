@@ -1,45 +1,26 @@
 
 
-## [0.320.0] - April 26, 2022
+## [0.323.0] - May 24, 2022
 
-### Removed
-  - DP-23217: Remove updated fields from org_pages
-- field_org_featured_message
-- field_org_featured_items
-- field_ref_contact_info_1
-- body
-- field_org_our_orgs
-- field_links_actions_3
-- field_ref_actions_6
-- field_ref_card_view_6
-- field_org_featured_news_items
-- field_number_of_news_items
-- field_org_show_news_images
-- field_event_quantity
-- field_location_button_short_desc
-- field_location_button_label
-- field_org_ref_locations
-- field_related_organization_type
-- field_ref_orgs
-- field_about
-- field_boards
-  
-### Added
-  - DP-23508: Support switching PHP versions during Acquia deployments
-  
 ### Changed
-  - DP-24125: Improve cache hit rate for dynamic page cache
-  - DP-24363: Update entity_hierarchy and its patch to allow enabling of webprofiler.
-  - DP-24545: 6 weeks links duration for unpublished access links.
+  - DP-24306: Upgrade to the latest Chrome image for tests
+  - DP-24794: - Removes "Related Services" number of links limitation on the service page..
+- Limits related services to 12 and updates field description.
+- Removes related display, 'related' sub path not used anymore for services.
+  - DP-24891: Improve performance of collection bulk tagging views.
+  - DP-24915: Only load development services on locals
+  - DP-24946: - Modify news_curated_list to not show blogpost news on News Org pages.
+- Modify RecentNews to not show blogpost news on Org pages.
+  - DP-24950: Collection filters to /admin/ma-dash/documents and its CSV export.
+  - DP-24951: Modify "no results" language for collections feature.
+  - DP-24952: Disable watch emails when using collection features.
   
 ### Fixed
-  - DP-24335: Fix hamburger menu horizontal scrolling in IOS.
-  - DP-24420: Ensure to have build info on View Page Controller before getting the view title.
-  - DP-24485: Make header hamburger menu translatable by Google.
-  - DP-24527: Fixing the problem with link in Service Page banner not formating correctly.
-  - DP-24557: Fixes null method exceptions on decisions when media entities are deleted
-  - DP-24657: Sends taxonomy term id to the collection_all_media view.
-  
-### Security
-  - DP-24632: Drupal core security updates.
+  - DP-24909: - Fixes on collection header title.
+- Showing the banner style only if the description or bg color is not empty.
+- Fix breadcrumb not appearing on collection term pages.
+- Improving breacrumb cacheability by adding entities from the hierarchy.
+  - DP-24939: This corrects editor permissions for promotional pages. Change already made in production directly.
+  - DP-24947: - Modify collection pager to make it work with sort.
+- Collection content filtered by topic pass the topic ID to collection media view.
   

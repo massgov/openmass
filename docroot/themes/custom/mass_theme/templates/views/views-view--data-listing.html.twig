@@ -36,6 +36,35 @@
 
 {{ attach_library('mass_theme/views-view--data-listing') }}
 
+{% set banner_style = collection is not empty and (collection.description|render is not empty or collection.bg_color != "#FFF") %}
+
+{% set primaryRelationshipContent = content.field_primary_parent %}
+{% set primaryIndicators = { "label": "part of" } %}
+{% set secondaryIndicators = banner_style ? {} : {
+    "label":  term.field_organizations is not empty ? "offered by" : "",
+    "icon": "building",
+    "groupAfter": 3
+  }
+%}
+
+{% if term.field_organizations is not empty %}
+  {% embed "@molecules/relationship-indicators.twig" with {
+    "relationshipIndicators": {
+      "pageTitle": title,
+      "secondary": secondaryIndicators,
+      "borderless": true
+    }
+  } %}
+
+    {% block primaryRelationship %}
+      {{ primaryRelationshipContent }}
+    {% endblock %}
+    {% block secondaryRelationship %}
+      {{ content.field_organizations }}
+    {% endblock %}
+  {% endembed %}
+{% endif %}
+
 {%
   set classes = [
     dom_id ? 'js-view-dom-id-' ~ dom_id,
@@ -44,27 +73,38 @@
     'data-listing-wrapper'
   ]
 %}
-<div{{ attributes.addClass(classes) }}>
-  <div class="ma__breadcrumb--views">
-    {% if header.area %}
-      {{ header.area }}
+
+{% if banner_style %}
+  {% set collection_content %}
+    <div class="collection-header__title">
+      {{ collection.title }}
+    </div>
+    {% if collection.description is not empty %}
+      <div class="collection-header__description">
+        {{ collection.description }}
+      </div>
     {% endif %}
-  </div>
+  {% endset %}
+
+  {% set collection = (collection ?: [])|merge({"content" : collection_content}) %}
+
+  {% include "@organisms/by-template/collection-header.twig" %}
+{% endif %}
+
+<div{{ attributes.addClass(classes) }}>
   {#
   Using the raw filter allows special characters to render properly.
   It allows markup to render. This should be safe in this case because
   administrators and content administrators are the only users that
   can edit Collection term names.
   #}
-  <h1>{{ title|raw }}</h1>
-
+  {% if not banner_style %}
+    <h1>{{ title }}</h1>
+  {% endif %}
 
   <aside class="sidebar">
-    <button id="filter-toggle" aria-controls="filters"></button>
-    <div id="filters">
-      {{ exposed }}
-    </div>
-    <div id="filters--desktop">
+    <button id="filter-toggle" aria-controls="filters">Show Filters</button>
+    <div id="filters" class="hide">
       {{ exposed }}
     </div>
   </aside>
