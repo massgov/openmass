@@ -1,3 +1,5 @@
+const os = require("os");
+
 /**
  * Ready script, fires after pages have loaded, but before screenshots are
  * captured.
@@ -7,6 +9,11 @@
  * trivial failures for an element, you can probably deal with it here.
  */
 module.exports = async function (page, scenario, vp) {
+  console.log(`Preparing ${page.url()}`);
+  const oneMinute = os.loadavg()[0];
+  if (oneMinute > os.cpus().length) {
+    console.log(`One minute load average is ${oneMinute}. Consider reducing the number of capture processes.`)
+  }
 
   // DO NOT put anything that modifies a mass.gov page before this point.
   // Otherwise, if a Tugboat preview is suspended and needs to resume, we may
