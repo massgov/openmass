@@ -424,11 +424,11 @@ jobs:
         type: string
         default: ""
     working_directory: /home/circleci/code
-    resource_class: xlarge
+    resource_class: large
     docker:
       - image: cimg/node:16.15
         environment:
-          BACKSTOP_ASYNC_CAPTURE_LIMIT: 16
+          BACKSTOP_ASYNC_CAPTURE_LIMIT: 8
     steps:
       - checkout
       - run:
