@@ -470,10 +470,15 @@ jobs:
                 working_directory: backstop
                 command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
                 no_output_timeout: 300m
+      - run:
+          name: Archive Backstop Artifacts
+          # Most files are pngs and compress minimally. This step is to avoid
+          # Circle's slow artifact file uploads.
+          command: zip -0 -r backstop.zip backstop/
       - store_test_results:
           path: /home/circleci/code/backstop/report
       - store_artifacts:
-          path: /home/circleci/code/backstop
+          path: /home/circleci/code/backstop.zip
 
   # If you make changes to this job, consider pushing to a tag that's not 'latest'
   # at Docker Hub. That way, your in-progress work does not interfere with build
