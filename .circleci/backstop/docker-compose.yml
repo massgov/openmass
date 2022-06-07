@@ -3,6 +3,9 @@ version: '3.1'
 services:
   backstop:
     image: "backstopjs/backstopjs:6.1.0"
+    # Add init to reap Chrome processes, as noted at
+    # https://github.com/puppeteer/puppeteer/blob/main/docs/troubleshooting.md#running-puppeteer-in-docker
+    init: true
     volumes:
       - ./backstop:/src
     shm_size: 1gb
