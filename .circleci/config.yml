@@ -433,7 +433,7 @@ jobs:
       - checkout
       - run:
           name: Install backstop
-          command: npm install -g backstopjs
+          command: npm install -g backstopjs@6.1.0
       - run:
           name: Backstop reference
           command: backstop reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
