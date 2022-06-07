@@ -426,39 +426,35 @@ jobs:
     working_directory: /home/circleci/code
     resource_class: xlarge
     docker:
-      - image: cimg/base:2022.06-22.04
+      - image: cimg/node:18
         environment:
           BACKSTOP_ASYNC_CAPTURE_LIMIT: 8
     steps:
       - checkout
-      - run: cp .circleci/backstop/docker-compose.yml .
-      - setup_remote_docker
-      - run: docker-compose up --no-start backstop
-      - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
+      - run:
+          name: Install backstop
+          command: npm install -g backstopjs
       - run:
           name: Backstop reference
-          command: docker-compose run backstop reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+          command: backstop reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
           no_output_timeout: 300m
       - when:
           condition: << parameters.tugboat >>
           steps:
             - run:
                 name: Backstop test (Tugboat target)
-                command: docker-compose run backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
+                command: backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
                 no_output_timeout: 300m
       - unless:
           condition: << parameters.tugboat >>
           steps:
             - run:
                 name: Backstop test (non Tugboat target)
-                command: docker-compose run backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+                command: backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
                 no_output_timeout: 300m
-      - run:
-          command: docker-compose logs backstop
-          when: always
-      - run:
-          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
-          when: always
+#      - run:
+#          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
+#          when: always
       - store_test_results:
           path: /home/circleci/code/backstop/report
       - store_artifacts:
