@@ -133,6 +133,9 @@ class SanitizationCommands extends DrushCommands {
     if ($input->getOption('sanitize-unpublish-reminders')) {
       $messages[] = 'Remove unpublish reminders.';
     }
+    if ($input->getOption('sanitize-entity-usage')) {
+      $messages[] = 'Remove entity usage.';
+    }
   }
 
   /**
@@ -142,8 +145,9 @@ class SanitizationCommands extends DrushCommands {
    * @option sanitize-roles Remove user role assignments.
    * @option sanitize-unpublish-reminders Remove unpublish reminders.
    * @option sanitize-names Replace usernames with user+1, user+2, etc.
+   * @option sanitize-entity-usage Remove entity usage.
    */
-  public function options($options = ['sanitize-keyvalue' => FALSE, 'sanitize-entities' => FALSE, 'sanitize-names' => FALSE, 'sanitize-roles' => FALSE, 'sanitize-unpublish-reminders' => FALSE]) {
+  public function options($options = ['sanitize-keyvalue' => FALSE, 'sanitize-entities' => FALSE, 'sanitize-names' => FALSE, 'sanitize-roles' => FALSE, 'sanitize-unpublish-reminders' => FALSE, 'sanitize-entity-usage' => FALSE]) {
   }
 
   /**
@@ -270,6 +274,24 @@ class SanitizationCommands extends DrushCommands {
       ->execute();
     $this->logger()->success(dt('User names are sanitized.'));
     $this->entityTypeManager->getStorage('user')->resetCache();
+  }
+
+  /**
+   * Sanitize the database table for entity usage.
+   *
+   * @hook post-command sql-sanitize
+   */
+  public function entityUsage($result, CommandData $commandData) {
+    if (!$commandData->input()->getOption('sanitize-entity-usage')) {
+      return;
+    }
+    // Remove all from the entity_usage table.
+    $reminders = Database::getConnection()->truncate('entity_usage')->execute();
+    if ($reminders) {
+      $this->logger()->error(dt('Entity usage has not been truncated.'));
+    } else {
+      $this->logger()->success(dt('Entity usage has been truncated.'));
+    }
   }
 
   /**
