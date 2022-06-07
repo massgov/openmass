@@ -437,7 +437,7 @@ jobs:
       - run:
           name: Backstop reference
           working_directory: backstop
-          command: backstop reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+          command: backstop --config=backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
           no_output_timeout: 300m
       - when:
           condition: << parameters.tugboat >>
@@ -445,7 +445,7 @@ jobs:
             - run:
                 name: Backstop test (Tugboat target)
                 working_directory: backstop
-                command: backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
+                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
                 no_output_timeout: 300m
       - unless:
           condition: << parameters.tugboat >>
@@ -453,7 +453,7 @@ jobs:
             - run:
                 name: Backstop test (non Tugboat target)
                 working_directory: backstop
-                command: backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
                 no_output_timeout: 300m
 #      - run:
 #          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
