@@ -128,7 +128,8 @@ if (viewportArg !== 'desktop') {
   );
 }
 
-const asyncCaptureLimit = process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT ? process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT : 4;
+// We need parseInt() as environment variables are strings.
+const asyncCaptureLimit = parseInt(process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT ? process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT : 4);
 const asyncCompareLimit = asyncCaptureLimit * 25;
 
 console.log(`Will capture with ${asyncCaptureLimit} browsers and compare with ${asyncCompareLimit} threads.`)
