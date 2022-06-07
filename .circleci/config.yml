@@ -475,6 +475,7 @@ jobs:
           # Most files are pngs and compress minimally. This step is to avoid
           # Circle's slow artifact file uploads.
           command: zip -0 -r backstop.zip backstop/
+          when: always
       - store_test_results:
           path: /home/circleci/code/backstop/report
       - store_artifacts:
