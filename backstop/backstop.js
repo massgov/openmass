@@ -128,6 +128,11 @@ if (viewportArg !== 'desktop') {
   );
 }
 
+const asyncCaptureLimit = process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT ? process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT : 4;
+const asyncCompareLimit = asyncCaptureLimit * 25;
+
+console.log(`Will capture with ${asyncCaptureLimit} browsers and compare with ${asyncCompareLimit} threads.`)
+
 module.exports = {
     id: 'regression',
     viewports,
@@ -153,8 +158,8 @@ module.exports = {
             "--ignore-certificate-errors"
         ]
     },
-    "asyncCaptureLimit": 4,
-    "asyncCompareLimit": 3,
+    "asyncCaptureLimit": asyncCaptureLimit,
+    "asyncCompareLimit": asyncCompareLimit,
     "debug": false,
     "debugWindow": false
 }

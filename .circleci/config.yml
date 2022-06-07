@@ -428,6 +428,8 @@ jobs:
     docker:
       # Need to use docker image for these steps.
       - image: circleci/python:2.7.14
+        environment:
+          BACKSTOP_ASYNC_CAPTURE_LIMIT: 8
     steps:
       - checkout
       - run: cp .circleci/backstop/docker-compose.yml .
