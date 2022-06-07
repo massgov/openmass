@@ -436,6 +436,7 @@ jobs:
           command: npm install -g backstopjs@6.1.0
       - run:
           name: Backstop reference
+          working_directory: backstop
           command: backstop reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
           no_output_timeout: 300m
       - when:
@@ -443,6 +444,7 @@ jobs:
           steps:
             - run:
                 name: Backstop test (Tugboat target)
+                working_directory: backstop
                 command: backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
                 no_output_timeout: 300m
       - unless:
@@ -450,6 +452,7 @@ jobs:
           steps:
             - run:
                 name: Backstop test (non Tugboat target)
+                working_directory: backstop
                 command: backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
                 no_output_timeout: 300m
 #      - run:
