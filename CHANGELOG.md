@@ -1,5 +1,45 @@
 
 
+## [0.324.0] - June 7, 2022
+
+### Changed
+  - DP-24265: Correct heading levels of event itmes in event listing page, event listing in org and event pages.
+  - DP-24370: Install Imagick PHP extension at Tugboat
+  - DP-24948: - editor can edit any external link for collections content
+- update help text for collections logo
+- updating form display labels on external data resource
+- removing 'only admins can' description from everywhere
+- updating view add_collections_documents label
+  - DP-24955: Configuration changes
+- Update "use this content type for" for news
+- Update news body help text
+  - DP-24993: Help text to clarify how the new Collection field should be used.
+  
+### Added
+  - DP-24573: Add organization metadata to campaign landing pages.
+  - DP-24963: Backstop for Collection pages with top banner and news Blogpost.
+  - DP-24981: Add data listing pages to Backstop.
+- Energy and Environment Data Listing: /data-listing/topic/energy-and-environment
+- All Data Listing: /data-listing/all
+  
+### Fixed
+  - DP-24692: - Adding cache tags for prepareExpandableContent
+- Topic headings override from the link text (if present)
+  - DP-24800: Automatic list "sort by date" fixes.
+  - DP-24801: Fix undefined array key 'ariaHidden'.
+  - DP-24976: - Title not required for CSV resources.
+- Title not shown if empty.
+- Help text added for CSV title.
+- If caption is empty, figcaption is not shown.
+  - DP-24983: Avoids special characters on titles for collection and data listing pages.
+  - DP-25028: Fixed caching errors on topics pages.
+  
+### Security
+  - DP-24927: Update components causing security alerts.
+  - DP-24987: Drupal core and Embed module update.
+  
+
+
 ## [0.323.0] - May 24, 2022
 
 ### Changed
