@@ -33,6 +33,11 @@ class EntityUsageTest extends ExistingSiteBase {
    */
   protected function setUp() {
     parent::setUp();
+
+    // Remove everything from the entity_usage table
+    // to avoid long cleaning times that break this test.
+    $this->database->delete('entity_usage')->execute();
+
     $this->emptyEntityUsageQueues();
     $user = User::create(['name' => $this->randomMachineName()]);
     $user->addRole('administrator');
