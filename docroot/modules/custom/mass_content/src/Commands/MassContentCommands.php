@@ -137,7 +137,7 @@ class MassContentCommands extends DrushCommands {
    *   1000 is the offset where to start processing.
    *   500 is the number of nodes that will be processed.
    */
-  public function migrateServiceData(int $offset, int $limit) {
+  public function migrateServiceData(int $offset, int $limit = 500) {
     // 1. Log the start of the script.
     $this->logger()->info('Update nodes batch operations start');
 
@@ -197,7 +197,7 @@ class MassContentCommands extends DrushCommands {
       }
     }
     else {
-      $this->logger()->warning('No nodes of this type @type', ['@type' => 'service_page']);
+      $this->logger()->warning(dt('No nodes of this type @type to process', ['@type' => 'service_page']));
     }
     // 4. Create the batch.
     $batch = [
