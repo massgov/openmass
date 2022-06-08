@@ -295,5 +295,5 @@ module.exports = async function (page, scenario, vp) {
   // https://github.com/garris/BackstopJS/issues/1156
   // https://github.com/garris/BackstopJS/issues/1303
   // https://github.com/garris/BackstopJS/issues/1318#issuecomment-841086680
-  await page.evaluate(() => window.scrollTo(0, 0);
+  await page.evaluate(() => window.scrollTo(0, 0));
 }
