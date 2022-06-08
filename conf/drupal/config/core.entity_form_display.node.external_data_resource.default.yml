@@ -25,15 +25,17 @@ third_party_settings:
     group_externaldata_edit_form:
       children:
         - group_external_data_resource
-      label: 'External data resource edit form'
+      label: 'External link for collections form'
       region: content
       parent_name: ''
       weight: 0
       format_type: tabs
       format_settings:
         classes: ''
+        show_empty_fields: false
         id: ''
         direction: horizontal
+        width_breakpoint: 640
     group_external_data_resource:
       children:
         - title
@@ -46,13 +48,14 @@ third_party_settings:
         - field_data_format
         - field_data_topic
         - field_collections
-      label: 'External data resource'
+      label: 'External link for collections'
       region: content
       parent_name: group_externaldata_edit_form
       weight: 0
       format_type: tab
       format_settings:
         classes: ''
+        show_empty_fields: false
         id: ''
         formatter: open
         description: ''

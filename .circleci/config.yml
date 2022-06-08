@@ -30,12 +30,12 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v13-{{ checksum "composer.lock" }}
+        - site-composer-v14-{{ checksum "composer.lock" }}
 
   save_composer_cache: &save_composer_cache
     save_cache:
       name: Save Composer cache
-      key: site-composer-v13-{{ checksum "composer.lock" }}
+      key: site-composer-v14-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
   # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
@@ -87,7 +87,7 @@ executors:
         command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
       - image: memcached:1-alpine
         command: memcached -m 128
-      - image: previousnext/chrome-headless:65
+      - image: seleniarm/standalone-chromium:4.1.4-20220429
 
 commands:
   git_configure_user:
@@ -254,7 +254,7 @@ jobs:
       # Make sure changelogs are parseable by PHP (since build-changelog.php requires that).
       - run: php scripts/directory-yaml-parse.php
       # Lint javascript
-      - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
+      - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: vendor/bin/phpcs -v -n -s
 
