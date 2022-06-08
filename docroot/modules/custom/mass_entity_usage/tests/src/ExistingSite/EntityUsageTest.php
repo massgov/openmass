@@ -123,6 +123,7 @@ class EntityUsageTest extends ExistingSiteBase {
   private function emptyEntityUsageQueues() {
     $this->clearQueue('entity_usage_tracker');
     $this->clearQueue('entity_usage_regenerate_queue');
+    \Drupal::service('mass_entity_usage.clean_usage_table')->clean();
   }
 
   /**
@@ -130,6 +131,7 @@ class EntityUsageTest extends ExistingSiteBase {
    */
   private function processEntityUsageQueues() {
     $this->runQueue('entity_usage_tracker');
+    \Drupal::service('mass_entity_usage.clean_usage_table')->clean();
   }
 
   /**
