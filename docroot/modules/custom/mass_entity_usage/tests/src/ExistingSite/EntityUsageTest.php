@@ -36,7 +36,7 @@ class EntityUsageTest extends ExistingSiteBase {
 
     // Remove everything from the entity_usage table
     // to avoid long cleaning times that break this test.
-    $this->database->delete('entity_usage')->execute();
+    \Drupal::service('database')->delete('entity_usage')->execute();
 
     $this->emptyEntityUsageQueues();
     $user = User::create(['name' => $this->randomMachineName()]);
