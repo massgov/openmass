@@ -284,9 +284,16 @@ module.exports = async function (page, scenario, vp) {
       'outline: none;\n' +
       '}'
   });
+
   // We can add a slight delay here. This can cover up jitter caused
   // by weird network conditions, slow JS, etc, but if we need an extra
   // delay after page load, it probably indicates there's a problem with
   // performance.
   // await page.waitForTimeout(2000);
+
+  // Attempt to fix Backstop taking a cut-off screenshot.
+  // https://github.com/garris/BackstopJS/issues/1156
+  // https://github.com/garris/BackstopJS/issues/1303
+  // https://github.com/garris/BackstopJS/issues/1318#issuecomment-841086680
+  await page.evaluate(() => window.scrollTo(0, 0);
 }
