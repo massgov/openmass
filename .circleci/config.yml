@@ -470,9 +470,6 @@ jobs:
                 working_directory: backstop
                 command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
                 no_output_timeout: 300m
-#      - run:
-#          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
-#          when: always
       - store_test_results:
           path: /home/circleci/code/backstop/report
       - store_artifacts:
