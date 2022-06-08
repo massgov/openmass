@@ -168,7 +168,7 @@ function super_sanitize() {
     # Super sanitize the database by removing or obfuscating user data.
     echo
     echo "${HEADING}[+] Super sanitize database ${TEXTRESET}" | tee -a $LOGFILE_NAME
-    drush -y -v sql:sanitize --sanitize-entities --sanitize-keyvalue --sanitize-names --sanitize-roles --sanitize-unpublish-reminders --sanitize-entity-usage
+    drush -y -v sql:sanitize --sanitize-entities --sanitize-keyvalue --sanitize-names --sanitize-roles --sanitize-unpublish-reminders
     nonzero_exit
 }
 
