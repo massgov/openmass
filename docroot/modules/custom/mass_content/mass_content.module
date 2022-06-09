@@ -5,6 +5,7 @@
  * Contains mass_content.module.
  */
 
+use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -12,6 +13,10 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
+use Drupal\file\Entity\File;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_entity_bundle_field_info().
@@ -71,11 +76,13 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
     }
 
     // Handle all of the related to relationship indicators.
-    // The related to config controls the creation of the field. In most instances, this is finding content that
-    // references the current node in specific link fields or reference fields. See additional comments for the
+    // The related to config controls the creation of the field.
+    // In most instances, this is finding content that
+    // references the current node in specific link fields or reference fields.
+    // See additional comments for the
     // exceptions to this in the definition for a specific content type.
-
-    // For these types, specific fields are used with the RelatedNodes class that queries for referencing services.
+    // For these types, specific fields are used with the RelatedNodes class
+    // that queries for referencing services.
     $related_to_config = [
       'advisory' => [
         'settings' => [
@@ -139,8 +146,10 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
           ],
         ],
       ],
-      // Event uses a field on the event content type but must have orgs filtered out. Org pages must remain an
-      // option for this field because the field also controls how events are shown on org pages.
+      // Event uses a field on the event content type but must have
+      // orgs filtered out. Org pages must remain an
+      // option for this field because the field also
+      // controls how events are shown on org pages.
       'event' => [
         'settings' => [
           'fields' => [
@@ -504,7 +513,8 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
 /**
  * Implements hook_ENTITY_TYPE_view().
  *
- * Attach the binder navigation management library and define the page flipper field implementation.
+ * Attach the binder navigation management library
+ * and define the page flipper field implementation.
  */
 function mass_content_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   if ($display->getComponent('referencing_binders')) {
@@ -586,6 +596,61 @@ function mass_content_page_attachments(array &$attachments) {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
+function mass_content_form_taxonomy_term_collections_form_alter(array &$form, FormStateInterface $form_state) {
+  /** @var Drupal\taxonomy\TermForm */
+  $form_object = $form_state->getFormObject();
+
+  /** @var Drupal\taxonomy\Entity\Term */
+  $term = $form_object->getEntity();
+
+  /** @var \Drupal\taxonomy\TermStorage */
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $parents = $term_storage->loadParents($term->id());
+
+  /** @var \Drupal\taxonomy\TermForm */
+  $term_form = $form_state->getFormObject();
+  /** @var \Drupal\taxonomy\Entity\Term */
+  $term = $term_form->getEntity();
+
+  // Show sort options only on top level terms.
+  if (count($parents) || $term->isNew()) {
+    $form['field_default_sort']['#access'] = FALSE;
+    $form['field_sort_order']['#access'] = FALSE;
+    $form['field_primary_parent']['#access'] = FALSE;
+    $form['field_landing_page']['#access'] = FALSE;
+    $form['field_collection_logo']['#access'] = FALSE;
+    $form['field_all_collection_breadcrumb']['#access'] = FALSE;
+    $form['field_short_description']['#access'] = FALSE;
+    $form['field_header_color']['#access'] = FALSE;
+    $form['field_organizations']['#access'] = FALSE;
+    $form['field_collection_logo']['#access'] = FALSE;
+    $form['field_show_only_future_events']['#access'] = FALSE;
+    return;
+  }
+
+  $default_sort_widget = &$form['field_default_sort']['widget'][0]['value'];
+  $default_sort_widget['#type'] = 'select';
+  $default_sort_widget['#options'] = $form['field_sort_order']['widget']['#options'];
+  $default_sort_widget['#size'] = 1;
+  $default_sort_widget['#element_validate'][] = 'mass_content_validate_default_sort_option';
+}
+
+/**
+ * Validates sort default option to be one of the selected available sorts.
+ */
+function mass_content_validate_default_sort_option(array &$element, FormStateInterface $form_state) {
+  $selected_sorts = array_column($form_state->getValue('field_sort_order'), 'value');
+  $default_sort = $form_state->getValue('field_default_sort')[0]['value'];
+
+  if (in_array($default_sort, $selected_sorts)) {
+    return;
+  }
+  $form_state->setError($element, t('The default sort must be one of the sort options.'));
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
 function mass_content_form_node_org_page_edit_form_alter(&$form, FormStateInterface $form_state) {
   mass_content_set_default_event_quantity($form);
 }
@@ -613,12 +678,62 @@ function mass_content_set_default_event_quantity(array &$form) {
 }
 
 /**
+ * Gets the collection based on the current route and field_url_name.
+ */
+function mass_content_get_collection_from_current_page() {
+  // Load collection by url name.
+  $route_match = \Drupal::routeMatch();
+  $collection_param = $route_match->getParameter('collection');
+  $query = \Drupal::entityQuery('taxonomy_term');
+  $query->condition('field_url_name', $collection_param);
+  $ids = $query->execute();
+  $collection_id = reset($ids);
+  if (!$collection_id) {
+    return FALSE;
+  }
+  $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $collection = $storage->load($collection_id);
+  return $collection;
+}
+
+/**
+ * Shows only available sort options on collection pages.
+ */
+function mass_content_form_views_exposed_form_alter__collection_all_page_all(&$form) {
+  $collection = mass_content_get_collection_from_current_page();
+  if (!$collection) {
+    return;
+  }
+
+  if (!$collection) {
+    return;
+  }
+
+  // Filter available sort options.
+  $selected_options = array_column($collection->field_sort_order->getValue(), 'value');
+
+  foreach ($form['sort_bef_combine']['#options'] as $key => $option) {
+    if (in_array($key, $selected_options)) {
+      continue;
+    }
+    unset($form['sort_bef_combine']['#options'][$key]);
+  }
+
+  // If only one sort option, hide the sort select control.
+  $form['sort_bef_combine']['#access'] = count($selected_options) > 1;
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
-function mass_content_form_views_exposed_form_alter(&$form, $form_state, $form_id) {
+function mass_content_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if ($form['#id'] == 'views-exposed-form-content-page-1' || $form['#id'] == 'views-exposed-form-my-content-page-1') {
     $form['status_1']['#options'][1] = t('Published');
     $form['status_1']['#options'][0] = t('Unpublished');
+  }
+
+  if ($form['#id'] == 'views-exposed-form-collection-all-page-all') {
+    mass_content_form_views_exposed_form_alter__collection_all_page_all($form);
   }
 }
 
@@ -678,6 +793,401 @@ function mass_content_entity_view_mode_alter(&$view_mode, $entity, $context) {
   if ($entity->getEntityTypeId() == 'paragraph' && $entity->bundle() == 'featured_topics' && $view_mode == 'default') {
     if ($entity->hasField('field_topic_name_only') && $entity->field_topic_name_only->value == 1) {
       $view_mode = 'card_compact';
+    }
+  }
+}
+
+/**
+ * Stores/retrieves the altered query for view collection_all_media.
+ */
+function mass_content_query_collection_media($query_arg = NULL) {
+  static $query;
+  $query = $query_arg ?? $query;
+  return $query;
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ */
+function mass_content_query_collection_all_media_alter(AlterableInterface $query) {
+  mass_content_query_collection_media(clone $query);
+}
+
+/**
+ * Checks sort query value is ok and returns the new sort value for the view.
+ */
+function mass_content_query_collection_all_check_sort_value($value = '') {
+  if (!$value) {
+    $value = \Drupal::request()->query->get('sort_bef_combine');
+  }
+
+  $permitted_values = [
+    'title_ASC',
+    'title_DESC',
+    'field_date_published_value_ASC',
+    'field_date_published_value_DESC',
+    'event_date_ASC',
+    'event_date_DESC',
+  ];
+
+  if (!in_array($value, $permitted_values)) {
+    return [];
+  }
+
+  $available_sorts_in_collection_view = [
+    'title' => 'node_field_data_title',
+    'field_date_published_value' => 'node__field_date_published_field_date_published_value',
+    'event_date' => 'node__field_event_date_field_event_date_value',
+  ];
+
+  // Get the field name and the direction of the sort.
+  $direction = array_reverse(explode('_', $value))[0];
+  $field = str_replace('_' . $direction, '', $value);
+
+  return [
+    'key' => $available_sorts_in_collection_view[$field],
+    'value' => $direction,
+  ];
+}
+
+/**
+ * To show events only in the future if the collection requires it.
+ */
+function _mass_content_collection_all_only_future_events(QueryPluginBase $query) {
+  $collection = mass_content_get_collection_from_current_page();
+  $only_future = $collection->field_show_only_future_events->value;
+
+  if (!$only_future) {
+    return;
+  }
+
+  $now = \Drupal::time()->getCurrentTime();
+  /** @var \Drupal\Core\Datetime\DateFormatter */
+  $date_formatter_service = \Drupal::service('date.formatter');
+  /** @var DateTimeZone */
+  $timezone = (new \DateTimeZone(date_default_timezone_get()));
+  $offset_interval = 'INTERVAL ' . date('Z') . ' SECOND ';
+  $now_formatted = $date_formatter_service->format($now, 'custom', 'Y-m-d\T:00:00:00', $timezone->getName());
+
+  $query->where[] = [
+    'type' => 'OR',
+    'conditions' => [
+      [
+        'field' => 'node__field_event_date.field_event_date_value',
+        'value' => NULL,
+        'operator' => 'IS NULL'
+      ],
+      [
+        'field' =>
+        "DATE_FORMAT((node__field_event_date.field_event_date_value + " . $offset_interval . "), '%Y-%m-%d\T%H:%i:%s') > " .
+        "DATE_FORMAT(('" . $now_formatted . "'), '%Y-%m-%d\T%H:%i:%s')",
+        'value' => [],
+        'operator' => 'formula',
+      ]
+    ],
+  ];
+}
+
+/**
+ * Implements hook_view_query_alter().
+ */
+function mass_content_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'collection_all') {
+    _mass_content_collection_all_only_future_events($query);
+  }
+}
+
+/**
+ * Implements hook_query_TAG_alter().
+ */
+function mass_content_query_collection_all_alter(AlterableInterface $query) {
+  /** @var Drupal\Core\Database\Query\Select $query */
+  // To identify later this result is from a node.
+  $query->addExpression('\'node\'', 'entity_type');
+
+  // Only show types related to the selected sort order.
+  $order_by = &$query->getOrderBy();
+  $order_by_event = $order_by['node__field_event_date_field_event_date_value'] ?? FALSE;
+  if ($order_by_event) {
+    $query->condition('type', 'event');
+  }
+
+  $order_by_published_date = $order_by['node__field_date_published_field_date_published_value'] ?? FALSE;
+  if ($order_by_published_date) {
+    $types_with_consolidated_date_field = [
+      'news',
+      'binder',
+      'decision',
+      'executive_order',
+      'info_details',
+      'news',
+      'regulation',
+      'rules',
+      'advisory',
+      'document',
+    ];
+    $query->condition('type', $types_with_consolidated_date_field, 'IN');
+
+    // Files doesn't have a published date, hence we don't need to make to
+    // make a Union to include media/files results.
+    return;
+  }
+
+  // Override sort with the sort_bef_combine query parameter.
+  if ($res = mass_content_query_collection_all_check_sort_value()) {
+    $order_by = [$res['key'] => $res['value']];
+  }
+
+  // Get the Collection ID passed to collection_all view.
+  $collection_id = $query->getArguments()[':taxonomy_index_tid'] ?? NULL;
+
+  // Get the Topic ID passed to collection_all view.
+  $topic_id = $query->getArguments()[':node__field_collections_field_collections_target_id_entityreference_filter'] ?? NULL;
+
+  // Executes collection_all_media to then get its query.
+  // Pass Topic ID if any, if not, pass Collection ID.
+  views_get_view_result('collection_all_media', 'default', $topic_id ?? $collection_id);
+
+  /** @var Drupal\Core\Database\Query\Select $media_query */
+  $media_query = mass_content_query_collection_media();
+
+  if (!$media_query) {
+    return;
+  }
+
+  // Avoids repeated results and syntax errors due to the removal of fields.
+  // This may leave if set on the view, but to ensure it we can set it here.
+  $media_query->distinct(TRUE);
+
+  // To identify later that records from this query are from media.
+  $media_query->addExpression('\'media\'', 'entity_type');
+  $media_query->range(NULL);
+
+  // Removing order by from the media query because we are going to make
+  // a union and not removing it would produce a syntax error.
+  $order_by = &$media_query->getOrderBy();
+  $order_by = [];
+
+  // Adding fields.
+  // We must have the same number of columns for the UNION to work.
+  // Currently, we only care about the 2 last fields.
+  // Order of field/columns is important.
+  $fields = &$media_query->getFields();
+  $fields = [];
+  $media_query->addField('media_field_data', 'mid', 'extra_column_1');
+  $media_query->addField('media_field_data', 'mid', 'extra_column_2');
+
+  // Same alias from the node title to be able to sort nodes and media by title.
+  $media_query->addField('media__field_title', 'field_title_value', 'node_field_data_title');
+
+  $media_query->addField('media_field_data', 'mid', 'extra_column_3');
+  $media_query->addField('media_field_data', 'mid', 'extra_column_4');
+
+  // If the sort is for news of event do not show media.
+  if ($order_by_event || $order_by_published_date) {
+    $media_query->condition('mid', -1);
+  }
+
+  // Last field, on the same column as NID, the alias doesn't matter here
+  // because it is a UNION, the second select doesn't define columns.
+  $media_query->addField('media_field_data', 'mid');
+
+  // Put together nodes and media on the same query.
+  $query->union($media_query);
+}
+
+/**
+ * Implements hook_views_data().
+ */
+function mass_content_views_data() {
+
+  $data = [];
+
+  $data['node']['rendered_entity_mixed'] = [
+    'field' => [
+      'title' => t('Rendered entity mixed'),
+      'help' => t('Renders an node/media in a view mode.'),
+      'id' => 'rendered_entity_mixed',
+    ],
+  ];
+
+  return $data;
+
+}
+
+/**
+ * Implements hook_entity_bundle_info_alter().
+ */
+function mass_content_entity_bundle_info_alter(array &$bundles): void {
+  if (isset($bundles['node']['action'])) {
+    $bundles['node']['action']['class'] = \Drupal\mass_content\Entity\Bundle\node\ActionBundle::class;
+  }
+  if (isset($bundles['node']['advisory'])) {
+    $bundles['node']['advisory']['class'] = \Drupal\mass_content\Entity\Bundle\node\AdvisoryBundle::class;
+  }
+  if (isset($bundles['node']['alert'])) {
+    $bundles['node']['alert']['class'] = \Drupal\mass_content\Entity\Bundle\node\AlertBundle::class;
+  }
+  if (isset($bundles['node']['binder'])) {
+    $bundles['node']['binder']['class'] = \Drupal\mass_content\Entity\Bundle\node\BinderBundle::class;
+  }
+  if (isset($bundles['node']['campaign_landing'])) {
+    $bundles['node']['campaign_landing']['class'] = \Drupal\mass_content\Entity\Bundle\node\CampaignLandingBundle::class;
+  }
+  if (isset($bundles['node']['contact_information'])) {
+    $bundles['node']['contact_information']['class'] = \Drupal\mass_content\Entity\Bundle\node\ContactInformationBundle::class;
+  }
+  if (isset($bundles['node']['curated_list'])) {
+    $bundles['node']['curated_list']['class'] = \Drupal\mass_content\Entity\Bundle\node\CuratedListBundle::class;
+  }
+  if (isset($bundles['node']['decision'])) {
+    $bundles['node']['decision']['class'] = \Drupal\mass_content\Entity\Bundle\node\DecisionBundle::class;
+  }
+  if (isset($bundles['node']['decision_tree'])) {
+    $bundles['node']['decision_tree']['class'] = \Drupal\mass_content\Entity\Bundle\node\DecisionTreeBundle::class;
+  }
+  if (isset($bundles['node']['decision_tree_branch'])) {
+    $bundles['node']['decision_tree_branch']['class'] = \Drupal\mass_content\Entity\Bundle\node\DecisionTreeBranchBundle::class;
+  }
+  if (isset($bundles['node']['decision_tree_conclusion'])) {
+    $bundles['node']['decision_tree_conclusion']['class'] = \Drupal\mass_content\Entity\Bundle\node\DecisionTreeConclusionBundle::class;
+  }
+  if (isset($bundles['node']['error_page'])) {
+    $bundles['node']['error_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\ErrorPageBundle::class;
+  }
+  if (isset($bundles['node']['event'])) {
+    $bundles['node']['event']['class'] = \Drupal\mass_content\Entity\Bundle\node\EventBundle::class;
+  }
+  if (isset($bundles['node']['executive_order'])) {
+    $bundles['node']['executive_order']['class'] = \Drupal\mass_content\Entity\Bundle\node\ExecutiveOrderBundle::class;
+  }
+  if (isset($bundles['node']['external_data_resource'])) {
+    $bundles['node']['external_data_resource']['class'] = \Drupal\mass_content\Entity\Bundle\node\ExternalDataResourceBundle::class;
+  }
+  if (isset($bundles['node']['fee'])) {
+    $bundles['node']['fee']['class'] = \Drupal\mass_content\Entity\Bundle\node\FeeBundle::class;
+  }
+  if (isset($bundles['node']['form_page'])) {
+    $bundles['node']['form_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\FormPageBundle::class;
+  }
+  if (isset($bundles['node']['guide_page'])) {
+    $bundles['node']['guide_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\GuidePageBundle::class;
+  }
+  if (isset($bundles['node']['how_to_page'])) {
+    $bundles['node']['how_to_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\HowToPageBundle::class;
+  }
+  if (isset($bundles['node']['info_details'])) {
+    $bundles['node']['info_details']['class'] = \Drupal\mass_content\Entity\Bundle\node\InfoDetailsBundle::class;
+  }
+  if (isset($bundles['node']['interstitial'])) {
+    $bundles['node']['interstitial']['class'] = \Drupal\mass_content\Entity\Bundle\node\InterstitialBundle::class;
+  }
+  if (isset($bundles['node']['location'])) {
+    $bundles['node']['location']['class'] = \Drupal\mass_content\Entity\Bundle\node\LocationBundle::class;
+  }
+  if (isset($bundles['node']['location_details'])) {
+    $bundles['node']['location_details']['class'] = \Drupal\mass_content\Entity\Bundle\node\LocationDetailsBundle::class;
+  }
+  if (isset($bundles['node']['news'])) {
+    $bundles['node']['news']['class'] = \Drupal\mass_content\Entity\Bundle\node\NewsBundle::class;
+  }
+  if (isset($bundles['node']['org_page'])) {
+    $bundles['node']['org_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\OrgPageBundle::class;
+  }
+  if (isset($bundles['node']['page'])) {
+    $bundles['node']['page']['class'] = \Drupal\mass_content\Entity\Bundle\node\PageBundle::class;
+  }
+  if (isset($bundles['node']['person'])) {
+    $bundles['node']['person']['class'] = \Drupal\mass_content\Entity\Bundle\node\PersonBundle::class;
+  }
+  if (isset($bundles['node']['regulation'])) {
+    $bundles['node']['regulation']['class'] = \Drupal\mass_content\Entity\Bundle\node\RegulationBundle::class;
+  }
+  if (isset($bundles['node']['rules'])) {
+    $bundles['node']['rules']['class'] = \Drupal\mass_content\Entity\Bundle\node\RulesBundle::class;
+  }
+  if (isset($bundles['node']['service_details'])) {
+    $bundles['node']['service_details']['class'] = \Drupal\mass_content\Entity\Bundle\node\ServiceDetailsBundle::class;
+  }
+  if (isset($bundles['node']['service_page'])) {
+    $bundles['node']['service_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\ServicePageBundle::class;
+  }
+  if (isset($bundles['node']['sitewide_alert'])) {
+    $bundles['node']['sitewide_alert']['class'] = \Drupal\mass_content\Entity\Bundle\node\SitewideAlertBundle::class;
+  }
+  if (isset($bundles['node']['stacked_layout'])) {
+    $bundles['node']['stacked_layout']['class'] = \Drupal\mass_content\Entity\Bundle\node\StackedLayoutBundle::class;
+  }
+  if (isset($bundles['node']['topic_page'])) {
+    $bundles['node']['topic_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\TopicPageBundle::class;
+  }
+  if (isset($bundles['node']['utility_drawer'])) {
+    $bundles['node']['utility_drawer']['class'] = \Drupal\mass_content\Entity\Bundle\node\UtilityDrawerBundle::class;
+  }
+
+  // Media
+  if (isset($bundles['media']['document'])) {
+    $bundles['media']['document']['class'] = \Drupal\mass_content\Entity\Bundle\media\DocumentBundle::class;
+  }
+  if (isset($bundles['media']['media_video'])) {
+    $bundles['media']['media_video']['class'] = \Drupal\mass_content\Entity\Bundle\media\MediaVideoBundle::class;
+  }
+
+  // User
+  if (isset($bundles['user']['user'])) {
+    $bundles['user']['user']['class'] = \Drupal\mass_content\Entity\Bundle\user\UserBundle::class;
+  }
+
+}
+
+/**
+ * Implements hook_ENTITY_insert() for crop entity.
+ */
+function mass_content_crop_insert(EntityInterface $entity) {
+  if ($entity->get('entity_type')->value == 'file') {
+    if ($file = File::load($entity->get('entity_id')->value)) {
+      \Drupal::service('mass_content.image_style_warmer')->warmUp($file);
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_update() for crop entity.
+ */
+function mass_content_crop_update(EntityInterface $entity) {
+  if ($entity->get('entity_type')->value == 'file') {
+    if ($file = File::load($entity->get('entity_id')->value)) {
+      \Drupal::service('mass_content.image_style_warmer')->warmUp($file);
+    }
+  }
+}
+
+/**
+ * Sets the sort_bef_combine URL parameter to sort Collection views.
+ */
+function mass_content_set_default_sort_from_collection($collection) {
+  if (!$collection) {
+    return;
+  }
+  // Setting default sort option if no sort option in the URL exists.
+  if (\Drupal::request()->query->get('sort_bef_combine')) {
+    return;
+  }
+  $first_option = $collection->field_default_sort->value;
+  if (!$first_option) {
+    return;
+  }
+  \Drupal::request()->query->set('sort_bef_combine', $first_option);
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function mass_content_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($view->id() == 'collection_all') {
+    $collection = mass_content_get_collection_from_current_page();
+    if ($collection) {
+      mass_content_set_default_sort_from_collection($collection);
     }
   }
 }

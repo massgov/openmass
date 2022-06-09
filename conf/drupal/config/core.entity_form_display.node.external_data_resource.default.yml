@@ -3,6 +3,8 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.external_data_resource.field_collections
+    - field.field.node.external_data_resource.field_data_flag
     - field.field.node.external_data_resource.field_data_format
     - field.field.node.external_data_resource.field_data_resource_type
     - field.field.node.external_data_resource.field_data_topic
@@ -13,6 +15,7 @@ dependencies:
     - node.type.external_data_resource
     - workflows.workflow.editorial
   module:
+    - conditional_fields
     - content_moderation
     - field_group
     - link
@@ -22,53 +25,97 @@ third_party_settings:
     group_externaldata_edit_form:
       children:
         - group_external_data_resource
+      label: 'External link for collections form'
+      region: content
       parent_name: ''
       weight: 0
       format_type: tabs
       format_settings:
-        id: ''
         classes: ''
+        show_empty_fields: false
+        id: ''
         direction: horizontal
-      label: 'External data resource edit form'
-      region: content
+        width_breakpoint: 640
     group_external_data_resource:
       children:
         - title
         - field_externaldata_url
         - field_externaldata_description
         - field_organizations
+        - field_data_flag
         - field_details_data_type
         - field_data_resource_type
         - field_data_format
         - field_data_topic
+        - field_collections
+      label: 'External link for collections'
+      region: content
       parent_name: group_externaldata_edit_form
       weight: 0
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        show_empty_fields: false
+        id: ''
         formatter: open
         description: ''
         required_fields: true
-      label: 'External data resource'
-      region: content
 id: node.external_data_resource.default
 targetEntityType: node
 bundle: external_data_resource
 mode: default
 content:
-  field_data_format:
-    weight: 14
+  field_collections:
+    type: term_reference_tree
+    weight: 17
+    region: content
+    settings:
+      start_minimized: true
+      leaves_only: false
+      select_parents: true
+      cascading_selection: 0
+      max_depth: 0
+    third_party_settings: {  }
+  field_data_flag:
+    type: options_buttons
+    weight: 12
+    region: content
     settings: {  }
     third_party_settings: {  }
+  field_data_format:
     type: options_buttons
+    weight: 15
     region: content
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        42f6693a-1ce8-4329-8047-942a75dc5669:
+          entity_type: node
+          bundle: external_data_resource
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_data_resource_type:
-    weight: 13
+    type: options_buttons
+    weight: 14
+    region: content
     settings: {  }
     third_party_settings:
       conditional_fields:
         426f433e-cb54-4199-aa9d-1e97961db4f6:
+          entity_type: node
+          bundle: external_data_resource
           dependee: field_details_data_type
           settings:
             state: visible
@@ -83,29 +130,63 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-          entity_type: node
-          bundle: external_data_resource
-    type: options_buttons
-    region: content
   field_data_topic:
-    weight: 15
+    type: term_reference_tree
+    weight: 16
+    region: content
     settings:
       start_minimized: true
+      leaves_only: false
       select_parents: true
       cascading_selection: 0
       max_depth: 0
-      leaves_only: false
-    third_party_settings: {  }
-    type: term_reference_tree
-    region: content
+    third_party_settings:
+      conditional_fields:
+        326a356e-1832-470d-9c80-4f47e86e199e:
+          entity_type: node
+          bundle: external_data_resource
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_details_data_type:
-    weight: 12
-    settings: {  }
-    third_party_settings: {  }
     type: options_buttons
+    weight: 13
     region: content
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        97894025-1f07-4008-b00c-6678a08b40a4:
+          entity_type: node
+          bundle: external_data_resource
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_externaldata_description:
+    type: string_textarea
     weight: 10
+    region: content
     settings:
       rows: 5
       placeholder: ''
@@ -113,48 +194,46 @@ content:
       maxlength:
         maxlength_js: 500
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
-        maxlength_js_enforce_attribute: true
         maxlength_js_enforce: false
         maxlength_js_truncate_html: false
-    type: string_textarea
-    region: content
+        maxlength_js_enforce_attribute: true
   field_externaldata_url:
+    type: link_default
     weight: 9
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_organizations:
+    type: entity_reference_autocomplete
     weight: 11
+    region: content
     settings:
       match_operator: CONTAINS
       match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: entity_reference_autocomplete
-    region: content
   langcode:
     type: language_select
-    weight: 2
+    weight: 3
     region: content
     settings:
       include_locked: true
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 7
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   publish_on:
+    type: datetime_timestamp
     weight: 26
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: datetime_timestamp
-    region: content
   publish_state:
     type: options_select
     weight: 5
@@ -176,7 +255,7 @@ content:
     third_party_settings: {  }
   uid:
     type: entity_reference_autocomplete
-    weight: 1
+    weight: 2
     region: content
     settings:
       match_operator: CONTAINS
@@ -185,11 +264,11 @@ content:
       placeholder: ''
     third_party_settings: {  }
   unpublish_on:
+    type: datetime_timestamp
     weight: 27
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: datetime_timestamp
-    region: content
   unpublish_state:
     type: options_select
     weight: 6

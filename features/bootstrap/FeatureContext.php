@@ -721,7 +721,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ],
           [
-            'field' => 'field-binder-date-published',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ],
@@ -776,7 +776,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-advisory-date',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -835,7 +835,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-regulation-last-updated',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -928,7 +928,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-decision-date	',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -1026,11 +1026,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'submit',
           ),
           array (
-            'field' => 'field-service-bg-narrow',
-            'tag' => 'input',
-            'type' => 'submit',
-          ),
-          array (
             'field' => 'field-service-ref-actions',
             'tag' => 'input',
             'type' => 'text',
@@ -1103,16 +1098,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'field' => 'field-topic-content-cards',
             'tag' => 'paragraphs',
             'type' => 'content-card-group',
-          ),
-          array (
-            'field' => 'field-topic-bg-wide',
-            'tag' => 'input',
-            'type' => 'submit',
-          ),
-          array (
-            'field' => 'field-topic-bg-narrow',
-            'tag' => 'input',
-            'type' => 'submit',
           ),
           array (
             'field' => 'field-topic-ref-icon',
@@ -1388,7 +1373,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'text',
           ),
           array (
-            'field' => 'field-executive-order-date',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -1456,7 +1441,7 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'date',
           ),
           array (
-            'field' => 'field-rules-effective-date',
+            'field' => 'field-date-published',
             'tag' => 'input',
             'type' => 'date',
           ),
@@ -1570,11 +1555,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
           ],
           [
             'field' => 'field-bg-wide',
-            'tag' => 'input',
-            'type' => 'submit',
-          ],
-          [
-            'field' => 'field-bg-narrow',
             'tag' => 'input',
             'type' => 'submit',
           ],

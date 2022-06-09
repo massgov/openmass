@@ -42,6 +42,9 @@ const scenarios = pages.map(function(page) {
       break;
     case 'tugboat':
       const opts = process.argv.filter(arg => arg.match(/^--tugboat=/))
+      if (opts.length < 1) {
+        throw '--tugboat must be specified with a preview URL if --target=tugboat is set.'
+      }
       base = opts[0].replace('--tugboat=', '');
       break;
     default:
@@ -53,17 +56,48 @@ const scenarios = pages.map(function(page) {
   if (url.search !== "") {
     separator = "&";
   }
+  if (page.screens !== undefined) {
+    if (page.screens.length > 0 && page.viewports === undefined) {
+      page.viewports = page.screens.map(function (screen) {
+        let viewport;
+        switch (screen) {
+          case "desktop":
+            viewport = {
+              "label": "desktop",
+              "width": 1920,
+              "height": 1080
+            };
+            break;
+          case "tablet":
+            viewport = {
+              "label": "tablet",
+              "width": 1024,
+              "height": 768
+            };
+            break;
+          case "mobile":
+            viewport = {
+              "label": "phone",
+              "width": 320,
+              "height": 480
+            };
+            break;
+        }
+        return viewport;
+      });
+    }
+  }
   return {
     ...page,
     url: `${base}${page.url}${separator}cachebuster=${Math.random().toString(36).substring(7)}`,
-    misMatchThreshold: 0.05,
+    misMatchThreshold: 0.1,
     auth,
   }
 });
 
 function getAuth() {
   // Trim leading and trailing quotes off of the auth variables.
-  // This works around docker-compose's handling of environmnent
+  // This works around docker-compose's handling of environment
   // variables with quotes.
   return {
     username: process.env.LOWER_ENVIR_AUTH_USER.replace(/(^["']|["']$)/g, ''),
@@ -119,7 +153,7 @@ module.exports = {
             "--ignore-certificate-errors"
         ]
     },
-    "asyncCaptureLimit": 2,
+    "asyncCaptureLimit": 4,
     "asyncCompareLimit": 3,
     "debug": false,
     "debugWindow": false

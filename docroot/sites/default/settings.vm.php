@@ -2,6 +2,7 @@
 
 use Drupal\KernelTests\Core\Entity\EntityQueryTest;
 use Drupal\node\Entity\Node;
+use Drupal\mass_utility\DebugCachability;
 
 $databases = array();
 $databases['default']['default'] = array(
@@ -18,8 +19,6 @@ $databases['default']['default'] = array(
   'pdo' => [PDO::ATTR_TIMEOUT => 60],
 );
 
-$settings['container_yamls'][] = $app_root . '/sites/development.services.yml';
-
 $settings['hash_salt'] = 'temporary';
 $settings['file_public_path'] = 'sites/default/files';
 $settings['file_private_path'] = 'sites/default/files/private';
@@ -31,8 +30,10 @@ $config['media_entity_download.settings']['external_file_storage'] = 1;
 $config['autologout.settings']['timeout'] = 9999999;
 $config['autologout.settings']['max_timeout'] = 9999999;
 // Routes mail to PHP's sendmail_path which then routes to Mailhog.
-$config['mailsystem.settings']['defaults']['sender'] = 'php_mail';
-$config['mailsystem.settings']['defaults']['formatter'] = 'php_mail';
+if (!getenv('MASS_MAILCHIMP')) {
+  $config['mailsystem.settings']['defaults']['sender'] = 'php_mail';
+  $config['mailsystem.settings']['defaults']['formatter'] = 'php_mail';
+}
 // Development geocoder overrides:
 // Use the dummy "random" geocoder plugin in in development environments.
 // This avoids overwhelming our production credentials for things like tests.
@@ -40,10 +41,22 @@ $config['mailsystem.settings']['defaults']['formatter'] = 'php_mail';
 $config['field.field.paragraph.address.field_geofield']['third_party_settings']['geocoder_field']['plugins'] = ['random'];
 
 
-if(getenv('DOCKER_ENV')) {
+if (getenv('DOCKER_ENV')) {
   // Docker service configuration.
   $settings['container_yamls'][] = $app_root . '/' . $site_path . '/services.docker.yml';
 }
+if (getenv('DOCKER_ENV') === 'devel') {
+  $settings['container_yamls'][] = $app_root . '/sites/development.services.yml';
+}
+
+// Manually require this file so we can share the constant. At this point,
+// Drupal is not bootstrapped enough to know what modules are enabled, so
+// technically we can only autoload classes in /vendor/.
+require_once __DIR__ . '../../../../docroot/modules/custom/mass_utility/src/DebugCachability.php';
+if (isset($GLOBALS['request']) && $GLOBALS['request']->headers->get(DebugCachability::HEADER, FALSE)) {
+  $settings['container_yamls'][] = $app_root . '/sites/debug_cacheability_headers.services.yml';
+}
+
 /**
  * Show all error messages with backtrace information, except during Behat runs.
  * Those would fail dynamic page cache tests (at minimum).

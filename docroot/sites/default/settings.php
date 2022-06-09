@@ -158,7 +158,7 @@ $settings['database_cache_max_rows']['default'] = -1;
 $settings['entity_update_batch_size'] = 250;
 
 // Secrets
-$config['mandrill.settings']['mandrill_api_key'] = getenv('MANDRILL_API_KEY');
+$config['mailchimp_transactional.settings']['mailchimp_transactional_api_key'] = getenv('MANDRILL_API_KEY');
 $config['scheduler.settings']['lightweight_cron_access_key'] = getenv('LIGHTWEIGHT_CRON_ACCESS_KEY');
 $config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
 $config['geocoder.geocoder_provider.opencage']['configuration']['apiKey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
@@ -193,7 +193,32 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   }
 }
 
+// Environment indicator. See https://architecture.lullabot.com/adr/20210609-environment-indicator/
+if (isset($_ENV['AH_SITE_ENVIRONMENT'])) {
+  $config['environment_indicator.indicator']['name'] = $_ENV['AH_SITE_ENVIRONMENT'];
+  switch ($_ENV['AH_SITE_ENVIRONMENT']) {
+    case 'prod':
+      // Green background.
+      $config['environment_indicator.indicator']['bg_color'] = '#9CC2AB';
+      break;
+
+    default:
+      // Gray background.
+      $config['environment_indicator.indicator']['bg_color'] = '#BABABA';
+      break;
+  }
+}
+else {
+  // We are in local or CI or Tugboat.
+  $config['environment_indicator.indicator']['name'] = getenv('TUGBOAT_ROOT') ? 'Tugboat' : 'Local';
+  // Gray background.
+  $config['environment_indicator.indicator']['bg_color'] = '#BABABA';
+}
+
 // phpunit.xml.dist sets -1 for memory_limit so just change for other cli requests.
 if (PHP_SAPI === 'cli' && ini_get('memory_limit')) {
-  ini_set('memory_limit', '1536M');
+  ini_set('memory_limit', '2048M');
 }
+
+$config['entity_usage.settings']['queue_tracking'] = TRUE;
+$settings['entity_usage_tracker'] = 'queue_unique.database';

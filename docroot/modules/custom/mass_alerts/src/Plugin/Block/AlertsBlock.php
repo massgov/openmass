@@ -10,6 +10,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\node\NodeInterface;
 use Drupal\Core\Url;
+use Drupal\node\Entity\Node;
 
 /**
  * Provides a mayflower Block for @organisms/by-template/ajax-pattern.
@@ -100,9 +101,16 @@ class AlertsBlock extends BlockBase implements BlockPluginInterface, ContainerFa
       }
     }
 
+    $param_node = \Drupal::routeMatch()->getParameter('node');
+    /** @var \Drupal\node\NodeInterface $node */
+    $node = \is_string($param_node) && intval($param_node) ? Node::load($param_node) : $param_node;
+    $type = $node && is_a($node, 'Drupal\node\Entity\Node') ? $node->getType() : '';
+
     return [
       '#theme' => 'mass_alerts_block',
       '#path' => $path,
+      '#wait' => strpos($path, 'sitewide') === FALSE,
+      '#type' => $type,
       '#cache' => [
         'contexts' => ['url'],
       ],

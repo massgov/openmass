@@ -33,6 +33,26 @@ function mass_superset_schema() {
         'not null' => TRUE,
         'description' => 'The UNIX time stamp representing when the node was last updated.',
       ],
+      'nos_per_1000' => [
+        'type' => 'float',
+        'description' => 'The number of No responses per 1000.',
+      ],
+      'eject_rate' => [
+        'type' => 'float',
+        'description' => 'The eject rate.',
+      ],
+      'rate_of_traffic_to_children' => [
+        'type' => 'float',
+        'description' => 'The rate of traffic to children.',
+      ],
+      'broken_links' => [
+        'type' => 'int',
+        'description' => 'The number of broken links.',
+      ],
+      'grade_level' => [
+        'type' => 'int',
+        'description' => 'The grade level.',
+      ],
     ],
     'indexes' => [
       'nid' => ['nid'],
@@ -120,4 +140,25 @@ function mass_superset_update_8003() {
   $conn->truncate('mass_superset_data')->execute();
   $schema = $conn->schema();
   $schema->addUniqueKey('mass_superset_data', 'unique_nid', ['nid']);
+}
+
+/**
+ * Update schema with new fields.
+ */
+function mass_superset_update_8004() {
+  $fields_to_add = [
+    'nos_per_1000',
+    'eject_rate',
+    'rate_of_traffic_to_children',
+    'broken_links',
+    'grade_level'
+  ];
+
+  $schema = Database::getConnection()->schema();
+  $table = 'mass_superset_data';
+  $spec = mass_superset_schema();
+
+  foreach ($fields_to_add as $field_to_add) {
+    $schema->addField($table, $field_to_add, $spec[$table]['fields'][$field_to_add]);
+  }
 }

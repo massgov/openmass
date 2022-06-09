@@ -168,13 +168,7 @@ class Molecules {
           $alt = $options['alt'];
         }
 
-        $ariaHidden = '';
-        if ($options['ariaHidden']) {
-          $ariaHidden = $options['ariaHidden'];
-        }
-        else {
-          $ariaHidden = '';
-        }
+        $ariaHidden = $options['ariaHidden'] ?? '';
 
         $imagePromo['image'] = [
           'src' => $src,
@@ -1623,7 +1617,7 @@ class Molecules {
     $immediateRelease = FALSE;
 
     $map = [
-      'date' => ['field_news_date'],
+      'date' => ['field_date_published'],
       'signees' => ['field_news_signees'],
       'news_type' => ['field_news_type'],
     ];
@@ -1698,14 +1692,23 @@ class Molecules {
     $url = $entity->toURL();
     $text = $entity->getTitle();
 
+    // https://massgov.atlassian.net/browse/DP-24119
+    // We need to keep the content type list to get the same behaviour
+    // for dates, since all the fields in the node are sharing the same
+    // machine name.
+    $ct_allowed_dates = [
+      'decision',
+      'executive_order',
+      'regulation',
+      'event',
+      'advisory',
+      'news'
+    ];
+
     $map = [
       'date' => [
-        'field_news_date',
         'field_event_date',
-        'field_decision_date',
-        'field_advisory_date',
-        'field_executive_order_date',
-        'field_regulation_last_updated',
+        'field_date_published',
       ],
       'eyebrow' => [
         'field_decision_ref_type',
@@ -1726,7 +1729,7 @@ class Molecules {
     // Determines which field names to use from the map.
     $fields = Helper::getMappedFields($entity, $map);
 
-    if (!empty($fields['date'])) {
+    if (!empty($fields['date']) && in_array($entity->bundle(), $ct_allowed_dates)) {
       $date = new DrupalDateTime($entity->{$fields['date']}->value, new \DateTimeZone('America/New_York'));
       $date = $date->format('n/d/Y');
     }

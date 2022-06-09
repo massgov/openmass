@@ -7,6 +7,7 @@
 
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -103,6 +104,28 @@ function mass_hierarchy_views_pre_view($view) {
 }
 
 /**
+ * Deletes revision that are not current on the nested set table.
+ */
+function mass_hierarchy_delete_other_revisions_from_nested_set_table(Node $node) {
+  if ($node->isNew()) {
+    return;
+  }
+
+  // Loading the node again to get the default revision.
+  // For instance, if the node comes from a draft we
+  // wont get the revision ID we need.
+  $node = Node::load($node->id());
+  $nid = $node->id();
+  $vid = $node->getRevisionId();
+
+  // Eliminates revisions that are not current on the nested set table.
+  $query = Drupal::database()->delete('nested_set_field_primary_parent_node');
+  $query->condition('id', $nid);
+  $query->condition('revision_id', $vid, '<>');
+  $query->execute();
+}
+
+/**
  * Implements hook_views_pre_render().
  */
 function mass_hierarchy_views_post_render(ViewExecutable $view) {
@@ -143,8 +166,10 @@ function mass_hierarchy_form_alter(&$form, FormState $form_state, $form_id) {
     ];
     // If the field has a default value, render the breadcrumb preview.
     if (isset($form['field_primary_parent']['widget'][0]['target_id']['target_id']['#default_value'])) {
-      $node = $form['field_primary_parent']['widget'][0]['target_id']['target_id']['#default_value'];
-      $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->buildFromEntity($node)->toRenderable();
+      $node_parent = $form['field_primary_parent']['widget'][0]['target_id']['target_id']['#default_value'];
+      $route_match = Drupal::service('current_route_match')->getCurrentRouteMatch();
+      $route_match->parent_node = $node_parent;
+      $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->build($route_match)->toRenderable();
       $form['field_primary_parent']['breadcrumb']['block'] = $rendered_block;
     }
     // If the field has a new value, render the breadcrumb based on that value.
@@ -152,7 +177,9 @@ function mass_hierarchy_form_alter(&$form, FormState $form_state, $form_id) {
       $parent_id = $form_state->getValue('field_primary_parent')[0]['target_id']['target_id'];
       if ($parent_id) {
         $node_loaded = Node::load($parent_id);
-        $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->buildFromEntity($node_loaded)->toRenderable();
+        $route_match = Drupal::service('current_route_match')->getCurrentRouteMatch();
+        $route_match->parent_node = $node_loaded;
+        $rendered_block = Drupal::service("entity_hierarchy.breadcrumb")->build($route_match)->toRenderable();
         $form['field_primary_parent']['breadcrumb']['block'] = $rendered_block;
       }
     }
@@ -171,22 +198,58 @@ function mass_hierarchy_form_alter(&$form, FormState $form_state, $form_id) {
  *   The breadcrumb block.
  */
 function _mass_utility_breadcrumb_ajax(array &$form, FormStateInterface $form_state) {
+  // Create a new response.
+  $response = new AjaxResponse();
   // Get the field value.
   $parent_id = $form_state->getValue('field_primary_parent')[0]['target_id']['target_id'];
   // Load the referenced node from the field value.
-  $node_loaded = Node::load($parent_id);
-  // Create a render array replacement with the new breadcrumb preview block.
-  $rendered_block['field_primary_parent']['breadcrumb'] = [
-    '#type' => 'container',
-    '#weight' => 100,
-    "#attributes" => ["class" => "form-item", "id" => "breadcrumb-preview-wrapper"],
-    'block' => Drupal::service("entity_hierarchy.breadcrumb")->buildFromEntity($node_loaded)->toRenderable(),
-  ];
+  if ($parent_id) {
+    $node_loaded = Node::load($parent_id);
+    $route_match = Drupal::service('current_route_match')
+      ->getCurrentRouteMatch();
+    $route_match->parent_node = $node_loaded;
+    // Create a render array replacement with the new breadcrumb preview block.
+    $rendered_block['field_primary_parent']['breadcrumb'] = [
+      '#type' => 'container',
+      '#weight' => 100,
+      "#attributes" => [
+        "class" => "form-item",
+        "id" => "breadcrumb-preview-wrapper"
+      ],
+      'block' => Drupal::service("entity_hierarchy.breadcrumb")
+        ->build($route_match)
+        ->toRenderable(),
+    ];
 
-  // Create a new response.
-  $response = new AjaxResponse();
-  // Replace the existing breadcrumb preview element with the new one.
-  $response->addCommand(new ReplaceCommand('#breadcrumb-preview-wrapper', $rendered_block));
-
+    // Replace the existing breadcrumb preview element with the new one.
+    $response->addCommand(new ReplaceCommand('#breadcrumb-preview-wrapper', $rendered_block));
+  }
   return $response;
+}
+
+/**
+ * Deletes all non-current revisions from the nested_set_field_primary_parent_node table.
+ */
+function mass_hierarchy_delete_all_non_current_revisions_from_nested_set_table() {
+  $res = \Drupal::database()->query(
+    'SELECT id, COUNT(*)
+    FROM nested_set_field_primary_parent_node
+    GROUP BY id
+    HAVING COUNT(*) > 1')->fetchAll();
+
+  foreach ($res as $value) {
+    $nid = $value->id;
+    $node = Node::load($nid);
+    if (!$node) {
+      continue;
+    }
+    mass_hierarchy_delete_other_revisions_from_nested_set_table($node);
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function mass_hierarchy_cron() {
+  mass_hierarchy_delete_all_non_current_revisions_from_nested_set_table();
 }

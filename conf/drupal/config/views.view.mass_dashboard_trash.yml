@@ -39,6 +39,7 @@ dependencies:
     - taxonomy.vocabulary.label
     - workflows.workflow.campaign_landing_page
     - workflows.workflow.editorial
+    - workflows.workflow.topic_page
   module:
     - content_moderation
     - mass_superset
@@ -47,6 +48,7 @@ dependencies:
     - taxonomy
     - user
     - views_autocomplete_filters
+    - views_bulk_operations
 id: mass_dashboard_trash
 label: 'Mass Dashboard Trash'
 module: views
@@ -56,169 +58,22 @@ base_table: node_field_revision
 base_field: vid
 display:
   default:
-    display_plugin: default
     id: default
     display_title: Master
+    display_plugin: default
     position: 0
     display_options:
-      access:
-        type: perm
-        options:
-          perm: 'use editorial transition move_to_trash'
-      cache:
-        type: tag
-        options: {  }
-      query:
-        type: views_query
-        options:
-          disable_sql_rewrite: false
-          distinct: false
-          replica: false
-          query_comment: ''
-          query_tags: {  }
-      exposed_form:
-        type: basic
-        options:
-          submit_button: Apply
-          reset_button: true
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-      pager:
-        type: mini
-        options:
-          items_per_page: 25
-          offset: 0
-          id: 0
-          total_pages: null
-          tags:
-            previous: Previous
-            next: Next
-          expose:
-            items_per_page: false
-            items_per_page_label: 'Items per page'
-            items_per_page_options: '5, 10, 25, 50'
-            items_per_page_options_all: false
-            items_per_page_options_all_label: '- All -'
-            offset: false
-            offset_label: Offset
-      style:
-        type: table
-        options:
-          grouping: {  }
-          row_class: ''
-          default_row_class: true
-          override: true
-          sticky: false
-          caption: ''
-          summary: ''
-          description: ''
-          columns:
-            node_bulk_form: node_bulk_form
-            title: title
-            nid_1: nid_1
-            type: type
-            uid_1: uid_1
-            status_1: status_1
-            changed_1: changed_1
-            name_1: name_1
-            score: score
-            pageviews: pageviews
-            operations_1: operations_1
-          info:
-            node_bulk_form:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            title:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            nid_1:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            type:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            uid_1:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            status_1:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            changed_1:
-              sortable: true
-              default_sort_order: desc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            name_1:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            score:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            pageviews:
-              sortable: true
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            operations_1:
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-          default: changed_1
-          empty_table: false
-      row:
-        type: fields
-        options:
-          inline: {  }
-          separator: ''
-          hide_empty: false
-          default_field_elements: true
+      title: Trash
       fields:
-        node_bulk_form:
-          id: node_bulk_form
-          table: node
-          field: node_bulk_form
-          relationship: nid
+        views_bulk_operations_bulk_form:
+          id: views_bulk_operations_bulk_form
+          table: views
+          field: views_bulk_operations_bulk_form
+          relationship: none
           group_type: group
           admin_label: ''
-          label: ''
+          plugin_id: views_bulk_operations_bulk_form
+          label: 'Views bulk operations'
           exclude: false
           alter:
             alter_text: false
@@ -251,7 +106,7 @@ display:
           element_class: ''
           element_label_type: ''
           element_label_class: ''
-          element_label_colon: false
+          element_label_colon: true
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
@@ -259,13 +114,19 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
+          batch: true
+          batch_size: 10
+          form_step: true
+          buttons: true
           action_title: Action
-          include_exclude: include
           selected_actions:
-            - flag_action.watch_content.flag
-            - flag_action.watch_content.unflag
-          entity_type: node
-          plugin_id: node_bulk_form
+            2:
+              action_id: mass_content_moderation_restore_action
+              preconfiguration:
+                label_override: 'Restore to unpublished state'
+                add_confirmation: 0
+          clear_on_exposed: true
+          force_selection_info: 0
         title:
           id: title
           table: node_field_revision
@@ -273,6 +134,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: field
           label: Title
           exclude: false
           alter:
@@ -328,9 +192,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: title
-          plugin_id: field
         nid_1:
           id: nid_1
           table: node_field_revision
@@ -338,6 +199,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: nid
+          plugin_id: field
           label: ID
           exclude: false
           alter:
@@ -394,9 +258,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: nid
-          plugin_id: field
         type:
           id: type
           table: node_field_data
@@ -404,6 +265,9 @@ display:
           relationship: nid
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: field
           label: 'Content type'
           exclude: false
           alter:
@@ -459,9 +323,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: type
-          plugin_id: field
         uid_1:
           id: uid_1
           table: node_field_revision
@@ -469,6 +330,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: uid
+          plugin_id: field
           label: Author
           exclude: false
           alter:
@@ -524,9 +388,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: uid
-          plugin_id: field
         status_1:
           id: status_1
           table: node_field_revision
@@ -534,6 +395,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: status
+          plugin_id: field
           label: 'Publication Status'
           exclude: false
           alter:
@@ -579,8 +443,8 @@ display:
           type: boolean
           settings:
             format: custom
-            format_custom_true: Published
             format_custom_false: Unpublished
+            format_custom_true: Published
           group_column: value
           group_columns: {  }
           group_rows: true
@@ -591,9 +455,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: status
-          plugin_id: field
         changed_1:
           id: changed_1
           table: node_field_revision
@@ -601,6 +462,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: changed
+          plugin_id: field
           label: 'Last revised'
           exclude: false
           alter:
@@ -658,9 +522,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: node
-          entity_field: changed
-          plugin_id: field
         name_1:
           id: name_1
           table: users_field_data
@@ -668,6 +529,9 @@ display:
           relationship: revision_uid
           group_type: group
           admin_label: ''
+          entity_type: user
+          entity_field: name
+          plugin_id: field
           label: 'Last revised by'
           exclude: false
           alter:
@@ -723,9 +587,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: user
-          entity_field: name
-          plugin_id: field
         score:
           id: score
           table: mass_superset_data
@@ -733,6 +594,7 @@ display:
           relationship: nid
           group_type: group
           admin_label: ''
+          plugin_id: numeric
           label: Score
           exclude: false
           alter:
@@ -782,7 +644,6 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-          plugin_id: numeric
         pageviews:
           id: pageviews
           table: mass_superset_data
@@ -790,6 +651,7 @@ display:
           relationship: nid
           group_type: group
           admin_label: ''
+          plugin_id: numeric
           label: 'Page views (1 month)'
           exclude: false
           alter:
@@ -839,7 +701,6 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-          plugin_id: numeric
         operations_1:
           id: operations_1
           table: node_revision
@@ -847,6 +708,8 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          plugin_id: entity_operations
           label: Actions
           exclude: false
           alter:
@@ -889,8 +752,57 @@ display:
           empty_zero: false
           hide_alter_empty: true
           destination: false
-          entity_type: node
-          plugin_id: entity_operations
+      pager:
+        type: mini
+        options:
+          offset: 0
+          items_per_page: 25
+          total_pages: null
+          id: 0
+          tags:
+            next: Next
+            previous: Previous
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Apply
+          reset_button: true
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      access:
+        type: perm
+        options:
+          perm: 'use editorial transition move_to_trash'
+      cache:
+        type: tag
+        options: {  }
+      empty:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: 'No content available.'
+            format: basic_html
+          tokenize: false
+      sorts: {  }
+      arguments: {  }
       filters:
         latest_revision:
           id: latest_revision
@@ -899,6 +811,8 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          plugin_id: latest_revision
           operator: '='
           value: ''
           group: 1
@@ -909,14 +823,14 @@ display:
             description: ''
             use_operator: false
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: ''
             required: false
             remember: false
             multiple: false
             remember_roles:
               authenticated: authenticated
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -929,8 +843,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          plugin_id: latest_revision
         moderation_state:
           id: moderation_state
           table: node_field_revision
@@ -938,10 +850,13 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          plugin_id: moderation_state_filter
           operator: in
           value:
             campaign_landing_page-trash: campaign_landing_page-trash
             editorial-trash: editorial-trash
+            topic_page-trash: topic_page-trash
           group: 1
           exposed: false
           expose:
@@ -950,6 +865,8 @@ display:
             description: ''
             use_operator: false
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: ''
             required: false
             remember: false
@@ -957,8 +874,6 @@ display:
             remember_roles:
               authenticated: authenticated
             reduce: false
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -971,8 +886,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          plugin_id: moderation_state_filter
         title_1:
           id: title_1
           table: node_field_revision
@@ -980,6 +893,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: title
+          plugin_id: views_autocomplete_filters_string
           operator: contains
           value: ''
           group: 1
@@ -990,6 +906,8 @@ display:
             description: ''
             use_operator: false
             operator: title_1_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: title
             required: false
             remember: true
@@ -1015,8 +933,6 @@ display:
             autocomplete_raw_suggestion: 1
             autocomplete_raw_dropdown: 1
             autocomplete_dependent: 0
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1029,9 +945,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          entity_field: title
-          plugin_id: views_autocomplete_filters_string
         nid_1:
           id: nid_1
           table: node_field_revision
@@ -1039,6 +952,9 @@ display:
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: nid
+          plugin_id: numeric
           operator: '='
           value:
             min: ''
@@ -1052,6 +968,8 @@ display:
             description: ''
             use_operator: false
             operator: nid_1_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: nid
             required: false
             remember: true
@@ -1069,11 +987,9 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
-            placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
+            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -1086,9 +1002,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          entity_field: nid
-          plugin_id: numeric
         type:
           id: type
           table: node_field_data
@@ -1096,6 +1009,9 @@ display:
           relationship: nid
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
           operator: in
           value:
             advisory: advisory
@@ -1173,9 +1089,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
         uid_1:
           id: uid_1
           table: node_field_data
@@ -1183,6 +1096,9 @@ display:
           relationship: nid
           group_type: group
           admin_label: ''
+          entity_type: node
+          entity_field: uid
+          plugin_id: user_name
           operator: in
           value: {  }
           group: 1
@@ -1193,6 +1109,8 @@ display:
             description: ''
             use_operator: false
             operator: uid_1_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: uid_1
             required: false
             remember: false
@@ -1211,8 +1129,6 @@ display:
               tester: '0'
               doc_deletion: '0'
             reduce: false
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1225,9 +1141,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          entity_field: uid
-          plugin_id: user_name
         uid:
           id: uid
           table: users_field_data
@@ -1235,6 +1148,9 @@ display:
           relationship: revision_uid
           group_type: group
           admin_label: ''
+          entity_type: user
+          entity_field: uid
+          plugin_id: user_name
           operator: in
           value: {  }
           group: 1
@@ -1245,6 +1161,8 @@ display:
             description: ''
             use_operator: false
             operator: uid_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: uid
             required: false
             remember: true
@@ -1263,8 +1181,6 @@ display:
               tester: '0'
               doc_deletion: '0'
             reduce: false
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1277,9 +1193,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: user
-          entity_field: uid
-          plugin_id: user_name
         node_org_filter:
           id: node_org_filter
           table: node_field_data
@@ -1287,6 +1200,8 @@ display:
           relationship: nid
           group_type: group
           admin_label: ''
+          entity_type: node
+          plugin_id: mass_views_node_org_filter
           operator: '='
           value: null
           group: 1
@@ -1297,6 +1212,8 @@ display:
             description: ''
             use_operator: false
             operator: node_org_filter_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: node_org_filter
             required: false
             remember: false
@@ -1314,8 +1231,6 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
-            operator_limit_selection: false
-            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1328,8 +1243,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          entity_type: node
-          plugin_id: mass_views_node_org_filter
         score:
           id: score
           table: mass_superset_data
@@ -1337,6 +1250,7 @@ display:
           relationship: nid
           group_type: group
           admin_label: ''
+          plugin_id: numeric
           operator: '<='
           value:
             min: ''
@@ -1350,6 +1264,8 @@ display:
             description: ''
             use_operator: false
             operator: score_op
+            operator_limit_selection: false
+            operator_list: {  }
             identifier: score
             required: false
             remember: true
@@ -1367,11 +1283,9 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
-            placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
-            operator_limit_selection: false
-            operator_list: {  }
+            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -1384,7 +1298,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          plugin_id: numeric
         field_reusable_label_target_id:
           id: field_reusable_label_target_id
           table: node__field_reusable_label
@@ -1392,6 +1305,7 @@ display:
           relationship: nid
           group_type: group
           admin_label: ''
+          plugin_id: taxonomy_index_tid
           operator: or
           value: {  }
           group: 1
@@ -1437,42 +1351,129 @@ display:
             default_group_multiple: {  }
             group_items: {  }
           reduce_duplicates: false
-          type: textfield
-          limit: true
           vid: label
+          type: textfield
           hierarchy: false
+          limit: true
           error_message: true
-          plugin_id: taxonomy_index_tid
-      sorts: {  }
-      header:
-        area:
-          id: area
-          table: views
-          field: area
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: false
-          tokenize: false
-          content:
-            value: '<p>Learn how to <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/navigating-the-cms/trash" target="_blank">move items to and recover them from the trash.</a></p>'
-            format: basic_html
-          plugin_id: text
-      footer: {  }
-      empty:
-        area:
-          id: area
-          table: views
-          field: area
-          relationship: none
-          group_type: group
-          admin_label: ''
-          empty: true
-          tokenize: false
-          content:
-            value: 'No content available.'
-            format: basic_html
-          plugin_id: text
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      style:
+        type: table
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+          columns:
+            node_bulk_form: node_bulk_form
+            title: title
+            nid_1: nid_1
+            type: type
+            uid_1: uid_1
+            status_1: status_1
+            changed_1: changed_1
+            name_1: name_1
+            score: score
+            pageviews: pageviews
+            operations_1: operations_1
+          default: changed_1
+          info:
+            node_bulk_form:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            title:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            nid_1:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            type:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            uid_1:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            status_1:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            changed_1:
+              sortable: true
+              default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            name_1:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            score:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            pageviews:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            operations_1:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+          override: true
+          sticky: false
+          summary: ''
+          empty_table: false
+          caption: ''
+          description: ''
+      row:
+        type: fields
+        options:
+          default_field_elements: true
+          inline: {  }
+          separator: ''
+          hide_empty: false
+      query:
+        type: views_query
+        options:
+          query_comment: ''
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_tags: {  }
       relationships:
         vid:
           id: vid
@@ -1481,10 +1482,10 @@ display:
           relationship: none
           group_type: group
           admin_label: 'Get the actual content from a content revision.'
-          required: false
           entity_type: node
           entity_field: vid
           plugin_id: standard
+          required: false
         nid:
           id: nid
           table: node_field_revision
@@ -1492,10 +1493,10 @@ display:
           relationship: vid
           group_type: group
           admin_label: Content
-          required: true
           entity_type: node
           entity_field: nid
           plugin_id: standard
+          required: true
         revision_uid:
           id: revision_uid
           table: node_revision
@@ -1503,16 +1504,26 @@ display:
           relationship: none
           group_type: group
           admin_label: 'revision user'
-          required: false
           entity_type: node
           entity_field: revision_uid
           plugin_id: standard
-      arguments: {  }
+          required: false
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: false
+          content:
+            value: '<p>Learn how to <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/navigating-the-cms/trash" target="_blank">move items to and recover them from the trash.</a></p>'
+            format: basic_html
+          tokenize: false
+      footer: {  }
       display_extenders: {  }
-      filter_groups:
-        operator: AND
-        groups:
-          1: AND
     cache_metadata:
       max-age: 0
       contexts:
@@ -1526,9 +1537,9 @@ display:
       tags:
         - 'config:workflow_list'
   page_1:
-    display_plugin: page
     id: page_1
     display_title: Page
+    display_plugin: page
     position: 1
     display_options:
       display_extenders: {  }

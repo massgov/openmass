@@ -11,10 +11,12 @@ dependencies:
     - field.field.node.info_details.field_data_format
     - field.field.node.info_details.field_data_resource_type
     - field.field.node.info_details.field_data_topic
+    - field.field.node.info_details.field_date_published
     - field.field.node.info_details.field_details_data_type
     - field.field.node.info_details.field_details_enable_fields
     - field.field.node.info_details.field_english_version
     - field.field.node.info_details.field_footnotes
+    - field.field.node.info_details.field_hide_table_of_contents
     - field.field.node.info_details.field_image_credit
     - field.field.node.info_details.field_info_detail_overview
     - field.field.node.info_details.field_info_details_date_publishe
@@ -40,17 +42,17 @@ bundle: info_details
 mode: title_short_desc
 content:
   extra_node_pager:
-    weight: 1
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
   field_short_desc:
     type: basic_string
-    weight: 0
-    region: content
     label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   computed_log_in_links: true
   computed_related_to: true
@@ -65,10 +67,12 @@ hidden:
   field_data_format: true
   field_data_resource_type: true
   field_data_topic: true
+  field_date_published: true
   field_details_data_type: true
   field_details_enable_fields: true
   field_english_version: true
   field_footnotes: true
+  field_hide_table_of_contents: true
   field_image_credit: true
   field_info_detail_overview: true
   field_info_details_date_publishe: true

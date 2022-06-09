@@ -1,7 +1,63 @@
 uuid: c7392215-2cca-490a-a10a-28974e33a786
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  config:
+    - node.type.advisory
+    - node.type.alert
+    - node.type.binder
+    - node.type.campaign_landing
+    - node.type.contact_information
+    - node.type.curated_list
+    - node.type.decision
+    - node.type.decision_tree
+    - node.type.decision_tree_branch
+    - node.type.decision_tree_conclusion
+    - node.type.event
+    - node.type.external_data_resource
+    - node.type.fee
+    - node.type.form_page
+    - node.type.guide_page
+    - node.type.how_to_page
+    - node.type.info_details
+    - node.type.location
+    - node.type.location_details
+    - node.type.news
+    - node.type.org_page
+    - node.type.person
+    - node.type.regulation
+    - node.type.rules
+    - node.type.service_details
+    - node.type.service_page
+    - node.type.topic_page
+    - workflows.workflow.campaign_landing_page
+    - workflows.workflow.editorial
+    - workflows.workflow.media_states
+    - workflows.workflow.topic_page
+  module:
+    - access_unpublished
+    - actions_permissions
+    - contact
+    - content_moderation
+    - draggableviews
+    - dropzonejs
+    - entity_browser
+    - environment_indicator
+    - mass_admin_toolbar
+    - mass_content_api
+    - mass_validation
+    - mass_views
+    - mass_workbench_ui
+    - media
+    - node
+    - quick_node_clone
+    - rabbit_hole
+    - route_iframes
+    - scheduled_transitions
+    - system
+    - tfa
+    - toolbar
+    - tour
 id: author
 label: Author
 weight: -8
@@ -11,8 +67,8 @@ permissions:
   - 'access browse_files_modal entity browser pages'
   - 'access content'
   - 'access content overview'
-  - 'access contextual links'
   - 'access draggableviews'
+  - 'access environment indicator'
   - 'access media overview'
   - 'access media_browser entity browser pages'
   - 'access toolbar'
@@ -21,7 +77,6 @@ permissions:
   - 'access user profiles'
   - 'access video_browser entity browser pages'
   - 'add scheduled transitions media document'
-  - 'add scheduled transitions media media_video'
   - 'add scheduled transitions node action'
   - 'add scheduled transitions node advisory'
   - 'add scheduled transitions node alert'
@@ -33,7 +88,6 @@ permissions:
   - 'add scheduled transitions node decision_tree'
   - 'add scheduled transitions node decision_tree_branch'
   - 'add scheduled transitions node decision_tree_conclusion'
-  - 'add scheduled transitions node error_page'
   - 'add scheduled transitions node event'
   - 'add scheduled transitions node executive_order'
   - 'add scheduled transitions node external_data_resource'
@@ -42,7 +96,6 @@ permissions:
   - 'add scheduled transitions node guide_page'
   - 'add scheduled transitions node how_to_page'
   - 'add scheduled transitions node info_details'
-  - 'add scheduled transitions node interstitial'
   - 'add scheduled transitions node location'
   - 'add scheduled transitions node location_details'
   - 'add scheduled transitions node news'
@@ -54,9 +107,6 @@ permissions:
   - 'add scheduled transitions node service_details'
   - 'add scheduled transitions node service_page'
   - 'add scheduled transitions node stacked_layout'
-  - 'add scheduled transitions node topic_page'
-  - 'add scheduled transitions node utility_drawer'
-  - 'administer xmlsitemap'
   - 'clone advisory content'
   - 'clone alert content'
   - 'clone binder content'
@@ -68,6 +118,7 @@ permissions:
   - 'clone decision_tree_branch content'
   - 'clone decision_tree_conclusion content'
   - 'clone event content'
+  - 'clone external_data_resource content'
   - 'clone fee content'
   - 'clone form_page content'
   - 'clone guide_page content'
@@ -93,6 +144,7 @@ permissions:
   - 'create decision_tree_branch content'
   - 'create decision_tree_conclusion content'
   - 'create event content'
+  - 'create external_data_resource content'
   - 'create fee content'
   - 'create form_page content'
   - 'create guide_page content'
@@ -121,6 +173,7 @@ permissions:
   - 'edit any decision_tree_branch content'
   - 'edit any decision_tree_conclusion content'
   - 'edit any event content'
+  - 'edit any external_data_resource content'
   - 'edit any fee content'
   - 'edit any form_page content'
   - 'edit any guide_page content'
@@ -135,6 +188,7 @@ permissions:
   - 'edit any rules content'
   - 'edit any service_details content'
   - 'edit any service_page content'
+  - 'edit any topic_page content'
   - 'edit own advisory content'
   - 'edit own alert content'
   - 'edit own binder content'
@@ -146,6 +200,7 @@ permissions:
   - 'edit own decision_tree_branch content'
   - 'edit own decision_tree_conclusion content'
   - 'edit own event content'
+  - 'edit own external_data_resource content'
   - 'edit own fee content'
   - 'edit own form_page content'
   - 'edit own guide_page content'
@@ -160,12 +215,11 @@ permissions:
   - 'edit own rules content'
   - 'edit own service_details content'
   - 'edit own service_page content'
+  - 'execute mass_content_moderation_restore_action all'
   - 'execute mass_views_change_collections all'
   - 'rabbit hole administer node'
   - 'rabbit hole bypass node'
-  - 'require tfa'
   - 'reschedule scheduled transitions media document'
-  - 'reschedule scheduled transitions media media_video'
   - 'reschedule scheduled transitions node action'
   - 'reschedule scheduled transitions node advisory'
   - 'reschedule scheduled transitions node alert'
@@ -177,7 +231,6 @@ permissions:
   - 'reschedule scheduled transitions node decision_tree'
   - 'reschedule scheduled transitions node decision_tree_branch'
   - 'reschedule scheduled transitions node decision_tree_conclusion'
-  - 'reschedule scheduled transitions node error_page'
   - 'reschedule scheduled transitions node event'
   - 'reschedule scheduled transitions node executive_order'
   - 'reschedule scheduled transitions node external_data_resource'
@@ -186,7 +239,6 @@ permissions:
   - 'reschedule scheduled transitions node guide_page'
   - 'reschedule scheduled transitions node how_to_page'
   - 'reschedule scheduled transitions node info_details'
-  - 'reschedule scheduled transitions node interstitial'
   - 'reschedule scheduled transitions node location'
   - 'reschedule scheduled transitions node location_details'
   - 'reschedule scheduled transitions node news'
@@ -198,8 +250,8 @@ permissions:
   - 'reschedule scheduled transitions node service_details'
   - 'reschedule scheduled transitions node service_page'
   - 'reschedule scheduled transitions node stacked_layout'
-  - 'reschedule scheduled transitions node topic_page'
-  - 'reschedule scheduled transitions node utility_drawer'
+  - 'revert external_data_resource revisions'
+  - 'set collection tags'
   - 'set info details page template'
   - 'set service page template'
   - 'setup own tfa'
@@ -222,6 +274,10 @@ permissions:
   - 'use media_states transition send_to_trash'
   - 'use media_states transition to_draft'
   - 'use media_states transition unpublish'
+  - 'use topic_page transition needs_review'
+  - 'use topic_page transition prepublished_draft'
+  - 'use topic_page transition prepublished_needs_review'
+  - 'use topic_page transition to_draft'
   - 'view advisory revisions'
   - 'view alert revisions'
   - 'view all revisions'
@@ -237,6 +293,7 @@ permissions:
   - 'view decision_tree_branch revisions'
   - 'view decision_tree_conclusion revisions'
   - 'view event revisions'
+  - 'view external_data_resource revisions'
   - 'view fee revisions'
   - 'view form_page revisions'
   - 'view guide_page revisions'
@@ -245,7 +302,6 @@ permissions:
   - 'view latest version'
   - 'view location revisions'
   - 'view location_details revisions'
-  - 'view moderation states'
   - 'view news revisions'
   - 'view org_page revisions'
   - 'view own unpublished content'
@@ -256,7 +312,6 @@ permissions:
   - 'view route iframe pages'
   - 'view rules revisions'
   - 'view scheduled transitions media document'
-  - 'view scheduled transitions media media_video'
   - 'view scheduled transitions node action'
   - 'view scheduled transitions node advisory'
   - 'view scheduled transitions node alert'
@@ -268,7 +323,6 @@ permissions:
   - 'view scheduled transitions node decision_tree'
   - 'view scheduled transitions node decision_tree_branch'
   - 'view scheduled transitions node decision_tree_conclusion'
-  - 'view scheduled transitions node error_page'
   - 'view scheduled transitions node event'
   - 'view scheduled transitions node executive_order'
   - 'view scheduled transitions node external_data_resource'
@@ -277,7 +331,6 @@ permissions:
   - 'view scheduled transitions node guide_page'
   - 'view scheduled transitions node how_to_page'
   - 'view scheduled transitions node info_details'
-  - 'view scheduled transitions node interstitial'
   - 'view scheduled transitions node location'
   - 'view scheduled transitions node location_details'
   - 'view scheduled transitions node news'
@@ -290,7 +343,6 @@ permissions:
   - 'view scheduled transitions node service_page'
   - 'view scheduled transitions node stacked_layout'
   - 'view scheduled transitions node topic_page'
-  - 'view scheduled transitions node utility_drawer'
   - 'view service_details revisions'
   - 'view service_page revisions'
   - 'view the administration theme'

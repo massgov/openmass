@@ -17,7 +17,6 @@
     button.setAttribute('aria-expanded', expanded);
     button.className = exp ? 'expanded' : '';
   }
-  toggleButton();
   button.onclick = function () {
     expanded = !expanded;
     toggleButton(expanded);

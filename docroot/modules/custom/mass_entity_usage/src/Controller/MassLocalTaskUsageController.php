@@ -9,6 +9,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\entity_usage\Controller\LocalTaskUsageSubQueryController;
+use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 
 /**
@@ -106,7 +107,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
         // If the source is a paragraph, get the parent node.
         if ($source_entity->getEntityTypeId() == 'paragraph') {
           /** @var \Drupal\paragraphs\ParagraphInterface $source_entity */
-          $source_entity = $this->getParentNode($source_entity);
+          $source_entity = Helper::getParentNode($source_entity);
         }
         $link = $this->getSourceEntityLink($source_entity);
         // If the label is empty it means this usage shouldn't be shown
@@ -135,26 +136,6 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
     }
 
     return $rows;
-  }
-
-  /**
-   * Recursive function to retrieve the parent node of a paragraph.
-   *
-   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
-   *   An entity.
-   *
-   * @return \Drupal\Core\Entity\ContentEntityInterface
-   *   The parent node.
-   */
-  public function getParentNode(ContentEntityInterface $entity) {
-    /** @var \Drupal\paragraphs\ParagraphInterface $source_entity */
-    if ($entity->getEntityTypeId() == 'paragraph') {
-      $parent = $entity->getParentEntity();
-      if ($parent) {
-        return $this->getParentNode($parent);
-      }
-    }
-    return $entity;
   }
 
   /**

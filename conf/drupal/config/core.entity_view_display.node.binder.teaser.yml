@@ -24,6 +24,7 @@ dependencies:
     - field.field.node.binder.field_data_format
     - field.field.node.binder.field_data_resource_type
     - field.field.node.binder.field_data_topic
+    - field.field.node.binder.field_date_published
     - field.field.node.binder.field_downloads
     - field.field.node.binder.field_intended_audience
     - field.field.node.binder.field_organizations
@@ -40,20 +41,20 @@ bundle: binder
 mode: teaser
 content:
   extra_sidebar_contact:
+    settings: {  }
+    third_party_settings: {  }
     weight: 2
     region: content
+  links:
     settings: {  }
     third_party_settings: {  }
-  links:
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_log_in_links: true
   computed_related_to: true
@@ -81,6 +82,7 @@ hidden:
   field_data_format: true
   field_data_resource_type: true
   field_data_topic: true
+  field_date_published: true
   field_downloads: true
   field_intended_audience: true
   field_organizations: true

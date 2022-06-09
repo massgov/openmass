@@ -15,44 +15,46 @@ third_party_settings:
     group_section_content:
       children:
         - field_section_long_form_content
+      label: 'Section Content'
+      region: content
       parent_name: ''
       weight: 2
       format_type: details
-      region: content
       format_settings:
+        classes: section-content
+        id: ''
+        open: false
         description: ''
         required_fields: true
-        id: ''
-        classes: section-content
-        open: false
-      label: 'Section Content'
     group_additional_resources:
       children: {  }
+      label: 'Additional Resources'
+      region: content
       parent_name: ''
       weight: 3
       format_type: details
-      region: content
       format_settings:
-        id: ''
         classes: ''
-        description: ''
+        id: ''
         open: false
+        description: ''
         required_fields: true
-      label: 'Additional Resources'
 id: paragraph.org_section_long_form.default
 targetEntityType: paragraph
 bundle: org_section_long_form
 mode: default
 content:
   field_hide_heading:
+    type: boolean_checkbox
     weight: 1
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_section_long_form_content:
+    type: entity_reference_paragraphs
     weight: 3
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -61,16 +63,14 @@ content:
       form_display_mode: media_caption_and_display
       default_paragraph_type: _none
     third_party_settings: {  }
-    type: entity_reference_paragraphs
-    region: content
   field_section_long_form_heading:
+    type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
 hidden:
   created: true
   status: true

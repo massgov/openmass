@@ -21,9 +21,9 @@ default_value_callback: ''
 settings:
   handler: 'default:paragraph'
   handler_settings:
-    negate: 0
     target_bundles:
       featured_item: featured_item
+    negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 82
@@ -36,6 +36,9 @@ settings:
         enabled: false
       3_up_text:
         weight: 85
+        enabled: false
+      about:
+        weight: 97
         enabled: false
       action_address:
         weight: 86
@@ -69,9 +72,6 @@ settings:
         enabled: false
       adjustment_type:
         weight: 96
-        enabled: false
-      about:
-        weight: 97
         enabled: false
       advisory_issuer:
         weight: 97
@@ -112,6 +112,9 @@ settings:
       decision_section:
         weight: 109
         enabled: false
+      details:
+        weight: 122
+        enabled: false
       emergency_alert:
         weight: 110
         enabled: false
@@ -128,13 +131,19 @@ settings:
         weight: 114
         enabled: false
       featured_item:
-        enabled: true
         weight: 115
+        enabled: true
       featured_item_mosaic:
         weight: 116
         enabled: false
       file_download:
         weight: 117
+        enabled: false
+      file_download_single:
+        weight: 131
+        enabled: false
+      footnotes:
+        weight: 132
         enabled: false
       full_bleed:
         weight: 118
@@ -147,9 +156,6 @@ settings:
         enabled: false
       homepage_background_images:
         weight: 121
-        enabled: false
-      details:
-        weight: 122
         enabled: false
       hours:
         weight: 122
@@ -169,11 +175,17 @@ settings:
       image:
         weight: 127
         enabled: false
+      image_credit:
+        weight: 143
+        enabled: false
       issuer:
         weight: 128
         enabled: false
       links:
         weight: 129
+        enabled: false
+      links_downloads:
+        weight: 146
         enabled: false
       list_dynamic:
         weight: 130
@@ -181,13 +193,7 @@ settings:
       list_item_document:
         weight: 131
         enabled: false
-      file_download_single:
-        weight: 131
-        enabled: false
       list_item_link:
-        weight: 132
-        enabled: false
-      footnotes:
         weight: 132
         enabled: false
       list_static:
@@ -217,11 +223,14 @@ settings:
       online_email:
         weight: 141
         enabled: false
+      page:
+        weight: 159
+        enabled: false
+      page_group:
+        weight: 160
+        enabled: false
       phone_number:
         weight: 142
-        enabled: false
-      image_credit:
-        weight: 143
         enabled: false
       pull_quote:
         weight: 143
@@ -231,9 +240,6 @@ settings:
         enabled: false
       recommended_activity:
         weight: 145
-        enabled: false
-      links_downloads:
-        weight: 146
         enabled: false
       regulation_section:
         weight: 146
@@ -259,6 +265,15 @@ settings:
       section:
         weight: 153
         enabled: false
+      section_heading_body_image:
+        weight: 173
+        enabled: false
+      section_heading_text:
+        weight: 174
+        enabled: false
+      section_long_form:
+        weight: 175
+        enabled: false
       section_with_heading:
         weight: 154
         enabled: false
@@ -274,14 +289,8 @@ settings:
       stat:
         weight: 158
         enabled: false
-      page:
-        weight: 159
-        enabled: false
       state_organization:
         weight: 159
-        enabled: false
-      page_group:
-        weight: 160
         enabled: false
       subhead:
         weight: 160
@@ -291,14 +300,5 @@ settings:
         enabled: false
       video:
         weight: 162
-        enabled: false
-      section_heading_body_image:
-        weight: 173
-        enabled: false
-      section_heading_text:
-        weight: 174
-        enabled: false
-      section_long_form:
-        weight: 175
         enabled: false
 field_type: entity_reference_revisions

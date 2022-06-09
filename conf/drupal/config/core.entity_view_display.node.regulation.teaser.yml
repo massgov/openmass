@@ -5,6 +5,7 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.regulation.field_collections
+    - field.field.node.regulation.field_date_published
     - field.field.node.regulation.field_intended_audience
     - field.field.node.regulation.field_organizations
     - field.field.node.regulation.field_primary_parent
@@ -35,21 +36,22 @@ bundle: regulation
 mode: teaser
 content:
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_related_to: true
   content_moderation_control: true
   extra_node_pager: true
   extra_org_feedback_form: true
   field_collections: true
+  field_date_published: true
   field_intended_audience: true
   field_organizations: true
   field_primary_parent: true

@@ -4,6 +4,8 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
+    - field.field.node.external_data_resource.field_collections
+    - field.field.node.external_data_resource.field_data_flag
     - field.field.node.external_data_resource.field_data_format
     - field.field.node.external_data_resource.field_data_resource_type
     - field.field.node.external_data_resource.field_data_topic
@@ -20,16 +22,18 @@ bundle: external_data_resource
 mode: teaser
 content:
   content_moderation_control:
-    weight: -20
     settings: {  }
     third_party_settings: {  }
+    weight: -20
     region: content
   links:
-    weight: 100
     settings: {  }
     third_party_settings: {  }
+    weight: 100
     region: content
 hidden:
+  field_collections: true
+  field_data_flag: true
   field_data_format: true
   field_data_resource_type: true
   field_data_topic: true

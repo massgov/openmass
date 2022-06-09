@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
+    - field.field.node.event.field_collections
     - field.field.node.event.field_event_address_type
     - field.field.node.event.field_event_agenda_download
     - field.field.node.event.field_event_capacity
@@ -48,19 +49,20 @@ bundle: event
 mode: teaser
 content:
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_related_to: true
   content_moderation_control: true
   extra_org_feedback_form: true
+  field_collections: true
   field_event_address_type: true
   field_event_agenda_download: true
   field_event_capacity: true

@@ -39,7 +39,7 @@
 #}
 {%
 set actionActivities = [{
-  'image': file_url(content.field_image['#items'].entity.uri.value),
+  'image': file_url(content.field_image['#items'].entity.uri.value ?? ''),
   'alt': content.field_image['#items'].alt,
   'title': content.field_title|field_value,
   'description': content.field_teaser|field_value,

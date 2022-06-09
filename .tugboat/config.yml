@@ -47,7 +47,13 @@ services:
     commands:
       # Commands that set up the basic preview infrastructure
       init:
-        # Install opcache and imagemagick.
+        - sudo apt update
+        # Install imagick
+        - apt-get install -y libmagickwand-dev
+        # Avoid prompts. https://stackoverflow.com/a/33647515
+        - echo '' | pecl install imagick
+        - docker-php-ext-enable imagick
+        # Install opcache
         - docker-php-ext-install opcache
         # Needed for image styles.
         - a2enmod headers rewrite
@@ -73,6 +79,11 @@ services:
         # Create the Drupal private and public files directories.
         - mkdir -p "${DOCROOT}/sites/default/files/private"
 
+        #Install Drush Launcher for a more comfortable terminal experience.
+        - wget -O drush.phar https://github.com/drush-ops/drush-launcher/releases/latest/download/drush.phar
+        - chmod +x drush.phar
+        - sudo mv drush.phar /usr/local/bin/drush
+
       # Commands that import files, databases, or other assets. When an
       # existing preview is refreshed, the build workflow starts here,
       # skipping the init step, because the results of that step will
@@ -84,6 +95,8 @@ services:
         - wget -q --continue $(vendor/bin/drush ma:latest-backup-url prod) --output-document=/tmp/database.sql.gz
         - PATH=${TUGBOAT_ROOT}/vendor/bin:$PATH ${TUGBOAT_ROOT}/scripts/ma-import-backup /tmp/database.sql.gz
         - rm -f /tmp/database.sql.gz
+        # Set release for env indicator module
+        - drush sset environment_indicator.current_release ${TUGBOAT_GITHUB_HEAD} || true
         # Set file permissions such that Drupal will not complain.
         - chgrp -R www-data "${DOCROOT}/sites/default/files"
         - find "${DOCROOT}/sites/default/files" -type d -exec chmod 2775 {} \;

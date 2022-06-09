@@ -5,6 +5,7 @@ namespace Drupal\mayflower\Prepare;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\mayflower\Helper;
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\node\Entity\Node;
 
@@ -523,6 +524,7 @@ class Organisms {
     $pressList = [];
     $moreLink = '';
     $i = 0;
+    $cache_tags[] = 'node_list:news';
 
     // Get field values.
     $field_values = $entity->get($field);
@@ -620,14 +622,14 @@ class Organisms {
    * @param array $options
    *   The object that contains static data and other options.
    *
-   * @see @organisms/by-template/page-banner.twig
+   * @see @organisms/page-banner/page-banner.twig
    *
    * @return array
    *   Returns an array of items that contains:
    *    [
    *      "bgWide":"/assets/images/placeholder/1600x400.png"
    *      "bgNarrow":"/assets/images/placeholder/800x400.png",
-   *      "size": "large",
+   *      "layout": "taper",
    *      "icon": null,
    *      "title": "Executive Office of Health and Human Services",
    *      "titleSubText": "(EOHHS)"
@@ -660,27 +662,22 @@ class Organisms {
     // Determines which field names to use from the map.
     $fields = Helper::getMappedFields($entity, $map);
 
-    // @TODO consider passing the image style in as an option.
+    // @todo consider passing the image style in as an option.
     // Use action_banner_* as default pageBanner image styles.
     $image_style_wide = 'action_banner_large';
+    if ($entity->bundle() === 'org_page') {
+      $image_style_wide = 'action_banner_large_focal_point';
+    }
     $image_style_narrow = 'action_banner_small';
 
     // Get pageBanner size, use as flag to determine image style.
-    $pageBanner['size'] = array_key_exists('size', $options) ? $options['size'] : 'large';
-
-    // Use appropriate image style for various pageBanner sizes.
-    if ($pageBanner['size'] === 'columns') {
-      $image_style_wide = 'hero820x460_no_blur';
-      $image_style_narrow = 'hero800x400_no_blur';
-    }
-    elseif ($pageBanner['size'] === 'hero1600x400') {
-      $image_style_wide = 'hero1600x400';
-      $image_style_narrow = 'hero800x400_no_blur';
-    }
+    $pageBanner['layout'] = array_key_exists('layout', $options) ? $options['layout'] : '';
 
     // Use helper function to get the image url of a given image style.
     $pageBanner['bgWide'] = Helper::getFieldImageUrl($entity, $image_style_wide, $fields['bg_wide']);
-    $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, $fields['bg_narrow']);
+    if ($entity->bundle() !== 'org_page') {
+      $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, $fields['bg_narrow']);
+    }
 
     if ($options['type'] == 'section landing') {
       // Manually specified since we have potentially 4 image fields on topic_page.
@@ -693,6 +690,7 @@ class Organisms {
     // @todo determine how to handle options vs field value (check existence, order of importance, etc.)
     $pageBanner['icon'] = $options['icon'];
     $pageBanner['color'] = array_key_exists('color', $options) ? $options['color'] : '';
+    $pageBanner['underline'] = array_key_exists('underline', $options) ? $options['underline'] : FALSE;
 
     $pageBanner['title'] = $entity->{$fields['title']}->value;
 
@@ -707,7 +705,12 @@ class Organisms {
     $description = '';
     if (array_key_exists('description', $fields)) {
       if (Helper::isFieldPopulated($entity, $fields['description'])) {
-        $description = $entity->{$fields['description']}->value;
+        if (!Helper::isFieldPopulated($entity, 'field_display_short_description')) {
+          $description = "";
+        }
+        elseif ($entity->field_display_short_description->value === '1') {
+          $description = $entity->{$fields['description']}->value;
+        }
       }
     }
 
@@ -892,6 +895,42 @@ class Organisms {
     if ($links) {
       return [
         'title' => $options['title'],
+        'links' => $links,
+      ];
+    }
+    else {
+      return [];
+    }
+  }
+
+  /**
+   * Returns the variables structure required to render an Inline Links.
+   *
+   * @param array $items
+   *   Items of the list.
+   * @param array $options
+   *   'ariaLabel' receives an optional aria-label to show.
+   *
+   * @see @organisms/by-template/inline-links.twig
+   *
+   * @return array
+   *   Returns a structured array of inline links.
+   */
+  public static function prepareInlineLinks(array $items, array $options) {
+    $links = [];
+
+    // Create the links data structure.
+    foreach ($items as $item) {
+
+      $links[] = [
+        'text' => $item['title'],
+        'href' => $item['url'],
+      ];
+    }
+
+    if ($links) {
+      return [
+        'ariaLabel' => $options['ariaLabel'],
         'links' => $links,
       ];
     }
@@ -1823,6 +1862,108 @@ class Organisms {
       }
     }
     return $return_array;
+  }
+
+  /**
+   * Returns the variables structure required to render Expandable Content.
+   *
+   * @param object $entities
+   *   The object that contains the fields.
+   * @param array $options
+   *   An array containing options.
+   * @param array $field_map
+   *   An optional array of fields.
+   * @param array $cache_tags
+   *   The array of cache_tags sent in the node render array.
+   *
+   * @see @organsms/by-template/table-of-contents-hierarchy.twig
+   *
+   * @return array
+   *   Returns structured array.
+   */
+  public static function prepareExpandableContent($entities, array $options = [], array $field_map = NULL, array &$cache_tags = []) {
+    $sections = [];
+    $fields = [];
+
+    if ($field_map) {
+      $fields = Helper::getMappedFields($entities, $field_map);
+    }
+
+    // Logic for topic_cards related field.
+    if (isset($fields['topic_cards'])) {
+      // Loop through the Link Groups.
+      foreach ($entities->{$fields['topic_cards']} as $key => $item) {
+        $url = $item->getUrl();
+        $link = Helper::separatedLink($item);
+        // Create an item link.
+        $sections[$key] = [
+          "text" => $link['text'],
+          "href" => $link['url'],
+        ];
+        // Load up our entity if internal.
+        if ($url->isExternal() == FALSE && $url->isRouted() == TRUE && method_exists($url, 'getRouteParameters')) {
+          $params = $url->getRouteParameters();
+          $entity_type = key($params);
+          $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($params[$entity_type]);
+
+          // If the entity is a topic_page, include Link Groups and links.
+          if (!empty($entity) && $entity->bundle() == 'topic_page') {
+            $cache_tags = Cache::mergeTags($entity->getCacheTags(), $cache_tags);
+            $topic_heading = [
+              'text' => trim($sections[$key]['text']) ?: $entity->label(),
+            ];
+            $link_items = [];
+            // Loop through the Topic Link Groups.
+            foreach ($entity->field_topic_content_cards as $topic_group) {
+              $cache_tags = Cache::mergeTags($topic_group->entity->getCacheTags(), $cache_tags);
+
+              // Initialize the heading and link arrays for this Link Group.
+              $topic_category_heading = [];
+              $topic_links = [];
+              // If a category is set, create a heading.
+              $topic_title = Helper::fieldFullView($topic_group->entity, 'field_content_card_category');
+              if (!empty($topic_title)) {
+                $topic_category_heading = [
+                  'title' => $topic_title,
+                ];
+              }
+              // Loop through the links and create an array of link data.
+              foreach ($topic_group->entity->{$fields['topic_cards']} as $topic_group_item) {
+                $topic_link = Helper::separatedLink($topic_group_item);
+                $topic_links[] = [
+                  "text" => $topic_link['text'],
+                  "href" => $topic_link['url'],
+                ];
+              }
+              // Create the subItems array if there is a topic category heading.
+              if (!empty($topic_category_heading)) {
+                $link_items[] = array_merge($topic_category_heading, ['subItems' => $topic_links]);
+              }
+              else {
+                $link_items += $topic_links;
+              }
+            }
+            // Add the section with topic heading and linkItems.
+            if (!empty($link_items)) {
+              $sections[$key] = array_merge($topic_heading, ['linkItems' => $link_items]);
+            }
+          }
+        }
+      }
+    }
+    // Set the section heading.
+    $heading = $options['categoryTitle'] ?? '';
+    // Return the section content array.
+    return [
+      'content' => [
+        'title' => [
+          'text' => $heading,
+          'colored' => FALSE,
+        ],
+        'background' => 'none',
+        'sections' => $sections,
+      ],
+    ];
   }
 
 }

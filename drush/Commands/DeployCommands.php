@@ -5,10 +5,12 @@ namespace Drush\Commands;
 use AcquiaCloudApi\CloudApi\Client;
 use AcquiaCloudApi\CloudApi\Connector;
 use Consolidation\AnnotatedCommand\CommandData;
+use Consolidation\SiteAlias\SiteAlias;
 use Consolidation\SiteAlias\SiteAliasManagerAwareTrait;
 use Consolidation\SiteProcess\Util\Shell;
 use Drush\Drush;
 use Drush\Exceptions\UserAbortException;
+use Drush\Log\DrushLoggerManager;
 use Drush\SiteAlias\SiteAliasManagerAwareInterface;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\MessageFormatter;
@@ -22,6 +24,13 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
   use SiteAliasManagerAwareTrait;
 
+  /**
+   * Set the PHP version to use when deploying to Acquia environments.
+   *
+   * @const string
+   */
+  public const PHP_VERSION = '7.4';
+
   var $site = 'prod:massgov';
 
   const TUGBOAT_REPO = '612e50fcbaa70da92493eef8';
@@ -34,6 +43,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    *
    * @param string $target Target environment. Recognized values: prod, test, local, tugboat, feature[N].
    * @param string $reference Reference environment. Recognized values: prod, test, local, tugboat, feature[N].
+   *
    * @option list The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js
    * @option tugboat A Tugboat URL which should be used as target. You must also pass 'tugboat' as target. When omitted, the most recent Preview for the current branch is assumed.
    * @option viewport The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.
@@ -45,39 +55,18 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @usage drush ma:backstop tugboat prod --ci-branch=feature/XYZ
    *   Run backstop against feature/XYZ's preview at Tugboat and compare against Production.
    * @usage drush ma:backstop tugboat prod --tugboat=https://pr1111-zswa06zr1auucl5hkruj76bdcprszykl.tugboat.qa/
-   *   Run backstop against the the sepcified preview at Tugboat and compare against Production.
+   *   Run backstop against the specified preview at Tugboat and compare against Production.
    * @aliases ma-backstop
    * @validate-circleci-token
    *
-   * @return string
-   *   A URL for viewing the build.
    * @throws \Exception
    * @throws \GuzzleHttp\Exception\GuzzleException
    */
-  public function backstop($target, $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::OPT]) {
-    if ($target == 'tugboat' && empty($options['tugboat'])) {
-      $branch = $options['ci-branch'];
-      if ($branch == 'develop') {
-        $process = $this->processManager()->shell('git rev-parse --abbrev-ref HEAD');
-        $branch = trim($process->mustRun()->getOutput());
-        if (empty($branch)) {
-          throw new \RuntimeException('Unable to determine current branch. Pass --tugboat option.');
-        }
-      }
-      // Lookup the Preview corresponding to the specified or current branch.
-      $cmd = sprintf('tugboat --json --api-token %s list previews %s', getenv('TUGBOAT_ACCESS_TOKEN'), '' . self::TUGBOAT_REPO . '');
-      $process = $this->processManager()->shell($cmd);
-      $output = $process->mustRun()->getOutput();
-      $previews = json_decode($output);
-      foreach ($previews as $preview) {
-        if ($preview->provider_ref->head->ref == $branch) {
-          $options['tugboat'] = $preview->url;
-          break;
-        }
-      }
-      if (empty($options['tugboat'])) {
-        throw new \RuntimeException('Unable to find a matching Tugboat preview. Pass --tugboat option.');
-      }
+  public function backstop(string $target, string $reference, array $options = ['ci-branch' => 'develop', 'list' => 'all', 'viewport' => 'all', 'tugboat' => self::OPT]): void {
+    // If --tugboat is specified without a specific URL, or --tugboat is
+    // omitted, automatically determine the preview for the branch.
+    if ($target === 'tugboat') {
+      $tugboat_url = $this->getTugboatUrl($options['tugboat'], $options['ci-branch']);
     }
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
@@ -86,14 +75,13 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       'json' => [
         'branch' => $options['ci-branch'],
         'parameters' => [
-          'post-trigger' => FALSE,
           'webhook' => FALSE,
           'ma-backstop' => TRUE,
           'target' => $target,
           'reference' => $reference,
           'list' => $options['list'],
           'viewport' => $options['viewport'],
-          'tugboat' => $options['tugboat'] ?: '',
+          'tugboat' => $tugboat_url ?: '',
         ],
       ],
     ];
@@ -103,7 +91,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
     }
 
-    $body = json_decode((string)$response->getBody(), TRUE);
+    // $body = json_decode((string)$response->getBody(), TRUE);
     $this->logger()->success($this->getSuccessMessage($body));
   }
 
@@ -136,7 +124,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       'json' => [
         'branch' => $options['ci-branch'],
         'parameters' => [
-          'post-trigger' => FALSE,
           'webhook' => FALSE,
           'ma-cf-deploy' => TRUE,
           'target' => $target,
@@ -231,7 +218,6 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       'json' => [
         'branch' => $options['ci-branch'] ?: $git_ref,
         'parameters' => [
-          'post-trigger' => FALSE,
           'webhook' => FALSE,
           'ma-release' => TRUE,
           'target' => $target,
@@ -336,9 +322,14 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success("Maintenance mode enabled in $target.");
     }
 
+    // We need to set the PHP version before we deploy the code, as the new
+    // artifacts may have changes dependent on the PHP version.
+    $this->setPhpVersion($targetRecord, self::PHP_VERSION);
+
     // Deploy the new code.
     $operationResponse = $this->getClient()->switchCode($targetRecord->get('uuid'), $git_ref);
     $href = $operationResponse->links->notification->href;
+    /** @noinspection PhpParamsInspection */
     $this->waitForTaskToComplete(basename($href));
 
     // Run deploy steps.
@@ -373,16 +364,13 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $process = Drush::drush($targetRecord, 'cache:tags', [implode(',', $tags)], ['verbose' => TRUE]);
       $process->mustRun();
 
-      // Enqueue purging of notable URLs. Don't use tags to avoid over-purging. Consider using manual purger.
+      // Enqueue purging of notable URLs. Don't use tags to avoid over-purging.
       // Empty path is the homepage
-      $paths = ['', 'orgs/office-of-the-governor', 'media/1268726'];
-      foreach ($domains_web as $domain) {
-        foreach ($paths as $path) {
-          $expressions[] = 'url ' . 'https://' . $domain . '/' . $path . ',';
-        }
+      $paths = ['', '/orgs/office-of-the-governor', '/media/1268726'];
+      foreach ($paths as $path) {
+        $process = Drush::drush($targetRecord, 'ev', ["\Drupal::service('manual_purger')->purgePath('$path');"], ['verbose' => TRUE]);
+        $process->mustRun();
       }
-      $process = Drush::drush($targetRecord, 'p:queue-add', $expressions, ['verbose' => TRUE]);
-      $process->mustRun();
 
       $this->logger()->success("Selective Purge enqueued at $target.");
     }
@@ -396,8 +384,8 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success("Maintenance mode disabled in $target.");
     }
 
-    // Log a new deployment at New Relic.
     if ($is_prod) {
+      // Log a new deployment at New Relic.
       $this->newRelic($git_ref, getenv('AC_API_USER'), getenv('MASS_NEWRELIC_APPLICATION'), getenv('MASS_NEWRELIC_KEY'));
     }
     $done = $this->getTimestamp();
@@ -407,6 +395,38 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $process = Drush::drush($targetRecord, 'p:queue-work', [], ['finish' => TRUE, 'verbose' => TRUE]);
     $process->mustRun();
     $this->logger()->success("Purge queue worker complete at $target.");
+  }
+
+  /**
+   * Rebuild a branch preview at Tugboat.
+   * @param string $branch
+   *
+   * @command ma:tugboat-rebuild
+   * @aliases ma:tbrb
+   */
+  public function tugboatRebuild(string $branch) {
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'headers' => ["Authorization" => 'Bearer ' . getenv('TUGBOAT_ACCESS_TOKEN')],
+      'json' => [
+        'children' => TRUE,
+        'force' => TRUE,
+      ],
+    ];
+    // @todo deploy the token.
+    if (!$id = $this->getTugboatPreviewForBranch($branch)) {
+      $this->logger()->warning('Tugboat preview for develop not found.');
+      return;
+    }
+    $response = $client->request('POST', "https://api.tugboat.qa/v3/previews/$id/rebuild", $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('Tugboat API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    // $body = json_decode((string)$response->getBody(), TRUE);
+    $this->logger()->success('Tugboat preview rebuild successful id=' . $id);
   }
 
   protected function getClient() {
@@ -430,11 +450,48 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
    * @throws \Exception
    */
   public function validate(CommandData $commandData) {
+    if (!$commandData->input()->hasArgument('target')) {
+      return;
+    }
     $target = $commandData->input()->getArgument('target');
     $available_targets = ['dev', 'cd', 'test', 'feature1', 'feature2', 'feature3', 'feature4', 'feature5', 'prod', 'ra', 'cf', 'global', 'stage', 'tugboat'];
     if (!in_array($target, $available_targets)) {
       throw new \Exception('Invalid argument: target. \nYou entered "' . $target . '". Target must be one of: ' . implode(', ', $available_targets));
     }
+  }
+
+  /**
+   * Lookup the Preview corresponding to the specified branch.
+   *
+   * @param $branch
+   * @param $property
+   *
+   * @return ?string
+   */
+  public function getTugboatPreviewForBranch(string $branch, string $property = 'id'): ?string {
+    // Get all previews.
+    $stack = $this->getStack();
+    $client = new \GuzzleHttp\Client(['handler' => $stack]);
+    $options = [
+      'headers' => ["Authorization" => 'Bearer ' . getenv('TUGBOAT_ACCESS_TOKEN')],
+    ];
+    $repo_id = self::TUGBOAT_REPO;
+    $response = $client->request('GET', "https://api.tugboat.qa/v3/repos/$repo_id/previews", $options);
+    $code = $response->getStatusCode();
+    if ($code >= 400) {
+      throw new \Exception('Tugboat API response was a ' . $code . '. Use -v for more Guzzle information.');
+    }
+
+    $previews = json_decode((string)$response->getBody(), TRUE);
+    foreach ($previews as $preview) {
+      if ($preview['provider_ref']['head']['ref'] == $branch || $preview->provider_id == "refs/heads/$branch") {
+        $this->logger()->info("Fetched preview for branch $branch.");
+        $return = $preview[$property];
+        break;
+      }
+    }
+
+    return $return ?: NULL;
   }
 
   /**
@@ -565,6 +622,102 @@ EOT;
    */
   private function getSuccessMessage($body): string {
     return 'Pipeline ' . $body['number'] . ' is viewable at https://circleci.com/gh/massgov/openmass.';
+  }
+
+  /**
+   * Set the PHP version on a given Acquia environment.
+   *
+   * Acquia treats the PHP version as a setting in the environment, and not
+   * configuration as a part of a build.
+   *
+   * @param \Consolidation\SiteAlias\SiteAlias $targetRecord
+   * @param string $version
+   *
+   * @return void
+   * @throws \Exception
+   */
+  private function setPhpVersion(SiteAlias $targetRecord, string $version): void {
+    $environmentUuid = $targetRecord->get('uuid');
+
+    $currentVersion = $this->getClient()
+      ->environment($environmentUuid)
+      ->configuration
+      ->php
+      ->version;
+
+    $this->logger()->info("{name} is currently set to PHP {version}", [
+      'name' => $targetRecord->name(),
+      'version'=> $currentVersion,
+    ]);
+
+    if ($version !== $currentVersion) {
+      $this->logger()->info("Switching {name} to PHP {version}", [
+        'name' => $targetRecord->name(),
+        'version'=> $version,
+      ]);
+      $modifyResponse = $this->getClient()
+        ->modifyEnvironment($environmentUuid, [
+          'version' => $version,
+        ]);
+      /** @noinspection PhpParamsInspection */
+      $this->waitForTaskToComplete(basename($modifyResponse->links->notification->href));
+    }
+  }
+
+  /**
+   * Return the Drush logger, and fail if it does not exist.
+   *
+   * The parent logger() method is typehinted to optionally return a
+   * DrushLoggerManager. That means that every call to logger() should check
+   * against NULL before calling methods. Rather than rewrite all of our typical
+   * Drush code that in practice should only fail if things are Horribly Broken,
+   * this method implements a stricter typehint and throws a useful exception if
+   * a logger is not set.
+   *
+   * @throws \RuntimeException
+   *   Thrown when a Drush logger is not set.
+   *
+   * @return \Drush\Log\DrushLoggerManager
+   */
+  protected function logger(): DrushLoggerManager {
+    $logger = parent::logger();
+    if (!$logger) {
+      throw new \RuntimeException('No Drush logger is available, but one should always be present.');
+    }
+
+    return $logger;
+  }
+
+  /**
+   * Fetch the tugboat URL based on --target and --ci-branch.
+   *
+   * @param mixed $tugboat_url_option
+   *   The value passed in --tugboat=<value>, TRUE when passing --tugboat, and
+   *   FALSE when --tugboat is omitted.
+   * @param string $ci_branch
+   *   The branch being built.
+   *
+   * @return string
+   *   The Tugboat URL to test against.
+   */
+  private function getTugboatUrl($tugboat_url_option, string $ci_branch): string {
+    if ($tugboat_url_option === TRUE || empty($tugboat_url_option)) {
+      $branch = $ci_branch;
+      if ($branch === 'develop') {
+        $process = $this->processManager()
+          ->shell('git rev-parse --abbrev-ref HEAD');
+        $branch = trim($process->mustRun()->getOutput());
+        if (empty($branch)) {
+          throw new \RuntimeException('Unable to determine current branch. Pass --tugboat option.');
+        }
+      }
+      $tugboat_url_option = $this->getTugboatPreviewForBranch($branch, 'url');
+      if (empty($tugboat_url_option)) {
+        throw new \RuntimeException('Unable to find a matching Tugboat preview. Pass --tugboat option.');
+      }
+    }
+
+    return $tugboat_url_option;
   }
 
 }

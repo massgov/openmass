@@ -18,6 +18,7 @@ dependencies:
     - field.field.node.advisory.field_advisory_section
     - field.field.node.advisory.field_advisory_type_tax
     - field.field.node.advisory.field_collections
+    - field.field.node.advisory.field_date_published
     - field.field.node.advisory.field_intended_audience
     - field.field.node.advisory.field_organizations
     - field.field.node.advisory.field_primary_parent
@@ -33,15 +34,15 @@ bundle: advisory
 mode: teaser
 content:
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 1
     region: content
+  workbench_moderation_control:
     settings: {  }
     third_party_settings: {  }
-  workbench_moderation_control:
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   computed_related_to: true
   content_moderation_control: true
@@ -61,6 +62,7 @@ hidden:
   field_advisory_section: true
   field_advisory_type_tax: true
   field_collections: true
+  field_date_published: true
   field_intended_audience: true
   field_organizations: true
   field_primary_parent: true

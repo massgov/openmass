@@ -8,6 +8,12 @@
 {% extends 'node.html.twig' %}
 
 {% block preContent %}
+  {% if translationLinks %}
+    {% set translationLinks = translationLinks|merge({'background': "gray"}) %}
+    {% include "@organisms/by-author/inline-links.twig" with {
+      "inlineLinks": translationLinks
+    } %}
+  {% endif %}
   {{ content.field_header }}
 {% endblock %}
 {% block main %}
@@ -16,4 +22,7 @@
       {{ content.field_sections }}
     </div>
   </div>
+{% endblock %}
+{% block postContent %}
+  {{ content.extra_org_feedback_form }}
 {% endblock %}
