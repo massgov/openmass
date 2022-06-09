@@ -50,6 +50,11 @@
     {% endblock %}
   {% endembed %}
   {{ content.referencing_binders }}
+  {% if translationLinks %}
+    {% include "@organisms/by-author/inline-links.twig" with {
+      "inlineLinks": translationLinks
+    } %}
+  {% endif %}
   {% set pageHeader = pageHeader|merge({'level': level}) %}
   {% include "@organisms/by-template/page-header.twig" %}
   {% include "@organisms/by-template/page-header-addons.twig" %}
