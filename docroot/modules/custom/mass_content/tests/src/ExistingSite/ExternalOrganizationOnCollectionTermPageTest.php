@@ -16,7 +16,7 @@ class ExternalOrganizationOnCollectionTermPageTest extends ExistingSiteBase {
   /**
    * Test External Organization rendering on Collection Term pages.
    */
-  function testExternalOrganizationOnCollectionTermPage() {
+  public function testExternalOrganizationOnCollectionTermPage() {
 
     // Create one new term in collections.
     $term_name = $this->randomMachineName();
@@ -31,7 +31,7 @@ class ExternalOrganizationOnCollectionTermPageTest extends ExistingSiteBase {
     // Create an org
     $org = $this->createNode([
       'type' => 'org_page',
-      'title' => 'org from the system '.$this->randomMachineName(),
+      'title' => 'org from the system ' . $this->randomMachineName(),
       'field_collections' => $parent_term->id(),
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
