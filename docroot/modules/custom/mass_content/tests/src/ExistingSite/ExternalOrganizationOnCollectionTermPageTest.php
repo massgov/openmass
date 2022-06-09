@@ -11,7 +11,6 @@ use weitzman\DrupalTestTraits\ExistingSiteBase;
  */
 class ExternalOrganizationOnCollectionTermPageTest extends ExistingSiteBase {
 
-
   /**
    * Test External Organization rendering on Collection Term pages.
    */
