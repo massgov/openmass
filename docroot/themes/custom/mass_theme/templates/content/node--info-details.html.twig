@@ -113,13 +113,17 @@
       {% endblock %}
     {% endembed %}
   {% endif %}
-  {% include "@organisms/by-template/sticky-toc.twig" with {
-    "stickyTOC": {
-      "title": "Table of Contents"|t,
-      "parent": "#main-content",
-      "sections": ".ma__information-details__content h2"
-    }
-  } %}
+
+  {% if not node.field_hide_table_of_contents.value %}
+    {% include "@organisms/by-template/sticky-toc.twig" with {
+      "stickyTOC": {
+        "title": "Table of Contents"|t,
+        "parent": "#main-content",
+        "sections": ".ma__information-details__content h2"
+      }
+    } %}
+  {% endif %}
+
   {{ pre_content }}
 {% endblock %}
 {% if node.field_info_details_header_media.isempty == false %}
@@ -132,7 +136,9 @@
 {% endif %}
 
 {% block pageContent %}
+
   {{ content.field_info_details_sections }}
+  
   {{ content.field_contact }}
 
   {% if node.field_footnotes[0].value %}
