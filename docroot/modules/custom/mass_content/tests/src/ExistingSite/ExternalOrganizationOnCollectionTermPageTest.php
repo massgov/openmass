@@ -8,6 +8,8 @@ use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
  * Tests External Organization on Colection Term pages.
+ *
+ * @group existing-site
  */
 class ExternalOrganizationOnCollectionTermPageTest extends ExistingSiteBase {
 
@@ -56,7 +58,7 @@ class ExternalOrganizationOnCollectionTermPageTest extends ExistingSiteBase {
 
     // Visit the collection term page again and notice
     // the external organization is showing up.
-    $this->getSession()->reload();
+    $this->drupalGet('/collections/' . $url);
     $this->assertSession()->pageTextNotContains($org->label());
     $this->assertSession()->pageTextContains($external_org_name);
 
@@ -64,12 +66,9 @@ class ExternalOrganizationOnCollectionTermPageTest extends ExistingSiteBase {
     $external_data_resource->field_external_organization = ' ';
     $external_data_resource->save();
 
-    // @TODO: Uncomment the line below to make this test work.
-    // \Drupal::service('cache.render')->invalidateAll();
-
     // Visit the term page again and notice the external organization
     // is NOT showing up on the collection term page.
-    $this->getSession()->reload();
+    $this->drupalGet('/collections/' . $url);
     $this->assertSession()->pageTextContains($org->label());
     $this->assertSession()->pageTextNotContains($external_org_name);
 
