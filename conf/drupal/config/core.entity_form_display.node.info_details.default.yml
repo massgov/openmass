@@ -39,6 +39,7 @@ dependencies:
     - content_moderation
     - datetime
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - focal_point
     - link
@@ -173,15 +174,18 @@ content:
       offsets: '50,50'
     third_party_settings: {  }
   field_collections:
-    type: term_reference_tree
+    type: entity_reference_tree
     weight: 27
     region: content
     settings:
-      start_minimized: true
-      leaves_only: false
-      select_parents: true
-      cascading_selection: 0
-      max_depth: 0
+      theme: default
+      dots: 0
+      size: 60
+      placeholder: ''
+      match_operator: CONTAINS
+      match_limit: 10
+      dialog_title: 'Select Collections'
+      label: 'Select Collections'
     third_party_settings: {  }
   field_contact:
     type: entity_reference_autocomplete
