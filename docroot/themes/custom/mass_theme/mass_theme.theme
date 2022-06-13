@@ -3399,11 +3399,10 @@ function mass_theme_preprocess_node_news_full(&$variables) {
 
     $variables['author'] = $full_name;
     $variables['author_url'] = $author->toUrl();
-    $variables['author_info'] = $author_title;
-    if ($author_title) {
-      $variables['author_info'] .= ', ' . $author_all_orgs;
-    }
-    $variables['author_info'] .= $author_all_orgs;
+    $variables['author_info'] =
+      $author_title .
+      ($author_title ? ', ' : '') .
+      $author_all_orgs;
 
     $cache_tags = array_merge($cache_tags, $author->getCacheTags());
   }

@@ -3,9 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.node.decision_tree.field_bg_narrow
-    - field.field.node.decision_tree.field_bg_wide
-    - field.field.node.decision_tree.field_campaign_logo
     - field.field.node.decision_tree.field_decision_tree_metatags
     - field.field.node.decision_tree.field_description
     - field.field.node.decision_tree.field_disclaimer
@@ -19,7 +16,6 @@ dependencies:
     - node.type.decision_tree
   module:
     - entity_reference_revisions
-    - image
     - metatag
     - text
     - user
@@ -45,33 +41,6 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 11
-    region: content
-  field_bg_narrow:
-    type: image
-    label: above
-    settings:
-      image_link: ''
-      image_style: ''
-    third_party_settings: {  }
-    weight: 8
-    region: content
-  field_bg_wide:
-    type: image
-    label: above
-    settings:
-      image_link: ''
-      image_style: ''
-    third_party_settings: {  }
-    weight: 7
-    region: content
-  field_campaign_logo:
-    type: image
-    label: above
-    settings:
-      image_link: ''
-      image_style: ''
-    third_party_settings: {  }
-    weight: 6
     region: content
   field_decision_tree_metatags:
     type: metatag_empty_formatter
