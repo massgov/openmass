@@ -94,6 +94,10 @@
   {% endfor %}
 {% endif %}
 
+{% if node.field_external_organization.value|render|trim is not empty %}
+  {% set organizations = [node.field_external_organization.value] %}
+{% endif %}
+
 {% include "@molecules/general-teaser.twig" with {
   "generalTeaser" : {
     "eyebrow": eyebrow,

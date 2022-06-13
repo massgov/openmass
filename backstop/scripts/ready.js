@@ -1,3 +1,5 @@
+const os = require("os");
+
 /**
  * Ready script, fires after pages have loaded, but before screenshots are
  * captured.
@@ -7,133 +9,23 @@
  * trivial failures for an element, you can probably deal with it here.
  */
 module.exports = async function (page, scenario, vp) {
+  console.log(`Preparing ${page.url()}`);
+  const oneMinute = os.loadavg()[0];
+  if (oneMinute > os.cpus().length) {
+    console.log(`One minute load average is ${oneMinute}. Consider reducing the number of capture processes.`)
+  }
 
-  await require('./clickAndHoverHelper')(page, scenario);
-  await page.addStyleTag({
-    content: '' +
-      // Force all animation to complete immediately.
-      '*, *::before, *::after {\n' +
-      '  animation-delay: 0ms !important;\n' +
-      '  animation-duration: 0ms !important;\n' +
-      '  transition-duration: 0ms !important;\n' +
-      '  transition-delay: 0ms !important;\n' +
-      '}' +
-      // Kill Video embeds (show black box instead)
-      '.fluid-width-video-wrapper:after {' +
-      '  background: black;' +
-      '  content: \'\';' +
-      '  position: absolute;' +
-      '  top: 0;' +
-      '  left: 0;' +
-      '  right: 0;' +
-      '  bottom: 0;' +
-      '  z-index: 100;' +
-      '}' +
-      // Kill iframes (show blue box instead)
-      '.ma__iframe__container:after {' +
-      '  background: #357B8F;' +
-      '  content: \'\';' +
-      '  position: absolute;' +
-      '  top: 0;' +
-      '  left: 0;' +
-      '  right: 0;' +
-      '  bottom: 0;' +
-      '  z-index: 100;' +
-      '}' +
-      // Kill google Maps (show a green box instead)
-      // .js-google-map for dynamic maps
-      '.js-google-map {' +
-      '  position: relative;' +
-      '}' +
-      '.js-google-map:before {' +
-      '  background: #B2DEA2;\n' +
-      '  content: \' \';\n' +
-      '  display: block;\n' +
-      '  position: absolute;\n' +
-      '  top: 0;\n' +
-      '  left: 0;\n' +
-      '  right: 0;\n' +
-      '  bottom: 0;\n' +
-      '  z-index: 100;\n' +
-      '}' +
-      // Kill banner image on QAG campaign landing page (show a black box
-      // instead)
-      '#ID1345331.ma__key-message--image, #imgID1345331 {' +
-      '  position: relative;' +
-      '}' +
-      '#ID1345331.ma__key-message--image:before, #imgID1345331:before {' +
-      '  background: #000000;\n' +
-      '  content: \' \';\n' +
-      '  display: block;\n' +
-      '  position: absolute;\n' +
-      '  top: 0;\n' +
-      '  left: 0;\n' +
-      '  right: 0;\n' +
-      '  bottom: 0;\n' +
-      '  z-index: 3;\n' +
-      '}' +
-      // [FREQUENTLY CHANGING CONTENT] Kill images in Updates From The
-      // Baker-Polito Administration on Governor's page (show a gray box
-      // instead)
-      '.ma__featured-item {' +
-      ' background-color: #888888;\n' +
-      '}' +
-      '.ma__featured-item__image, .ma__featured-item__image--large {' +
-      '  position: relative;' +
-      '}' +
-      '.ma__featured-item__image:before, .ma__featured-item__image--large:before {' +
-      '  background: #888888;\n' +
-      '  content: \' \';\n' +
-      '  display: block;\n' +
-      '  position: absolute;\n' +
-      '  top: 0;\n' +
-      '  left: 0;\n' +
-      '  right: 0;\n' +
-      '  bottom: 0;\n' +
-      '  z-index: 3;\n' +
-      '}' +
-      // [FREQUENTLY CHANGING CONTENT] Kill images and text in Recent news and
-      // announcements on Governor's page (show a gray box instead)
-      '.ma__press-listing__secondary-item .ma__press-teaser .ma__press-teaser__image {' +
-      '  position: relative;' +
-      '}' +
-      '.ma__press-listing__secondary-item .ma__press-teaser .ma__press-teaser__image:before {' +
-      '  background: #888888;\n' +
-      '  content: \' \';\n' +
-      '  display: block;\n' +
-      '  position: absolute;\n' +
-      '  top: 0;\n' +
-      '  left: 0;\n' +
-      '  right: 0;\n' +
-      '  bottom: 0;\n' +
-      '  z-index: 3;\n' +
-      '}' +
-      // [FREQUENTLY CHANGING CONTENT] Kill banner background image on Home
-      // page (show a gray box instead)
-      '.ma__search-banner {' +
-      '  position: relative;' +
-      '}' +
-      '.ma__search-banner:after {' +
-      ' background: #888888;\n' +
-      '  z-index: 1;\n' +
-      '  content: \' \';\n' +
-      '  display: block;\n' +
-      '  position: absolute;\n' +
-      '  top: 0;\n' +
-      '  left: 0;\n' +
-      '  right: 0;\n' +
-      '  bottom: 0;\n' +
-      '}' +
-      'button:focus-visible, [type="button"]:focus-visible {' +
-      'outline: none;\n' +
-      '}'
-  });
+  // DO NOT put anything that modifies a mass.gov page before this point.
+  // Otherwise, if a Tugboat preview is suspended and needs to resume, we may
+  // alter the state of the Tugboat "Preview is resuming" page and not the
+  // mass.gov page.
 
   // The Tugboat preview is suspended. While Tugboat returns HTTP 418 in this
   // state, the page goes through several steps before finishing. Notably, the
   // title tag will contain something like "Tugboat - Preview is...", which
   // we can wait for. If the server doesn't respond with a mass.gov page in
-  // 60 seconds, this will time out.
+  // 60 seconds, this will time out. To manually suspend a preview for testing,
+  // use `tugboat suspend <id>` at the command line.
   if (new RegExp('.*tugboat.qa.*').test(page.url())) {
     try {
       await page.waitForFunction("new RegExp('.*Tugboat.*').test(document.title) !== true", {timeout: 60 * 1000})
@@ -151,6 +43,8 @@ module.exports = async function (page, scenario, vp) {
   catch (e) {
     throw new Error(`${e.constructor.name}: jQuery was not found. This is usually caused by the server returning a 500 response. Please check ${page.url()} in your browser.`)
   }
+
+  await require('./clickAndHoverHelper')(page, scenario);
 
   await page.evaluate(function (url) {
     // Disable jQuery animation for any future calls.
@@ -270,6 +164,126 @@ module.exports = async function (page, scenario, vp) {
   await page.evaluate(async function () {
     await document.fonts.ready;
   })
+
+  await page.addStyleTag({
+    content: '' +
+      // Force all animation to complete immediately.
+      '*, *::before, *::after {\n' +
+      '  animation-delay: 0ms !important;\n' +
+      '  animation-duration: 0ms !important;\n' +
+      '  transition-duration: 0ms !important;\n' +
+      '  transition-delay: 0ms !important;\n' +
+      '}' +
+      // Kill Video embeds (show black box instead)
+      '.fluid-width-video-wrapper:after {' +
+      '  background: black;' +
+      '  content: \'\';' +
+      '  position: absolute;' +
+      '  top: 0;' +
+      '  left: 0;' +
+      '  right: 0;' +
+      '  bottom: 0;' +
+      '  z-index: 100;' +
+      '}' +
+      // Kill iframes (show blue box instead)
+      '.ma__iframe__container:after {' +
+      '  background: #357B8F;' +
+      '  content: \'\';' +
+      '  position: absolute;' +
+      '  top: 0;' +
+      '  left: 0;' +
+      '  right: 0;' +
+      '  bottom: 0;' +
+      '  z-index: 100;' +
+      '}' +
+      // Kill google Maps (show a green box instead)
+      // .js-google-map for dynamic maps
+      '.js-google-map {' +
+      '  position: relative;' +
+      '}' +
+      '.js-google-map:before {' +
+      '  background: #B2DEA2;\n' +
+      '  content: \' \';\n' +
+      '  display: block;\n' +
+      '  position: absolute;\n' +
+      '  top: 0;\n' +
+      '  left: 0;\n' +
+      '  right: 0;\n' +
+      '  bottom: 0;\n' +
+      '  z-index: 100;\n' +
+      '}' +
+      // Kill banner image on QAG campaign landing page (show a black box
+      // instead)
+      '#ID1345331.ma__key-message--image, #imgID1345331 {' +
+      '  position: relative;' +
+      '}' +
+      '#ID1345331.ma__key-message--image:before, #imgID1345331:before {' +
+      '  background: #000000;\n' +
+      '  content: \' \';\n' +
+      '  display: block;\n' +
+      '  position: absolute;\n' +
+      '  top: 0;\n' +
+      '  left: 0;\n' +
+      '  right: 0;\n' +
+      '  bottom: 0;\n' +
+      '  z-index: 3;\n' +
+      '}' +
+      // [FREQUENTLY CHANGING CONTENT] Kill images in Updates From The
+      // Baker-Polito Administration on Governor's page (show a gray box
+      // instead)
+      '.ma__featured-item {' +
+      ' background-color: #888888;\n' +
+      '}' +
+      '.ma__featured-item__image, .ma__featured-item__image--large {' +
+      '  position: relative;' +
+      '}' +
+      '.ma__featured-item__image:before, .ma__featured-item__image--large:before {' +
+      '  background: #888888;\n' +
+      '  content: \' \';\n' +
+      '  display: block;\n' +
+      '  position: absolute;\n' +
+      '  top: 0;\n' +
+      '  left: 0;\n' +
+      '  right: 0;\n' +
+      '  bottom: 0;\n' +
+      '  z-index: 3;\n' +
+      '}' +
+      // [FREQUENTLY CHANGING CONTENT] Kill images and text in Recent news and
+      // announcements on Governor's page (show a gray box instead)
+      '.ma__press-listing__secondary-item .ma__press-teaser .ma__press-teaser__image {' +
+      '  position: relative;' +
+      '}' +
+      '.ma__press-listing__secondary-item .ma__press-teaser .ma__press-teaser__image:before {' +
+      '  background: #888888;\n' +
+      '  content: \' \';\n' +
+      '  display: block;\n' +
+      '  position: absolute;\n' +
+      '  top: 0;\n' +
+      '  left: 0;\n' +
+      '  right: 0;\n' +
+      '  bottom: 0;\n' +
+      '  z-index: 3;\n' +
+      '}' +
+      // [FREQUENTLY CHANGING CONTENT] Kill banner background image on Home
+      // page (show a gray box instead)
+      '.ma__search-banner {' +
+      '  position: relative;' +
+      '}' +
+      '.ma__search-banner:after {' +
+      ' background: #888888;\n' +
+      '  z-index: 1;\n' +
+      '  content: \' \';\n' +
+      '  display: block;\n' +
+      '  position: absolute;\n' +
+      '  top: 0;\n' +
+      '  left: 0;\n' +
+      '  right: 0;\n' +
+      '  bottom: 0;\n' +
+      '}' +
+      'button:focus-visible, [type="button"]:focus-visible {' +
+      'outline: none;\n' +
+      '}'
+  });
 
   // We can add a slight delay here. This can cover up jitter caused
   // by weird network conditions, slow JS, etc, but if we need an extra

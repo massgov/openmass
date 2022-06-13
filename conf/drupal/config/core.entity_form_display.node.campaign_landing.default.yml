@@ -19,6 +19,7 @@ dependencies:
     - field.field.node.campaign_landing.field_reusable_label
     - field.field.node.campaign_landing.field_sections
     - field.field.node.campaign_landing.field_short_title
+    - field.field.node.campaign_landing.field_state_organization_tax
     - node.type.campaign_landing
     - workflows.workflow.campaign_landing_page
   module:
@@ -374,6 +375,16 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_state_organization_tax:
+    type: entity_reference_autocomplete
+    weight: 3
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   langcode:
     type: language_select
     weight: 61
@@ -383,7 +394,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 9
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -435,7 +446,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }
