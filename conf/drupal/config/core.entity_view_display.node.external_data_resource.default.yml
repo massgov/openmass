@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.external_data_resource.field_data_resource_type
     - field.field.node.external_data_resource.field_data_topic
     - field.field.node.external_data_resource.field_details_data_type
+    - field.field.node.external_data_resource.field_external_organization
     - field.field.node.external_data_resource.field_externaldata_description
     - field.field.node.external_data_resource.field_externaldata_url
     - field.field.node.external_data_resource.field_organizations
@@ -72,6 +73,14 @@ content:
       link: true
     third_party_settings: {  }
     weight: 4
+    region: content
+  field_external_organization:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 10
     region: content
   field_externaldata_description:
     type: basic_string
