@@ -19,7 +19,6 @@ dependencies:
     - text
     - user
     - views_autocomplete_filters
-    - views_custom_cache_tag
     - views_porter_stemmer
 id: collection_all
 label: 'Collection All'
@@ -482,9 +481,8 @@ display:
         options:
           perm: 'access content'
       cache:
-        type: custom_tag
-        options:
-          custom_tag: "node_list\r\nmedia_list"
+        type: none
+        options: {  }
       empty:
         area:
           id: area
