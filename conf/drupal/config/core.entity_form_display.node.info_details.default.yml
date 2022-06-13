@@ -15,6 +15,7 @@ dependencies:
     - field.field.node.info_details.field_details_enable_fields
     - field.field.node.info_details.field_english_version
     - field.field.node.info_details.field_footnotes
+    - field.field.node.info_details.field_hide_table_of_contents
     - field.field.node.info_details.field_image_credit
     - field.field.node.info_details.field_info_detail_overview
     - field.field.node.info_details.field_info_details_date_publishe
@@ -77,6 +78,7 @@ third_party_settings:
         - field_date_published
         - field_info_details_last_updated
         - field_page_template
+        - field_hide_table_of_contents
         - field_primary_parent
         - field_organizations
         - field_data_flag
@@ -278,7 +280,7 @@ content:
             selector: ''
   field_date_published:
     type: datetime_default
-    weight: 13
+    weight: 12
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -349,6 +351,13 @@ content:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
+  field_hide_table_of_contents:
+    type: boolean_checkbox
+    weight: 15
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_image_credit:
     type: string_textfield
     weight: 7
@@ -379,7 +388,7 @@ content:
     third_party_settings: {  }
   field_info_details_last_updated:
     type: datetime_default
-    weight: 14
+    weight: 13
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -432,7 +441,7 @@ content:
     third_party_settings: {  }
   field_page_template:
     type: options_select
-    weight: 15
+    weight: 14
     region: content
     settings: {  }
     third_party_settings: {  }

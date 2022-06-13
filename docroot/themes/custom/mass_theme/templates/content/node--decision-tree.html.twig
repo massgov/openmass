@@ -48,105 +48,16 @@
     {% endblock %}
   {% endembed %}
 
-  <div class="decision-tree">
-  {% if pageBanner %}
-
-    {# Copied from page-banner.twig to allow logo to be inserted into banner #}
-    {% set sizeClass = pageBanner.size ? "ma__page-banner--" ~ pageBanner.size : '' %}
-
-    {% set colorClass = pageBanner.color ? "ma__page-banner--" ~ pageBanner.color : '' %}
-
-    <section class="ma__page-banner {{ sizeClass }} {{ colorClass }}">
-      {% if pageBanner.size == "columns" %}
-        <style>
-          .ma__page-banner__image {
-            background-image: url('{{ pageBanner.bgNarrow }}');
-          }
-
-          @media (min-width: 801px) {
-            .ma__page-banner__image {
-              background-image: url('{{ pageBanner.bgWide }}');
-            }
-          }
-        </style>
-      {% else %}
-        <style>
-          .ma__page-banner {
-            background-image: url('{{ pageBanner.bgNarrow }}');
-          }
-
-          @media (min-width: 801px) {
-            .ma__page-banner {
-              background-image: url('{{ pageBanner.bgWide }}');
-            }
-          }
-        </style>
-      {% endif %}
-      <div class="ma__page-banner__container">
-        {% if pageBanner.size and pageBanner.size == "columns" %}
-          <div class="ma__page-banner__image"></div>
-        {% endif %}
-        {% if logo %}
-          <div class="ma__page-banner__logo">
-            {% set image = logo %}
-            {% include '@atoms/09-media/image.twig' %}
-          </div>
-        {% endif %}
-        <div class="ma__page-banner__content" property="mainEntityOfPage">
-          {% if pageBanner.icon %}
-            <div class="ma__page-banner__icon">
-              {% include pageBanner.icon %}
-            </div>
-          {% endif %}
-          {% if logo %}
-            <div class="ma__page-banner__logo-mobile">
-              {% set image = logo %}
-              {% include '@atoms/09-media/image.twig' %}
-            </div>
-          {% endif %}
-          <h1 class="ma__page-banner__title">
-            {{ pageBanner.title }}
-            {% if pageBanner.titleSubText %}
-              <span> {{ pageBanner.titleSubText }}</span>
-            {% endif %}
-          </h1>
-          {% if pageBanner.description and not (pageBanner.size == "columns") %}
-            <p class="ma__page-banner__description">
-              {{ pageBanner.description }}
-            </p>
-          {% endif %}
-        </div>
-        {% if pageBanner.description and pageBanner.size == "columns" %}
-          <p class="ma__page-banner__description">
-            {{ pageBanner.description }}
-          </p>
-        {% endif %}
-      </div>
-    </section>
-    {# End copied from page-banner.twig #}
-  {% endif %}
-  </div>
+  {% include "@organisms/by-template/page-header.twig" with {
+    "pageHeader": {
+      "divider": false,
+      "title": label,
+      "widgets": null
+    },
+  } %}
 {% endblock %}
 
 {% block main %}
-<style>
-  /* Override the default style for the element with h1's initially applied to the element for the get started, question and answer. */
-  .ma__decision-tree__qa {
-    margin: 0.67em 0;
-    font-size: 3rem;
-    line-height: 1.07;
-  }
-  @media (min-width: 781px) {
-    .ma__decision-tree__qa {
-      font-size: 3.25rem;
-    }
-  }
-  @media (min-width: 1201px) {
-    .ma__decision-tree__qa {
-      font-size: 3.5rem;
-    }
-  }
-</style>
   <div class="main-content main-content--two"></div>
 
   <script id="root-content" type="text/x-handlebars-template">
