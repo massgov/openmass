@@ -32,8 +32,8 @@ dependencies:
   module:
     - content_moderation
     - datetime
-    - entity_browser
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - image
     - link
@@ -191,8 +191,12 @@ content:
       placeholder: ''
       match_operator: CONTAINS
       match_limit: 10
-      dialog_title: 'Select Collections'
-      label: 'Select Collections'
+      dialog_title: ''
+      label: ''
+      auto_check_ancestors: '1'
+      auto_uncheck_descendants: '1'
+      auto_uncheck_ancestors: 0
+      auto_check_descendants: 0
     third_party_settings: {  }
   field_date_published:
     type: datetime_default
