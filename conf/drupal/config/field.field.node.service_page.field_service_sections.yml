@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.storage.node.field_service_sections
     - node.type.service_page
+    - paragraphs.paragraphs_type.key_message_section
     - paragraphs.paragraphs_type.service_section
   module:
     - entity_reference_revisions
@@ -22,6 +23,7 @@ settings:
   handler: 'default:paragraph'
   handler_settings:
     target_bundles:
+      key_message_section: key_message_section
       service_section: service_section
     negate: 0
     target_bundles_drag_drop:
@@ -100,6 +102,9 @@ settings:
       caspio_embed:
         weight: 151
         enabled: false
+      collection_search:
+        weight: 156
+        enabled: false
       completion_time:
         weight: 152
         enabled: false
@@ -111,6 +116,9 @@ settings:
         enabled: false
       contact_info:
         weight: 155
+        enabled: false
+      contact_placeholder:
+        weight: 161
         enabled: false
       content_card_group:
         weight: 156
@@ -166,6 +174,9 @@ settings:
       file_download_single:
         weight: 173
         enabled: false
+      flexible_link_group:
+        weight: 180
+        enabled: false
       footnotes:
         weight: 174
         enabled: false
@@ -213,7 +224,7 @@ settings:
         enabled: false
       key_message_section:
         weight: 189
-        enabled: false
+        enabled: true
       link_group:
         weight: 192
         enabled: false

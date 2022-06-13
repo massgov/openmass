@@ -143,7 +143,7 @@ third_party_settings:
       label: 'Tasks and key info'
       region: hidden
       parent_name: ''
-      weight: 15
+      weight: 16
       format_type: tab
       format_settings:
         classes: ''
@@ -160,7 +160,7 @@ third_party_settings:
       label: Map
       region: hidden
       parent_name: ''
-      weight: 16
+      weight: 17
       format_type: tab
       format_settings:
         classes: ''
@@ -171,7 +171,6 @@ third_party_settings:
     group_additional_info:
       children:
         - field_service_ref_services_6
-        - group_additional_resources
       label: 'Additional info'
       region: content
       parent_name: group_service_edit_form
@@ -216,8 +215,8 @@ third_party_settings:
         - field_service_file
       label: 'Additional resources'
       region: content
-      parent_name: group_additional_info
-      weight: 67
+      parent_name: ''
+      weight: 15
       format_type: fieldset
       format_settings:
         classes: ''
@@ -708,44 +707,6 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-  field_service_file:
-    type: inline_entity_form_complex
-    weight: 56
-    region: content
-    settings:
-      form_mode: default
-      override_labels: false
-      label_singular: ''
-      label_plural: ''
-      allow_new: true
-      allow_existing: true
-      allow_edit: true
-      match_operator: CONTAINS
-      allow_duplicate: false
-      collapsible: false
-      collapsed: false
-      revision: false
-    third_party_settings:
-      entity_browser_entity_form:
-        entity_browser_id: media_browser
-      conditional_fields:
-        261f5b95-fd22-4d3d-bac3-bd778e653614:
-          entity_type: node
-          bundle: service_page
-          dependee: field_template
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: default
-            effect: show
-            effect_options: {  }
-            selector: ''
   field_service_kpi_choice:
     type: options_buttons
     weight: 51
@@ -761,32 +722,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_service_links:
-    type: link_default
-    weight: 55
-    region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
-    third_party_settings:
-      conditional_fields:
-        a0bc6929-b26a-479a-a27f-c83782609d35:
-          entity_type: node
-          bundle: service_page
-          dependee: field_template
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: default
-            effect: show
-            effect_options: {  }
-            selector: ''
   field_service_metatags:
     type: metatag_firehose
     weight: 2
@@ -850,9 +785,9 @@ content:
       title: Paragraph
       title_plural: Paragraphs
       edit_mode: open
-      add_mode: dropdown
+      add_mode: button
       form_display_mode: default
-      default_paragraph_type: ''
+      default_paragraph_type: _none
     third_party_settings: {  }
   field_service_video:
     type: inline_entity_form_complex
@@ -971,7 +906,9 @@ hidden:
   field_location_button_short_desc: true
   field_related_organization_type: true
   field_service_bg_narrow: true
+  field_service_file: true
   field_service_key_info_links_6: true
+  field_service_links: true
   field_service_ref_actions: true
   field_service_ref_actions_2: true
   field_service_ref_locations: true
