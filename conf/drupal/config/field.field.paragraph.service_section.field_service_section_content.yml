@@ -4,6 +4,12 @@ status: true
 dependencies:
   config:
     - field.storage.paragraph.field_service_section_content
+    - paragraphs.paragraphs_type.caspio_embed
+    - paragraphs.paragraphs_type.collection_search
+    - paragraphs.paragraphs_type.contact_placeholder
+    - paragraphs.paragraphs_type.featured_item_mosaic
+    - paragraphs.paragraphs_type.flexible_link_group
+    - paragraphs.paragraphs_type.org_events
     - paragraphs.paragraphs_type.campaign_features
     - paragraphs.paragraphs_type.caspio_embed
     - paragraphs.paragraphs_type.contact_placeholder
@@ -16,7 +22,7 @@ dependencies:
     - paragraphs.paragraphs_type.social_media
     - paragraphs.paragraphs_type.stat
     - paragraphs.paragraphs_type.tableau_embed
-    - paragraphs.paragraphs_type.video_with_section
+    - paragraphs.paragraphs_type.video
   module:
     - entity_reference_revisions
 id: paragraph.service_section.field_service_section_content
@@ -38,13 +44,15 @@ settings:
       org_events: org_events
       social_media: social_media
       org_locations: org_locations
+      flexible_link_group: flexible_link_group
+      contact_placeholder: contact_placeholder
       pull_quote: pull_quote
       stat: stat
       tableau_embed: tableau_embed
+      video: video
+      collection_search: collection_search
       campaign_features: campaign_features
       video_with_section: video_with_section
-      flexible_link_group: flexible_link_group
-      contact_placeholder: contact_placeholder
     negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
@@ -115,7 +123,7 @@ settings:
         enabled: false
       campaign_features:
         weight: 43
-        enabled: true
+        enabled: false
       card:
         weight: 44
         enabled: false
@@ -123,8 +131,8 @@ settings:
         weight: 3
         enabled: true
       collection_search:
-        weight: 157
-        enabled: false
+        weight: 156
+        enabled: true
       completion_time:
         weight: 45
         enabled: false
@@ -427,13 +435,13 @@ settings:
         enabled: true
       video:
         weight: 21
-        enabled: false
+        enabled: true
       video_with_header:
         weight: 123
         enabled: false
       video_with_section:
         weight: 124
-        enabled: true
+        enabled: false
       what_would_you_like_to_do:
         weight: 22
         enabled: false

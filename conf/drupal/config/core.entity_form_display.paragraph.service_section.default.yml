@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.service_section.field_hide_heading
+    - field.field.paragraph.service_section.field_section_style
     - field.field.paragraph.service_section.field_service_section_content
     - field.field.paragraph.service_section.field_service_section_heading
     - paragraphs.paragraphs_type.service_section
@@ -18,7 +19,7 @@ third_party_settings:
       label: 'Section content'
       region: content
       parent_name: ''
-      weight: 2
+      weight: 3
       format_type: details
       format_settings:
         classes: ''
@@ -34,10 +35,16 @@ mode: default
 content:
   field_hide_heading:
     type: boolean_checkbox
-    weight: 2
+    weight: 1
     region: content
     settings:
       display_label: true
+    third_party_settings: {  }
+  field_section_style:
+    type: options_buttons
+    weight: 2
+    region: content
+    settings: {  }
     third_party_settings: {  }
   field_service_section_content:
     type: entity_reference_paragraphs
@@ -46,7 +53,7 @@ content:
     settings:
       title: Paragraph
       title_plural: Paragraphs
-      edit_mode: open
+      edit_mode: closed
       add_mode: button
       form_display_mode: media_caption_and_display
       default_paragraph_type: _none

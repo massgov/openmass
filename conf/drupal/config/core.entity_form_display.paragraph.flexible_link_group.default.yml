@@ -7,6 +7,7 @@ dependencies:
     - field.field.paragraph.flexible_link_group.field_featured
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_desc
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_title
+    - field.field.paragraph.flexible_link_group.field_group_expanded
     - field.field.paragraph.flexible_link_group.field_link_group
     - paragraphs.paragraphs_type.flexible_link_group
   module:
@@ -36,7 +37,7 @@ content:
           bundle: flexible_link_group
           dependee: field_display_type
           settings:
-            state: visible
+            state: '!visible'
             condition: value
             grouping: AND
             values_set: 1
@@ -44,7 +45,7 @@ content:
             values: {  }
             value_form:
               -
-                value: '2'
+                value: links
             effect: show
             effect_options: {  }
             selector: ''
@@ -55,7 +56,25 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        18468cf0-5fae-49d3-8b7b-8436200c2e0d:
+          entity_type: paragraph
+          bundle: flexible_link_group
+          dependee: field_display_type
+          settings:
+            state: required
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: links
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_flexible_link_group_title:
     type: string_textfield
     weight: 2
@@ -63,7 +82,50 @@ content:
     settings:
       size: 60
       placeholder: ''
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        7745ea53-3ecd-420d-b793-64945c5a9017:
+          entity_type: paragraph
+          bundle: flexible_link_group
+          dependee: field_display_type
+          settings:
+            state: required
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: links
+            effect: show
+            effect_options: {  }
+            selector: ''
+  field_group_expanded:
+    type: boolean_checkbox
+    weight: 4
+    region: content
+    settings:
+      display_label: true
+    third_party_settings:
+      conditional_fields:
+        b31c7b3e-659c-4b11-8bad-d2947c82da28:
+          entity_type: paragraph
+          bundle: flexible_link_group
+          dependee: field_display_type
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: links
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_link_group:
     type: entity_reference_paragraphs
     weight: 5

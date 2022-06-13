@@ -7,6 +7,7 @@ dependencies:
     - field.field.paragraph.flexible_link_group.field_featured
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_desc
     - field.field.paragraph.flexible_link_group.field_flexible_link_group_title
+    - field.field.paragraph.flexible_link_group.field_group_expanded
     - field.field.paragraph.flexible_link_group.field_link_group
     - paragraphs.paragraphs_type.flexible_link_group
   module:
@@ -22,7 +23,7 @@ content:
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 0
+    weight: 5
     region: content
   field_featured:
     type: boolean
@@ -49,6 +50,16 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: 1
+    region: content
+  field_group_expanded:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 6
     region: content
   field_link_group:
     type: entity_reference_revisions_entity_view
