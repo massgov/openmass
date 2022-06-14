@@ -113,7 +113,11 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
           $state_label = $workflow->get('type_settings')['states'][$state_name]['label'];
         }
         // Get a field label.
-        $field_label = isset($field_definitions[$records[$default_key]['field_name']]) ? $field_definitions[$records[$default_key]['field_name']]->getLabel() : $this->t('Unknown');
+        $field_label = isset($field_definitions[$records[$default_key]['field_name']]) ?
+          $field_definitions[$records[$default_key]['field_name']]->getLabel() .
+            ' (' . $records[$default_key]['method'] . ')' :
+          $this->t('Unknown');
+
         // Set the row values.
         $rows[] = [
           $link,
