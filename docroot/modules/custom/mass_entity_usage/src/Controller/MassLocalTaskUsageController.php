@@ -92,19 +92,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
           continue;
         }
         $field_definitions = $this->entityFieldManager->getFieldDefinitions($source_type, $source_entity->bundle());
-        if ($source_entity instanceof RevisionableInterface) {
-          $default_revision_id = $source_entity->getRevisionId();
-          $default_langcode = $source_entity->language()->getId();
-          $used_in_default = FALSE;
-          $default_key = 0;
-          foreach ($records as $key => $record) {
-            if ($record['source_vid'] == $default_revision_id && $record['source_langcode'] == $default_langcode) {
-              $default_key = $key;
-              $used_in_default = TRUE;
-              break;
-            }
-          }
-        }
+        $default_key = count($records) - 1;
         // If the source is a paragraph, get the parent node.
         if ($source_entity->getEntityTypeId() == 'paragraph') {
           /** @var \Drupal\paragraphs\ParagraphInterface $source_entity */
@@ -113,7 +101,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
         $link = $this->getSourceEntityLink($source_entity);
         // If the label is empty it means this usage shouldn't be shown
         // on the UI, just skip this row. Also, only show Default sources.
-        if (empty($link) || !$used_in_default) {
+        if (empty($link)) {
           continue;
         }
         // Get the moderation state label of the parent node.
