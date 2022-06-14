@@ -1,3 +1,31 @@
+## [0.324.0] - May 31, 2022
+
+### Fixed
+  - DP-24692: - Adding cache tags for prepareExpandableContent
+              - Topic headings override from the link text (if present)
+  - DP-24801: Fix undefined array key 'ariaHidden'.
+  - DP-24983: Avoids special characters on titles for collection and data listing pages.
+  - DP-25028: Fixed caching errors on topics pages.
+  
+### Changed
+  - DP-24948: - editor can edit any external link for collections content
+              - update help text for collections logo
+              - updating form display labels on external data resource
+              - removing 'only admins can' description from everywhere
+              - updating view add_collections_documents label
+  - DP-24955: Configuration changes
+              - Update "use this content type for" for news
+              - Update news body help text
+  
+### Added
+  - DP-24963: Backstop for Collection pages with top banner and news Blogpost.
+  - DP-24981: Add data listing pages to Backstop.
+              - Energy and Environment Data Listing: /data-listing/topic/energy-and-environment
+              - All Data Listing: /data-listing/all
+  
+### Security
+  - DP-24987: Drupal core and Embed module update.
+
 
 
 ## [0.323.0] - May 24, 2022
