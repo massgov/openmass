@@ -3213,56 +3213,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
     $variables['mappedLocations'] = Organisms::prepareMappedLocations($node->field_service_ref_locations->referencedEntities(), $mappedLocations_options, $cache_tags);
   }
 
-  // Get upcoming events related to this service.
-  /** @var \Drupal\mass_content\EventManager $eventManager */
-  $eventManager = \Drupal::service('mass_content.event_manager');
-
-  // Determine if there are past events related to this service.
-  $is_past_events = $eventManager->hasPast($node);
-
-  if ($eventManager->hasUpcoming($node)) {
-    // Set the limit on how many events should be displayed on the page. Default
-    // to 2 if no limit is set.
-    $limit = 2;
-    if ($node->hasField('field_event_quantity') && !$node->field_event_quantity->isEmpty()) {
-      $limit = (int) $node->field_event_quantity->value;
-    }
-    $events = Helper::prepareEvents($eventManager->getUpcoming($node, $limit + 1));
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $compHeading_options = [
-      'title' => t('Upcoming Events'),
-      'titleContext' => $titleContext,
-    ];
-    $event_more_link = Helper::prepareMoreLink($node, ['text' => t('See all events')]);
-
-    $variables['eventListing'] = Atoms::prepareCompHeading(['title' => t('Upcoming Events')], $compHeading_options);
-    $variables['eventListing']['grid'] = 'true';
-    // Display the see more events link if there are either more upcoming events
-    // than the limit set in Drupal or <= upcoming with past event(s).
-    $variables['eventListing']['more'] = count($events) > $limit || $is_past_events ? $event_more_link : '';
-    $variables['eventListing']['events'] = array_splice($events, 0, $limit);
-    $max_age = $eventManager->getMaxAge($node);
-  }
-  // If there are no upcoming events, check for past events to render past
-  // events link.
-  else {
-    if ($is_past_events) {
-      $variables['eventListing'] = [
-        'grid' => FALSE,
-        'compHeading' => [
-          'title' => t('Upcoming Events'),
-        ],
-        'emptyText' => t('No upcoming events scheduled'),
-        'pastMore' => [
-          "text" => t('See past events'),
-          "href" => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()) . '/events/past',
-          "chevron" => TRUE,
-          "labelContext" => t('for the @label', ['@label' => $node->label()]),
-        ],
-      ];
-    }
-  }
-
   // Prepare the split columns data structure (send only if there is content).
   $split_columns = [];
 
@@ -7144,7 +7094,7 @@ function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
     // Set up options for contact list.
     $contact_list_options = [
       'heading' => [
-        'title' => t("Contact Information"),
+        'title' => '',
       ],
       'groups' => [
         'accordion' => TRUE,

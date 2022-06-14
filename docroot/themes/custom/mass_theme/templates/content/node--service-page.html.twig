@@ -165,11 +165,6 @@
   {% if contactList %}
     {% include "@organisms/by-author/contact-list.twig" %}
   {% endif %}
-  {% if eventListing %}
-    {% set compHeading = eventListing.compHeading|merge({'level': level}) %}
-    {% set eventListing = eventListing|merge({'compHeading': compHeading}) %}
-    {% include "@organisms/by-author/event-listing.twig" %}
-  {% endif %}
   {% if default and splitColumns %}
     {% set moreInfo = "More Information"|t %}
     {# The "More Information" should only show if the split columns are being used. #}

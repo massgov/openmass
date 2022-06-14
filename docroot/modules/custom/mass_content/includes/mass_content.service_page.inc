@@ -56,7 +56,7 @@ function _mass_content_service_page_migration_custom_link_group(&$node) {
     ]);
 
     $flexible_link_group->set('field_featured', 1);
-    $flexible_link_group->set('field_display_type', 2);
+    $flexible_link_group->set('field_display_type', 'buttons');
     // 2 = Buttons.
     $flexible_link_group->set('field_flexible_link_group_title', 'Featured');
     $flexible_link_group->set('field_link_group', $link_group_links);
@@ -79,7 +79,8 @@ function _mass_content_service_page_migration_custom_link_group(&$node) {
       ]);
 
       $flexible_link_group->set('field_featured', 0);
-      $flexible_link_group->set('field_display_type', 1);
+      $flexible_link_group->set('field_display_type', 'links');
+      $flexible_link_group->set('field_group_expanded', 1);
       // 1 = Links.
       $flexible_link_group->set('field_flexible_link_group_title', $title);
       $flexible_link_group->set('field_flexible_link_group_desc', $description);
@@ -97,6 +98,7 @@ function _mass_content_service_page_migration_custom_link_group(&$node) {
   $new_service_section_form_paragraph->set('field_service_section_content', $flexible_link_groups);
   $new_service_section_form_paragraph->set('field_service_section_heading', 'What would you like to do?');
   $new_service_section_form_paragraph->set('field_hide_heading', 0);
+  $new_service_section_form_paragraph->set('field_section_style', 'enhanced');
   // Save the new paragraph.
   $new_service_section_form_paragraph->save();
   // Add the new section to the org sections field.
@@ -131,7 +133,7 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
     ]);
 
     $flexible_link_group->set('field_featured', 1);
-    $flexible_link_group->set('field_display_type', 2);
+    $flexible_link_group->set('field_display_type', 'buttons');
     // 2 = Buttons.
     $flexible_link_group->set('field_flexible_link_group_title', 'Top tasks');
     $flexible_link_group->set('field_link_group', $link_group_links);
@@ -161,7 +163,7 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
     ]);
 
     $flexible_link_group->set('field_featured', 0);
-    $flexible_link_group->set('field_display_type', 2);
+    $flexible_link_group->set('field_display_type', 'buttons');
     // 2 = Buttons.
     $flexible_link_group->set('field_flexible_link_group_title', 'All other tasks');
     $flexible_link_group->set('field_link_group', $link_group_links);
@@ -191,7 +193,7 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
     ]);
 
     $key_information_group->set('field_featured', 0);
-    $key_information_group->set('field_display_type', 2);
+    $key_information_group->set('field_display_type', 'buttons');
     // 2 = Buttons.
     $key_information_group->set('field_flexible_link_group_title', '');
     $key_information_group->set('field_link_group', $link_group_links);
@@ -206,6 +208,7 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
   // Set the field values.
   $new_service_section_form_paragraph->set('field_service_section_content', $flexible_link_groups);
   $new_service_section_form_paragraph->set('field_service_section_heading', 'What would you like to do?');
+  $new_service_section_form_paragraph->set('field_section_style', 'enhanced');
   $new_service_section_form_paragraph->set('field_hide_heading', 0);
   // Save the new paragraph.
   $new_service_section_form_paragraph->save();
@@ -219,7 +222,8 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
   // Set the field values.
   $new_service_section_form_paragraph_key->set('field_service_section_content', $key_information_group);
   $new_service_section_form_paragraph_key->set('field_service_section_heading', 'What you need to know');
-  $new_service_section_form_paragraph_key->set('field_hide_heading', 1);
+  $new_service_section_form_paragraph_key->set('field_section_style', 'enhanced');
+  $new_service_section_form_paragraph_key->set('field_hide_heading', 0);
   // Save the new paragraph.
   $new_service_section_form_paragraph_key->save();
   // Add the new section to the org sections field.
@@ -259,6 +263,7 @@ function _mass_content_service_page_migration_locations(&$node) {
     $new_service_section_form_paragraph->set('field_service_section_content', $location_p);
     $new_service_section_form_paragraph->set('field_service_section_heading', 'Locations');
     $new_service_section_form_paragraph->set('field_hide_heading', 0);
+    $new_service_section_form_paragraph->set('field_section_style', 'simple');
     // Save the new paragraph.
     $new_service_section_form_paragraph->save();
     // Add the new section to the org sections field.
@@ -284,6 +289,7 @@ function _mass_content_service_page_add_contact_information(&$node) {
     $new_service_section_form_paragraph->set('field_service_section_content', $contact);
     $new_service_section_form_paragraph->set('field_service_section_heading', 'Contact Information');
     $new_service_section_form_paragraph->set('field_hide_heading', 0);
+    $new_service_section_form_paragraph->set('field_section_style', 'simple');
     // Save the new paragraph.
     $new_service_section_form_paragraph->save();
     // Add the new section to the org sections field.
@@ -309,6 +315,7 @@ function _mass_content_service_page_add_social_links(&$node) {
     $new_service_section_form_paragraph->set('field_service_section_content', $social_media);
     $new_service_section_form_paragraph->set('field_service_section_heading', 'Social');
     $new_service_section_form_paragraph->set('field_hide_heading', 0);
+    $new_service_section_form_paragraph->set('field_section_style', 'simple');
     // Save the new paragraph.
     $new_service_section_form_paragraph->save();
     // Add the new section to the org sections field.
@@ -359,7 +366,8 @@ function _mass_content_service_page_migrate_additional_resources(&$node) {
     ]);
 
     $additional_resources->set('field_featured', 0);
-    $additional_resources->set('field_display_type', 1);
+    $additional_resources->set('field_display_type', 'links');
+    $additional_resources->set('field_group_expanded', 1);
     // 1 = Links.
     $additional_resources->set('field_flexible_link_group_title', '');
     $additional_resources->set('field_link_group', $link_groups);
@@ -373,6 +381,7 @@ function _mass_content_service_page_migrate_additional_resources(&$node) {
     $new_service_section_form_paragraph->set('field_service_section_content', $additional_resources);
     $new_service_section_form_paragraph->set('field_service_section_heading', 'Additional Resources');
     $new_service_section_form_paragraph->set('field_hide_heading', 0);
+    $new_service_section_form_paragraph->set('field_section_style', 'simple');
     // Save the new paragraph.
     $new_service_section_form_paragraph->save();
     // Add the new section to the org sections field.
@@ -397,6 +406,7 @@ function _mass_content_service_page_add_event_section(&$node) {
   $new_service_section_form_paragraph->set('field_service_section_content', $event);
   $new_service_section_form_paragraph->set('field_service_section_heading', 'Upcoming Events');
   $new_service_section_form_paragraph->set('field_hide_heading', 0);
+  $new_service_section_form_paragraph->set('field_section_style', 'simple');
   // Save the new paragraph.
   $new_service_section_form_paragraph->save();
   // Add the new section to the org sections field.

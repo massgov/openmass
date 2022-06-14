@@ -330,8 +330,11 @@ class Organisms {
     $contactList = [];
     if (!empty($contacts)) {
       // Build a sidebar, comp, or colored heading based on heading type option.
+      $heading = [];
       $options['heading']['title'] = isset($options['heading']['title']) ? $options['heading']['title'] : t('Contacts');
-      $heading = Helper::buildHeading($options['heading']);
+      if (!empty($options['heading']['title'])) {
+        $heading = Helper::buildHeading($options['heading']);
+      }
 
       $contactList = array_merge($heading, ['contacts' => $contacts]);
     }
