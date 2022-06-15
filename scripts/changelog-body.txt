@@ -1,26 +1,30 @@
 
 
-## [0.323.0] - May 24, 2022
+## [0.324.0] - May 31, 2022
 
-### Changed
-  - DP-24306: Upgrade to the latest Chrome image for tests
-  - DP-24794: - Removes "Related Services" number of links limitation on the service page..
-- Limits related services to 12 and updates field description.
-- Removes related display, 'related' sub path not used anymore for services.
-  - DP-24891: Improve performance of collection bulk tagging views.
-  - DP-24915: Only load development services on locals
-  - DP-24946: - Modify news_curated_list to not show blogpost news on News Org pages.
-- Modify RecentNews to not show blogpost news on Org pages.
-  - DP-24950: Collection filters to /admin/ma-dash/documents and its CSV export.
-  - DP-24951: Modify "no results" language for collections feature.
-  - DP-24952: Disable watch emails when using collection features.
-  
 ### Fixed
-  - DP-24909: - Fixes on collection header title.
-- Showing the banner style only if the description or bg color is not empty.
-- Fix breadcrumb not appearing on collection term pages.
-- Improving breacrumb cacheability by adding entities from the hierarchy.
-  - DP-24939: This corrects editor permissions for promotional pages. Change already made in production directly.
-  - DP-24947: - Modify collection pager to make it work with sort.
-- Collection content filtered by topic pass the topic ID to collection media view.
+  - DP-24692: - Adding cache tags for prepareExpandableContent
+- Topic headings override from the link text (if present)
+  - DP-24801: Fix undefined array key 'ariaHidden'.
+  - DP-24983: Avoids special characters on titles for collection and data listing pages.
+  - DP-25028: Fixed caching errors on topics pages.
+  
+### Changed
+  - DP-24948: - editor can edit any external link for collections content
+- update help text for collections logo
+- updating form display labels on external data resource
+- removing 'only admins can' description from everywhere
+- updating view add_collections_documents label
+  - DP-24955: Configuration changes
+- Update "use this content type for" for news
+- Update news body help text
+  
+### Added
+  - DP-24963: Backstop for Collection pages with top banner and news Blogpost.
+  - DP-24981: Add data listing pages to Backstop.
+- Energy and Environment Data Listing: /data-listing/topic/energy-and-environment
+- All Data Listing: /data-listing/all
+  
+### Security
+  - DP-24987: Drupal core and Embed module update.
   
