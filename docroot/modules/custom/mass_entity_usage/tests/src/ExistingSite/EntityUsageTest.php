@@ -184,7 +184,7 @@ class EntityUsageTest extends ExistingSiteBase {
   /**
    * Usage count checks when updating and deleting referencing entities.
    */
-  function testUsageCountWhenEditingAndDeletingReferences() {
+  public function testUsageCountWhenEditingAndDeletingReferences() {
     // Create node1.
     $node_org = $this->createNode([
       'type' => 'org_page',
