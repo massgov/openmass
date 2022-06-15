@@ -568,6 +568,15 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
+      - crawl:
+          name: crawl-test-200
+          requires: [build]
+          target: test
+          samples: 200
+          filters:
+            branches:
+              only:
+                - DP-25106_fix-nightcrawler
 
 
   # This is to automate the creation of the release branch.
@@ -701,9 +710,7 @@ workflows:
             samples: 200
             filters:
               branches:
-                only:
-                  - /^hotfix\/.*$/
-                  - DP-25106_fix-nightcrawler
+                only: /^hotfix\/.*$/
       - backstop:
             name: backstop-test
             requires: [deploy-test-no-refresh-db]
