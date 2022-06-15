@@ -182,6 +182,65 @@ class EntityUsageTest extends ExistingSiteBase {
   }
 
   /**
+   * Usage count checks when updating and deleting referencing entities.
+   */
+  function testUsageCountWhenEditingAndDeletingReferences() {
+    // Create node1.
+    $node_org = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Test Organization - Node 1',
+      'uid' => $this->user->id(),
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+    $this->processEntityUsageQueues();
+    // Check usages = 0.
+    $this->assertUsageRows($node_org, 0);
+
+    // Create node2 linking node1.
+    $node_curated_list_1 = $this->createNode([
+      'type' => 'curated_list',
+      'title' => 'Test Curated List - Node 2',
+      'uid' => $this->user->id(),
+      'moderation_state' => MassModeration::PUBLISHED,
+      'field_curatedlist_overview' => [
+        'value' => $node_org->toLink()->toString(),
+        'format' => 'basic_html',
+      ],
+    ]);
+    $this->processEntityUsageQueues();
+    // Usage for node1 should be 1.
+    $this->assertUsageRows($node_org, 1);
+
+    // Create node3, linking node1.
+    $node_curated_list_2 = $this->createNode([
+      'type' => 'curated_list',
+      'title' => 'Test Curated List - Node 3',
+      'uid' => $this->user->id(),
+      'moderation_state' => MassModeration::PUBLISHED,
+      'field_curatedlist_overview' => [
+        'value' => $node_org->toLink()->toString(),
+        'format' => 'basic_html',
+      ],
+    ]);
+    $this->processEntityUsageQueues();
+    // Usage for node1 should be 2.
+    $this->assertUsageRows($node_org, 2);
+
+    // Remove link from Node3 to Node1.
+    $node_curated_list_2->field_curatedlist_overview->setValue(NULL);
+    $node_curated_list_2->save();
+    $this->processEntityUsageQueues();
+    // Usage for node1 should be 1.
+    $this->assertUsageRows($node_org, 1);
+
+    // Delete node2.
+    $node_curated_list_1->delete();
+    $this->processEntityUsageQueues();
+    // Usage for node1 should be 0.
+    $this->assertUsageRows($node_org, 0);
+  }
+
+  /**
    * Creates an organization with nested paragpraphs.
    */
   private function createOrganizationWithNestedParagraphs($topic_page_link, $state) {
