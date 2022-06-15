@@ -31,6 +31,7 @@
 - If caption is empty, figcaption is not shown.
   - DP-25081: Organizations was printing twice on authors info on News full.
   - DP-25103: Fix scaffold overwriting example settings file
+  - hotfix: Fix global menu overlay
   
 ### Security
   - DP-24927: Update components causing security alerts.
