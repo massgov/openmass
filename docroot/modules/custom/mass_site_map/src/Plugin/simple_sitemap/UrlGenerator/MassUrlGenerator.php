@@ -53,10 +53,6 @@ class MassUrlGenerator extends EntityUrlGenerator {
           $mass_path_value = $this->fixDocumentLinks($entity);
           break;
 
-        case 'location':
-          $mass_path_value = $this->fixLocationLinks($entity);
-          break;
-
       }
       $default_path = [
         'url' => $url_object,
