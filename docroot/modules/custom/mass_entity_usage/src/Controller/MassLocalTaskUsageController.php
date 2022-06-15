@@ -108,6 +108,11 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
         $state_label = '';
         if ($source_entity instanceof Node) {
           $content_moderation_state = ContentModerationState::loadFromModeratedEntity($source_entity);
+
+          if (!$content_moderation_state) {
+            continue;
+          }
+
           $state_name = $content_moderation_state->get('moderation_state')->value;
           $workflow = $content_moderation_state->get('workflow')->entity;
           $state_label = $workflow->get('type_settings')['states'][$state_name]['label'];
