@@ -119,9 +119,7 @@ class MassLocalTaskUsageController extends LocalTaskUsageSubQueryController {
         }
         // Get a field label.
         $field_label = isset($field_definitions[$records[$default_key]['field_name']]) ?
-          $field_definitions[$records[$default_key]['field_name']]->getLabel() .
-            ' (' . $records[$default_key]['method'] . ')' :
-          $this->t('Unknown');
+          $field_definitions[$records[$default_key]['field_name']]->getLabel() : $this->t('Unknown');
 
         // Set the row values.
         $rows[] = [
