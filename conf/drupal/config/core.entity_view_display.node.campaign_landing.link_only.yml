@@ -20,6 +20,7 @@ dependencies:
     - field.field.node.campaign_landing.field_reusable_label
     - field.field.node.campaign_landing.field_sections
     - field.field.node.campaign_landing.field_short_title
+    - field.field.node.campaign_landing.field_state_organization_tax
     - node.type.campaign_landing
   module:
     - user
@@ -27,7 +28,12 @@ id: node.campaign_landing.link_only
 targetEntityType: node
 bundle: campaign_landing
 mode: link_only
-content: {  }
+content:
+  extra_org_feedback_form:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
 hidden:
   content_moderation_control: true
   field_campaign_landing_metatags: true
@@ -46,5 +52,6 @@ hidden:
   field_reusable_label: true
   field_sections: true
   field_short_title: true
+  field_state_organization_tax: true
   langcode: true
   links: true

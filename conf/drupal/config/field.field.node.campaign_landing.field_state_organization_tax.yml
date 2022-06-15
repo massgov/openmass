@@ -1,0 +1,29 @@
+uuid: 56fcbd88-6233-4690-80b8-c6edf6375a42
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_state_organization_tax
+    - node.type.campaign_landing
+    - taxonomy.vocabulary.user_organization
+id: node.campaign_landing.field_state_organization_tax
+field_name: field_state_organization_tax
+entity_type: node
+bundle: campaign_landing
+label: Groups
+description: 'Choose SiteImprove groups in which to show this content. This field will be soon phased out in favor of using the Organization(s) field.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      user_organization: user_organization
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

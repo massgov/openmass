@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.external_data_resource.field_data_resource_type
     - field.field.node.external_data_resource.field_data_topic
     - field.field.node.external_data_resource.field_details_data_type
+    - field.field.node.external_data_resource.field_external_organization
     - field.field.node.external_data_resource.field_externaldata_description
     - field.field.node.external_data_resource.field_externaldata_url
     - field.field.node.external_data_resource.field_organizations
@@ -42,6 +43,7 @@ third_party_settings:
         - field_externaldata_url
         - field_externaldata_description
         - field_organizations
+        - field_external_organization
         - field_data_flag
         - field_details_data_type
         - field_data_resource_type
@@ -67,7 +69,7 @@ mode: default
 content:
   field_collections:
     type: term_reference_tree
-    weight: 17
+    weight: 18
     region: content
     settings:
       start_minimized: true
@@ -78,13 +80,13 @@ content:
     third_party_settings: {  }
   field_data_flag:
     type: options_buttons
-    weight: 12
+    weight: 13
     region: content
     settings: {  }
     third_party_settings: {  }
   field_data_format:
     type: options_buttons
-    weight: 15
+    weight: 16
     region: content
     settings: {  }
     third_party_settings:
@@ -108,7 +110,7 @@ content:
             selector: ''
   field_data_resource_type:
     type: options_buttons
-    weight: 14
+    weight: 15
     region: content
     settings: {  }
     third_party_settings:
@@ -132,7 +134,7 @@ content:
             selector: ''
   field_data_topic:
     type: term_reference_tree
-    weight: 16
+    weight: 17
     region: content
     settings:
       start_minimized: true
@@ -161,7 +163,7 @@ content:
             selector: ''
   field_details_data_type:
     type: options_buttons
-    weight: 13
+    weight: 14
     region: content
     settings: {  }
     third_party_settings:
@@ -183,6 +185,14 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_external_organization:
+    type: string_textfield
+    weight: 12
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_externaldata_description:
     type: string_textarea
     weight: 10
