@@ -42,6 +42,9 @@ const scenarios = pages.map(function(page) {
       break;
     case 'tugboat':
       const opts = process.argv.filter(arg => arg.match(/^--tugboat=/))
+      if (opts.length < 1) {
+        throw '--tugboat must be specified with a preview URL if --target=tugboat is set.'
+      }
       base = opts[0].replace('--tugboat=', '');
       break;
     default:
@@ -87,14 +90,14 @@ const scenarios = pages.map(function(page) {
   return {
     ...page,
     url: `${base}${page.url}${separator}cachebuster=${Math.random().toString(36).substring(7)}`,
-    misMatchThreshold: 0.05,
+    misMatchThreshold: 0.1,
     auth,
   }
 });
 
 function getAuth() {
   // Trim leading and trailing quotes off of the auth variables.
-  // This works around docker-compose's handling of environmnent
+  // This works around docker-compose's handling of environment
   // variables with quotes.
   return {
     username: process.env.LOWER_ENVIR_AUTH_USER.replace(/(^["']|["']$)/g, ''),
@@ -125,6 +128,12 @@ if (viewportArg !== 'desktop') {
   );
 }
 
+// We need parseInt() as environment variables are strings.
+const asyncCaptureLimit = parseInt(process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT ? process.env.BACKSTOP_ASYNC_CAPTURE_LIMIT : 4);
+const asyncCompareLimit = asyncCaptureLimit * 25;
+
+console.log(`Will capture with ${asyncCaptureLimit} browsers and compare with ${asyncCompareLimit} threads.`)
+
 module.exports = {
     id: 'regression',
     viewports,
@@ -150,8 +159,8 @@ module.exports = {
             "--ignore-certificate-errors"
         ]
     },
-    "asyncCaptureLimit": 2,
-    "asyncCompareLimit": 3,
+    "asyncCaptureLimit": asyncCaptureLimit,
+    "asyncCompareLimit": asyncCompareLimit,
     "debug": false,
     "debugWindow": false
 }

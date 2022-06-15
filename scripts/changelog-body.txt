@@ -1,45 +1,30 @@
 
 
-## [0.320.0] - April 26, 2022
+## [0.324.0] - May 31, 2022
 
-### Removed
-  - DP-23217: Remove updated fields from org_pages
-- field_org_featured_message
-- field_org_featured_items
-- field_ref_contact_info_1
-- body
-- field_org_our_orgs
-- field_links_actions_3
-- field_ref_actions_6
-- field_ref_card_view_6
-- field_org_featured_news_items
-- field_number_of_news_items
-- field_org_show_news_images
-- field_event_quantity
-- field_location_button_short_desc
-- field_location_button_label
-- field_org_ref_locations
-- field_related_organization_type
-- field_ref_orgs
-- field_about
-- field_boards
-  
-### Added
-  - DP-23508: Support switching PHP versions during Acquia deployments
+### Fixed
+  - DP-24692: - Adding cache tags for prepareExpandableContent
+- Topic headings override from the link text (if present)
+  - DP-24801: Fix undefined array key 'ariaHidden'.
+  - DP-24983: Avoids special characters on titles for collection and data listing pages.
+  - DP-25028: Fixed caching errors on topics pages.
   
 ### Changed
-  - DP-24125: Improve cache hit rate for dynamic page cache
-  - DP-24363: Update entity_hierarchy and its patch to allow enabling of webprofiler.
-  - DP-24545: 6 weeks links duration for unpublished access links.
+  - DP-24948: - editor can edit any external link for collections content
+- update help text for collections logo
+- updating form display labels on external data resource
+- removing 'only admins can' description from everywhere
+- updating view add_collections_documents label
+  - DP-24955: Configuration changes
+- Update "use this content type for" for news
+- Update news body help text
   
-### Fixed
-  - DP-24335: Fix hamburger menu horizontal scrolling in IOS.
-  - DP-24420: Ensure to have build info on View Page Controller before getting the view title.
-  - DP-24485: Make header hamburger menu translatable by Google.
-  - DP-24527: Fixing the problem with link in Service Page banner not formating correctly.
-  - DP-24557: Fixes null method exceptions on decisions when media entities are deleted
-  - DP-24657: Sends taxonomy term id to the collection_all_media view.
+### Added
+  - DP-24963: Backstop for Collection pages with top banner and news Blogpost.
+  - DP-24981: Add data listing pages to Backstop.
+- Energy and Environment Data Listing: /data-listing/topic/energy-and-environment
+- All Data Listing: /data-listing/all
   
 ### Security
-  - DP-24632: Drupal core security updates.
+  - DP-24987: Drupal core and Embed module update.
   

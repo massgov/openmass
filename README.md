@@ -52,7 +52,7 @@ If the Docker section above is unappealing, its easy to run mass.gov natively on
 - [You may override ddev config locally](https://ddev.readthedocs.io/en/stable/users/extend/config_yaml/). create a `.ddev/config.personal.yml` file and add whatever you need.
 - Similarly, rename [.ddev/.env.example](https://github.com/massgov/openmass/blob/develop/.ddev/.env.example) to `.env` in order to use ARM containers suitable for the Apple M1 Macs. This is also how you specify the less sanitized variant of our database.
 - Since we use a custom `dbmass` service and not DDEV's usual `db`, some DDEV DB commands will not work here. @todo try to improve this.
-- Use `ddev service enable backstop` to start the backstop image locally. Same for `chromedriver`.
+- Use `ddev service enable backstop` to start the backstop image locally. Same for `selenium-chrome`.
 - Mass Digital team members: see additional information at [Mass Digital Developers](https://github.com/massgov/massgov-internal-docs/blob/master/development-massgov-team.md).
 
 ## Pull Requests

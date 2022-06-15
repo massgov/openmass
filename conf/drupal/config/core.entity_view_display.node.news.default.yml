@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.news.field_author
     - field.field.node.news.field_collections
     - field.field.node.news.field_date_published
     - field.field.node.news.field_english_version
@@ -58,13 +59,21 @@ content:
     third_party_settings: {  }
     weight: 18
     region: content
+  field_author:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 21
+    region: content
   field_collections:
     type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    weight: 20
+    weight: 21
     region: content
   field_date_published:
     type: datetime_custom

@@ -5,6 +5,7 @@ dependencies:
   config:
     - filter.format.basic_html
     - filter.format.full_html
+    - filter.format.mailchimp
     - filter.format.restricted_html
     - filter.format.rules_of_court_section
     - node.type.action
@@ -55,6 +56,8 @@ dependencies:
     - flood_unblock
     - google_tag
     - image
+    - mailchimp_transactional
+    - mailchimp_transactional_template
     - mass_admin_toolbar
     - mass_content_api
     - mass_feedback_form
@@ -150,6 +153,8 @@ permissions:
   - 'administer form for node feedback block'
   - 'administer google tag manager'
   - 'administer image styles'
+  - 'administer mailchimp transactional'
+  - 'administer mailchimp transactional templates'
   - 'administer media'
   - 'administer media'
   - 'administer media display'
@@ -437,6 +442,7 @@ permissions:
   - 'use media_states transition unpublish'
   - 'use text format basic_html'
   - 'use text format full_html'
+  - 'use text format mailchimp'
   - 'use text format restricted_html'
   - 'use text format rules_of_court_section'
   - 'view action revisions'

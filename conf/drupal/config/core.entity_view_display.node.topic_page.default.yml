@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.topic_page.field_collections
+    - field.field.node.topic_page.field_image_credit
     - field.field.node.topic_page.field_display_short_description
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
@@ -45,6 +46,14 @@ content:
     region: content
   field_collections:
     type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 17
+    region: content
+  field_image_credit:
+    type: string
     label: above
     settings:
       link: true

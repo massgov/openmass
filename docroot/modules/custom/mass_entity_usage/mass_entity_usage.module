@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_entity_usage.module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\mass_entity_usage\UsageTrackingBlocker;
+
+/**
+ * Implements hook_entity_usage_block_tracking().
+ */
+function mass_entity_usage_entity_usage_block_tracking($target_id, $target_type, $source_id, $source_type, $source_langcode, $source_vid, $method, $field_name, $count) {
+  // Block tracking of entities with a node source that is unpublished or trash.
+  return !_mass_entity_usage_tracking_check($source_type, $source_id, $source_vid);
+}
+
+/**
+ * Find an id/revision_id record in the default field data table.
+ *
+ * @param string $entity_type
+ *   The entity type.
+ * @param int $id
+ *   The entity id.
+ * @param int $vid
+ *   The entity revision id.
+ *
+ * @return bool
+ *   If true, the content should be tracked. If false, do not track.
+ */
+function _mass_entity_usage_tracking_check($entity_type, $id, $vid) {
+  $tracking_blocker = new UsageTrackingBlocker(\Drupal::database(), \Drupal::service('entity_type.manager'));
+  return $tracking_blocker->check($entity_type, $vid);
+}
+
+/**
+ * Implements hook_queue_info_alter().
+ */
+function mass_entity_usage_queue_info_alter(&$queues) {
+  // Removes entity usage queues from processing when cron runs.
+  if (isset($queues['entity_usage_regenerate_queue'])) {
+    unset($queues['entity_usage_regenerate_queue']['cron']);
+  }
+  if (isset($queues['entity_usage_tracker'])) {
+    unset($queues['entity_usage_tracker']['cron']);
+  }
+}

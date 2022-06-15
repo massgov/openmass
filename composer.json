@@ -131,6 +131,7 @@
         }
     ],
     "require": {
+        "ext-json": "*",
         "christian-riesen/base32": "^1.3.1",
         "ckeditor/liststyle": "4.11.1",
         "components/highlightjs": "9.7.*",
@@ -156,7 +157,7 @@
         "drupal/composer_deploy": "^1.4",
         "drupal/conditional_fields": "^4.0@alpha",
         "drupal/config_filter": "^2.2",
-        "drupal/config_ignore": "2.x-dev",
+        "drupal/config_ignore": "3.x-dev",
         "drupal/core-composer-scaffold": "^9.3",
         "drupal/core-project-message": "^9.3",
         "drupal/core-recommended": "^9.3",
@@ -194,6 +195,7 @@
         "drupal/key": "^1.10",
         "drupal/key_value_field": "1.x-dev",
         "drupal/linkit": "^6",
+        "drupal/mailchimp_transactional": "^1",
         "drupal/mandrill": "^1.2",
         "drupal/maxlength": "^1.0@RC",
         "drupal/media_entity_download": "2.x-dev",
@@ -212,7 +214,8 @@
         "drupal/private_files_download_permission": "^3",
         "drupal/purge": "^3",
         "drupal/purge_queues": "^1",
-        "drupal/quick_node_clone": "^1.11",
+        "drupal/queue_unique": "^2.2",
+        "drupal/quick_node_clone": "^1.15",
         "drupal/rabbit_hole": "^1",
         "drupal/real_aes": "^2",
         "drupal/redirect": "^1",
@@ -300,7 +303,8 @@
                 "[web-root]/robots.txt": false,
                 "[web-root]/.eslintrc": false,
                 "[web-root]/.eslintignore": false,
-                "[web-root]/.eslintrc.json": false
+                "[web-root]/.eslintrc.json": false,
+                "[web-root]/sites/example.settings.local.php": false
             }
         },
         "installer-paths": {
@@ -334,6 +338,11 @@
                 "Improve error message on unrouted URLs (https://www.drupal.org/project/drupal/issues/3013802#comment-14456001)": "https://www.drupal.org/files/issues/2022-03-24/3013802-22.patch",
                 "Ensure to have build info on View Page Controller before getting the view title" : "patches/DP-24420--View-pages-arguments-title-overrides-not-working--2.patch"
             },
+
+            "drupal/conditional_fields": {
+                "2902164 - \"Controlled by\" fields inside a Paragraph don't work": "patches/conditional-fields-and-paragraphs-2902164--using-ids--v6.patch"
+            },
+
             "ckeditor/liststyle": {
                 "Change code from styles to type": "https://www.drupal.org/files/issues/2019-01-02/ckeditor_liststyle-styles-to-type-2874952-4-do-not-test.patch"
             },
@@ -357,7 +366,7 @@
                 "3007752 - Entity usage list does not scale (https://www.drupal.org/project/entity_usage/issues/3007752)": "patches/entity_usage-usage_list_scale-3007752-17.patch",
                 "Hides language column and shows bundle" : "patches/entity-usage--hide-language--show-bundle.patch",
                 "3254437 - Delete queue items for `entity_usage_regenerate_queue` when `running drush entity-usage:recreate`  ": "https://www.drupal.org/files/issues/2021-12-14/issue-3254437--remove-items-from-queue-before-recreating-it.patch",
-                "3015287 - Allow usage records to be registered in background" : "https://www.drupal.org/files/issues/2019-07-22/3015287-12.patch",
+                "3015287 - A queue for entity usage tracking and processing" : "https://www.drupal.org/files/issues/2022-02-14/3015287-entity-usage-tracker-queue.patch",
                 "Getting the base fields is not supported for entity type (https://www.drupal.org/project/entity_usage/issues/3101451)": "https://www.drupal.org/files/issues/2019-12-24/3101451-3.patch"
             },
             "drupal/geocoder": {
@@ -417,10 +426,13 @@
                 "Remove the select/deselect all results within VBO": "patches/DP-11179-hide-select-all-results-from-views.patch"
             },
             "drupal/quick_node_clone": {
-                "2979426 - Ensures per-content type permissions are respected": "https://www.drupal.org/files/issues/2021-03-10/2979426-27.patch"
+                "2979426 - Ensures per-content type permissions are respected": "https://www.drupal.org/files/issues/2022-05-05/quick_node_clone-permissions_not_respected-2979426-34.patch"
             },
             "drupal/views_bulk_edit": {
                 "Fix Required fields to really not be required": "https://www.drupal.org/files/issues/2020-11-20/3024419-invalid-form-control-24.patch"
+            },
+            "drupal/stage_file_proxy": {
+                "Merged patches fixing backstop issues": "patches/stage_file_proxy/3282524-3282542-3283162-merged.patch"
             }
         },
         "composer-exit-on-patch-failure": true,

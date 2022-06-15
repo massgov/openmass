@@ -7,9 +7,11 @@ dependencies:
     - field.storage.node.field_how_to_lede
     - field.storage.node.field_short_desc
     - taxonomy.vocabulary.collections
+    - views.view.collection_term_empty_message
     - views.view.taxonomy_term_children
   module:
     - better_exposed_filters
+    - datetime
     - entityreference_filter
     - mass_content
     - node
@@ -448,6 +450,16 @@ display:
               allow_secondary: false
               secondary_label: 'Advanced options'
               secondary_open: false
+            sort:
+              plugin_id: default
+              advanced:
+                combine: true
+                combine_rewrite: "Title Asc|Alpha by title - ascending\r\nTitle Desc|Alpha by title - descending\r\nPublish date - Asc|Publish date - ascending\r\nPublish date - Desc|Publish date - descending\r\nStart date (Events) Asc|Event start date - ascending\r\nStart date (Events) Desc|Event start date - descending\r\n"
+                reset: false
+                reset_label: ''
+                collapsible: false
+                collapsible_label: 'Sort options'
+                is_secondary: false
             filter:
               field_collections_target_id_entityreference_filter:
                 plugin_id: bef
@@ -459,33 +471,17 @@ display:
                 select_all_none: false
                 select_all_none_nested: false
                 display_inline: 0
-                options_show_only_used: false
-                options_show_only_used_filtered: false
-              title:
+              combine:
                 plugin_id: default
                 advanced:
                   collapsible: false
                   is_secondary: false
-                options_show_only_used: false
-                options_show_only_used_filtered: false
-              field_collections_target_id_entityreference_filter_1:
-                plugin_id: bef
-                advanced:
-                  rewrite:
-                    filter_rewrite_values: ''
-                  collapsible: false
-                  is_secondary: false
-                select_all_none: false
-                select_all_none_nested: false
-                display_inline: 0
-                options_show_only_used: false
-                options_show_only_used_filtered: false
       access:
         type: perm
         options:
           perm: 'access content'
       cache:
-        type: tag
+        type: none
         options: {  }
       empty:
         area:
@@ -498,9 +494,20 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: '<div class="ma__no-results"><h3>No results found</h3><p>Here are a few tips:</p><ul><li>Try a different keyword</li><li><a href="[view:url]">Clear all filters</a></li><li>Browse by topic without keywords</li></ul><p><a href="https://www.mass.gov/forms/massgov-data-hub-feedback-form" target="_blank">Tell us what you were hoping to find</a> so we can continue to improve the Data Hub.</p></div>'
+            value: '<div class="ma__no-results"><h3>No results found</h3><p>Here are a few tips:</p><ul><li>Try a different keyword</li><li><a href="[view:url]">Clear all filters</a></li><li>Browse by topic without keywords</li></ul></div>'
             format: full_html
           tokenize: false
+        view:
+          id: view
+          table: views
+          field: view
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: view
+          empty: true
+          view_to_insert: 'collection_term_empty_message:default'
+          inherit_arguments: true
       sorts:
         title:
           id: title
@@ -514,9 +521,37 @@ display:
           plugin_id: standard
           order: ASC
           expose:
-            label: ''
+            label: Title
             field_identifier: title
-          exposed: false
+          exposed: true
+        field_date_published_value:
+          id: field_date_published_value
+          table: node__field_date_published
+          field: field_date_published_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: datetime
+          order: ASC
+          expose:
+            label: 'Publish date -'
+            field_identifier: field_date_published_value
+          exposed: true
+          granularity: second
+        field_event_date_value:
+          id: field_event_date_value
+          table: node__field_event_date
+          field: field_event_date_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: datetime
+          order: ASC
+          expose:
+            label: 'Start date (Events)'
+            field_identifier: event_date
+          exposed: true
+          granularity: second
       arguments:
         tid:
           id: tid
@@ -818,6 +853,8 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - 'url.query_args:sort_by'
+        - 'url.query_args:sort_order'
         - user
         - 'user.node_grants:view'
         - user.permissions
@@ -886,6 +923,7 @@ display:
         - 'config:core.entity_view_display.node.event.default'
         - 'config:core.entity_view_display.node.event.link_and_description'
         - 'config:core.entity_view_display.node.event.link_only'
+        - 'config:core.entity_view_display.node.event.listing'
         - 'config:core.entity_view_display.node.event.minutes'
         - 'config:core.entity_view_display.node.event.teaser'
         - 'config:core.entity_view_display.node.event.token'
@@ -942,6 +980,7 @@ display:
         - 'config:core.entity_view_display.node.news.default'
         - 'config:core.entity_view_display.node.news.link_and_description'
         - 'config:core.entity_view_display.node.news.link_only'
+        - 'config:core.entity_view_display.node.news.listing'
         - 'config:core.entity_view_display.node.news.press_teaser'
         - 'config:core.entity_view_display.node.news.teaser'
         - 'config:core.entity_view_display.node.news.token'
@@ -1023,6 +1062,8 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - 'url.query_args:sort_by'
+        - 'url.query_args:sort_order'
         - user
         - 'user.node_grants:view'
         - user.permissions
@@ -1091,6 +1132,7 @@ display:
         - 'config:core.entity_view_display.node.event.default'
         - 'config:core.entity_view_display.node.event.link_and_description'
         - 'config:core.entity_view_display.node.event.link_only'
+        - 'config:core.entity_view_display.node.event.listing'
         - 'config:core.entity_view_display.node.event.minutes'
         - 'config:core.entity_view_display.node.event.teaser'
         - 'config:core.entity_view_display.node.event.token'
@@ -1147,6 +1189,7 @@ display:
         - 'config:core.entity_view_display.node.news.default'
         - 'config:core.entity_view_display.node.news.link_and_description'
         - 'config:core.entity_view_display.node.news.link_only'
+        - 'config:core.entity_view_display.node.news.listing'
         - 'config:core.entity_view_display.node.news.press_teaser'
         - 'config:core.entity_view_display.node.news.teaser'
         - 'config:core.entity_view_display.node.news.token'

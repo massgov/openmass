@@ -4,14 +4,14 @@ namespace Drupal\Tests\mass_hierarchy\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\user\Entity\User;
-use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
 use Drupal\Tests\Traits\Core\CronRunTrait;
 
 /**
  * Tests Hierachy tab.
  */
-class HierarchyTest extends ExistingSiteWebDriverTestBase {
+class HierarchyTest extends ExistingSiteSelenium2DriverTestBase {
 
   use LoginTrait;
 
@@ -109,29 +109,6 @@ class HierarchyTest extends ExistingSiteWebDriverTestBase {
 
     mass_hierarchy_cron();
 
-    // Verify it has 1 entry.
-    $this->assertEquals(1, $this->countNestedSetFieldPrimaryParentNodeEntries($child1Node->id()));
-
-    // Verify it is still showing in the hierarchy,
-    // hence we delete the draft and not the published version.
-    $this->drupalGet('node/' . $parent1Node->id() . '/children');
-    $this->assertSession()->pageTextContains($child1Node->label());
-  }
-
-  /**
-   * Tests node edit erases other revisions other than the current.
-   */
-  public function testNodeEditFormErasesOtherRevisions() {
-    $this->drupalLogin($this->createRandomUser('content_team'));
-    list($parent1Node, $child1Node,) = $this->createParentAndChildren();
-
-    // Save child node.
-    $child1Node->moderation_state = MassModeration::DRAFT;
-    $child1Node->save();
-
-    // Verify it has 2 entries
-    $this->assertEquals(2, $this->countNestedSetFieldPrimaryParentNodeEntries($child1Node->id()));
-    $this->drupalGet('node/' . $child1Node->id() . '/edit');
     // Verify it has 1 entry.
     $this->assertEquals(1, $this->countNestedSetFieldPrimaryParentNodeEntries($child1Node->id()));
 

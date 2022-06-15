@@ -20,7 +20,7 @@
   {% endif %}
   #}
   {% set secondaryIndicators = false %}
-  {% if content.field_organizations is not empty %}
+  {% if content.field_organizations is not empty and not is_blog_post %}
     {% set secondaryIndicators = {
       "icon": "building",
       "label": "offered by",
@@ -32,7 +32,8 @@
     "relationshipIndicators": {
       "pageTitle": node.label,
       "primary": primaryIndicators,
-      "secondary": secondaryIndicators
+      "secondary": secondaryIndicators,
+      "borderless": is_blog_post and blogpostCollectionHeader.bg_color is not empty
     }
   } %}
     {% block primaryRelationship %}
@@ -42,6 +43,10 @@
       {{ content.field_organizations }}
     {% endblock %}
   {% endembed %}
+
+  {% if is_blog_post and blogpostCollectionHeader.bg_color is not empty %}
+    {% include "@organisms/by-template/blogpost-collection-header.twig" %}
+  {% endif %}
 
   {% if translationLinks %}
     {% include "@organisms/by-author/inline-links.twig" with {
@@ -56,7 +61,9 @@
   {# Increase heading number by 1 from the parent heading. #}
   {% set level = level + 1 %}
   <div class="main-content main-content--two">
-    <div class="page-content ma__announcement__page-content">
+
+    {% set type_class = "ma__announcement__page-content--" ~ (node.field_news_type.value is not iterable ? node.field_news_type.value : '')  %}
+    <div class="page-content ma__announcement__page-content {{ type_class }}">
       {% if pageContent.pressStatus %}
         {% set pressStatus = pageContent.pressStatus %}
         {% include "@molecules/press-status.twig" %}
@@ -97,14 +104,17 @@
           {% endif %}
         {% endfor %}
       {% endblock %}
-      {% if pageContent.contactList %}
-        {% set contactList = pageContent.contactList %}
-        {% set contactList = contactList|merge({'compHeading': {
-            'title': contactList.compHeading.title,
-            'titleContext': contactList.compHeading.titleContext,
-            'level': level,
-            'id': contactList.compHeading.id }}) %}
-        {% include "@organisms/by-author/contact-list.twig" %}
+      {% if not is_blog_post %}
+        {% if pageContent.contactList %}
+
+          {% set contactList = pageContent.contactList %}
+          {% set contactList = contactList|merge({'compHeading': {
+              'title': contactList.compHeading.title,
+              'titleContext': contactList.compHeading.titleContext,
+              'level': level,
+              'id': contactList.compHeading.id }}) %}
+          {% include "@organisms/by-author/contact-list.twig" %}
+        {% endif %}
       {% endif %}
       {% if pageContent.personalMessage %}
         {% set personalMessage = pageContent.personalMessage %}
@@ -112,26 +122,66 @@
         {% include "@organisms/by-author/personal-message.twig" %}
       {% endif %}
     </div>
-    <aside class="sidebar ma__announcement__sidebar">
-      {% if sidebar.contactList %}
-        {% set contactList = sidebar.contactList %}
-        {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
-        {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
-        {% include "@organisms/by-author/contact-list.twig" %}
+
+    {% set show_blogpost_author = author is not empty and is_blog_post %}
+
+    {% set aside_has_content =
+      (not is_blog_post and sidebar.contactList) or
+      show_blogpost_author
+    %}
+
+    {% set author_section %}
+      {% if show_blogpost_author %}
+        <section>
+          {% include "@atoms/04-headings/sidebar-heading.twig" with {
+            'sidebarHeading': {
+              'title': 'Author'|t
+            }
+          } %}
+
+          {% include "@molecules/contact-us.twig" with {
+            'contactUs': {
+              'subTitle': {
+                'text': author
+              },
+              'groups': [{
+                "items": [{
+                  "label": author_info,
+                }]
+              }]
+            }
+          } %}
+        </section>
       {% endif %}
-      {% if sidebar.pressListing %}
-        {% set pressListing = sidebar.pressListing %}
-        {% set sidebarHeading = pressListing.sidebarHeading|merge({'level': level }) %}
-        {% set pressListing = pressListing|merge({'sidebarHeading': sidebarHeading }) %}
-        {% include "@organisms/by-author/press-listing.twig" %}
-      {% endif %}
-      {% if sidebar.eventListing %}
-        {% set eventListing = sidebar.eventListing %}
-        {% set sidebarHeading = eventListing.sidebarHeading|merge({'level': level }) %}
-        {% set eventListing = eventListing|merge({'sidebarHeading': sidebarHeading }) %}
-        {% include "@organisms/by-author/event-listing.twig" %}
-      {% endif %}
-    </aside>
+    {% endset %}
+
+    {% if aside_has_content %}
+      <aside class="sidebar ma__announcement__sidebar">
+        {% if author %}
+          {{ author_section }}
+        {% endif %}
+
+        {% if not is_blog_post and sidebar.contactList %}
+          {% set contactList = sidebar.contactList %}
+          {% set sidebarHeading = contactList.sidebarHeading|merge({'level': level }) %}
+          {% set contactList = contactList|merge({'sidebarHeading': sidebarHeading }) %}
+          {% include "@organisms/by-author/contact-list.twig" %}
+        {% endif %}
+        {% if sidebar.pressListing %}
+          {% set pressListing = sidebar.pressListing %}
+          {% set sidebarHeading = pressListing.sidebarHeading|merge({'level': level }) %}
+          {% set pressListing = pressListing|merge({'sidebarHeading': sidebarHeading }) %}
+          {% include "@organisms/by-author/press-listing.twig" %}
+        {% endif %}
+        {% if sidebar.eventListing %}
+          {% set eventListing = sidebar.eventListing %}
+          {% set sidebarHeading = eventListing.sidebarHeading|merge({'level': level }) %}
+          {% set eventListing = eventListing|merge({'sidebarHeading': sidebarHeading }) %}
+          {% include "@organisms/by-author/event-listing.twig" %}
+        {% endif %}
+      </aside>
+
+    {% endif %}
   </div>
 {% endblock %}
 {% block postContent %}

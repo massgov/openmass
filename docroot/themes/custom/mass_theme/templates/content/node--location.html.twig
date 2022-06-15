@@ -76,10 +76,12 @@
   "level": level,
   } %}
   {% include "@atoms/04-headings/colored-heading.twig" %}
+
+  <div class="ma__details__container">
+  <div class="ma__details__sticky-nav">
+    {% include "@molecules/sticky-nav.twig" %}
+  </div>
   <div class="ma__details__content">
-    <div class="ma__details__stick-nav">
-      {% include "@molecules/sticky-nav.twig" %}
-    </div>
     {# Increase heading number by 1 from the parent heading. #}
     {% set level = level + 1 %}
     {% if pageContent.pageOverview %}
@@ -190,6 +192,7 @@
                 'id': suggestedPages.compHeading.id
               }}) %}
     {% endif %}
+  </div>
   </div>
 {% endblock %}
 

@@ -21,8 +21,8 @@ web_environment:
   - MEMCACHED_HOST=memcached
   - DRUSH_OPTIONS_URI=https://mass.local:$DDEV_ROUTER_HTTPS_PORT
   - DTT_BASE_URL=http://mass-web
-  - DTT_API_URL=http://chromedriver:9515
   - MASS_PURGERS
+  - MASS_MAILCHIMP
 #  - BROWSERTEST_OUTPUT_DIRECTORY=/tmp
   - BROWSERTEST_OUTPUT_BASE_URL=https://mass.local:$DDEV_ROUTER_HTTPS_PORT
   # Acquia Cloud - v2
@@ -37,3 +37,5 @@ web_environment:
 hooks:
   pre-start:
     - exec-host: echo "No output is shown during the first container build. It may take a minute to install Tugboat, CircleCI, and GitHub CLI tools."
+  post-stop:
+    - exec-host: echo "The database has been reset to a pristine state. If you didn't mean this, next time use ddev pause instead."

@@ -63,7 +63,9 @@
     description_display == 'invisible' ? 'visually-hidden',
   ]
 %}
-<div{{ attributes.addClass(classes) }}>
+
+{% set id = name|clean_id %}
+<div{{ attributes.addClass(classes) }} id="{{ id }}">
   {% if label_display in ['before', 'invisible'] %}
     {{ label }}
   {% endif %}
