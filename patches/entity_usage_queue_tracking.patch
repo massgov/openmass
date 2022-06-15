@@ -1,0 +1,408 @@
+diff --git a/README.txt b/README.txt
+index a76dd0d..f394d9b 100644
+--- a/README.txt
++++ b/README.txt
+@@ -54,6 +54,22 @@ usage of entities on your site.
+ Go to the URL /admin/config/entity-usage/batch-update in order to start the
+ batch operation.
+ 
++Tracking via queue
++============
++The module support tracking entity usage via a queue. When the entity usage is
++tracked via a queue, the tracking information will be updated when cron runs.
++This means some references between entities could be missing. Only use this setting
++when you are sure there are no automatic processes using the tracking information
++to update or delete content.
++
++Since this is for advanced users only, this setting is not exposed in the UI.
++This can be enabled through the settings.php by adding the following line:
++
++$config['entity_usage.settings']['queue_tracking'] = TRUE;
++
++You also need to periodically run `drush clean_usage_table` to clean references
++to outdated revisions.
++
+ Project page and Online handbook
+ ================================
+ 
+diff --git a/drush.services.yml b/drush.services.yml
+index cbedcc2..024ff1f 100644
+--- a/drush.services.yml
++++ b/drush.services.yml
+@@ -4,3 +4,9 @@ services:
+     arguments: ['@entity_usage.batch_manager', '@entity_usage.queue_batch_manager', '@entity_type.manager', '@config.factory']
+     tags:
+       - { name: drush.command }
++
++  entity_usage.clean_usage_table_command:
++    class: \Drupal\entity_usage\Commands\CleanUsageTableCommand
++    arguments: [ '@entity_usage.clean_usage_table' ]
++    tags:
++      - { name: drush.command }
+diff --git a/entity_usage.module b/entity_usage.module
+index 2dd3f72..3f358cf 100644
+--- a/entity_usage.module
++++ b/entity_usage.module
+@@ -31,35 +31,80 @@ function entity_usage_help($route_name, RouteMatchInterface $route_match) {
+  * Implements hook_entity_insert().
+  */
+ function entity_usage_entity_insert(EntityInterface $entity) {
+-  \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnCreation($entity);
++  if (\Drupal::configFactory()->get('entity_usage.settings')->get('queue_tracking')) {
++    \Drupal::queue('entity_usage_tracker')->createItem([
++      'operation' => 'insert',
++      'entity_type' => $entity->getEntityTypeId(),
++      'entity_id' => $entity->id(),
++    ]);
++  }
++  else {
++    \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnCreation($entity);
++  }
+ }
+ 
+ /**
+  * Implements hook_entity_update().
+  */
+ function entity_usage_entity_update(EntityInterface $entity) {
+-  \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnEdition($entity);
++  if (\Drupal::configFactory()->get('entity_usage.settings')->get('queue_tracking')) {
++    \Drupal::queue('entity_usage_tracker')->createItem([
++      'operation' => 'update',
++      'entity_type' => $entity->getEntityTypeId(),
++      'entity_id' => $entity->id(),
++    ]);
++  }
++  else {
++    \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnEdition($entity);
++  }
+ }
+ 
+ /**
+  * Implements hook_entity_predelete().
+  */
+ function entity_usage_entity_predelete(EntityInterface $entity) {
+-  \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnDeletion($entity);
++  if (\Drupal::configFactory()->get('entity_usage.settings')->get('queue_tracking')) {
++    \Drupal::queue('entity_usage_tracker')->createItem([
++      'operation' => 'predelete',
++      'entity_type' => $entity->getEntityTypeId(),
++      'entity_id' => $entity->id(),
++    ]);
++  }
++  else {
++    \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnDeletion($entity);
++  }
+ }
+ 
+ /**
+  * Implements hook_entity_translation_delete().
+  */
+ function entity_usage_entity_translation_delete(EntityInterface $translation) {
+-  \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnDeletion($translation, 'translation');
++  if (\Drupal::configFactory()->get('entity_usage.settings')->get('queue_tracking')) {
++    \Drupal::queue('entity_usage_tracker')->createItem([
++      'operation' => 'translation_delete',
++      'entity_type' => $translation->getEntityTypeId(),
++      'entity_id' => $translation->id(),
++    ]);
++  }
++  else {
++    \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnDeletion($translation, 'translation');
++  }
+ }
+ 
+ /**
+  * Implements hook_entity_revision_delete().
+  */
+ function entity_usage_entity_revision_delete(EntityInterface $entity) {
+-  \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnDeletion($entity, 'revision');
++  if (\Drupal::configFactory()->get('entity_usage.settings')->get('queue_tracking')) {
++    \Drupal::queue('entity_usage_tracker')->createItem([
++      'operation' => 'revision_delete',
++      'entity_type' => $entity->getEntityTypeId(),
++      'entity_id' => $entity->id(),
++    ]);
++  }
++  else {
++    \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnDeletion($entity, 'revision');
++  }
+ }
+ 
+ /**
+diff --git a/entity_usage.services.yml b/entity_usage.services.yml
+index f1fe59f..c47ed17 100644
+--- a/entity_usage.services.yml
++++ b/entity_usage.services.yml
+@@ -19,3 +19,6 @@ services:
+     arguments: ['@entity_type.manager', '@config.factory']
+     tags:
+       - { name: event_subscriber }
++  entity_usage.clean_usage_table:
++    class: Drupal\entity_usage\CleanUsageTable
++    arguments: ['@entity_type.manager', '@database']
+diff --git a/src/CleanUsageTable.php b/src/CleanUsageTable.php
+new file mode 100644
+index 0000000..2afb35f
+--- /dev/null
++++ b/src/CleanUsageTable.php
+@@ -0,0 +1,112 @@
++<?php
++
++namespace Drupal\entity_usage;
++
++use Drupal\Core\Entity\EntityTypeManagerInterface;
++use Drupal\Core\Database\Connection;
++use Drupal\Core\Entity\RevisionableInterface;
++
++/**
++ * Cleans entity usage table from repeated records.
++ */
++class CleanUsageTable {
++
++  /**
++   * Database service.
++   *
++   * @var \Drupal\Core\Database\Connection
++   */
++  private $database;
++
++  /**
++   * Entity Type Manager Service.
++   *
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
++   */
++  private $entityTypeManager;
++
++  /**
++   * Returns a CleanUsageTable object with populated properties.
++   *
++   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
++   * @param \Drupal\Core\Database\Connection $database
++   *
++   * @return void
++   */
++  public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $database) {
++    $this->entityTypeManager = $entity_type_manager;
++    $this->database = $database;
++  }
++
++  /**
++   * Execute private methods for cleanining.
++   */
++  public function clean() {
++    $this->deleteRecordsWithNonCurrentRevisions();
++    $this->deleteRecordsPointingThemselves();
++  }
++
++  /**
++   * Delete references from other revisions.
++   */
++  private function deleteOtherRevisions($id, $vid, $suffix = '') {
++    $this->database->delete('entity_usage')
++      ->condition('source_id' . $suffix, $id)
++      ->condition('source_vid' . $suffix, $vid, '<>')
++      ->execute();
++  }
++
++  /**
++   * Deletes records where the target is the same as the source.
++   */
++  private function deleteRecordsPointingThemselves() {
++    $this->database->query("
++      DELETE FROM entity_usage
++      WHERE target_id = source_id
++    ")->execute();
++
++    $this->database->query("
++      DELETE FROM entity_usage
++      WHERE target_id_string = source_id_string
++    ")->execute();
++
++  }
++
++  /**
++   * Returns records with repeated entity IDs.
++   */
++  private function getRepeatedRecords($field) {
++    return $this->database->query("
++        SELECT
++          {$field}, source_type, COUNT({$field})
++        FROM entity_usage
++        GROUP BY {$field} HAVING COUNT({$field}) > 1
++    ")->fetchAll();
++  }
++
++  /**
++   * Deletes records with revisions that are not the current one.
++   */
++  private function deleteRecordsWithNonCurrentRevisions() {
++    $res = [];
++    $res[''] = $this->getRepeatedRecords('source_id');
++    $res['_string'] = $this->getRepeatedRecords('source_id_string');
++
++    foreach ($res as $key => $records) {
++
++      foreach ($records as $record) {
++        $source_type = $record->source_type;
++        $source_id = $record->source_id;
++        $storage = $this->entityTypeManager->getStorage($source_type);
++        /** @var \Drupal\Core\Entity\RevisionableInterface */
++        $entity = $storage->load($source_id);
++        if (!($entity instanceof RevisionableInterface)) {
++          continue;
++        }
++        $vid = $entity->getRevisionId();
++        $this->deleteOtherRevisions($source_id, $vid, $key);
++      }
++    }
++  }
++
++}
+diff --git a/src/Commands/CleanUsageTableCommand.php b/src/Commands/CleanUsageTableCommand.php
+new file mode 100644
+index 0000000..cb1ab1e
+--- /dev/null
++++ b/src/Commands/CleanUsageTableCommand.php
+@@ -0,0 +1,30 @@
++<?php
++
++namespace Drupal\entity_usage\Commands;
++
++use Drush\Commands\DrushCommands;
++
++/**
++ * Exposes the CleanUsageTable service to clean the usage table.
++ */
++class CleanUsageTableCommand extends DrushCommands {
++
++  private $cleanUsageTableService;
++
++  /**
++   * {@inheritdoc}
++   */
++  public function __construct($clean_usage_table) {
++    $this->cleanUsageTableService = $clean_usage_table;
++  }
++
++  /**
++   * Drush command that clean the usage table.
++   *
++   * @command clean_usage_table
++   */
++  public function clean() {
++    $this->cleanUsageTableService->clean();
++  }
++
++}
+diff --git a/src/Plugin/QueueWorker/EntityUsageTracker.php b/src/Plugin/QueueWorker/EntityUsageTracker.php
+new file mode 100644
+index 0000000..b41d3c9
+--- /dev/null
++++ b/src/Plugin/QueueWorker/EntityUsageTracker.php
+@@ -0,0 +1,106 @@
++<?php
++
++namespace Drupal\entity_usage\Plugin\QueueWorker;
++
++use Drupal\Core\Entity\EntityTypeManagerInterface;
++use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
++use Drupal\Core\Queue\QueueWorkerBase;
++use Drupal\entity_usage\EntityUpdateManager;
++use Symfony\Component\DependencyInjection\ContainerInterface;
++
++/**
++ * Processes the entity usage tracking via a queue.
++ *
++ * @QueueWorker(
++ *   id = "entity_usage_tracker",
++ *   title = @Translation("Entity usage tracker"),
++ *   cron = {"time" = 300}
++ * )
++ */
++class EntityUsageTracker extends QueueWorkerBase implements ContainerFactoryPluginInterface {
++
++  /**
++   * The entity type manager service.
++   *
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
++   */
++  protected $entityTypeManager;
++
++  /**
++   * The entity usage update manager.
++   *
++   * @var \Drupal\entity_usage\EntityUpdateManager
++   */
++  protected $entityUsageUpdateManager;
++
++  /**
++   * Constructs a new class instance.
++   *
++   * @param array $configuration
++   *   A configuration array containing information about the plugin instance.
++   * @param string $plugin_id
++   *   The plugin_id for the plugin instance.
++   * @param mixed $plugin_definition
++   *   The plugin implementation definition.
++   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
++   *   Entity type manager service.
++   * @param \Drupal\entity_usage\EntityUpdateManager $entity_usage_update_manager
++   *   Entity usage update manager.
++   */
++  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, EntityUpdateManager $entity_usage_update_manager) {
++    parent::__construct($configuration, $plugin_id, $plugin_definition);
++    $this->entityTypeManager = $entity_type_manager;
++    $this->entityUsageUpdateManager = $entity_usage_update_manager;
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
++    return new static(
++      $configuration,
++      $plugin_id,
++      $plugin_definition,
++      $container->get('entity_type.manager'),
++      $container->get('entity_usage.entity_update_manager')
++    );
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function processItem($data) {
++
++    $storage = $this->entityTypeManager->getStorage($data['entity_type']);
++
++    if (!$storage) {
++      return;
++    }
++
++    $entity = $storage->load($data['entity_id']);
++
++    if (!$entity) {
++      return;
++    }
++
++    switch ($data['operation']) {
++      case 'insert':
++      case 'update':
++        $this->entityUsageUpdateManager->trackUpdateOnCreation($entity);
++        break;
++
++      case 'predelete':
++        $this->entityUsageUpdateManager->trackUpdateOnDeletion($entity);
++        break;
++
++      case 'translation_delete':
++        $this->entityUsageUpdateManager->trackUpdateOnDeletion($entity, 'translation');
++        break;
++
++      case 'revision_delete':
++        $this->entityUsageUpdateManager->trackUpdateOnDeletion($entity, 'revision');
++        break;
++    }
++  }
++
++}
