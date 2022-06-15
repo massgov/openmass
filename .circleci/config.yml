@@ -701,7 +701,9 @@ workflows:
             samples: 200
             filters:
               branches:
-                only: /^hotfix\/.*$/
+                only:
+                  - /^hotfix\/.*$/
+                  - DP-25106_fix-nightcrawler
       - backstop:
             name: backstop-test
             requires: [deploy-test-no-refresh-db]
