@@ -204,11 +204,11 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
   }
 
   if ($flexible_link_groups) {
-  // Create a new Service Section paragraph.
-  $new_service_section_form_paragraph = Paragraph::create([
-    'type' => 'service_section',
-  ]);
-  // Set the field values.
+    // Create a new Service Section paragraph.
+    $new_service_section_form_paragraph = Paragraph::create([
+     'type' => 'service_section',
+    ]);
+    // Set the field values.
     $new_service_section_form_paragraph->set('field_service_section_content', $flexible_link_groups);
     $new_service_section_form_paragraph->set('field_service_section_heading', 'What would you like to do?');
     $new_service_section_form_paragraph->set('field_section_style', 'enhanced');
@@ -437,5 +437,7 @@ function _mass_content_service_page_cleanup_field_values(&$node) {
   $node->set('field_location_button_label', '');
   $node->set('field_service_links', []);
   $node->set('field_service_file', []);
+  $node->set('field_services_social_links', []);
+  $node->set('field_ref_contact_info', []);
 
 }
