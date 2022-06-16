@@ -41,6 +41,7 @@ function gotResizeMessage(event) {
     if (matches[i].contentWindow === event.source) {
       // matches[i].width = Number( event.data.width )	 <--- we do not do anything with the page width for now
       matches[i].height = Number(event.data.height);
+      matches[i].setAttribute('data-resized', 1);
       return 1;
     }
   }

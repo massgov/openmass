@@ -121,6 +121,9 @@ module.exports = async function (page, scenario, vp) {
     await page.waitForTimeout(1000);
   }
 
+  // Wait for iframes to be resized at least once.
+  await page.waitForFunction("jQuery('.js-ma-responsive-iframe iframe:not([data-resized])').length === 0");
+
   switch (scenario.label) {
     case "InfoDetailsImageWrapLeft":
     case "InfoDetailsImageWrapRight":
@@ -146,7 +149,6 @@ module.exports = async function (page, scenario, vp) {
       break;
     case "InfoDetails1":
       await page.waitForFunction("document.querySelector('div.csv-table') === null");
-      await page.waitForTimeout(1000);
       break;
     case "ServiceGroupedLinks":
     case "Service1":
