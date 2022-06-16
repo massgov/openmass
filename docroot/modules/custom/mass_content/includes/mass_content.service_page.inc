@@ -11,14 +11,16 @@ use Drupal\mayflower\Helper;
 /**
  * Helper function to check if paragraph of given type is already populated.
  */
-function checkParagraph($node, $bundle) {
+function check_paragraph($node, $bundle) {
   $p_sections = Helper::getReferencedEntitiesFromField($node, 'field_service_sections');
   if ($p_sections) {
     foreach ($p_sections as $p_section) {
       $p_contents = Helper::getReferencedEntitiesFromField($p_section, 'field_service_section_content');
-      foreach ($p_contents as $p_content) {
-        if ($p_content->bundle() == $bundle) {
-          return TRUE;
+      if ($p_contents) {
+        foreach ($p_contents as $p_content) {
+          if ($p_content->bundle() == $bundle) {
+            return TRUE;
+          }
         }
       }
     }
@@ -299,7 +301,7 @@ function _mass_content_service_page_migration_locations(&$node) {
  * Create empty contact placeholder paragraph.
  */
 function _mass_content_service_page_add_contact_information(&$node) {
-  $check = checkParagraph($node, 'contact_placeholder');
+  $check = check_paragraph($node, 'contact_placeholder');
   if (!$node->field_ref_contact_info->isEmpty() && !$check) {
     $contact = Paragraph::create([
       'type' => 'contact_placeholder',
@@ -326,7 +328,7 @@ function _mass_content_service_page_add_contact_information(&$node) {
  * Add social links section.
  */
 function _mass_content_service_page_add_social_links(&$node) {
-  $check = checkParagraph($node, 'social_media');
+  $check = check_paragraph($node, 'social_media');
   if (!$node->field_services_social_links->isEmpty() && !$check) {
     $social_media = Paragraph::create([
       'type' => 'social_media',
