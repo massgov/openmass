@@ -115,8 +115,10 @@ class MassContentBatchManager {
       if (in_array($node->id(), $service_with_events)) {
         _mass_content_service_page_add_event_section($node);
       }
-      _mass_content_service_page_migrate_additional_resources($node);
-      _mass_content_service_page_cleanup_field_values($node);
+      if ($template !== 'custom') {
+        _mass_content_service_page_migrate_additional_resources($node);
+      }
+      // _mass_content_service_page_cleanup_field_values($node);
 
       // Save the node.
       // Save without updating the last modified date. This requires a core patch
