@@ -7279,10 +7279,12 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
           }
           /** @var Drupal\mass_content\Entity\Bundle\media\DocumentBundle */
           $file = $item->entity->field_file_download_single[0]->entity;
-          $view_builder = Drupal::entityTypeManager()->getViewBuilder($file->getEntityType()->id());
-          $links[$index]['download_link'] = $view_builder->view($file, 'media_download_link');
-          $links[$index]['href'] = $file->toURL()->setAbsolute()->toString();
-          $links[$index]['text'] = $file->label();
+          if ($file) {
+            $view_builder = Drupal::entityTypeManager()->getViewBuilder($file->getEntityType()->id());
+            $links[$index]['download_link'] = $view_builder->view($file, 'media_download_link');
+            $links[$index]['href'] = $file->toURL()->setAbsolute()->toString();
+            $links[$index]['text'] = $file->label();
+          }
           break;
       }
     }

@@ -6,7 +6,25 @@
  */
 
 use Drupal\paragraphs\Entity\Paragraph;
-use Drush\Drush;
+use Drupal\mayflower\Helper;
+
+/**
+ * Helper function to check if paragraph of given type is already populated.
+ */
+function checkParagraph($node, $bundle) {
+  $p_sections = Helper::getReferencedEntitiesFromField($node, 'field_service_sections');
+  if ($p_sections) {
+    foreach ($p_sections as $p_section) {
+      $p_contents = Helper::getReferencedEntitiesFromField($p_section, 'field_service_section_content');
+      foreach ($p_contents as $p_content) {
+        if ($p_content->bundle() == $bundle) {
+          return TRUE;
+        }
+      }
+    }
+  }
+  return FALSE;
+}
 
 /**
  * Add a new service pages paragraph to the service sections field.
@@ -281,7 +299,8 @@ function _mass_content_service_page_migration_locations(&$node) {
  * Create empty contact placeholder paragraph.
  */
 function _mass_content_service_page_add_contact_information(&$node) {
-  if (!$node->field_ref_contact_info->isEmpty()) {
+  $check = checkParagraph($node, 'contact_placeholder');
+  if (!$node->field_ref_contact_info->isEmpty() && !$check) {
     $contact = Paragraph::create([
       'type' => 'contact_placeholder',
     ]);
@@ -307,7 +326,8 @@ function _mass_content_service_page_add_contact_information(&$node) {
  * Add social links section.
  */
 function _mass_content_service_page_add_social_links(&$node) {
-  if (!$node->field_services_social_links->isEmpty()) {
+  $check = checkParagraph($node, 'social_media');
+  if (!$node->field_services_social_links->isEmpty() && !$check) {
     $social_media = Paragraph::create([
       'type' => 'social_media',
     ]);
@@ -437,7 +457,5 @@ function _mass_content_service_page_cleanup_field_values(&$node) {
   $node->set('field_location_button_label', '');
   $node->set('field_service_links', []);
   $node->set('field_service_file', []);
-  $node->set('field_services_social_links', []);
-  $node->set('field_ref_contact_info', []);
 
 }
