@@ -3,19 +3,45 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.taxonomy_term.collections.field_additional_no_items_found
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
+    - field.field.taxonomy_term.collections.field_collection_logo
     - field.field.taxonomy_term.collections.field_default_sort
+    - field.field.taxonomy_term.collections.field_header_color
     - field.field.taxonomy_term.collections.field_landing_page
+    - field.field.taxonomy_term.collections.field_organizations
+    - field.field.taxonomy_term.collections.field_primary_parent
+    - field.field.taxonomy_term.collections.field_short_description
+    - field.field.taxonomy_term.collections.field_show_only_future_events
     - field.field.taxonomy_term.collections.field_sort_order
     - field.field.taxonomy_term.collections.field_url_name
     - taxonomy.vocabulary.collections
   module:
+    - entity_hierarchy
+    - image
     - options
+    - text
 id: taxonomy_term.collections.default
 targetEntityType: taxonomy_term
 bundle: collections
 mode: default
 content:
+  field_additional_no_items_found:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_collection_logo:
+    type: image
+    label: above
+    settings:
+      image_link: ''
+      image_style: ''
+    third_party_settings: {  }
+    weight: -2
+    region: content
   field_default_sort:
     type: string
     label: above
@@ -23,6 +49,48 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: -3
+    region: content
+  field_header_color:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: null
+    region: content
+  field_organizations:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: -1
+    region: content
+  field_primary_parent:
+    type: entity_reference_hierarchy_label
+    label: above
+    settings:
+      link: true
+      weight_output: attribute
+    third_party_settings: {  }
+    weight: -4
+    region: content
+  field_short_description:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: -3
+    region: content
+  field_show_only_future_events:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: -2
     region: content
   field_sort_order:
     type: list_default
@@ -33,6 +101,7 @@ content:
     region: content
 hidden:
   description: true
+  field_additional_no_items_found: true
   field_all_collection_breadcrumb: true
   field_landing_page: true
   field_url_name: true

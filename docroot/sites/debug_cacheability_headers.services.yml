@@ -1,0 +1,9 @@
+# Enable cache tag debugging headers. These are used in some tests, and are
+# useful when debugging caches.
+# Pages with many cache tags (such as node forms with many paragraphs) may
+# hit the default Apache header limit of 16KB. If pages mysteriously
+# crash with this setting enabled, increase LimitRequestFieldSize in the
+# Apache configuration.
+# https://www.drupal.org/project/drupal/issues/2844620
+parameters:
+  http.response.debug_cacheability_headers: true

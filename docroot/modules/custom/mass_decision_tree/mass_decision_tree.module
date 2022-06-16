@@ -190,27 +190,6 @@ function mass_decision_tree_preprocess_node(&$variables) {
       ],
     ];
 
-    // Set static pageBanner properties to pass to prepare function.
-    $pageBanner_options = [
-      'size' => 'overlay',
-      'icon' => NULL,
-      'type' => NULL,
-      'color' => 'blue',
-    ];
-
-    // Make pageBanner data object available in twig template.
-    $variables['pageBanner'] = Organisms::preparePageBanner($node, $pageBanner_options);
-
-    // Prepare the option array for image widget.
-    $logo_options = [
-      'style' => NULL,
-      'height' => 90,
-      'width' => '',
-    ];
-    if ($logo = Atoms::prepareImage($node, $logo_options, 'field_campaign_logo')) {
-      $variables['logo'] = $logo;
-    }
-
     if (Helper::isFieldPopulated($node, 'field_disclaimer')) {
       $variables['disclaimer'] = Helper::fieldValue($node, 'field_disclaimer');
     }

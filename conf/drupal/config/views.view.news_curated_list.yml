@@ -9,6 +9,7 @@ dependencies:
     - datetime
     - mass_styles
     - node
+    - options
     - paragraphs
     - user
     - views_custom_cache_tag
@@ -260,6 +261,47 @@ display:
             operator: ''
             operator_limit_selection: false
             operator_list: {  }
+        field_news_type_value:
+          id: field_news_type_value
+          table: node__field_news_type
+          field: field_news_type_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: list_field
+          operator: not
+          value:
+            blog_post: blog_post
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
       style:
         type: press_listing
         options:

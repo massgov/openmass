@@ -7,6 +7,7 @@ dependencies:
     - field.storage.node.field_how_to_lede
     - field.storage.node.field_short_desc
     - taxonomy.vocabulary.collections
+    - views.view.collection_term_empty_message
     - views.view.taxonomy_term_children
   module:
     - better_exposed_filters
@@ -18,7 +19,6 @@ dependencies:
     - text
     - user
     - views_autocomplete_filters
-    - views_custom_cache_tag
     - views_porter_stemmer
 id: collection_all
 label: 'Collection All'
@@ -481,9 +481,8 @@ display:
         options:
           perm: 'access content'
       cache:
-        type: custom_tag
-        options:
-          custom_tag: "node_list\r\nmedia_list"
+        type: none
+        options: {  }
       empty:
         area:
           id: area
@@ -495,9 +494,20 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: '<div class="ma__no-results"><h3>No results found</h3><p>Here are a few tips:</p><ul><li>Try a different keyword</li><li><a href="[view:url]">Clear all filters</a></li><li>Browse by topic without keywords</li></ul><p><a href="https://www.mass.gov/forms/massgov-data-hub-feedback-form" target="_blank">Tell us what you were hoping to find</a> so we can continue to improve the Data Hub.</p></div>'
+            value: '<div class="ma__no-results"><h3>No results found</h3><p>Here are a few tips:</p><ul><li>Try a different keyword</li><li><a href="[view:url]">Clear all filters</a></li><li>Browse by topic without keywords</li></ul></div>'
             format: full_html
           tokenize: false
+        view:
+          id: view
+          table: views
+          field: view
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: view
+          empty: true
+          view_to_insert: 'collection_term_empty_message:default'
+          inherit_arguments: true
       sorts:
         title:
           id: title
@@ -913,6 +923,7 @@ display:
         - 'config:core.entity_view_display.node.event.default'
         - 'config:core.entity_view_display.node.event.link_and_description'
         - 'config:core.entity_view_display.node.event.link_only'
+        - 'config:core.entity_view_display.node.event.listing'
         - 'config:core.entity_view_display.node.event.minutes'
         - 'config:core.entity_view_display.node.event.teaser'
         - 'config:core.entity_view_display.node.event.token'
@@ -1121,6 +1132,7 @@ display:
         - 'config:core.entity_view_display.node.event.default'
         - 'config:core.entity_view_display.node.event.link_and_description'
         - 'config:core.entity_view_display.node.event.link_only'
+        - 'config:core.entity_view_display.node.event.listing'
         - 'config:core.entity_view_display.node.event.minutes'
         - 'config:core.entity_view_display.node.event.teaser'
         - 'config:core.entity_view_display.node.event.token'

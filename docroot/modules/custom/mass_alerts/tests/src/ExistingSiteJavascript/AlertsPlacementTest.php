@@ -5,13 +5,13 @@ namespace Drupal\Tests\mass_alerts\ExistingSiteJavascript;
 use Behat\Mink\Exception\ExpectationException;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\paragraphs\Entity\Paragraph;
-use weitzman\DrupalTestTraits\ExistingSiteWebDriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Test Alerts Placement.
  */
-class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
+class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
 
   use LoginTrait;
 
@@ -151,11 +151,10 @@ class AlertsPlacementTest extends ExistingSiteWebDriverTestBase {
 
     $content_types_and_selectors = [];
     foreach ($bundles as $bundle) {
-      $content_types_and_selectors[$bundle] = '#main-content > div.pre-content > div.mass-alerts-block > div > section > button';
+      $content_types_and_selectors[$bundle] = '#main-content > div.pre-content > div.mass-alerts-block > div > section > h2 > button';
     }
     $irregular_selectors = [
-      'decision_tree' => '#main-content > div.pre-content > div.decision-tree > div > div > section > button',
-      'person' => '#main-content > div.ma__bio__content > div > div > div.mass-alerts-block > div > section > button',
+      'person' => '#main-content > div.ma__bio__content > div > div > div.mass-alerts-block > div > section > h2 > button',
     ];
 
     return $irregular_selectors + $content_types_and_selectors;

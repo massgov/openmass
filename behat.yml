@@ -33,8 +33,11 @@ default:
         base_uri: "http://mass-web"
     Behat\MinkExtension:
       goutte: ~
-      selenium2:
-        wd_host: "http://127.0.0.1:8643/wd/hub"
+      # No Behat tests currently declare the @javascript annotation, so they
+      # use goutte for better performance. If a full browser is required, this
+      # can be changed by uncommenting the following lines.
+      # selenium2:
+        # wd_host: "http://selenium-chrome:4444/wd/hub"
       base_url: http://mass-web
       files_path: "%paths.base%/features/fixtures"
     Drupal\DrupalExtension:
@@ -53,7 +56,7 @@ default:
         anywhere: "*"
         body: "body"
         header: "header.ma__header"
-        footer: "footer.ma__footer"
+        footer: "footer.ma__footer-new"
         breadcrumbs: "section.ma__breadcrumbs"
         page_banner: "section.ma__page-banner"
         action_header: "section.ma__action-header"

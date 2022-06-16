@@ -35,7 +35,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'Add Collections to Documents'
+      title: 'Add documents to a collection'
       fields:
         views_bulk_operations_bulk_form:
           id: views_bulk_operations_bulk_form
@@ -87,7 +87,7 @@ display:
           empty_zero: false
           hide_alter_empty: true
           batch: true
-          batch_size: 50
+          batch_size: 10
           form_step: true
           buttons: true
           action_title: Action
@@ -686,7 +686,7 @@ display:
             offset: false
             offset_label: Offset
       exposed_form:
-        type: basic
+        type: input_required
         options:
           submit_button: Search
           reset_button: true
@@ -695,6 +695,8 @@ display:
           expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
+          text_input_required: 'Select any filter and click on Apply to see results'
+          text_input_required_format: basic_html
       access:
         type: perm
         options:
@@ -1268,6 +1270,7 @@ display:
             ne: ne
             so: so
             uk: uk
+            el: el
           group: 1
           exposed: true
           expose:
@@ -1590,7 +1593,7 @@ display:
         - 'config:workflow_list'
   media_page_list:
     id: media_page_list
-    display_title: 'Add Collections to Documents'
+    display_title: 'Add documents to a collection'
     display_plugin: page
     position: 1
     display_options:

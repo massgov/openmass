@@ -3,12 +3,6 @@
 # To activate this feature, follow the instructions at the top of the
 # 'example.settings.local.php' file, which sits next to this file.
 parameters:
-  # Pages with many cache tags (such as node forms with many paragraphs) may
-  # hit the default Apache header limit of 16KB. If pages mysteriously
-  # crash with this setting enabled, increase LimitRequestFieldSize in the
-  # Apache configuration.
-  # https://www.drupal.org/project/drupal/issues/2844620
-  http.response.debug_cacheability_headers: false
   twig.config:
     debug: true
 services:

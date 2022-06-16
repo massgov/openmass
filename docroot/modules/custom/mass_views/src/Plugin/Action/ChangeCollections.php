@@ -2,37 +2,101 @@
 
 namespace Drupal\mass_views\Plugin\Action;
 
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Plugin\PluginFormInterface;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Allows to change Collections field value.
+ * Allows to add Collections field value.
  *
  * @see https://www.drupal.org/docs/contributed-modules/views-bulk-operations-vbo/creating-a-new-action#s-2-action-class
  *
  * @Action(
  *   id = "mass_views_change_collections",
- *   label = @Translation("Change Collections"),
+ *   label = @Translation("Add Collections"),
  *   type = "node"
  * )
  */
-class ChangeCollections extends ViewsBulkOperationsActionBase {
+class ChangeCollections extends ViewsBulkOperationsActionBase implements ContainerFactoryPluginInterface, PluginFormInterface {
 
   use StringTranslationTrait;
+
+  /**
+   * The datetime.time service.
+   *
+   * @var \Drupal\Component\Datetime\TimeInterface
+   */
+  protected $time;
+
+  /**
+   * The current user.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $currentUser;
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Object constructor.
+   *
+   * @param array $configuration
+   *   The configuration.
+   * @param string $plugin_id
+   *   The plugin_id for the formatter.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param Drupal\Core\Session\AccountInterface $currentUser
+   *   The current user.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, AccountInterface $currentUser, TimeInterface $time, EntityTypeManagerInterface $entity_type_manager) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->currentUser = $currentUser;
+    $this->time = $time;
+    $this->entityTypeManager = $entity_type_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('current_user'),
+      $container->get('datetime.time'),
+      $container->get('entity_type.manager')
+    );
+  }
 
   /**
    * {@inheritdoc}
    */
   public function execute($entity = NULL) {
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
     $config = $this->getConfiguration();
     $new_collection_id = $config['new_collection'];
 
     /** @var \Drupal\Node\NodeStorage */
-    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $node_storage = $this->entityTypeManager->getStorage('node');
     $vid = $node_storage->getLatestRevisionId($entity->id());
     $create_draft = $vid != $entity->getRevisionId();
 
@@ -48,10 +112,10 @@ class ChangeCollections extends ViewsBulkOperationsActionBase {
       }
     }
 
-    $entity->setNewRevision(TRUE);
-    $entity->setRevisionUserId(\Drupal::currentUser()->id());
-    $entity->setRevisionLogMessage('Revision created with "Move Collections" feature.');
-    $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+    $entity->setNewRevision();
+    $entity->setRevisionUserId($this->currentUser->id());
+    $entity->setRevisionLogMessage('Revision created with "Add Collections" feature.');
+    $entity->setRevisionCreationTime($this->time->getRequestTime());
     $entity->save();
 
     // Was the current version different from the latest version?
@@ -59,9 +123,9 @@ class ChangeCollections extends ViewsBulkOperationsActionBase {
       /** @var \Drupal\node\Entity\Node */
       $node_latest = $node_storage->loadRevision($vid);
       $node_latest->setNewRevision(TRUE);
-      $node_latest->setRevisionUserId(\Drupal::currentUser()->id());
-      $node_latest->setRevisionLogMessage('Revision created with "Move Collections" feature.');
-      $node_latest->setRevisionCreationTime(\Drupal::time()->getRequestTime());
+      $node_latest->setRevisionUserId($this->currentUser->id());
+      $node_latest->setRevisionLogMessage('Revision created with "Add Collections" feature.');
+      $node_latest->setRevisionCreationTime($this->time->getRequestTime());
       if (is_array($new_collection_id)) {
         if (!empty($node_latest->field_collections->getValue())) {
           foreach ($new_collection_id as $id) {
@@ -97,7 +161,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase {
    * Returns the entity bundles allowed for collections.
    */
   private function intersectTargetBundles() {
-    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $node_storage = $this->entityTypeManager->getStorage('node');
     $target_bundles = NULL;
 
     /** @var int[] */
@@ -131,7 +195,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase {
 
       $form['#list'] = $this->context['list'];
 
-      $form['actions']['submit']['#value'] = $this->t('Change collections');
+      $form['actions']['submit']['#value'] = $this->t('Add collections');
 
       $form['new_collection'] = [
         '#type' => 'checkbox_tree',

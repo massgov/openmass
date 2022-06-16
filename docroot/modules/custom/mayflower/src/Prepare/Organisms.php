@@ -5,6 +5,7 @@ namespace Drupal\mayflower\Prepare;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\mayflower\Helper;
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\node\Entity\Node;
 
@@ -523,6 +524,7 @@ class Organisms {
     $pressList = [];
     $moreLink = '';
     $i = 0;
+    $cache_tags[] = 'node_list:news';
 
     // Get field values.
     $field_values = $entity->get($field);
@@ -663,6 +665,9 @@ class Organisms {
     // @todo consider passing the image style in as an option.
     // Use action_banner_* as default pageBanner image styles.
     $image_style_wide = 'action_banner_large';
+    if ($entity->bundle() === 'org_page') {
+      $image_style_wide = 'action_banner_large_focal_point';
+    }
     $image_style_narrow = 'action_banner_small';
 
     // Get pageBanner size, use as flag to determine image style.
@@ -670,7 +675,9 @@ class Organisms {
 
     // Use helper function to get the image url of a given image style.
     $pageBanner['bgWide'] = Helper::getFieldImageUrl($entity, $image_style_wide, $fields['bg_wide']);
-    $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, $fields['bg_narrow']);
+    if ($entity->bundle() !== 'org_page') {
+      $pageBanner['bgNarrow'] = Helper::getFieldImageUrl($entity, $image_style_narrow, $fields['bg_narrow']);
+    }
 
     if ($options['type'] == 'section landing') {
       // Manually specified since we have potentially 4 image fields on topic_page.
@@ -1875,7 +1882,6 @@ class Organisms {
    *   Returns structured array.
    */
   public static function prepareExpandableContent($entities, array $options = [], array $field_map = NULL, array &$cache_tags = []) {
-    $renderer = \Drupal::service('renderer');
     $sections = [];
     $fields = [];
 
@@ -1899,14 +1905,18 @@ class Organisms {
           $params = $url->getRouteParameters();
           $entity_type = key($params);
           $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($params[$entity_type]);
+
           // If the entity is a topic_page, include Link Groups and links.
           if (!empty($entity) && $entity->bundle() == 'topic_page') {
+            $cache_tags = Cache::mergeTags($entity->getCacheTags(), $cache_tags);
             $topic_heading = [
-              'text' => $entity->label(),
+              'text' => trim($sections[$key]['text']) ?: $entity->label(),
             ];
             $link_items = [];
             // Loop through the Topic Link Groups.
             foreach ($entity->field_topic_content_cards as $topic_group) {
+              $cache_tags = Cache::mergeTags($topic_group->entity->getCacheTags(), $cache_tags);
+
               // Initialize the heading and link arrays for this Link Group.
               $topic_category_heading = [];
               $topic_links = [];
@@ -1914,7 +1924,7 @@ class Organisms {
               $topic_title = Helper::fieldFullView($topic_group->entity, 'field_content_card_category');
               if (!empty($topic_title)) {
                 $topic_category_heading = [
-                  'title' => \htmlspecialchars_decode($renderer->renderRoot($topic_title)->__toString()),
+                  'title' => $topic_title,
                 ];
               }
               // Loop through the links and create an array of link data.

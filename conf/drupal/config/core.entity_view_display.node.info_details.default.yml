@@ -15,6 +15,7 @@ dependencies:
     - field.field.node.info_details.field_details_enable_fields
     - field.field.node.info_details.field_english_version
     - field.field.node.info_details.field_footnotes
+    - field.field.node.info_details.field_hide_table_of_contents
     - field.field.node.info_details.field_image_credit
     - field.field.node.info_details.field_info_detail_overview
     - field.field.node.info_details.field_info_details_date_publishe
@@ -31,12 +32,13 @@ dependencies:
     - field.field.node.info_details.field_short_desc
     - field.field.node.info_details.field_short_title
     - field.field.node.info_details.field_state_organization_tax
+    - image.style.action_banner_large
     - node.type.info_details
   module:
     - datetime
     - entity_reference_revisions
-    - image
     - link
+    - mass_formatters
     - metatag
     - options
     - text
@@ -75,11 +77,10 @@ content:
     weight: 2
     region: content
   field_banner_image:
-    type: image
+    type: image_safe_string_url
     label: hidden
     settings:
-      image_link: ''
-      image_style: ''
+      image_style: action_banner_large
     third_party_settings: {  }
     weight: 23
     region: content
@@ -163,6 +164,16 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 8
+    region: content
+  field_hide_table_of_contents:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 28
     region: content
   field_image_credit:
     type: string

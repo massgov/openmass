@@ -50,12 +50,14 @@ dependencies:
     - field.field.node.service_page.field_short_title
     - field.field.node.service_page.field_state_organization_tax
     - field.field.node.service_page.field_template
+    - image.style.action_banner_large
     - node.type.service_page
   module:
     - entity_reference_revisions
     - image
     - link
     - mass_content
+    - mass_formatters
     - metatag
     - options
     - user
@@ -288,11 +290,10 @@ content:
     weight: 4
     region: content
   field_service_bg_wide:
-    type: image
+    type: image_safe_string_url
     label: above
     settings:
-      image_link: ''
-      image_style: ''
+      image_style: action_banner_large
     third_party_settings: {  }
     weight: 3
     region: content
