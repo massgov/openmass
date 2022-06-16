@@ -206,7 +206,7 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
   if ($flexible_link_groups) {
     // Create a new Service Section paragraph.
     $new_service_section_form_paragraph = Paragraph::create([
-     'type' => 'service_section',
+      'type' => 'service_section',
     ]);
     // Set the field values.
     $new_service_section_form_paragraph->set('field_service_section_content', $flexible_link_groups);
