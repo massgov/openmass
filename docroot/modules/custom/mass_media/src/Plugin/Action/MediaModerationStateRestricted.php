@@ -26,7 +26,7 @@ class MediaModerationStateRestricted extends ActionBase {
     if ($entity) {
       $entity->set('moderation_state', 'restricted');
       $entity->setNewRevision(TRUE);
-      $entity->revision_log_message = 'Moderation state for ' . $entity->id() . ' changed by bulk action to Restricted';
+      $entity->revision_log_message = 'Moderation state for media entity ' . $entity->id() . ' changed by bulk action to Restricted';
       $entity->setRevisionCreationTime(REQUEST_TIME);
       $entity->setRevisionUserId(\Drupal::currentUser()->id());
       $entity->save();

@@ -24,7 +24,7 @@ class MediaModerationStatePublish extends ActionBase {
     if ($entity) {
       $entity->set('moderation_state', 'published');
       $entity->setNewRevision(TRUE);
-      $entity->revision_log_message = 'Moderation state for ' . $entity->id() . ' changed by bulk action to Published';
+      $entity->revision_log_message = 'Moderation state for media entity ' . $entity->id() . ' changed by bulk action to Published';
       $entity->setRevisionCreationTime(REQUEST_TIME);
       $entity->setRevisionUserId(\Drupal::currentUser()->id());
       $entity->save();
