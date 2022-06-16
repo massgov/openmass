@@ -52,6 +52,7 @@ module.exports = async function (page, scenario, vp) {
 
     // Zero delay on CSS transitions.
     jQuery("head").append('<style id="no-more-css-transitions" type="text/css"> * { transition-duration: 0s !important } </style>');
+    jQuery("head").append('<style id="new-animations" type="text/css">*:before, *:after { transition-duration: 0s !important; }</style>');
 
     // Immediately complete any in-progress animations.
     jQuery(':animated').finish();
