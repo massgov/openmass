@@ -24,7 +24,7 @@ class MediaModerationStateUnpublish extends ActionBase {
     if ($entity) {
       $entity->set('moderation_state', 'unpublished');
       $entity->setNewRevision(TRUE);
-      $entity->revision_log = 'Moderation state for ' . $entity->id() . ' changed  by bulk action to Unpublished';
+      $entity->revision_log_message = 'Moderation state for ' . $entity->id() . ' changed by bulk action to Unpublished';
       $entity->setRevisionCreationTime(REQUEST_TIME);
       $entity->setRevisionUserId(\Drupal::currentUser()->id());
       $entity->save();
