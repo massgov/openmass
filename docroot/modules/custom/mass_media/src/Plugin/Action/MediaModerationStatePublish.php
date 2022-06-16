@@ -22,7 +22,12 @@ class MediaModerationStatePublish extends ActionBase {
    */
   public function execute(MediaInterface $entity = NULL) {
     if ($entity) {
-      $entity->set('moderation_state', 'published')->save();
+      $entity->set('moderation_state', 'published');
+      $entity->setNewRevision(TRUE);
+      $entity->revision_log = 'Moderation state for ' . $entity->id() . ' changed  by bulk action to Published';
+      $entity->setRevisionCreationTime(REQUEST_TIME);
+      $entity->setRevisionUserId(\Drupal::currentUser()->id());
+      $entity->save();
     }
   }
 

@@ -24,7 +24,12 @@ class MediaModerationStateRestricted extends ActionBase {
    */
   public function execute(MediaInterface $entity = NULL) {
     if ($entity) {
-      $entity->set('moderation_state', 'restricted')->save();
+      $entity->set('moderation_state', 'restricted');
+      $entity->setNewRevision(TRUE);
+      $entity->revision_log = 'Moderation state for ' . $entity->id() . ' changed  by bulk action to Restricted';
+      $entity->setRevisionCreationTime(REQUEST_TIME);
+      $entity->setRevisionUserId(\Drupal::currentUser()->id());
+      $entity->save();
 
       // Move file to private storage.
       $file = File::load($entity->field_upload_file->target_id);

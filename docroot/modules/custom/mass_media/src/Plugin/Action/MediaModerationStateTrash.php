@@ -22,7 +22,12 @@ class MediaModerationStateTrash extends ActionBase {
    */
   public function execute(MediaInterface $entity = NULL) {
     if ($entity) {
-      $entity->set('moderation_state', 'trash')->save();
+      $entity->set('moderation_state', 'trash');
+      $entity->setNewRevision(TRUE);
+      $entity->revision_log = 'Moderation state for ' . $entity->id() . ' changed  by bulk action to Trash';
+      $entity->setRevisionCreationTime(REQUEST_TIME);
+      $entity->setRevisionUserId(\Drupal::currentUser()->id());
+      $entity->save();
     }
   }
 
