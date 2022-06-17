@@ -568,6 +568,14 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
+      - crawl:
+          name: crawl-test-200
+          requires: [build]
+          target: test
+          samples: 200
+          filters:
+            branches:
+              only: test/DP-25106_rollback-nightcrawler-update
 
 
   # This is to automate the creation of the release branch.
