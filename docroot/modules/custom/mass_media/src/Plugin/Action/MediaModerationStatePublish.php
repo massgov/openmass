@@ -4,6 +4,7 @@ namespace Drupal\mass_media\Plugin\Action;
 
 use Drupal\Core\Action\ActionBase;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\mass_media\Traits\MediaModerationStateActionTrait;
 use Drupal\media\MediaInterface;
 
 /**
@@ -17,17 +18,14 @@ use Drupal\media\MediaInterface;
  */
 class MediaModerationStatePublish extends ActionBase {
 
+  use MediaModerationStateActionTrait;
+
   /**
    * {@inheritdoc}
    */
   public function execute(MediaInterface $entity = NULL) {
     if ($entity) {
-      $entity->set('moderation_state', 'published');
-      $entity->setNewRevision(TRUE);
-      $entity->setRevisionLogMessage('Moderation state for media entity ' . $entity->id() . ' changed by bulk action to Published.');
-      $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
-      $entity->setRevisionUserId(\Drupal::currentUser()->id());
-      $entity->save();
+      $this->createRevision($entity, 'published');
     }
   }
 

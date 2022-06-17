@@ -5,6 +5,7 @@ namespace Drupal\mass_media\Plugin\Action;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Action\ActionBase;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\mass_media\Traits\MediaModerationStateActionTrait;
 use Drupal\media\MediaInterface;
 use Drupal\file\Entity\File;
 
@@ -19,17 +20,14 @@ use Drupal\file\Entity\File;
  */
 class MediaModerationStateRestricted extends ActionBase {
 
+  use MediaModerationStateActionTrait;
+
   /**
    * {@inheritdoc}
    */
   public function execute(MediaInterface $entity = NULL) {
     if ($entity) {
-      $entity->set('moderation_state', 'restricted');
-      $entity->setNewRevision(TRUE);
-      $entity->setRevisionLogMessage('Moderation state for media entity ' . $entity->id() . ' changed by bulk action to Restricted.');
-      $entity->setRevisionCreationTime(\Drupal::time()->getRequestTime());
-      $entity->setRevisionUserId(\Drupal::currentUser()->id());
-      $entity->save();
+      $this->createRevision($entity, 'restricted');
 
       // Move file to private storage.
       $file = File::load($entity->field_upload_file->target_id);
