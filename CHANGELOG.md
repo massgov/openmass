@@ -1,3 +1,42 @@
+
+
+## [0.325.0] - June 14, 2022
+
+### Changed
+  - DP-22592: Change global footer.
+  - DP-24265: Correct heading levels of event itmes in event listing page, event listing in org and event pages.
+  - DP-24370: Install Imagick PHP extension at Tugboat
+  - DP-24806: Updates to the focal point help text on multiple places.
+  - DP-24993: Help text to clarify how the new Collection field should be used.
+  
+### Added
+  - DP-24414: Added a new Content Performance view.
+  - DP-24573: Add organization metadata to campaign landing pages.
+  - DP-24920: Add translation options to how-to content type.
+  - DP-25041: Add parent organization filter to Parents and Children Report.
+  - DP-25052: Uses field_hide_table_of_contents to hide Table of Contents on Info Details.
+  - DP-25105: Fix timeout tests for Entity Usage by deleting the entity_usage table before running them.
+  - DP-25108: - Creates a view (collection_term_empty_message) to display the "no items field".
+- Append collection_term_empty_message to the collection_all view empty section.
+  - DP-25112: -| - Added field_external_organization to external_data_resrouce - If field_external_organization has a value, replaces the organization shown on the collection listing pages.
+  - DP-25132: Add Greek language to the system.
+  
+### Fixed
+  - DP-24699: Improve CircleCI Backstop Job Times
+  - DP-24800: Automatic list "sort by date" fixes.
+  - DP-24907: Adjust image display on decision tree content type and add to backstop.
+  - DP-24976: - Title not required for CSV resources.
+- Title not shown if empty.
+- Help text added for CSV title.
+- If caption is empty, figcaption is not shown.
+  - DP-25081: Organizations was printing twice on authors info on News full.
+  - DP-25103: Fix scaffold overwriting example settings file
+  - hotfix: Fix global menu overlay
+  
+### Security
+  - DP-24927: Update components causing security alerts.
+  - DP-25141: Updated Drupal core to 9.3.16.
+  
 ## [0.324.0] - May 31, 2022
 
 ### Fixed
