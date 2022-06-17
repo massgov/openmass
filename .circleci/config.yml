@@ -43,7 +43,6 @@ references:
     node/install-packages:
       pkg-manager: yarn
       cache-version: v1002
-      paths: [ ., .circleci/nightcrawler ]
 
   branch_ignore: &branch_ignore
     ignore:
@@ -402,7 +401,7 @@ jobs:
       - run: mkdir -p /tmp/results/junit
       - run:
           name: Nightcrawler
-          command: node_modules/.bin/nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=<< parameters.target >> --samples=<< parameters.samples >>
+          command: node_modules/.bin/nightcrawler --config=.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=<< parameters.target >> --samples=<< parameters.samples >>
           no_output_timeout: 300m
       - store_test_results:
           path: /tmp/results
