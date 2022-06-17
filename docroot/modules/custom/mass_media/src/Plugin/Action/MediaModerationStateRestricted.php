@@ -33,8 +33,7 @@ class MediaModerationStateRestricted extends ActionBase {
       $file = File::load($entity->field_upload_file->target_id);
       // Path to save files to.
       $directory = "documents" . "/" . date("Y") . "/" . date("m") . "/" . date("d") . "/";
-
-      file_move($file, 'private://' . $directory, FileSystemInterface::EXISTS_REPLACE);
+      \Drupal::service('file_system')->move($file, 'private://' . $directory, FileSystemInterface::EXISTS_REPLACE);
     }
   }
 
