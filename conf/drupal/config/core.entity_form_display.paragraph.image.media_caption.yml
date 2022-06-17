@@ -12,10 +12,10 @@ dependencies:
     - field.field.paragraph.image.field_image_display_size
     - field.field.paragraph.image.field_image_wrapping
     - field.field.paragraph.image.field_media_display
-    - image.style.thumbnail
+    - image.style.embedded_full_width
     - paragraphs.paragraphs_type.image
   module:
-    - image
+    - focal_point
     - text
 id: paragraph.image.media_caption
 targetEntityType: paragraph
@@ -23,12 +23,14 @@ bundle: image
 mode: media_caption
 content:
   field_image:
-    type: image_image
+    type: image_focal_point
     weight: 0
     region: content
     settings:
       progress_indicator: throbber
-      preview_image_style: thumbnail
+      preview_image_style: embedded_full_width
+      preview_link: true
+      offsets: '50,50'
     third_party_settings: {  }
   field_image_caption:
     type: text_textarea
