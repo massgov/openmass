@@ -49,6 +49,10 @@ module.exports = async function (page, scenario, vp) {
   await page.evaluate(function (url) {
     // Disable jQuery animation for any future calls.
     jQuery.fx.off = true;
+
+    // Zero delay on CSS transitions.
+    jQuery("head").append('<style type="text/css"> *, *:before, *:after { transition-duration: 0s !important } </style>');
+
     // Immediately complete any in-progress animations.
     jQuery(':animated').finish();
 
