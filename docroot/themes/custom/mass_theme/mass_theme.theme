@@ -3392,7 +3392,15 @@ function mass_theme_preprocess_node_news_full(&$variables) {
     $cache_tags = array_merge($cache_tags, $author->getCacheTags());
   }
 
-  $is_blog_post = $node->field_news_type->value === 'blog_post';
+  switch ($node->field_news_type->value) {
+    case 'blog_post':
+    case 'guest_post':
+      $is_blog_post = TRUE;
+      break;
+
+    default:
+      $is_blog_post = FALSE;
+  }
   $variables['is_blog_post'] = $is_blog_post;
 
   $variables['blogpostCollectionHeader'] = [];
