@@ -102,6 +102,9 @@ module.exports = async function (page, scenario, vp) {
   // in local environments.
   await page.waitForFunction('jQuery.active == 0');
 
+  // All the alerts on the page must be processed.
+  await page.waitForFunction("jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0");
+
   if (scenario.label === 'InfoDetails1') {
     await page.waitForSelector('.cbFormErrorMarker', {visible: true})
   }
