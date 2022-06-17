@@ -25,13 +25,6 @@ class LazyBuilder {
   public function currentNid() {
     $nid = $this->routeMatch->getRawParameter('node');
 
-    // For location listing pages, set the nid to 0 to prevent Formstack from
-    // mixing the results with the location page.
-    $route_name = $this->routeMatch->getRouteName();
-    if ($route_name === 'mass_map.map_page') {
-      $nid = 0;
-    }
-
     return [
       '#cache' => [
         'contexts' => ['route'],
