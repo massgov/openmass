@@ -36,6 +36,15 @@
 #  - description: Third change item that needs a description along with an issue.
 #    issue: DP-19843
 #
-Security:
-  - description: Update components causing security alerts.
-    issue: DP-24927
+Changed:
+  - description: |-
+      - For Contextual Login Links:
+        - If services, using field_log_in_links if not empty.
+        - If organizations, using field_application_login_links if not empty.
+        - If other bundles, using computed_log_in_links.
+      - Setting value of computed_log_in_links
+        - Uses links from the closest ancestor, service or organization.
+      - If service or organization do not have login links:
+        - Uses links from the closest ancestor, service or organization.
+      - Ancestor referenced by field_primary_parent.
+    issue: DP-24810
