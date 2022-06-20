@@ -3,32 +3,50 @@
 namespace Drupal\mass_content;
 
 use Drupal\Component\Utility\UrlHelper;
-use Drupal\Core\Render\Renderer;
 use Drupal\Core\Url;
-use Drupal\mass_content_api\DescendantManagerInterface;
 use Drupal\node\NodeInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Provides contextual log in links based on the page being viewed.
  */
 class LogInLinksBuilder {
 
-  /**
-   * Drupal\mass_content_api\DescendantManagerInterface definition.
-   *
-   * @var \Drupal\mass_content_api\DescendantManagerInterface
-   */
-  protected $descendantManager;
+  public const MAX_ANCESTORS = 6;
 
   /**
-   * Constructor.
-   *
-   * @param \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager
-   *   The descendant manager service.
+   * Searches for contextual login links on current node and its ancestors.
    */
-  public function __construct(DescendantManagerInterface $descendant_manager) {
-    $this->descendantManager = $descendant_manager;
+  public function getContextualLoginLinks($entity, &$entities_hierarchy = [], $max_level = self::MAX_ANCESTORS) {
+    // No login links found and we have reached the max number of ancestors
+    // to look for them. Bye!
+    if ($max_level <= 0) {
+      return [];
+    }
+
+    $bundle = $entity->bundle();
+    // If page is service or organization, try to get direct links.
+    if (in_array($bundle, ['service_page', 'org_page'])) {
+      $login_links_fields_per_bundle = [
+        'service_page' => 'field_log_in_links',
+        'org_page' => 'field_application_login_links',
+      ];
+      $field = $login_links_fields_per_bundle[$bundle];
+      /** @var \Drupal\Core\Field\FieldItemList */
+      $login_links = $entity->$field ?? FALSE;
+      // Login links found.
+      if ($login_links && $login_links->count()) {
+        $list = [];
+        // Collecting links.
+        foreach ($login_links as $login_link) {
+          $list[] = $login_link;
+        }
+        return $list;
+      }
+    }
+    $refs = $entity->field_primary_parent->referencedEntities();
+    $parent_entity = $refs[0] ?? FALSE;
+    $entities_hierarchy[] = $entity;
+    return $parent_entity ? $this->getContextualLoginLinks($parent_entity, $entities_hierarchy, --$max_level) : [];
   }
 
   /**
@@ -42,31 +60,19 @@ class LogInLinksBuilder {
   public function buildContextualLogInLinks(array &$build, NodeInterface $node) {
     $links = $list_links = $cache_tags = [];
 
-    // Gather all the parent pages and set their ids as cache tags against
-    // this child page. This way if a link is added to the parent page it'll
-    // trickle down to the child page.
-    $this->getParentCacheTags($cache_tags, $node->id());
+    if (
+      $node->hasField('field_log_in_links') ||
+      $node->hasField('field_application_login_links') ||
+      $node->hasField('computed_log_in_links')
+      ) {
+      $entities_hierarchy = [];
+      $list_links = $this->getContextualLoginLinks($node, $entities_hierarchy);
 
-    // Service and Organization pages will have their own log in links set
-    // directly against their content entity. All other pages that should
-    // have contextual log in links will be determine based on the results
-    // of the computed log in links field.
-    $manual_field_mapping = [
-      'service_page' => 'field_log_in_links',
-      'org_page' => 'field_application_login_links',
-    ];
-    $bundle = $node->bundle();
-    if ((isset($manual_field_mapping[$bundle]) && $node->hasField($manual_field_mapping[$bundle]))
-      || $node->hasField('computed_log_in_links')) {
-      // Set the links for the two content types that should reference
-      // themselves. Otherwise, get the links from the computed log in link
-      // field.
-      if (in_array($bundle, array_keys($manual_field_mapping))) {
-        $list_links = $node->get($manual_field_mapping[$bundle]);
+      // Adding cache tags of all the ancestors needed to build the links.
+      foreach ($entities_hierarchy as $entity) {
+        $cache_tags[] = 'node:' . $entity->id();
       }
-      else {
-        $list_links = $node->get('computed_log_in_links');
-      }
+
       foreach ($list_links as $link) {
         $uri = $link->uri;
         $is_external = UrlHelper::isExternal($uri);
@@ -106,27 +112,6 @@ class LogInLinksBuilder {
             'tags' => $cache_tags,
           ],
         ];
-      }
-    }
-  }
-
-  /**
-   * Adds the node cache tags for parent services pages to the render array.
-   *
-   * @param array $cache_tags
-   *   The cache tags array.
-   * @param int $node_id
-   *   The node id of the current page.
-   */
-  protected function getParentCacheTags(array &$cache_tags, $node_id) {
-    // Find all parent service pages up to 3 levels.
-    $parents = $this->descendantManager->getParents($node_id, 3);
-
-    foreach ($parents as $parent_level) {
-      foreach ($parent_level as $parent) {
-        if ($parent['type'] == 'service_page') {
-          $cache_tags[] = 'node:' . $parent['id'];
-        }
       }
     }
   }
