@@ -11,10 +11,10 @@ dependencies:
     - field.field.paragraph.image.field_image_display_size
     - field.field.paragraph.image.field_image_wrapping
     - field.field.paragraph.image.field_media_display
-    - image.style.thumbnail
+    - image.style.embedded_full_width
     - paragraphs.paragraphs_type.image
   module:
-    - image
+    - image_widget_crop
     - text
 id: paragraph.image.default
 targetEntityType: paragraph
@@ -22,12 +22,22 @@ bundle: image
 mode: default
 content:
   field_image:
-    type: image_image
+    type: image_widget_crop
     weight: 0
     region: content
     settings:
       progress_indicator: throbber
-      preview_image_style: thumbnail
+      preview_image_style: embedded_full_width
+      crop_preview_image_style: crop_thumbnail
+      crop_list:
+        - tall
+        - wide
+      crop_types_required:
+        - tall
+        - wide
+      warn_multiple_usages: true
+      show_crop_area: false
+      show_default_crop: true
     third_party_settings: {  }
   field_image_administrative_title:
     type: string_textfield
