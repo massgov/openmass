@@ -33,6 +33,13 @@ class EntityUsageTest extends ExistingSiteBase {
    */
   protected function setUp() {
     parent::setUp();
+
+    // Remove everything from the entity_usage table
+    // to avoid long cleaning times that break this test.
+    // Note this avoids triggering events on bulk deletes, such as at
+    // \Drupal\entity_usage\EntityUsage::bulkDeleteTargets().
+    \Drupal::service('database')->delete('entity_usage')->execute();
+
     $this->emptyEntityUsageQueues();
     $user = User::create(['name' => $this->randomMachineName()]);
     $user->addRole('administrator');

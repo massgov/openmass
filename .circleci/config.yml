@@ -254,7 +254,7 @@ jobs:
       # Make sure changelogs are parseable by PHP (since build-changelog.php requires that).
       - run: php scripts/directory-yaml-parse.php
       # Lint javascript
-      - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 'docroot/profiles/custom/**/*.js' 2>&1
+      - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: vendor/bin/phpcs -v -n -s
 
@@ -426,38 +426,50 @@ jobs:
     working_directory: /home/circleci/code
     resource_class: xlarge
     docker:
-      # Need to use docker image for these steps.
-      - image: circleci/python:2.7.14
+      - image: cimg/node:16.15
+        environment:
+          BACKSTOP_ASYNC_CAPTURE_LIMIT: 3
     steps:
       - checkout
-      - run: cp .circleci/backstop/docker-compose.yml .
-      - setup_remote_docker
-      - run: docker-compose up --no-start backstop
-      - run: docker cp ./backstop/. "$(docker-compose ps -q backstop)":/src/
+      - run:
+          name: Install backstop and chromium dependencies
+          command: |
+            # Copied from https://github.com/garris/BackstopJS/blob/02eb04768fc04dd4a8b9d80de4e0c6785c4f603b/docker/Dockerfile
+            sudo apt-get update
+            sudo apt-get -qqy --no-install-recommends install \
+              libfontconfig \
+              libfreetype6 \
+              xfonts-cyrillic \
+              xfonts-scalable \
+              fonts-liberation \
+              fonts-ipafont-gothic \
+              fonts-wqy-zenhei \
+              libgbm-dev \
+              gconf-service libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libcairo2 libcups2 libdbus-1-3 libexpat1 libfontconfig1 libgcc1 libgconf-2-4 libgdk-pixbuf2.0-0 libglib2.0-0 libgtk-3-0 libnspr4 libpango-1.0-0 libpangocairo-1.0-0 libstdc++6 libx11-6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxss1 libxtst6 libappindicator1 libnss3 libasound2 libatk1.0-0 libc6 ca-certificates fonts-liberation lsb-release xdg-utils wget
+      - run:
+          name: Install backstop
+          command: npm install -g backstopjs@6.1.0
       - run:
           name: Backstop reference
-          command: docker-compose run backstop reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+          working_directory: backstop
+          command: backstop --config=backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
           no_output_timeout: 300m
       - when:
           condition: << parameters.tugboat >>
           steps:
             - run:
                 name: Backstop test (Tugboat target)
-                command: docker-compose run backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
+                working_directory: backstop
+                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
                 no_output_timeout: 300m
       - unless:
           condition: << parameters.tugboat >>
           steps:
             - run:
                 name: Backstop test (non Tugboat target)
-                command: docker-compose run backstop test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+                working_directory: backstop
+                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
                 no_output_timeout: 300m
-      - run:
-          command: docker-compose logs backstop
-          when: always
-      - run:
-          command: docker cp "$(docker-compose ps -q backstop)":/src/. ./backstop/
-          when: always
       - store_test_results:
           path: /home/circleci/code/backstop/report
       - store_artifacts:

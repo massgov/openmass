@@ -7,7 +7,6 @@ Feature: Decision Tree Content type
     Given I am logged in as a user with the "administrator" role
     Then the content type "decision_tree" has the fields:
       | field                        | tag        | type          | multivalue |
-      | field-campaign-logo          | input      | submit        | false      |
       | field-description            | textarea   | text          | false      |
       | field-disclaimer             | input      | text          | false      |
       | field-service-ref-services-6 | input      | text          | false      |

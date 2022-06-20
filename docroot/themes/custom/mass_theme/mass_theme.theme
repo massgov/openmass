@@ -1042,21 +1042,6 @@ function mass_theme_preprocess_node_location(&$variables) {
     $links = [];
     $nearby = FALSE;
 
-    if (Helper::isFieldPopulated($node, 'computed_related_locations')) {
-      $more_locations = $node->computed_related_locations->getValue();
-
-      foreach ($more_locations as $location) {
-        $more_node = Node::load($location['target_id']);
-        if ($more_node->hasField('field_related_organization_type')) {
-          $nearby = $nearby || $more_node->field_related_organization_type->value;
-        }
-        $links[] = [
-          'href' => Url::fromRoute('mass_map.map_page', ['node' => $more_node->id()]),
-          'text' => $more_node->label() . ' Locations',
-        ];
-      }
-    }
-
     $titleContext = t(' for @title', ['@title' => $page_title]);
     $related_prefix = $nearby ? t('Nearby') : t('Related');
     $related_title = $locationType == 'park' ? t('@prefix parks', ['@prefix' => $related_prefix]) : t('@prefix locations', ['@prefix' => $related_prefix]);
@@ -3399,16 +3384,23 @@ function mass_theme_preprocess_node_news_full(&$variables) {
 
     $variables['author'] = $full_name;
     $variables['author_url'] = $author->toUrl();
-    $variables['author_info'] = $author_title;
-    if ($author_title) {
-      $variables['author_info'] .= ', ' . $author_all_orgs;
-    }
-    $variables['author_info'] .= $author_all_orgs;
+    $variables['author_info'] =
+      $author_title .
+      ($author_title ? ', ' : '') .
+      $author_all_orgs;
 
     $cache_tags = array_merge($cache_tags, $author->getCacheTags());
   }
 
-  $is_blog_post = $node->field_news_type->value === 'blog_post';
+  switch ($node->field_news_type->value) {
+    case 'blog_post':
+    case 'guest_post':
+      $is_blog_post = TRUE;
+      break;
+
+    default:
+      $is_blog_post = FALSE;
+  }
   $variables['is_blog_post'] = $is_blog_post;
 
   $variables['blogpostCollectionHeader'] = [];

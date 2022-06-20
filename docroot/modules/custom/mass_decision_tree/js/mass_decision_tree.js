@@ -132,7 +132,7 @@
       function concatParams() {
         var paramComponents = [];
         for (var param in currentParams) {
-          if (currentParams.hasOwnProperty(param) && currentParams[param] !== '') {
+          if (Object.prototype.hasOwnProperty.call(currentParams, param) && currentParams[param] !== '') {
             var val = currentParams[param];
             if (param === 'responses') {
               param = 'p';

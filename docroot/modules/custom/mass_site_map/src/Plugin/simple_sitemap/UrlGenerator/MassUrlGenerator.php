@@ -53,10 +53,6 @@ class MassUrlGenerator extends EntityUrlGenerator {
           $mass_path_value = $this->fixDocumentLinks($entity);
           break;
 
-        case 'location':
-          $mass_path_value = $this->fixLocationLinks($entity);
-          break;
-
       }
       $default_path = [
         'url' => $url_object,
@@ -165,24 +161,6 @@ class MassUrlGenerator extends EntityUrlGenerator {
     }
 
     return $data;
-  }
-
-  /**
-   * The Mass.gov adjustments to Location entities in the sitemap.
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $entity
-   *   Plain old entity object.
-   */
-  protected function fixLocationLinks(EntityInterface $entity) {
-    $url_object = Url::fromRoute('mass_map.map_page', ['node' => $entity->id()]);
-    $url_object->setOption('absolute', TRUE);
-
-    return [
-      'url' => $url_object,
-      'lastmod' => method_exists($entity, 'getChangedTime') ? date('c', $entity->getChangedTime()) : NULL,
-      'priority' => 0.5,
-      'changefreq' => 'daily',
-    ];
   }
 
 }
