@@ -138,19 +138,6 @@
 {% set introSidebar = introSidebar ?: true %}
 
 {% block sidebarIntro %}
-  {% if introSidebar.logo %}
-    {% set image = introSidebar.logo %}
-    {% include "@atoms/09-media/image.twig" %}
-  {% endif %}
-  {% if introSidebar.social %}
-    {% set sidebarHeading = introSidebar.social.sidebarHeading %}
-    {% set sidebarHeading = sidebarHeading|merge({'level': level }) %}
-    {% set iconLinks = introSidebar.social.iconLinks|merge({'compHeading' : sidebarHeading }) %}
-    {% include "@molecules/icon-links.twig" %}
-  {% endif %}
-  {% if node.field_service_offered_by is not empty %}
-    {{ content.field_service_offered_by|merge({'#level': level }) }}
-  {% endif %}
 {% endblock %}
 
 {% block pageContent %}
