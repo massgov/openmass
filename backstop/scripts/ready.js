@@ -126,7 +126,8 @@ module.exports = async function (page, scenario, vp) {
   }
 
   // Wait for iframes to be resized at least once.
-  await page.waitForFunction("jQuery('.js-ma-responsive-iframe iframe:not([data-resized])').length === 0");
+  // Avoid iframes with fixed height.
+  await page.waitForFunction("jQuery('.js-ma-responsive-iframe iframe[height=auto]').length === 0");
 
   switch (scenario.label) {
     case "InfoDetailsImageWrapLeft":
