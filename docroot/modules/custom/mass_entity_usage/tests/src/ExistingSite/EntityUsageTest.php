@@ -241,6 +241,37 @@ class EntityUsageTest extends ExistingSiteBase {
   }
 
   /**
+   * Tests multiple references from one entity to another entity.
+   */
+  public function testCuratedList() {
+    $new_test_org = $this->createNode([
+      'title' => 'TestOrg',
+      'type' => 'org_page',
+      'moderation_state' => MassModeration::PUBLISHED,
+      'status' => 1
+    ]);
+
+    $this->createNode([
+      'title' => 'Curated list with references to an Organization.',
+      'type' => 'curated_list',
+      'field_curatedlist_overview' => [
+        'value' => $new_test_org->toLink()->toString(),
+        'format' => 'full_html',
+      ],
+      'field_primary_parent' => $new_test_org->id(),
+      'field_organizations' => $new_test_org->id(),
+      'moderation_state' => MassModeration::PUBLISHED,
+      'status' => 1
+    ]);
+
+    $this->processEntityUsageQueues();
+
+    // Showing only 1 reference is correct.
+    // @see Drupal\entity_usage\EntityUsage::listUniqueSourcesCount
+    $this->assertUsageRows($new_test_org, 1);
+  }
+
+  /**
    * Creates an organization with nested paragpraphs.
    */
   private function createOrganizationWithNestedParagraphs($topic_page_link, $state) {
