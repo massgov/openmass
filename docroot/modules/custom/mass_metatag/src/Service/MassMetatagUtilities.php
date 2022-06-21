@@ -29,13 +29,30 @@ class MassMetatagUtilities {
   }
 
   /**
+   * Gets the labels trimmed and slugified from a nodes array.
+   *
+   * @param \Drupal\node\Entity\Node [] $nodes
+   *   An array of Org nodes.
+   *
+   * @return string []
+   *   The array of slugified Org names from $nodes.
+   */
+  public function getSlugifiedTrimmedLabels($nodes) {
+    $result = [];
+    foreach ($nodes as $node) {
+      $result[] = $this->slugify(trim($node->label()));
+    }
+    return $result;
+  }
+
+  /**
    * Gets all Organization names for the passed node, including all parent Orgs.
    *
    * @param \Drupal\node\Entity\Node $node
    *   The node to get Orgs and parent Orgs from.
    *
-   * @return string[]
-   *   The array of slugified Org names related to this node.
+   * @return \Drupal\node\Entity\Node []
+   *   The array of Orgs related to this node.
    */
   public function getAllOrgsFromNode(Node $node) {
     $result = [];
@@ -54,7 +71,7 @@ class MassMetatagUtilities {
       if ($node->bundle() === 'org_page') {
         // If it is an unchecked org, add the slugified title to values.
         if (!in_array($node->id(), $checked_orgs)) {
-          $result[] = $this->slugify(trim($node->label()));
+          $result[] = $node;
         }
         // If there is a parent org, add it to the array to check.
         if (!$node->field_parent->isEmpty() && !is_null($node->field_parent->entity) && !in_array($node->field_parent->entity->id(), $checked_orgs)) {

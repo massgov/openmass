@@ -218,7 +218,12 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
         case 'mass_organizations':
           /** @var \Drupal\mass_metatag\Service\MassMetatagUtilities $metatag_utils */
           $metatag_utils = \Drupal::service('mass_metatag.utilities');
-          $org_names = $metatag_utils->getAllOrgsFromNode($data['node']);
+          $orgs = $metatag_utils->getAllOrgsFromNode($data['node']);
+          $org_names = $metatag_utils->getSlugifiedTrimmedLabels($orgs);
+
+          foreach ($orgs as $org) {
+            $bubbleable_metadata->addCacheableDependency($org);
+          }
 
           // Remove hyphens from organizations.
           foreach ($org_names as $key => $value) {
