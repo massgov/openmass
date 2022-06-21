@@ -194,6 +194,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
                   if ($item->entity->hasField('field_external_org_name')) {
                     $values[] = $item->entity->field_external_org_name->value;
                     $replacements[$original] = json_encode($values);
+                    $bubbleable_metadata->addCacheableDependency($item->entity);
                   }
                 }
               }
