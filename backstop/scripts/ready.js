@@ -113,19 +113,24 @@ module.exports = async function (page, scenario, vp) {
     await page.waitForSelector('.cbFormErrorMarker', {visible: true})
   }
 
-  if (scenario.showAlerts) {
+  if (!scenario.hideAlerts || scenario.hideAlerts === undefined) {
     // Wait for a selector to become visible.
     await page.waitForSelector('span.ma__emergency-alert__time-stamp', {
       visible: true,
       timeout: 0
     })
     await page.evaluate(async function () {
-      document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
-        // Force the content to be always same.
-        e.innerText = 'May. 24th, 2021, 5:00 pm';
-      });
+      document.querySelector('.ma__emergency-alert__time-stamp').innerText = 'May. 24th, 2021, 5:00 pm';
+      document.querySelector('.ma__emergency-alert__link a.ma__content-link span:first-child').innerText = 'Everyone age 5+ should get a COVID-19 booster. Anyone age 50+ may get a second booster. See the latest updates as of ';
+
     })
     await page.waitForTimeout(1000);
+  }
+  else {
+    await page.evaluate(async function () {
+      var el = document.querySelector( '.mass-alerts-block' );
+      el.parentNode.removeChild( el );
+    })
   }
 
   switch (scenario.label) {
