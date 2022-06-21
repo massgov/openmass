@@ -261,6 +261,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
               $data_resources = $data['node']->get('field_data_resource_type');
               if (!$data_resources->isEmpty() && strpos($type_name, 'resource') !== FALSE) {
                 foreach ($data_resources->referencedEntities() as $k => $resource) {
+                  $bubbleable_metadata->addCacheableDependency($resource);
                   $tags[$k] = $resource->get('field_dataresource_metatag')->getString();
                 }
               }
