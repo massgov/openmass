@@ -308,6 +308,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
             case 'links':
               foreach ($paragraph->field_link_single as $link) {
                 if ($link instanceof LinkItemInterface) {
+                  $bubbleable_metadata->addCacheableDependency($link->getEntity());
                   $url = $link->getUrl()->setAbsolute();
                   $name = $link->computed_title;
                   // Sometimes the computed_title is a render array, the output
