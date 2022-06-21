@@ -33,42 +33,6 @@ function mass_map_theme() {
 }
 
 /**
- * Implements hook_page_attachments().
- */
-function mass_map_page_attachments(&$page) {
-  $match = Drupal::routeMatch();
-
-  if ($match->getRouteName() === 'mass_map.map_page') {
-    $node = $match->getParameter('node');
-
-    $page['#attached']['html_head'][] = [
-      [
-        '#tag' => 'meta',
-        '#attributes' => [
-          'name' => 'mg_title',
-          'content' => $node->label() . ' Locations',
-        ],
-      ],
-      'mg_title',
-    ];
-
-    // Pass the absolute URL of the current page as mg_url.
-    $url = Url::fromRouteMatch($match)
-      ->setAbsolute(TRUE);
-    $page['#attached']['html_head'][] = [
-      [
-        '#tag' => 'meta',
-        '#attributes' => [
-          'name' => 'mg_url',
-          'content' => $url->toString(),
-        ],
-      ],
-      'mg_url',
-    ];
-  }
-}
-
-/**
  * Implements hook_preprocess_map_page().
  */
 function mass_map_preprocess_map_page(&$variables) {
