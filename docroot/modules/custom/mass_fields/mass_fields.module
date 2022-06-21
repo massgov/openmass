@@ -448,17 +448,11 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     $has_location_listing_page =
       $entity->field_org_ref_locations ?? FALSE &&
       !$entity->field_org_ref_locations->isEmpty();
-    // The org page's location listing URL.
-    $location_listings_url = Url::fromRoute('mass_map.map_page', ['node' => $entity->id()])->toString();
 
     foreach ($entity->field_ref_contact_info_1->referencedEntities() as $linked) {
       $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
       $item = $builder->view($linked, 'organization_navigation');
       $item['#field_name'] = 'extra_org_nav_contact_us';
-      $item['location_listings_url'] = [
-        '#markup' => $location_listings_url,
-        '#access' => $has_location_listing_page,
-      ];
 
       $build['extra_org_nav_contact_us'][] = $item;
     }
