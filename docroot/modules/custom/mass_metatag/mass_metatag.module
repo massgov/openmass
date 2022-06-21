@@ -156,6 +156,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
               'name' => $location->label(),
               'url' => $location->toUrl('canonical', ['absolute' => TRUE])->toString(),
             ];
+            $bubbleable_metadata->addCacheableDependency($location);
             $replacements[$original] = json_encode($values);
           }
           break;
