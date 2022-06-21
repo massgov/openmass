@@ -196,6 +196,7 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
     foreach ($nodes as $node) {
       $this->drupalGet($node->toUrl()->toString());
       $selector = $content_types_and_selectors[$node->bundle()];
+      $this->assertSession()->waitForElement('css', $selector);
       $this->assertSession()->elementExists('css', $selector);
     }
   }
