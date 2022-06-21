@@ -31,13 +31,13 @@ class MassMetatagUtilities {
   /**
    * Gets the labels trimmed and slugified from a nodes array.
    *
-   * @param \Drupal\node\Entity\Node [] $nodes
+   * @param \Drupal\node\Entity\Node[] $nodes
    *   An array of Org nodes.
    *
-   * @return string []
+   * @return string[]
    *   The array of slugified Org names from $nodes.
    */
-  public function getSlugifiedTrimmedLabels($nodes) {
+  public function getSlugifiedTrimmedLabels(array $nodes) {
     $result = [];
     foreach ($nodes as $node) {
       $result[] = $this->slugify(trim($node->label()));
@@ -51,7 +51,7 @@ class MassMetatagUtilities {
    * @param \Drupal\node\Entity\Node $node
    *   The node to get Orgs and parent Orgs from.
    *
-   * @return \Drupal\node\Entity\Node []
+   * @return \Drupal\node\Entity\Node[]
    *   The array of Orgs related to this node.
    */
   public function getAllOrgsFromNode(Node $node) {
