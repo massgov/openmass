@@ -4,7 +4,6 @@ namespace Drupal\mass_content\Commands;
 
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drush\Commands\DrushCommands;
 

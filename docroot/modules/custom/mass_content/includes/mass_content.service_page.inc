@@ -403,7 +403,6 @@ function _mass_content_service_page_add_social_links(&$node) {
 function _mass_content_service_page_migrate_additional_resources(&$node, bool $section = TRUE) {
   $link_groups = [];
   $check_additional = check_additional_resources($node);
-  Drush::logger()->notice(json_encode($check_additional));
   if (!$check_additional) {
     if (!$node->field_service_links->isEmpty()) {
       // Get the field value.
