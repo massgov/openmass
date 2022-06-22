@@ -11,15 +11,40 @@ use Drupal\mayflower\Helper;
 /**
  * Helper function to check if paragraph of given type is already populated.
  */
-function check_paragraph($node, $bundle) {
+function check_paragraph_bundle($node, $bundle, $heading = NULL) {
+  $p_sections = Helper::getReferencedEntitiesFromField($node, 'field_service_sections');
+  if ($p_sections) {
+    foreach ($p_sections as $p_section) {
+      $p_contents = Helper::getReferencedEntitiesFromField($p_section, 'field_service_section_content');
+      if ($p_contents) {
+          foreach ($p_contents as $p_content) {
+            if ($p_content->bundle() == $bundle) {
+              return TRUE;
+            }
+          }
+        }
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Helper function to check if Additional Resources is already populated.
+ */
+function check_additional_resources($node) {
   $p_sections = Helper::getReferencedEntitiesFromField($node, 'field_service_sections');
   if ($p_sections) {
     foreach ($p_sections as $p_section) {
       $p_contents = Helper::getReferencedEntitiesFromField($p_section, 'field_service_section_content');
       if ($p_contents) {
         foreach ($p_contents as $p_content) {
-          if ($p_content->bundle() == $bundle) {
-            return TRUE;
+          if ($p_content->bundle() == 'flexible_link_group') {
+            if (Helper::isFieldPopulated($p_content, 'field_flexible_link_group_title')) {
+              $value = $p_content->get('field_flexible_link_group_title')->value;
+              if ($value == 'Additional Resources') {
+                return TRUE;
+              }
+            }
           }
         }
       }
@@ -196,64 +221,85 @@ function _mass_content_service_page_migration_default_link_group(&$node) {
   if (!$node->field_service_key_info_links_6->isEmpty()) {
     // Get the field value.
     $field_service_key_info_links_6 = $node->get('field_service_key_info_links_6')->getValue();
-
+    $key_information_groups = [];
     $link_group_links = [];
     foreach ($field_service_key_info_links_6 as $link) {
-      // Create a new link_group_link paragraph.
-      $link_group_link = Paragraph::create([
-        'type' => 'link_group_link',
-      ]);
-
-      $link_group_link->set('field_link_group_link', $link);
-      $link_group_link->save();
-      $link_group_links[] = $link_group_link;
+      if ($link) {
+        // Create a new link_group_link paragraph.
+        $link_group_link = Paragraph::create([
+          'type' => 'link_group_link',
+        ]);
+        $link_group_link->set('field_link_group_link', $link);
+        $link_group_link->save();
+        $link_group_links[] = $link_group_link;
+      }
     }
 
-    // Create a new flexible_link_group paragraph.
-    $key_information_group = Paragraph::create([
-      'type' => 'flexible_link_group',
-    ]);
+    if ($link_group_links) {
+      // Create a new flexible_link_group paragraph.
+      $key_information_group = Paragraph::create([
+        'type' => 'flexible_link_group',
+      ]);
 
-    $key_information_group->set('field_featured', 0);
-    $key_information_group->set('field_display_type', 'buttons');
-    // 2 = Buttons.
-    $key_information_group->set('field_flexible_link_group_title', '');
-    $key_information_group->set('field_link_group', $link_group_links);
-    $key_information_group->save();
-
+      $key_information_group->set('field_featured', 0);
+      $key_information_group->set('field_display_type', 'buttons');
+      // 2 = Buttons.
+      $key_information_group->set('field_flexible_link_group_title', '');
+      $key_information_group->set('field_link_group', $link_group_links);
+      $key_information_group->save();
+      $key_information_groups[] = $key_information_group;
+    }
   }
 
-  if ($flexible_link_groups) {
-    // Create a new Service Section paragraph.
-    $new_service_section_form_paragraph = Paragraph::create([
-      'type' => 'service_section',
-    ]);
-    // Set the field values.
-    $new_service_section_form_paragraph->set('field_service_section_content', $flexible_link_groups);
-    $new_service_section_form_paragraph->set('field_service_section_heading', 'What would you like to do?');
-    $new_service_section_form_paragraph->set('field_section_style', 'enhanced');
-    $new_service_section_form_paragraph->set('field_hide_heading', 0);
-    // Save the new paragraph.
-    $new_service_section_form_paragraph->save();
-    // Add the new section to the org sections field.
-    _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph);
-  }
-
-  if ($key_information_group) {
-    // Create a new Service Section paragraph.
-    $new_service_section_form_paragraph_key = Paragraph::create([
-      'type' => 'service_section',
-    ]);
-    // Set the field values.
-    $new_service_section_form_paragraph_key->set('field_service_section_content', $key_information_group);
-    $new_service_section_form_paragraph_key->set('field_service_section_heading', 'What you need to know');
-    $new_service_section_form_paragraph_key->set('field_section_style', 'enhanced');
-    $new_service_section_form_paragraph_key->set('field_hide_heading', 0);
-    // Save the new paragraph.
-    $new_service_section_form_paragraph_key->save();
+  if (empty($flexible_link_groups) && !empty($key_information_groups)) {
+    $additional_resources = _mass_content_service_page_migrate_additional_resources($node, FALSE);
+    if ($additional_resources) {
+      $key_information_groups[] = $additional_resources;
+    }
+    $new_service_section_form_paragraph_key = create_service_section($key_information_groups, 'What you need to know', 'enhanced', 0);
     // Add the new section to the org sections field.
     _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph_key);
   }
+  elseif (!empty($flexible_link_groups) && empty($key_information_groups)) {
+    $additional_resources = _mass_content_service_page_migrate_additional_resources($node, FALSE);
+    if ($additional_resources) {
+      $flexible_link_groups[] = $additional_resources;
+    }
+    $new_service_section_form_paragraph = create_service_section($flexible_link_groups, 'What would you like to do?', 'enhanced', 0);
+    // Add the new section to the org sections field.
+    _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph);
+  }
+  elseif (!empty($flexible_link_groups) && !empty($key_information_groups)) {
+    $new_service_section_form_paragraph = create_service_section($flexible_link_groups, 'What would you like to do?', 'enhanced', 0);
+    // Add the new section to the org sections field.
+    _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph);
+
+    $additional_resources = _mass_content_service_page_migrate_additional_resources($node, FALSE);
+    if ($additional_resources) {
+      $key_information_groups[] = $additional_resources;
+    }
+    $new_service_section_form_paragraph_key = create_service_section($key_information_groups, 'What you need to know', 'enhanced', 0);
+    // Add the new section to the org sections field.
+    _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph_key);
+  }
+}
+
+/**
+ * Helper function to populate service sections.
+ */
+function create_service_section(array $content, string $heading, string $style, bool $hide) {
+  // Create a new Service Section paragraph.
+  $new_service_section_form_paragraph = Paragraph::create([
+    'type' => 'service_section',
+  ]);
+  // Set the field values.
+  $new_service_section_form_paragraph->set('field_service_section_content', $content);
+  $new_service_section_form_paragraph->set('field_service_section_heading', $heading);
+  $new_service_section_form_paragraph->set('field_section_style', $style);
+  $new_service_section_form_paragraph->set('field_hide_heading', $hide);
+  // Save the new paragraph.
+  $new_service_section_form_paragraph->save();
+  return $new_service_section_form_paragraph;
 }
 
 /**
@@ -301,7 +347,7 @@ function _mass_content_service_page_migration_locations(&$node) {
  * Create empty contact placeholder paragraph.
  */
 function _mass_content_service_page_add_contact_information(&$node) {
-  $check = check_paragraph($node, 'contact_placeholder');
+  $check = check_paragraph_bundle($node, 'contact_placeholder');
   if (!$node->field_ref_contact_info->isEmpty() && !$check) {
     $contact = Paragraph::create([
       'type' => 'contact_placeholder',
@@ -328,7 +374,7 @@ function _mass_content_service_page_add_contact_information(&$node) {
  * Add social links section.
  */
 function _mass_content_service_page_add_social_links(&$node) {
-  $check = check_paragraph($node, 'social_media');
+  $check = check_paragraph_bundle($node, 'social_media');
   if (!$node->field_services_social_links->isEmpty() && !$check) {
     $social_media = Paragraph::create([
       'type' => 'social_media',
@@ -354,67 +400,74 @@ function _mass_content_service_page_add_social_links(&$node) {
 /**
  * Migrate additional resources section.
  */
-function _mass_content_service_page_migrate_additional_resources(&$node) {
+function _mass_content_service_page_migrate_additional_resources(&$node, bool $section = TRUE) {
   $link_groups = [];
-  if (!$node->field_service_links->isEmpty()) {
-    // Get the field value.
-    $field_service_links = $node->get('field_service_links')->getValue();
-    foreach ($field_service_links as $link) {
-      // Create a new link_group_link paragraph.
-      $link_group_link = Paragraph::create([
-        'type' => 'link_group_link',
-      ]);
+  $check_additional = check_additional_resources($node);
+  Drush::logger()->notice(json_encode($check_additional));
+  if (!$check_additional) {
+    if (!$node->field_service_links->isEmpty()) {
+      // Get the field value.
+      $field_service_links = $node->get('field_service_links')->getValue();
+      foreach ($field_service_links as $link) {
+        // Create a new link_group_link paragraph.
+        $link_group_link = Paragraph::create([
+          'type' => 'link_group_link',
+        ]);
 
-      $link_group_link->set('field_link_group_link', $link);
-      $link_group_link->save();
-      $link_groups[] = $link_group_link;
+        $link_group_link->set('field_link_group_link', $link);
+        $link_group_link->save();
+        $link_groups[] = $link_group_link;
+      }
     }
-  }
 
-  if (!$node->field_service_file->isEmpty()) {
-    // Get the field value.
-    $field_service_file = $node->get('field_service_file')->getValue();
+    if (!$node->field_service_file->isEmpty()) {
+      // Get the field value.
+      $field_service_file = $node->get('field_service_file')->getValue();
 
-    foreach ($field_service_file as $file) {
-      // Create a new link_group_document paragraph.
-      $link_group_document = Paragraph::create([
-        'type' => 'link_group_document',
-      ]);
+      foreach ($field_service_file as $file) {
+        // Create a new link_group_document paragraph.
+        $link_group_document = Paragraph::create([
+          'type' => 'link_group_document',
+        ]);
 
-      $link_group_document->set('field_file_download_single', $file);
-      $link_group_document->save();
-      $link_groups[] = $link_group_document;
+        $link_group_document->set('field_file_download_single', $file);
+        $link_group_document->save();
+        $link_groups[] = $link_group_document;
+      }
     }
-  }
 
-  if (!empty($link_groups)) {
-    // Create a new flexible_link_group paragraph.
-    $additional_resources = Paragraph::create([
-      'type' => 'flexible_link_group',
-    ]);
-
-    $additional_resources->set('field_featured', 0);
-    $additional_resources->set('field_display_type', 'links');
-    $additional_resources->set('field_group_expanded', 1);
-    // 1 = Links.
-    $additional_resources->set('field_flexible_link_group_title', 'Additional Resources');
-    $additional_resources->set('field_link_group', $link_groups);
-    $additional_resources->save();
-
-    if ($additional_resources) {
-      // Create a new Service Section paragraph.
-      $new_service_section_form_paragraph = Paragraph::create([
-        'type' => 'service_section',
+    if (!empty($link_groups)) {
+      // Create a new flexible_link_group paragraph.
+      $additional_resources = Paragraph::create([
+        'type' => 'flexible_link_group',
       ]);
-      // Set the field values.
-      $new_service_section_form_paragraph->set('field_service_section_content', $additional_resources);
-      $new_service_section_form_paragraph->set('field_service_section_heading', 'Additional Resources');
-      $new_service_section_form_paragraph->set('field_hide_heading', 1);
-      $new_service_section_form_paragraph->set('field_section_style', 'simple');
-      // Save the new paragraph.
-      $new_service_section_form_paragraph->save();
-      // Add the new section to the org sections field.
-      _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph);
+
+      $additional_resources->set('field_featured', 0);
+      $additional_resources->set('field_display_type', 'links');
+      $additional_resources->set('field_group_expanded', 1);
+      // 1 = Links.
+      $additional_resources->set('field_flexible_link_group_title', 'Additional Resources');
+      $additional_resources->set('field_link_group', $link_groups);
+      $additional_resources->save();
+
+      if ($section) {
+        // Create a new Service Section paragraph.
+        $new_service_section_form_paragraph = Paragraph::create([
+          'type' => 'service_section',
+        ]);
+        // Set the field values.
+        $new_service_section_form_paragraph->set('field_service_section_content', $additional_resources);
+        $new_service_section_form_paragraph->set('field_service_section_heading', 'Additional Resources');
+        $new_service_section_form_paragraph->set('field_hide_heading', 1);
+        $new_service_section_form_paragraph->set('field_section_style', 'simple');
+        // Save the new paragraph.
+        $new_service_section_form_paragraph->save();
+        // Add the new section to the org sections field.
+        _mass_content_service_page_migration_add_section($node, $new_service_section_form_paragraph);
+      }
+      else {
+        return $additional_resources;
+      }
     }
   }
 }
