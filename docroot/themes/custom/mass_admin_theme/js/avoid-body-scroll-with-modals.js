@@ -2,13 +2,13 @@
 
 (function () {
   function controlBodyOverflow() {
-    const modals = document.querySelectorAll('[aria-describedby=drupal-modal]').length > 0;
+    var modals = document.querySelectorAll('[aria-describedby=drupal-modal]').length > 0;
     document.getElementsByTagName('body')[0].setAttribute('data-showing-modal', modals);
   }
 
-  const modalObserver = new MutationObserver(Drupal.debounce(controlBodyOverflow, 250));
+  var modalObserver = new MutationObserver(Drupal.debounce(controlBodyOverflow, 250));
 
-  const config = {
+  var config = {
     attributes: false,
     childList: true,
     characterData: false
