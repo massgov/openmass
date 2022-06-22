@@ -132,14 +132,6 @@
   {% endif %}
 {% endblock %}
 
-{# The sidebar can have one or more of many fields, which are right now prepared in preprocess function and populated #}
-{# in the variable "introSidebar". A full template mapping of all those fields is needed. If we template map only one #}
-{# field at a time Eg:field_service_offered_by, then others will not appear as we did in the commented out line below. #}
-{% set introSidebar = introSidebar ?: true %}
-
-{% block sidebarIntro %}
-{% endblock %}
-
 {% block pageContent %}
 
   {{ content.field_service_sections }}
