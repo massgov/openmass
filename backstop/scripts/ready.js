@@ -117,7 +117,7 @@ module.exports = async function (page, scenario, vp) {
     // Wait for a selector to become visible.
     await page.waitForSelector('span.ma__emergency-alert__time-stamp', {
       visible: true,
-      timeout: 0
+      timeout: 10000,
     })
     await page.evaluate(async function () {
       document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
@@ -140,11 +140,11 @@ module.exports = async function (page, scenario, vp) {
       await page.waitForFunction("document.readyState === 'complete'");
       await page.waitForSelector('form.ma__mass-feedback-form__form', {
         visible: true,
-        timeout: 0
+        timeout: 10000,
       });
       await page.waitForSelector(".ma__figure--x-large img", {
         visible: true,
-        timeout: 0
+        timeout: 10000,
       });
       await page.waitForTimeout(3000);
       break;
