@@ -26,16 +26,22 @@ targetEntityType: paragraph
 bundle: iframe
 mode: media_caption_and_display
 content:
+  field_aspect_ratio:
+    type: options_select
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_height:
     type: number
-    weight: 4
+    weight: 5
     region: content
     settings:
       placeholder: ''
     third_party_settings: {  }
   field_iframe_accessibility_title:
     type: string_textfield
-    weight: 5
+    weight: 6
     region: content
     settings:
       size: 60
@@ -51,13 +57,13 @@ content:
     third_party_settings: {  }
   field_iframe_alignment:
     type: options_buttons
-    weight: 8
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
   field_iframe_caption:
     type: text_textarea
-    weight: 6
+    weight: 7
     region: content
     settings:
       rows: 5
@@ -65,19 +71,19 @@ content:
     third_party_settings: {  }
   field_iframe_display_size:
     type: options_select
-    weight: 7
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   field_iframe_height_config:
     type: options_buttons
-    weight: 2
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
   field_iframe_wrapping:
     type: options_buttons
-    weight: 9
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -91,7 +97,7 @@ content:
     third_party_settings: {  }
   field_verify_iframe_100_confirm:
     type: boolean_checkbox
-    weight: 3
+    weight: 4
     region: content
     settings:
       display_label: false
@@ -103,7 +109,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_aspect_ratio: true
   field_caption: true
   field_media_display: true
   status: true
