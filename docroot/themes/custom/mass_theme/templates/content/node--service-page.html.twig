@@ -24,9 +24,7 @@
 
 {% block preContent %}
   {# If the contextual navigation should be set for this node, then add it. #}
-  {% if node.field_log_in_links is not empty %}
-    {{ contextual_log_in_links }}
-  {% endif %}
+  {{ contextual_log_in_links }}
 
   {# Check if primary indicator content exists. #}
   {% set primaryIndicators = null %}

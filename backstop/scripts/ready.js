@@ -49,6 +49,10 @@ module.exports = async function (page, scenario, vp) {
   await page.evaluate(function (url) {
     // Disable jQuery animation for any future calls.
     jQuery.fx.off = true;
+
+    // Zero delay on CSS transitions.
+    jQuery("head").append('<style type="text/css"> *, *:before, *:after { transition-duration: 0s !important } </style>');
+
     // Immediately complete any in-progress animations.
     jQuery(':animated').finish();
 
@@ -101,6 +105,9 @@ module.exports = async function (page, scenario, vp) {
   // time to finish rendering. This can take a while, especially
   // in local environments.
   await page.waitForFunction('jQuery.active == 0');
+
+  // All the alerts on the page must be processed.
+  await page.waitForFunction("jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0");
 
   if (scenario.label === 'InfoDetails1') {
     await page.waitForSelector('.cbFormErrorMarker', {visible: true})

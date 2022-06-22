@@ -3340,7 +3340,15 @@ function mass_theme_preprocess_node_news_full(&$variables) {
     $cache_tags = array_merge($cache_tags, $author->getCacheTags());
   }
 
-  $is_blog_post = $node->field_news_type->value === 'blog_post';
+  switch ($node->field_news_type->value) {
+    case 'blog_post':
+    case 'guest_post':
+      $is_blog_post = TRUE;
+      break;
+
+    default:
+      $is_blog_post = FALSE;
+  }
   $variables['is_blog_post'] = $is_blog_post;
 
   $variables['blogpostCollectionHeader'] = [];
@@ -3988,6 +3996,7 @@ function mass_theme_preprocess_node(&$variables) {
     'Data Resource' => 'resource',
     'Report' => 'report',
   ];
+
   // The field_data_flag field determines if it's a data listing. All External
   // Data Resource nodes are data listings.
   if ($node->getType() === 'external_data_resource' ||
@@ -4020,7 +4029,7 @@ function mass_theme_preprocess_node(&$variables) {
         }
       }
       else {
-        $variables['data_listing_icon'] = $icon_map[$term->label()];
+        $variables['data_listing_icon'] = $icon_map[$term->label()] ?? NULL;
         $variables['data_listing_icon_label'] = $term->label();
       }
     }
