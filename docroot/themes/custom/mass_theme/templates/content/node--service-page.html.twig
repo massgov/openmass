@@ -152,16 +152,7 @@
   {% if contactList %}
     {% include "@organisms/by-author/contact-list.twig" %}
   {% endif %}
-  {% if default and splitColumns %}
-    {% set moreInfo = "More Information"|t %}
-    {# The "More Information" should only show if the split columns are being used. #}
-    <div class="more-info-header">
-      <h{{ level }} class="ma__comp-heading">
-        {{ moreInfo }}
-      </h{{ level }}>
-    </div>
-    {% include "@organisms/by-author/split-columns.twig" %}
-  {% elseif custom and node.field_service_ref_services_6 is not empty %}
+  {% if node.field_service_ref_services_6 is not empty %}
     {% set moreInfo = "Related Services"|t %}
     {# The "More Information" should only show if the split columns are being used. #}
     <div class="more-info-header">
