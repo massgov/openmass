@@ -350,6 +350,21 @@ jobs:
       - run:
           command: "php scripts/ma-mayflower-develop.php"
 
+  # Post-release merge from master to develop.
+  master_to_develop:
+    working_directory: /tmp/code
+    docker:
+      - image: cimg/php:7.4-node
+    steps:
+      - attach_workspace: { at: /tmp }
+      - *vendor_bin_add_path
+      - *no_host_check
+      - checkout
+      # Identify the committer i.e. CircleCI deployment bot
+      - git_configure_user
+      - run:
+          command: "scripts/master-to-develop"
+
   deploy:
     parameters:
       target:
@@ -939,10 +954,10 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - master-to-develop:
+      - master_to_develop:
           name: master-to-develop-prod-maint
           requires: [ deploy-tag-prod-acquia-maint ]
-      - master-to-develop:
+      - master_to_develop:
           name: master-to-develop-prod-no-maint
           requires: [ deploy-tag-prod-acquia-no-maint ]
 
