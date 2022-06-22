@@ -1,6 +1,6 @@
 'use strict';
 
-(() => {
+(function () {
   function controlBodyOverflow() {
     const modals = document.querySelectorAll('[aria-describedby=drupal-modal]').length > 0;
     document.getElementsByTagName('body')[0].setAttribute('data-showing-modal', modals);
