@@ -24,9 +24,7 @@
 
 {% block preContent %}
   {# If the contextual navigation should be set for this node, then add it. #}
-  {% if node.field_log_in_links is not empty %}
-    {{ contextual_log_in_links }}
-  {% endif %}
+  {{ contextual_log_in_links }}
 
   {# Check if primary indicator content exists. #}
   {% set primaryIndicators = null %}
@@ -130,14 +128,6 @@
     {% set keyActions = keyActions|merge({'compHeading': compHeading}) %}
     {% include "@organisms/by-author/key-actions.twig" %}
   {% endif %}
-{% endblock %}
-
-{# The sidebar can have one or more of many fields, which are right now prepared in preprocess function and populated #}
-{# in the variable "introSidebar". A full template mapping of all those fields is needed. If we template map only one #}
-{# field at a time Eg:field_service_offered_by, then others will not appear as we did in the commented out line below. #}
-{% set introSidebar = introSidebar ?: true %}
-
-{% block sidebarIntro %}
 {% endblock %}
 
 {% block pageContent %}

@@ -1,26 +1,29 @@
 
 
-## [0.323.0] - May 24, 2022
+## [0.326.0] - June 21, 2022
 
-### Changed
-  - DP-24306: Upgrade to the latest Chrome image for tests
-  - DP-24794: - Removes "Related Services" number of links limitation on the service page..
-- Limits related services to 12 and updates field description.
-- Removes related display, 'related' sub path not used anymore for services.
-  - DP-24891: Improve performance of collection bulk tagging views.
-  - DP-24915: Only load development services on locals
-  - DP-24946: - Modify news_curated_list to not show blogpost news on News Org pages.
-- Modify RecentNews to not show blogpost news on Org pages.
-  - DP-24950: Collection filters to /admin/ma-dash/documents and its CSV export.
-  - DP-24951: Modify "no results" language for collections feature.
-  - DP-24952: Disable watch emails when using collection features.
-  
 ### Fixed
-  - DP-24909: - Fixes on collection header title.
-- Showing the banner style only if the description or bg color is not empty.
-- Fix breadcrumb not appearing on collection term pages.
-- Improving breacrumb cacheability by adding entities from the hierarchy.
-  - DP-24939: This corrects editor permissions for promotional pages. Change already made in production directly.
-  - DP-24947: - Modify collection pager to make it work with sort.
-- Collection content filtered by topic pass the topic ID to collection media view.
+  - DP-24689: Fix language bar spacing.
+  - DP-24980: Fix flakey \Drupal\Tests\mass_alerts\ExistingSiteJavascript\AlertsPlacementTest.
+  - DP-25106: Rolled back Nightcrawler update to resolve errors.
+  - DP-25153: Add rule to remove animations by setting the transition-duration to 0s.
+  - DP-25156: Backstop - wait all alerts on the page to be processed.
+  
+### Changed
+  - DP-24810: - For Contextual Login Links:
+  - If services, using field_log_in_links if not empty.
+  - If organizations, using field_application_login_links if not empty.
+  - If other bundles, using computed_log_in_links.
+- Setting value of computed_log_in_links
+  - Uses links from the closest ancestor, service or organization.
+- If service or organization do not have login links:
+  - Uses links from the closest ancestor, service or organization.
+- Ancestor referenced by field_primary_parent.
+  
+### Added
+  - DP-25130: Add new choice for announcement type field for news content type.
+  - DP-25155: Add Entity diff UI module to allow tracking of Media entity revision changes.
+  
+### Removed
+  - DP-25147: Remove /locations-old route from the system.
   
