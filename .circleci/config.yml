@@ -1018,6 +1018,15 @@ workflows:
               only:
                 - develop
 
+  #temporary
+  post-deploy-merge:
+    jobs:
+      - master_to_develop:
+          filters:
+            branches:
+              only: feature/DP-2…deploy-merge
+
+
   # Usually triggered by drush ma:backstop.
   backstop_ad_hoc:
     when: << pipeline.parameters.ma-backstop >>
