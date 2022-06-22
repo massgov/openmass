@@ -957,9 +957,19 @@ workflows:
       - master_to_develop:
           name: master-to-develop-prod-maint
           requires: [ deploy-tag-prod-acquia-maint ]
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
       - master_to_develop:
           name: master-to-develop-prod-no-maint
           requires: [ deploy-tag-prod-acquia-no-maint ]
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /.*/
 
   # Daily run of test suite using super sanitized DB
   build_test_super:
@@ -1017,12 +1027,6 @@ workflows:
             branches:
               only:
                 - develop
-
-  #temporary
-  post-deploy-merge:
-    jobs:
-      - master_to_develop
-
 
   # Usually triggered by drush ma:backstop.
   backstop_ad_hoc:
