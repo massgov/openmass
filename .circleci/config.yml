@@ -829,7 +829,6 @@ workflows:
             branches:
               only: master
 
-  # This is to tag the release in the Acquia repository.
   # This will deploy the newly created tag to stage environment and production environment with hold/approval for each job.
   build_tag:
     when: << pipeline.parameters.webhook >>
@@ -940,6 +939,12 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
+      - master-to-develop:
+          name: master-to-develop-prod-maint
+          requires: [ deploy-tag-prod-acquia-maint ]
+      - master-to-develop:
+          name: master-to-develop-prod-no-maint
+          requires: [ deploy-tag-prod-acquia-no-maint ]
 
   # Daily run of test suite using super sanitized DB
   build_test_super:
