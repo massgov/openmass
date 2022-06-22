@@ -1021,10 +1021,7 @@ workflows:
   #temporary
   post-deploy-merge:
     jobs:
-      - master_to_develop:
-          filters:
-            branches:
-              only: feature/DP-2…deploy-merge
+      - master_to_develop
 
 
   # Usually triggered by drush ma:backstop.
