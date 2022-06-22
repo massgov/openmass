@@ -17,12 +17,12 @@ function check_paragraph_bundle($node, $bundle, $heading = NULL) {
     foreach ($p_sections as $p_section) {
       $p_contents = Helper::getReferencedEntitiesFromField($p_section, 'field_service_section_content');
       if ($p_contents) {
-          foreach ($p_contents as $p_content) {
-            if ($p_content->bundle() == $bundle) {
-              return TRUE;
-            }
+        foreach ($p_contents as $p_content) {
+          if ($p_content->bundle() == $bundle) {
+            return TRUE;
           }
         }
+      }
     }
   }
   return FALSE;
