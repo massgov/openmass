@@ -3,7 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
-    - node.type.action
+    - field.storage.node.field_organizations
     - node.type.advisory
     - node.type.alert
     - node.type.binder
@@ -14,7 +14,6 @@ dependencies:
     - node.type.decision_tree
     - node.type.decision_tree_branch
     - node.type.decision_tree_conclusion
-    - node.type.error_page
     - node.type.event
     - node.type.executive_order
     - node.type.external_data_resource
@@ -23,21 +22,18 @@ dependencies:
     - node.type.guide_page
     - node.type.how_to_page
     - node.type.info_details
-    - node.type.interstitial
     - node.type.location
     - node.type.location_details
     - node.type.news
     - node.type.org_page
-    - node.type.page
     - node.type.person
     - node.type.regulation
     - node.type.rules
     - node.type.service_details
     - node.type.service_page
     - node.type.sitewide_alert
-    - node.type.stacked_layout
     - node.type.topic_page
-    - node.type.utility_drawer
+    - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
     - workflows.workflow.campaign_landing_page
     - workflows.workflow.editorial
@@ -50,6 +46,7 @@ dependencies:
     - taxonomy
     - user
     - views_autocomplete_filters
+    - views_porter_stemmer
 id: report_orphaned_content
 label: 'report orphaned content'
 module: views
@@ -396,7 +393,7 @@ display:
           entity_type: node
           entity_field: status
           plugin_id: field
-          label: 'Publication Status'
+          label: 'Published?'
           exclude: false
           alter:
             alter_text: false
@@ -520,149 +517,21 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        name:
-          id: name
-          table: users_field_data
-          field: name
-          relationship: revision_uid
-          group_type: group
-          admin_label: ''
-          entity_type: user
-          entity_field: name
-          plugin_id: field
-          label: 'Last revised by'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: user_name
-          settings:
-            link_to_entity: true
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        moderation_state:
-          id: moderation_state
-          table: node_field_revision
-          field: moderation_state
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          plugin_id: moderation_state_field
-          label: 'Last revision status'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: content_moderation_state
-          settings: {  }
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
+        last_updated:
+          id: last_updated
+          table: snooze
+          field: last_updated
           relationship: vid
           group_type: group
           admin_label: ''
-          plugin_id: numeric
-          label: Score
-          exclude: false
+          plugin_id: standard
+          label: 'Date Snoozed'
+          exclude: true
           alter:
             alter_text: false
             text: ''
-            make_link: true
-            path: 'node/{{ nid }}/analytics'
+            make_link: false
+            path: ''
             absolute: false
             external: false
             replace_spaces: false
@@ -694,26 +563,81 @@ display:
           element_wrapper_class: ''
           element_default_classes: true
           empty: ''
-          hide_empty: true
+          hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          set_precision: true
-          precision: 1
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
+        field_organizations:
+          id: field_organizations
+          table: node__field_organizations
+          field: field_organizations
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: Organization(s)
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: ul
+          separator: ', '
+          field_api_classes: false
         pageviews:
           id: pageviews
           table: mass_superset_data
           field: pageviews
-          relationship: vid
+          relationship: nid
           group_type: group
           admin_label: ''
           plugin_id: numeric
-          label: 'Page views (1 month)'
+          label: 'Page views'
           exclude: false
           alter:
             alter_text: false
@@ -813,55 +737,6 @@ display:
           empty_zero: false
           hide_alter_empty: true
           destination: false
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: standard
-          label: 'Date Snoozed'
-          exclude: true
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
       pager:
         type: mini
         options:
@@ -1552,6 +1427,7 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags:
+        - 'config:field.storage.node.field_organizations'
         - 'config:workflow_list'
   page_1:
     id: page_1
@@ -1668,63 +1544,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        nid:
-          id: nid
-          table: node_field_revision
-          field: nid
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: nid
-          plugin_id: numeric
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: nid_op
-            label: ID
-            description: ''
-            use_operator: false
-            operator: nid_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: nid
-            required: false
-            remember: true
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
         type_1:
           id: type_1
           table: node_field_data
@@ -1739,7 +1558,7 @@ display:
           value:
             advisory: advisory
             alert: alert
-            page: page
+            sitewide_alert: sitewide_alert
             binder: binder
             contact_information: contact_information
             curated_list: curated_list
@@ -1747,7 +1566,6 @@ display:
             decision_tree: decision_tree
             decision_tree_branch: decision_tree_branch
             decision_tree_conclusion: decision_tree_conclusion
-            error_page: error_page
             event: event
             executive_order: executive_order
             external_data_resource: external_data_resource
@@ -1756,7 +1574,6 @@ display:
             guide_page: guide_page
             how_to_page: how_to_page
             info_details: info_details
-            interstitial: interstitial
             location: location
             location_details: location_details
             news: news
@@ -1764,28 +1581,24 @@ display:
             person: person
             campaign_landing: campaign_landing
             regulation: regulation
-            action: action
             rules: rules
             service_page: service_page
             service_details: service_details
-            sitewide_alert: sitewide_alert
-            stacked_layout: stacked_layout
             topic_page: topic_page
-            utility_drawer: utility_drawer
           group: 1
           exposed: true
           expose:
             operator_id: type_1_op
             label: 'Content type'
             description: ''
-            use_operator: false
+            use_operator: true
             operator: type_1_op
             operator_limit_selection: false
             operator_list: {  }
             identifier: type_1
             required: false
             remember: true
-            multiple: false
+            multiple: true
             remember_roles:
               authenticated: authenticated
               anonymous: '0'
@@ -1799,9 +1612,7 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
               d2d_redirect_manager: '0'
-              external_data_resource_manager: '0'
               data_administrator: '0'
               collection_administrator: '0'
             reduce: true
@@ -1833,7 +1644,7 @@ display:
           exposed: true
           expose:
             operator_id: ''
-            label: 'Publication status'
+            label: 'Published?'
             description: ''
             use_operator: false
             operator: status_1_op
@@ -1856,6 +1667,9 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
           is_grouped: false
           group_info:
             label: ''
@@ -1907,57 +1721,6 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        uid:
-          id: uid
-          table: users_field_data
-          field: uid
-          relationship: revision_uid
-          group_type: group
-          admin_label: 'revision user'
-          entity_type: user
-          entity_field: uid
-          plugin_id: user_name
-          operator: in
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: uid_op
-            label: 'Last revised by'
-            description: ''
-            use_operator: false
-            operator: uid_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: uid
-            required: false
-            remember: true
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
             reduce: false
           is_grouped: false
           group_info:
@@ -2111,122 +1874,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        score:
-          id: score
-          table: mass_superset_data
-          field: score
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '<='
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: score_op
-            label: 'Score is less than or equal to'
-            description: ''
-            use_operator: false
-            operator: score_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: score
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        last_updated:
-          id: last_updated
-          table: snooze
-          field: last_updated
-          relationship: vid
-          group_type: group
-          admin_label: ''
-          plugin_id: date
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-            type: date
-          group: 1
-          exposed: true
-          expose:
-            operator_id: last_updated_op
-            label: Snoozed
-            description: null
-            use_operator: false
-            operator: last_updated_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: last_updated
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: null
-            max_placeholder: null
-            placeholder: null
-          is_grouped: true
-          group_info:
-            label: Snoozed
-            description: ''
-            identifier: last_updated
-            optional: true
-            widget: select
-            multiple: false
-            remember: true
-            default_group: All
-            default_group_multiple: {  }
-            group_items:
-              1:
-                title: 'Yes'
-                operator: '>='
-                value:
-                  min: ''
-                  max: ''
-                  value: '-2 weeks'
-                  type: offset
-              2:
-                title: 'No'
-                operator: empty
-                value:
-                  min: ''
-                  max: ''
-                  value: ''
-                  type: date
         field_reusable_label_target_id:
           id: field_reusable_label_target_id
           table: node__field_reusable_label
@@ -2373,6 +2020,65 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        field_collections_target_id:
+          id: field_collections_target_id
+          table: node__field_collections
+          field: field_collections_target_id
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: taxonomy_index_tid
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_collections_target_id_op
+            label: Collections
+            description: ''
+            use_operator: false
+            operator: field_collections_target_id_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: field_collections_target_id
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          vid: collections
+          type: textfield
+          hierarchy: false
+          limit: true
+          error_message: true
       filter_groups:
         operator: AND
         groups:
@@ -2408,4 +2114,5 @@ display:
         - user
         - 'user.node_grants:view'
         - user.permissions
-      tags: {  }
+      tags:
+        - 'config:field.storage.node.field_organizations'
