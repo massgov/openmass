@@ -1042,6 +1042,21 @@ function mass_theme_preprocess_node_location(&$variables) {
     $links = [];
     $nearby = FALSE;
 
+    if (Helper::isFieldPopulated($node, 'computed_related_locations')) {
+      $more_locations = $node->computed_related_locations->getValue();
+
+      foreach ($more_locations as $location) {
+        $more_node = Node::load($location['target_id']);
+        if ($more_node->hasField('field_related_organization_type')) {
+          $nearby = $nearby || $more_node->field_related_organization_type->value;
+        }
+        $links[] = [
+          'href' => Url::fromRoute('mass_map.map_page', ['node' => $more_node->id()]),
+          'text' => $more_node->label() . ' Locations',
+        ];
+      }
+    }
+
     $titleContext = t(' for @title', ['@title' => $page_title]);
     $related_prefix = $nearby ? t('Nearby') : t('Related');
     $related_title = $locationType == 'park' ? t('@prefix parks', ['@prefix' => $related_prefix]) : t('@prefix locations', ['@prefix' => $related_prefix]);
@@ -4048,6 +4063,7 @@ function mass_theme_preprocess_node(&$variables) {
     'Data Resource' => 'resource',
     'Report' => 'report',
   ];
+
   // The field_data_flag field determines if it's a data listing. All External
   // Data Resource nodes are data listings.
   if ($node->getType() === 'external_data_resource' ||
@@ -4080,7 +4096,7 @@ function mass_theme_preprocess_node(&$variables) {
         }
       }
       else {
-        $variables['data_listing_icon'] = $icon_map[$term->label()];
+        $variables['data_listing_icon'] = $icon_map[$term->label()] ?? NULL;
         $variables['data_listing_icon_label'] = $term->label();
       }
     }
