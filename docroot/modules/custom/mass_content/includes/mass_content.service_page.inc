@@ -11,7 +11,7 @@ use Drupal\mayflower\Helper;
 /**
  * Helper function to check if paragraph of given type is already populated.
  */
-function check_paragraph_bundle($node, $bundle, $heading = NULL) {
+function check_paragraph_bundle($node, $bundle) {
   $p_sections = Helper::getReferencedEntitiesFromField($node, 'field_service_sections');
   if ($p_sections) {
     foreach ($p_sections as $p_section) {
