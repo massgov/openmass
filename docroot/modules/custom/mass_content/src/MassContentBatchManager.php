@@ -85,7 +85,7 @@ class MassContentBatchManager {
   /**
    * Process the service_page node to migrate data.
    */
-  public function processServiceNode($id, ContentEntityBase $node, array $service_with_events, $operation_details, &$context) {
+  public static function processServiceNode($id, ContentEntityBase $node, array $service_with_events, $operation_details, &$context) {
     // Don't spam all the users with content update emails.
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
 
