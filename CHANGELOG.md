@@ -1,5 +1,34 @@
 
 
+## [0.326.0] - June 21, 2022
+
+### Fixed
+  - DP-24689: Fix language bar spacing.
+  - DP-24980: Fix flakey \Drupal\Tests\mass_alerts\ExistingSiteJavascript\AlertsPlacementTest.
+  - DP-25106: Rolled back Nightcrawler update to resolve errors.
+  - DP-25153: Add rule to remove animations by setting the transition-duration to 0s.
+  - DP-25156: Backstop - wait all alerts on the page to be processed.
+  
+### Changed
+  - DP-24810: - For Contextual Login Links:
+  - If services, using field_log_in_links if not empty.
+  - If organizations, using field_application_login_links if not empty.
+  - If other bundles, using computed_log_in_links.
+- Setting value of computed_log_in_links
+  - Uses links from the closest ancestor, service or organization.
+- If service or organization do not have login links:
+  - Uses links from the closest ancestor, service or organization.
+- Ancestor referenced by field_primary_parent.
+  
+### Added
+  - DP-25130: Add new choice for announcement type field for news content type.
+  - DP-25155: Add Entity diff UI module to allow tracking of Media entity revision changes.
+  
+### Removed
+  - DP-25147: Remove /locations-old route from the system.
+  
+
+
 ## [0.325.0] - June 14, 2022
 
 ### Changed
