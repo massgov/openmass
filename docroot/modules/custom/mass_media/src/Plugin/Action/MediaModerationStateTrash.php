@@ -2,10 +2,10 @@
 
 namespace Drupal\mass_media\Plugin\Action;
 
-use Drupal\Core\Action\ActionBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\mass_media\Traits\MediaModerationStateActionTrait;
 use Drupal\media\MediaInterface;
+use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 
 /**
  * Updates the moderation state of a media item to Trash.
@@ -16,7 +16,7 @@ use Drupal\media\MediaInterface;
  *   type = "media"
  * )
  */
-class MediaModerationStateTrash extends ActionBase {
+class MediaModerationStateTrash extends ViewsBulkOperationsActionBase {
 
   use MediaModerationStateActionTrait;
 

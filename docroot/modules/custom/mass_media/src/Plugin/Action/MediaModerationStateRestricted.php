@@ -3,11 +3,11 @@
 namespace Drupal\mass_media\Plugin\Action;
 
 use Drupal\Core\File\FileSystemInterface;
-use Drupal\Core\Action\ActionBase;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\mass_media\Traits\MediaModerationStateActionTrait;
 use Drupal\media\MediaInterface;
 use Drupal\file\Entity\File;
+use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 
 /**
  * Updates the moderation state of a media item to Restricted.
@@ -18,7 +18,7 @@ use Drupal\file\Entity\File;
  *   type = "media"
  * )
  */
-class MediaModerationStateRestricted extends ActionBase {
+class MediaModerationStateRestricted extends ViewsBulkOperationsActionBase {
 
   use MediaModerationStateActionTrait;
 
@@ -32,7 +32,7 @@ class MediaModerationStateRestricted extends ActionBase {
       // Move file to private storage.
       $file = File::load($entity->field_upload_file->target_id);
       // Path to save files to.
-      $directory = "documents" . "/" . date("Y") . "/" . date("m") . "/" . date("d") . "/";
+      $directory = "documents" .x "/" . date("Y") . "/" . date("m") . "/" . date("d") . "/";
 
       file_move($file, 'private://' . $directory, FileSystemInterface::EXISTS_REPLACE);
     }
