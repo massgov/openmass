@@ -120,13 +120,6 @@
     {% set video = introPageContent.video %}
     {% include "@atoms/09-media/video.twig" %}
   {% endif %}
-
-  {% if not flexibleLinkGroup and introPageContent.keyActions %}
-    {% set keyActions = introPageContent.keyActions %}
-    {% set compHeading = keyActions.compHeading|merge({'level': level }) %}
-    {% set keyActions = keyActions|merge({'compHeading': compHeading}) %}
-    {% include "@organisms/by-author/key-actions.twig" %}
-  {% endif %}
 {% endblock %}
 
 {% block pageContent %}
