@@ -354,7 +354,7 @@ jobs:
   master_to_develop:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:7.4-node
+      - image: cimg/php:8.0-node
     steps:
       - attach_workspace: { at: /tmp }
       - *vendor_bin_add_path
