@@ -246,6 +246,10 @@ jobs:
     working_directory: /tmp/code
     docker:
       - image: cimg/php:8.0-node
+    parameters:
+      target-branch:
+        type: string
+        default: '$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" $(echo https://api.github.com/repos/${CIRCLE_PULL_REQUEST:19} | sed "s/\/pull\//\/pulls\//") | jq ".base.ref" | tr -d "\042" )'
     steps:
       - attach_workspace: {at: /tmp }
       - *vendor_bin_add_path
@@ -266,7 +270,7 @@ jobs:
             -z \
             --name-only \
             --no-commit-id \
-            HEAD $CIRCLE_SHA1 -- docroot/modules/custom | xargs vendor/bin/phpcs --standard=phpcs.strict_types.xml
+            HEAD << parameters.target-branch >> -- docroot/modules/custom | xargs vendor/bin/phpcs --standard=phpcs.strict_types.xml
 
   test:
     parameters:
