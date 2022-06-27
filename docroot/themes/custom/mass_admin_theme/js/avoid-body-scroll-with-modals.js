@@ -2,7 +2,11 @@
   'use strict';
 
   function controlBodyOverflow() {
-    var modals = document.querySelectorAll('[aria-describedby=drupal-modal]').length > 0;
+    var modals = (
+      document.querySelectorAll('[aria-describedby=drupal-modal]').length +
+      (document.getElementById('drupal-modal') ? 1 : 0)
+    ) > 0;
+
     document.getElementsByTagName('body')[0].setAttribute('data-showing-modal', modals);
   }
 
