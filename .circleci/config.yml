@@ -257,6 +257,16 @@ jobs:
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
       - run: vendor/bin/phpcs -v -n -s
+      - run:
+          # https://architecture.lullabot.com/adr/20211201-use-strict-types-in-php-code/
+          name: New files must use strict types.
+          command: |
+            git diff-tree \
+            -r \
+            -z \
+            --name-only \
+            --no-commit-id \
+            HEAD $CIRCLE_SHA1 -- docroot/modules/custom | xargs vendor/bin/phpcs --standard=phpcs.strict_types.xml
 
   test:
     parameters:
