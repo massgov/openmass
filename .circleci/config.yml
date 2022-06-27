@@ -249,7 +249,7 @@ jobs:
     parameters:
       target-branch:
         type: string
-        default: '$(curl -s -H "Authorization: token ${GITHUB_TOKEN}" $(echo https://api.github.com/repos/${CIRCLE_PULL_REQUEST:19} | sed "s/\/pull\//\/pulls\//") | jq ".base.ref" | tr -d "\042" )'
+        default: '$(curl -s -H "Authorization: token ${GITHUB_MASSGOV_BOT_TOKEN}" $(echo https://api.github.com/repos/${CIRCLE_PULL_REQUEST:19} | sed "s/\/pull\//\/pulls\//") | jq ".base.ref" | tr -d "\042" )'
     steps:
       - attach_workspace: {at: /tmp }
       - *vendor_bin_add_path
