@@ -7293,7 +7293,7 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
 
             if ($variables['display_type'] == "buttons") {
               $original_file = $file->field_upload_file->entity;
-              $links[$index]['file_size']  = strtoupper(format_size($original_file->getSize()));
+              $links[$index]['file_size'] = strtoupper(format_size($original_file->getSize()));
               $file_info = new \SplFileInfo($original_file->getFilename());
               $file_extension = strtoupper($file_info->getExtension());
               $file_icon = 'doc-' . strtolower($file_extension);
