@@ -1,13 +1,19 @@
 (function () {
   'use strict';
 
-  function controlBodyOverflow() {
-    var modals = (
-      document.querySelectorAll('[aria-describedby=drupal-modal]').length +
-      (document.getElementById('drupal-modal') ? 1 : 0)
-    ) > 0;
+  function countsAsModal(element) {
+    if (element) {
+      var style = window.getComputedStyle(element);
+      return (style.display !== 'none');
+    }
+    return false;
+  }
 
-    document.getElementsByTagName('body')[0].setAttribute('data-showing-modal', modals);
+  function controlBodyOverflow() {
+    var showingModals =
+      countsAsModal(document.querySelectorAll('[aria-describedby=drupal-modal]')[0]) ||
+      countsAsModal(document.getElementById('drupal-modal'));
+    document.getElementsByTagName('body')[0].setAttribute('data-showing-modal', showingModals);
   }
 
   var modalObserver = new MutationObserver(Drupal.debounce(controlBodyOverflow, 250));
