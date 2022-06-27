@@ -64,7 +64,11 @@ services:
         - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
         - sudo apt update
         - sudo apt install yarn
-        - echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/my-php.ini
+        # These match Acquia default settings.
+        # See .ddev/php/my-php.ini for local configuration.
+        - echo "memory_limit=128M" >> /usr/local/etc/php/conf.d/my-php.ini
+        - echo "upload_max_filesize=256M" >> /usr/local/etc/php/conf.d/my-php.ini
+        - echo "post_max_size=256M" >> /usr/local/etc/php/conf.d/my-php.ini
 
         # Link the document root to the expected path.
         - ln -snf "${TUGBOAT_ROOT}/docroot" "${DOCROOT}"
