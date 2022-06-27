@@ -52,14 +52,28 @@
 {% if (display_type == 'buttons') %}
 
   {% set items = flexible_links_group.0.links %}
-
   {% set calloutLinks = [] %}
+
   {% for item in items %}
-    {% set calloutLink = {
+
+    {% set calloutLink = item.downloadable_file ?
+      {
+        "linkTemplate": "download",
+        "iconSize": "",
+        "icon": item.file_icon,
+        "size": item.file_size,
+        "format": item.file_extension,
+        "text": item.file_title,
+        "href": url('media_entity_download.download', {'media': item.mid}),
+        "info": ""
+      }
+      :
+      {
         "text": item.text,
         "href": item.href,
         "theme": flexible_links_group.0.theme
       }
+
     %}
     {% set calloutLinks = calloutLinks|merge([calloutLink]) %}
   {% endfor %}
