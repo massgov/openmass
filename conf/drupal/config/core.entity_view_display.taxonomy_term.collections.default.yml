@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.taxonomy_term.collections.field_additional_no_items_found
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_collection_logo
     - field.field.taxonomy_term.collections.field_default_sort
@@ -19,11 +20,19 @@ dependencies:
     - entity_hierarchy
     - image
     - options
+    - text
 id: taxonomy_term.collections.default
 targetEntityType: taxonomy_term
 bundle: collections
 mode: default
 content:
+  field_additional_no_items_found:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
   field_collection_logo:
     type: image
     label: above
@@ -92,6 +101,7 @@ content:
     region: content
 hidden:
   description: true
+  field_additional_no_items_found: true
   field_all_collection_breadcrumb: true
   field_landing_page: true
   field_url_name: true

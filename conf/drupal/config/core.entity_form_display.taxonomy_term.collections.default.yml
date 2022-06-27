@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.taxonomy_term.collections.field_additional_no_items_found
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_collection_logo
     - field.field.taxonomy_term.collections.field_default_sort
@@ -28,6 +29,7 @@ third_party_settings:
         - group_top_banner
         - group_hierarchy_and_breadcrumb
         - group_sort_settings
+        - group_results
         - field_landing_page
       label: 'Collection Settings'
       region: content
@@ -36,16 +38,16 @@ third_party_settings:
       format_type: tab
       format_settings:
         classes: ''
+        show_empty_fields: false
         id: ''
-        formatter: closed
+        formatter: open
         description: 'These settings only need to be defined for the top level collection term. They don''t need to be set for topics or sub topics.'
         required_fields: true
     group_sort_settings:
       children:
         - field_sort_order
         - field_default_sort
-        - field_show_only_future_events
-      label: 'Sorting and Results'
+      label: Sorting
       region: content
       parent_name: group_collection_settings
       weight: 12
@@ -54,7 +56,7 @@ third_party_settings:
         classes: ''
         show_empty_fields: false
         id: ''
-        open: true
+        open: false
         description: ''
         required_fields: true
     group_top_banner:
@@ -71,7 +73,7 @@ third_party_settings:
         classes: ''
         show_empty_fields: false
         id: ''
-        open: true
+        open: false
         description: ''
         required_fields: true
     group_hierarchy_and_breadcrumb:
@@ -88,7 +90,23 @@ third_party_settings:
         classes: ''
         show_empty_fields: false
         id: ''
-        open: true
+        open: false
+        description: ''
+        required_fields: true
+    group_results:
+      children:
+        - field_show_only_future_events
+        - field_additional_no_items_found
+      label: Results
+      region: content
+      parent_name: group_collection_settings
+      weight: 13
+      format_type: details
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        open: false
         description: ''
         required_fields: true
 id: taxonomy_term.collections.default
@@ -99,6 +117,14 @@ content:
   description:
     type: text_textarea
     weight: 2
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_additional_no_items_found:
+    type: text_textarea
+    weight: 12
     region: content
     settings:
       rows: 5
@@ -165,7 +191,7 @@ content:
     third_party_settings: {  }
   field_show_only_future_events:
     type: boolean_checkbox
-    weight: 9
+    weight: 11
     region: content
     settings:
       display_label: true
@@ -207,5 +233,6 @@ content:
       display_label: true
     third_party_settings: {  }
 hidden:
+  field_additional_no_items_found: true
   field_landing_page: true
   path: true
