@@ -1,5 +1,25 @@
 
 
+## [0.327.0] - June 28, 2022
+
+### Changed
+  - DP-23508: Upgrade to PHP 8.
+  - DP-24668: Upgrade to BackstopJS 6.0.4
+  - DP-25237: Updated CSV Serialization and its dependencies to allow CSV exports to work with PHP 8.
+  
+### Fixed
+  - DP-24698: Fix Backstop failing when Tugboat is suspended
+  - DP-25136: Fixes entity usage count when referencing entities are deleted or modified.
+  - DP-25159: Wait for iframes to be resized at least once before taking a screenshot on Backstop.
+  - DP-25231: When changing parent, check descendants entities before calling methods on them.
+  
+### Added
+  - DP-25192: Release automation - post deployment merge from master to develop
+  - DP-25225: Add Start date to "All documents" view in Drupal.
+  - DP-9559: Added an Orphaned Content views page report that shows content that is not linked in any other content.
+  
+
+
 ## [0.326.0] - June 21, 2022
 
 ### Fixed
