@@ -2,10 +2,10 @@
 
 set -eo pipefail
 
-SHA1=597bc96a83b5a71ce1d7fa1304c0c345969191c2
+SHA1=( $(curl -s -H "Authorization: token ${GITHUB_MASSGOV_BOT_TOKEN}" $(echo https://api.github.com/repos/${CIRCLE_PULL_REQUEST:19} | sed "s/\/pull\//\/pulls\//") | jq ".base.sha" | tr -d "\042" ) )
 git diff-tree \
             -r \
             -z \
             --name-only \
             --no-commit-id \
-            HEAD $SHA1 -- docroot/modules/custom | xargs -0 vendor/bin/phpcs --standard=phpcs.strict_types.xml
+            HEAD "${SHA1[@]}" -- docroot/modules/custom | xargs --no-run-if-empty -0 vendor/bin/phpcs --standard=phpcs.strict_types.xml
