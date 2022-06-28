@@ -50,10 +50,11 @@
     "iframe": {
       "src": paragraph.field_url.uri,
       "title": paragraph.field_iframe_accessibility_title.value,
-      "height": iframe_height,
-      "ratio": paragraph.field_aspect_ratio.value,
+      "height": paragraph.field_iframe_height_config.value is same as('ratio') ? null : iframe_height,
+      "ratio": paragraph.field_iframe_height_config.value is not same as('ratio') ? null : paragraph.field_aspect_ratio.value,
       "position": paragraph.field_iframe_display_size.value,
       "caption": caption
     }
   }
 } %}
+
