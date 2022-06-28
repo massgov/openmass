@@ -7244,6 +7244,7 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
 
     $base = 'flexible_links_group';
     $variables['display_type'] = $flexible_lg->field_display_type->value;
+
     $variables[$base][$key]['title'] = $flexible_lg->field_flexible_link_group_title->value;
     $variables[$base][$key]['description'] = $flexible_lg->field_flexible_link_group_desc->value;
     $variables[$base][$key]['theme'] = ((bool) intval($flexible_lg->field_featured->value)) ? 'blue' : 'white';
@@ -7277,8 +7278,33 @@ function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
           /** @var Drupal\mass_content\Entity\Bundle\media\DocumentBundle */
           $file = $item->entity->field_file_download_single[0]->entity;
           if ($file) {
-            $view_builder = Drupal::entityTypeManager()->getViewBuilder($file->getEntityType()->id());
-            $links[$index]['download_link'] = $view_builder->view($file, 'media_download_link');
+
+            if ($variables['display_type'] == "buttons") {
+              $original_file = $file->field_upload_file->entity;
+              $links[$index]['file_size'] = strtoupper(format_size($original_file->getSize()));
+              $file_info = new \SplFileInfo($original_file->getFilename());
+              $file_extension = strtoupper($file_info->getExtension());
+              $file_icon = 'doc-' . strtolower($file_extension);
+              if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
+                $file_icon = 'doc-generic';
+              }
+              $links[$index]['file_icon'] = $file_icon;
+              $links[$index]['downloadable_file'] = TRUE;
+              $links[$index]['file_extension'] = $file_extension;
+              if (!$file->field_title->isEmpty()) {
+                $links[$index]['file_title'] = $file->field_title->value;
+              }
+              else {
+                $links[$index]['file_title'] = $file->label();
+              }
+              $links[$index]['mid'] = $file->id();
+
+            }
+            else {
+              $view_builder = Drupal::entityTypeManager()
+                ->getViewBuilder($file->getEntityType()->id());
+              $links[$index]['download_link'] = $view_builder->view($file, 'media_download_link');
+            }
             $links[$index]['href'] = $file->toURL()->setAbsolute()->toString();
             $links[$index]['text'] = $file->label();
           }
