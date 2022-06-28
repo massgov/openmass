@@ -247,9 +247,9 @@ jobs:
     docker:
       - image: cimg/php:8.0-node
     parameters:
-      target-branch:
+      base-sha1:
         type: string
-        default: '$(curl -s -H "Authorization: token ${GITHUB_MASSGOV_BOT_TOKEN}" $(echo https://api.github.com/repos/${CIRCLE_PULL_REQUEST:19} | sed "s/\/pull\//\/pulls\//") | jq ".base.ref" | tr -d "\042" )'
+        default: '$(curl -s -H "Authorization: token ${GITHUB_MASSGOV_BOT_TOKEN}" $(echo https://api.github.com/repos/${CIRCLE_PULL_REQUEST:19} | sed "s/\/pull\//\/pulls\//") | jq ".base.sha" | tr -d "\042" )'
     steps:
       - attach_workspace: {at: /tmp }
       - *vendor_bin_add_path
@@ -257,7 +257,6 @@ jobs:
       - run: composer -n validate
       # Make sure changelogs are parseable by PHP (since build-changelog.php requires that).
       - run: php scripts/directory-yaml-parse.php
-      - run: << parameters.target-branch >>
       - run:
           # https://architecture.lullabot.com/adr/20211201-use-strict-types-in-php-code/
           # CircleCI makes it hard to get the target sha1. @todo experiment with https://stackoverflow.com/questions/55150683/how-to-get-the-branch-that-the-pr-is-heading-to-in-circleci
@@ -268,7 +267,7 @@ jobs:
             -z \
             --name-only \
             --no-commit-id \
-            HEAD << parameters.target-branch >> -- docroot/modules/custom | xargs -0 vendor/bin/phpcs --standard=phpcs.strict_types.xml
+            HEAD << parameters.base-sha1 >> -- docroot/modules/custom | xargs -0 vendor/bin/phpcs --standard=phpcs.strict_types.xml
       # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
