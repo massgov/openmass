@@ -246,6 +246,10 @@ jobs:
     working_directory: /tmp/code
     docker:
       - image: cimg/php:8.0-node
+    parameters:
+      target-branch:
+        type: string
+        default: '$(curl -s -H "Authorization: token ${GITHUB_MASSGOV_BOT_TOKEN}" $(echo https://api.github.com/repos/${CIRCLE_PULL_REQUEST:19} | sed "s/\/pull\//\/pulls\//") | jq ".base.ref" | tr -d "\042" )'
     steps:
       - attach_workspace: {at: /tmp }
       - *vendor_bin_add_path
@@ -263,7 +267,7 @@ jobs:
             -z \
             --name-only \
             --no-commit-id \
-            HEAD origin/develop -- docroot/modules/custom | xargs -0 vendor/bin/phpcs --standard=phpcs.strict_types.xml
+            HEAD << parameters.target-branch >> -- docroot/modules/custom | xargs -0 vendor/bin/phpcs --standard=phpcs.strict_types.xml
       # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
