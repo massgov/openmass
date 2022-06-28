@@ -261,6 +261,17 @@ jobs:
       - run:
           # https://architecture.lullabot.com/adr/20211201-use-strict-types-in-php-code/
           # CircleCI makes it hard to get the target sha1. @todo experiment with https://stackoverflow.com/questions/55150683/how-to-get-the-branch-that-the-pr-is-heading-to-in-circleci
+          name: Find newly added files
+          command: |
+            git diff-tree \
+            -r \
+            -z \
+            --name-only \
+            --no-commit-id \
+            HEAD << parameters.base-sha1 >> -- docroot/modules/custom
+      - run:
+          # https://architecture.lullabot.com/adr/20211201-use-strict-types-in-php-code/
+          # CircleCI makes it hard to get the target sha1. @todo experiment with https://stackoverflow.com/questions/55150683/how-to-get-the-branch-that-the-pr-is-heading-to-in-circleci
           name: New files must use strict types.
           command: |
             git diff-tree \
