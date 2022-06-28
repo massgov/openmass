@@ -3175,18 +3175,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
   // Make the introPageContent data structure available in twig template.
   $variables['introPageContent'] = $intro_page_content;
 
-  // Prepare the introduction sidebar.
-  $intro_sidebar = [];
-
-  // Prepare the sidebar social media widget.
-  if (Helper::isFieldPopulated($node, 'field_services_social_links')) {
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $intro_sidebar['social'] = array_merge(Atoms::prepareSidebarHeading(t('Social'), $titleContext), Molecules::prepareIconLinks($node));
-  }
-
-  // Make the introSidebar data structure available in twig template.
-  $variables['introSidebar'] = $intro_sidebar;
-
   // Make the mappedLocations data structure available in twig template.
   if (Helper::isFieldPopulated($node, 'field_service_ref_locations')) {
     $titleContext = t(' for @title', ['@title' => $page_title]);

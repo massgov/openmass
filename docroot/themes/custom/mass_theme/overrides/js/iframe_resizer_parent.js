@@ -41,6 +41,12 @@ function gotResizeMessage(event) {
     if (matches[i].contentWindow === event.source) {
       // matches[i].width = Number( event.data.width )	 <--- we do not do anything with the page width for now
       matches[i].height = Number(event.data.height);
+
+      // A flag to know if an iframe has been resized at least once.
+      // On every Backstop test, before taking the screenshot, we wait for
+      // elements ".js-ma-responsive-iframe iframe" to have this flag.
+      // @see backstop/scripts/ready.js
+      matches[i].setAttribute('data-resized', 1);
       return 1;
     }
   }
