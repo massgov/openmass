@@ -4,7 +4,9 @@ namespace Drupal\Tests\mass_media\ExistingSite;
 
 use Drupal\file\Entity\File;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
+use weitzman\LoginTrait\LoginTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
+use Drupal\Tests\mass_views\ExistingSiteJavascript;
 
 /**
  * Verify media functionality.
@@ -14,6 +16,7 @@ use weitzman\DrupalTestTraits\ExistingSiteBase;
 class MediaRevisionTest extends ExistingSiteBase {
 
   use MediaCreationTrait;
+  use LoginTrait;
 
   /**
    * Ensure that a document is no longer available after it is replaced.
@@ -37,7 +40,7 @@ class MediaRevisionTest extends ExistingSiteBase {
     $file_system->copy($src, $destination, TRUE);
 
     // Create a "Llama" media item.
-    $media = $this->createMedia([
+    $this->createMedia([
       'title' => 'Llama',
       'bundle' => 'document',
       'field_upload_file' => [
@@ -46,14 +49,19 @@ class MediaRevisionTest extends ExistingSiteBase {
       'status' => 1,
     ]);
 
-    $this->visit('admin/ma-dash/documents');
+    $admin = $this->createUser();
+    $admin->addRole('administrator');
+    $admin->activate();
+    $admin->save();
+    $this->drupalLogin($admin);
+    $this->drupalGet('admin/ma-dash/documents');
     $this->assertEquals($this->getSession()->getStatusCode(), 200);
     $this->getCurrentPage()->selectFieldOption('action', 'Moderation: Unpublish media');
     $this->getCurrentPage()->checkField('views_bulk_operations_bulk_form[0]');
     $this->getCurrentPage()->pressButton('Apply to selected items');
-    $this->assertSession()->pageTextContains('Execute action');
     $this->getCurrentPage()->pressButton('Execute action');
     $this->assertEquals($this->getSession()->getStatusCode(), 200);
+    $this->
     $this->assertSession()->pageTextContains('Your changes have been successfully made.');
   }
 
