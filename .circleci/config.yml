@@ -246,10 +246,6 @@ jobs:
     working_directory: /tmp/code
     docker:
       - image: cimg/php:8.0-node
-    parameters:
-      base-sha1:
-        type: string
-        default: '$(curl -s -H "Authorization: token ${GITHUB_MASSGOV_BOT_TOKEN}" $(echo https://api.github.com/repos/${CIRCLE_PULL_REQUEST:19} | sed "s/\/pull\//\/pulls\//") | jq ".base.sha" | tr -d "\042" )'
     steps:
       - attach_workspace: {at: /tmp }
       - *vendor_bin_add_path
@@ -257,24 +253,9 @@ jobs:
       - run: composer -n validate
       # Make sure changelogs are parseable by PHP (since build-changelog.php requires that).
       - run: php scripts/directory-yaml-parse.php
-      - run: echo `<< parameters.base-sha1 >>`
-      - run:
-          # https://architecture.lullabot.com/adr/20211201-use-strict-types-in-php-code/
-          # CircleCI makes it hard to get the target sha1. @todo experiment with https://stackoverflow.com/questions/55150683/how-to-get-the-branch-that-the-pr-is-heading-to-in-circleci
-          name: Find newly added files
-          command: |
-            git diff-tree \
-            -r \
-            -z \
-            --name-only \
-            --no-commit-id \
-            HEAD << parameters.base-sha1 >> -- docroot/modules/custom
-      - run:
-          # https://architecture.lullabot.com/adr/20211201-use-strict-types-in-php-code/
-          # CircleCI makes it hard to get the target sha1. @todo experiment with https://stackoverflow.com/questions/55150683/how-to-get-the-branch-that-the-pr-is-heading-to-in-circleci
-          name: New files must use strict types.
-          command: |
-            scripts/phpcs-new-files
+      # https://architecture.lullabot.com/adr/20211201-use-strict-types-in-php-code/
+      # New php files must use strict types.
+      - run: scripts/phpcs-new-files
       # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
