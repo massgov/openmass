@@ -117,7 +117,7 @@ module.exports = async function (page, scenario, vp) {
     // Wait for a selector to become visible.
     await page.waitForSelector('span.ma__emergency-alert__time-stamp', {
       visible: true,
-      timeout: 0
+      timeout: 10000,
     })
     await page.evaluate(async function () {
       document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
@@ -128,6 +128,10 @@ module.exports = async function (page, scenario, vp) {
     await page.waitForTimeout(1000);
   }
 
+  // Wait for iframes to be resized at least once.
+  // Avoid iframes with fixed height.
+  await page.waitForFunction("jQuery('.js-ma-responsive-iframe iframe[height=auto]').length === 0");
+
   switch (scenario.label) {
     case "InfoDetailsImageWrapLeft":
     case "InfoDetailsImageWrapRight":
@@ -136,11 +140,11 @@ module.exports = async function (page, scenario, vp) {
       await page.waitForFunction("document.readyState === 'complete'");
       await page.waitForSelector('form.ma__mass-feedback-form__form', {
         visible: true,
-        timeout: 0
+        timeout: 10000,
       });
       await page.waitForSelector(".ma__figure--x-large img", {
         visible: true,
-        timeout: 0
+        timeout: 10000,
       });
       await page.waitForTimeout(3000);
       break;
@@ -153,7 +157,6 @@ module.exports = async function (page, scenario, vp) {
       break;
     case "InfoDetails1":
       await page.waitForFunction("document.querySelector('div.csv-table') === null");
-      await page.waitForTimeout(1000);
       break;
     case "ServiceGroupedLinks":
     case "Service1":
