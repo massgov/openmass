@@ -263,7 +263,7 @@ jobs:
             -z \
             --name-only \
             --no-commit-id \
-            HEAD origin/develop -- docroot/modules/custom | xargs vendor/bin/phpcs --standard=phpcs.strict_types.xml
+            HEAD origin/develop -- docroot/modules/custom | xargs -0 vendor/bin/phpcs --standard=phpcs.strict_types.xml
       # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
