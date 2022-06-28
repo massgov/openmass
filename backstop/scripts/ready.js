@@ -1,3 +1,5 @@
+const os = require("os");
+
 /**
  * Ready script, fires after pages have loaded, but before screenshots are
  * captured.
@@ -7,6 +9,11 @@
  * trivial failures for an element, you can probably deal with it here.
  */
 module.exports = async function (page, scenario, vp) {
+  console.log(`Preparing ${page.url()}`);
+  const oneMinute = os.loadavg()[0];
+  if (oneMinute > os.cpus().length) {
+    console.log(`One minute load average is ${oneMinute}. Consider reducing the number of capture processes.`)
+  }
 
   // DO NOT put anything that modifies a mass.gov page before this point.
   // Otherwise, if a Tugboat preview is suspended and needs to resume, we may
@@ -42,6 +49,10 @@ module.exports = async function (page, scenario, vp) {
   await page.evaluate(function (url) {
     // Disable jQuery animation for any future calls.
     jQuery.fx.off = true;
+
+    // Zero delay on CSS transitions.
+    jQuery("head").append('<style type="text/css"> *, *:before, *:after { transition-duration: 0s !important } </style>');
+
     // Immediately complete any in-progress animations.
     jQuery(':animated').finish();
 
@@ -95,6 +106,9 @@ module.exports = async function (page, scenario, vp) {
   // in local environments.
   await page.waitForFunction('jQuery.active == 0');
 
+  // All the alerts on the page must be processed.
+  await page.waitForFunction("jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0");
+
   if (scenario.label === 'InfoDetails1') {
     await page.waitForSelector('.cbFormErrorMarker', {visible: true})
   }
@@ -103,7 +117,7 @@ module.exports = async function (page, scenario, vp) {
     // Wait for a selector to become visible.
     await page.waitForSelector('span.ma__emergency-alert__time-stamp', {
       visible: true,
-      timeout: 0
+      timeout: 10000,
     })
     await page.evaluate(async function () {
       document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
@@ -114,6 +128,10 @@ module.exports = async function (page, scenario, vp) {
     await page.waitForTimeout(1000);
   }
 
+  // Wait for iframes to be resized at least once.
+  // Avoid iframes with fixed height.
+  await page.waitForFunction("jQuery('.js-ma-responsive-iframe iframe[height=auto]').length === 0");
+
   switch (scenario.label) {
     case "InfoDetailsImageWrapLeft":
     case "InfoDetailsImageWrapRight":
@@ -122,11 +140,11 @@ module.exports = async function (page, scenario, vp) {
       await page.waitForFunction("document.readyState === 'complete'");
       await page.waitForSelector('form.ma__mass-feedback-form__form', {
         visible: true,
-        timeout: 0
+        timeout: 10000,
       });
       await page.waitForSelector(".ma__figure--x-large img", {
         visible: true,
-        timeout: 0
+        timeout: 10000,
       });
       await page.waitForTimeout(3000);
       break;
@@ -139,7 +157,6 @@ module.exports = async function (page, scenario, vp) {
       break;
     case "InfoDetails1":
       await page.waitForFunction("document.querySelector('div.csv-table') === null");
-      await page.waitForTimeout(1000);
       break;
     case "ServiceGroupedLinks":
     case "Service1":
@@ -277,6 +294,7 @@ module.exports = async function (page, scenario, vp) {
       'outline: none;\n' +
       '}'
   });
+
   // We can add a slight delay here. This can cover up jitter caused
   // by weird network conditions, slow JS, etc, but if we need an extra
   // delay after page load, it probably indicates there's a problem with

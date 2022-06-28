@@ -150,7 +150,6 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
       $content_types_and_selectors[$bundle] = '#main-content > div.pre-content > div.mass-alerts-block > div > section > h2 > button';
     }
     $irregular_selectors = [
-      'decision_tree' => '#main-content > div.pre-content > div.decision-tree > div > div > section > h2 > button',
       'person' => '#main-content > div.ma__bio__content > div > div > div.mass-alerts-block > div > section > h2 > button',
     ];
 
@@ -194,7 +193,8 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
       $node = Node::load($node_id);
       $this->drupalGet($node->toUrl()->toString());
       $selector = $content_types_and_selectors[$node->bundle()];
-      $element = $this->getCurrentPage()->find('css', $selector);
+      $element = $this->assertSession()->waitForElement('css', $selector);
+      // $this->assertSession()->elementExists()
       if ($element) {
         continue;
       }
