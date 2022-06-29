@@ -1298,8 +1298,8 @@ function mass_theme_preprocess_node_location(&$variables) {
 
               $hour = array_map('trim', explode('<br>', $hour));
               $variables['imagePromo']['hours'][] = [
-                'label' => trim($hour[0]),
-                'text' => trim($hour[1]),
+                'label' => trim($hour[0] ?? ''),
+                'text' => trim($hour[1] ?? ''),
               ];
             }
           }
@@ -3145,23 +3145,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
     $intro_page_content['video'] = Atoms::prepareVideo($node->field_service_video->entity, $video_options);
   }
 
-  // Prepare the Contact Us field, if it's populated.
-  if (Helper::isFieldPopulated($node, 'field_ref_contact_info')) {
-    // Set up options for contact list.
-    $contact_list_options = [
-      'heading' => [
-        'title' => t("Contact Information"),
-      ],
-      'groups' => [
-        'accordion' => TRUE,
-        'isExpanded' => FALSE,
-      ],
-    ];
-    // Prepare the contactList data object.
-    $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options, $cache_tags);
-
-  }
-
   // Prepare field_service_bg_wide, if it's populated.
   if (Helper::isFieldPopulated($node, 'field_service_bg_wide')) {
     $variables['bannerImageWide'] = Helper::getFieldImageUrl($node, 'hero1600x400_fp', 'field_service_bg_wide');
@@ -3192,18 +3175,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
   // Make the introPageContent data structure available in twig template.
   $variables['introPageContent'] = $intro_page_content;
 
-  // Prepare the introduction sidebar.
-  $intro_sidebar = [];
-
-  // Prepare the sidebar social media widget.
-  if (Helper::isFieldPopulated($node, 'field_services_social_links')) {
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $intro_sidebar['social'] = array_merge(Atoms::prepareSidebarHeading(t('Social'), $titleContext), Molecules::prepareIconLinks($node));
-  }
-
-  // Make the introSidebar data structure available in twig template.
-  $variables['introSidebar'] = $intro_sidebar;
-
   // Make the mappedLocations data structure available in twig template.
   if (Helper::isFieldPopulated($node, 'field_service_ref_locations')) {
     $titleContext = t(' for @title', ['@title' => $page_title]);
@@ -3228,56 +3199,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
       ],
     ];
     $variables['mappedLocations'] = Organisms::prepareMappedLocations($node->field_service_ref_locations->referencedEntities(), $mappedLocations_options, $cache_tags);
-  }
-
-  // Get upcoming events related to this service.
-  /** @var \Drupal\mass_content\EventManager $eventManager */
-  $eventManager = \Drupal::service('mass_content.event_manager');
-
-  // Determine if there are past events related to this service.
-  $is_past_events = $eventManager->hasPast($node);
-
-  if ($eventManager->hasUpcoming($node)) {
-    // Set the limit on how many events should be displayed on the page. Default
-    // to 2 if no limit is set.
-    $limit = 2;
-    if ($node->hasField('field_event_quantity') && !$node->field_event_quantity->isEmpty()) {
-      $limit = (int) $node->field_event_quantity->value;
-    }
-    $events = Helper::prepareEvents($eventManager->getUpcoming($node, $limit + 1));
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $compHeading_options = [
-      'title' => t('Upcoming Events'),
-      'titleContext' => $titleContext,
-    ];
-    $event_more_link = Helper::prepareMoreLink($node, ['text' => t('See all events')]);
-
-    $variables['eventListing'] = Atoms::prepareCompHeading(['title' => t('Upcoming Events')], $compHeading_options);
-    $variables['eventListing']['grid'] = 'true';
-    // Display the see more events link if there are either more upcoming events
-    // than the limit set in Drupal or <= upcoming with past event(s).
-    $variables['eventListing']['more'] = count($events) > $limit || $is_past_events ? $event_more_link : '';
-    $variables['eventListing']['events'] = array_splice($events, 0, $limit);
-    $max_age = $eventManager->getMaxAge($node);
-  }
-  // If there are no upcoming events, check for past events to render past
-  // events link.
-  else {
-    if ($is_past_events) {
-      $variables['eventListing'] = [
-        'grid' => FALSE,
-        'compHeading' => [
-          'title' => t('Upcoming Events'),
-        ],
-        'emptyText' => t('No upcoming events scheduled'),
-        'pastMore' => [
-          "text" => t('See past events'),
-          "href" => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()) . '/events/past',
-          "chevron" => TRUE,
-          "labelContext" => t('for the @label', ['@label' => $node->label()]),
-        ],
-      ];
-    }
   }
 
   // Prepare the split columns data structure (send only if there is content).
@@ -4063,6 +3984,7 @@ function mass_theme_preprocess_node(&$variables) {
     'Data Resource' => 'resource',
     'Report' => 'report',
   ];
+
   // The field_data_flag field determines if it's a data listing. All External
   // Data Resource nodes are data listings.
   if ($node->getType() === 'external_data_resource' ||
@@ -4095,7 +4017,7 @@ function mass_theme_preprocess_node(&$variables) {
         }
       }
       else {
-        $variables['data_listing_icon'] = $icon_map[$term->label()];
+        $variables['data_listing_icon'] = $icon_map[$term->label()] ?? NULL;
         $variables['data_listing_icon_label'] = $term->label();
       }
     }
@@ -4999,7 +4921,7 @@ function mass_theme_preprocess_field(&$variables, $hook) {
   }
 
   // Setup social link icons.
-  if ($element['#field_name'] == 'field_social_links') {
+  if (in_array($element['#field_name'], ['field_services_social_links', 'field_social_links'])) {
     // Get icons for social links.
     $services = [
       'twitter',
@@ -5121,6 +5043,7 @@ function mass_theme_preprocess_paragraph__info_details_card_group(&$variables) {
  */
 function mass_theme_preprocess_paragraph__org_events(&$variables) {
   $paragraph = $variables['paragraph'];
+  // Gather events associated with this node.
   $eventManager = \Drupal::service('mass_content.event_manager');
   $eventsRender = (new EventsRendererOrgPages($eventManager, $paragraph))->render();
   $variables = array_merge($variables, $eventsRender);
@@ -7139,9 +7062,9 @@ function mass_theme_preprocess_paragraph__featured_content_single_item(&$variabl
 function mass_theme_preprocess_paragraph__social_media(&$variables) {
   $paragraph = $variables['paragraph'];
   $node = Helper::getParentNode($paragraph);
-
-  $variables['social_links'] = $node->get('field_social_links')->view();
-
+  $social_field_name = $node->bundle() == 'service_page' ? 'field_services_social_links' : 'field_social_links';
+  $variables['social_links'] = $node && ($node->$social_field_name ?? FALSE) ?
+    $node->$social_field_name->view() : [];
 }
 
 /**
@@ -7157,24 +7080,48 @@ function mass_theme_preprocess_paragraph__organization_contact_logo(&$variables)
 }
 
 /**
- * Implements hook_preprocess_HOOK().
- *
- * Groups different components together when necessary.
+ * Fetch contact info from parent service node.
  */
-function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
+function mass_theme_preprocess_paragraph__contact_placeholder(&$variables) {
+  $paragraph = $variables['paragraph'];
+  $node = Helper::getParentNode($paragraph);
+
+  // Prepare the Contact Us field, if it's populated.
+  if (Helper::isFieldPopulated($node, 'field_ref_contact_info')) {
+    // Set up options for contact list.
+    $contact_list_options = [
+      'heading' => [
+        'title' => '',
+      ],
+      'groups' => [
+        'accordion' => TRUE,
+        'isExpanded' => FALSE,
+      ],
+    ];
+    // Prepare the contactList data object.
+    $variables['contactList'] = Organisms::prepareContactList($node, $contact_list_options);
+  }
+}
+
+/**
+ * Preprocess paragraph sections from services and organizations.
+ */
+function _mass_theme_preprocess_paragraph_sections(&$variables, $field) {
   // Define fields and paragraphs that should be wrapped, fields have priority over paragraphs.
   $wrap_paragraphs = ['iframe', 'caspio_embed', 'tableau_embed', 'image', 'stat'];
   $wrap_fields = ['field_tabl_wrapping', 'field_iframe_wrapping', 'field_image_wrapping', 'field_stat_wrapping'];
   $contained = ['rich_text'];
 
   $components = [];
+  /** @var \Drupal\paragraphs\Entity\Paragraph */
   $container = $variables['paragraph'];
-  $paragraphs = Helper::getReferencedEntitiesFromField($container, "field_section_long_form_content");
+  /** @var \Drupal\paragraphs\Entity\Paragraph[] */
+  $paragraphs = Helper::getReferencedEntitiesFromField($container, $field);
 
   for ($i = 0; $i < count($paragraphs); $i++) {
     $component = [];
     // If the current component has the "wrapping" field, group it with the following component and move the loop pointer.
-    if (mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
+    if (mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i], $wrap_fields)) {
       $items = [];
       do {
         if (isset($paragraphs[$i])) {
@@ -7183,7 +7130,7 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
 
         $i++;
         // Keep grouping together while the next element has the check.
-      } while (isset($paragraphs[$i]) && mass_theme_org_section_long_form_check_wrapping_field($paragraphs[$i], $wrap_fields));
+      } while (isset($paragraphs[$i]) && mass_theme_paragraphs_sections_check_wrapping_field($paragraphs[$i], $wrap_fields));
 
       // Once done, also group the following one.
       if (isset($paragraphs[$i])) {
@@ -7207,14 +7154,170 @@ function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
     }
     $components[] = $component;
   }
-  $variables["org_components"] = $components;
+  return $components;
+}
 
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Groups different components together when necessary.
+ */
+function mass_theme_preprocess_paragraph__org_section_long_form(&$variables) {
+  $variables["org_components"] =
+    _mass_theme_preprocess_paragraph_sections($variables, 'field_section_long_form_content');
+}
+
+/**
+ * Join contiguous flexible link groups, type links, into the same element.
+ */
+function _mass_theme_join_contiguous_flexible_link_group_type_links(&$links_group, &$variables) {
+  if (count($links_group) < 2) {
+    return;
+  }
+  $first = array_keys($links_group)[0];
+  foreach ($links_group as $key => $link_group) {
+    if ($key == $first) {
+      continue;
+    }
+
+    $variables['service_components'][$first][0]->subsequent_links[] = $link_group[0];
+
+    // Empty elements included previously.
+    $variables['service_components'][$key] = FALSE;
+  }
+  $links_group = [];
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * Groups different components together when necessary.
+ */
+function mass_theme_preprocess_paragraph__service_section(&$variables) {
+  $variables["service_components"] =
+    _mass_theme_preprocess_paragraph_sections($variables, 'field_service_section_content');
+
+  /** @var \Drupal\paragraphs\Entity\Paragraph */
+  $container = $variables['paragraph'];
+  $variables['section_style'] = $container->field_section_style->value;
+  $variables['hide_heading'] = $container->field_hide_heading->value;
+
+  $links_group = [];
+  foreach ($variables['service_components'] as $key => &$service_component) {
+    /** @var Drupal\paragraphs\Entity\Paragraph */
+    $service_component_paragraph = &$service_component[0];
+    if (
+      is_object($service_component_paragraph) &&
+      $service_component_paragraph->getType() == 'flexible_link_group' &&
+      $service_component_paragraph->field_display_type->value == 'links'
+    ) {
+      $links_group[$key] = $service_component;
+    }
+    else {
+      _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables);
+      $links_group = [];
+    }
+  }
+
+  _mass_theme_join_contiguous_flexible_link_group_type_links($links_group, $variables);
+
+  // Removing elements included previously.
+  foreach ($variables['service_components'] as $key => &$service_component) {
+    if ($service_component === FALSE) {
+      unset($variables['service_components'][$key]);
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function mass_theme_preprocess_paragraph__flexible_link_group(&$variables) {
+  /** @var \Drupal\paragraphs\Entity\Paragraph */
+  $flexible_lg = $variables['paragraph'];
+
+  $all_flexible_links = array_merge([$flexible_lg], $flexible_lg->subsequent_links ?? []);
+
+  unset($flexible_lg->subsequent_links);
+
+  foreach ($all_flexible_links as $key => $flexible_lg) {
+
+    $base = 'flexible_links_group';
+    $variables['display_type'] = $flexible_lg->field_display_type->value;
+
+    $variables[$base][$key]['title'] = $flexible_lg->field_flexible_link_group_title->value;
+    $variables[$base][$key]['description'] = $flexible_lg->field_flexible_link_group_desc->value;
+    $variables[$base][$key]['theme'] = ((bool) intval($flexible_lg->field_featured->value)) ? 'blue' : 'white';
+    $variables[$base][$key]['links'] = [];
+    $variables[$base][$key]['expanded'] = (bool) intval($flexible_lg->field_group_expanded->value);
+
+    $links = &$variables[$base][$key]['links'];
+    foreach ($flexible_lg->field_link_group as $index => $item) {
+      if (empty($item->entity)) {
+        continue;
+      }
+      switch ($item->entity->bundle()) {
+        case 'link_group_link':
+          if (empty($item->entity->field_link_group_link)) {
+            break;
+          }
+          /** @var \Drupal\mass_content\Field\FieldType\DynamicLinkItem */
+          $link = $item->entity->field_link_group_link[0];
+          if (empty($link->get('computed_title'))) {
+            break;
+          }
+          $computed_title = $link->get('computed_title')->getValue();
+          $links[$index]['text'] = is_array($computed_title) ? $computed_title['#markup'] : $computed_title;
+          $links[$index]['href'] = $link->getUrl()->setAbsolute()->toString();
+          break;
+
+        case 'link_group_document':
+          if (empty($item->entity->field_file_download_single)) {
+            break;
+          }
+          /** @var Drupal\mass_content\Entity\Bundle\media\DocumentBundle */
+          $file = $item->entity->field_file_download_single[0]->entity;
+          if ($file) {
+
+            if ($variables['display_type'] == "buttons") {
+              $original_file = $file->field_upload_file->entity;
+              $links[$index]['file_size'] = strtoupper(format_size($original_file->getSize()));
+              $file_info = new \SplFileInfo($original_file->getFilename());
+              $file_extension = strtoupper($file_info->getExtension());
+              $file_icon = 'doc-' . strtolower($file_extension);
+              if (!in_array($file_extension, ['PDF', 'DOCX', 'XLSX'])) {
+                $file_icon = 'doc-generic';
+              }
+              $links[$index]['file_icon'] = $file_icon;
+              $links[$index]['downloadable_file'] = TRUE;
+              $links[$index]['file_extension'] = $file_extension;
+              if (!$file->field_title->isEmpty()) {
+                $links[$index]['file_title'] = $file->field_title->value;
+              }
+              else {
+                $links[$index]['file_title'] = $file->label();
+              }
+              $links[$index]['mid'] = $file->id();
+
+            }
+            else {
+              $view_builder = Drupal::entityTypeManager()
+                ->getViewBuilder($file->getEntityType()->id());
+              $links[$index]['download_link'] = $view_builder->view($file, 'media_download_link');
+            }
+            $links[$index]['href'] = $file->toURL()->setAbsolute()->toString();
+            $links[$index]['text'] = $file->label();
+          }
+          break;
+      }
+    }
+  }
 }
 
 /**
  * Checks if the paragraph has one of the fields and has a value for it.
  */
-function mass_theme_org_section_long_form_check_wrapping_field($paragraph, $fields) {
+function mass_theme_paragraphs_sections_check_wrapping_field($paragraph, $fields) {
   foreach ($fields as $field) {
     if (isset($paragraph) && $paragraph->hasField($field) && $paragraph->get($field)->getValue()) {
       return TRUE;

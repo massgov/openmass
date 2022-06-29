@@ -1,0 +1,95 @@
+{% if (display_type == 'links') %}
+  {% set items = [] %}
+  {% for flexible_link in flexible_links_group %}
+    {% set links = [] %}
+    {% for link in flexible_link.links %}
+      {% set content = link.download_link ?
+        {
+          "path": "@atoms/11-text/raw-html.twig",
+          "data": {
+            "rawHtml": {
+              "content": link.download_link
+            }
+          }
+        }
+      :
+        {
+          "path": "@atoms/decorative-link.twig",
+          "data": {
+            "decorativeLink": {
+              "text": link.text,
+              "href": link.href
+            }
+          }
+        }
+      %}
+
+      {% set links = links|merge([content]) %}
+    {% endfor %}
+
+    {% set item  = {
+        "collapsibleHeader": {
+            "title": flexible_link.title,
+            "description": flexible_link.description,
+            "headingLevel": 3
+          },
+          "expanded": flexible_link.expanded,
+          "includes" : links
+        }
+    %}
+
+    {% set items = items|merge([item]) %}
+  {% endfor %}
+
+  {% include "@organisms/by-author/collapsible-content.twig" with {
+    "collapsibleContent": {
+      "extended": true,
+      "items": items
+    }
+  } %}
+{% endif %}
+
+{% if (display_type == 'buttons') %}
+
+  {% set items = flexible_links_group.0.links %}
+  {% set calloutLinks = [] %}
+
+  {% for item in items %}
+
+    {% set calloutLink = item.downloadable_file ?
+      {
+        "download": true,
+        "iconSize": "small",
+        "icon": item.file_icon,
+        "size": item.file_size,
+        "format": item.file_extension,
+        "text": item.file_title,
+        "href": url('media_entity_download.download', {'media': item.mid}),
+        "info": "",
+        "theme": flexible_links_group.0.theme
+      }
+      :
+      {
+        "text": item.text,
+        "href": item.href,
+        "theme": flexible_links_group.0.theme
+      }
+
+    %}
+    {% set calloutLinks = calloutLinks|merge([calloutLink]) %}
+  {% endfor %}
+
+  {% set calloutLinksThreeUp = {
+    'calloutLinksThreeUp': {
+      "headingText": flexible_links_group.0.title,
+      "headingDescription": flexible_links_group.0.description,
+      "headingLevel": "3",
+      'calloutLinks': calloutLinks
+    }
+  } %}
+
+  <div class="ma__stacked-row__container">
+    {% include "@organisms/by-author/callout-links-three-up.twig" with calloutLinksThreeUp %}
+  </div>
+
+{% endif %}

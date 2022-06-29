@@ -4,6 +4,3 @@ services:
     arguments: ['@entity_type.manager', '@config.factory']
     tags:
       - { name: event_subscriber }
-  mass_entity_usage.clean_usage_table:
-    class: Drupal\mass_entity_usage\CleanUsageTable
-    arguments: ['@entity_type.manager', '@database']
