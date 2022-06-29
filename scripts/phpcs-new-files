@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+# CircleCI makes it hard to get the target sha1.
+# See https://stackoverflow.com/questions/55150683/how-to-get-the-branch-that-the-pr-is-heading-to-in-circleci but getting base.sha instead of base.ref
+SHA1=( $(curl -s -H "Authorization: token ${GITHUB_MASSGOV_BOT_TOKEN}" $(echo https://api.github.com/repos/${CIRCLE_PULL_REQUEST:19} | sed "s/\/pull\//\/pulls\//") | jq ".base.sha" | tr -d "\042" ) )
+git diff-tree \
+            -r \
+            -z \
+            --name-only \
+            --no-commit-id \
+            HEAD "${SHA1[@]}" -- docroot/modules/custom | xargs --no-run-if-empty -0 vendor/bin/phpcs --standard=phpcs.strict_types.xml
