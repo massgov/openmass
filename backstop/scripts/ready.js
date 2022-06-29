@@ -179,7 +179,7 @@ module.exports = async function (page, scenario, vp) {
     case "ExpansionOfAccordions2_toggle":
       await page.waitForFunction("document.readyState === 'complete'");
       await page.evaluate(async function () {
-        jQuery(".js-accordion-link").click();
+        jQuery(".js-accordion-link").not('.ma__emergency-header__toggle').click();
       });
       await page.waitForTimeout(1000);
       break;
