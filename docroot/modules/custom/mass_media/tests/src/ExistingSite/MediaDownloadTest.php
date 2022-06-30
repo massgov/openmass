@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\mass_media\ExistingSite;
 
 use Behat\Mink\Driver\GoutteDriver;
