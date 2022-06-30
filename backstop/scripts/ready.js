@@ -263,6 +263,13 @@ module.exports = async function (page, scenario, vp) {
       '.ma__press-listing__secondary-item .ma__press-teaser .ma__press-teaser__image {' +
       '  position: relative;' +
       '}' +
+      '.ma__fixed-feedback-button {' +
+      '  top: 28rem;' +
+      '  bottom: unset;' +
+      '}' +
+      '.ma__fixed-feedback-button a {' +
+      '  transition: unset;' +
+      '}' +
       '.ma__press-listing__secondary-item .ma__press-teaser .ma__press-teaser__image:before {' +
       '  background: #888888;\n' +
       '  content: \' \';\n' +
