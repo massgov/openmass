@@ -113,19 +113,34 @@ module.exports = async function (page, scenario, vp) {
     await page.waitForSelector('.cbFormErrorMarker', {visible: true})
   }
 
-  if (scenario.showAlerts) {
+  if (!scenario.hideAlerts || scenario.hideAlerts === undefined) {
     // Wait for a selector to become visible.
-    await page.waitForSelector('span.ma__emergency-alert__time-stamp', {
-      visible: true,
-      timeout: 10000,
+    page.evaluate(async function () {
+      var el = document.querySelector( '.ma__emergency-header__toggle');
+      if (el.getAttribute('aria-expanded')) {
+        await page.waitForSelector('span.ma__emergency-alert__time-stamp', {
+          visible: true,
+          timeout: 10000,
+        })
+        document.querySelector('.ma__emergency-alert__time-stamp').innerText = 'May. 24th, 2021, 5:00 pm';
+        document.querySelector('.ma__emergency-alert__link a.ma__content-link span:first-child').innerText = 'Everyone age 5+ should get a COVID-19 booster. Anyone age 50+ may get a second booster. See the latest updates as of ';
+      }
+      else {
+        await page.waitForSelector('.ma__emergency-header__toggle', {
+          visible: true,
+          timeout: 10000,
+        })
+      }
     })
-    await page.evaluate(async function () {
-      document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
-        // Force the content to be always same.
-        e.innerText = 'May. 24th, 2021, 5:00 pm';
-      });
-    })
+
+
     await page.waitForTimeout(1000);
+  }
+  else {
+    await page.evaluate(async function () {
+      var el = document.querySelector( '.mass-alerts-block' );
+      el.parentNode.removeChild( el );
+    })
   }
 
   // Wait for iframes to be resized at least once.
@@ -164,7 +179,7 @@ module.exports = async function (page, scenario, vp) {
     case "ExpansionOfAccordions2_toggle":
       await page.waitForFunction("document.readyState === 'complete'");
       await page.evaluate(async function () {
-        jQuery(".js-accordion-link").click();
+        jQuery(".js-accordion-link").not('.ma__emergency-header__toggle').click();
       });
       await page.waitForTimeout(1000);
       break;
