@@ -115,24 +115,30 @@ module.exports = async function (page, scenario, vp) {
 
   if (!scenario.hideAlerts || scenario.hideAlerts === undefined) {
     // Wait for a selector to become visible.
-    page.evaluate(async function () {
+    let expanded = await page.evaluate(async function () {
+      let result = false;
       var el = document.querySelector( '.ma__emergency-header__toggle');
       if (el.getAttribute('aria-expanded')) {
-        await page.waitForSelector('span.ma__emergency-alert__time-stamp', {
-          visible: true,
-          timeout: 10000,
-        })
+        result = true;
+      }
+      return result;
+    });
+    if (expanded) {
+      await page.waitForSelector('span.ma__emergency-alert__time-stamp', {
+        visible: true,
+        timeout: 10000,
+      })
+      await page.evaluate(async function () {
         document.querySelector('.ma__emergency-alert__time-stamp').innerText = 'May. 24th, 2021, 5:00 pm';
         document.querySelector('.ma__emergency-alert__link a.ma__content-link span:first-child').innerText = 'Everyone age 5+ should get a COVID-19 booster. Anyone age 50+ may get a second booster. See the latest updates as of ';
-      }
-      else {
-        await page.waitForSelector('.ma__emergency-header__toggle', {
-          visible: true,
-          timeout: 10000,
-        })
-      }
-    })
-
+      });
+    }
+    else {
+      await page.waitForSelector('.ma__emergency-header__toggle', {
+        visible: true,
+        timeout: 10000,
+      })
+    }
 
     await page.waitForTimeout(1000);
   }
