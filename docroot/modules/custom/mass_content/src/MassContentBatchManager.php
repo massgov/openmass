@@ -4,6 +4,7 @@ namespace Drupal\mass_content;
 
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityBase;
+use Drush\Drush;
 
 /**
  * Manages Mass Content batch processing.
@@ -65,6 +66,67 @@ class MassContentBatchManager {
           }
         }
       }
+    }
+    catch (\Exception $e) {
+      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    }
+
+    // Store some results for post-processing in the 'finished' callback.
+    // The contents of 'results' will be available as $results in the
+    // 'finished' function (in this example, batch_example_finished()).
+    $context['results'][] = $id;
+
+    // Optional message displayed under the progressbar.
+    $context['message'] = t('Running Batch "@id" @details',
+      ['@id' => $id, '@details' => $operation_details]
+    );
+  }
+
+  /**
+   * Process the service_page node to migrate data.
+   */
+  public static function processServiceNode($id, ContentEntityBase $node, array $service_with_events, $operation_details, &$context) {
+    // Don't spam all the users with content update emails.
+    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    // Turn off entity_hierarchy writes while processing the item.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+    // Include migration functions.
+    require_once __DIR__ . '/../includes/mass_content.service_page.inc';
+
+    try {
+
+      $template = $node->field_template->value;
+
+      _mass_content_service_page_add_social_links($node);
+      switch ($template) {
+        case 'custom':
+          _mass_content_service_page_migration_custom_link_group($node);
+          break;
+
+        case 'default':
+          _mass_content_service_page_migration_default_link_group($node);
+          break;
+
+      }
+      _mass_content_service_page_add_contact_information($node);
+      _mass_content_service_page_migration_locations($node);
+      if (in_array($node->id(), $service_with_events)) {
+        _mass_content_service_page_add_event_section($node);
+      }
+      if ($template !== 'custom') {
+        _mass_content_service_page_migrate_additional_resources($node);
+      }
+      _mass_content_service_page_cleanup_field_values($node);
+
+      // Save the node.
+      // Save without updating the last modified date. This requires a core patch
+      // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
+      $node->setSyncing(TRUE);
+      $node->save();
+      // Turn on entity_hierarchy writes after processing the item.
+      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
     }
     catch (\Exception $e) {
       \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);

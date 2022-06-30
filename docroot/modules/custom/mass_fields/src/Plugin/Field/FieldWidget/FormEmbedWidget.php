@@ -65,7 +65,7 @@ class FormEmbedWidget extends WidgetBase {
   /**
    * Validate embed text.
    */
-  public function validate(&$element, FormStateInterface $form_state) {
+  public static function validate(&$element, FormStateInterface $form_state) {
     $value = $element['value']['#value'];
     $type = $element['type']['#value'];
 
