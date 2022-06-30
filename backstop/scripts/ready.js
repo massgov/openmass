@@ -116,14 +116,19 @@ module.exports = async function (page, scenario, vp) {
   if (!scenario.hideAlerts || scenario.hideAlerts === undefined) {
     // Wait for a selector to become visible.
     let expanded = await page.evaluate(async function () {
-      let result = false;
+      let result = undefined;
       var el = document.querySelector( '.ma__emergency-header__toggle');
-      if (el.getAttribute('aria-expanded') == true) {
-        result = true;
+      if (el !== null) {
+        if (el.getAttribute('aria-expanded') == true) {
+          result = true;
+        }
+        else {
+          result = false;
+        }
       }
       return result;
     });
-    if (expanded) {
+    if (expanded == true) {
       await page.waitForSelector('span.ma__emergency-alert__time-stamp', {
         visible: true,
         timeout: 10000,
@@ -133,7 +138,7 @@ module.exports = async function (page, scenario, vp) {
         document.querySelector('.ma__emergency-alert__link a.ma__content-link span:first-child').innerText = 'Everyone age 5+ should get a COVID-19 booster. Anyone age 50+ may get a second booster. See the latest updates as of ';
       });
     }
-    else {
+    else if (expanded == false) {
       await page.waitForSelector('.ma__emergency-header__toggle', {
         visible: true,
         timeout: 10000,
