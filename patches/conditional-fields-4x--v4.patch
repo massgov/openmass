@@ -224,7 +224,7 @@ index 1cebd40..3808c5f 100644
          'options' => $options,
        ];
 diff --git a/src/ConditionalFieldsFormHelper.php b/src/ConditionalFieldsFormHelper.php
-index 5452a5c..f86be0f 100644
+index 5452a5c..f608c8d 100644
 --- a/src/ConditionalFieldsFormHelper.php
 +++ b/src/ConditionalFieldsFormHelper.php
 @@ -3,6 +3,7 @@
@@ -521,7 +521,7 @@ index 5452a5c..f86be0f 100644
 +    // Tag errors from untriggered fields to remove them later.
 +    $untriggered_dependents = $form_state->getValue('conditional_fields_untriggered_dependents');
 +    foreach ($untriggered_dependents as &$field) {
-+      $error_key_arr = NestedArray::getValue($form, $field['parents'])['#parents'];
++      $error_key_arr = NestedArray::getValue($form, $field['parents'])['#parents'] ?? [];
 +      $error_key = implode('][', $error_key_arr ?? []);
 +      if (isset($form_state_errors[$error_key])) {
 +        $field['errors'][$error_key] = $form_state_errors[$error_key];
