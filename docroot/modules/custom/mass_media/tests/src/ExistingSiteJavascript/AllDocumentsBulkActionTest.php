@@ -11,7 +11,11 @@ use weitzman\LoginTrait\LoginTrait;
 /**
  * Tests "All Content" view requires input to show content to speed up login.
  */
-class AllDocumentsViewTest extends ExistingSiteSelenium2DriverTestBase {
+class AllDocumentsBulkActionTest extends ExistingSiteSelenium2DriverTestBase {
+  const RESTRICT_ACTION = '2';
+  const UNPUBLISH_ACTION = '3';
+  const TRASH_ACTION = '4';
+  const PUBLISH_ACTION = '5';
 
   use LoginTrait;
   use MediaCreationTrait;
@@ -20,7 +24,6 @@ class AllDocumentsViewTest extends ExistingSiteSelenium2DriverTestBase {
    * {@inheritdoc}
    */
   public function setUp() {
-
     parent::setUp();
     /** @var \Drupal\Tests\DocumentElement */
     $this->page = $this->getSession()->getPage();
@@ -31,7 +34,40 @@ class AllDocumentsViewTest extends ExistingSiteSelenium2DriverTestBase {
     $admin->activate();
     $admin->save();
     $this->drupalLogin($admin);
+  }
 
+  /**
+   * Test Restrict bulk action.
+   */
+  public function testRestrict() {
+    $this->runTestSteps(self::RESTRICT_ACTION);
+  }
+
+  /**
+   * Test Unpublish bulk action.
+   */
+  public function testUnpublish() {
+    $this->runTestSteps(self::UNPUBLISH_ACTION);
+  }
+
+  /**
+   * Test Publish bulk action.
+   */
+  public function testPublish() {
+    $this->runTestSteps(self::PUBLISH_ACTION);
+  }
+
+  /**
+   * Test Trash bulk action.
+   */
+  public function testTrash() {
+    $this->runTestSteps(self::TRASH_ACTION);
+  }
+
+  /**
+   * Create media file.
+   */
+  private function createMediaFile() {
     // Create a file to upload.
     $destination = 'public://llama-23.txt';
     $file = File::create([
@@ -57,43 +93,16 @@ class AllDocumentsViewTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
-   * Ensure that a document is no longer available after it is replaced.
-   *
-   * @see mass_media_media_update()
-   *
-   * @throws \Drupal\Core\Entity\EntityStorageException
+   * Run through test steps.
    */
-  public function testMediaRevision() {
-
-
-    $admin = $this->createUser();
-    $admin->addRole('administrator');
-    $admin->activate();
-    $admin->save();
-    $this->drupalLogin($admin);
+  private function runTestSteps($action) {
+    $this->createMediaFile();
     $this->drupalGet('admin/ma-dash/documents');
-    $this->assertEquals($this->getSession()->getStatusCode(), 200);
-    $this->getCurrentPage()->selectFieldOption('action', 'Moderation: Unpublish media');
-    $this->getCurrentPage()->checkField('views_bulk_operations_bulk_form[0]');
+    $this->getCurrentPage()->find('css', 'select[name="action"]')->selectOption($action);
+    $this->getCurrentPage()->find('css', 'input[name="views_bulk_operations_bulk_form[0]"]')->check();
     $this->getCurrentPage()->pressButton('Apply to selected items');
     $this->getCurrentPage()->pressButton('Execute action');
-    $this->assertEquals($this->getSession()->getStatusCode(), 200);
-    $this->assertSession()->pageTextContains('Your changes have been successfully made.');
-  }
-
-
-  /**
-   * Ensure view content has no results if the Apply button is not clicked.
-   */
-  public function testView() {
-    $this->drupalGet('admin/ma-dash/documents');
-    $this->view = $this->page->find('css', '.view.view-all-documents');
-    $view_results_selector = '.view-content .views-view-table';
-    $this->assertSession()->elementNotExists('css', $view_results_selector);
-    $this->getCurrentPage()->checkField('views_bulk_operations_bulk_form[0]');
-    $this->getCurrentPage()->pressButton('Apply to selected items');
-    $this->getCurrentPage()->pressButton('Execute action');
-    $this->assertSession()->pageTextContains('Your changes have been successfully made.');
+    $this->assertSession()->waitForText('Your changes have been successfully made.');
   }
 
 }
