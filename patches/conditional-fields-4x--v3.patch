@@ -224,7 +224,7 @@ index 1cebd40..3808c5f 100644
          'options' => $options,
        ];
 diff --git a/src/ConditionalFieldsFormHelper.php b/src/ConditionalFieldsFormHelper.php
-index 5452a5c..e82f199 100644
+index 5452a5c..f86be0f 100644
 --- a/src/ConditionalFieldsFormHelper.php
 +++ b/src/ConditionalFieldsFormHelper.php
 @@ -3,6 +3,7 @@
@@ -257,14 +257,14 @@ index 5452a5c..e82f199 100644
        $dependees = $dependent_info['dependees'];
  
 -      $dependent_location = array_merge([], [$dependent]);
-+      $dependent_location = $dependent_info['is_from_paragraph'] ?
++      $dependent_location = ($dependent_info['is_from_paragraph'] ?? FALSE) ?
 +        $dependent_info['array_parents'] :
 +        array_merge([], [$dependent]);
 +
        $dependent_form_field = NestedArray::getValue($this->form, $dependent_location);
  
 -      $states = $this->processDependeeFields($dependees, $dependent_form_field, $dependent_location, $states);
-+      if ($dependent_info['is_from_paragraph']) {
++      if ($dependent_info['is_from_paragraph'] ?? FALSE) {
 +        $base_name = $this->getBaseName($dependent);
 +      }
 +
