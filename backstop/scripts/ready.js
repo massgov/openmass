@@ -118,7 +118,7 @@ module.exports = async function (page, scenario, vp) {
     let expanded = await page.evaluate(async function () {
       let result = false;
       var el = document.querySelector( '.ma__emergency-header__toggle');
-      if (el.getAttribute('aria-expanded')) {
+      if (el.getAttribute('aria-expanded') == true) {
         result = true;
       }
       return result;
