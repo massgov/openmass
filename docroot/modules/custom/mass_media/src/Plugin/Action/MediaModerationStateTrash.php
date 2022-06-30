@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\mass_media\Plugin\Action;
 
 use Drupal\Core\Session\AccountInterface;
