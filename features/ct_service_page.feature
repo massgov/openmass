@@ -15,6 +15,7 @@ Feature: Service Page Content type
   @caching
   Scenario: Verify that the service page content type shows events immediately
     Given I am viewing a published "service_page" with the title "Events Service Page"
+    Given I add events in the service section to "Events Service Page"
     Then I should not see "Upcoming Events"
     And an event "MyUpcomingEvent" referencing service_page "Events Service Page" happening at "now +1 day"
     When I reload the page

@@ -1,29 +1,20 @@
 
 
-## [0.326.0] - June 21, 2022
+## [0.327.0] - June 28, 2022
 
-### Fixed
-  - DP-24689: Fix language bar spacing.
-  - DP-24980: Fix flakey \Drupal\Tests\mass_alerts\ExistingSiteJavascript\AlertsPlacementTest.
-  - DP-25106: Rolled back Nightcrawler update to resolve errors.
-  - DP-25153: Add rule to remove animations by setting the transition-duration to 0s.
-  - DP-25156: Backstop - wait all alerts on the page to be processed.
-  
 ### Changed
-  - DP-24810: - For Contextual Login Links:
-  - If services, using field_log_in_links if not empty.
-  - If organizations, using field_application_login_links if not empty.
-  - If other bundles, using computed_log_in_links.
-- Setting value of computed_log_in_links
-  - Uses links from the closest ancestor, service or organization.
-- If service or organization do not have login links:
-  - Uses links from the closest ancestor, service or organization.
-- Ancestor referenced by field_primary_parent.
+  - DP-23508: Upgrade to PHP 8.
+  - DP-24668: Upgrade to BackstopJS 6.0.4
+  - DP-25237: Updated CSV Serialization and its dependencies to allow CSV exports to work with PHP 8.
+  
+### Fixed
+  - DP-24698: Fix Backstop failing when Tugboat is suspended
+  - DP-25136: Fixes entity usage count when referencing entities are deleted or modified.
+  - DP-25159: Wait for iframes to be resized at least once before taking a screenshot on Backstop.
+  - DP-25231: When changing parent, check descendants entities before calling methods on them.
   
 ### Added
-  - DP-25130: Add new choice for announcement type field for news content type.
-  - DP-25155: Add Entity diff UI module to allow tracking of Media entity revision changes.
-  
-### Removed
-  - DP-25147: Remove /locations-old route from the system.
+  - DP-25192: Release automation - post deployment merge from master to develop
+  - DP-25225: Add Start date to "All documents" view in Drupal.
+  - DP-9559: Added an Orphaned Content views page report that shows content that is not linked in any other content.
   
