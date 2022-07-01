@@ -150,7 +150,7 @@ module.exports = async function (page, scenario, vp) {
   else {
     await page.evaluate(async function () {
       var el = document.querySelector('.mass-alerts-block');
-      el.parentNode.removeChild( el );
+      el.parentNode.removeChild(el);
     })
   }
 
