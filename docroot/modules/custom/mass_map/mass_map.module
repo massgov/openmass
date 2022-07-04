@@ -38,7 +38,7 @@ function mass_map_theme() {
 function mass_map_page_attachments(&$page) {
   $match = Drupal::routeMatch();
 
-  if ($match->getRouteName() === 'mass_map.map_page') {
+  if ($match->getRouteName() === 'view.locations.page') {
     $node = $match->getParameter('node');
 
     $page['#attached']['html_head'][] = [
