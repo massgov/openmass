@@ -5,6 +5,7 @@ namespace Drupal\mass_workbench_ui\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -65,15 +66,8 @@ class WorkbenchModerationCurrentState extends BlockBase implements ContainerFact
     /** @var \Drupal\node\Entity\Node $node */
     $node = $this->routeMatch->getParameter('node');
     $nodeStorage = $this->entityTypeManager->getStorage('node');
-    if (ctype_digit($node)) {
-      $node = $nodeStorage->load($node);
-    }
 
-    if ($revision = $this->routeMatch->getParameter('node_revision')) {
-      $node = $nodeStorage->loadRevision($revision);
-    }
-
-    if ($node) {
+    if (is_a($node, ContentEntityBase::class)) {
       $block = [
         '#markup' => "Current moderation state: " . $node->moderation_state->value,
       ];
