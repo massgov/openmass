@@ -72,6 +72,11 @@ AddType application/octet-stream .rte
   php_value always_populate_raw_post_data   -1
 </IfModule>
 
+# PHP 8
+<IfModule mod_php.c>
+  php_value assert.active                   0
+</IfModule>
+
 # Requires mod_expires to be enabled.
 <IfModule mod_expires.c>
   # Enable expirations.
