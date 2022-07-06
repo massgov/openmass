@@ -1,5 +1,22 @@
 
 
+## [0.328.0] - July 5, 2022
+
+### Added
+  - DP-24449: Require strict types on new php files
+  
+### Fixed
+  - DP-24818: Fix sitewide alerts breaking Backstop tests.
+  - DP-25154: Fix backstop alerts and footer false positives related.
+  - DP-25197: Avoid body overflow when showing a modal.
+  - DP-25233: Increase Tugboat upload limit
+  - DP-25326: Fix revision view page via bug in moderation status block
+  
+### Removed
+  - DP-25250: Remove old service overflow page URLs from backstop.
+  
+
+
 ## [0.327.0] - June 29, 2022
 
 ### Changed
