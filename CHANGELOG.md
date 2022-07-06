@@ -3,7 +3,7 @@
 ## [0.328.1] - July 6, 2022
 
 ### Fixed
-- DP-25325: Updated Monolog to fix 403 errors in Acquia environments.
+- DP-25325: Updated the Monolog to fix 403 errors in Acquia environments.
 
 
 
