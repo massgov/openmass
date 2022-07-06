@@ -10,4 +10,5 @@ git diff-tree \
             -z \
             --name-only \
             --no-commit-id \
+            --irreversible-delete \
             HEAD "${SHA1[@]}" -- docroot/modules/custom | xargs --no-run-if-empty -0 vendor/bin/phpcs --standard=phpcs.strict_types.xml
