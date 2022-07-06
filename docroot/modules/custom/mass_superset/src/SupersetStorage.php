@@ -146,7 +146,6 @@ class SupersetStorage implements SupersetStorageInterface {
           'last_updated' => $time,
           'nos_per_1000' => $stat['nos_per_1000'],
           'eject_rate' => $stat['eject_rate'],
-          'rate_of_traffic_to_children' => $stat['rate_of_traffic_to_children'],
           'broken_links' => $stat['broken_links'],
           'grade_level' => $stat['grade_level'],
         ])

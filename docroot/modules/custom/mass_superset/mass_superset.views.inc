@@ -99,21 +99,6 @@ function mass_superset_views_data() {
     ],
   ];
 
-  $data['mass_superset_data']['rate_of_traffic_to_children'] = [
-    'title' => t('Traffic to Children'),
-    'help' => t('The rate of traffic to children.'),
-    'field' => [
-      'id' => 'numeric',
-      'float' => TRUE,
-    ],
-    'filter' => [
-      'title' => t('Traffic to Children'),
-      'help' => t('Limit pages to those with a certain rate of traffic to children.'),
-      'field' => 'rate_of_traffic_to_children',
-      'id' => 'numeric',
-    ],
-  ];
-
   $data['mass_superset_data']['broken_links'] = [
     'title' => t('Broken Links'),
     'help' => t('The number of broken links.'),
