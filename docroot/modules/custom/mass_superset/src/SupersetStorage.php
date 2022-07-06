@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\mass_superset;
 
 use Drupal\Core\Config\ConfigFactoryInterface;

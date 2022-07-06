@@ -7,6 +7,8 @@
  * @ingroup views_module_handlers
  */
 
+declare(strict_types=1);
+
 /**
  * Implements hook_views_data().
  */
