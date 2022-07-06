@@ -1,8 +1,8 @@
 services:
   # What to call the service hosting the site.
   php:
-    # Use PHP 7.x with Apache; this syntax pulls in the latest version of PHP 7
-    image: tugboatqa/php:7.4-apache
+    # Use PHP 8.x with Apache; this syntax pulls in the latest version of PHP 8
+    image: tugboatqa/php:8.0-apache
 
     # Set this as the default service. This does a few things
     #   1. Clones the git repository into the service container
@@ -64,7 +64,12 @@ services:
         - echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
         - sudo apt update
         - sudo apt install yarn
-        - echo "memory_limit = 512M" >> /usr/local/etc/php/conf.d/my-php.ini
+        # See .ddev/php/my-php.ini for local configuration.
+        # We have a 256M limit set at Acquia via their UI / API.
+        - echo "memory_limit=256M" >> /usr/local/etc/php/conf.d/my-php.ini
+        # These match Acquia default settings.
+        - echo "upload_max_filesize=256M" >> /usr/local/etc/php/conf.d/my-php.ini
+        - echo "post_max_size=256M" >> /usr/local/etc/php/conf.d/my-php.ini
 
         # Link the document root to the expected path.
         - ln -snf "${TUGBOAT_ROOT}/docroot" "${DOCROOT}"

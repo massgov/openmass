@@ -130,7 +130,7 @@ class EntityUsageTest extends ExistingSiteBase {
   private function emptyEntityUsageQueues() {
     $this->clearQueue('entity_usage_tracker');
     $this->clearQueue('entity_usage_regenerate_queue');
-    \Drupal::service('mass_entity_usage.clean_usage_table')->clean();
+    \Drupal::service('entity_usage.clean_usage_table')->clean();
   }
 
   /**
@@ -138,7 +138,7 @@ class EntityUsageTest extends ExistingSiteBase {
    */
   private function processEntityUsageQueues() {
     $this->runQueue('entity_usage_tracker');
-    \Drupal::service('mass_entity_usage.clean_usage_table')->clean();
+    \Drupal::service('entity_usage.clean_usage_table')->clean();
   }
 
   /**
@@ -179,6 +179,96 @@ class EntityUsageTest extends ExistingSiteBase {
     $this->assertUsageRows($media, 0);
     $this->assertUsageRows($node_curated_list, 0);
     $this->assertUsageRows($node_org, 0);
+  }
+
+  /**
+   * Usage count checks when updating and deleting referencing entities.
+   */
+  public function testUsageCountWhenEditingAndDeletingReferences() {
+    // Create node1.
+    $node_org = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Test Organization - Node 1',
+      'uid' => $this->user->id(),
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+    $this->processEntityUsageQueues();
+    // Check usages = 0.
+    $this->assertUsageRows($node_org, 0);
+
+    // Create node2 linking node1.
+    $node_curated_list_1 = $this->createNode([
+      'type' => 'curated_list',
+      'title' => 'Test Curated List - Node 2',
+      'uid' => $this->user->id(),
+      'moderation_state' => MassModeration::PUBLISHED,
+      'field_curatedlist_overview' => [
+        'value' => $node_org->toLink()->toString(),
+        'format' => 'basic_html',
+      ],
+    ]);
+    $this->processEntityUsageQueues();
+    // Usage for node1 should be 1.
+    $this->assertUsageRows($node_org, 1);
+
+    // Create node3, linking node1.
+    $node_curated_list_2 = $this->createNode([
+      'type' => 'curated_list',
+      'title' => 'Test Curated List - Node 3',
+      'uid' => $this->user->id(),
+      'moderation_state' => MassModeration::PUBLISHED,
+      'field_curatedlist_overview' => [
+        'value' => $node_org->toLink()->toString(),
+        'format' => 'basic_html',
+      ],
+    ]);
+    $this->processEntityUsageQueues();
+    // Usage for node1 should be 2.
+    $this->assertUsageRows($node_org, 2);
+
+    // Remove link from Node3 to Node1.
+    $node_curated_list_2->field_curatedlist_overview->setValue(NULL);
+    $node_curated_list_2->save();
+    $this->processEntityUsageQueues();
+    // Usage for node1 should be 1.
+    $this->assertUsageRows($node_org, 1);
+
+    // Delete node2.
+    $node_curated_list_1->delete();
+    $this->processEntityUsageQueues();
+    // Usage for node1 should be 0.
+    $this->assertUsageRows($node_org, 0);
+  }
+
+  /**
+   * Tests multiple references from one entity to another entity.
+   */
+  public function testCuratedList() {
+    $new_test_org = $this->createNode([
+      'title' => 'TestOrg',
+      'type' => 'org_page',
+      'moderation_state' => MassModeration::PUBLISHED,
+      'status' => 1
+    ]);
+
+    $this->createNode([
+      'title' => 'Curated list with references to an Organization.',
+      'type' => 'curated_list',
+      'field_curatedlist_overview' => [
+        'value' => $new_test_org->toLink()->toString(),
+        'format' => 'full_html',
+      ],
+      'field_primary_parent' => $new_test_org->id(),
+      'field_organizations' => $new_test_org->id(),
+      'moderation_state' => MassModeration::PUBLISHED,
+      'status' => 1
+    ]);
+
+    $this->processEntityUsageQueues();
+
+    // Showing only 1 reference is correct.
+    // @see Drupal\entity_usage\EntityUsage::listUniqueSourcesCount
+    $this->assertUsageRows($new_test_org, 1);
   }
 
   /**

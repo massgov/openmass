@@ -113,20 +113,50 @@ module.exports = async function (page, scenario, vp) {
     await page.waitForSelector('.cbFormErrorMarker', {visible: true})
   }
 
-  if (scenario.showAlerts) {
+  if (!scenario.hideAlerts || scenario.hideAlerts === undefined) {
     // Wait for a selector to become visible.
-    await page.waitForSelector('span.ma__emergency-alert__time-stamp', {
-      visible: true,
-      timeout: 0
-    })
-    await page.evaluate(async function () {
-      document.querySelectorAll('span.ma__emergency-alert__time-stamp').forEach(function (e) {
-        // Force the content to be always same.
-        e.innerText = 'May. 24th, 2021, 5:00 pm';
+    let expanded = await page.evaluate(async function () {
+      let result = undefined;
+      var el = document.querySelector( '.ma__emergency-header__toggle');
+      if (el !== null) {
+        if (el.getAttribute('aria-expanded') == true) {
+          result = true;
+        }
+        else {
+          result = false;
+        }
+      }
+      return result;
+    });
+    if (expanded == true) {
+      await page.waitForSelector('span.ma__emergency-alert__time-stamp', {
+        visible: true,
+        timeout: 10000,
+      })
+      await page.evaluate(async function () {
+        document.querySelector('.ma__emergency-alert__time-stamp').innerText = 'May. 24th, 2021, 5:00 pm';
+        document.querySelector('.ma__emergency-alert__link a.ma__content-link span:first-child').innerText = 'Everyone age 5+ should get a COVID-19 booster. Anyone age 50+ may get a second booster. See the latest updates as of ';
       });
-    })
+    }
+    else if (expanded == false) {
+      await page.waitForSelector('.ma__emergency-header__toggle', {
+        visible: true,
+        timeout: 10000,
+      })
+    }
+
     await page.waitForTimeout(1000);
   }
+  else {
+    await page.evaluate(async function () {
+      var el = document.querySelector('.mass-alerts-block');
+      el.parentNode.removeChild(el);
+    })
+  }
+
+  // Wait for iframes to be resized at least once.
+  // Avoid iframes with fixed height.
+  await page.waitForFunction("jQuery('.js-ma-responsive-iframe iframe[height=auto]').length === 0");
 
   switch (scenario.label) {
     case "InfoDetailsImageWrapLeft":
@@ -136,11 +166,11 @@ module.exports = async function (page, scenario, vp) {
       await page.waitForFunction("document.readyState === 'complete'");
       await page.waitForSelector('form.ma__mass-feedback-form__form', {
         visible: true,
-        timeout: 0
+        timeout: 10000,
       });
       await page.waitForSelector(".ma__figure--x-large img", {
         visible: true,
-        timeout: 0
+        timeout: 10000,
       });
       await page.waitForTimeout(3000);
       break;
@@ -153,7 +183,6 @@ module.exports = async function (page, scenario, vp) {
       break;
     case "InfoDetails1":
       await page.waitForFunction("document.querySelector('div.csv-table') === null");
-      await page.waitForTimeout(1000);
       break;
     case "ServiceGroupedLinks":
     case "Service1":
@@ -161,7 +190,7 @@ module.exports = async function (page, scenario, vp) {
     case "ExpansionOfAccordions2_toggle":
       await page.waitForFunction("document.readyState === 'complete'");
       await page.evaluate(async function () {
-        jQuery(".js-accordion-link").click();
+        jQuery(".js-accordion-link").not('.ma__emergency-header__toggle').click();
       });
       await page.waitForTimeout(1000);
       break;
@@ -259,6 +288,13 @@ module.exports = async function (page, scenario, vp) {
       // announcements on Governor's page (show a gray box instead)
       '.ma__press-listing__secondary-item .ma__press-teaser .ma__press-teaser__image {' +
       '  position: relative;' +
+      '}' +
+      '.ma__fixed-feedback-button {' +
+      '  top: 28rem;' +
+      '  bottom: unset;' +
+      '}' +
+      '.ma__fixed-feedback-button a {' +
+      '  transition: unset;' +
       '}' +
       '.ma__press-listing__secondary-item .ma__press-teaser .ma__press-teaser__image:before {' +
       '  background: #888888;\n' +

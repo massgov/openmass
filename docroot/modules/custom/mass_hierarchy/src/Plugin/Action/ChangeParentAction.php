@@ -125,6 +125,12 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
       }
 
       foreach ($descendants as $descendant) {
+        // Descendants might not be up-to-date for a particular node,
+        // hence it's better to check the descendant entity first.
+        if (!$descendant) {
+          continue;
+        }
+
         $descendant_node = $node_storage->load($descendant->getId());
 
         // Ensure new parent is not a descendant from one of the selected nodes.
