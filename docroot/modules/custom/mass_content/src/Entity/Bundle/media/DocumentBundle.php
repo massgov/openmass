@@ -17,10 +17,11 @@ class DocumentBundle extends MediaBundle {
   public function getFileChangedTime($field_name = 'field_upload_file'): string {
     $file = $this->{$field_name}->entity;
     if (!$file instanceof File) {
-      \Drupal::logger('media.documents')->notice('Document is missing its File: @entity_label (@entity_id)', [
-        '@entity_label' => $this->label(),
-        '@entity_id' => $this->id(),
-      ]);
+//      This log has poor signal/noise ratio. Uncomment when needed.
+//      \Drupal::logger('media.documents')->notice('Document is missing its File: @entity_label (@entity_id)', [
+//        '@entity_label' => $this->label(),
+//        '@entity_id' => $this->id(),
+//      ]);
       return '';
     }
     return DrupalDateTime::createFromTimestamp($file->getChangedTime())->format('Y-m-d');
