@@ -357,6 +357,31 @@ function mass_validation_service_page_alter_helper(array &$form) {
 }
 
 /**
+ * Validates service page sections (field_service_sections).
+ */
+function _mass_validation_service_page_sections_validate(array &$form, FormStateInterface $form_state) {
+  if (!$form_state->hasValue('field_service_sections')) {
+    return;
+  }
+
+  $sections = $form_state->getValue('field_service_sections');
+
+  foreach ($sections as $section_key => $section) {
+    if (!is_array($section)) {
+      continue;
+    }
+    $paragraphs = $sections[$section_key]['subform']['field_service_section_content'] ?? [];
+    foreach ($paragraphs as $key => $paragraph) {
+      if (!is_int($key)) {
+        continue;
+      }
+      _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $key, 'field_service_sections', 'field_service_section_content');
+      _mass_validation_validate_mosaic_items($form_state, $paragraph);
+    }
+  }
+}
+
+/**
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_service_page_form_validate(array &$form, FormStateInterface $form_state) {
@@ -364,6 +389,8 @@ function _mass_validation_form_node_service_page_form_validate(array &$form, For
   _mass_link_validate($form_state, 'field_service_ref_actions');
   _mass_link_validate($form_state, 'field_service_links');
   _mass_link_validate($form_state, 'field_service_key_info_links_6');
+  _mass_validation_service_page_sections_validate($form, $form_state);
+
   $template = $form_state->getValue('field_template');
   $template_value = isset($template[0]['value']) ? $template[0]['value'] : '';
   if ($template_value === 'custom') {
@@ -1136,6 +1163,55 @@ function mass_validation_org_page_alter_helper(array &$form) {
 }
 
 /**
+ * Validates mosaic items to be 5 and Hightlight image for the first item.
+ */
+function _mass_validation_validate_mosaic_items(FormStateInterface $form_state, &$paragraph) {
+  if (!isset($paragraph['subform']['field_featured_item_mosaic_items'])) {
+    return;
+  }
+  if (isset($paragraph['subform']['field_featured_item_mosaic_items']['add_more'])) {
+    $form_state->setErrorByName('mosaic_items_add_more', t('You must provide 5 featured items.'));
+  }
+  // Find the item with the lowest weight.
+  foreach ($paragraph['subform']['field_featured_item_mosaic_items'] as $mosaic_key => $mosaic_array) {
+    if (!isset($mosaic_array['_weight'])) {
+      continue;
+    }
+    $weight = (int) $mosaic_array['_weight'];
+    if (!isset($lowest) || $weight < $lowest) {
+      $lowest = $weight;
+      $first = $mosaic_array;
+    }
+  }
+  if (isset($first) && empty($first['subform']['field_featured_item_highlight'][0]['fids'])) {
+    $form_state->setErrorByName('mosaic_hightlight',
+      t('You must provide a value for the Highlight Image of the first Featured Item.'));
+  }
+}
+
+/**
+ * Validates caspio items to have a URL to caspio.com.
+ */
+function _mass_validation_validate_caspio(FormStateInterface $form_state, $paragraph, $section_key, $paragraph_key, $field_wrapper, $field) {
+  if (!isset($paragraph['subform']['field_caspio_data_identifier'])) {
+    return;
+  }
+
+  foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
+    if (empty($caspioId)) {
+      continue;
+    }
+    if (preg_match('/^http(s)?:\/\/\w+\.caspio\.(com)(\/.*|$)/', $caspioId['value'])) {
+      continue;
+    }
+    $form_state->setErrorByName(
+      $field_wrapper . '][' . $section_key . '][subform][' . $field . '][' . $paragraph_key . '][subform][field_caspio_data_identifier][0][value',
+      t('Only caspio.com URL allowed. See help text for this field.')
+    );
+  }
+}
+
+/**
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_org_page_form_validate(array &$form, FormStateInterface $form_state) {
@@ -1148,34 +1224,8 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
       if (isset($section['subform']['field_section_long_form_content'])) {
         $paragraphs = $section['subform']['field_section_long_form_content'];
         foreach ($paragraphs as $paragraph_key => $paragraph) {
-          if (isset($paragraph['subform']['field_caspio_data_identifier'])) {
-            foreach ($paragraph['subform']['field_caspio_data_identifier'] as $caspioId) {
-              if (!empty($caspioId)) {
-                if (!preg_match('/^http(s)?:\/\/\w+\.caspio\.(com)(\/.*|$)/', $caspioId['value'])) {
-                  $form_state->setErrorByName('field_organization_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform][field_caspio_data_identifier', t('Only caspio.com URL allowed. See help text for this field.'));
-                }
-              }
-            }
-          }
-          if (isset($paragraph['subform']['field_featured_item_mosaic_items'])) {
-            if (isset($paragraph['subform']['field_featured_item_mosaic_items']['add_more'])) {
-              $form_state->setErrorByName('', t('You must provide 5 featured items.'));
-            }
-            // Find the item with the lowest weight.
-            foreach ($paragraph['subform']['field_featured_item_mosaic_items'] as $mosaic_key => $mosaic_array) {
-              if (isset($mosaic_array['_weight'])) {
-                $weight = (int) $mosaic_array['_weight'];
-                if (!isset($lowest) || $weight < $lowest) {
-                  $lowest = $weight;
-                  $first = $mosaic_array;
-                }
-              }
-            }
-            if (isset($first) && empty($first['subform']['field_featured_item_highlight'][0]['fids'])) {
-              $form_state->setErrorByName('',
-                t('You must provide a value for the Highlight Image of the first Featured Item.'));
-            }
-          }
+          _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $paragraph_key, 'field_organization_sections', 'field_section_long_form_content');
+          _mass_validation_validate_mosaic_items($form_state, $paragraph);
         }
       }
     }

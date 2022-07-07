@@ -1,5 +1,50 @@
 
 
+## [0.328.1] - July 6, 2022
+
+### Fixed
+- DP-25325: Updated the Monolog to fix 403 errors in Acquia environments.
+
+
+
+## [0.328.0] - July 5, 2022
+
+### Added
+  - DP-24449: Require strict types on new php files
+
+### Fixed
+  - DP-24818: Fix sitewide alerts breaking Backstop tests.
+  - DP-25154: Fix backstop alerts and footer false positives related.
+  - DP-25197: Avoid body overflow when showing a modal.
+  - DP-25233: Increase Tugboat upload limit
+  - DP-25326: Fix revision view page via bug in moderation status block
+
+### Removed
+  - DP-25250: Remove old service overflow page URLs from backstop.
+
+
+
+## [0.327.0] - June 29, 2022
+
+### Changed
+  - DP-23508: Upgrade to PHP 8.
+  - DP-24668: Upgrade to BackstopJS 6.0.4
+  - DP-25237: Updated CSV Serialization and its dependencies to allow CSV exports to work with PHP 8.
+
+### Fixed
+  - DP-24698: Fix Backstop failing when Tugboat is suspended
+  - DP-25136: Fixes entity usage count when referencing entities are deleted or modified.
+  - DP-25159: Wait for iframes to be resized at least once before taking a screenshot on Backstop.
+  - DP-25231: When changing parent, check descendants entities before calling methods on them.
+  - DP-25249: Fixed Form form validation.
+
+### Added
+  - DP-25192: Release automation - post deployment merge from master to develop
+  - DP-25225: Add Start date to "All documents" view in Drupal.
+  - DP-9559: Added an Orphaned Content views page report that shows content that is not linked in any other content.
+
+
+
 ## [0.326.0] - June 21, 2022
 
 ### Fixed
@@ -8,7 +53,7 @@
   - DP-25106: Rolled back Nightcrawler update to resolve errors.
   - DP-25153: Add rule to remove animations by setting the transition-duration to 0s.
   - DP-25156: Backstop - wait all alerts on the page to be processed.
-  
+
 ### Changed
   - DP-24810: - For Contextual Login Links:
   - If services, using field_log_in_links if not empty.
@@ -19,14 +64,14 @@
 - If service or organization do not have login links:
   - Uses links from the closest ancestor, service or organization.
 - Ancestor referenced by field_primary_parent.
-  
+
 ### Added
   - DP-25130: Add new choice for announcement type field for news content type.
   - DP-25155: Add Entity diff UI module to allow tracking of Media entity revision changes.
-  
+
 ### Removed
   - DP-25147: Remove /locations-old route from the system.
-  
+
 
 
 ## [0.325.0] - June 14, 2022
@@ -37,7 +82,7 @@
   - DP-24370: Install Imagick PHP extension at Tugboat
   - DP-24806: Updates to the focal point help text on multiple places.
   - DP-24993: Help text to clarify how the new Collection field should be used.
-  
+
 ### Added
   - DP-24414: Added a new Content Performance view.
   - DP-24573: Add organization metadata to campaign landing pages.
@@ -49,7 +94,7 @@
 - Append collection_term_empty_message to the collection_all view empty section.
   - DP-25112: -| - Added field_external_organization to external_data_resrouce - If field_external_organization has a value, replaces the organization shown on the collection listing pages.
   - DP-25132: Add Greek language to the system.
-  
+
 ### Fixed
   - DP-24699: Improve CircleCI Backstop Job Times
   - DP-24800: Automatic list "sort by date" fixes.
@@ -61,11 +106,11 @@
   - DP-25081: Organizations was printing twice on authors info on News full.
   - DP-25103: Fix scaffold overwriting example settings file
   - hotfix: Fix global menu overlay
-  
+
 ### Security
   - DP-24927: Update components causing security alerts.
   - DP-25141: Updated Drupal core to 9.3.16.
-  
+
 ## [0.324.0] - May 31, 2022
 
 ### Fixed
@@ -74,7 +119,7 @@
   - DP-24801: Fix undefined array key 'ariaHidden'.
   - DP-24983: Avoids special characters on titles for collection and data listing pages.
   - DP-25028: Fixed caching errors on topics pages.
-  
+
 ### Changed
   - DP-24948: - editor can edit any external link for collections content
               - update help text for collections logo
@@ -84,13 +129,13 @@
   - DP-24955: Configuration changes
               - Update "use this content type for" for news
               - Update news body help text
-  
+
 ### Added
   - DP-24963: Backstop for Collection pages with top banner and news Blogpost.
   - DP-24981: Add data listing pages to Backstop.
               - Energy and Environment Data Listing: /data-listing/topic/energy-and-environment
               - All Data Listing: /data-listing/all
-  
+
 ### Security
   - DP-24987: Drupal core and Embed module update.
 
@@ -104,7 +149,7 @@
   - DP-24801: Fix undefined array key 'ariaHidden'.
   - DP-24983: Avoids special characters on titles for collection and data listing pages.
   - DP-25028: Fixed caching errors on topics pages.
-  
+
 ### Changed
   - DP-24948: - editor can edit any external link for collections content
 - update help text for collections logo
@@ -114,16 +159,16 @@
   - DP-24955: Configuration changes
 - Update "use this content type for" for news
 - Update news body help text
-  
+
 ### Added
   - DP-24963: Backstop for Collection pages with top banner and news Blogpost.
   - DP-24981: Add data listing pages to Backstop.
 - Energy and Environment Data Listing: /data-listing/topic/energy-and-environment
 - All Data Listing: /data-listing/all
-  
+
 ### Security
   - DP-24987: Drupal core and Embed module update.
-  
+
 
 
 ## [0.323.0] - May 24, 2022
@@ -140,7 +185,7 @@
   - DP-24950: Collection filters to /admin/ma-dash/documents and its CSV export.
   - DP-24951: Modify "no results" language for collections feature.
   - DP-24952: Disable watch emails when using collection features.
-  
+
 ### Fixed
   - DP-24909: - Fixes on collection header title.
 - Showing the banner style only if the description or bg color is not empty.
@@ -149,7 +194,7 @@
   - DP-24939: This corrects editor permissions for promotional pages. Change already made in production directly.
   - DP-24947: - Modify collection pager to make it work with sort.
 - Collection content filtered by topic pass the topic ID to collection media view.
-  
+
 
 
 ## [0.322.0] - May 17, 2022
@@ -160,7 +205,7 @@
 - Add "Organizations" to Collections
 - Collections view with full breadcrumb
 - Modified Blog post header for News
-  
+
 ### Changed
   - DP-24326: - Not require unpublished date for promotional pages
 - KPI fields not required on promo pages
@@ -168,7 +213,7 @@
   - DP-24890: - node.external_data_resource.field_data_format on external_data_resource not required.
 - external_data_resource update on name,  description and "use this content type for"
   - DP-24928: Label for external data resource content type is now External link for Collections
-  
+
 ### Fixed
   - DP-24569: - Events listed in the collection, “Thu, 04/28/2022 - 18:00” should be “Thursday, April 28, 2022 - 6:00 p.m.”
 - Optional collection field for authors to check a box and then only events that are today or in the future will be shown.
@@ -183,14 +228,14 @@ for getting the label and the hours.
   - DP-24877: Refactor Accordion tests to fix concurrency issues
   - DP-24884: Fix hardcoding wait and missing required field in TemporaryUnpublishedAccessTest
   - DP-24917: Avoid cache staleness in org page.
-  
+
 ### Security
   - DP-24687: Update packages. Fixes Dependabot alert security issues.
   - DP-24913: Re-added security update for quick_node_clone.
-  
+
 ### Removed
   - DP-24860: Remove margin bottom override on campaign pages to allow consistent spacing above feedback form on Mass.gov.
-  
+
 ## [0.321.1] - May 12, 2022
 
 ### Changed
