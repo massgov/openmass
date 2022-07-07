@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\mass_hierarchy;
 
 use Drupal\Core\Breadcrumb\Breadcrumb;
