@@ -182,7 +182,15 @@ module.exports = async function (page, scenario, vp) {
       })
       break;
     case "InfoDetails1":
-      await page.waitForFunction("document.querySelector('div.csv-table') === null");
+      await page.waitForSelector('.ma__csvtable table.dataTable', {
+        visible: true,
+        timeout: 10000,
+      })
+      await page.waitForSelector('.ma__csvtable div.dataTables_info', {
+        visible: true,
+        timeout: 10000,
+      })
+      await page.waitForTimeout(1000);
       break;
     case "ServiceGroupedLinks":
     case "Service1":
