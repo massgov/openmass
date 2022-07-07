@@ -182,11 +182,19 @@ module.exports = async function (page, scenario, vp) {
       })
       break;
     case "InfoDetails1":
-      await page.waitForSelector('.ma__csvtable table.dataTable', {
+      await page.waitForSelector('.ma__figure--large.ma__csvtable table.dataTable', {
         visible: true,
         timeout: 10000,
       })
-      await page.waitForSelector('.ma__csvtable div.dataTables_info', {
+      await page.waitForSelector('.ma__figure--x-large.ma__csvtable table.dataTable', {
+        visible: true,
+        timeout: 10000,
+      })
+      await page.waitForSelector('.ma__figure--large.ma__csvtable div.dataTables_info', {
+        visible: true,
+        timeout: 10000,
+      })
+      await page.waitForSelector('.ma__figure--x-large.ma__csvtable div.dataTables_info', {
         visible: true,
         timeout: 10000,
       })
