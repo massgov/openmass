@@ -16,6 +16,8 @@ dependencies:
     - media
     - user
     - views_autocomplete_filters
+    - views_bulk_operations
+    - views_porter_stemmer
 id: trash_media
 label: Trash
 module: views
@@ -1205,15 +1207,14 @@ display:
     position: 1
     display_options:
       fields:
-        media_bulk_form:
-          id: media_bulk_form
-          table: media
-          field: media_bulk_form
+        views_bulk_operations_bulk_form:
+          id: views_bulk_operations_bulk_form
+          table: views
+          field: views_bulk_operations_bulk_form
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: media
-          plugin_id: bulk_form
+          plugin_id: views_bulk_operations_bulk_form
           label: 'Bulk update'
           exclude: false
           alter:
@@ -1255,10 +1256,18 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
+          batch: true
+          batch_size: 10
+          form_step: true
+          buttons: false
           action_title: Action
-          include_exclude: include
           selected_actions:
-            - mass_media_unpublish
+            3:
+              action_id: mass_media_unpublish
+              preconfiguration:
+                add_confirmation: 1
+          clear_on_exposed: true
+          force_selection_info: 0
         mid:
           id: mid
           table: media_field_data
