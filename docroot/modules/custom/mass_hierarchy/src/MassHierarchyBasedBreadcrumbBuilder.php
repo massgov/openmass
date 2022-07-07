@@ -99,7 +99,12 @@ class MassHierarchyBasedBreadcrumbBuilder extends HierarchyBasedBreadcrumbBuilde
           && !$entity->get('field_short_title')->isEmpty()) {
           $text = $entity->get('field_short_title')->value;
         }
-        $links[] = Link::createFromRoute($text, '<none>');
+        if ($route_match->getRouteName() == 'mass_more_lists.events_past') {
+          $links[] = Link::fromTextAndUrl($text, $entity->toUrl());
+        }
+        else {
+          $links[] = Link::createFromRoute($text, '<none>');
+        }
       }
       else {
         if ($entity->hasField('field_short_title') && !$entity->get('field_short_title')->isEmpty()) {
