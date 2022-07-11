@@ -235,8 +235,13 @@ trait FieldProcessingTrait {
 
       $validator = $this->getPathValidator();
       $url = $validator->getUrlIfValid($parsed_match['path']);
+
+      if (empty($url) || $url->isExternal()) {
+        return;
+      }
+
       // Confirming the local link is a node, not media or other.
-      if ($url && $url->getRouteName() === 'entity.node.canonical') {
+      if ($url->getRouteName() === 'entity.node.canonical') {
         $params = $url->getRouteParameters();
         $nid = $params['node'];
         $collected[$nid] = [
@@ -247,11 +252,11 @@ trait FieldProcessingTrait {
         ];
       }
       // Documents particularly are linked to, track those.
-      elseif ($url && $url->getRouteName() === 'media_entity_download.download') {
+      elseif ($url->getRouteName() === 'media_entity_download.download') {
         $params = $url->getRouteParameters();
         $id = $params['media'];
         // @TODO the undefined need below needs to be fixed.
-        $collected[$nid] = [
+        $collected[$id] = [
           'id' => $id,
           'entity' => 'media',
           'field_label' => $field_label ?? '',
