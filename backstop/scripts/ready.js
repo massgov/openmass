@@ -198,7 +198,11 @@ module.exports = async function (page, scenario, vp) {
         visible: true,
         timeout: 10000,
       })
-      await page.waitForTimeout(1000);
+      await page.waitForSelector('footer#footer .ma__footer-new__container', {
+        visible: true,
+        timeout: 10000,
+      })
+      await page.waitForTimeout(3000);
       break;
     case "ServiceGroupedLinks":
     case "Service1":
@@ -310,6 +314,9 @@ module.exports = async function (page, scenario, vp) {
       '  bottom: unset;' +
       '}' +
       '.ma__fixed-feedback-button a {' +
+      '  transition: unset;' +
+      '}' +
+      '.ma__figure--full {' +
       '  transition: unset;' +
       '}' +
       '.ma__press-listing__secondary-item .ma__press-teaser .ma__press-teaser__image:before {' +
