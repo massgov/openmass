@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\mass_media\Plugin\Action;
 
 use Drupal\Core\File\FileSystemInterface;
-use Drupal\Core\Action\ActionBase;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\mass_media\Traits\MediaModerationStateActionTrait;
 use Drupal\media\MediaInterface;
 use Drupal\file\Entity\File;
+use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionBase;
 
 /**
  * Updates the moderation state of a media item to Restricted.
@@ -17,14 +20,16 @@ use Drupal\file\Entity\File;
  *   type = "media"
  * )
  */
-class MediaModerationStateRestricted extends ActionBase {
+class MediaModerationStateRestricted extends ViewsBulkOperationsActionBase {
+
+  use MediaModerationStateActionTrait;
 
   /**
    * {@inheritdoc}
    */
   public function execute(MediaInterface $entity = NULL) {
     if ($entity) {
-      $entity->set('moderation_state', 'restricted')->save();
+      $this->createRevision($entity, 'restricted');
 
       // Move file to private storage.
       $file = File::load($entity->field_upload_file->target_id);
