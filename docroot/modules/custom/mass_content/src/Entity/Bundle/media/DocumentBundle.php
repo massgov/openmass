@@ -19,9 +19,9 @@ class DocumentBundle extends MediaBundle {
     if (!$file instanceof File) {
       // This log has poor signal/noise ratio. Uncomment when needed, or use the report at https://edit.mass.gov/admin/reports/missing-files
       // \Drupal::logger('media.documents')->notice('Document is missing its File: @entity_label (@entity_id)', [
-      //  '@entity_label' => $this->label(),
-      //  '@entity_id' => $this->id(),
-      //]);
+      // '@entity_label' => $this->label(),
+      // '@entity_id' => $this->id(),
+      // ]);
       return '';
     }
     return DrupalDateTime::createFromTimestamp($file->getChangedTime())->format('Y-m-d');
