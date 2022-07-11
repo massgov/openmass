@@ -7,6 +7,8 @@
  * @ingroup views_module_handlers
  */
 
+declare(strict_types=1);
+
 /**
  * Implements hook_views_data().
  */
@@ -95,21 +97,6 @@ function mass_superset_views_data() {
       'title' => t('Eject Rate'),
       'help' => t('Limit pages to those with a certain eject rate.'),
       'field' => 'eject_rate',
-      'id' => 'numeric',
-    ],
-  ];
-
-  $data['mass_superset_data']['rate_of_traffic_to_children'] = [
-    'title' => t('Traffic to Children'),
-    'help' => t('The rate of traffic to children.'),
-    'field' => [
-      'id' => 'numeric',
-      'float' => TRUE,
-    ],
-    'filter' => [
-      'title' => t('Traffic to Children'),
-      'help' => t('Limit pages to those with a certain rate of traffic to children.'),
-      'field' => 'rate_of_traffic_to_children',
       'id' => 'numeric',
     ],
   ];
