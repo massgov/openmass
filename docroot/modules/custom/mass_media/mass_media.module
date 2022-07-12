@@ -102,9 +102,18 @@ function mass_media_preprocess_page_title(&$variables) {
  * Checks permission for restricted state.
  */
 function mass_media_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
   $uid = \Drupal::currentUser()->id();
   $current_user_roles = \Drupal::currentUser()->getRoles();
 
+  if ($form_id === "views_bulk_operations_confirm_action") {
+    if ($form_data = $form_state->get('views_bulk_operations')) {
+      $form['actions']['submit']['#value'] = str_replace("Moderation: ", "",$form_data['action_label']);
+      $form['actions']['submit']['#attributes']['class'][] = $form_data['action_id'];
+      $form['actions']['cancel']['#value'] = t("Cancel transition");
+      $form['#attached']['library'][] = 'mass_media/views_operations';
+    }
+  }
   // Check if we're editing a media document.
   if ($form_id == "media_document_edit_form") {
     $doc = $form_state->getFormObject()->getEntity();
