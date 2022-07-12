@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\mayflower\Helper;
 use Drupal\Core\Site\Settings;
+use Drupal\node\Entity\Node;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -38,15 +39,16 @@ function mass_map_theme() {
 function mass_map_page_attachments(&$page) {
   $match = Drupal::routeMatch();
 
-  if ($match->getRouteName() === 'mass_map.map_page') {
-    $node = $match->getParameter('node');
-
+  if ($match->getRouteName() === 'view.locations.page') {
+    $param_node = $match->getParameter('node');
+    $node = is_string($param_node) && intval($param_node) ? Node::load($param_node) : $param_node;
+    $label = $node && is_a($node, 'Drupal\node\Entity\Node') ? $node->label() : '';
     $page['#attached']['html_head'][] = [
       [
         '#tag' => 'meta',
         '#attributes' => [
           'name' => 'mg_title',
-          'content' => $node->label() . ' Locations',
+          'content' => $label . ' Locations',
         ],
       ],
       'mg_title',

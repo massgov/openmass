@@ -255,7 +255,8 @@ jobs:
       - run: php scripts/directory-yaml-parse.php
       # https://architecture.lullabot.com/adr/20211201-use-strict-types-in-php-code/
       # New php files must use strict types.
-      - run: scripts/phpcs-new-files
+      # @todo Handle deleted files.
+      # - run: scripts/phpcs-new-files
       # Lint javascript
       - run: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
       # Check coding standards with php code sniffer. See phpcs.xml
