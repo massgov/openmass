@@ -1,0 +1,26 @@
+<?php
+
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Logger\RfcLogLevel;
+
+function mass_content_moderation_node_update(ContentEntityInterface $entity):void {
+  mass_content_moderation_log_state_change($entity);
+}
+
+function mass_content_moderation_media_update(ContentEntityInterface $entity):void {
+  mass_content_moderation_log_state_change($entity);
+}
+
+function mass_content_moderation_log_state_change(ContentEntityInterface $entity):void {
+  $originalState = $entity->original->getModerationState()->getString();
+  $currentState = $entity->getModerationState()->getString();
+  if ($originalState !== $currentState) {
+    $message = 'Entity !url changed moderation state from !originalState to !currentState';
+    $variables = [
+      '!url' => $entity->toUrl()->toString(),
+      '!originalState' => $originalState,
+      '!currentState' => $currentState,
+    ];
+    \Drupal::logger('mass_content_moderation')->log(RfcLogLevel::NOTICE, $message, $variables);
+  }
+}
