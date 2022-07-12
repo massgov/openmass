@@ -107,10 +107,12 @@ function mass_media_form_alter(&$form, FormStateInterface $form_state, $form_id)
 
   if ($form_id === "views_bulk_operations_confirm_action") {
     if ($form_data = $form_state->get('views_bulk_operations')) {
-      $form['actions']['submit']['#value'] = $form_data['action_label'];
-      $form['actions']['submit']['#attributes']['class'][] = $form_data['action_id'];
-      $form['actions']['cancel']['#value'] = t("Cancel transition");
-      $form['#attached']['library'][] = 'mass_media/views_operations';
+      if ($form_data['view_id'] == "media" && $form_data['display_id'] == "media_page_list") {
+        $form['actions']['submit']['#value'] = $form_data['action_label'];
+        $form['actions']['submit']['#attributes']['class'][] = $form_data['action_id'];
+        $form['actions']['cancel']['#value'] = t("Cancel transition");
+        $form['#attached']['library'][] = 'mass_media/views_operations';
+      }
     }
   }
   // Check if we're editing a media document.
