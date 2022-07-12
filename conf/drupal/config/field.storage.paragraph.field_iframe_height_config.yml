@@ -13,10 +13,13 @@ settings:
   allowed_values:
     -
       value: fixed
-      label: 'Fixed height in pixels (default)'
+      label: '<strong>Fixed height (default)</strong> — For iframes with a fixed height, and/or requires a min-height.'
+    -
+      value: ratio
+      label: "<strong>Aspect ratio</strong>\_— For iframes with a consistent proportion of width to height across browser widths."
     -
       value: '100'
-      label: '100% (as much height as necessary to show the whole iframe without scrolling within the frame). <strong>If you want the iframe height to adjust based on the content in your iframe, choose 100% and add the following script into your iframe HTML source code before the closing body tag:</strong><pre><code>&lt;script type="text/javascript" src="https://www.mass.gov/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js"&gt;&lt;/script&gt;<code></pre>'
+      label: '<strong>Dynamic height</strong> — For iframes whose height is determined by dynamic content. You must be able to add the following script into your iframe HTML source code before the closing body tag:<pre><code>&lt;script type="text/javascript" src="https://www.mass.gov/themes/custom/mass_theme/overrides/js/iframe_resizer_iframe.js"&gt;&lt;/script&gt;</code></pre>'
   allowed_values_function: ''
 module: options
 locked: false

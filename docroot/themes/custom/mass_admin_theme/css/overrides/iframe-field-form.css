@@ -1,0 +1,32 @@
+fieldset[data-drupal-selector^="group-iframe-height"] {
+  border-bottom: 3px solid #f2f2f2;
+  padding-bottom: 1rem;;
+  margin-bottom: 3rem !important;
+}
+
+fieldset[data-drupal-selector^="group-iframe-height"] .field--name-field-iframe-height-config legend{
+  display: none;
+}
+
+fieldset[data-drupal-selector^="group-iframe-height"] > .fieldset-wrapper > .form-wrapper {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* 
+  Adding required * label using css to conditional field labels, as the label doesn't persist when control field value changes. 
+  This is a bug in conditional fields. Once it's fixed, the following block should be removed. 
+*/
+fieldset[data-drupal-selector^="group-iframe-height"] > .fieldset-wrapper > .form-wrapper
+label[for$="-subform-field-height-0-value"]:after,
+fieldset[data-drupal-selector^="group-iframe-height"] > .fieldset-wrapper > .form-wrapper
+label[for$="-subform-field-aspect-ratio"]:after {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin: 0 0.3em;
+  content: "*";
+  color: red;
+  vertical-align: super;
+  background-image: none;
+}
