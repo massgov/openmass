@@ -204,7 +204,6 @@ module.exports = async function (page, scenario, vp) {
       })
       await page.waitForTimeout(3000);
       break;
-    case "ServiceGroupedLinks":
     case "Service1":
     case "ExpansionOfAccordions1_toggle":
     case "ExpansionOfAccordions2_toggle":
