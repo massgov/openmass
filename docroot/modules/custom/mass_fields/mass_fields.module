@@ -283,43 +283,45 @@ function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
       $content_entity = $section_entity->get('field_section_long_form_content')[$content_key]->entity;
       // Get the paragraph type.
 
-      $paragraph_type = $content_entity->bundle();
-      // For certain paragraph types, get field data and store in return array.
-      switch ($paragraph_type) {
-        case 'about':
-          $org_page_field_data['about']['entities'][] = $content_entity;
-          break;
+      if ($content_entity) {
+        $paragraph_type = $content_entity->bundle();
+        // For certain paragraph types, get field data and store in return array.
+        switch ($paragraph_type) {
+          case 'about':
+            $org_page_field_data['about']['entities'][] = $content_entity;
+            break;
 
-        case 'featured_topics':
-          $org_page_field_data['field_featured_topics_topics']['build'] = $content_entity->field_featured_topics_topics->view();
-          $org_page_field_data['field_featured_topics_topics']['entities'] = $content_entity->field_featured_topics_topics->referencedEntities();
-          break;
+          case 'featured_topics':
+            $org_page_field_data['field_featured_topics_topics']['build'] = $content_entity->field_featured_topics_topics->view();
+            $org_page_field_data['field_featured_topics_topics']['entities'] = $content_entity->field_featured_topics_topics->referencedEntities();
+            break;
 
-        case 'org_events':
-          $org_page_field_data['org_events']['entities'][] = $content_entity;
-          break;
+          case 'org_events':
+            $org_page_field_data['org_events']['entities'][] = $content_entity;
+            break;
 
-        case 'org_locations':
-          $org_page_field_data['org_locations']['entities'][] = $content_entity;
-          break;
+          case 'org_locations':
+            $org_page_field_data['org_locations']['entities'][] = $content_entity;
+            break;
 
-        case 'org_news':
-          $org_page_field_data['org_news']['entities'][] = $content_entity;
-          break;
+          case 'org_news':
+            $org_page_field_data['org_news']['entities'][] = $content_entity;
+            break;
 
-        case 'organization_grid':
-          $org_page_field_data['organization_grid']['entities'][] = $content_entity;
-          break;
+          case 'organization_grid':
+            $org_page_field_data['organization_grid']['entities'][] = $content_entity;
+            break;
 
-        case 'what_would_you_like_to_do':
-          $org_page_field_data['field_wwyltd_top_s_links']['value'] = $content_entity->get('field_wwyltd_top_s_links')
-            ->getValue();
-          $org_page_field_data['field_wwyltd_top_s_links']['build'] = $content_entity->field_wwyltd_top_s_links->view();
-          $org_page_field_data['field_wwyltd_more_services']['value'] = $content_entity->get('field_wwyltd_more_services')
-            ->getValue();
-          $org_page_field_data['field_wwyltd_more_services']['build'] = $content_entity->field_wwyltd_more_services->view();
-          $org_page_field_data['field_wwyltd_more_services']['entities'] = $content_entity->field_wwyltd_more_services->referencedEntities();
-          break;
+          case 'what_would_you_like_to_do':
+            $org_page_field_data['field_wwyltd_top_s_links']['value'] = $content_entity->get('field_wwyltd_top_s_links')
+              ->getValue();
+            $org_page_field_data['field_wwyltd_top_s_links']['build'] = $content_entity->field_wwyltd_top_s_links->view();
+            $org_page_field_data['field_wwyltd_more_services']['value'] = $content_entity->get('field_wwyltd_more_services')
+              ->getValue();
+            $org_page_field_data['field_wwyltd_more_services']['build'] = $content_entity->field_wwyltd_more_services->view();
+            $org_page_field_data['field_wwyltd_more_services']['entities'] = $content_entity->field_wwyltd_more_services->referencedEntities();
+            break;
+        }
       }
     }
   }
@@ -450,7 +452,7 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
       $entity->field_org_ref_locations ?? FALSE &&
       !$entity->field_org_ref_locations->isEmpty();
     // The org page's location listing URL.
-    $location_listings_url = Url::fromRoute('mass_map.map_page', ['node' => $entity->id()])->toString();
+    $location_listings_url = Url::fromRoute('view.locations.page', ['node' => $entity->id()])->toString();
 
     foreach ($entity->field_ref_contact_info_1->referencedEntities() as $linked) {
       $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
