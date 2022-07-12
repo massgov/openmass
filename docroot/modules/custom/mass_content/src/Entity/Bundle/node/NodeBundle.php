@@ -10,4 +10,5 @@ use Drupal\node\Entity\Node;
  */
 abstract class NodeBundle extends Node {
   use MassModerationTrait;
+
 }

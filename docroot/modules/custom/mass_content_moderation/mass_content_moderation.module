@@ -3,14 +3,28 @@
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
 function mass_content_moderation_node_update(ContentEntityInterface $entity):void {
   mass_content_moderation_log_state_change($entity);
 }
 
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
 function mass_content_moderation_media_update(ContentEntityInterface $entity):void {
   mass_content_moderation_log_state_change($entity);
 }
 
+/**
+ * Log any state change.
+ *
+ * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+ *
+ * @return void
+ * @throws \Drupal\Core\Entity\EntityMalformedException
+ */
 function mass_content_moderation_log_state_change(ContentEntityInterface $entity):void {
   $originalState = $entity->original->getModerationState()->getString();
   $currentState = $entity->getModerationState()->getString();
