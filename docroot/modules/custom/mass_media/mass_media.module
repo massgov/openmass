@@ -102,7 +102,6 @@ function mass_media_preprocess_page_title(&$variables) {
  * Checks permission for restricted state.
  */
 function mass_media_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-
   $uid = \Drupal::currentUser()->id();
   $current_user_roles = \Drupal::currentUser()->getRoles();
 
