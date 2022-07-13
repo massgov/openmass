@@ -1053,7 +1053,7 @@ function mass_theme_preprocess_node_location(&$variables) {
           $nearby = $nearby || $more_node->field_related_organization_type->value;
         }
         $links[] = [
-          'href' => Url::fromRoute('mass_map.map_page', ['node' => $more_node->id()]),
+          'href' => Url::fromRoute('view.locations.page', ['node' => $more_node->id()]),
           'text' => $more_node->label() . ' Locations',
         ];
       }
