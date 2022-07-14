@@ -53,7 +53,7 @@ class RelatedLocations extends EntityReferenceFieldItemList {
       $types = $this->getSetting('ancestor_allowed_types') ?? 'all';
       $fields = $this->getSetting('ancestor_allowed_fields') ?? NULL;
 
-      $parent_nids = $this->filterDescendantsByTypeNew($entity, $types, $fields);
+      $parent_nids = $this->filterDescendantsByType($entity, $types, $fields);
 
       if (!empty($parent_nids)) {
         $parent_nodes = Node::loadMultiple($parent_nids);
@@ -110,47 +110,28 @@ class RelatedLocations extends EntityReferenceFieldItemList {
     }
   }
 
-  public function filterDescendantsByTypeNew(Node $entity, array $types, array $fields) {
+  /**
+   * Filter by location id and get parent referencing nodes.
+   *
+   * @param \Drupal\node\Entity\Node $entity
+   * @param array $types
+   * @param array $fields
+   *
+   * @return array|int
+   */
+  private function filterDescendantsByType(Node $entity, array $types, array $fields) {
     $location_id = $entity->id();
     $query = \Drupal::entityQuery('node');
     $query->condition('type', $types, 'IN');
-    $andCondition = $query->andConditionGroup();
+    $orCondition = $query->orConditionGroup();
     foreach ($fields as $field) {
       $query_string = str_replace(">",".entity.",$field);
-      $orCondition = $query->orConditionGroup();
-      $orCondition->condition($query_string, $location_id);
-      $andCondition->condition($orCondition);
+      $andCondition = $query->andConditionGroup();
+      $andCondition->condition($query_string, $location_id);
+      $orCondition->condition($andCondition);
     }
-    $query->condition($andCondition);
+    $query->condition($orCondition);
     return $query->execute();
-  }
-
-  /**
-   * Filter descendants by node type.
-   *
-   * @param \Drupal\node\Entity\Node $entity
-   *   The entity to get descendants from.
-   * @param array $types
-   *   An array of node types to filter by.
-   *
-   * @return array
-   *   An array of descendant node IDs.
-   */
-  private function filterDescendantsByType(Node $entity, array $types) {
-    $nodes = [];
-
-    $descendantManager = \Drupal::service('descendant_manager');
-    $parents = $descendantManager->getParents($entity->id(), 1);
-
-    if (is_array($parents) && array_key_exists(1, $parents)) {
-      $nodes = array_filter($parents[1], function ($p) use ($types) {
-        if ($types === 'all' || in_array($p['type'], $types)) {
-          return $p;
-        }
-      });
-    }
-
-    return array_keys($nodes);
   }
 
   /**
