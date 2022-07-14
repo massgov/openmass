@@ -54,7 +54,6 @@ class RelatedLocations extends EntityReferenceFieldItemList {
       $fields = $this->getSetting('ancestor_allowed_fields') ?? NULL;
 
       $parent_nids = $this->filterDescendantsByTypeNew($entity, $types, $fields);
-      ksm($parent_nids);
 
       if (!empty($parent_nids)) {
         $parent_nodes = Node::loadMultiple($parent_nids);
@@ -117,7 +116,6 @@ class RelatedLocations extends EntityReferenceFieldItemList {
     $query->condition('type', $types, 'IN');
     $andCondition = $query->andConditionGroup();
     foreach ($fields as $field) {
-      ksm($field);
       $query_string = str_replace(">",".entity.",$field);
       $orCondition = $query->orConditionGroup();
       $orCondition->condition($query_string, $location_id);
