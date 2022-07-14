@@ -156,44 +156,6 @@
     }
   };
 
-  Drupal.behaviors.iframeConditional = {
-    attach: function (context) {
-      $('.field--name-field-iframe-display-size', context).change(function () {
-        if ($(this).find('option:selected').val() === 'x-large') {
-          $(this).siblings('.field--name-field-iframe-alignment').hide().find('.fieldgroup').removeAttr('required');
-          $(this).siblings('.field--name-field-iframe-wrapping').hide();
-        }
-        else {
-          $(this).siblings('.field--name-field-iframe-alignment').show().find('.fieldgroup').attr('required', 'required');
-          $(this).siblings('.field--name-field-iframe-wrapping').show();
-        }
-      }).change();
-
-      $('.field--name-field-iframe-height-config', context).change(function () {
-        var height = $(this).siblings('.field--name-field-height').find('input').val();
-        var heightVal = function () {
-          if (!height || height.length === 0) {
-            return '0';
-          }
-          return height;
-        };
-
-        if ($(this).find('input:checked').length < 1) {
-          $(this).find("input[value='fixed']").attr('checked', 'checked');
-        }
-
-        if ($(this).find('input:checked').val() === '100') {
-          $(this).siblings('.field--name-field-height').hide().find('input').val(heightVal).removeAttr('required');
-          $(this).siblings('.field--name-field-verify-iframe-100-confirm').show().find('input').attr('required', 'required');
-        }
-        else {
-          $(this).siblings('.field--name-field-height').show().find('input').val(heightVal).attr('required', 'required');
-          $(this).siblings('.field--name-field-verify-iframe-100-confirm').hide().find('input').removeAttr('required');
-        }
-      }).change();
-    }
-  };
-
   /**
    * Enable/disable fields on info details.
    *

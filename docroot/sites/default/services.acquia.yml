@@ -9,3 +9,5 @@ parameters:
   monolog.channel_handlers:
     # Log to syslog and NewRelic
     default: ['acquia_syslog', 'acquia_newrelic']
+    # Cut down noise in New Relic
+    purge: ['acquia_syslog']

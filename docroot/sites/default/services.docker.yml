@@ -10,8 +10,8 @@ parameters:
   monolog.channel_handlers:
     # Log to stderr.
     default: ['stderr']
-    # Log php channel to web server's error log and mysql.
-    php: ['error_log', 'behat']
+    # Log php channel to web server's error log.
+    php: ['error_log', 'behat', 'stderr']
     # Silence purge warnings.
     # purge: ['null']
   monolog.behat.file: 'temporary://monolog.handler.behat.log'

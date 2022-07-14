@@ -1,0 +1,53 @@
+uuid: 31e76a1e-5f3d-451f-9371-f6e94fe5fad8
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.service_section.field_hide_heading
+    - field.field.paragraph.service_section.field_section_style
+    - field.field.paragraph.service_section.field_service_section_content
+    - field.field.paragraph.service_section.field_service_section_heading
+    - paragraphs.paragraphs_type.service_section
+  module:
+    - entity_reference_revisions
+    - options
+id: paragraph.service_section.default
+targetEntityType: paragraph
+bundle: service_section
+mode: default
+content:
+  field_hide_heading:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_section_style:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_service_section_content:
+    type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_service_section_heading:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 3
+    region: content
+hidden: {  }
