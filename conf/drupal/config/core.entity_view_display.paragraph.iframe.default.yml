@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.iframe.field_aspect_ratio
     - field.field.paragraph.iframe.field_caption
     - field.field.paragraph.iframe.field_height
     - field.field.paragraph.iframe.field_iframe_accessibility_title
@@ -16,11 +17,20 @@ dependencies:
     - field.field.paragraph.iframe.field_url
     - field.field.paragraph.iframe.field_verify_iframe_100_confirm
     - paragraphs.paragraphs_type.iframe
+  module:
+    - options
 id: paragraph.iframe.default
 targetEntityType: paragraph
 bundle: iframe
 mode: default
-content: {  }
+content:
+  field_aspect_ratio:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   created: true
   field_caption: true

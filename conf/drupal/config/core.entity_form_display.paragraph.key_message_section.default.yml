@@ -53,7 +53,8 @@ content:
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields: {  }
   field_main_heading:
     type: string_textfield
     weight: 1
@@ -86,58 +87,7 @@ content:
     region: content
     settings: {  }
     third_party_settings:
-      conditional_fields:
-        ca5695dc-aaa3-4a5c-989f-db1622209b3a:
-          entity_type: paragraph
-          bundle: key_message_section
-          dependee: field_background_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: color
-            effect: show
-            effect_options: {  }
-            selector: ''
-        e66728be-cbfa-446c-b204-c80d2fe6e60a:
-          entity_type: paragraph
-          bundle: key_message_section
-          dependee: field_background_type
-          settings:
-            state: '!visible'
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: image
-            effect: show
-            effect_options: {  }
-            selector: ''
-        4f297771-9915-4e0f-9b8e-ca838246b904:
-          entity_type: paragraph
-          bundle: key_message_section
-          dependee: field_background_type
-          settings:
-            state: required
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: color
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_section_text_overlay_color:
     type: options_buttons
     weight: 9
@@ -148,41 +98,7 @@ content:
         maxlength_js: 80
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce_attribute: true
-      conditional_fields:
-        ae838475-d901-45e5-8fa5-55775b4d84ee:
-          entity_type: paragraph
-          bundle: key_message_section
-          dependee: field_background_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: image
-            effect: show
-            effect_options: {  }
-            selector: ''
-        ba86d68d-1d51-40bd-94a1-51ccf1aad640:
-          entity_type: paragraph
-          bundle: key_message_section
-          dependee: field_background_type
-          settings:
-            state: '!visible'
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: color
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_sub_heading:
     type: string_textfield
     weight: 3

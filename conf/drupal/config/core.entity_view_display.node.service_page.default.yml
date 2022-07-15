@@ -45,6 +45,7 @@ dependencies:
     - field.field.node.service_page.field_service_ref_guide_page_1
     - field.field.node.service_page.field_service_ref_locations
     - field.field.node.service_page.field_service_ref_services_6
+    - field.field.node.service_page.field_service_sections
     - field.field.node.service_page.field_service_video
     - field.field.node.service_page.field_services_social_links
     - field.field.node.service_page.field_short_title
@@ -423,6 +424,15 @@ content:
       link: true
     third_party_settings: {  }
     weight: 9
+    region: content
+  field_service_sections:
+    type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 46
     region: content
   field_service_video:
     type: entity_reference_label
