@@ -174,7 +174,7 @@ class MassUrlGenerator extends EntityUrlGenerator {
    *   Plain old entity object.
    */
   protected function fixLocationLinks(EntityInterface $entity) {
-    $url_object = Url::fromRoute('mass_map.map_page', ['node' => $entity->id()]);
+    $url_object = Url::fromRoute('view.locations.page', ['node' => $entity->id()]);
     $url_object->setOption('absolute', TRUE);
 
     return [
