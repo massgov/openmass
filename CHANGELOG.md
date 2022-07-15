@@ -1,5 +1,59 @@
 
 
+## [0.329.0] - July 12, 2022
+
+### Changed
+  - DP-25055: - Use entity_reference_tree instead of term_reference_tree for collections.
+- Patches entity_reference_tree module to allow more options to select/deselect ancestors/descendants elements.
+  - DP-25157: Update org page banner design.
+  - DP-25198: Replace custom javascript conditionals with condition fields configurations.
+Style iframe conditional fields in the admin UI.
+
+  - DP-25373: Update help text related to events.
+  
+### Added
+  - DP-25071: Create report of collections with URLs.
+  - DP-25198: Add aspect ratio to iframe height configuration.
+  
+### Removed
+  - DP-25147: Remove locations-old url.
+  - DP-25347: Removed Traffic to Children from Content Performance view and Mass Superset.
+  - DP-25356: Remove 2 pages from backstop.
+  - DP-25372: Remove unneeded "Content performance" tab in Drupal on content menu.
+  
+### Fixed
+  - DP-25190: Fixed issues causing inaccurate revision tracking for media entities on bulk actions.
+  - DP-25230: Creating key message section with image background bug fix.
+  - DP-25242: Fix Backstop wait code for Information Details CSVs.
+  - DP-25348: Fix minor New Relic reported errors
+  - DP-25349: Handle missing contact on howto page
+  
+
+
+## [0.328.1] - July 6, 2022
+
+### Fixed
+- DP-25325: Updated the Monolog to fix 403 errors in Acquia environments.
+
+
+
+## [0.328.0] - July 5, 2022
+
+### Added
+  - DP-24449: Require strict types on new php files
+
+### Fixed
+  - DP-24818: Fix sitewide alerts breaking Backstop tests.
+  - DP-25154: Fix backstop alerts and footer false positives related.
+  - DP-25197: Avoid body overflow when showing a modal.
+  - DP-25233: Increase Tugboat upload limit
+  - DP-25326: Fix revision view page via bug in moderation status block
+
+### Removed
+  - DP-25250: Remove old service overflow page URLs from backstop.
+
+
+
 ## [0.327.0] - June 29, 2022
 
 ### Changed

@@ -429,11 +429,13 @@ function mass_theme_preprocess_node_how_to_page(&$variables) {
 
     $pageContent['contactList'] = Organisms::prepareContactList($node, $contactList_options, $cache_tags);
 
-    // Build sidebar.contactList, which is a subset of pageContent.ContactList.
-    $sidebar['contactList'] = Helper::getPrimaryContactPhoneOnlineContactList($pageContent['contactList']);
-    // Hide the top contact on mobile.
-    $sidebar['contactList']['compHeading']['id'] = 'sidebar-contact';
-    $sidebar['contactList']['viewSpecific'] = TRUE;
+    if ($pageContent['contactList']) {
+      // Build sidebar.contactList, which is a subset of pageContent.ContactList.
+      $sidebar['contactList'] = Helper::getPrimaryContactPhoneOnlineContactList($pageContent['contactList']);
+      // Hide the top contact on mobile.
+      $sidebar['contactList']['compHeading']['id'] = 'sidebar-contact';
+      $sidebar['contactList']['viewSpecific'] = TRUE;
+    }
 
     // Set up corresponding sticky nav entry for contacts.
     $stickyNav[] = $contacts_title;
@@ -584,13 +586,19 @@ function mass_theme_preprocess_node_form_page(&$variables) {
         $crawler = new Crawler($node->field_form_embed->value);
         $script_url = $crawler->filterXPath('//script[@src]')->attr('src');
         $noscript_url = $crawler->filterXPath('//noscript/a[@href]')->attr('href');
+        $validate_script_url = parse_url($script_url, PHP_URL_HOST);
+        $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
 
         $query = ['no_style_strict' => 1];
         if ($node->field_form_embed->type === 'formstack') {
           $query['jsonp'] = 1;
         }
-        $variables['form_url'] = Url::fromUri($script_url, ['query' => $query])->toString();
-        $variables['form_url_noscript'] = $noscript_url;
+        if (str_ends_with($validate_script_url, "formstack.com")) {
+          $variables['form_url'] = Url::fromUri($script_url, ['query' => $query])->toString();
+        }
+        if (str_ends_with($validate_noscript_url, "formstack.com")) {
+          $variables['form_url_noscript'] = $noscript_url;
+        }
       }
       catch (\Exception $e) {
         \Drupal::logger('mass_fields')->warning('Parsing of formstack URL failed: %message', [
@@ -1051,7 +1059,7 @@ function mass_theme_preprocess_node_location(&$variables) {
           $nearby = $nearby || $more_node->field_related_organization_type->value;
         }
         $links[] = [
-          'href' => Url::fromRoute('mass_map.map_page', ['node' => $more_node->id()]),
+          'href' => Url::fromRoute('view.locations.page', ['node' => $more_node->id()]),
           'text' => $more_node->label() . ' Locations',
         ];
       }
