@@ -53,7 +53,7 @@ class RelatedLocations extends EntityReferenceFieldItemList {
       $types = $this->getSetting('ancestor_allowed_types') ?? 'all';
       $fields = $this->getSetting('ancestor_allowed_fields') ?? NULL;
 
-      $parent_nids = $this->filterDescendantsByType($entity, $types);
+      $parent_nids = $this->filterDescendantsByType($entity, $types, $fields);
 
       if (!empty($parent_nids)) {
         $parent_nodes = Node::loadMultiple($parent_nids);
@@ -111,31 +111,28 @@ class RelatedLocations extends EntityReferenceFieldItemList {
   }
 
   /**
-   * Filter descendants by node type.
+   * Filter by location id and get parent referencing nodes.
    *
    * @param \Drupal\node\Entity\Node $entity
-   *   The entity to get descendants from.
    * @param array $types
-   *   An array of node types to filter by.
+   * @param array $fields
    *
-   * @return array
-   *   An array of descendant node IDs.
+   * @return array|int
+   *   Returns an array of node ids to process as parents.
    */
-  private function filterDescendantsByType(Node $entity, array $types) {
-    $nodes = [];
-
-    $descendantManager = \Drupal::service('descendant_manager');
-    $parents = $descendantManager->getParents($entity->id(), 1);
-
-    if (is_array($parents) && array_key_exists(1, $parents)) {
-      $nodes = array_filter($parents[1], function ($p) use ($types) {
-        if ($types === 'all' || in_array($p['type'], $types)) {
-          return $p;
-        }
-      });
+  private function filterDescendantsByType(Node $entity, array $types, array $fields) {
+    $location_id = $entity->id();
+    $query = \Drupal::entityQuery('node');
+    $query->condition('type', $types, 'IN');
+    $orCondition = $query->orConditionGroup();
+    foreach ($fields as $field) {
+      $query_string = str_replace(">", ".entity.", $field);
+      $andCondition = $query->andConditionGroup();
+      $andCondition->condition($query_string, $location_id);
+      $orCondition->condition($andCondition);
     }
-
-    return array_keys($nodes);
+    $query->condition($orCondition);
+    return $query->execute();
   }
 
   /**
