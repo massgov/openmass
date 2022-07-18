@@ -259,18 +259,19 @@ function mass_fields_entity_extra_field_info() {
  */
 function mass_fields_entity_base_field_info(\Drupal\Core\Entity\EntityTypeInterface $entity_type) {
   if (in_array($entity_type->id(), ['media', 'node'])) {
+    $options = [
+      'type' => 'boolean_checkbox',
+      'settings' => [
+        'display_label' => TRUE,
+      ]
+    ];
     $fields['search'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Exclude from search'))
       ->setDefaultValue(FALSE)
       ->setRevisionable(TRUE)
       ->setTranslatable(TRUE)
       ->setDisplayConfigurable('form', TRUE)
-      ->setDisplayOptions('form', array(
-        'type' => 'boolean_checkbox',
-        'settings' => array(
-          'display_label' => TRUE,
-        ),
-      ))
+      ->setDisplayOptions('form', $options)
       ->setDescription('If you need to publish this content but hide it from search engines, check this box. If you change the value of this checkbox, it may take multiple days for your page to be added or removed from search.');
     return $fields;
   }
