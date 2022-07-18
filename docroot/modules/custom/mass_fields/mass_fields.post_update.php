@@ -17,3 +17,13 @@ function mass_fields_post_update_text_format() {
     ->execute();
 
 }
+
+/**
+ * Updates media and node entity types for new search boolean field.
+ */
+function mass_fields_post_update_search_field() {
+  foreach (['node', 'media'] as $type) {
+    $entity_type = \Drupal::entityTypeManager()->getDefinition($type);
+    \Drupal::entityDefinitionUpdateManager()->updateEntityType($entity_type);
+  }
+}
