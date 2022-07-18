@@ -1,0 +1,41 @@
+<?php
+
+declare(strict_types=1);
+
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Logger\RfcLogLevel;
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function mass_content_moderation_node_update(ContentEntityInterface $entity):void {
+  mass_content_moderation_log_state_change($entity);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_update().
+ */
+function mass_content_moderation_media_update(ContentEntityInterface $entity):void {
+  mass_content_moderation_log_state_change($entity);
+}
+
+/**
+ * Log any state change.
+ *
+ * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+ *
+ * @throws \Drupal\Core\Entity\EntityMalformedException
+ */
+function mass_content_moderation_log_state_change(ContentEntityInterface $entity):void {
+  $originalState = $entity->original->getModerationState()->getString();
+  $currentState = $entity->getModerationState()->getString();
+  if ($originalState !== $currentState) {
+    $message = 'Entity !url changed moderation state from !originalState to !currentState';
+    $variables = [
+      '!url' => $entity->toUrl()->toString(),
+      '!originalState' => $originalState,
+      '!currentState' => $currentState,
+    ];
+    \Drupal::logger('mass_content_moderation')->log(RfcLogLevel::NOTICE, $message, $variables);
+  }
+}
