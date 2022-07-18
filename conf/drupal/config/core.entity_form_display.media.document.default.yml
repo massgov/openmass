@@ -21,6 +21,7 @@ dependencies:
     - field.field.media.document.field_document_listing_desc
     - field.field.media.document.field_document_type
     - field.field.media.document.field_end_date
+    - field.field.media.document.field_exclude_from_search
     - field.field.media.document.field_file_migration_id
     - field.field.media.document.field_file_mime
     - field.field.media.document.field_geographic_area
@@ -49,13 +50,13 @@ dependencies:
   module:
     - content_moderation
     - datetime
+    - entity_reference_tree
     - field_group
     - file
     - geofield
     - key_value_field
     - link
     - path
-    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -307,6 +308,13 @@ content:
     weight: 8
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_exclude_from_search:
+    type: boolean_checkbox
+    weight: 62
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   field_file_migration_id:
     type: string_textfield

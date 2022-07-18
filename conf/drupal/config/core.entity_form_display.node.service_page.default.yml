@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.service_page.field_data_resource_type
     - field.field.node.service_page.field_data_topic
     - field.field.node.service_page.field_event_quantity
+    - field.field.node.service_page.field_exclude_from_search
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
     - field.field.node.service_page.field_kpi_pl_avg_cl_comp_time
@@ -59,6 +60,7 @@ dependencies:
     - content_moderation
     - entity_browser_entity_form
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - focal_point
     - inline_entity_form
@@ -365,6 +367,13 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_exclude_from_search:
+    type: boolean_checkbox
+    weight: 86
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_image_credit:
     type: string_textfield
     weight: 75
