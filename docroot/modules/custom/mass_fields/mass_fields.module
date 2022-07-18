@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
@@ -252,6 +253,20 @@ function mass_fields_entity_extra_field_info() {
 
   return $extra;
 }
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+//function mass_fields_entity_base_field_info(\Drupal\Core\Entity\EntityTypeInterface $entity_type) {
+//  if (in_array($entity_type->id(), ['media', 'node'])) {
+//    $fields['search'] = BaseFieldDefinition::create('boolean')
+//      ->setLabel(t('Include in search'))
+//      ->setDefaultValue(TRUE)
+//      ->setDescription('Uncheck this box if you need to publish this content and hide it from search engines. If you change the value of this checkbox, it may take multiple days for your page to be added or removed from search.');
+//
+//    return $fields;
+//  }
+//}
 
 /**
  * Get org_page section data for display fields used in SubNav.
@@ -754,6 +769,29 @@ function mass_fields_theme() {
       ],
     ],
   ];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Place the 'Include in search' checkbox.
+ */
+function mass_fields_form_node_form_alter(&$form, FormStateInterface $form_state) {
+  /** @var ContentEntityInterface $entity */
+  $entity = $form_state->getFormObject()->getEntity();
+  $settings = \Drupal::service('simple_sitemap.generator')->getBundleSettings();
+  if ($settings[$entity->getEntityTypeId()][$entity->bundle()]['index']) {
+    $form['search'] = [
+      '#type' => 'details',
+      '#group' => 'advanced',
+      '#open' => FALSE,
+      '#title' => t('Search status'),
+    ];
+    // Copy the checkbox field into the advanced group.
+    $form['search']['field_exclude_from_search'] = $form['field_exclude_from_search'];
+  }
+  // Remove the original checkbox in the main section.
+  unset($form['field_exclude_from_search']);
 }
 
 /**

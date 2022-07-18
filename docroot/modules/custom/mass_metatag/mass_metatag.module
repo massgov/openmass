@@ -411,6 +411,15 @@ function mass_metatag_page_attachments(array &$attachments) {
     $noindex_and_follow = TRUE;
   }
 
+  // Honor custom field for hiding from Search
+  if (\Drupal::routeMatch()->getRouteName() === 'entity.node.canonical') {
+    /** @var \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node */
+    $node = \Drupal::routeMatch()->getParameter('node');
+    if ($node->getSearch()->getString()) {
+      $noindex_and_follow = TRUE;
+    }
+  }
+
   if (in_array($uri_end, $paths) && substr_count($current_path, '/') > 1) {
     $noindex_and_follow = TRUE;
   }

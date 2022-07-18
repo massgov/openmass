@@ -39,6 +39,11 @@ class MassUrlGenerator extends EntityUrlGenerator {
         continue;
       }
 
+      // Also, respect our custom checkbox for omitting from search
+      if (method_exists($entity, 'getSearch') && $entity->getSearch()) {
+        continue;
+      }
+
       $url_object = $entity->toUrl()->setAbsolute();
 
       // Do not include external paths.
