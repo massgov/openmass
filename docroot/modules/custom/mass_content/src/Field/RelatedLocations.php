@@ -118,6 +118,7 @@ class RelatedLocations extends EntityReferenceFieldItemList {
    * @param array $fields
    *
    * @return array|int
+   *   Returns an array of node ids to process as parents.
    */
   private function filterDescendantsByType(Node $entity, array $types, array $fields) {
     $location_id = $entity->id();
@@ -125,7 +126,7 @@ class RelatedLocations extends EntityReferenceFieldItemList {
     $query->condition('type', $types, 'IN');
     $orCondition = $query->orConditionGroup();
     foreach ($fields as $field) {
-      $query_string = str_replace(">",".entity.",$field);
+      $query_string = str_replace(">", ".entity.", $field);
       $andCondition = $query->andConditionGroup();
       $andCondition->condition($query_string, $location_id);
       $orCondition->condition($andCondition);
