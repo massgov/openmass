@@ -1,0 +1,23 @@
+uuid: a5ada896-6fae-455c-b6a0-89927e54d7fd
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_exclude_from_search
+    - node.type.service_details
+id: node.service_details.field_exclude_from_search
+field_name: field_exclude_from_search
+entity_type: node
+bundle: service_details
+label: 'Exclude from search'
+description: 'If you need to publish this content but hide it from search engines, check this box. If you change the value of this checkbox, it may take multiple days for your page to be added or removed from search.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: Excluded
+  off_label: 'Not Excluded'
+field_type: boolean
