@@ -13,4 +13,5 @@ use Drupal\media\Entity\Media;
 abstract class MediaBundle extends Media implements MassModerationAwareInterface {
   use MassModerationTrait;
   use MassSearchTrait;
+
 }

@@ -21,7 +21,6 @@ dependencies:
     - field.field.media.document.field_document_listing_desc
     - field.field.media.document.field_document_type
     - field.field.media.document.field_end_date
-    - field.field.media.document.field_exclude_from_search
     - field.field.media.document.field_file_migration_id
     - field.field.media.document.field_file_mime
     - field.field.media.document.field_geographic_area
@@ -309,13 +308,6 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_exclude_from_search:
-    type: boolean_checkbox
-    weight: 62
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
   field_file_migration_id:
     type: string_textfield
     weight: 58
@@ -518,6 +510,13 @@ content:
     weight: 4
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 63
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   status:
     type: boolean_checkbox

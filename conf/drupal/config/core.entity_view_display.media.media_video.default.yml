@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.media.media_video.field_exclude_from_search
     - field.field.media.media_video.field_media_video_embed_field
     - field.field.media.media_video.field_video_description
     - field.field.media.media_video.field_video_transcript
@@ -28,16 +27,6 @@ content:
       timezone: ''
     third_party_settings: {  }
     weight: 2
-    region: content
-  field_exclude_from_search:
-    type: boolean
-    label: above
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
-    weight: 6
     region: content
   field_media_video_embed_field:
     type: video_embed_field_video
