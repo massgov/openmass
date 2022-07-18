@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.iframe.field_aspect_ratio
     - field.field.paragraph.iframe.field_caption
     - field.field.paragraph.iframe.field_height
     - field.field.paragraph.iframe.field_iframe_accessibility_title
@@ -25,17 +26,78 @@ targetEntityType: paragraph
 bundle: iframe
 mode: default
 content:
+  field_aspect_ratio:
+    type: options_select
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        b426c22e-981a-4f13-bd7b-1aff79fc3621:
+          entity_type: paragraph
+          bundle: iframe
+          dependee: field_iframe_height_config
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: ratio
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_height:
     type: number
-    weight: 4
+    weight: 5
     region: content
     settings:
       placeholder: ''
     third_party_settings:
-      conditional_fields: {  }
+      conditional_fields:
+        695b886e-2d9f-4f53-b779-c6e8e59b8dbe:
+          entity_type: paragraph
+          bundle: iframe
+          dependee: field_iframe_height_config
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: fixed
+            effect: show
+            effect_options: {  }
+            selector: ''
+        8d0dc4b4-e8a4-4298-aa4a-7d0ecec45ae2:
+          entity_type: paragraph
+          bundle: iframe
+          dependee: field_iframe_height_config
+          settings:
+            state: empty
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: ratio
+            effect: empty
+            effect_options:
+              empty:
+                value: ''
+                reset: 1
+            selector: ''
   field_iframe_accessibility_title:
     type: string_textfield
-    weight: 5
+    weight: 6
     region: content
     settings:
       size: 60
@@ -51,13 +113,13 @@ content:
     third_party_settings: {  }
   field_iframe_alignment:
     type: options_buttons
-    weight: 7
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
   field_iframe_caption:
     type: text_textarea
-    weight: 9
+    weight: 10
     region: content
     settings:
       rows: 5
@@ -65,7 +127,7 @@ content:
     third_party_settings: {  }
   field_iframe_display_size:
     type: options_select
-    weight: 6
+    weight: 7
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -77,7 +139,7 @@ content:
     third_party_settings: {  }
   field_iframe_wrapping:
     type: options_buttons
-    weight: 8
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -95,7 +157,25 @@ content:
     region: content
     settings:
       display_label: true
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        114064bd-369d-4659-8cb7-868853532ca4:
+          entity_type: paragraph
+          bundle: iframe
+          dependee: field_iframe_height_config
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: '100'
+            effect: show
+            effect_options: {  }
+            selector: ''
   paragraphs_type_help__default:
     weight: -100
     region: content
