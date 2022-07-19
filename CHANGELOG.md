@@ -1,5 +1,17 @@
 
 
+## [0.330.0] - July 19, 2022
+
+### Added
+  - DP-25184: Log moderation state changes
+  - DP-25351: Add validation to limit source URL in form embed field on Form content type.
+  
+### Fixed
+  - DP-25400: Fixed related location rendering logic issue.
+  - DP-25404: Fix event paragraph to show the correct number of events.
+  
+
+
 ## [0.329.0] - July 12, 2022
 
 ### Changed
