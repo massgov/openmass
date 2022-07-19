@@ -66,11 +66,20 @@ class EntityAutocompleteMatcher extends DefaultAutocompleteMatcher {
       foreach ($entity_labels as $bundle => $values) {
         foreach ($values as $entity_id => $label) {
           if (!isset($entity_type_labels[$bundle])) {
-            $node_type = $this->entityTypeManager->getStorage('node_type')
-              ->load($bundle);
-            if (isset($node_type)) {
-              $entity_type_label = $node_type->label();
-              $entity_type_labels[$bundle] = $entity_type_label;
+            if (isset($handler->entityTypeBundleInfo)) {
+              $bundle_info = $handler->entityTypeBundleInfo->getBundleInfo($target_type)[$bundle];
+              if (!empty($bundle_info)) {
+                $entity_type_label = $bundle_info['label'];
+                $entity_type_labels[$bundle] = $entity_type_label;
+              }
+            }
+            else {
+              $node_type = $this->entityTypeManager->getStorage('node_type')
+                ->load($bundle);
+              if (isset($node_type)) {
+                $entity_type_label = $node_type->label();
+                $entity_type_labels[$bundle] = $entity_type_label;
+              }
             }
           }
           if (isset($entity_type_labels[$bundle])) {
