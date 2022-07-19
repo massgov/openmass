@@ -90,7 +90,7 @@ class RobotsMetatagTest extends ExistingSiteBase {
     $this->assertNull($robots_metatag);
 
     // Now edit that service node so it is excluded from index.
-    $service_page->set('field_exclude_from_search', TRUE)->save();
+    $service_page->set('search', TRUE)->save();
     $session->visit('/node/' . $service_page->id());
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Page loads');
     $content = $session->getPage()->find('xpath', '//meta[@name="robots"]')->getAttribute('content');
