@@ -74,8 +74,8 @@ class EntityAutocompleteMatcher extends DefaultAutocompleteMatcher {
               }
             }
             else {
-              $entity_type_id = $target_type == 'node' ? 'node_type' : $target_type;
-              $node_type = $this->entityTypeManager->getStorage($entity_type_id)->load($bundle);
+              $node_type = $this->entityTypeManager->getStorage('node_type')
+                ->load($bundle);
               if (isset($node_type)) {
                 $entity_type_label = $node_type->label();
                 $entity_type_labels[$bundle] = $entity_type_label;
