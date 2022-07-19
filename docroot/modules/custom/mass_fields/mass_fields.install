@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @file
+ * Contains mass_fields.install.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_update_N().
+ */
+function mass_fields_update_9001() {
+
+  $definition_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Create a new field definition.
+  $options = [
+    'type' => 'boolean_checkbox',
+    'settings' => [
+      'display_label' => TRUE,
+    ]
+  ];
+  $new_field = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Exclude from search'))
+    ->setDefaultValue(FALSE)
+    ->setRevisionable(TRUE)
+    ->setTranslatable(TRUE)
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayOptions('form', $options)
+    ->setDescription('If you need to publish this content but hide it from search engines, check this box. If you change the value of this checkbox, it may take multiple days for your page to be added or removed from search.');
+
+  // Install the new definition.
+  $definition_manager->installFieldStorageDefinition('note', 'media', 'media', $new_field);
+  $definition_manager->installFieldStorageDefinition('note', 'node', 'node', $new_field);
+}
