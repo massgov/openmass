@@ -6,7 +6,7 @@
 function mass_fields_deploy_search_field() {
   $result = \Drupal::database()->select('simple_sitemap_entity_overrides', 'sseo')->fields('sseo', ['id', 'entity_type', 'entity_id'])->execute();
   $items = $result->fetchAllAssoc('id');
-  $i=0;
+  $i = 0;
   foreach ($items as $item) {
     $i++;
     if ($entity = Drupal::entityTypeManager()->getStorage($item->entity_type)->load($item->entity_id)) {
