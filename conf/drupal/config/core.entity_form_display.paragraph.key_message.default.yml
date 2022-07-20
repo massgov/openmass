@@ -53,23 +53,6 @@ content:
     settings: {  }
     third_party_settings:
       conditional_fields:
-        3005304f-6a0d-42ae-ada4-3f4b10b9cb99:
-          entity_type: paragraph
-          bundle: key_message
-          dependee: field_background_type
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: color
-            effect: show
-            effect_options: {  }
-            selector: ''
         01d9f10b-8e9d-456b-b774-0500080a46dc:
           entity_type: paragraph
           bundle: key_message
@@ -133,7 +116,25 @@ content:
       preview_image_style: embedded_half_width
       preview_link: true
       offsets: '50,50'
-    third_party_settings: {  }
+    third_party_settings:
+      conditional_fields:
+        78fa091d-6a67-45cf-9612-0f3d28d3df9e:
+          entity_type: paragraph
+          bundle: key_message
+          dependee: field_background_type
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: color
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_main_heading:
     type: string_textfield
     weight: 1

@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\Tests\mass_alerts\ExistingSiteJavascript;
 
 use Behat\Mink\Exception\ExpectationException;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 use weitzman\LoginTrait\LoginTrait;
@@ -63,12 +66,7 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
   /**
    * Creates an specific alerts with specific target ids.
    */
-  private function createSpecificAlert(array $nodes) {
-
-    $targets = [];
-    foreach ($nodes as $node) {
-      $targets[] = $node->id();
-    }
+  private function createSpecificAlert(array $node_ids) {
 
     $this->createNode([
       'type' => 'alert',
@@ -80,7 +78,7 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
         'type' => 'emergency_alert',
         'field_emergency_alert_message' => $this->randomMachineName(),
       ]),
-      'field_target_page' => $targets,
+      'field_target_page' => $node_ids,
     ]);
 
   }
@@ -164,7 +162,7 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
    * Creates the nodes needed to test an Alert.
    */
   private function createNodesToTestAlert($content_types_and_selectors) {
-    $nodes = [];
+    $node_ids = [];
 
     $node_data = [
       'status' => 1,
@@ -183,17 +181,18 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
       }
 
       $node = $this->createNode($node_data);
-      $nodes[] = $node;
+      $node_ids[] = $node->id();
     }
 
-    return $nodes;
+    return $node_ids;
   }
 
   /**
    * Asserts alerts placements.
    */
-  private function checkAlertsMatchBundleAndSelectors($nodes, $content_types_and_selectors, $test_ref) {
-    foreach ($nodes as $node) {
+  private function checkAlertsMatchBundleAndSelectors($node_ids, $content_types_and_selectors, $test_ref) {
+    foreach ($node_ids as $node_id) {
+      $node = Node::load($node_id);
       $this->drupalGet($node->toUrl()->toString());
       $selector = $content_types_and_selectors[$node->bundle()];
       $element = $this->assertSession()->waitForElement('css', $selector);
@@ -215,9 +214,9 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
     $this->createAndLoginUser('administrator');
     $content_types_and_selectors = $this->getContentTypesAndSelectorForWideAlerts();
     /** @var \Drupal\node\Entity\Node[] */
-    $nodes = $this->createNodesToTestAlert($content_types_and_selectors);
+    $node_ids = $this->createNodesToTestAlert($content_types_and_selectors);
     $this->createSiteWideAlert();
-    $this->checkAlertsMatchBundleAndSelectors($nodes, $content_types_and_selectors, __FUNCTION__);
+    $this->checkAlertsMatchBundleAndSelectors($node_ids, $content_types_and_selectors, __FUNCTION__);
   }
 
   /**
@@ -227,9 +226,9 @@ class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
     $this->createAndLoginUser('administrator');
     $content_types_and_selectors = $this->getContentTypesAndSelectorForSpecificAlerts();
     /** @var \Drupal\node\Entity\Node[] */
-    $nodes = $this->createNodesToTestAlert($content_types_and_selectors);
-    $this->createSpecificAlert($nodes);
-    $this->checkAlertsMatchBundleAndSelectors($nodes, $content_types_and_selectors, __FUNCTION__);
+    $node_ids = $this->createNodesToTestAlert($content_types_and_selectors);
+    $this->createSpecificAlert($node_ids);
+    $this->checkAlertsMatchBundleAndSelectors($node_ids, $content_types_and_selectors, __FUNCTION__);
   }
 
 }
