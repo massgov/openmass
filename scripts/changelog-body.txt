@@ -1,29 +1,30 @@
 
 
-## [0.326.0] - June 21, 2022
+## [0.329.0] - July 12, 2022
 
-### Fixed
-  - DP-24689: Fix language bar spacing.
-  - DP-24980: Fix flakey \Drupal\Tests\mass_alerts\ExistingSiteJavascript\AlertsPlacementTest.
-  - DP-25106: Rolled back Nightcrawler update to resolve errors.
-  - DP-25153: Add rule to remove animations by setting the transition-duration to 0s.
-  - DP-25156: Backstop - wait all alerts on the page to be processed.
-  
 ### Changed
-  - DP-24810: - For Contextual Login Links:
-  - If services, using field_log_in_links if not empty.
-  - If organizations, using field_application_login_links if not empty.
-  - If other bundles, using computed_log_in_links.
-- Setting value of computed_log_in_links
-  - Uses links from the closest ancestor, service or organization.
-- If service or organization do not have login links:
-  - Uses links from the closest ancestor, service or organization.
-- Ancestor referenced by field_primary_parent.
+  - DP-25055: - Use entity_reference_tree instead of term_reference_tree for collections.
+- Patches entity_reference_tree module to allow more options to select/deselect ancestors/descendants elements.
+  - DP-25157: Update org page banner design.
+  - DP-25198: Replace custom javascript conditionals with condition fields configurations.
+Style iframe conditional fields in the admin UI.
+
+  - DP-25373: Update help text related to events.
   
 ### Added
-  - DP-25130: Add new choice for announcement type field for news content type.
-  - DP-25155: Add Entity diff UI module to allow tracking of Media entity revision changes.
+  - DP-25071: Create report of collections with URLs.
+  - DP-25198: Add aspect ratio to iframe height configuration.
   
 ### Removed
-  - DP-25147: Remove /locations-old route from the system.
+  - DP-25147: Remove locations-old url.
+  - DP-25347: Removed Traffic to Children from Content Performance view and Mass Superset.
+  - DP-25356: Remove 2 pages from backstop.
+  - DP-25372: Remove unneeded "Content performance" tab in Drupal on content menu.
+  
+### Fixed
+  - DP-25190: Fixed issues causing inaccurate revision tracking for media entities on bulk actions.
+  - DP-25230: Creating key message section with image background bug fix.
+  - DP-25242: Fix Backstop wait code for Information Details CSVs.
+  - DP-25348: Fix minor New Relic reported errors
+  - DP-25349: Handle missing contact on howto page
   

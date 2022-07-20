@@ -41,10 +41,6 @@ function mass_superset_schema() {
         'type' => 'float',
         'description' => 'The eject rate.',
       ],
-      'rate_of_traffic_to_children' => [
-        'type' => 'float',
-        'description' => 'The rate of traffic to children.',
-      ],
       'broken_links' => [
         'type' => 'int',
         'description' => 'The number of broken links.',
@@ -161,4 +157,11 @@ function mass_superset_update_8004() {
   foreach ($fields_to_add as $field_to_add) {
     $schema->addField($table, $field_to_add, $spec[$table]['fields'][$field_to_add]);
   }
+}
+
+/**
+ * Remove rate_of_traffic_to_children.
+ */
+function mass_superset_update_8005() {
+  Database::getConnection()->schema()->dropField('mass_superset_data', 'rate_of_traffic_to_children');
 }

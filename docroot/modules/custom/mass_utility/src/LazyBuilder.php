@@ -28,7 +28,7 @@ class LazyBuilder {
     // For location listing pages, set the nid to 0 to prevent Formstack from
     // mixing the results with the location page.
     $route_name = $this->routeMatch->getRouteName();
-    if ($route_name === 'mass_map.map_page') {
+    if ($route_name === 'view.locations.page') {
       $nid = 0;
     }
 

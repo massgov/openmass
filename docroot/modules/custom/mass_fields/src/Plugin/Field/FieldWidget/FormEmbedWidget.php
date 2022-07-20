@@ -65,7 +65,7 @@ class FormEmbedWidget extends WidgetBase {
   /**
    * Validate embed text.
    */
-  public function validate(&$element, FormStateInterface $form_state) {
+  public static function validate(&$element, FormStateInterface $form_state) {
     $value = $element['value']['#value'];
     $type = $element['type']['#value'];
 
@@ -80,9 +80,18 @@ class FormEmbedWidget extends WidgetBase {
       case 'formstack_reload':
         try {
           $doc = new Crawler($value);
-          $url = $doc->filterXPath('//noscript/a[@href]')->attr('href');
-          if (!$url) {
+          $script_url = $doc->filterXPath('//script[@src]')->attr('src');
+          $noscript_url = $doc->filterXPath('//noscript/a[@href]')->attr('href');
+
+          if (!$noscript_url || !$script_url) {
             $form_state->setError($element['value'], t("Malformed embed code. FormStack embed must contain a formstack URL."));
+          }
+          else {
+            $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
+            $validate_script_url = parse_url($script_url, PHP_URL_HOST);
+            if (!str_ends_with($validate_noscript_url, "formstack.com") || !str_ends_with($validate_script_url, "formstack.com")) {
+              $form_state->setError($element['value'], t("Malformed embed code. FormStack embed must contain a formstack URL."));
+            }
           }
         }
         catch (\Exception $e) {

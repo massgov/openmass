@@ -11,10 +11,7 @@ use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
-use Drupal\user\Entity\User;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\taxonomy\Entity\Term;
-use Drupal\mass_entityaccess_userreference\Entity\UserRefAccess;
 use Behat\Behat\Context\SnippetAcceptingContext;
 
 /**
@@ -53,6 +50,11 @@ class MassContentContext extends RawDrupalContext implements SnippetAcceptingCon
   private $minkContext;
 
   /**
+   * @var FeatureContext
+   */
+  private $featureContext;
+
+  /**
    * @BeforeScenario
    */
   public function gatherContexts(BeforeScenarioScope $scope)
@@ -60,6 +62,7 @@ class MassContentContext extends RawDrupalContext implements SnippetAcceptingCon
     $environment = $scope->getEnvironment();
     $this->drupalContext = $environment->getContext(DrupalContext::class);
     $this->minkContext = $environment->getContext(MinkContext::class);
+    $this->featureContext = $environment->getContext(FeatureContext::class);
   }
 
   /**
@@ -693,8 +696,8 @@ class MassContentContext extends RawDrupalContext implements SnippetAcceptingCon
    */
   public function anEventItemReferencing($dateSpec, $title, $reftype, $refname) {
     $date = new \DateTime($dateSpec);
-    $referenceds = $this->getNodesByTitle($reftype, $refname);
-    if ($referenceds = reset($referenceds)) {
+    $referenceds = $this->featureContext->getLastNodeByTitle($reftype, $refname);
+    if ($referenceds) {
       $node = Node::create([
         'type' => 'event',
         'title' => $title,

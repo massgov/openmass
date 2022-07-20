@@ -12,6 +12,7 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\Plugin\DataType\Uri;
@@ -282,43 +283,45 @@ function _mass_fields_get_org_page_sections_data(EntityInterface $entity) {
       $content_entity = $section_entity->get('field_section_long_form_content')[$content_key]->entity;
       // Get the paragraph type.
 
-      $paragraph_type = $content_entity->bundle();
-      // For certain paragraph types, get field data and store in return array.
-      switch ($paragraph_type) {
-        case 'about':
-          $org_page_field_data['about']['entities'][] = $content_entity;
-          break;
+      if ($content_entity) {
+        $paragraph_type = $content_entity->bundle();
+        // For certain paragraph types, get field data and store in return array.
+        switch ($paragraph_type) {
+          case 'about':
+            $org_page_field_data['about']['entities'][] = $content_entity;
+            break;
 
-        case 'featured_topics':
-          $org_page_field_data['field_featured_topics_topics']['build'] = $content_entity->field_featured_topics_topics->view();
-          $org_page_field_data['field_featured_topics_topics']['entities'] = $content_entity->field_featured_topics_topics->referencedEntities();
-          break;
+          case 'featured_topics':
+            $org_page_field_data['field_featured_topics_topics']['build'] = $content_entity->field_featured_topics_topics->view();
+            $org_page_field_data['field_featured_topics_topics']['entities'] = $content_entity->field_featured_topics_topics->referencedEntities();
+            break;
 
-        case 'org_events':
-          $org_page_field_data['org_events']['entities'][] = $content_entity;
-          break;
+          case 'org_events':
+            $org_page_field_data['org_events']['entities'][] = $content_entity;
+            break;
 
-        case 'org_locations':
-          $org_page_field_data['org_locations']['entities'][] = $content_entity;
-          break;
+          case 'org_locations':
+            $org_page_field_data['org_locations']['entities'][] = $content_entity;
+            break;
 
-        case 'org_news':
-          $org_page_field_data['org_news']['entities'][] = $content_entity;
-          break;
+          case 'org_news':
+            $org_page_field_data['org_news']['entities'][] = $content_entity;
+            break;
 
-        case 'organization_grid':
-          $org_page_field_data['organization_grid']['entities'][] = $content_entity;
-          break;
+          case 'organization_grid':
+            $org_page_field_data['organization_grid']['entities'][] = $content_entity;
+            break;
 
-        case 'what_would_you_like_to_do':
-          $org_page_field_data['field_wwyltd_top_s_links']['value'] = $content_entity->get('field_wwyltd_top_s_links')
-            ->getValue();
-          $org_page_field_data['field_wwyltd_top_s_links']['build'] = $content_entity->field_wwyltd_top_s_links->view();
-          $org_page_field_data['field_wwyltd_more_services']['value'] = $content_entity->get('field_wwyltd_more_services')
-            ->getValue();
-          $org_page_field_data['field_wwyltd_more_services']['build'] = $content_entity->field_wwyltd_more_services->view();
-          $org_page_field_data['field_wwyltd_more_services']['entities'] = $content_entity->field_wwyltd_more_services->referencedEntities();
-          break;
+          case 'what_would_you_like_to_do':
+            $org_page_field_data['field_wwyltd_top_s_links']['value'] = $content_entity->get('field_wwyltd_top_s_links')
+              ->getValue();
+            $org_page_field_data['field_wwyltd_top_s_links']['build'] = $content_entity->field_wwyltd_top_s_links->view();
+            $org_page_field_data['field_wwyltd_more_services']['value'] = $content_entity->get('field_wwyltd_more_services')
+              ->getValue();
+            $org_page_field_data['field_wwyltd_more_services']['build'] = $content_entity->field_wwyltd_more_services->view();
+            $org_page_field_data['field_wwyltd_more_services']['entities'] = $content_entity->field_wwyltd_more_services->referencedEntities();
+            break;
+        }
       }
     }
   }
@@ -449,7 +452,7 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
       $entity->field_org_ref_locations ?? FALSE &&
       !$entity->field_org_ref_locations->isEmpty();
     // The org page's location listing URL.
-    $location_listings_url = Url::fromRoute('mass_map.map_page', ['node' => $entity->id()])->toString();
+    $location_listings_url = Url::fromRoute('view.locations.page', ['node' => $entity->id()])->toString();
 
     foreach ($entity->field_ref_contact_info_1->referencedEntities() as $linked) {
       $builder = $entityTypeManager->getViewBuilder($linked->getEntityTypeId());
@@ -887,6 +890,69 @@ function _mass_fields_info_details_enable_flag(&$form, FormStateInterface $form_
           }
         }
       }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ */
+function mass_fields_field_widget_entity_reference_paragraphs_form_alter(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+  _mass_fields_conditions_for_paragraphs($element, $form_state, $context);
+}
+
+/**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ */
+function mass_fields_field_widget_paragraphs_form_alter(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+  _mass_fields_conditions_for_paragraphs($element, $form_state, $context);
+}
+
+/**
+ * Helper function to define conditional logic for paragraphs.
+ */
+function _mass_fields_conditions_for_paragraphs(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+  /** @var \Drupal\field\Entity\FieldConfig $field_definition */
+  $field_definition = $context['items']->getFieldDefinition();
+  $paragraph_entity_reference_field_name = $field_definition->getName();
+
+  if ($paragraph_entity_reference_field_name == 'field_service_sections' || $paragraph_entity_reference_field_name == 'field_sections') {
+    $widget_state = WidgetBase::getWidgetState($element['#field_parents'], $paragraph_entity_reference_field_name, $form_state);
+
+    /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
+    $paragraph_instance = $widget_state['paragraphs'][$element['#delta']]['entity'];
+    $paragraph_type = $paragraph_instance->bundle();
+
+    // Determine which paragraph type is being embedded.
+    if ($paragraph_type == 'key_message_section') {
+      $dependee_field_name = 'field_background_type';
+      $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+
+      // Dependent fields.
+      $element['subform']['field_image']['#states'] = [
+        'visible' => [
+          $selector => ['value' => 'image'],
+        ],
+        'required' => [
+          $selector => ['value' => 'image'],
+        ],
+      ];
+
+      $element['subform']['field_section_background_color']['#states'] = [
+        'visible' => [
+          $selector => ['value' => 'color'],
+        ],
+        'required' => [
+          $selector => ['value' => 'color'],
+        ],
+      ];
+
+      $element['subform']['field_section_text_overlay_color']['#states'] = [
+        'visible' => [
+          $selector => ['value' => 'image'],
+        ],
+
+      ];
     }
   }
 }

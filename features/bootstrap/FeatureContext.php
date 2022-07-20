@@ -10,8 +10,10 @@ use Drupal\DrupalExtension\Context\DrupalContext;
 use Drupal\Core\Url;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Gherkin\Node\TableNode;
+use Drupal\node\Entity\Node;
 use GuzzleHttp\Psr7\Uri;
 use Webmozart\PathUtil\Path;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Defines application features from the specific context.
@@ -1026,39 +1028,14 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
             'type' => 'submit',
           ),
           array (
-            'field' => 'field-service-ref-actions',
-            'tag' => 'input',
-            'type' => 'text',
-          ),
-          array (
-            'field' => 'field-service-file',
-            'tag' => 'input',
-            'type' => 'submit',
-          ),
-          array (
-            'field' => 'field-service-ref-actions-2',
-            'tag' => 'input',
-            'type' => 'text',
-          ),
-          array (
             'field' => 'field-service-ref-guide-page-1',
             'tag' => 'input',
             'type' => 'text',
           ),
           array (
-            'field' => 'field-service-key-info-links-6',
-            'tag' => 'input',
-            'type' => 'text',
-          ),
-          array (
-            'field' => 'field-service-links',
-            'tag' => 'input',
-            'type' => 'text',
-          ),
-          array (
-            'field' => 'field-service-ref-locations',
-            'tag' => 'input',
-            'type' => 'text',
+            'field' => 'field-service-sections',
+            'tag' => 'paragraphs',
+            'type' => '',
           ),
           array (
             'field' => 'field-service-body',
@@ -1067,11 +1044,6 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
           ),
           array (
             'field' => 'field-service-ref-services-6',
-            'tag' => 'input',
-            'type' => 'text',
-          ),
-          array (
-            'field' => 'field-service-offered-by',
             'tag' => 'input',
             'type' => 'text',
           ),
@@ -1506,8 +1478,8 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
         $fields = [
           [
             'field' => 'field-curatedlist-list-section',
-            'tag' => 'paragraphs',
             'type' => 'list-dynamic',
+            'tag' => 'paragraphs',
           ],
           [
             'field' => 'field-curatedlist-list-section',
@@ -2091,6 +2063,40 @@ class FeatureContext extends RawDrupalContext implements SnippetAcceptingContext
       }
     }
 
+  }
+
+  /**
+   * Helper function to lookup the last created node by type/title.
+   */
+  public function getLastNodeByTitle($type, $title) {
+    /** @var \Drupal\Core\Config\Entity\Query\Query $query */
+    $query = \Drupal::entityQuery('node');
+    $query->condition('type', $type);
+    $query->condition('title', $title);
+    $query->range(0, 1);
+    $query->sort('nid', 'DESC');
+    $exec = $query->execute();
+    $nid = reset($exec);
+    return Node::load($nid);
+  }
+
+  /**
+   * @Given I add events in the service section to :title
+   */
+  public function addEventsInTheServiceSection($title) {
+    $service_node = $this->getLastNodeByTitle('service_page', $title);
+    $event = Paragraph::create([
+      'type' => 'org_events',
+      'field_event_quantity' => 2,
+    ]);
+    $service_section = Paragraph::create([
+      'type' => 'service_section',
+      'field_service_section_content' => [$event],
+      'field_hide_heading' => FALSE,
+      'field_service_section_heading' => 'The service section heading',
+    ]);
+    $service_node->field_service_sections = [$service_section];
+    $service_node->save();
   }
 
   /**
