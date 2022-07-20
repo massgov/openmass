@@ -39,8 +39,7 @@ Style iframe conditional fields in the admin UI.
   - DP-25242: Fix Backstop wait code for Information Details CSVs.
   - DP-25348: Fix minor New Relic reported errors
   - DP-25349: Handle missing contact on howto page
-
-
+  - DP-25419: Fixed date sorting errors for automatic list paragraphs.
 
 ## [0.328.1] - July 6, 2022
 
