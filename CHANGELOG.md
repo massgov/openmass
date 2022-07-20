@@ -10,25 +10,24 @@
 Style iframe conditional fields in the admin UI.
 
   - DP-25373: Update help text related to events.
-  
+
 ### Added
   - DP-25071: Create report of collections with URLs.
   - DP-25198: Add aspect ratio to iframe height configuration.
-  
+
 ### Removed
   - DP-25147: Remove locations-old url.
   - DP-25347: Removed Traffic to Children from Content Performance view and Mass Superset.
   - DP-25356: Remove 2 pages from backstop.
   - DP-25372: Remove unneeded "Content performance" tab in Drupal on content menu.
-  
+
 ### Fixed
   - DP-25190: Fixed issues causing inaccurate revision tracking for media entities on bulk actions.
   - DP-25230: Creating key message section with image background bug fix.
   - DP-25242: Fix Backstop wait code for Information Details CSVs.
   - DP-25348: Fix minor New Relic reported errors
   - DP-25349: Handle missing contact on howto page
-  
-
+  - DP-25419: Fixed date sorting errors for automatic list paragraphs.
 
 ## [0.328.1] - July 6, 2022
 
