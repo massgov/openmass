@@ -75,21 +75,23 @@ class EntitySorter {
         case 'executive_order':
         case 'regulation':
         case 'rules':
-          $date = Helper::fieldValue($object, 'field_date_published');
-          $date = $this->formatDateValue($date);
-          break;
+          if ($date = Helper::fieldValue($object, 'field_date_published')) {
+            $date = $this->formatDateValue($date);
+            break;
+          }
 
         case 'curated_list':
-          $date = $this->formatDateValue($object->created->value, FALSE);
+          $date = $this->formatDateValue($object->getCreatedTime(), FALSE);
           break;
 
         case 'info_details':
-          $date = Helper::fieldValue($object, 'field_info_details_last_updated');
-          $date = $this->formatDateValue($date);
-          break;
+          if ($date = Helper::fieldValue($object, 'field_info_details_last_updated')) {
+            $date = $this->formatDateValue($date);
+            break;
+          }
 
         default:
-          $date = $this->formatDateValue($object->changed->value, FALSE);
+          $date = $this->formatDateValue($object->getRevisionCreationTime(), FALSE);
       }
     }
     elseif ($object instanceof Media) {
