@@ -182,9 +182,28 @@ module.exports = async function (page, scenario, vp) {
       })
       break;
     case "InfoDetails1":
-      await page.waitForFunction("document.querySelector('div.csv-table') === null");
+      await page.waitForSelector('.ma__figure--large.ma__csvtable table.dataTable', {
+        visible: true,
+        timeout: 10000,
+      })
+      await page.waitForSelector('.ma__figure--x-large.ma__csvtable table.dataTable', {
+        visible: true,
+        timeout: 10000,
+      })
+      await page.waitForSelector('.ma__figure--large.ma__csvtable div.dataTables_info', {
+        visible: true,
+        timeout: 10000,
+      })
+      await page.waitForSelector('.ma__figure--x-large.ma__csvtable div.dataTables_info', {
+        visible: true,
+        timeout: 10000,
+      })
+      await page.waitForSelector('footer#footer .ma__footer-new__container', {
+        visible: true,
+        timeout: 10000,
+      })
+      await page.waitForTimeout(3000);
       break;
-    case "ServiceGroupedLinks":
     case "Service1":
     case "ExpansionOfAccordions1_toggle":
     case "ExpansionOfAccordions2_toggle":
@@ -294,6 +313,9 @@ module.exports = async function (page, scenario, vp) {
       '  bottom: unset;' +
       '}' +
       '.ma__fixed-feedback-button a {' +
+      '  transition: unset;' +
+      '}' +
+      '.ma__figure--full {' +
       '  transition: unset;' +
       '}' +
       '.ma__press-listing__secondary-item .ma__press-teaser .ma__press-teaser__image:before {' +

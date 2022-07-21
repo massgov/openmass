@@ -68,7 +68,7 @@ class EventsRendererOrgPages {
     // Set the limit on how many events should be displayed on the page. Default
     // to 2 if no limit is set.
     $limit = $this->paragraph->hasField('field_event_quantity') &&
-      !$this->paragraph->field_event_quantity->isEmpty() ?
+      $this->paragraph->field_event_quantity->isEmpty() ?
         2 : (int) $this->paragraph->field_event_quantity->value;
 
     $events = Helper::prepareEvents($this->eventManager->getUpcoming($this->parentNode, $limit + 1));

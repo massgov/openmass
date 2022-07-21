@@ -63,18 +63,26 @@ class EntityAutocompleteMatcher extends DefaultAutocompleteMatcher {
 
       $entity_type_labels = [];
       // Loop through the entities and convert them into autocomplete output.
-      foreach ($entity_labels as $entity_type => $values) {
+      foreach ($entity_labels as $bundle => $values) {
         foreach ($values as $entity_id => $label) {
-          if (!isset($entity_type_labels[$entity_type])) {
-            $node_type = $this->entityTypeManager->getStorage('node_type')
-              ->load($entity_type);
-            if (isset($node_type)) {
-              $entity_type_label = $node_type->label();
-              $entity_type_labels[$entity_type] = $entity_type_label;
+          if (!isset($entity_type_labels[$bundle])) {
+            if (isset($handler->entityTypeBundleInfo)) {
+              $bundle_info = $handler->entityTypeBundleInfo->getBundleInfo($target_type)[$bundle];
+              if (!empty($bundle_info)) {
+                $entity_type_label = $bundle_info['label'];
+                $entity_type_labels[$bundle] = $entity_type_label;
+              }
+            }
+            else {
+              $node_type = $this->entityTypeManager->getStorage('node_type')->load($bundle);
+              if (isset($node_type)) {
+                $entity_type_label = $node_type->label();
+                $entity_type_labels[$bundle] = $entity_type_label;
+              }
             }
           }
-          if (isset($entity_type_labels[$entity_type])) {
-            $key = "$label ($entity_id) - {$entity_type_labels[$entity_type]}";
+          if (isset($entity_type_labels[$bundle])) {
+            $key = "$label ($entity_id) - {$entity_type_labels[$bundle]}";
           }
           else {
             $key = "$label ($entity_id)";
@@ -89,7 +97,7 @@ class EntityAutocompleteMatcher extends DefaultAutocompleteMatcher {
           }
           $matches[] = [
             'value' => $key,
-            'label' => $entity_type_labels[$entity_type] . ': ' . $label,
+            'label' => $entity_type_labels[$bundle] . ': ' . $label,
           ];
         }
       }

@@ -158,9 +158,9 @@
         "drupal/conditional_fields": "^4.0@alpha",
         "drupal/config_filter": "^2.2",
         "drupal/config_ignore": "3.x-dev",
-        "drupal/core-composer-scaffold": "^9.3",
-        "drupal/core-project-message": "^9.3",
-        "drupal/core-recommended": "^9.3",
+        "drupal/core-composer-scaffold": "^9.4",
+        "drupal/core-project-message": "^9.4",
+        "drupal/core-recommended": "^9.4",
         "drupal/csv_field": "^1.0@beta",
         "drupal/csv_serialization": "^2.1",
         "drupal/datalayer": "^1",
@@ -173,6 +173,7 @@
         "drupal/entity_diff_ui": "^1.0",
         "drupal/entity_hierarchy": "^3.0",
         "drupal/entity_reference_revisions": "^1.7",
+        "drupal/entity_reference_tree": "^2.0",
         "drupal/entity_usage": "^2.0-beta5",
         "drupal/entityreference_filter": "^1.4",
         "drupal/environment_indicator": "^4",
@@ -230,7 +231,7 @@
         "drupal/simple_sitemap": "^3.1",
         "drupal/stage_file_proxy": "^1.1",
         "drupal/subpathauto": "^1",
-        "drupal/term_reference_tree": "^1.0",
+        "drupal/term_reference_tree": "^1.1",
         "drupal/tfa": "^1.0.0-alpha7",
         "drupal/twig_field_value": "^2",
         "drupal/twig_tweak": "^2.9",
@@ -260,7 +261,7 @@
     "require-dev": {
         "behat/behat": "^3",
         "behat/mink-extension": "^2.2",
-        "drupal/core-dev": "^9.3",
+        "drupal/core-dev": "^9.4",
         "drupal/devel": "^4",
         "drupal/devel_entity_updates": "^3.0",
         "drupal/drupal-extension": "^4.0.0beta1",
@@ -322,7 +323,7 @@
                 "Invalid argument supplied for foreach SettingsForm->prepareHeadersDisplay (https://www.drupal.org/project/access_unpublished/issues/3252499)": "https://www.drupal.org/files/issues/2021-12-03/3252499-warning-invalid-argument-2.patch"
             },
             "drupal/core": {
-                "Don't break if telephone number is less than 6 digits. (https://www.drupal.org/node/2575577#comment-11750724)": "https://www.drupal.org/files/issues/2575577-11.patch",
+                "Don't break if telephone number is less than 6 digits. (https://www.drupal.org/node/2575577)": "https://www.drupal.org/files/issues/2022-07-12/2575577-38.patch",
                 "Fix config-import when uninstalling a theme": "https://www.drupal.org/files/issues/2018-04-04/2958649-1.patch",
                 "Remove final from a class in order to inherit from it": "patches/DP-11721-jsonapi-serializer.patch",
                 "Remove type hint which allows usage in combination with workbench_moderation": "patches/jsonapi-2.3.0-no-type-hint.patch",
@@ -330,18 +331,21 @@
                 "IMPORTANT: Make content moderation views use indexes": "patches/content-moderation-add-views-filter-indices.patch",
                 "Batch is dependent on the order of query string parameters (https://www.drupal.org/project/drupal/issues/2879023)": "https://www.drupal.org/files/issues/2021-08-24/2879023-34.patch",
                 "3075454 - combine fields filter doesn't recognise taxonomy description field":  "https://www.drupal.org/files/issues/2019-08-20/3075454-3.patch",
-                "2993688 - Views relationships with multi-valued entity reference fields invalidate Distinct query option": "https://www.drupal.org/files/issues/2021-04-16/2993688-69.patch",
+                "2993688 - Views relationships with multi-valued entity reference fields invalidate Distinct query option": "https://www.drupal.org/files/issues/2022-06-16/2993688-99.patch",
                 "Store table drag object in the table data" : "patches/DP-23411_store-object-in-draggable-table.patch",
                 "2329253 - Allow the ChangedItem to skip updating when synchronizing (f.e. when migrating)": "https://www.drupal.org/files/issues/2021-09-29/2329253-drupal-allow-changeditem-skipping-78-9.3.patch",
                 "Avoid warnings when getting permissions for roles that do not have permissions and are not administrators": "patches/DP-23561-avoid-warnings-on-roles-without-permissions.patch",
-                "2845144 - User can't reference unpublished content even when they have access to it" : "https://www.drupal.org/files/issues/2021-06-09/2845144_52.patch",
+                "2845144 - User can't reference unpublished content even when they have access to it" : "https://www.drupal.org/files/issues/2022-06-17/2845144-67.patch",
                 "Link error The internal path component is invalid (https://www.drupal.org/project/drupal/issues/2943135)":  "https://www.drupal.org/files/issues/2021-12-01/2943135-31.patch",
-                "Improve error message on unrouted URLs (https://www.drupal.org/project/drupal/issues/3013802#comment-14456001)": "https://www.drupal.org/files/issues/2022-03-24/3013802-22.patch",
                 "Ensure to have build info on View Page Controller before getting the view title" : "patches/DP-24420--View-pages-arguments-title-overrides-not-working--2.patch"
             },
 
             "drupal/conditional_fields": {
                 "2902164 - \"Controlled by\" fields inside a Paragraph don't work": "patches/conditional-fields-and-paragraphs-2902164--using-ids--v6.patch"
+            },
+
+            "drupal/entity_reference_tree": {
+                "3285499 - Options to automatically select/deselect ancestors/descendants when node is checked/unchecked.": "patches/issue-3285499--automatic-selection-options--3.patch"
             },
 
             "ckeditor/liststyle": {
@@ -362,6 +366,9 @@
                 "Fatal error on node/{nid}/media #3034602": "https://www.drupal.org/files/issues/2022-04-08/issue_3034602_15_node_nid_media.patch",
                 "Async support & save only changed, based on https://www.drupal.org/files/issues/2021-05-06/3178313-tree-editor-3.patch) but only save parent changes when saving on the children tab": "patches/DP-23411_node-hierarchy-async-support-save-only-changed--v4.patch",
                 "Enable entity_hierarchy_breadcrumb module to work on node edit routes": "patches/entity_hierarchy_breadcrumb_for_admin_routes.patch"
+            },
+            "drupal/entityreference_filter": {
+                "Undefined array key \"title\" entityreference_filter.views.inc (https://www.drupal.org/project/entityreference_filter/issues/3295497)": "https://www.drupal.org/files/issues/2022-07-12/3295497_2.patch"
             },
             "drupal/entity_usage": {
                 "3007752 - Entity usage list does not scale (https://www.drupal.org/project/entity_usage/issues/3007752)": "patches/entity_usage-usage_list_scale-3007752-17.patch",

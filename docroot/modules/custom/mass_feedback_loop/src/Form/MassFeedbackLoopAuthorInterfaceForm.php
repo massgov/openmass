@@ -40,7 +40,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
   /**
    * Current active database's master connection.
    *
-   * @var \Drupal\Core\Database\Driver\mysql\Connection
+   * @var \Drupal\Core\Database\Connection
    */
   private $database;
 
