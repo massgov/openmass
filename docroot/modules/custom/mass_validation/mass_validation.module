@@ -596,10 +596,12 @@ function _mass_validation_form_node_location_details_form_validate(array &$form,
         // have no more than 6 values between them.
         $num_links = 0;
         // Count the links.
-        foreach ($section['subform']['field_section_links'] as $link) {
-          if (is_array($link)) {
-            if (!empty($link['uri'])) {
-              $num_links += 1;
+        if (isset($section['subform']['field_section_links'])) {
+          foreach ($section['subform']['field_section_links'] as $link) {
+            if (is_array($link)) {
+              if (!empty($link['uri'])) {
+                $num_links += 1;
+              }
             }
           }
         }
