@@ -261,6 +261,7 @@ function mass_fields_entity_base_field_info(\Drupal\Core\Entity\EntityTypeInterf
   if (in_array($entity_type->id(), ['media', 'node'])) {
     $options = [
       'type' => 'boolean_checkbox',
+      'weight' => 99,
       'settings' => [
         'display_label' => TRUE,
       ]
