@@ -1314,6 +1314,61 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        score:
+          id: score
+          table: mass_superset_data
+          field: score
+          relationship: vid
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '<='
+          value:
+            min: ''
+            max: ''
+            value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: score_op
+            label: 'Score is less than or equal to'
+            description: ''
+            use_operator: false
+            operator: score_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: score
+            required: false
+            remember: true
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
         last_updated:
           id: last_updated
           table: snooze
@@ -1463,6 +1518,189 @@ display:
               '>=': '>='
               between: between
             identifier: nos_per_1000
+            required: false
+            remember: true
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        eject_rate:
+          id: eject_rate
+          table: mass_superset_data
+          field: eject_rate
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '>='
+          value:
+            min: ''
+            max: ''
+            value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: eject_rate_op
+            label: 'Eject Rate'
+            description: ''
+            use_operator: true
+            operator: eject_rate_op
+            operator_limit_selection: true
+            operator_list:
+              '<=': '<='
+              '>=': '>='
+              between: between
+            identifier: eject_rate
+            required: false
+            remember: true
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        grade_level:
+          id: grade_level
+          table: mass_superset_data
+          field: grade_level
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '>='
+          value:
+            min: ''
+            max: ''
+            value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: grade_level_op
+            label: 'Reading Level'
+            description: ''
+            use_operator: true
+            operator: grade_level_op
+            operator_limit_selection: true
+            operator_list:
+              '<=': '<='
+              '>=': '>='
+              between: between
+            identifier: grade_level
+            required: false
+            remember: true
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        broken_links:
+          id: broken_links
+          table: mass_superset_data
+          field: broken_links
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '>='
+          value:
+            min: ''
+            max: ''
+            value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: broken_links_op
+            label: 'Broken Links'
+            description: ''
+            use_operator: true
+            operator: broken_links_op
+            operator_limit_selection: true
+            operator_list:
+              '<=': '<='
+              '>=': '>='
+              between: between
+            identifier: broken_links
             required: false
             remember: true
             multiple: false
@@ -3512,7 +3750,7 @@ display:
         - 'config:workflow_list'
   page_1:
     id: page_1
-    display_title: 'Content Performance'
+    display_title: Page
     display_plugin: page
     position: 1
     display_options:
@@ -3532,60 +3770,6 @@ display:
         exposed_form: false
         filters: true
         filter_groups: true
-      display_description: ''
-      display_extenders: {  }
-      path: admin/content/performance
-      menu:
-        type: none
-        title: 'Content Performance'
-        description: ''
-        weight: 0
-        expanded: false
-        menu_name: admin
-        parent: ''
-        context: '0'
-      tab_options:
-        type: normal
-        title: Content
-        description: 'Find and manage content'
-        weight: -10
-        menu_name: admin
-    cache_metadata:
-      max-age: 0
-      contexts:
-        - 'languages:language_content'
-        - 'languages:language_interface'
-        - url
-        - url.query_args
-        - 'user.node_grants:view'
-        - user.permissions
-      tags:
-        - 'config:workflow_list'
-  page_2:
-    id: page_2
-    display_title: Feedback
-    display_plugin: page
-    position: 1
-    display_options:
-      title: Feedback
-      exposed_form:
-        type: input_required_on_request
-        options:
-          submit_button: Apply
-          reset_button: true
-          reset_button_label: Reset
-          exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
-          sort_asc_label: Asc
-          sort_desc_label: Desc
-          text_input_required: 'Select any filter and click on Apply to see results'
-          text_input_required_format: basic_html
-      defaults:
-        title: false
-        exposed_form: false
-        filters: true
-        filter_groups: true
-      display_description: ''
       display_extenders: {  }
       path: admin/content/performance
       menu:
