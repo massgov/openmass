@@ -27,9 +27,6 @@ class MediaBulkActionTest extends ExistingSiteBase {
    */
   public function setUp() {
     parent::setUp();
-    /** @var \Drupal\Tests\DocumentElement */
-    $this->page = $this->getSession()->getPage();
-
     // An admin is needed.
     $admin = User::create(['name' => $this->randomMachineName()]);
     $admin->addRole('administrator');
