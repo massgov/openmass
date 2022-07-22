@@ -102,8 +102,7 @@ class MediaBulkActionTest extends ExistingSiteBase {
     $this->getCurrentPage()->pressButton('Apply to selected items');
     $this->getCurrentPage()->pressButton('Execute action');
     $this->checkForMetaRefresh();
-    $message = $this->getCurrentPage()->find('css', '.messages--status')->getText();
-    $this->assertStringContainsString('Your changes have been successfully made.', $message);
+    $this->assertSession()->pageTextContains('Your changes have been successfully made.');
   }
 
 }
