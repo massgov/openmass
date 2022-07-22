@@ -12,7 +12,9 @@ commands:
   stop:
     cmd: ddev pause "$@"
   pull:
-    cmd: ddev stop && ~/.ddev/bin/docker-compose -f .ddev/.ddev-docker-compose-full.yaml down --rmi all && ahoy up
+    // Container+Volume deletion, then image deletion, then start.
+    // cmd: ddev delete -Oy && ~/.ddev/bin/docker-compose -f .ddev/.ddev-docker-compose-full.yaml down --rmi all && ahoy up
+    cmd: ~/.ddev/bin/docker-compose -f .ddev/.ddev-docker-compose-full.yaml build --no-cache --pull dbmass
   refresh:
     cmd: ahoy exec "scripts/ma-refresh-local -dpo && vendor/bin/drush sql:sanitize -y"
   updatedb:
