@@ -2,18 +2,18 @@
 
 declare(strict_types=1);
 
-namespace Drupal\Tests\mass_media\ExistingSiteJavascript;
+namespace Drupal\Tests\mass_media\ExistingSite;
 
 use Drupal\file\Entity\File;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests "All Content" view requires input to show content to speed up login.
  */
-class AllDocumentsBulkActionTest extends ExistingSiteSelenium2DriverTestBase {
+class MediaBulkActionTest extends ExistingSiteBase {
   const RESTRICT_ACTION = '2';
   const UNPUBLISH_ACTION = '3';
   const TRASH_ACTION = '4';
@@ -104,7 +104,9 @@ class AllDocumentsBulkActionTest extends ExistingSiteSelenium2DriverTestBase {
     $this->getCurrentPage()->find('css', 'input[name="views_bulk_operations_bulk_form[0]"]')->check();
     $this->getCurrentPage()->pressButton('Apply to selected items');
     $this->getCurrentPage()->pressButton('Execute action');
-    $this->assertSession()->waitForText('Your changes have been successfully made.');
+    $this->checkForMetaRefresh();
+    $message = $this->getCurrentPage()->find('css', '.messages--status')->getText();
+    $this->assertStringContainsString('Your changes have been successfully made.', $message);
   }
 
 }
