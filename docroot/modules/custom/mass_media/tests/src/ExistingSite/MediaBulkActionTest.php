@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\mass_media\ExistingSite;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\file\Entity\File;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
@@ -21,6 +22,7 @@ class MediaBulkActionTest extends ExistingSiteBase {
 
   use LoginTrait;
   use MediaCreationTrait;
+  use StringTranslationTrait;
 
   /**
    * {@inheritdoc}
@@ -97,10 +99,12 @@ class MediaBulkActionTest extends ExistingSiteBase {
   private function runTestSteps($action) {
     $this->createMediaFile();
     $this->drupalGet('admin/ma-dash/documents');
-    $this->getCurrentPage()->find('css', 'select[name="action"]')->selectOption($action);
-    $this->getCurrentPage()->find('css', 'input[name="views_bulk_operations_bulk_form[0]"]')->check();
-    $this->getCurrentPage()->pressButton('Apply to selected items');
-    $this->getCurrentPage()->pressButton('Execute action');
+    $edit = [
+      'action' => $action,
+      'views_bulk_operations_bulk_form[0]' => TRUE,
+    ];
+    $this->submitForm($edit, $this->t('Apply to selected items'), 'views-form-all-documents-page-1');
+    $this->submitForm([], $this->t('Execute action'), 'views-bulk-operations-confirm-action');
     $this->checkForMetaRefresh();
     $this->assertSession()->pageTextContains('Your changes have been successfully made.');
   }
