@@ -105,7 +105,7 @@ class MediaBulkActionTest extends ExistingSiteBase {
     ];
     $this->submitForm($edit, $this->t('Apply to selected items'), 'views-form-all-documents-page-1');
     $this->submitForm([], $this->t('Execute action'), 'views-bulk-operations-confirm-action');
-    $this->checkForMetaRefresh();
+    $this->assertSession()->pageTextContains('Performing Moderation');
     $this->assertSession()->pageTextContains('Your changes have been successfully made.');
   }
 
