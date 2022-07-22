@@ -106,7 +106,7 @@ class MediaBulkActionTest extends ExistingSiteBase {
     $this->submitForm($edit, $this->t('Apply to selected items'), 'views-form-all-documents-page-1');
     $this->submitForm([], $this->t('Execute action'), 'views-bulk-operations-confirm-action');
     $page = $this->getSession()->getPage();
-    $page->waitFor(10, function () use ($page) {
+    $page->waitFor(3, function () use ($page) {
       return $page->hasContent('Your changes have been successfully made.');
     });
   }
