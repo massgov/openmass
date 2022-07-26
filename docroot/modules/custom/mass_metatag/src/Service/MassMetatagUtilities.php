@@ -65,14 +65,12 @@ class MassMetatagUtilities {
       // and add it to the orgs array so they can be checked for parents.
       if ($node->hasField('field_organizations')) {
         /** @var \Drupal\node\Entity\Node[] $org_pages */
-        $org_pages = $node->field_organizations->referencedEntities();
-        ksm($node->field_organizations->getValue());
-        ksm($org_pages);
+        $org_pages = $node->field_organizations;
         foreach ($org_pages as $org_page) {
           // Only add the referenced orgs if they have not already been
           // checked.
-          if (!in_array($org_page->id(), $checked_orgs)) {
-            $orgs[] = $org_page;
+          if (!in_array($org_page->entity->id(), $checked_orgs)) {
+            $orgs[] = $org_page->entity;
           }
         }
       }
