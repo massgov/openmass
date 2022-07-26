@@ -60,6 +60,9 @@ class MassMetatagUtilities {
         if (!$node->field_parent->isEmpty() && !is_null($node->field_parent->entity) && !in_array($node->field_parent->entity->id(), $checked_orgs)) {
           $orgs[] = $node->field_parent->entity;
         }
+        ksm("inside 1");
+        ksm($result);
+        ksm("inside 1");
       }
       // For all other nodes, get all the organizations referenced
       // and add it to the orgs array so they can be checked for parents.
@@ -75,6 +78,9 @@ class MassMetatagUtilities {
         }
       }
       // Add the current org node to the checked array to keep track.
+      ksm("inside 2");
+      ksm($checked_orgs);
+      ksm("inside 2");
       $checked_orgs[] = $node->id();
     }
 
