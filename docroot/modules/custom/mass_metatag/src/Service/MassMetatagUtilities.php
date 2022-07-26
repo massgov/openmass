@@ -60,15 +60,14 @@ class MassMetatagUtilities {
         if (!$node->field_parent->isEmpty() && !is_null($node->field_parent->entity) && !in_array($node->field_parent->entity->id(), $checked_orgs)) {
           $orgs[] = $node->field_parent->entity;
         }
-        ksm("inside 1");
-        ksm($result);
-        ksm("inside 1");
       }
       // For all other nodes, get all the organizations referenced
       // and add it to the orgs array so they can be checked for parents.
       if ($node->hasField('field_organizations')) {
         /** @var \Drupal\node\Entity\Node[] $org_pages */
         $org_pages = $node->field_organizations->referencedEntities();
+        ksm($node->field_organizations->getValue());
+        ksm($org_pages);
         foreach ($org_pages as $org_page) {
           // Only add the referenced orgs if they have not already been
           // checked.
@@ -78,9 +77,6 @@ class MassMetatagUtilities {
         }
       }
       // Add the current org node to the checked array to keep track.
-      ksm("inside 2");
-      ksm($checked_orgs);
-      ksm("inside 2");
       $checked_orgs[] = $node->id();
     }
 
