@@ -90,6 +90,7 @@ class MassMetatagUtilities {
       // Add the current org node to the checked array to keep track.
       $checked_orgs[] = $node->id();
     }
+
     return $result;
   }
 
