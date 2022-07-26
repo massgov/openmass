@@ -1,0 +1,12 @@
+diff --git a/src/Form/BulkEditFormTrait.php b/src/Form/BulkEditFormTrait.php
+index f7a12a3..aafd283 100644
+--- a/src/Form/BulkEditFormTrait.php
++++ b/src/Form/BulkEditFormTrait.php
+@@ -166,6 +166,7 @@ trait BulkEditFormTrait {
+ 
+       $revision_form['revision_information']['revision'] = [
+         '#type' => 'checkbox',
++        '#access' => FALSE,
+         '#title' => $this->t('Create new revision'),
+         '#default_value' => $new_revision_default,
+       ];
