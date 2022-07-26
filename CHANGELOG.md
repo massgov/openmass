@@ -1,5 +1,30 @@
 
 
+## [0.331.0] - July 26, 2022
+
+### Fixed
+  - DP-24431: Fix organization navigation overlapped by main nav on mobile, and fix its positioning logic.
+  - DP-25157: Fixes the relationship indicators script on Mayflower to avoid failures on Backstop tests.
+  - DP-25473: Fixed mg_organizations metatag value generation on organization pages.
+  - DP-25506: Fixed flaky media bulk action tests.
+  
+### Added
+  - DP-24958: Add a skip link target indicator at click to verify users' whereabout. Set focus on the target (= anchor) at click to ensure users can navigate page below the TOC.
+  
+### Removed
+  - DP-25205: Remove author options to bulk edit or save pages.
+  
+### Security
+  - DP-25324: Resolve dependabot security issues on openmass, update Drupal core to 9.4.2.
+  - DP-25522: Drupal core update to version 9.4.3.
+  
+### Changed
+  - DP-25406: Allow Topic Pages to be a parent page of Form Pages.
+  - DP-25468: Allow Rules of Court Pages to be a parent page of Rules of Court Pages.
+  - DP-25527: In local development, pin portainer and fix DB persistence
+  
+
+
 ## [0.330.0] - July 19, 2022
 
 ### Added
