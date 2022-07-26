@@ -78,6 +78,7 @@ class MassMetatagUtilities {
       $checked_orgs[] = $node->id();
     }
 
+    ksm($result);
     return array_unique($result);
   }
 
