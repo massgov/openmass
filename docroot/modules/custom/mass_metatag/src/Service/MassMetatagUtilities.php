@@ -91,7 +91,7 @@ class MassMetatagUtilities {
       $checked_orgs[] = $node->id();
     }
 
-    return $result;
+    return array_unique($result);
   }
 
   /**
