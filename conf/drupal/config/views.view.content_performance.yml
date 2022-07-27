@@ -701,8 +701,8 @@ display:
           alter:
             alter_text: false
             text: ''
-            make_link: false
-            path: ''
+            make_link: true
+            path: 'node/{{ nid }}/feedback'
             absolute: false
             external: false
             replace_spaces: false
@@ -5123,7 +5123,7 @@ display:
           click_sort_column: target_id
           type: entity_reference_label
           settings:
-            link: true
+            link: false
           group_column: target_id
           group_columns: {  }
           group_rows: true
@@ -5439,13 +5439,13 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: numeric
-          label: 'Nos per 1000'
+          label: 'No''s per 1000'
           exclude: false
           alter:
             alter_text: false
             text: ''
-            make_link: false
-            path: ''
+            make_link: true
+            path: 'node/{{ nid }}/feedback'
             absolute: false
             external: false
             replace_spaces: false
@@ -5540,7 +5540,7 @@ display:
           hide_alter_empty: true
           destination: false
       exposed_form:
-        type: input_required_on_request
+        type: basic
         options:
           submit_button: Apply
           reset_button: true
@@ -5549,8 +5549,6 @@ display:
           expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
-          text_input_required: 'Select any filter and click on Apply to see results'
-          text_input_required_format: basic_html
       filters:
         latest_revision:
           id: latest_revision
@@ -6053,7 +6051,7 @@ display:
           value:
             min: ''
             max: ''
-            value: '200'
+            value: '250'
           group: 1
           exposed: true
           expose:
@@ -6114,7 +6112,7 @@ display:
           value:
             min: ''
             max: ''
-            value: '5'
+            value: '6'
           group: 1
           exposed: true
           expose:
@@ -6184,9 +6182,9 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: text
-          empty: false
+          empty: true
           content:
-            value: "<p>This report will show you pages where a large number of visitors didn't find what they wanted and answered \"No\" to the queston \"Did you find what you were looking for on this webpage\" that is in the footer of all pages on the site. </p>\r\n<ol>\r\n<li>Filter by your organization</li>\r\n<li>Adjust the \"Pageviews\" and \"No's per Thousand\" responses to find the pages that get the most negative feedback.</li>\r\n"
+            value: "<p>This report will show you pages where a large number of visitors didn't find what they wanted and answered \"No\" to the queston \"Did you find what you were looking for on this webpage\" that is in the footer of all pages on the site. </p>\r\n<ol>\r\n<li>Filter by your organization</li>\r\n<li>Adjust the \"Pageviews\" and \"No's per Thousand\" responses to find the pages that get the most negative feedback.\r\n<ul>\r\n<li>This report is setup to show pages with moderate traffic. Try adjusting to find pages with lower or higher traffic.<br>\r\n- Higher traffic:  pageviews > 500, No's per 1000 pageviews > 4 <br>\r\n- Lower traffic: pageviews > 50, No's per 1000 pageviews > 50\r\n</li>\r\n</ul>\r\n<li>Some page types get more or less negative feedback because of the nature of the type, so try filtering for your key content types individually, while setting the limit for No's per 1000 page views to zero and compare those pages to each other. Try to understand why some pages are not performing as well as others.</li>\r\n<li>Click the number in the \"No's per 1000\" column to see the feedback for that page. Look for any common patterns in the feedback that suggest improvements.\r\n</ol>"
             format: basic_html
           tokenize: false
       display_extenders: {  }
