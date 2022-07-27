@@ -112,7 +112,7 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
           // to let the browser determine when an element is ready to interact
           // with. In particular, this triggers in CI where interactive latency
           // is not prioritized.
-          $me->assertSession()->waitForElementVisible('css', '#overlay-toc-518191 > div.ma__toc--overlay__content > div > ul > li.ma__toc--hierarchy__accordion.js-accordion');
+          $me->assertSession()->waitForElementVisible('css', '#overlay-toc-384686 > div.ma__toc--overlay__content > div > ul > li.ma__toc--hierarchy__accordion.js-accordion');
         },
       ],
       '_QAG Request Help with a Computer Problem Notices and Alerts' => [
