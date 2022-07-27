@@ -37,5 +37,3 @@ web_environment:
 hooks:
   pre-start:
     - exec-host: echo "No output is shown during the first container build. It may take a minute to install Tugboat, CircleCI, and GitHub CLI tools."
-  post-stop:
-    - exec-host: echo "The database has been reset to a pristine state. If you didn't mean this, next time use ddev pause instead."
