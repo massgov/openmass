@@ -1931,11 +1931,8 @@ display:
             last_updated: last_updated
             score: score
             nos_per_1000: nos_per_1000
-            eject_rate: eject_rate
-            broken_links: broken_links
-            grade_level: grade_level
             operations: operations
-          default: pageviews
+          default: nos_per_1000
           info:
             node_bulk_form:
               align: ''
@@ -2006,27 +2003,6 @@ display:
               empty_column: false
               responsive: ''
             nos_per_1000:
-              sortable: true
-              default_sort_order: desc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            eject_rate:
-              sortable: true
-              default_sort_order: desc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            broken_links:
-              sortable: true
-              default_sort_order: desc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            grade_level:
               sortable: true
               default_sort_order: desc
               align: ''
@@ -6077,7 +6053,7 @@ display:
           value:
             min: ''
             max: ''
-            value: '20'
+            value: '200'
           group: 1
           exposed: true
           expose:
@@ -6138,12 +6114,12 @@ display:
           value:
             min: ''
             max: ''
-            value: ''
+            value: '5'
           group: 1
           exposed: true
           expose:
             operator_id: nos_per_1000_op
-            label: 'Nos per 1000'
+            label: 'No''s per 1000 Pageviews'
             description: ''
             use_operator: true
             operator: nos_per_1000_op
@@ -6197,7 +6173,22 @@ display:
         fields: false
         filters: false
         filter_groups: false
+        header: false
       display_description: ''
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: false
+          content:
+            value: "<p>This report will show you pages where a large number of visitors didn't find what they wanted and answered \"No\" to the queston \"Did you find what you were looking for on this webpage\" that is in the footer of all pages on the site. </p>\r\n<ol>\r\n<li>Filter by your organization</li>\r\n<li>Adjust the \"Pageviews\" and \"No's per Thousand\" responses to find the pages that get the most negative feedback.</li>\r\n"
+            format: basic_html
+          tokenize: false
       display_extenders: {  }
       path: admin/content/performance/feedback
       menu:
