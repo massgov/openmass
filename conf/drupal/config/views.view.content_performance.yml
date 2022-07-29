@@ -55,6 +55,7 @@ dependencies:
     - views_autocomplete_filters
     - views_data_export
     - views_porter_stemmer
+    - views_simple_math_field
 id: content_performance
 label: 'Content Performance'
 module: views
@@ -1931,6 +1932,7 @@ display:
             last_updated: last_updated
             score: score
             nos_per_1000: nos_per_1000
+            field_views_simple_math_field: field_views_simple_math_field
             operations: operations
           default: nos_per_1000
           info:
@@ -2004,6 +2006,13 @@ display:
               responsive: ''
             nos_per_1000:
               sortable: true
+              default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_views_simple_math_field:
+              sortable: false
               default_sort_order: desc
               align: ''
               separator: ''
@@ -5488,6 +5497,78 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
+        field_views_simple_math_field:
+          id: field_views_simple_math_field
+          table: views_simple_math_field
+          field: field_views_simple_math_field
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field_views_simple_math_field
+          label: '# of No''s'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          set_precision: 1
+          precision: '0'
+          decimal: .
+          separator: ','
+          format_plural: 0
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
+          fieldset_one:
+            data_field:
+              pageviews: pageviews
+              nos_per_1000: nos_per_1000
+              node_bulk_form: 0
+              title: 0
+              nid: 0
+              type: 0
+              uid: 0
+              status: 0
+              changed: 0
+              last_updated: 0
+              score: 0
+              operations: 0
+            formula: '@pageviews / 1000 * @nos_per_1000 '
         operations:
           id: operations
           table: node_revision
