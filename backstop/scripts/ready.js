@@ -134,9 +134,10 @@ module.exports = async function (page, scenario, vp) {
       visible: true,
       timeout: 10000,
     })
+    await page.waitForTimeout(1000);
   }
   else if (leafletMapInitialized == true) {
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(2000);
   }
 
   if (!scenario.hideAlerts || scenario.hideAlerts === undefined) {
