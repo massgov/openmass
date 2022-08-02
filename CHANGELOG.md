@@ -1,5 +1,16 @@
 
 
+## [0.332.0] - August 2, 2022
+
+### Fixed
+  - DP-25137: Fix bad breadcrumb on event landing pages.
+  - DP-25519: Search in some collections doesn't show expected results.
+  
+### Changed
+  - DP-25173: Reduce Collection Header vertical spacing, make title H1, and reduce H1 line height, fix logo alignment.
+  
+
+
 ## [0.331.0] - July 26, 2022
 
 ### Fixed
