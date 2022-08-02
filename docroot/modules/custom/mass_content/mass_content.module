@@ -650,35 +650,6 @@ function mass_content_validate_default_sort_option(array &$element, FormStateInt
 }
 
 /**
- * Implements hook_form_FORM_ID_alter().
- */
-function mass_content_form_node_org_page_edit_form_alter(&$form, FormStateInterface $form_state) {
-  mass_content_set_default_event_quantity($form);
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- */
-function mass_content_form_node_service_page_edit_form_alter(&$form, FormStateInterface $form_state) {
-  mass_content_set_default_event_quantity($form);
-}
-
-/**
- * Set the Event Quantity field to 2 if nothing is set.
- *
- * This will prevent errors on service pages that were created before the Event
- * Quantity was present in the system.
- *
- * @param array $form
- *   The node edit form.
- */
-function mass_content_set_default_event_quantity(array &$form) {
-  if (!empty($form['field_event_quantity']) && empty($form['field_event_quantity']['widget']['#default_value'])) {
-    $form['field_event_quantity']['widget']['#default_value'] = [2];
-  }
-}
-
-/**
  * Gets the collection based on the current route and field_url_name.
  */
 function mass_content_get_collection_from_current_page() {
