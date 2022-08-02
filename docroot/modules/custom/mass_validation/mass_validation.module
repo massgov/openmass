@@ -13,6 +13,8 @@ use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\WidgetInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drupal\Component\Utility\UrlHelper;
 
@@ -137,9 +139,32 @@ function _mass_validation_form_node_alert_form_validate(array &$form, FormStateI
 }
 
 /**
+ * Implements hook_theme().
+ */
+function mass_validation_theme($existing, $type, $theme, $path) {
+  return [
+    'warning_draft' => [
+      'variables' => ['link' => NULL]
+    ]
+  ];
+}
+
+/**
  * Implements hook_form_FORM_ID_alter.
  */
 function mass_validation_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $node = $form_state->getFormObject()->getEntity();
+  if (!$node->isNew() && $node->get('moderation_state')->getString() == MassModeration::DRAFT) {
+    $url = Url::fromRoute('entity.node.version_history', ['node' => $node->id()]);
+    $rendarable = [
+      "#theme" => "warning_draft",
+      "#link" => "internal:" . $url->toString()
+    ];
+    $rendered = \Drupal::service('renderer')->render($rendarable);
+    $form['#prefix'] = $rendered;
+    $form['#attached']['library'][] = 'mass_validation/warning-draft';
+  }
+
   $form['#validate'][] = '_mass_validation_field_organizations_validate';
 
   // For 5 content types, setup field synchronization from a source field to field_organizations.
