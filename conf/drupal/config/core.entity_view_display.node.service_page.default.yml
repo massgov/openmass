@@ -28,7 +28,6 @@ dependencies:
     - field.field.node.service_page.field_ref_contact_info
     - field.field.node.service_page.field_related_organization_type
     - field.field.node.service_page.field_reusable_label
-    - field.field.node.service_page.field_service_bg_narrow
     - field.field.node.service_page.field_service_bg_wide
     - field.field.node.service_page.field_service_body
     - field.field.node.service_page.field_service_eligibility_info
@@ -54,7 +53,6 @@ dependencies:
     - node.type.service_page
   module:
     - entity_reference_revisions
-    - image
     - link
     - mass_content
     - mass_formatters
@@ -272,17 +270,6 @@ content:
       link: true
     third_party_settings: {  }
     weight: 20
-    region: content
-  field_service_bg_narrow:
-    type: image
-    label: above
-    settings:
-      image_link: ''
-      image_style: ''
-      image_loading:
-        attribute: lazy
-    third_party_settings: {  }
-    weight: 4
     region: content
   field_service_bg_wide:
     type: image_safe_string_url
