@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.paragraph.list_dynamic.field_contact_values_to_display
     - field.field.paragraph.list_dynamic.field_list_dynamic_desc_setting
+    - field.field.paragraph.list_dynamic.field_listdynamic_description
     - field.field.paragraph.list_dynamic.field_listdynamic_label
     - field.field.paragraph.list_dynamic.field_listdynamic_sort
     - field.field.paragraph.list_dynamic.field_listdynamic_title
@@ -12,6 +13,7 @@ dependencies:
   module:
     - dynamic_entity_reference
     - options
+    - text
 id: paragraph.list_dynamic.default
 targetEntityType: paragraph
 bundle: list_dynamic
@@ -46,8 +48,23 @@ content:
       contact_message:
         view_mode: default
         link: false
+      content_moderation_state:
+        view_mode: default
+        link: false
+      crop:
+        view_mode: default
+        link: false
+      entity_embed_fake_entity:
+        view_mode: default
+        link: false
+      path_alias:
+        view_mode: default
+        link: false
+      scheduled_transition:
+        view_mode: default
+        link: false
     third_party_settings: {  }
-    weight: 5
+    weight: 6
     region: content
   computed_dynamic_list_w_desc:
     type: dynamic_entity_reference_entity_view
@@ -78,15 +95,30 @@ content:
       contact_message:
         view_mode: default
         link: false
+      content_moderation_state:
+        view_mode: default
+        link: false
+      crop:
+        view_mode: default
+        link: false
+      entity_embed_fake_entity:
+        view_mode: default
+        link: false
+      path_alias:
+        view_mode: default
+        link: false
+      scheduled_transition:
+        view_mode: default
+        link: false
     third_party_settings: {  }
-    weight: 6
+    weight: 7
     region: content
   field_contact_values_to_display:
     type: list_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    weight: 4
+    weight: 5
     region: content
   field_list_dynamic_desc_setting:
     type: boolean
@@ -96,7 +128,14 @@ content:
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-    weight: 3
+    weight: 4
+    region: content
+  field_listdynamic_description:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
     region: content
   field_listdynamic_label:
     type: entity_reference_label
@@ -104,14 +143,14 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 2
+    weight: 3
     region: content
   field_listdynamic_sort:
     type: list_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    weight: 1
+    weight: 2
     region: content
   field_listdynamic_title:
     type: string
