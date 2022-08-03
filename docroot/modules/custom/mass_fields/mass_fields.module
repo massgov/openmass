@@ -555,33 +555,6 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
             }
           }
         }
-        // If there are "All tasks" links, add them to the render array.
-        if ($entity->field_service_ref_actions->count() > 0 && !empty($build['field_service_ref_actions'])) {
-          foreach ($entity->field_service_ref_actions->getValue() as $delta => $item) {
-            if (strpos($item['uri'], 'entity:') !== FALSE) {
-              [$entity_type, $entity_id] = explode('/', str_replace('entity:', '', $item['uri']));
-              $view_builder = $entityTypeManager->getViewBuilder('node');
-              $storage = $entityTypeManager->getStorage('node');
-              $node = $storage->load($entity_id);
-              if ($node !== NULL && $node->isPublished() === TRUE) {
-                // Override the author entered label with node title.
-                if ($item['title'] !== '' && $item['title'] !== $node->title->value) {
-                  $node->set('title', $item['title']);
-                }
-                $render_arr = $view_builder->view($node, 'title_short_desc');
-                $render_arr['#cache']['contexts'] = ['url'];
-                $build['extra_node_all_actions'][] = $render_arr;
-              }
-            }
-            else {
-              // THIS IS FOR EXTERNAL LINK.
-              $build['extra_node_all_actions'][] = [
-                'title' => $item['title'],
-                'href' => $item['uri'],
-              ];
-            }
-          }
-        }
       }
 
       $build['extra_node_all_actions']['#view_mode'] = 'title_short_desc';

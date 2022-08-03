@@ -33,14 +33,6 @@ class ServicePageMetadataTest extends MetadataTestCase {
       'title' => 'Test Service Page',
       'field_state_organization_tax' => [$org_term],
       'field_service_lede' => 'Test Lede',
-      'field_service_ref_actions' => [
-        'uri' => 'http://example.com',
-        'title' => 'Take Action!',
-      ],
-      'field_service_ref_actions_2' => [
-        'uri' => 'http://google.com',
-        'title' => 'Take Another Action!',
-      ],
       'field_service_bg_wide' => $image,
       'field_organizations' => [$org_node],
       'moderation_state' => 'published',

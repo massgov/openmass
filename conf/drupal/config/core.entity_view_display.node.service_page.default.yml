@@ -18,7 +18,6 @@ dependencies:
     - field.field.node.service_page.field_kpi_pl_em_app_review_time
     - field.field.node.service_page.field_kpi_pl_em_app_reviews
     - field.field.node.service_page.field_kpi_sessions_clicks_pl_pct
-    - field.field.node.service_page.field_link_group
     - field.field.node.service_page.field_list_data_type
     - field.field.node.service_page.field_location_button_label
     - field.field.node.service_page.field_location_button_short_desc
@@ -37,7 +36,6 @@ dependencies:
     - field.field.node.service_page.field_service_lede
     - field.field.node.service_page.field_service_links
     - field.field.node.service_page.field_service_metatags
-    - field.field.node.service_page.field_service_ref_actions
     - field.field.node.service_page.field_service_ref_actions_2
     - field.field.node.service_page.field_service_ref_guide_page_1
     - field.field.node.service_page.field_service_ref_locations
@@ -208,15 +206,6 @@ content:
     third_party_settings: {  }
     weight: 42
     region: content
-  field_link_group:
-    type: entity_reference_revisions_entity_view
-    label: above
-    settings:
-      view_mode: default
-      link: ''
-    third_party_settings: {  }
-    weight: 30
-    region: content
   field_list_data_type:
     type: entity_reference_label
     label: above
@@ -346,18 +335,6 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 19
-    region: content
-  field_service_ref_actions:
-    type: dynamic_link_separate
-    label: above
-    settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
-    third_party_settings: {  }
-    weight: 8
     region: content
   field_service_ref_actions_2:
     type: dynamic_link_separate
