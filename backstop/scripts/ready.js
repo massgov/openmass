@@ -123,10 +123,12 @@ module.exports = async function (page, scenario, vp) {
           if (container._leaflet_id == null) {
             initialized = false;
           }
+          else {
+            initialized = true;
+          }
         }
       });
     }
-    initialized = true;
   })
 
   if (leafletMapInitialized == false) {
