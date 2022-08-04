@@ -118,7 +118,7 @@ module.exports = async function (page, scenario, vp) {
     const containers = document.querySelectorAll(".js-leaflet-map");
     if (containers.length) {
       containers.forEach(function (e) {
-        var container = L.DomUtil.get(e);
+        const container = L.DomUtil.get(e);
         if (container != null) {
           if (container._leaflet_id == null) {
             initialized = false;
