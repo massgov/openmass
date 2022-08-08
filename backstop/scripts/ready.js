@@ -113,6 +113,35 @@ module.exports = async function (page, scenario, vp) {
     await page.waitForSelector('.cbFormErrorMarker', {visible: true})
   }
 
+  let leafletMapInitialized = await page.evaluate(async function () {
+    let initialized = undefined;
+    const containers = document.querySelectorAll(".js-leaflet-map");
+    if (containers.length) {
+      containers.forEach(function (e) {
+        const container = L.DomUtil.get(e);
+        if (container != null) {
+          if (container._leaflet_id == null) {
+            initialized = false;
+          }
+          else {
+            initialized = true;
+          }
+        }
+      });
+    }
+  })
+
+  if (leafletMapInitialized == false) {
+    await page.waitForSelector('.js-leaflet-map .leaflet-tile-container', {
+      visible: true,
+      timeout: 10000,
+    })
+    await page.waitForTimeout(3000);
+  }
+  else if (leafletMapInitialized == true) {
+    await page.waitForTimeout(5000);
+  }
+
   if (!scenario.hideAlerts || scenario.hideAlerts === undefined) {
     // Wait for a selector to become visible.
     let expanded = await page.evaluate(async function () {
