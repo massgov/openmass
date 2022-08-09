@@ -437,7 +437,7 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
       $fields['computed_short_name'] = BaseFieldDefinition::create('text')
         ->setLabel(t('Computed Short name from parent'))
         ->setComputed(TRUE)
-        ->setSetting('parent_field', ['field_short_name', 'title'])
+        ->setSetting('parent_field', ['title'])
         ->setClass('\Drupal\mass_content\Field\InjectParentField')
         ->setDisplayConfigurable('view', TRUE);
 
@@ -472,7 +472,7 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
       $fields['computed_short_name'] = BaseFieldDefinition::create('text')
         ->setLabel(t('Computed Short name from parent'))
         ->setComputed(TRUE)
-        ->setSetting('parent_field', ['field_short_name', 'title'])
+        ->setSetting('parent_field', ['title'])
         ->setClass('\Drupal\mass_content\Field\InjectParentField')
         ->setDisplayConfigurable('view', TRUE);
     }
