@@ -3,8 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.field.node.org_page.field_action_set__bg_narrow
-    - field.field.node.org_page.field_action_set__bg_wide
     - field.field.node.org_page.field_application_login_links
     - field.field.node.org_page.field_approver
     - field.field.node.org_page.field_banner_image
@@ -33,7 +31,6 @@ dependencies:
     - field.field.node.org_page.field_response_expectations
     - field.field.node.org_page.field_reusable_label
     - field.field.node.org_page.field_secondary_person_bio
-    - field.field.node.org_page.field_short_name
     - field.field.node.org_page.field_short_title
     - field.field.node.org_page.field_social_links
     - field.field.node.org_page.field_state_organization_tax
@@ -82,7 +79,6 @@ third_party_settings:
         - group_organization_name
         - field_ref_contact_info_1
         - field_bg_wide
-        - field_bg_narrow
         - field_banner_image
         - field_image_credit
         - field_primary_parent
@@ -98,19 +94,6 @@ third_party_settings:
         id: ''
         formatter: closed
         description: ''
-        required_fields: true
-    group_actions:
-      children: {  }
-      label: 'Services Offered'
-      region: hidden
-      parent_name: ''
-      weight: 33
-      format_type: tab
-      format_settings:
-        classes: ''
-        id: ''
-        formatter: closed
-        description: 'This large, visual element will help call attention to top services that constituents may need. You can feature up to 3 and list a total of 6 others.'
         required_fields: true
     group_other:
       children:
@@ -756,9 +739,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_action_set__bg_narrow: true
-  field_action_set__bg_wide: true
-  field_short_name: true
   langcode: true
   path: true
   promote: true

@@ -167,7 +167,7 @@ function mass_admin_pages_form_node_type_edit_form_alter(&$form, FormStateInterf
  */
 function _mass_admin_pages_node_type_thumbnail_path_validate(array &$element, FormStateInterface $form_state, array &$complete_form) {
   // Checks that thumbnail path begins with slash and ends with file extension.
-  $pattern = '/^\/[\w-\/]*[\w]\.(png|jpg|jpeg|gif|svg)$/';
+  $pattern = '/^\/[\w\-\/]*[\w]\.(png|jpg|jpeg|gif|svg)$/';
   if (!empty($element['#value']) && !preg_match($pattern, $element['#value'])) {
     $form_state->setError($element, t('The path %path is invalid. Please see the field description for a valid example.', ['%path' => $element['#value']]));
   }
