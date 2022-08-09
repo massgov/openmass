@@ -12,7 +12,8 @@ commands:
   stop:
     cmd: ddev pause "$@"
   pull:
-    cmd: ddev stop && ~/.ddev/bin/docker-compose -f .ddev/.ddev-docker-compose-full.yaml down --rmi all && ahoy up
+    # Container+Volume deletion, then image deletion, then start (db fetch happens at end).
+    cmd: ddev delete --omit-snapshot -y && ~/.ddev/bin/docker-compose -f .ddev/.ddev-docker-compose-full.yaml down --rmi all && ahoy up
   refresh:
     cmd: ahoy exec "scripts/ma-refresh-local -dpo && vendor/bin/drush sql:sanitize -y"
   updatedb:
