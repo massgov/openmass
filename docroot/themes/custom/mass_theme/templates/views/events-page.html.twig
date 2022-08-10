@@ -51,14 +51,6 @@
     }
   }]}) %}
 {% endif %}
-{% if breadcrumb %}
-  {% include "@organisms/by-template/breadcrumbs.twig" with {
-    "breadcrumbs": {
-      "light": true,
-      "links": breadcrumb['#links']
-    }
-  } %}
-{% endif %}
 <main id="main-content" tabindex="-1">
   <div class="pre-content">
     {% block preContent %}
