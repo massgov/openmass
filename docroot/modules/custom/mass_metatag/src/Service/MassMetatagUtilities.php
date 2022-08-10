@@ -63,7 +63,7 @@ class MassMetatagUtilities {
       }
       // For all other nodes, get all the organizations referenced
       // and add it to the orgs array so they can be checked for parents.
-      elseif ($node->hasField('field_organizations')) {
+      if ($node->hasField('field_organizations')) {
         /** @var \Drupal\node\Entity\Node[] $org_pages */
         $org_pages = $node->field_organizations->referencedEntities();
         foreach ($org_pages as $org_page) {
@@ -78,7 +78,7 @@ class MassMetatagUtilities {
       $checked_orgs[] = $node->id();
     }
 
-    return $result;
+    return array_unique($result);
   }
 
   /**

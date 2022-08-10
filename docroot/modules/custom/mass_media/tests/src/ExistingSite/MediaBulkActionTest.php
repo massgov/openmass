@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Drupal\Tests\mass_media\ExistingSiteJavascript;
+namespace Drupal\Tests\mass_media\ExistingSite;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\file\Entity\File;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests "All Content" view requires input to show content to speed up login.
  */
-class AllDocumentsBulkActionTest extends ExistingSiteSelenium2DriverTestBase {
+class MediaBulkActionTest extends ExistingSiteBase {
   const RESTRICT_ACTION = '2';
   const UNPUBLISH_ACTION = '3';
   const TRASH_ACTION = '4';
@@ -21,15 +22,13 @@ class AllDocumentsBulkActionTest extends ExistingSiteSelenium2DriverTestBase {
 
   use LoginTrait;
   use MediaCreationTrait;
+  use StringTranslationTrait;
 
   /**
    * {@inheritdoc}
    */
   public function setUp() {
     parent::setUp();
-    /** @var \Drupal\Tests\DocumentElement */
-    $this->page = $this->getSession()->getPage();
-
     // An admin is needed.
     $admin = User::create(['name' => $this->randomMachineName()]);
     $admin->addRole('administrator');
@@ -100,11 +99,16 @@ class AllDocumentsBulkActionTest extends ExistingSiteSelenium2DriverTestBase {
   private function runTestSteps($action) {
     $this->createMediaFile();
     $this->drupalGet('admin/ma-dash/documents');
-    $this->getCurrentPage()->find('css', 'select[name="action"]')->selectOption($action);
-    $this->getCurrentPage()->find('css', 'input[name="views_bulk_operations_bulk_form[0]"]')->check();
-    $this->getCurrentPage()->pressButton('Apply to selected items');
-    $this->getCurrentPage()->pressButton('Execute action');
-    $this->assertSession()->waitForText('Your changes have been successfully made.');
+    $edit = [
+      'action' => $action,
+      'views_bulk_operations_bulk_form[0]' => TRUE,
+    ];
+    $this->submitForm($edit, $this->t('Apply to selected items'), 'views-form-all-documents-page-1');
+    $this->submitForm([], $this->t('Execute action'), 'views-bulk-operations-confirm-action');
+    $page = $this->getSession()->getPage();
+    $page->waitFor(3, function () use ($page) {
+      return $page->hasContent('Your changes have been successfully made.');
+    });
   }
 
 }
