@@ -3209,10 +3209,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
     ];
   }
 
-  if ($variables['view_mode'] === 'listing') {
-    $variables['featured_tasks_links'] = Helper::separatedLinks($node, 'field_service_ref_actions_2');
-  }
-
   // Make the mappedLocations data structure available in twig template.
   $variables['splitColumns'] = $split_columns;
 

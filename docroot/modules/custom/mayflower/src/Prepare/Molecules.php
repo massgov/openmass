@@ -378,7 +378,6 @@ class Molecules {
       ],
       'links' => [
         'field_topic_content_cards',
-        'field_service_ref_actions_2',
       ],
     ];
 

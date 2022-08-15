@@ -45,29 +45,6 @@ class RelatedToHelper {
   }
 
   /**
-   * Gets related services based on values in the "Featured Tasks" field.
-   *
-   * @param int $nid
-   *   The ID of the node to check for relations to.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface[]
-   *   Related entities.
-   */
-  public static function getRelatedServicesByActionLinks($nid) {
-    $route = sprintf('entity:node/%d', $nid);
-    $query = \Drupal::entityQuery('node');
-    $query->condition('status', 1);
-    // To separate the query into two to improve the performance on the how-to pages.
-    $que1 = (clone $query)->condition('field_service_ref_actions.uri', $route)->execute();
-    $que2 = (clone $query)->condition('field_service_ref_actions_2.uri', $route)->execute();
-    $nids = array_merge($que1, $que2);
-
-    $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
-
-    return $nodes;
-  }
-
-  /**
    * Get a list of all service pages that reference a page via guide links.
    *
    * @param int $nid

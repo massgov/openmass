@@ -393,8 +393,6 @@ function _mass_validation_service_page_sections_validate(array &$form, FormState
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_service_page_form_validate(array &$form, FormStateInterface $form_state) {
-  _mass_link_validate($form_state, 'field_service_ref_actions_2');
-  _mass_link_validate($form_state, 'field_service_ref_actions');
   _mass_validation_service_page_sections_validate($form, $form_state);
 
   // Check that the KPIs have values if the box is checked.

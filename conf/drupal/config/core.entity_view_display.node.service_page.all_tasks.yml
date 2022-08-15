@@ -32,8 +32,6 @@ dependencies:
     - field.field.node.service_page.field_service_kpi_choice
     - field.field.node.service_page.field_service_lede
     - field.field.node.service_page.field_service_metatags
-    - field.field.node.service_page.field_service_ref_actions
-    - field.field.node.service_page.field_service_ref_actions_2
     - field.field.node.service_page.field_service_ref_guide_page_1
     - field.field.node.service_page.field_service_ref_services_6
     - field.field.node.service_page.field_service_sections
@@ -43,7 +41,6 @@ dependencies:
     - field.field.node.service_page.field_state_organization_tax
     - node.type.service_page
   module:
-    - mass_content
     - user
 id: node.service_page.all_tasks
 targetEntityType: node
@@ -54,30 +51,6 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 2
-    region: content
-  field_service_ref_actions:
-    type: dynamic_link_separate
-    label: hidden
-    settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
-    third_party_settings: {  }
-    weight: 1
-    region: content
-  field_service_ref_actions_2:
-    type: dynamic_link_separate
-    label: hidden
-    settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
-    third_party_settings: {  }
-    weight: 0
     region: content
 hidden:
   computed_related_to: true
