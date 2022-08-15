@@ -134,8 +134,6 @@ third_party_settings:
     group_tasks_key_info:
       children:
         - field_link_group
-        - group_what_would_you_like_to_do_
-        - group_what_you_need_to_know
       label: 'Tasks and key info'
       region: hidden
       parent_name: group_service_edit_form
@@ -177,33 +175,6 @@ third_party_settings:
         id: ''
         formatter: closed
         description: 'Optional. Add other resources that are less critical but may be helpful to users of this service.'
-        required_fields: true
-    group_what_would_you_like_to_do_:
-      children:
-        - field_service_ref_actions
-        - field_service_ref_actions_2
-      label: 'What would you like to do?'
-      region: hidden
-      parent_name: group_tasks_key_info
-      weight: 39
-      format_type: fieldset
-      format_settings:
-        classes: ''
-        id: what-would-you-like-to-do
-        description: 'This section provides links to all transactions related to this service.'
-        required_fields: true
-    group_what_you_need_to_know:
-      children:
-        - field_service_key_info_links_6
-      label: 'What you need to know'
-      region: hidden
-      parent_name: group_tasks_key_info
-      weight: 41
-      format_type: fieldset
-      format_settings:
-        classes: ''
-        id: what-you-need-to-know
-        description: 'This section provides links to key information needed to use this service.'
         required_fields: true
     group_additional_resources:
       children:
