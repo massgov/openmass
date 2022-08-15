@@ -86,25 +86,6 @@ class RelatedToHelper {
   }
 
   /**
-   * Get a list of all service pages that reference a page via service links.
-   *
-   * @param int $nid
-   *   The ID of the node to check for relations to.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface[]
-   *   An array of related nodes.
-   */
-  public static function getRelatedServicePagesByServiceLinks($nid) {
-    $route = sprintf('entity:node/%d', $nid);
-    $query = \Drupal::entityQuery('node');
-    $query->condition('field_service_links.uri', $route);
-    $query->condition('status', 1);
-    $nids = $query->execute();
-
-    return \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
-  }
-
-  /**
    * Get a list of all locations that reference a page via location details.
    *
    * @param int $nid

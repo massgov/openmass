@@ -1234,7 +1234,6 @@ class Organisms {
         'field_liststaticdoc_item',
       ],
       'link' => [
-        'field_service_links',
         'field_section_links',
         'field_listitemlink_item',
       ],
