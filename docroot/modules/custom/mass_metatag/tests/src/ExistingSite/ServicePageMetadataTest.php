@@ -41,7 +41,6 @@ class ServicePageMetadataTest extends MetadataTestCase {
         'uri' => 'http://google.com',
         'title' => 'Take Another Action!',
       ],
-      'field_service_offered_by' => $org_node,
       'field_service_bg_wide' => $image,
       'field_organizations' => [$org_node],
       'moderation_state' => 'published',
