@@ -51,7 +51,6 @@ class ServicePageMetadataTest extends MetadataTestCase {
       'og:image' => $file_uri,
       'twitter:card' => 'summary_large_image',
       'twitter:image' => $file_uri,
-      'mg_key_actions' => '[{"name":"Take Another Action!","url":"http:\/\/google.com"}]',
       'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_organization' => 'testorgpage',
     ]);
@@ -69,18 +68,7 @@ class ServicePageMetadataTest extends MetadataTestCase {
         '@id' => $uri . '#services',
         'name' => 'Test Service Page',
         'description' => 'Test Lede',
-        'potentialAction' => [
-          [
-            '@type' => 'Action',
-            'name' => 'Take Action!',
-            'url' => 'http://example.com',
-          ],
-          [
-            '@type' => 'Action',
-            'name' => 'Take Another Action!',
-            'url' => 'http://google.com',
-          ],
-        ],
+        'potentialAction' => [],
         'areaServed' => [
           '@type' => 'AdministrativeArea',
           'name' => 'Massachusetts',
