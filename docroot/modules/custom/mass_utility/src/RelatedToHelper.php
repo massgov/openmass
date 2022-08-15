@@ -113,33 +113,6 @@ class RelatedToHelper {
   }
 
   /**
-   * Get a list of all nodes that reference a page via locations fields.
-   *
-   * @param int $nid
-   *   The ID of the node to check for relations to.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface[]
-   *   An array of related nodes.
-   */
-  public static function getRelatedLocationsByLocations($nid) {
-    $query = \Drupal::entityQuery('node');
-    $query->condition('status', 1);
-
-    // This query performs poorly if we execute it as one query with an OR
-    // condition.
-    $res1 = (clone $query)->condition('field_service_ref_locations.target_id', $nid)->execute();
-    $res2 = (clone $query)->condition('field_org_ref_locations.target_id', $nid)->execute();
-    $nids = array_merge($res1, $res2);
-
-    $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
-    // Sort by created, DESC.
-    usort($nodes, function ($a, $b) {
-      return ($a->getCreatedTime() < $b->getCreatedTime()) ? 1 : -1;
-    });
-    return $nodes;
-  }
-
-  /**
    * Get a list of all services that reference a page via eligiblity field.
    *
    * @param int $nid

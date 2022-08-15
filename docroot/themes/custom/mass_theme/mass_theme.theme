@@ -3183,25 +3183,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
   // Make the introPageContent data structure available in twig template.
   $variables['introPageContent'] = $intro_page_content;
 
-  // Make the mappedLocations data structure available in twig template.
-  if (Helper::isFieldPopulated($node, 'field_service_ref_locations')) {
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $mappedLocations_options = [
-      'heading' => [
-        'title' => t('Locations'),
-        'titleContext' => $titleContext,
-        'type' => 'compHeading',
-      ],
-      'locationDetailsLink' => [
-        'display' => TRUE,
-        'nid' => $node->id(),
-        'path' => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()),
-      ],
-    ];
-
-    $variables['mappedLocations'] = Organisms::prepareMappedLocations($node->field_service_ref_locations->referencedEntities(), [], $cache_tags);
-  }
-
   // Prepare the split columns data structure (send only if there is content).
   $split_columns = [];
 
