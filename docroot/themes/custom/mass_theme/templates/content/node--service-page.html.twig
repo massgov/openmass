@@ -12,8 +12,6 @@
 {% set titleContextAbout = ' about ' ~ node.label %}
 {% set titleContextOf = ' of ' ~ node.label %}
 
-{% set flexibleLinkGroup = node.field_template.value == "custom" %}
-
 {# Set top heading level for the page. #}
 {% set level = 1 %}
 
@@ -125,9 +123,6 @@
 
   {{ content.field_service_sections }}
 
-  {% set linkGroups = false %}
-  {% set default = (node.field_template is empty or node.field_template.value == "default") %}
-  {% set custom = (node.field_template.value == "custom" and linkGroups) %}
   {% set seeAll = false %}
 
   {% if contactList %}

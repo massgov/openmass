@@ -47,7 +47,6 @@ dependencies:
     - field.field.node.service_page.field_services_social_links
     - field.field.node.service_page.field_short_title
     - field.field.node.service_page.field_state_organization_tax
-    - field.field.node.service_page.field_template
     - image.style.large
     - node.type.service_page
     - workflows.workflow.editorial
@@ -693,24 +692,7 @@ content:
       size: 60
       placeholder: ''
     third_party_settings:
-      conditional_fields:
-        7931e70d-a78b-4cec-a527-30237d712636:
-          entity_type: node
-          bundle: service_page
-          dependee: field_template
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: default
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_service_kpi_choice:
     type: options_buttons
     weight: 42
@@ -743,24 +725,7 @@ content:
       size: 60
       placeholder: ''
     third_party_settings:
-      conditional_fields:
-        c61775d4-fa36-46aa-a752-2111f459d311:
-          entity_type: node
-          bundle: service_page
-          dependee: field_template
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: default
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_service_ref_services_6:
     type: entity_reference_autocomplete
     weight: 66
@@ -904,7 +869,6 @@ hidden:
   field_service_ref_actions: true
   field_service_ref_actions_2: true
   field_service_ref_locations: true
-  field_template: true
   langcode: true
   path: true
   promote: true
