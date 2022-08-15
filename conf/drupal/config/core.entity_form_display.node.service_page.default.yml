@@ -31,7 +31,6 @@ dependencies:
     - field.field.node.service_page.field_service_bg_wide
     - field.field.node.service_page.field_service_body
     - field.field.node.service_page.field_service_eligibility_info
-    - field.field.node.service_page.field_service_file
     - field.field.node.service_page.field_service_kpi_choice
     - field.field.node.service_page.field_service_lede
     - field.field.node.service_page.field_service_links
@@ -174,20 +173,6 @@ third_party_settings:
         id: ''
         formatter: closed
         description: 'Optional. Add other resources that are less critical but may be helpful to users of this service.'
-        required_fields: true
-    group_additional_resources:
-      children:
-        - field_service_file
-        - field_service_links
-      label: 'Additional resources'
-      region: content
-      parent_name: ''
-      weight: 6
-      format_type: fieldset
-      format_settings:
-        classes: ''
-        id: additional-resources
-        description: 'Optional. If there are additional resources that contain helpful information, add them here. A maximum of 6 links and downloads (combined) will appear on the service page. Work is underway to allow all Additional Resources to appear on a ''more'' page'
         required_fields: true
     group_key_performance_indicators:
       children:
@@ -833,7 +818,6 @@ hidden:
   field_location_button_label: true
   field_location_button_short_desc: true
   field_related_organization_type: true
-  field_service_file: true
   field_service_links: true
   field_service_ref_actions: true
   field_service_ref_actions_2: true

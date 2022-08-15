@@ -3236,7 +3236,7 @@ function mass_theme_preprocess_node_service_page(&$variables) {
   }
 
   // Build Additional Resources sidebar heading and action downloads.
-  if (Helper::isFieldPopulated($node, 'field_service_file') || Helper::isFieldPopulated($node, 'field_service_links')) {
+  if (Helper::isFieldPopulated($node, 'field_service_links')) {
 
     $titleContext = t(' for @title', ['@title' => $page_title]);
     $download_options = [

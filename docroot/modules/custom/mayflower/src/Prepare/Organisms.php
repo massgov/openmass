@@ -1230,7 +1230,6 @@ class Organisms {
     $map = [
       'downloads' => [
         'field_downloads',
-        'field_service_file',
         'field_section_downloads',
         'field_liststaticdoc_item',
       ],
