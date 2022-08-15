@@ -68,25 +68,6 @@ class RelatedToHelper {
   }
 
   /**
-   * Gets related services based on values in the "What you need to know" field.
-   *
-   * @param int $nid
-   *   The ID of the node to check for relations to.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface[]
-   *   Related entities.
-   */
-  public static function getRelatedServicesByKeyInfoLinks($nid) {
-    $route = sprintf('entity:node/%d', $nid);
-    $query = \Drupal::entityQuery('node');
-    $query->condition('field_service_key_info_links_6.uri', $route);
-    $query->condition('status', 1);
-    $nids = $query->execute();
-
-    return \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
-  }
-
-  /**
    * Get a list of all service pages that reference a page via guide links.
    *
    * @param int $nid

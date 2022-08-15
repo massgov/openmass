@@ -54,10 +54,6 @@ class RobotsMetatagTest extends ExistingSiteBase {
       'type' => 'service_page',
       'title' => 'Robots Service Page',
       'moderation_state' => MassModeration::PUBLISHED,
-      'field_service_key_info_links_6' => [
-        'uri' => 'entity:node/' . $news_page->id(),
-        'title' => 'Test Robots News Link',
-      ],
     ]);
 
     $session = $this->getSession();
