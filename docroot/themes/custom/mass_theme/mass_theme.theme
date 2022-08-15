@@ -3199,14 +3199,7 @@ function mass_theme_preprocess_node_service_page(&$variables) {
       ],
     ];
 
-    // Use aside for the text that displays next to the map with the button.
-    $mappedLocations_options['aside'] = [
-      'button' => '',
-      'paragraph' => [
-        'text' => Helper::fieldFullView($node, 'field_location_button_short_desc'),
-      ],
-    ];
-    $variables['mappedLocations'] = Organisms::prepareMappedLocations($node->field_service_ref_locations->referencedEntities(), $mappedLocations_options, $cache_tags);
+    $variables['mappedLocations'] = Organisms::prepareMappedLocations($node->field_service_ref_locations->referencedEntities(), [], $cache_tags);
   }
 
   // Prepare the split columns data structure (send only if there is content).
