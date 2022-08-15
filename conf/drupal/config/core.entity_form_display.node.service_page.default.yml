@@ -20,7 +20,6 @@ dependencies:
     - field.field.node.service_page.field_kpi_sessions_clicks_pl_pct
     - field.field.node.service_page.field_link_group
     - field.field.node.service_page.field_list_data_type
-    - field.field.node.service_page.field_location_button_label
     - field.field.node.service_page.field_location_button_short_desc
     - field.field.node.service_page.field_log_in_links
     - field.field.node.service_page.field_organizations
@@ -141,23 +140,6 @@ third_party_settings:
         id: ''
         formatter: closed
         description: 'This is where you add items to the “What would you like to do?” section.'
-        required_fields: true
-    group_map:
-      children:
-        - field_location_button_label
-        - field_location_button_short_desc
-        - field_related_organization_type
-        - field_service_ref_locations
-      label: Map
-      region: hidden
-      parent_name: ''
-      weight: 17
-      format_type: tab
-      format_settings:
-        classes: ''
-        id: ''
-        formatter: closed
-        description: ''
         required_fields: true
     group_additional_info:
       children:
@@ -814,7 +796,6 @@ content:
 hidden:
   created: true
   field_link_group: true
-  field_location_button_label: true
   field_location_button_short_desc: true
   field_related_organization_type: true
   field_service_ref_actions: true
