@@ -761,7 +761,20 @@ display:
           entity_type: scheduled_transition
           plugin_id: standard
           required: false
-      header: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: false
+          content:
+            value: '<p>You can schedule content to publish or unpublish on specific dates and times. <a href="https://www.mass.gov/kb/schedule-content" target="_blank">Learn more about scheduling transitions</a>.</p>'
+            format: full_html
+          tokenize: false
       footer: {  }
       display_extenders: {  }
     cache_metadata:
