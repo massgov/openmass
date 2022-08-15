@@ -528,7 +528,6 @@ class Organisms {
       ],
       'bg_narrow' => [
         'field_bg_narrow',
-        'field_service_bg_narrow',
         'field_topic_bg_narrow',
       ],
       'description' => ['field_lede', 'field_topic_lede', 'field_service_lede'],

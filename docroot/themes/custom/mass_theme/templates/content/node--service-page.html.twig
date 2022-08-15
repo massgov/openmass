@@ -58,7 +58,6 @@
     {% endblock %}
   {% endembed %}
 
-  {% set bannerImageNarrow = node.field_service_bg_narrow.entity.fileuri ? file_url(node.field_service_bg_narrow.entity.fileuri) : '' %}
   {# NOTE: At this time a service page node's design does not require the optional page-banner template #}
   {# values for "icon", "primaryLink", and "secondaryLink", so we don't set them. We may in the future. #}
 
@@ -86,7 +85,7 @@
       "titleSubText": content.field_title_sub_text,
       "description": content.field_service_lede,
       "bgWide": bannerImageWide,
-      "bgNarrow": bannerImageNarrow,
+      "bgNarrow": '',
       "buttonsLabel": "LOG IN:",
       "buttons": logInButtons
     }
