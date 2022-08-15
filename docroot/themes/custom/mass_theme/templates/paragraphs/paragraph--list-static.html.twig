@@ -56,7 +56,22 @@
   },
   "externalSidebar": true
 } %}
+
   {% block stackedRowContentOverride %}
+    {% if content.field_liststatic_description | render is not empty %}
+      {% include "@organisms/by-author/rich-text-description.twig" with {
+        "richText": {
+          "rteElements": [{
+            "path": "@atoms/11-text/paragraph.twig",
+            "data": {
+              "paragraph" : {
+                "text": content.field_liststatic_description
+              }
+            }
+          }]
+        }
+      } %}
+    {% endif %}
     {{ content.field_liststatic_items }}
   {% endblock %}
 {% endembed %}
