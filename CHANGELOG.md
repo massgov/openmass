@@ -1,5 +1,12 @@
 
 
+## [0.333.0] - August 16, 2022
+
+### Fixed
+  - DP-25175: Improve sticky TOC accessibility - make section headings the jump link targets.
+  
+
+
 ## [0.332.0] - August 9, 2022
 
 ### Fixed
