@@ -37,4 +37,3 @@ class DuplicateReferenceConstraintValidator extends ConstraintValidator {
   }
 
 }
-

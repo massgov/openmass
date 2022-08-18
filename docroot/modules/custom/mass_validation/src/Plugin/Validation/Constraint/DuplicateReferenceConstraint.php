@@ -24,4 +24,3 @@ class DuplicateReferenceConstraint extends Constraint {
   public $message = 'The value %label has been entered multiple times.';
 
 }
-
