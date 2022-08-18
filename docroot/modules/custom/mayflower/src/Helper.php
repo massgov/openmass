@@ -2,6 +2,7 @@
 
 namespace Drupal\mayflower;
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\file\Entity\File;
@@ -408,29 +409,23 @@ class Helper {
   public static function getReferencedEntitiesFromSectionField($entity, array $reference_fields) {
     // Get the sections field.
     $sections_field = array_shift($reference_fields);
+    // Get the sections content field.
+    $sections_field_content = array_shift($reference_fields);
     // Get the nested reference field.
-    $reference_field = array_pop($reference_fields);
-    // Get the sections field value.
-    $sections_field_value = $entity->get($sections_field);
-    // Loop through the sections to find one that contains the nested reference
-    // field.
-    foreach ($sections_field_value as $key => $value) {
-      // Get the current section entity.
-      $nested_entity = $entity->get($sections_field)[$key]->entity;
-      // Loop through the reference fields to get the nested entity.
-      foreach ($reference_fields as $field) {
-        // If the current entity doesn't have a reference field, try the next
-        // section.
-        if (!$nested_entity->hasField($field)) {
-          break;
+    $reference_field = end($reference_fields);
+    if ($entity->hasField($sections_field)) {
+      $sections_field_list = $entity->get($sections_field);
+      foreach ($sections_field_list as $section_field_value) {
+        $section_field_entity = $section_field_value->entity;
+        if ($section_field_entity->hasField($sections_field_content)) {
+          $sections_field_content_list = $section_field_entity->get($sections_field_content);
+          foreach ($sections_field_content_list as $sections_field_content_value) {
+            $sections_field_content_entity = $sections_field_content_value->entity;
+            if ($sections_field_content_entity->hasField($reference_field)) {
+              return self::getReferencedEntitiesFromField($sections_field_content_entity, $reference_field);
+            }
+          }
         }
-        // Save the current entity as the nested entity.
-        $nested_entity = $nested_entity->{$field}->entity;
-      }
-      // If the final nested entity has the reference field, use that as the
-      // value of field.
-      if (isset($nested_entity) && $nested_entity->hasField($reference_field)) {
-        return self::getReferencedEntitiesFromField($nested_entity, $reference_field);
       }
     }
     // Return an empty array if the reference field was never found.

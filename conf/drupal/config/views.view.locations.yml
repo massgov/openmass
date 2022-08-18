@@ -312,7 +312,7 @@ display:
         options:
           row_class: ''
           default_row_class: true
-          uses_fields: false
+          uses_fields: true
       row:
         type: 'entity:node'
         options:
@@ -327,20 +327,11 @@ display:
           replica: false
           query_tags: {  }
       relationships:
-        field_ref_contact_info_1:
-          id: field_ref_contact_info_1
-          table: node__field_ref_contact_info_1
-          field: field_ref_contact_info_1
-          relationship: none
-          group_type: group
-          admin_label: 'field_ref_contact_info_1: Content'
-          plugin_id: standard
-          required: false
         field_ref_address:
           id: field_ref_address
           table: node__field_ref_address
           field: field_ref_address
-          relationship: field_ref_contact_info_1
+          relationship: none
           group_type: group
           admin_label: 'field_ref_address: Paragraph'
           plugin_id: standard

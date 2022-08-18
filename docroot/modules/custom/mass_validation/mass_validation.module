@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Utility\Unicode;
+use Drupal\Core\Config\Entity\ThirdPartySettingsInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -75,9 +76,18 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
       ],
     ]);
   }
-  if ($entity_type->id() === 'paragraph' && $bundle === 'iframe') {
-    $url_field =& $fields['field_url'];
-    $url_field->addConstraint('AllowedIframeUrl');
+  if ($entity_type->id() === 'paragraph') {
+    ksm($bundle);
+    switch ($bundle) {
+      case 'org_locations':
+        $locations_field =& $fields['field_org_ref_locations'];
+        $locations_field->addConstraint('MassDuplicateReference');
+        break;
+      case 'iframe':
+        $url_field =& $fields['field_url'];
+        $url_field->addConstraint('AllowedIframeUrl');
+        break;
+    }
   }
 }
 
