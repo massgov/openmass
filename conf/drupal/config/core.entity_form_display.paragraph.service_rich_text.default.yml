@@ -1,0 +1,36 @@
+uuid: 8ac1f776-d8dd-470a-b1c9-ab4849b5fba9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.service_rich_text.field_section_body
+    - paragraphs.paragraphs_type.service_rich_text
+  module:
+    - allowed_formats
+    - maxlength
+    - text
+id: paragraph.service_rich_text.default
+targetEntityType: paragraph
+bundle: service_rich_text
+mode: default
+content:
+  field_section_body:
+    type: text_textarea
+    weight: 0
+    region: content
+    settings:
+      rows: 3
+      placeholder: ''
+    third_party_settings:
+      allowed_formats:
+        hide_help: '1'
+        hide_guidelines: '1'
+      maxlength:
+        maxlength_js: 600
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: true
+        maxlength_js_truncate_html: true
+        maxlength_js_enforce_attribute: true
+hidden:
+  created: true
+  status: true
