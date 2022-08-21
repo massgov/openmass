@@ -4,6 +4,7 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use weitzman\DrupalTestTraits\ScreenShotTrait;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
@@ -12,6 +13,7 @@ use weitzman\LoginTrait\LoginTrait;
 class ContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
 
   use LoginTrait;
+  use ScreenShotTrait;
 
   const QAG_PATHS = [
     "/memorandum/qag-advisory",
@@ -40,7 +42,7 @@ class ContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
   ];
 
   /**
-   * Creates an admin, saves it and returns it.
+   * Creates an editor, saves it and returns it.
    */
   private function createEditor() {
     $editor = User::create(['name' => $this->randomMachineName()]);
@@ -59,7 +61,9 @@ class ContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
     foreach ($paths as $path) {
       // Edit the node.
       $this->drupalGet($path . '/edit');
+      $this->captureScreenshot();
       $this->getCurrentPage()->findButton('Save')->click();
+      $this->captureScreenshot();
       $this->assertSession()->addressEquals($path);
     }
   }
