@@ -16,7 +16,6 @@ class ContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
   use ScreenShotTrait;
 
   const QAG_PATHS = [
-    "/memorandum/qag-advisory",
     "/audit/qag-binderaudit",
     "/report/qag-binderreport",
     "/qagcampaign-landing-with-solid-color-key-message-header",
