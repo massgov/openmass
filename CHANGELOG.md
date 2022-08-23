@@ -1,5 +1,16 @@
 
 
+## [0.333.0] - August 23, 2022
+
+### Changed
+  - DP-24286: Adjust the keyboard navigation on the main nav to more make sense to users.
+  
+### Fixed
+  - DP-25175: Improve sticky TOC accessibility - make section headings the jump link targets.
+  - DP-25638: Missing breadcrumb on some events pages.
+  
+
+
 ## [0.332.0] - August 9, 2022
 
 ### Fixed
