@@ -27,7 +27,6 @@ use Drupal\Core\TypedData\ComputedItemListTrait;
  *     link field that includes a paragraph field with '.entity.'.
  *     Example:
  *       ->setSetting('linkFields', [
- *         'field_service_key_info_links_6',
  *         'field_links_actions_3',
  *         'field_paragraph_card.entity.field_related_org',
  *       ])
