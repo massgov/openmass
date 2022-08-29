@@ -4,6 +4,7 @@ namespace Drupal\Tests\mass_content\ExistingSite;
 
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
+use weitzman\DrupalTestTraits\ScreenShotTrait;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
@@ -12,6 +13,7 @@ use weitzman\LoginTrait\LoginTrait;
 class ContentEditingTest extends ExistingSiteBase {
 
   use LoginTrait;
+  use ScreenShotTrait;
 
   const QAG_PATHS = [
     "/audit/qag-binderaudit",
@@ -61,6 +63,7 @@ class ContentEditingTest extends ExistingSiteBase {
       $session->visit($path . '/edit');
       $page = $session->getPage();
       $page->findButton('Save')->press();
+      $this->captureScreenshot();
       $this->assertEquals($this->baseUrl . $path, $session->getCurrentUrl());
     }
   }
