@@ -4,7 +4,6 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
-use weitzman\DrupalTestTraits\ScreenShotTrait;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
@@ -13,7 +12,6 @@ use weitzman\LoginTrait\LoginTrait;
 class ContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
 
   use LoginTrait;
-  use ScreenShotTrait;
 
   const QAG_PATHS = [
     "/audit/qag-binderaudit",
@@ -60,10 +58,8 @@ class ContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
     foreach ($paths as $path) {
       // Edit the node.
       $this->drupalGet($path . '/edit');
-      $this->captureScreenshot();
       $this->getCurrentPage()->findButton('Save')->click();
-      $this->captureScreenshot();
-      $this->assertSession()->addressEquals($path);
+      $this->assertEquals($this->baseUrl . $path, $this->getSession()->getCurrentUrl());
     }
   }
 
