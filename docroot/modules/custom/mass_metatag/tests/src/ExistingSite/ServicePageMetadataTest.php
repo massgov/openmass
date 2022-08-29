@@ -33,15 +33,6 @@ class ServicePageMetadataTest extends MetadataTestCase {
       'title' => 'Test Service Page',
       'field_state_organization_tax' => [$org_term],
       'field_service_lede' => 'Test Lede',
-      'field_service_ref_actions' => [
-        'uri' => 'http://example.com',
-        'title' => 'Take Action!',
-      ],
-      'field_service_ref_actions_2' => [
-        'uri' => 'http://google.com',
-        'title' => 'Take Another Action!',
-      ],
-      'field_service_offered_by' => $org_node,
       'field_service_bg_wide' => $image,
       'field_organizations' => [$org_node],
       'moderation_state' => 'published',
@@ -60,7 +51,6 @@ class ServicePageMetadataTest extends MetadataTestCase {
       'og:image' => $file_uri,
       'twitter:card' => 'summary_large_image',
       'twitter:image' => $file_uri,
-      'mg_key_actions' => '[{"name":"Take Another Action!","url":"http:\/\/google.com"}]',
       'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_organization' => 'testorgpage',
     ]);
@@ -78,18 +68,7 @@ class ServicePageMetadataTest extends MetadataTestCase {
         '@id' => $uri . '#services',
         'name' => 'Test Service Page',
         'description' => 'Test Lede',
-        'potentialAction' => [
-          [
-            '@type' => 'Action',
-            'name' => 'Take Action!',
-            'url' => 'http://example.com',
-          ],
-          [
-            '@type' => 'Action',
-            'name' => 'Take Another Action!',
-            'url' => 'http://google.com',
-          ],
-        ],
+        'potentialAction' => [],
         'areaServed' => [
           '@type' => 'AdministrativeArea',
           'name' => 'Massachusetts',

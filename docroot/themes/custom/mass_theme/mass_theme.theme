@@ -3183,32 +3183,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
   // Make the introPageContent data structure available in twig template.
   $variables['introPageContent'] = $intro_page_content;
 
-  // Make the mappedLocations data structure available in twig template.
-  if (Helper::isFieldPopulated($node, 'field_service_ref_locations')) {
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $mappedLocations_options = [
-      'heading' => [
-        'title' => t('Locations'),
-        'titleContext' => $titleContext,
-        'type' => 'compHeading',
-      ],
-      'locationDetailsLink' => [
-        'display' => TRUE,
-        'nid' => $node->id(),
-        'path' => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()),
-      ],
-    ];
-
-    // Use aside for the text that displays next to the map with the button.
-    $mappedLocations_options['aside'] = [
-      'button' => $node->field_location_button_label->value,
-      'paragraph' => [
-        'text' => Helper::fieldFullView($node, 'field_location_button_short_desc'),
-      ],
-    ];
-    $variables['mappedLocations'] = Organisms::prepareMappedLocations($node->field_service_ref_locations->referencedEntities(), $mappedLocations_options, $cache_tags);
-  }
-
   // Prepare the split columns data structure (send only if there is content).
   $split_columns = [];
 
@@ -3233,55 +3207,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
         'linkList' => Organisms::prepareLinkList($node, 'field_service_ref_services_6', $linkList_options),
       ],
     ];
-  }
-
-  // Build Additional Resources sidebar heading and action downloads.
-  if (Helper::isFieldPopulated($node, 'field_service_file') || Helper::isFieldPopulated($node, 'field_service_links')) {
-
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $download_options = [
-      'heading' => [
-        'type' => 'sidebarHeading',
-        'title' => t('Additional Resources'),
-        'titleContext' => $titleContext,
-        'level' => 2,
-      ],
-    ];
-
-    // Prepare the formDownloads data object, including all downloadLinks, not
-    // just the visible ones.
-    $formDownloads = Organisms::prepareFormDownloads($node, $download_options, $cache_tags);
-
-    // Creates 'more' link when more than 6 resources are referenced, trims
-    // visible resources down to 6.
-    $num_download_links = count($formDownloads['downloadLinks']);
-    if ($num_download_links > 6) {
-      // Just get the max visible items we want to render.
-      $visibleDownloads = array_slice($formDownloads['downloadLinks'], 0, 6);
-      unset($formDownloads['downloadLinks']);
-      $formDownloads['downloadLinks'] = $visibleDownloads;
-
-      // Use the total number of items (including non-visible) in the more link.
-      $text_download_links = t("See all @count", ['@count' => $num_download_links]);
-      $formDownloads['more'] = [
-        'href' => $node->toUrl()->toString() . '/resources',
-        'text' => $text_download_links,
-        'chevron' => TRUE,
-        'labelContext' => t('additional resources for the @label', ['@label' => $node->label()]),
-      ];
-    }
-
-    $split_columns['columns'][]['items'][] =
-      [
-        'path' => '@organisms/by-author/form-downloads.twig',
-        'data' => [
-          'formDownloads' => $formDownloads,
-        ],
-      ];
-  }
-
-  if ($variables['view_mode'] === 'listing') {
-    $variables['featured_tasks_links'] = Helper::separatedLinks($node, 'field_service_ref_actions_2');
   }
 
   // Make the mappedLocations data structure available in twig template.

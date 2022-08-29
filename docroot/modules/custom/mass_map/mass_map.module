@@ -173,7 +173,7 @@ function mass_map_views_query_alter(ViewExecutable $view, $query) {
         $location_nodes = [];
 
         // Get Location nodes from Service and Location nodes.
-        $fields = ['field_related_locations', 'field_service_ref_locations'];
+        $fields = ['field_related_locations'];
         foreach ($fields as $field_name) {
           if (Helper::isFieldPopulated($node, $field_name)) {
             $location_nodes += Helper::getReferencedEntitiesFromField($node, $field_name);
