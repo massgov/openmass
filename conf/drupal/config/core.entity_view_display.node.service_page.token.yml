@@ -9,7 +9,6 @@ dependencies:
     - field.field.node.service_page.field_data_format
     - field.field.node.service_page.field_data_resource_type
     - field.field.node.service_page.field_data_topic
-    - field.field.node.service_page.field_event_quantity
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
     - field.field.node.service_page.field_kpi_pl_avg_cl_comp_time
@@ -20,38 +19,25 @@ dependencies:
     - field.field.node.service_page.field_kpi_pl_em_app_review_time
     - field.field.node.service_page.field_kpi_pl_em_app_reviews
     - field.field.node.service_page.field_kpi_sessions_clicks_pl_pct
-    - field.field.node.service_page.field_link_group
     - field.field.node.service_page.field_list_data_type
-    - field.field.node.service_page.field_location_button_label
-    - field.field.node.service_page.field_location_button_short_desc
     - field.field.node.service_page.field_log_in_links
     - field.field.node.service_page.field_organizations
     - field.field.node.service_page.field_primary_parent
     - field.field.node.service_page.field_ref_contact_info
-    - field.field.node.service_page.field_related_organization_type
     - field.field.node.service_page.field_reusable_label
-    - field.field.node.service_page.field_service_bg_narrow
     - field.field.node.service_page.field_service_bg_wide
     - field.field.node.service_page.field_service_body
     - field.field.node.service_page.field_service_eligibility_info
-    - field.field.node.service_page.field_service_file
-    - field.field.node.service_page.field_service_key_info_links_6
     - field.field.node.service_page.field_service_kpi_choice
     - field.field.node.service_page.field_service_lede
-    - field.field.node.service_page.field_service_links
     - field.field.node.service_page.field_service_metatags
-    - field.field.node.service_page.field_service_offered_by
-    - field.field.node.service_page.field_service_ref_actions
-    - field.field.node.service_page.field_service_ref_actions_2
     - field.field.node.service_page.field_service_ref_guide_page_1
-    - field.field.node.service_page.field_service_ref_locations
     - field.field.node.service_page.field_service_ref_services_6
     - field.field.node.service_page.field_service_sections
     - field.field.node.service_page.field_service_video
     - field.field.node.service_page.field_services_social_links
     - field.field.node.service_page.field_short_title
     - field.field.node.service_page.field_state_organization_tax
-    - field.field.node.service_page.field_template
     - node.type.service_page
   module:
     - image
@@ -66,17 +52,6 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 2
-    region: content
-  field_service_bg_narrow:
-    type: image
-    label: above
-    settings:
-      image_link: ''
-      image_style: ''
-      image_loading:
-        attribute: lazy
-    third_party_settings: {  }
-    weight: 5
     region: content
   field_service_bg_wide:
     type: image
@@ -104,26 +79,6 @@ content:
     third_party_settings: {  }
     weight: 17
     region: content
-  field_service_file:
-    type: entity_reference_label
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    weight: 12
-    region: content
-  field_service_key_info_links_6:
-    type: link
-    label: above
-    settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
-    third_party_settings: {  }
-    weight: 16
-    region: content
   field_service_lede:
     type: string
     label: above
@@ -132,50 +87,6 @@ content:
     third_party_settings: {  }
     weight: 3
     region: content
-  field_service_links:
-    type: link
-    label: above
-    settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
-    third_party_settings: {  }
-    weight: 11
-    region: content
-  field_service_offered_by:
-    type: entity_reference_label
-    label: above
-    settings:
-      link: false
-    third_party_settings: {  }
-    weight: 18
-    region: content
-  field_service_ref_actions:
-    type: link_separate
-    label: above
-    settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
-    third_party_settings: {  }
-    weight: 9
-    region: content
-  field_service_ref_actions_2:
-    type: link_separate
-    label: above
-    settings:
-      trim_length: 80
-      url_only: false
-      url_plain: true
-      rel: '0'
-      target: '0'
-    third_party_settings: {  }
-    weight: 8
-    region: content
   field_service_ref_guide_page_1:
     type: entity_reference_label
     label: above
@@ -183,14 +94,6 @@ content:
       link: true
     third_party_settings: {  }
     weight: 13
-    region: content
-  field_service_ref_locations:
-    type: entity_reference_label
-    label: above
-    settings:
-      link: true
-    third_party_settings: {  }
-    weight: 14
     region: content
   field_service_ref_services_6:
     type: entity_reference_entity_id
@@ -238,7 +141,6 @@ hidden:
   field_data_format: true
   field_data_resource_type: true
   field_data_topic: true
-  field_event_quantity: true
   field_image_credit: true
   field_intended_audience: true
   field_kpi_pl_avg_cl_comp_time: true
@@ -249,20 +151,15 @@ hidden:
   field_kpi_pl_em_app_review_time: true
   field_kpi_pl_em_app_reviews: true
   field_kpi_sessions_clicks_pl_pct: true
-  field_link_group: true
   field_list_data_type: true
-  field_location_button_label: true
-  field_location_button_short_desc: true
   field_log_in_links: true
   field_organizations: true
   field_primary_parent: true
   field_ref_contact_info: true
-  field_related_organization_type: true
   field_reusable_label: true
   field_service_kpi_choice: true
   field_service_metatags: true
   field_service_sections: true
   field_short_title: true
   field_state_organization_tax: true
-  field_template: true
   langcode: true

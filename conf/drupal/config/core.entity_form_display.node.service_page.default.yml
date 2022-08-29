@@ -8,7 +8,6 @@ dependencies:
     - field.field.node.service_page.field_data_format
     - field.field.node.service_page.field_data_resource_type
     - field.field.node.service_page.field_data_topic
-    - field.field.node.service_page.field_event_quantity
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
     - field.field.node.service_page.field_kpi_pl_avg_cl_comp_time
@@ -19,38 +18,25 @@ dependencies:
     - field.field.node.service_page.field_kpi_pl_em_app_review_time
     - field.field.node.service_page.field_kpi_pl_em_app_reviews
     - field.field.node.service_page.field_kpi_sessions_clicks_pl_pct
-    - field.field.node.service_page.field_link_group
     - field.field.node.service_page.field_list_data_type
-    - field.field.node.service_page.field_location_button_label
-    - field.field.node.service_page.field_location_button_short_desc
     - field.field.node.service_page.field_log_in_links
     - field.field.node.service_page.field_organizations
     - field.field.node.service_page.field_primary_parent
     - field.field.node.service_page.field_ref_contact_info
-    - field.field.node.service_page.field_related_organization_type
     - field.field.node.service_page.field_reusable_label
-    - field.field.node.service_page.field_service_bg_narrow
     - field.field.node.service_page.field_service_bg_wide
     - field.field.node.service_page.field_service_body
     - field.field.node.service_page.field_service_eligibility_info
-    - field.field.node.service_page.field_service_file
-    - field.field.node.service_page.field_service_key_info_links_6
     - field.field.node.service_page.field_service_kpi_choice
     - field.field.node.service_page.field_service_lede
-    - field.field.node.service_page.field_service_links
     - field.field.node.service_page.field_service_metatags
-    - field.field.node.service_page.field_service_offered_by
-    - field.field.node.service_page.field_service_ref_actions
-    - field.field.node.service_page.field_service_ref_actions_2
     - field.field.node.service_page.field_service_ref_guide_page_1
-    - field.field.node.service_page.field_service_ref_locations
     - field.field.node.service_page.field_service_ref_services_6
     - field.field.node.service_page.field_service_sections
     - field.field.node.service_page.field_service_video
     - field.field.node.service_page.field_services_social_links
     - field.field.node.service_page.field_short_title
     - field.field.node.service_page.field_state_organization_tax
-    - field.field.node.service_page.field_template
     - image.style.large
     - node.type.service_page
     - workflows.workflow.editorial
@@ -59,6 +45,7 @@ dependencies:
     - content_moderation
     - entity_browser_entity_form
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - focal_point
     - inline_entity_form
@@ -134,39 +121,6 @@ third_party_settings:
         formatter: closed
         description: ''
         required_fields: true
-    group_tasks_key_info:
-      children:
-        - field_link_group
-        - group_what_would_you_like_to_do_
-        - group_what_you_need_to_know
-      label: 'Tasks and key info'
-      region: hidden
-      parent_name: group_service_edit_form
-      weight: 16
-      format_type: tab
-      format_settings:
-        classes: ''
-        id: ''
-        formatter: closed
-        description: 'This is where you add items to the “What would you like to do?” section.'
-        required_fields: true
-    group_map:
-      children:
-        - field_location_button_label
-        - field_location_button_short_desc
-        - field_related_organization_type
-        - field_service_ref_locations
-      label: Map
-      region: hidden
-      parent_name: ''
-      weight: 17
-      format_type: tab
-      format_settings:
-        classes: ''
-        id: ''
-        formatter: closed
-        description: ''
-        required_fields: true
     group_additional_info:
       children:
         - field_service_ref_services_6
@@ -180,47 +134,6 @@ third_party_settings:
         id: ''
         formatter: closed
         description: 'Optional. Add other resources that are less critical but may be helpful to users of this service.'
-        required_fields: true
-    group_what_would_you_like_to_do_:
-      children:
-        - field_service_ref_actions
-        - field_service_ref_actions_2
-      label: 'What would you like to do?'
-      region: hidden
-      parent_name: group_tasks_key_info
-      weight: 39
-      format_type: fieldset
-      format_settings:
-        classes: ''
-        id: what-would-you-like-to-do
-        description: 'This section provides links to all transactions related to this service.'
-        required_fields: true
-    group_what_you_need_to_know:
-      children:
-        - field_service_key_info_links_6
-      label: 'What you need to know'
-      region: hidden
-      parent_name: group_tasks_key_info
-      weight: 41
-      format_type: fieldset
-      format_settings:
-        classes: ''
-        id: what-you-need-to-know
-        description: 'This section provides links to key information needed to use this service.'
-        required_fields: true
-    group_additional_resources:
-      children:
-        - field_service_file
-        - field_service_links
-      label: 'Additional resources'
-      region: content
-      parent_name: ''
-      weight: 6
-      format_type: fieldset
-      format_settings:
-        classes: ''
-        id: additional-resources
-        description: 'Optional. If there are additional resources that contain helpful information, add them here. A maximum of 6 links and downloads (combined) will appear on the service page. Work is underway to allow all Additional Resources to appear on a ''more'' page'
         required_fields: true
     group_key_performance_indicators:
       children:
@@ -695,24 +608,7 @@ content:
       size: 60
       placeholder: ''
     third_party_settings:
-      conditional_fields:
-        7931e70d-a78b-4cec-a527-30237d712636:
-          entity_type: node
-          bundle: service_page
-          dependee: field_template
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: default
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_service_kpi_choice:
     type: options_buttons
     weight: 42
@@ -745,24 +641,7 @@ content:
       size: 60
       placeholder: ''
     third_party_settings:
-      conditional_fields:
-        c61775d4-fa36-46aa-a752-2111f459d311:
-          entity_type: node
-          bundle: service_page
-          dependee: field_template
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: default
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_service_ref_services_6:
     type: entity_reference_autocomplete
     weight: 66
@@ -896,20 +775,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_event_quantity: true
-  field_link_group: true
-  field_location_button_label: true
-  field_location_button_short_desc: true
-  field_related_organization_type: true
-  field_service_bg_narrow: true
-  field_service_file: true
-  field_service_key_info_links_6: true
-  field_service_links: true
-  field_service_offered_by: true
-  field_service_ref_actions: true
-  field_service_ref_actions_2: true
-  field_service_ref_locations: true
-  field_template: true
   langcode: true
   path: true
   promote: true
