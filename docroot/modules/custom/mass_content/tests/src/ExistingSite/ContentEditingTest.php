@@ -13,10 +13,9 @@ use weitzman\LoginTrait\LoginTrait;
 class ContentEditingTest extends ExistingSiteBase {
 
   use LoginTrait;
-  use ScreenShotTrait;
 
   const QAG_PATHS = [
-    "/audit/qag-binderaudit",
+    // "/audit/qag-binderaudit",
     "/report/qag-binderreport",
     "/qagcampaign-landing-with-solid-color-key-message-header",
     "/lists/qag-curatedlist",
@@ -63,7 +62,6 @@ class ContentEditingTest extends ExistingSiteBase {
       $session->visit($path . '/edit');
       $page = $session->getPage();
       $page->findButton('Save')->press();
-      $this->captureScreenshot();
       $this->assertEquals($this->baseUrl . $path, $session->getCurrentUrl());
     }
   }
