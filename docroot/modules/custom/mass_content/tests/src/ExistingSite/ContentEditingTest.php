@@ -1,15 +1,15 @@
 <?php
 
-namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
+namespace Drupal\Tests\mass_content\ExistingSite;
 
 use Drupal\user\Entity\User;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use weitzman\DrupalTestTraits\ExistingSiteBase;
 use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Ensures editor can save the nodes.
  */
-class ContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
+class ContentEditingTest extends ExistingSiteBase {
 
   use LoginTrait;
 
@@ -55,11 +55,13 @@ class ContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
   public function testSaveContent() {
     $this->drupalLogin($this->createEditor());
     $paths = self::QAG_PATHS;
+    $session = $this->getSession();
     foreach ($paths as $path) {
       // Edit the node.
-      $this->drupalGet($path . '/edit');
-      $this->getCurrentPage()->findButton('Save')->click();
-      $this->assertEquals($this->baseUrl . $path, $this->getSession()->getCurrentUrl());
+      $session->visit($path . '/edit');
+      $page = $session->getPage();
+      $page->findButton('Save')->press();
+      $this->assertEquals($this->baseUrl . $path, $session->getCurrentUrl());
     }
   }
 
