@@ -15,7 +15,7 @@ class ContentEditingTest extends ExistingSiteBase {
   use LoginTrait;
 
   const QAG_PATHS = [
-    // "/audit/qag-binderaudit",
+    "/audit/qag-binderaudit",
     "/report/qag-binderreport",
     "/qagcampaign-landing-with-solid-color-key-message-header",
     "/lists/qag-curatedlist",
