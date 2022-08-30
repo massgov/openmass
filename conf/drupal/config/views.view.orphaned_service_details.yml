@@ -12,11 +12,11 @@ dependencies:
     - user.role.developer
   module:
     - mass_superset
-    - mass_views
     - node
     - taxonomy
     - user
     - views_autocomplete_filters
+    - views_porter_stemmer
 id: orphaned_service_details
 label: 'Orphaned service details'
 module: views
@@ -683,45 +683,6 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        field_service_key_info_links_6_uri:
-          id: field_service_key_info_links_6_uri
-          table: node__field_service_key_info_links_6
-          field: field_service_key_info_links_6_uri
-          relationship: linked_by__node__field_service_key_info_links_6
-          group_type: group
-          admin_label: ''
-          plugin_id: string
-          operator: empty
-          value: ''
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
         title:
           id: title
           table: node_field_data
@@ -1033,16 +994,6 @@ display:
           admin_label: field_service_eligibility_info
           entity_type: node
           plugin_id: entity_reverse
-          required: false
-        linked_by__node__field_service_key_info_links_6:
-          id: linked_by__node__field_service_key_info_links_6
-          table: node_field_data
-          field: linked_by__node__field_service_key_info_links_6
-          relationship: none
-          group_type: group
-          admin_label: 'Content linking to node using field_service_key_info_links_6'
-          entity_type: node
-          plugin_id: link_reverse
           required: false
         uid:
           id: uid

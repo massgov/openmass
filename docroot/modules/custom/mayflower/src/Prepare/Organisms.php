@@ -528,7 +528,6 @@ class Organisms {
       ],
       'bg_narrow' => [
         'field_bg_narrow',
-        'field_service_bg_narrow',
         'field_topic_bg_narrow',
       ],
       'description' => ['field_lede', 'field_topic_lede', 'field_service_lede'],
@@ -1231,12 +1230,10 @@ class Organisms {
     $map = [
       'downloads' => [
         'field_downloads',
-        'field_service_file',
         'field_section_downloads',
         'field_liststaticdoc_item',
       ],
       'link' => [
-        'field_service_links',
         'field_section_links',
         'field_listitemlink_item',
       ],
