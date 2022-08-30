@@ -13,9 +13,9 @@ function mass_fields_deploy_search_field3() {
     $table = 'node__field_' . $type->id() . '_metatags';
     if (Drupal::database()->schema()->tableExists($table)) {
       $result = \Drupal::database()->select($table, 'tab')
-          ->fields('tab', ['entity_id'])
-          ->condition('field_' . $type->id() . '_metatags_value', '%noindex%', 'LIKE')
-          ->execute();
+        ->fields('tab', ['entity_id'])
+        ->condition('field_' . $type->id() . '_metatags_value', '%noindex%', 'LIKE')
+        ->execute();
       $ids = $result->fetchCol();
       foreach ($ids as $id) {
         $i++;
@@ -29,7 +29,7 @@ function mass_fields_deploy_search_field3() {
           $migrated['node'][] = $id;
         }
       }
-      $i=0;
+      $i = 0;
     }
   }
 
