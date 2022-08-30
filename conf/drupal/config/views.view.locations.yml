@@ -303,6 +303,50 @@ display:
           hierarchy: false
           limit: true
           error_message: true
+        delta:
+          id: delta
+          table: node__field_ref_address
+          field: delta
+          relationship: field_ref_contact_info_1
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '='
+          value:
+            min: ''
+            max: ''
+            value: '0'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
       filter_groups:
         operator: AND
         groups:
@@ -312,7 +356,7 @@ display:
         options:
           row_class: ''
           default_row_class: true
-          uses_fields: true
+          uses_fields: false
       row:
         type: 'entity:node'
         options:
@@ -322,22 +366,31 @@ display:
         options:
           query_comment: ''
           disable_sql_rewrite: false
-          distinct: true
+          distinct: false
           disable_automatic_base_fields: false
           replica: false
           query_tags: {  }
       relationships:
+        field_ref_contact_info_1:
+          id: field_ref_contact_info_1
+          table: node__field_ref_contact_info_1
+          field: field_ref_contact_info_1
+          relationship: none
+          group_type: group
+          admin_label: 'field_ref_contact_info_1: Content'
+          plugin_id: standard
+          required: false
         field_ref_address:
           id: field_ref_address
           table: node__field_ref_address
           field: field_ref_address
-          relationship: none
+          relationship: field_ref_contact_info_1
           group_type: group
           admin_label: 'field_ref_address: Paragraph'
           plugin_id: standard
           required: false
       use_ajax: false
-      group_by: true
+      group_by: false
       header:
         result:
           id: result
