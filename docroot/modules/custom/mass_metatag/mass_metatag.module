@@ -429,7 +429,7 @@ function mass_metatag_page_attachments(array &$attachments) {
       '#tag' => 'meta',
       '#attributes' => [
         'name' => 'robots',
-        'content' => 'noindex, follow',
+        'content' => 'noindex, nofollow',
       ],
     ];
     $attachments['#attached']['html_head'][] = [$noindex, 'noindex'];
