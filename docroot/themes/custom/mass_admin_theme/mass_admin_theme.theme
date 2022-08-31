@@ -20,6 +20,9 @@ function mass_admin_theme_form_entity_embed_dialog_alter(&$form, FormStateInterf
   }
   if (array_key_exists('data-entity-embed-display-settings', $form['attributes'])) {
     $display_settings = $form['attributes']['data-entity-embed-display-settings'];
+    if (array_key_exists('image_loading', $display_settings)) {
+      unset($form['attributes']['data-entity-embed-display-settings']['image_loading']);
+    }
     if (array_key_exists('image_style', $display_settings)) {
       $image_style = $form['attributes']['data-entity-embed-display-settings']['image_style'];
       $image_style['#title'] = t('Image width');
