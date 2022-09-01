@@ -20,6 +20,10 @@ function mass_admin_theme_form_entity_embed_dialog_alter(&$form, FormStateInterf
   }
   if (array_key_exists('data-entity-embed-display-settings', $form['attributes'])) {
     $display_settings = $form['attributes']['data-entity-embed-display-settings'];
+    // Image loading added by core image module not supported by entity_embed.
+    // This is causing array to string conversion warning and behat test failure.
+    // Temporarily unsetting image_loading field from the dialog to avoid warnings.
+    // @TODO Remove this code when entity_embed start supporting lazy loading attribute.
     if (array_key_exists('image_loading', $display_settings)) {
       unset($form['attributes']['data-entity-embed-display-settings']['image_loading']);
     }
