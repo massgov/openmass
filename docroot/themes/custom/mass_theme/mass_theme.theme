@@ -2773,7 +2773,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
  * Prepare the variables for the Event page.
  */
 function mass_theme_preprocess_node_event(&$variables) {
-  /** @var \Drupal\node\Entity\Node $node */
+  /** @var \Drupal\mass_content\Entity\Bundle\node\EventBundle $node */
   $node = $variables['node'];
   $cache_tags = [];
 
@@ -2796,8 +2796,6 @@ function mass_theme_preprocess_node_event(&$variables) {
   // Determines which field names to use from the map.
   $fields = Helper::getMappedFields($node, $map);
 
-  $is_public_meeting = $node->{$fields['type']}->value == 'public_meeting';
-
   $optionalContents = [];
 
   // Build date and time optional contents.
@@ -2816,7 +2814,7 @@ function mass_theme_preprocess_node_event(&$variables) {
     ];
   }
 
-  if (Helper::isFieldPopulated($node, $fields['posted_date']) && $is_public_meeting) {
+  if (Helper::isFieldPopulated($node, $fields['posted_date']) && $node->isPublicMeeting()) {
     $postedDate = Helper::getMayflowerDate($node->{$fields['posted_date']}->value, ['date_format' => 'F j, Y']);
     // Use the value of field_updated_date as the changedDate value.
     if (Helper::isFieldPopulated($node, $fields['updated_date'])) {
@@ -2853,8 +2851,8 @@ function mass_theme_preprocess_node_event(&$variables) {
 
   // Get the address type.
   $address_type = '';
-  if (Helper::isFieldPopulated($node, 'field_event_address_type')) {
-    $address_type = $node->field_event_address_type->getValue();
+  if (!$node->getAddressType()->isEmpty()) {
+    $address_type = $node->getAddressType()->getValue();
     $address_type = reset($address_type);
     $address_type = $address_type['value'];
   }
@@ -2872,7 +2870,7 @@ function mass_theme_preprocess_node_event(&$variables) {
 
   // Build call out time.
   if (Helper::isFieldPopulated($node, 'field_event_public_testimony')
-    && $is_public_meeting) {
+    && $node->isPublicMeeting()) {
     $optionalContents[] = [
       'path' => '@organisms/by-author/callout-time.twig',
       'data' => [
@@ -2912,12 +2910,11 @@ function mass_theme_preprocess_node_event(&$variables) {
   }
 
   // Build title for pageHeader.
-  $event_type = $node->{$fields['type']}->value;
   $category_title = '';
-  if ($event_type === 'public_meeting') {
+  if ($node->isPublicMeeting()) {
     $category_title = t('Public Meeting Notice');
   }
-  elseif ($event_type === 'public_hearing') {
+  elseif ($node->isPublicHearing()) {
     $category_title = t('Public Hearing Notice');
   }
 
