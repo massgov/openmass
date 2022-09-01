@@ -2823,27 +2823,29 @@ function mass_theme_preprocess_node_event(&$variables) {
       $changedDate = Helper::getMayflowerDate($node->{$fields['updated_date']}->value, ['date_format' => 'F j, Y']);
     }
     else {
-      // Otherwise, display the posted date as last modified.
-      $changedDate = $postedDate;
+      // Otherwise, display nothing.
+      $changedDate = [];
     }
 
     array_shift($postedDate);
     array_shift($changedDate);
 
+    $items[] = [
+      'label' => 'Posted:',
+      'text' => implode(' ', $postedDate),
+    ];
+    if ($changedDate) {
+      $items[] = [
+        'label' => 'Last Updated:',
+        'text' => implode(' ', $changedDate),
+      ];
+    }
+
     $optionalContents[] = [
       'path' => '@molecules/labelled-list.twig',
       'data' => [
         'labelledList' => [
-          'items' => [
-            [
-              'label' => 'Posted:',
-              'text' => implode(' ', $postedDate),
-            ],
-            [
-              'label' => 'Last Updated:',
-              'text' => implode(' ', $changedDate),
-            ],
-          ],
+          'items' => $items,
         ],
       ],
     ];
