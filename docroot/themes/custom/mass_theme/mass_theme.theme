@@ -2819,7 +2819,7 @@ function mass_theme_preprocess_node_event(&$variables) {
   if (Helper::isFieldPopulated($node, $fields['posted_date']) && $is_public_meeting) {
     $postedDate = Helper::getMayflowerDate($node->{$fields['posted_date']}->value, ['date_format' => 'F j, Y']);
     // Use the value of field_updated_date as the changedDate value.
-    if (Helper::isFieldPopulated($node, $fields['posted_date'])) {
+    if (Helper::isFieldPopulated($node, $fields['updated_date'])) {
       $changedDate = Helper::getMayflowerDate($node->{$fields['updated_date']}->value, ['date_format' => 'F j, Y']);
     }
     else {
