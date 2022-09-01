@@ -2,25 +2,39 @@
 
 namespace Drupal\mass_content\Entity\Bundle\node;
 
+use Drupal\Core\Field\FieldItemListInterface;
+
 /**
  * A bundle class for node entities.
  */
 class EventBundle extends NodeBundle {
 
-  public function getMeetingType() {
+  /**
+   * Get meeting type.
+   */
+  public function getMeetingType(): string {
     return $this->get('field_event_type_list')->getString();
   }
 
-  public function isPublicMeeting() {
+  /**
+   * Is event a public meeting.
+   */
+  public function isPublicMeeting(): bool {
     return $this->getMeetingType() == 'public_meeting';
   }
 
-  public function isPublicHearing() {
+  /**
+   * Is event a public hearing.
+   */
+  public function isPublicHearing(): bool {
     return $this->getMeetingType() == 'public_hearing';
 
   }
 
-  public function getAddressType() {
+  /**
+   * Get address type.
+   */
+  public function getAddressType(): FieldItemListInterface {
     return $this->get('field_event_address_type');
   }
 
