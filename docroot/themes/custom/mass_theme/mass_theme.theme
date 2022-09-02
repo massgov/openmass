@@ -5888,6 +5888,20 @@ function mass_theme_preprocess_views_view(&$variables) {
 }
 
 /**
+ * Preprocess entity_embed_container template.
+ */
+function mass_theme_preprocess_entity_embed_container(array &$variables) {
+  // image_loading is hidden from entity_embed dialog.
+  // See docroot/themes/custom/mass_admin_theme/mass_admin_theme.theme:27
+  // This code will prevent warnings for the content that already
+  // has image_loading attribute set.
+  // @TODO Remove this code when entity_embed start supporting lazy loading attribute.
+  if (isset($variables['attributes']['data-entity-embed-display-settings']['image_loading'])) {
+    unset($variables['attributes']['data-entity-embed-display-settings']['image_loading']);
+  }
+}
+
+/**
  * Populates $variables for a collection header image from a $collection_term.
  */
 function _mass_theme_populate_collection_image_from_collection($collection_term, &$variables) {
