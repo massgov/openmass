@@ -129,22 +129,6 @@
     }
   }] %}
 
-  {# Add only the links that exist to the components array. #}
-  {% for item in featured_tasks_links %}
-    {% set decorative_link = {
-      "path": "@atoms/decorative-link.twig",
-      "data": {
-        "decorativeLink": {
-          "href": item.url,
-          "text": item.text,
-          "chevron": true,
-          "label": ""
-        }
-      }
-    } %}
-    {% set contents = contents|merge([decorative_link]) %}
-  {% endfor %}
-
   {% include "@molecules/general-teaser.twig" with {
     "generalTeaser" : {
       "title" : {

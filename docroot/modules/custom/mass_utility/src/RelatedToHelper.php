@@ -45,48 +45,6 @@ class RelatedToHelper {
   }
 
   /**
-   * Gets related services based on values in the "Featured Tasks" field.
-   *
-   * @param int $nid
-   *   The ID of the node to check for relations to.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface[]
-   *   Related entities.
-   */
-  public static function getRelatedServicesByActionLinks($nid) {
-    $route = sprintf('entity:node/%d', $nid);
-    $query = \Drupal::entityQuery('node');
-    $query->condition('status', 1);
-    // To separate the query into two to improve the performance on the how-to pages.
-    $que1 = (clone $query)->condition('field_service_ref_actions.uri', $route)->execute();
-    $que2 = (clone $query)->condition('field_service_ref_actions_2.uri', $route)->execute();
-    $nids = array_merge($que1, $que2);
-
-    $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
-
-    return $nodes;
-  }
-
-  /**
-   * Gets related services based on values in the "What you need to know" field.
-   *
-   * @param int $nid
-   *   The ID of the node to check for relations to.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface[]
-   *   Related entities.
-   */
-  public static function getRelatedServicesByKeyInfoLinks($nid) {
-    $route = sprintf('entity:node/%d', $nid);
-    $query = \Drupal::entityQuery('node');
-    $query->condition('field_service_key_info_links_6.uri', $route);
-    $query->condition('status', 1);
-    $nids = $query->execute();
-
-    return \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
-  }
-
-  /**
    * Get a list of all service pages that reference a page via guide links.
    *
    * @param int $nid
@@ -98,25 +56,6 @@ class RelatedToHelper {
   public static function getRelatedServicePagesByGuideLinks($nid) {
     $query = \Drupal::entityQuery('node');
     $query->condition('field_service_ref_guide_page_1.target_id', $nid);
-    $query->condition('status', 1);
-    $nids = $query->execute();
-
-    return \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
-  }
-
-  /**
-   * Get a list of all service pages that reference a page via service links.
-   *
-   * @param int $nid
-   *   The ID of the node to check for relations to.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface[]
-   *   An array of related nodes.
-   */
-  public static function getRelatedServicePagesByServiceLinks($nid) {
-    $route = sprintf('entity:node/%d', $nid);
-    $query = \Drupal::entityQuery('node');
-    $query->condition('field_service_links.uri', $route);
     $query->condition('status', 1);
     $nids = $query->execute();
 
@@ -148,33 +87,6 @@ class RelatedToHelper {
     else {
       return [];
     }
-  }
-
-  /**
-   * Get a list of all nodes that reference a page via locations fields.
-   *
-   * @param int $nid
-   *   The ID of the node to check for relations to.
-   *
-   * @return \Drupal\Core\Entity\EntityInterface[]
-   *   An array of related nodes.
-   */
-  public static function getRelatedLocationsByLocations($nid) {
-    $query = \Drupal::entityQuery('node');
-    $query->condition('status', 1);
-
-    // This query performs poorly if we execute it as one query with an OR
-    // condition.
-    $res1 = (clone $query)->condition('field_service_ref_locations.target_id', $nid)->execute();
-    $res2 = (clone $query)->condition('field_org_ref_locations.target_id', $nid)->execute();
-    $nids = array_merge($res1, $res2);
-
-    $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
-    // Sort by created, DESC.
-    usort($nodes, function ($a, $b) {
-      return ($a->getCreatedTime() < $b->getCreatedTime()) ? 1 : -1;
-    });
-    return $nodes;
   }
 
   /**
