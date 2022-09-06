@@ -763,6 +763,7 @@ function mass_fields_do_form_alter(&$form, FormStateInterface $form_state) {
     '#open' => FALSE,
     '#title' => t('Search status'),
     '#weight' => 55,
+    '#access' =>  $settings[$entity->getEntityTypeId()][$entity->bundle()]['index'],
   ];
   // Copy the checkbox field into the advanced group.
   $form['search_status']['search'] = $form['search'];
