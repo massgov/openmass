@@ -411,15 +411,6 @@ function mass_metatag_page_attachments(array &$attachments) {
     $noindex_and_follow = TRUE;
   }
 
-  // Honor custom field for hiding from Search
-  if (\Drupal::routeMatch()->getRouteName() === 'entity.node.canonical') {
-    /** @var \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node */
-    $node = \Drupal::routeMatch()->getParameter('node');
-    if ($node->getSearch()->getString()) {
-      $noindex_and_follow = TRUE;
-    }
-  }
-
   if (in_array($uri_end, $paths) && substr_count($current_path, '/') > 1) {
     $noindex_and_follow = TRUE;
   }
@@ -429,7 +420,7 @@ function mass_metatag_page_attachments(array &$attachments) {
       '#tag' => 'meta',
       '#attributes' => [
         'name' => 'robots',
-        'content' => 'noindex, nofollow',
+        'content' => 'noindex',
       ],
     ];
     $attachments['#attached']['html_head'][] = [$noindex, 'noindex'];
@@ -687,7 +678,18 @@ function mass_metatag_metatags_attachments_alter(array &$metatag_attachments) {
     $metatags = $metatag_attachments['#attached']['html_head'];
 
     // Find the mg_metatag_body_preview to grab the value.
-    foreach ($metatags as $tag) {
+    foreach ($metatags as $key => $tag) {
+      // Honor custom field for hiding from Search
+      if (\Drupal::routeMatch()->getRouteName() === 'entity.node.canonical') {
+        /** @var \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node */
+        $node = \Drupal::routeMatch()->getParameter('node');
+        if ($node->getSearch()->getString()) {
+          if ($tag['1'] == 'robots') {
+            $metatag_attachments['#attached']['html_head'][$key][0]['#attributes']['content'] = 'noindex, nofollow';
+          }
+        }
+      }
+
       // Verify that we are in the news content type.
       if ($tag[1] == "schema_news_article_id") {
         $news = TRUE;
