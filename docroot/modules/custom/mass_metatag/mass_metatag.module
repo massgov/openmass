@@ -661,9 +661,9 @@ function mass_metatag_form_node_form_alter(&$form, FormStateInterface $form_stat
     }
   }
 
-  // We've decided to hide the whole metatag section of the node form.
+  // We've decided to hide the whole metatag section of the node form except Admins.
   if (isset($metatags_labels[$content_type])) {
-    $form[$metatags_labels[$content_type]]['#access'] = FALSE;
+    $form[$metatags_labels[$content_type]]['#access'] = Drupal::currentUser()->hasPermission('administer meta tags');
   }
 }
 
