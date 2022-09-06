@@ -560,9 +560,8 @@ function _mass_metatag_addresses(NodeInterface $node) {
   $addresses = [];
   $field_ref = NULL;
 
-  $address_type = $node->get('field_event_address_type')->value;
   try {
-    switch ($address_type) {
+    switch ($node->getAddressType()->getString()) {
       // Unique entered address in the address paragraph.
       case 'unique':
         $ref = $node->get('field_event_ref_unique_address')->entity;

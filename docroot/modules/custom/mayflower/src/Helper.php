@@ -1367,7 +1367,7 @@ class Helper {
   /**
    * Helper function to return event data.
    *
-   * @param \Drupal\node\Entity\Node[] $events
+   * @param \Drupal\mass_content\Entity\Bundle\node\EventBundle[] $events
    *   The event nodes.
    * @param array $options
    *   Display options to use in render.
@@ -1397,8 +1397,8 @@ class Helper {
 
       // Get the address type.
       $address_type = '';
-      if (Helper::isFieldPopulated($event_entity, 'field_event_address_type')) {
-        $address_type = $event_entity->field_event_address_type->getValue();
+      if (!$event_entity->getAddressType()->isEmpty()) {
+        $address_type = $event_entity->getAddressType()->getValue();
         $address_type = reset($address_type);
         $address_type = $address_type['value'];
       }
