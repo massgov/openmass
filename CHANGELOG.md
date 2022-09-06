@@ -1,5 +1,22 @@
 
 
+## [0.334.0] - September 6, 2022
+
+### Added
+  - DP-25215: Change description field in collection taxonomy to reflect use for search filtering.
+  - DP-25248: Add testing for saving QAG pages.
+  - DP-25551: Add rich text field to Service Section paragraph.
+  
+### Changed
+  - DP-25339: Extensive help text improvements.
+  
+### Fixed
+  - DP-25642: Duplicates of locations exist on service location listing pages.
+  - DP-25755: Fixed Behat test failure due to the entity_embed module array to string conversion warning.
+  - DP-25762: Fix bug with updated date on events that are public meetings
+  
+
+
 ## [0.333.0] - August 30, 2022
 
 ### Changed
