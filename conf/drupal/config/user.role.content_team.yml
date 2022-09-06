@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - filter.format.collections_custom_html
     - node.type.action
     - node.type.advisory
     - node.type.binder
@@ -51,6 +52,7 @@ dependencies:
     - embed
     - entity_browser
     - file
+    - filter
     - mass_admin_pages
     - mass_admin_toolbar
     - mass_content_api
@@ -333,6 +335,7 @@ permissions:
   - 'use media_states transition save_unpublished'
   - 'use media_states transition send_to_trash'
   - 'use media_states transition unpublish'
+  - 'use text format collections_custom_html'
   - 'use topic_page transition move_to_trash'
   - 'use topic_page transition needs_review'
   - 'use topic_page transition prepublished_draft'

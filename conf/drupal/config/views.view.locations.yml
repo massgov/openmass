@@ -15,6 +15,8 @@ dependencies:
     - paragraphs
     - taxonomy
     - user
+    - views_autocomplete_filters
+    - views_porter_stemmer
 id: locations
 label: Locations
 module: views
@@ -303,6 +305,97 @@ display:
           hierarchy: false
           limit: true
           error_message: true
+        delta:
+          id: delta
+          table: node__field_ref_address
+          field: delta
+          relationship: field_ref_contact_info_1
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '='
+          value:
+            min: ''
+            max: ''
+            value: '0'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        field_geofield_value:
+          id: field_geofield_value
+          table: paragraph__field_geofield
+          field: field_geofield_value
+          relationship: field_ref_address
+          group_type: group
+          admin_label: ''
+          plugin_id: views_porter_stemmer_autocomplete_string
+          operator: 'not empty'
+          value: ''
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            placeholder: ''
+            autocomplete_filter: 0
+            autocomplete_min_chars: 0
+            autocomplete_items: 10
+            autocomplete_field: ''
+            autocomplete_raw_suggestion: true
+            autocomplete_raw_dropdown: true
+            autocomplete_dependent: false
+            stem_query: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
       filter_groups:
         operator: AND
         groups:
@@ -322,7 +415,7 @@ display:
         options:
           query_comment: ''
           disable_sql_rewrite: false
-          distinct: true
+          distinct: false
           disable_automatic_base_fields: false
           replica: false
           query_tags: {  }
@@ -346,7 +439,7 @@ display:
           plugin_id: standard
           required: false
       use_ajax: false
-      group_by: true
+      group_by: false
       header:
         result:
           id: result

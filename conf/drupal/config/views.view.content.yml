@@ -1583,7 +1583,12 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-      header: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          plugin_id: text
       footer: {  }
       display_extenders: {  }
     cache_metadata:
@@ -4226,6 +4231,21 @@ display:
         exposed_form: false
         filters: false
         filter_groups: false
+        header: false
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: '<p>Search for content using any of the filters below. </p>'
+            format: basic_html
+          tokenize: false
       display_extenders: {  }
       path: admin/content/node
       menu:
