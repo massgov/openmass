@@ -251,7 +251,7 @@ module.exports = async function (page, scenario, vp) {
         visible: true,
         timeout: 10000,
       })
-      await page.waitForTimeout(3000);
+      await page.waitForTimeout(5000);
       break;
     case "Service1":
     case "ExpansionOfAccordions1_toggle":
