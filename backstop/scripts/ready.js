@@ -206,7 +206,10 @@ module.exports = async function (page, scenario, vp) {
       })
       break;
     case "InfoDetails1":
-      await page.waitForSelector('.cbFormErrorMarker', {visible: true})
+      await page.waitForSelector('.cbFormErrorMarker', {
+        visible: true,
+        timeout: 10000,
+      })
       await page.evaluate(async function () {
         document.querySelector('.ma__sticky-toc__stuck').remove()
       })
@@ -240,6 +243,11 @@ module.exports = async function (page, scenario, vp) {
 
 
       await page.waitForSelector('footer#footer .ma__footer-new__container', {
+        visible: true,
+        timeout: 10000,
+      })
+
+      await page.waitForSelector('.ma__fixed-feedback-button', {
         visible: true,
         timeout: 10000,
       })
