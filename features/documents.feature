@@ -18,7 +18,6 @@ Feature: Media Documents
     And I attach the file "upload.txt" to "files[field_upload_file_0]"
     And I press "Save"
     Then I should see "Document upload.txt has been created."
-    Given I am on "/admin/ma-dash/documents"
-    When I follow "upload.txt"
+    Given I am on "/doc/test-document-behat"
     Then I should see "Test document Behat"
     And I should see "(TXT 24 BYTES)"
