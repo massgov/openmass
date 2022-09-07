@@ -109,10 +109,6 @@ module.exports = async function (page, scenario, vp) {
   // All the alerts on the page must be processed.
   await page.waitForFunction("jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0");
 
-  if (scenario.label === 'InfoDetails1') {
-    await page.waitForSelector('.cbFormErrorMarker', {visible: true})
-  }
-
   let leafletMapInitialized = await page.evaluate(async function () {
     let initialized = undefined;
     const containers = document.querySelectorAll(".js-leaflet-map");
@@ -186,13 +182,12 @@ module.exports = async function (page, scenario, vp) {
   // Wait for iframes to be resized at least once.
   // Avoid iframes with fixed height.
   await page.waitForFunction("jQuery('.js-ma-responsive-iframe iframe[height=auto]').length === 0");
-
+  await page.waitForFunction("document.readyState === 'complete'");
   switch (scenario.label) {
     case "InfoDetailsImageWrapLeft":
     case "InfoDetailsImageWrapRight":
     case "InfoDetailsImageNoWrapLeft":
     case "InfoDetailsImageNoWrapRight":
-      await page.waitForFunction("document.readyState === 'complete'");
       await page.waitForSelector('form.ma__mass-feedback-form__form', {
         visible: true,
         timeout: 10000,
@@ -211,22 +206,39 @@ module.exports = async function (page, scenario, vp) {
       })
       break;
     case "InfoDetails1":
-      await page.waitForSelector('.ma__figure--large.ma__csvtable table.dataTable', {
+      await page.waitForSelector('.cbFormErrorMarker', {visible: true})
+      await page.evaluate(async function () {
+        document.querySelector('.ma__sticky-toc__stuck').remove()
+      })
+      await page.waitForSelector('.ma__figure--large.ma__csvtable table#DataTables_Table_0', {
         visible: true,
         timeout: 10000,
       })
-      await page.waitForSelector('.ma__figure--x-large.ma__csvtable table.dataTable', {
+      await page.waitForSelector('.ma__figure--large.ma__csvtable div#DataTables_Table_0_info', {
         visible: true,
         timeout: 10000,
       })
-      await page.waitForSelector('.ma__figure--large.ma__csvtable div.dataTables_info', {
+      await page.waitForSelector('.ma__figure--large.ma__csvtable table#DataTables_Table_1', {
         visible: true,
         timeout: 10000,
       })
-      await page.waitForSelector('.ma__figure--x-large.ma__csvtable div.dataTables_info', {
+      await page.waitForSelector('.ma__figure--large.ma__csvtable div#DataTables_Table_1_info', {
         visible: true,
         timeout: 10000,
       })
+
+
+      await page.waitForSelector('.ma__figure--x-large.ma__csvtable table#DataTables_Table_2', {
+        visible: true,
+        timeout: 10000,
+      })
+
+      await page.waitForSelector('.ma__figure--x-large.ma__csvtable div#DataTables_Table_2_info', {
+        visible: true,
+        timeout: 10000,
+      })
+
+
       await page.waitForSelector('footer#footer .ma__footer-new__container', {
         visible: true,
         timeout: 10000,
@@ -236,7 +248,6 @@ module.exports = async function (page, scenario, vp) {
     case "Service1":
     case "ExpansionOfAccordions1_toggle":
     case "ExpansionOfAccordions2_toggle":
-      await page.waitForFunction("document.readyState === 'complete'");
       await page.evaluate(async function () {
         jQuery(".js-accordion-link").not('.ma__emergency-header__toggle').click();
       });
