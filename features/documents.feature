@@ -11,8 +11,6 @@ Feature: Media Documents
     And I fill in the following:
       | Title                             | Test document Behat                |
       | Organization(s)                   | Massachusetts Court System (67286) |
-      | Publishing Frequency              | 99                                 |
-      | Geographic Place (value 1)        | Massachusetts                      |
       | field_start_date[0][value][date]  | 2018-01-19                         |
       | Save as                           | published                          |
     And I attach the file "upload.txt" to "files[field_upload_file_0]"
@@ -30,8 +28,6 @@ Feature: Media Documents
     And I fill in the following:
       | Title                             | Test mp3 Behat                     |
       | Organization(s)                   | Massachusetts Court System (67286) |
-      | Publishing Frequency              | 99                                 |
-      | Geographic Place (value 1)        | Massachusetts                      |
       | field_start_date[0][value][date]  | 2018-03-26                         |
       | Save as                           | published                          |
     And I attach the file "upload.mp3" to "files[field_upload_file_0]"
