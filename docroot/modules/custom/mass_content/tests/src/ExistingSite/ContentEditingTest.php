@@ -38,6 +38,15 @@ class ContentEditingTest extends ExistingSiteBase {
     "/qag-service1",
     "/topics/qag-topicpage1",
   ];
+/**
+ * Temporarily uncomment to avoid failures when new validation is added or Prod content has become invalid.
+ */
+protected function setUp() {
+    if (FALSE) {
+      $this->markTestSkipped('Please comment out this skip after next deployment');
+    }  
+    parent::setUp();
+}
 
   /**
    * Creates an editor, saves it and returns it.
