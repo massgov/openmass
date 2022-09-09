@@ -45,7 +45,7 @@ class ContentEditingTest extends ExistingSiteBase {
   protected function setUp() {
     if (FALSE) {
       $this->markTestSkipped('Please comment out this skip after next deployment');
-    }  
+    }
     parent::setUp();
   }
 
