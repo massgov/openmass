@@ -62,14 +62,14 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
    */
   public function access($object, AccountInterface $account = NULL, $return_as_object = FALSE) {
     if ($object->getEntityType() === 'node') {
-      $access = $object->access('update', $account, TRUE)
-        ->andIf($object->status->access('edit', $account, TRUE));
+      $access = $object->access('update', $account, $return_as_object)
+        ->andIf($object->access('edit', $account, $return_as_object));
       return $return_as_object ? $access : $access->isAllowed();
     }
 
     // Other entity types may have different
     // access methods and properties.
-    return TRUE;
+    return $object->access('update', $account, $return_as_object);
   }
 
   /**
