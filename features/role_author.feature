@@ -53,7 +53,6 @@ Feature: Author Role
       | Permission            |
       | create media |
       | update media |
-      | access media overview |
       | update any media |
 
 

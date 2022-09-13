@@ -47,4 +47,10 @@ function mass_nav_menu_local_tasks_alter(&$data, $route_name) {
   if ($route_name == 'view.ordered_topics.topic_reorder') {
     unset($data['tabs'][0]['views_view:view.ordered_topics.topic_reorder']);
   }
+
+  if ($route_name == "system.admin_content") {
+    // Hide "Moderated content" tab from the "All content" page.
+    unset($data['tabs'][1]['content_moderation.workflows:content_moderation.moderated_content']);
+  }
+
 }
