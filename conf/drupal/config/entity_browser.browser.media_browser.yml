@@ -1,0 +1,31 @@
+uuid: e8760514-0627-466c-b52e-9aef2fae0315
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.media
+  module:
+    - views
+name: media_browser
+label: 'Media Browser'
+display: iframe
+display_configuration:
+  width: '650'
+  height: '500'
+  link_text: 'Select file'
+  auto_open: true
+selection_display: no_display
+selection_display_configuration: {  }
+widget_selector: single
+widget_selector_configuration: {  }
+widgets:
+  386e7b96-6495-451d-b8a2-e398c6ecfe33:
+    id: view
+    uuid: 386e7b96-6495-451d-b8a2-e398c6ecfe33
+    label: 'File Library'
+    weight: 1
+    settings:
+      submit_text: 'Select file'
+      auto_select: false
+      view: media
+      view_display: entity_browser_media
