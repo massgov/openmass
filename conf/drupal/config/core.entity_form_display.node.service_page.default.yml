@@ -41,6 +41,7 @@ dependencies:
     - node.type.service_page
     - workflows.workflow.editorial
   module:
+    - a11y_autocomplete_element
     - conditional_fields
     - content_moderation
     - entity_browser_entity_form
@@ -63,7 +64,6 @@ third_party_settings:
         - group_content
         - group_additional_info
         - group_key_performance_indicators
-        - group_tasks_key_info
       label: 'Service Edit Form'
       region: content
       parent_name: ''
@@ -540,14 +540,10 @@ content:
       placeholder_title: ''
     third_party_settings: {  }
   field_organizations:
-    type: entity_reference_autocomplete
+    type: a11y_autocomplete
     weight: 77
     region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
+    settings: {  }
     third_party_settings: {  }
   field_primary_parent:
     type: entity_reference_hierarchy_autocomplete
