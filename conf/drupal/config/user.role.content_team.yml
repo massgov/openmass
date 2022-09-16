@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - filter.format.collections_custom_html
     - node.type.executive_order
     - node.type.page
     - node.type.sitewide_alert
@@ -23,6 +24,7 @@ dependencies:
     - content_moderation
     - embed
     - file
+    - filter
     - mass_admin_pages
     - mass_admin_toolbar
     - mass_feedback_form
@@ -94,6 +96,7 @@ permissions:
   - 'revert topic_page revisions'
   - 'revert utility_drawer revisions'
   - 'select which pages should suppress the header search'
+  - 'use text format collections_custom_html'
   - 'use topic_page transition move_to_trash'
   - 'use topic_page transition unpublish'
   - 'view executive_order revisions'

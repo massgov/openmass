@@ -72,8 +72,8 @@ class MediaLinkingPageController extends ControllerBase {
    * {@inheritdoc}
    */
   public function build() {
-    $help_url = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/content-improvement-tools/pages-linking-here');
-    $help_text = Link::fromTextAndUrl('Learn how to use Linking Pages.', $help_url)->toString();
+    $help_url = Url::fromUri('https://www.mass.gov/kb/pages-linking-here');
+    $help_text = Link::fromTextAndUrl('Learn how to use Pages Linking Here.', $help_url)->toString();
     $output = [];
     $output['linking_nodes'] = [
       '#type' => 'table',

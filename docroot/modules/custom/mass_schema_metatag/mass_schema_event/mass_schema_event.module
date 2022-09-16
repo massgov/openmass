@@ -168,8 +168,8 @@ function mass_schema_event_metatags_alter(array &$metatags, array &$context) {
   // remove the ```location``` property from that EVENT's schema.org data.
   if (array_key_exists('entity', $context) && $context['entity'] instanceof NodeInterface) {
     $entity = $context['entity'];
-    if ($entity->bundle() === 'event' && $entity->hasField('field_event_address_type')) {
-      if ($entity->get('field_event_address_type')->getString() === "none") {
+    if ($entity->bundle() === 'event') {
+      if ($entity->getMeetingType() === "none") {
         if (array_key_exists('schema_event_location', $metatags)) {
           unset($metatags['schema_event_location']);
         }
