@@ -50,7 +50,6 @@ Feature: editor Role
       | Permission            |
       | create media |
       | update media |
-      | access media overview |
       | update any media      |
 
   Scenario: Ensure Editors can create, edit and otherwise manage News, Event, Form and Guide nodes.
