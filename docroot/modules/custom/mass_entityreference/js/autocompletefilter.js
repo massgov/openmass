@@ -60,9 +60,9 @@
    * @return {string}
    *   The last value of the input field.
    */
-  function extractLastTerm(terms) {
-    return autocomplete.splitValues(terms).pop();
-  }
+  // function extractLastTerm(terms) {
+  //   return autocomplete.splitValues(terms).pop();
+  // }
 
   /**
    * The search handler is called before a search is performed.
@@ -75,16 +75,16 @@
    * @return {bool}
    *   Whether to perform a search or not.
    */
-  function searchHandler(event) {
-    var options = autocomplete.options;
-    var term = autocomplete.extractLastTerm(event.target.value);
-    // Abort search if the first character is in firstCharacterBlacklist.
-    if (term.length > 0 && options.firstCharacterBlacklist.indexOf(term[0]) !== -1) {
-      return false;
-    }
-    // Only search when the term is at least the minimum length.
-    return term.length >= options.minLength;
-  }
+  // function searchHandler(event) {
+  //   var options = autocomplete.options;
+  //   var term = autocomplete.extractLastTerm(event.target.value);
+  //   // Abort search if the first character is in firstCharacterBlacklist.
+  //   if (term.length > 0 && options.firstCharacterBlacklist.indexOf(term[0]) !== -1) {
+  //     return false;
+  //   }
+  //   // Only search when the term is at least the minimum length.
+  //   return term.length >= options.minLength;
+  // }
 
   /**
    * JQuery UI autocomplete source callback.
@@ -234,8 +234,6 @@
   //       $autocomplete.autocomplete(autocomplete.options)
   //     .each(function () {
   //       $(this).data('ui-autocomplete')._renderItem = autocomplete.options.renderItem;
-  //       console.log("REANDER ITEMS");
-  //       console.log(autocomplete.options.renderItem);
   //     });
   //     }
   //   },
