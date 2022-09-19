@@ -20,34 +20,34 @@
    * @return {Array}
    *   Array of values, split by comma.
    */
-  function autocompleteSplitValues(value) {
-    // We will match the value against comma-separated terms.
-    var result = [];
-    var quote = false;
-    var current = '';
-    var valueLength = value.length;
-    var character;
+  // function autocompleteSplitValues(value) {
+  //   // We will match the value against comma-separated terms.
+  //   var result = [];
+  //   var quote = false;
+  //   var current = '';
+  //   var valueLength = value.length;
+  //   var character;
 
-    for (var i = 0; i < valueLength; i++) {
-      character = value.charAt(i);
-      if (character === '"') {
-        current += character;
-        quote = !quote;
-      }
-      else if (character === ',' && !quote) {
-        result.push(current.trim());
-        current = '';
-      }
-      else {
-        current += character;
-      }
-    }
-    if (value.length > 0) {
-      result.push($.trim(current));
-    }
+  //   for (var i = 0; i < valueLength; i++) {
+  //     character = value.charAt(i);
+  //     if (character === '"') {
+  //       current += character;
+  //       quote = !quote;
+  //     }
+  //     else if (character === ',' && !quote) {
+  //       result.push(current.trim());
+  //       current = '';
+  //     }
+  //     else {
+  //       current += character;
+  //     }
+  //   }
+  //   if (value.length > 0) {
+  //     result.push($.trim(current));
+  //   }
 
-    return result;
-  }
+  //   return result;
+  // }
 
   /**
    * Returns the last value of an multi-value textfield.
