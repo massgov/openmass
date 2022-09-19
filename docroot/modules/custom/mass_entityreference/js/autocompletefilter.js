@@ -184,7 +184,8 @@
    */
   function renderItem(ul, item) {
     return $('<li>')
-      .append($('<a>').html(item.label))
+      .attr('role', 'none')
+      .append($('<a>').html(item.label).attr('role', 'option'))
       .appendTo(ul);
   }
 
