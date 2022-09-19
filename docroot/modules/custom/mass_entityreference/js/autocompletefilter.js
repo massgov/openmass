@@ -155,21 +155,21 @@
    * @return {bool}
    *   Returns false to indicate the event status.
    */
-  function selectHandler(event, ui) {
-    var terms = autocomplete.splitValues(event.target.value);
-    // Remove the current input.
-    terms.pop();
-    // Add the selected item.
-    if (ui.item.value.search(',') > 0) {
-      terms.push('"' + ui.item.value + '"');
-    }
-    else {
-      terms.push(ui.item.value);
-    }
-    event.target.value = terms.join(', ');
-    // Return false to tell jQuery UI that we've filled in the value already.
-    return false;
-  }
+  // function selectHandler(event, ui) {
+  //   var terms = autocomplete.splitValues(event.target.value);
+  //   // Remove the current input.
+  //   terms.pop();
+  //   // Add the selected item.
+  //   if (ui.item.value.search(',') > 0) {
+  //     terms.push('"' + ui.item.value + '"');
+  //   }
+  //   else {
+  //     terms.push(ui.item.value);
+  //   }
+  //   event.target.value = terms.join(', ');
+  //   // Return false to tell jQuery UI that we've filled in the value already.
+  //   return false;
+  // }
 
   /**
    * Override jQuery UI _renderItem function to output HTML by default.
@@ -183,19 +183,19 @@
    *   jQuery collection of the ul element.
    */
   // IT DOESN'T SEEM THESE FUNCTIONS ARE DOING ANYTHING.
-  function renderMenu(ul, item) {
-    var that = this;
-    $.each( items, function( index, item ) {
-      that._renderItemData( ul, item );
-    });
-    $( ul ).attr('role', 'listbox').find( "li" ).attr('role', 'none');
-  }
+  // function renderMenu(ul, item) {
+  //   var that = this;
+  //   $.each( items, function( index, item ) {
+  //     that._renderItemData( ul, item );
+  //   });
+  //   $( ul ).attr('role', 'listbox').find( "li" ).attr('role', 'none');
+  // }
 
-  function renderItem(ul, item) {
-    return $('<li>')
-      .append($('<a>').attr('role', 'option').html(item.label))
-      .appendTo(ul);
-  }
+  // function renderItem(ul, item) {
+  //   return $('<li>')
+  //     .append($('<a>').attr('role', 'option').html(item.label))
+  //     .appendTo(ul);
+  // }
 
   /**
    * Attaches the autocomplete behavior to all required fields.
