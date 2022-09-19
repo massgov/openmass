@@ -182,10 +182,17 @@
    * @return {jQuery}
    *   jQuery collection of the ul element.
    */
+  function renderMenu(ul, item) {
+    var that = this;
+    $.each( items, function( index, item ) {
+      that._renderItemData( ul, item );
+    });
+    $( ul ).attr('role', 'listbox').find( "li" ).attr('role', 'none');
+  }
+
   function renderItem(ul, item) {
     return $('<li>')
-      .attr('role', 'none')
-      .append($('<a>').html(item.label).attr('role', 'option'))
+      .append($('<a>').attr('role', 'option').html(item.label))
       .appendTo(ul);
   }
 
