@@ -407,7 +407,7 @@ function mass_metatag_page_attachments(array &$attachments) {
   $uri_end = end($uri_parts);
   $noindex_and_follow = FALSE;
 
-  // The /download route is provided vi simple_sitemap so don't index the canonical.
+  // The /download route is provided via simple_sitemap so don't index the canonical.
   if (\Drupal::routeMatch()->getRouteName() === 'entity.media.canonical') {
     $noindex_and_follow = TRUE;
   }

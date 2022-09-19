@@ -772,13 +772,13 @@ function mass_fields_do_form_alter(&$form, FormStateInterface $form_state) {
     '#open' => FALSE,
     '#title' => t('Search status'),
     '#weight' => 55,
-    '#access' =>  $settings[$entity->getEntityTypeId()][$entity->bundle()]['index'],
+    '#access' => $settings[$entity->getEntityTypeId()][$entity->bundle()]['index'],
   ];
   // Copy the checkbox fields into the advanced group.
   $form['search_status']['search'] = $form['search'];
   $form['search_status']['search_nosnippet'] = $form['search_nosnippet'];
 
-  // nosnippet only makes sense if search is enabled.
+  // Nosnippet only makes sense if search is enabled.
   $form['search_status']['search_nosnippet']['#states'] = [
     'enabled' => [
       ':input[name="search[value]"]' => ['checked' => FALSE],
