@@ -190,11 +190,11 @@
     $( ul ).attr('role', 'listbox').find( "li" ).attr('role', 'none');
   }
 
-  function renderItem(ul, item) {
-    return $('<li>')
-      .append($('<a>').attr('role', 'option').html(item.label))
-      .appendTo(ul);
-  }
+  // function renderItem(ul, item) {
+  //   return $('<li>')
+  //     .append($('<a>').attr('role', 'option').html(item.label))
+  //     .appendTo(ul);
+  // }
 
   /**
    * Attaches the autocomplete behavior to all required fields.
