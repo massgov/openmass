@@ -182,13 +182,14 @@
    * @return {jQuery}
    *   jQuery collection of the ul element.
    */
-  function renderMenu(ul, item) {
-    var that = this;
-    $.each( items, function( index, item ) {
-      that._renderItemData( ul, item );
-    });
-    $( ul ).attr('role', 'listbox').find( "li" ).attr('role', 'none');
-  }
+  // IT DOESN'T SEEM THESE FUNCTIONS ARE DOING ANYTHING.
+  // function renderMenu(ul, item) {
+  //   var that = this;
+  //   $.each( items, function( index, item ) {
+  //     that._renderItemData( ul, item );
+  //   });
+  //   $( ul ).attr('role', 'listbox').find( "li" ).attr('role', 'none');
+  // }
 
   // function renderItem(ul, item) {
   //   return $('<li>')
@@ -208,7 +209,12 @@
    */
   Drupal.behaviors.autocomplete = {
     attach: function (context) {
-      // Act on textfields with the "form-autocomplete" class.
+    // Add aria role to
+      $(context).find('input.form-autocomplete').attr({'role': 'combobox',
+                                                       'aria-autocomplete': 'none',
+                                                       'aria-expanded': 'false',
+                                                       'aria-controls': 'optionListID'});
+    // Act on textfields with the "form-autocomplete" class.
       var $autocomplete = $(context).find('input.form-autocomplete').once('autocomplete');
       if ($autocomplete.length) {
     // Allow options to be overriden per instance.
