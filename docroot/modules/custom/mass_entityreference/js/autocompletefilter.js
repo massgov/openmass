@@ -219,7 +219,11 @@
 
 
       // Act on textfields with the "form-autocomplete" class.
-      var $autocomplete = $(context).find('input.form-autocomplete').once('autocomplete');
+      // var $autocomplete = $(context).find('input.form-autocomplete').once('autocomplete');
+      var $autocomplete = $(context).find('input.form-autocomplete').attr({'role': 'combobox',
+                                                                            'aria-autocomplete': 'none',
+                                                                            'aria-expanded': 'false',
+                                                                            'aria-controls': 'optionListID'})
       if ($autocomplete.length) {
     // Allow options to be overriden per instance.
         var blacklist = $autocomplete.attr('data-autocomplete-first-character-blacklist');
@@ -229,10 +233,9 @@
     // Use jQuery UI Autocomplete on the textfield.
         $autocomplete.autocomplete(autocomplete.options)
       .each(function () {
-        $(this).attr({'role': 'combobox',
-                      'aria-autocomplete': 'none',
-                      'aria-expanded': 'false',
-                      'aria-controls': 'optionListID'}).data('ui-autocomplete')._renderItem = autocomplete.options.renderItem;
+        $(this).data('ui-autocomplete')._renderItem = autocomplete.options.renderItem;
+        console.log("REANDER ITEMS");
+        console.log(autocomplete.options.renderItem);
       });
       }
     },
