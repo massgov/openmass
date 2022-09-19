@@ -207,8 +207,8 @@
    * @prop {Drupal~behaviorDetach} detach
    *   Detaches the autocomplete behaviors.
    */
-  Drupal.behaviors.autocomplete = {
-    attach: function (context) {
+  // Drupal.behaviors.autocomplete = {
+  //   attach: function (context) {
 
 
     // Add aria role to input.form-autocomplete
@@ -220,33 +220,33 @@
 
       // Act on textfields with the "form-autocomplete" class.
       // var $autocomplete = $(context).find('input.form-autocomplete').once('autocomplete');
-      var $autocomplete = $(context).find('input.form-autocomplete').attr({'role': 'combobox',
-                                                                            'aria-autocomplete': 'none',
-                                                                            'aria-expanded': 'false',
-                                                                            'aria-controls': 'optionListID'})
-      if ($autocomplete.length) {
+      // var $autocomplete = $(context).find('input.form-autocomplete').attr({'role': 'combobox',
+      //                                                                       'aria-autocomplete': 'none',
+      //                                                                       'aria-expanded': 'false',
+      //                                                                       'aria-controls': 'optionListID'})
+      // if ($autocomplete.length) {
     // Allow options to be overriden per instance.
-        var blacklist = $autocomplete.attr('data-autocomplete-first-character-blacklist');
-        $.extend(autocomplete.options, {
-          firstCharacterBlacklist: (blacklist) ? blacklist : ''
-        });
+        // var blacklist = $autocomplete.attr('data-autocomplete-first-character-blacklist');
+        // $.extend(autocomplete.options, {
+        //   firstCharacterBlacklist: (blacklist) ? blacklist : ''
+        // });
     // Use jQuery UI Autocomplete on the textfield.
-        $autocomplete.autocomplete(autocomplete.options)
-      .each(function () {
-        $(this).data('ui-autocomplete')._renderItem = autocomplete.options.renderItem;
-        console.log("REANDER ITEMS");
-        console.log(autocomplete.options.renderItem);
-      });
-      }
-    },
-    detach: function (context, settings, trigger) {
-      if (trigger === 'unload') {
-        $(context).find('input.form-autocomplete')
-      .removeOnce('autocomplete')
-      .autocomplete('destroy');
-      }
-    }
-  };
+  //       $autocomplete.autocomplete(autocomplete.options)
+  //     .each(function () {
+  //       $(this).data('ui-autocomplete')._renderItem = autocomplete.options.renderItem;
+  //       console.log("REANDER ITEMS");
+  //       console.log(autocomplete.options.renderItem);
+  //     });
+  //     }
+  //   },
+  //   detach: function (context, settings, trigger) {
+  //     if (trigger === 'unload') {
+  //       $(context).find('input.form-autocomplete')
+  //     .removeOnce('autocomplete')
+  //     .autocomplete('destroy');
+  //     }
+  //   }
+  // };
 
   /**
    * Autocomplete object implementation.
