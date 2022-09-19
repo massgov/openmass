@@ -155,21 +155,21 @@
    * @return {bool}
    *   Returns false to indicate the event status.
    */
-  function selectHandler(event, ui) {
-    var terms = autocomplete.splitValues(event.target.value);
-    // Remove the current input.
-    terms.pop();
-    // Add the selected item.
-    if (ui.item.value.search(',') > 0) {
-      terms.push('"' + ui.item.value + '"');
-    }
-    else {
-      terms.push(ui.item.value);
-    }
-    event.target.value = terms.join(', ');
-    // Return false to tell jQuery UI that we've filled in the value already.
-    return false;
-  }
+  // function selectHandler(event, ui) {
+  //   var terms = autocomplete.splitValues(event.target.value);
+  //   // Remove the current input.
+  //   terms.pop();
+  //   // Add the selected item.
+  //   if (ui.item.value.search(',') > 0) {
+  //     terms.push('"' + ui.item.value + '"');
+  //   }
+  //   else {
+  //     terms.push(ui.item.value);
+  //   }
+  //   event.target.value = terms.join(', ');
+  //   // Return false to tell jQuery UI that we've filled in the value already.
+  //   return false;
+  // }
 
   /**
    * Override jQuery UI _renderItem function to output HTML by default.
@@ -210,10 +210,10 @@
   Drupal.behaviors.autocomplete = {
     attach: function (context) {
     // Add aria role to
-      $(context).find('input.form-autocomplete').attr({'role': 'combobox',
-                                                       'aria-autocomplete': 'none',
-                                                       'aria-expanded': 'false',
-                                                       'aria-controls': 'optionListID'});
+      // $(context).find('input.form-autocomplete').attr({'role': 'combobox',
+      //                                                  'aria-autocomplete': 'none',
+      //                                                  'aria-expanded': 'false',
+      //                                                  'aria-controls': 'optionListID'});
     // Act on textfields with the "form-autocomplete" class.
       var $autocomplete = $(context).find('input.form-autocomplete').once('autocomplete');
       if ($autocomplete.length) {
