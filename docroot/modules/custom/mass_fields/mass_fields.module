@@ -268,13 +268,22 @@ function mass_fields_entity_base_field_info(\Drupal\Core\Entity\EntityTypeInterf
     ];
     $fields['search'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Exclude from search'))
-      ->setDefaultValue(FALSE)
       ->setDefaultValueCallback('mass_fields_search_default_value')
       ->setRevisionable(TRUE)
-      ->setTranslatable(TRUE)
+      ->setTranslatable(FALSE)
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayOptions('form', $options)
       ->setDescription('If you need to publish this content but hide it from search engines, check this box. If you change the value of this checkbox, it may take multiple days for your page to be added or removed from search.');
+
+    $fields['search_nosnippet'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Omit snippet in search results'))
+      ->setDefaultValue(FALSE)
+      ->setRevisionable(TRUE)
+      ->setTranslatable(FALSE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayOptions('form', $options)
+      ->setDescription('Tell search engines not to show a page description or excerpt after the result title. We recommend that you do not use this option as snippets help users choose a search result.');
+
     return $fields;
   }
 }
@@ -765,10 +774,18 @@ function mass_fields_do_form_alter(&$form, FormStateInterface $form_state) {
     '#weight' => 55,
     '#access' =>  $settings[$entity->getEntityTypeId()][$entity->bundle()]['index'],
   ];
-  // Copy the checkbox field into the advanced group.
+  // Copy the checkbox fields into the advanced group.
   $form['search_status']['search'] = $form['search'];
-  // Remove the original checkbox in the main section.
-  unset($form['search']);
+  $form['search_status']['search_nosnippet'] = $form['search_nosnippet'];
+
+  // nosnippet only makes sense if search is enabled.
+  $form['search_status']['search_nosnippet']['#states'] = [
+    'enabled' => [
+      ':input[name="search[value]"]' => ['checked' => FALSE],
+    ],
+  ];
+  // Remove the original checkboxes in the main section.
+  unset($form['search'], $form['search_nosnippet']);
 }
 
 /**

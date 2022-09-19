@@ -1,9 +1,9 @@
 <?php
 
 /**
- * Migrate from simple sitemap and metatag exclusions to the new boolean 'search' field.
+ * Migrate from simple sitemap and metatag exclusions to the new boolean search fields.
  */
-function mass_fields_deploy_search_field3() {
+function mass_fields_deploy_search_field4() {
   $i = 0;
   $migrated = ['node' => [], 'media' => []];
 
@@ -12,20 +12,25 @@ function mass_fields_deploy_search_field3() {
   foreach ($types as $type) {
     $table = 'node__field_' . $type->id() . '_metatags';
     if (Drupal::database()->schema()->tableExists($table)) {
-      $result = \Drupal::database()->select($table, 'tab')
-        ->fields('tab', ['entity_id'])
-        ->condition('field_' . $type->id() . '_metatags_value', '%noindex%', 'LIKE')
-        ->execute();
-      $ids = $result->fetchCol();
-      foreach ($ids as $id) {
+      $field = 'field_' . $type->id() . '_metatags_value';
+      $query = \Drupal::database()->select($table, 'tab')
+        ->fields('tab', ['entity_id', $field]);
+      $or = $query->orConditionGroup();
+      $or->condition($field, '%noindex%', 'LIKE');
+      $or->condition($field, '%nosnippet%', 'LIKE');
+      $result = $query->condition($or)->execute();
+      $records = $result->fetchAllAssoc('entity_id');
+      foreach ($records as $id => $columns) {
         $i++;
         if (in_array($id, $migrated['node'])) {
           // We already migrated this entity.
           continue;
         }
         elseif ($entity = Drupal::entityTypeManager()->getStorage('node')->load($id)) {
-          $entity->set('search', TRUE)->save();
-          \Drupal::logger('mass_fields')->notice('Migrated !url from metatag (!i of !total !type).', ['!url' => $entity->toUrl()->toString(), '!i' => $i, '!total' => count($ids), '!type' => $type->id()]);
+          $entity->set('search', str_contains($columns->$field, 'noindex'));
+          $entity->set('search_nosnippet', str_contains($columns->$field, 'nosnippet'));
+          $entity->save();
+          \Drupal::logger('mass_fields')->notice('Migrated !url from metatag (!i of !total !type).', ['!url' => $entity->toUrl()->toString(), '!i' => $i, '!total' => count($records), '!type' => $type->id()]);
           $migrated['node'][] = $id;
         }
       }
