@@ -1,5 +1,53 @@
 
 
+## [0.335.0] - September 13, 2022
+
+### Added
+  - DP-25204: Add confirmation warning when bulk transitioning documents.
+  - DP-25248: Add testing for saving QAG pages.
+  
+### Removed
+  - DP-25692: Hide "Media" and remove "Moderated Content" from All Content view.
+  
+### Fixed
+  - DP-25803: Fix TOC jump link target margin top that blocks page content.
+  - DP-25805: Fix accordions collapsing while scrolling on Android/iOS devices issue.
+  - DP-25828: Resolve 500 error on decision tree page.
+  - DP-25832: Fix accordion tests in patternlab.
+  
+
+
+## [0.334.0] - September 6, 2022
+
+### Added
+  - DP-25215: Change description field in collection taxonomy to reflect use for search filtering.
+  - DP-25248: Add testing for saving QAG pages.
+  - DP-25551: Add rich text field to Service Section paragraph.
+  
+### Changed
+  - DP-25339: Extensive help text improvements.
+  
+### Fixed
+  - DP-25642: Duplicates of locations exist on service location listing pages.
+  - DP-25755: Fixed Behat test failure due to the entity_embed module array to string conversion warning.
+  - DP-25762: Fix bug with updated date on events that are public meetings
+  
+
+
+## [0.333.0] - August 30, 2022
+
+### Changed
+  - DP-24286: Adjust the keyboard navigation on the main nav to more make sense to users.
+  
+### Fixed
+  - DP-25175: Improve sticky TOC accessibility - make section headings the jump link targets.
+  - DP-25638: Missing breadcrumb on some events pages.
+  
+### Removed
+  - DP-25409: Cleanup and remove old service page fields no longer needed after flexibility changes.
+  
+
+
 ## [0.332.0] - August 9, 2022
 
 ### Fixed

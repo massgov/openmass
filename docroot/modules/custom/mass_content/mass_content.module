@@ -610,6 +610,9 @@ function mass_content_form_taxonomy_term_collections_form_alter(array &$form, Fo
     $form['field_additional_no_items_found']['#access'] = FALSE;
     return;
   }
+  else {
+    $form['field_additional_search_keywords']['#access'] = FALSE;
+  }
 
   $default_sort_widget = &$form['field_default_sort']['widget'][0]['value'];
   $default_sort_widget['#type'] = 'select';

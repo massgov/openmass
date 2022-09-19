@@ -168,7 +168,9 @@ function mass_decision_tree_preprocess_node(&$variables) {
       if (Helper::isFieldPopulated($descendant_node, 'field_add_video')) {
         $videos = Helper::getReferencedEntitiesFromField($descendant_node, 'field_add_video');
         $video = $videos[0];
-        $descendant['video'] = Atoms::prepareVideo($video->field_video->entity, []);
+        if (!empty($video->field_video->entity)) {
+          $descendant['video'] = Atoms::prepareVideo($video->field_video->entity, []);
+        }
       }
       if ($descendant_node->access('update', $user)) {
         $descendant['editLink'] = $descendant_node->toUrl('edit-form')->toString();
