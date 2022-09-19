@@ -3,7 +3,7 @@
 /**
  * Migrate from simple sitemap and metatag exclusions to the new boolean search fields.
  */
-function mass_fields_deploy_search_field4() {
+function mass_fields_deploy_search_fields() {
   $i = 0;
   $migrated = ['node' => [], 'media' => []];
 

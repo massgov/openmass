@@ -540,6 +540,42 @@ function mass_content_page_attachments(array &$attachments) {
 }
 
 /**
+ * Implements hook_page_attachments_alter().
+ *
+ * Honor custom fields for hiding from Search (robots meta tag). This overrides
+ * any robot tag set by metatag module (which is now unused for robots tag).
+ */
+function mass_content_page_attachments_alter(array &$attachments) {
+  $values = [];
+  $entity = NULL;
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($route_name === 'entity.node.canonical') {
+    $entity = \Drupal::routeMatch()->getParameter('node');
+  }
+  if ($entity) {
+    if ($entity->getSearch()->getString()) {
+      $values = ['noindex', 'nofollow'];
+    }
+    elseif ($entity->getSearchNoSnippet()->getString()) {
+      $values = ['nosnippet'];
+    }
+    if ($values) {
+      $attachments['#attached']['html_head'][] = [
+        [
+          // Redirect through a 'Refresh' meta tag if JavaScript is disabled.
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'robots',
+            'content' => implode(', ', $values),
+          ],
+        ],
+        'robots',
+      ];
+    }
+  }
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function mass_content_form_taxonomy_term_collections_form_alter(array &$form, FormStateInterface $form_state) {
