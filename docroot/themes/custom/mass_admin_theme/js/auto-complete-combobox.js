@@ -8,33 +8,40 @@
 (function () {
   'use strict';
 
-    console.log("LOADED!");
+  setTimeout(function () {
     // #block-mass-admin-theme-mainpagecontent
-  var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
-  var optionLists = document.querySelectorAll(".ui-autocomplete");
+    var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
+    var optionLists = document.querySelectorAll(".ui-autocomplete");
 
-  autoCompleteFields.forEach(function (autoCompleteField, index) {
-    console.log("autoCompleteFields LISTS");
-    // Add missing accessibility components to pairng a field and its combobox(option list).
-    autoCompleteField.setAttribute("role", "combobox");
-    autoCompleteField.setAttribute("aria-autocomplete", "none");
-    autoCompleteField.setAttribute("aria-expanded", "false");
 
-    console.log(index);
-    console.log(autoCompleteField);
+    console.log(autoCompleteFields);
 
-    autoCompleteField.addEventListener("keyPress", (e) => {
-      console.log(e.target);
+    autoCompleteFields.forEach(function (autoCompleteField, index) {
+      console.log("autoCompleteFields LISTS");
+      // Add missing accessibility components to pairng a field and its combobox(option list).
+      autoCompleteField.setAttribute("role", "combobox");
+      autoCompleteField.setAttribute("aria-autocomplete", "none");
+      autoCompleteField.setAttribute("aria-expanded", "false");
+
+      console.log(index);
+      console.log(autoCompleteField);
+
+      autoCompleteField.addEventListener("keyPress", e => {
+        console.log(e.target);
+      });
+    }, );
+    // autoCompleteFields.findIndex();
+
+    optionLists.forEach(optionList => {
+      console.log("OPTION LISTS");
+      console.log(optionList);
+
+      optionList.attr("role", "listbox");
     });
-  });
-  // autoCompleteFields.findIndex();
 
-  optionLists.forEach(optionList => {
-    console.log("OPTION LISTS");
-    console.log(optionList);
+  }, 1000);
 
-    optionList.attr("role", "listbox");
-  });
+
 
   // Add missing accessibility components to pairng a field and its combobox(option list) as their lists get generated.
   // Get index for the field with keypress event fired.
