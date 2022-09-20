@@ -8,37 +8,26 @@
 (function () {
   'use strict';
 
+  // The timeout function is necessary to recognize the fields and the lists.
   setTimeout(function () {
-    // #block-mass-admin-theme-mainpagecontent
     var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
     var optionLists = document.querySelectorAll(".ui-autocomplete");
 
-
-    console.log(autoCompleteFields);
-
     autoCompleteFields.forEach(function (autoCompleteField, index) {
-      console.log("autoCompleteFields LISTS");
       // Add missing accessibility components to pairng a field and its combobox(option list).
       autoCompleteField.setAttribute("role", "combobox");
       autoCompleteField.setAttribute("aria-autocomplete", "none");
       autoCompleteField.setAttribute("aria-expanded", "false");
 
-      console.log(index);
-      console.log(autoCompleteField);
-
       autoCompleteField.addEventListener("keyPress", e => {
         console.log(e.target);
       });
-    }, );
-    // autoCompleteFields.findIndex();
-
-    optionLists.forEach(optionList => {
-      console.log("OPTION LISTS");
-      console.log(optionList);
-
-      optionList.attr("role", "listbox");
     });
 
+    optionLists.forEach((optionList, index) => {
+      // Add missing accessibility components to pairng a field and its combobox(option list).
+      optionList.setAttribute("role", "listbox");
+    });
   }, 1000);
 
 
