@@ -8,16 +8,19 @@
 (function () {
   'use strict';
 
+    console.log("LOADED!");
     // #block-mass-admin-theme-mainpagecontent
   var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
   var optionLists = document.querySelectorAll(".ui-autocomplete");
 
-  autoCompleteFields.forEach(autoCompleteField => {
+  autoCompleteFields.forEach(function (autoCompleteField, index) {
+    console.log("autoCompleteFields LISTS");
     // Add missing accessibility components to pairng a field and its combobox(option list).
     autoCompleteField.setAttribute("role", "combobox");
     autoCompleteField.setAttribute("aria-autocomplete", "none");
     autoCompleteField.setAttribute("aria-expanded", "false");
 
+    console.log(index);
     console.log(autoCompleteField);
 
     autoCompleteField.addEventListener("keyPress", (e) => {
@@ -27,6 +30,9 @@
   // autoCompleteFields.findIndex();
 
   optionLists.forEach(optionList => {
+    console.log("OPTION LISTS");
+    console.log(optionList);
+
     optionList.attr("role", "listbox");
   });
 
