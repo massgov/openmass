@@ -8,12 +8,17 @@
 (function () {
   'use strict';
 
-  var listIndex;
-
   // The timeout function is necessary to recognize the fields and the lists.
   setTimeout(function () {
     var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
     var optionLists = document.querySelectorAll(".ui-autocomplete");
+    var listIndex;
+
+    optionLists.forEach((optionList, index) => {
+      listIndex = index;
+      // Add missing accessibility components to pairng a field and its combobox(option list).
+      optionList.setAttribute("role", "listbox");
+    });
 
     autoCompleteFields.forEach((autoCompleteField, index) => {
       // Add missing accessibility components to pairng a field and its combobox(option list).
@@ -27,34 +32,26 @@
         console.log("EVENT");
         console.log(index);
         console.log(this.index);
-        console.log(e);
+        console.log(e.target);
+        // Find the matching index UL.
+
+        // Check the UL has display: none;
+        // if() {
+        //   this.setAttribute("aria-expanded", "false");
+        // } else {
+        //   this.setAttribute("aria-expanded", "true");
+        // }
+        // If no, change aria-expanded value to true.
+
+        // Get ID of the UL.
+
+        // Add aria-controls with the UL ID value.
+        // this.setAttribute("aria-controls", "ID");
+
+        // Set role to LIs and their child As.
+        // optionLists[XX].querySelectorAll("li").setAttribute("role", "none");
+        // optionLists[XX].querySelectorAll("li a").setAttribute("role", "option");
       });
     });
-
-    optionLists.forEach((optionList, index) => {
-      listIndex = index;
-      // Add missing accessibility components to pairng a field and its combobox(option list).
-      optionList.setAttribute("role", "listbox");
-    });
   }, 1000);
-
-
-
-  // Add missing accessibility components to pairng a field and its combobox(option list) as their lists get generated.
-  // Get index for the field with keypress event fired.
-
-  // Find the UL that got its content.
-  // Get ID and assign it to its corresponding field's aria-controls.
-  // autoCompleteFields[XX].setAttribute("aria-controls", "ID");
-  // 1. Check the UL doesn't have display: none;
-  // 2. Change the aria-expanded value to true.
-  // autoCompleteFields[XX].setAttribute("aria-expanded", "true");
-  // Add roles to LIs and As.
-  // optionLists[XX].setAttribute("role", "combobox");
-  // optionLists[XX].querySelectorAll("li").setAttribute("role", "none");
-  // optionLists[XX].querySelectorAll("li a").setAttribute("role", "option");
-
-
-  // // When UL has display: none;, set its corresnponding field's aria-expanded to false.
-  // autoCompleteFields[XX].setAttribute("aria-expanded", "false");
 })();
