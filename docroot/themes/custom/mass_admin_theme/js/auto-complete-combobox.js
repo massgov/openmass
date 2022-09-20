@@ -15,18 +15,19 @@
     var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
     var optionLists = document.querySelectorAll(".ui-autocomplete");
 
-    autoCompleteFields.forEach(function (autoCompleteField, index) {
+    autoCompleteFields.forEach((autoCompleteField, index) => {
       // Add missing accessibility components to pairng a field and its combobox(option list).
       autoCompleteField.setAttribute("role", "combobox");
       autoCompleteField.setAttribute("aria-autocomplete", "none");
       autoCompleteField.setAttribute("aria-expanded", "false");
 
-      console.log("index: " + index);
+      console.log("list index: " + listIndex);
 
-      autoCompleteField.addEventListener("keyPress", e => {
+      autoCompleteField.addEventListener("change", e => {
         console.log("EVENT");
+        console.log(index);
         console.log(this.index);
-        console.log(e.key);
+        console.log(e);
       });
     });
 
