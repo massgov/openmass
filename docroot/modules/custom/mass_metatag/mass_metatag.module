@@ -421,7 +421,7 @@ function mass_metatag_page_attachments(array &$attachments) {
       '#tag' => 'meta',
       '#attributes' => [
         'name' => 'robots',
-        'content' => 'noindex',
+        'content' => 'noindex, follow',
       ],
     ];
     $attachments['#attached']['html_head'][] = [$noindex, 'noindex'];
@@ -674,7 +674,7 @@ function mass_metatag_metatags_attachments_alter(array &$metatag_attachments) {
   if (!empty($metatag_attachments['#attached']['html_head'])) {
     $metatags = $metatag_attachments['#attached']['html_head'];
 
-    foreach ($metatags as $key => $tag) {
+    foreach ($metatags as $tag) {
       // Verify that we are in the news content type.
       if ($tag[1] == "schema_news_article_id") {
         $news = TRUE;
