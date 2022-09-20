@@ -8,28 +8,27 @@
 (function () {
   'use strict';
 
-  let autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
-  let optionLists = document.querySelectorAll(".ui-autocomplete");
-
-  // Add missing accessibility components to pairng a field and its combobox(option list).
-  autoCompleteFields.setAttribute("role", "combobox");
-  autoCompleteFields.setAttribute("aria-autocomplete", "none");
-  autoCompleteFields.setAttribute("aria-expanded", "false");
-
-  optionLists.attr("role", "listbox");
-
-
-  // autoCompleteFields.addEventListener("keyPress", () => {
-
-  // });
+    // #block-mass-admin-theme-mainpagecontent
+  var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
+  var optionLists = document.querySelectorAll(".ui-autocomplete");
 
   autoCompleteFields.forEach(autoCompleteField => {
+    // Add missing accessibility components to pairng a field and its combobox(option list).
+    autoCompleteField.setAttribute("role", "combobox");
+    autoCompleteField.setAttribute("aria-autocomplete", "none");
+    autoCompleteField.setAttribute("aria-expanded", "false");
+
+    console.log(autoCompleteField);
+
     autoCompleteField.addEventListener("keyPress", (e) => {
       console.log(e.target);
     });
   });
   // autoCompleteFields.findIndex();
 
+  optionLists.forEach(optionList => {
+    optionList.attr("role", "listbox");
+  });
 
   // Add missing accessibility components to pairng a field and its combobox(option list) as their lists get generated.
   // Get index for the field with keypress event fired.
