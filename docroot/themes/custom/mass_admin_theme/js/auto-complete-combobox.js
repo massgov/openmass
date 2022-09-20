@@ -8,6 +8,8 @@
 (function () {
   'use strict';
 
+  var listIndex;
+
   // The timeout function is necessary to recognize the fields and the lists.
   setTimeout(function () {
     var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
@@ -19,12 +21,17 @@
       autoCompleteField.setAttribute("aria-autocomplete", "none");
       autoCompleteField.setAttribute("aria-expanded", "false");
 
+      console.log("index: " + index);
+
       autoCompleteField.addEventListener("keyPress", e => {
-        console.log(e.target);
+        console.log("EVENT");
+        console.log(this.index);
+        console.log(e.key);
       });
     });
 
     optionLists.forEach((optionList, index) => {
+      listIndex = index;
       // Add missing accessibility components to pairng a field and its combobox(option list).
       optionList.setAttribute("role", "listbox");
     });
