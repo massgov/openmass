@@ -1,5 +1,18 @@
 
 
+## [0.336.0] - September 20, 2022
+
+### Added
+  - DP-25559: Added Total No, Total Yes, and Total Feedback to Content Performance.
+  
+### Removed
+  - DP-25808: Removed feedback survey from public site.
+  
+### Fixed
+  - DP-25861: Fixed permissions issue preventing authors and editors from viewing the entity browser.
+  
+
+
 ## [0.335.0] - September 13, 2022
 
 ### Added
