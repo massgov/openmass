@@ -12,10 +12,10 @@
   setTimeout(function () {
     var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
     var optionLists = document.querySelectorAll(".ui-autocomplete");
-    var listIndex;
+    // var listIndex;
 
-    optionLists.forEach((optionList, index) => {
-      listIndex = index;
+    optionLists.forEach((optionList) => {
+      // listIndex = index;
       // Add missing accessibility components to pairng a field and its combobox(option list).
       optionList.setAttribute("role", "listbox");
     });
@@ -26,21 +26,18 @@
       autoCompleteField.setAttribute("aria-autocomplete", "none");
       autoCompleteField.setAttribute("aria-expanded", "false");
 
-      console.log("list index: " + listIndex);
-
       autoCompleteField.addEventListener("change", e => {
         console.log("EVENT");
         console.log(index);
-        console.log(this.index);
-        console.log(e.target);
+        console.log(e.target.attribute("aria-expanded"));
         // Find the matching index UL.
-
+        console.log("list index: " + optionLists[index]);
         // Check the UL has display: none;
-        // if() {
-        //   this.setAttribute("aria-expanded", "false");
-        // } else {
-        //   this.setAttribute("aria-expanded", "true");
-        // }
+        if(optionLists[index].style.display === "none") {
+          this.setAttribute("aria-expanded", "false");
+        } else {
+          this.setAttribute("aria-expanded", "true");
+        }
         // If no, change aria-expanded value to true.
 
         // Get ID of the UL.
