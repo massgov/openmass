@@ -29,8 +29,9 @@
       autoCompleteField.addEventListener("change", e => {
         console.log("EVENT");
         console.log(index);
-        console.log(e.target.getAttribute("aria-expanded"));
+        // console.log(e.target.getAttribute("aria-expanded"));
         // Find the matching index UL.
+        console.log("list 1: " + optionLists[0]);
         console.log("list index: " + optionLists[index]);
         // Check the UL has display: none;
         if(optionLists[index].style.display === "none") {
@@ -41,13 +42,13 @@
         // If no, change aria-expanded value to true.
 
         // Get ID of the UL.
-
+        var listId = optionLists[index].getAttribute("id")
         // Add aria-controls with the UL ID value.
-        // this.setAttribute("aria-controls", "ID");
+        e.target.setAttribute("aria-controls", listId);
 
         // Set role to LIs and their child As.
-        // optionLists[XX].querySelectorAll("li").setAttribute("role", "none");
-        // optionLists[XX].querySelectorAll("li a").setAttribute("role", "option");
+        optionLists[index].querySelectorAll("li").setAttribute("role", "none");
+        optionLists[index].querySelectorAll("li > a").setAttribute("role", "option");
       });
     });
   }, 500);
