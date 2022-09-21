@@ -31,10 +31,7 @@
         console.log(index);
         // console.log(e.target.getAttribute("aria-expanded"));
         // Find the matching index UL.
-        console.log(optionLists[0]);
         console.log(optionLists[index]);
-        console.log("list 1: " + optionLists[0].appendChild(generateListFromArray(array)));
-        console.log("list index: " + optionLists[index].appendChild(generateListFromArray(array)));
         // Check the UL has display: none;
         if(optionLists[index].style.display) {
           e.target.setAttribute("aria-expanded", "false");
