@@ -546,32 +546,33 @@ function mass_content_page_attachments(array &$attachments) {
  * any robot tag set by metatag module (which is now unused for robots tag).
  */
 function mass_content_page_attachments_alter(array &$attachments) {
+  $values = [];
   $entity = NULL;
   $route_name = \Drupal::routeMatch()->getRouteName();
   if ($route_name === 'entity.node.canonical') {
-    /** @var \Drupal\mass_content\Entity\Bundle\node\NodeBundle $entity */
     $entity = \Drupal::routeMatch()->getParameter('node');
   }
-  if (!$entity) {
-    return;
+  if ($entity) {
+    if ($entity->getSearch()->getString()) {
+      $values = ['noindex', 'nofollow'];
+    }
+    elseif ($entity->getSearchNoSnippet()->getString()) {
+      $values = ['nosnippet'];
+    }
+    if ($values) {
+      $attachments['#attached']['html_head'][] = [
+        [
+          // Redirect through a 'Refresh' meta tag if JavaScript is disabled.
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'robots',
+            'content' => implode(', ', $values),
+          ],
+        ],
+        'robots',
+      ];
+    }
   }
-
-  // @todo Harmless? empty divs added before and after the meta tag.
-  $build['bots'] = ['#markup' => \Drupal\Core\Render\Markup::create('<meta name="robots" content="<@content>" />')];
-  $build['bots']['#attached']['placeholders']['<@content>'] = [
-    '#lazy_builder' => [
-      'mass_content.lazy_builders:renderRobots',
-      [
-        $entity->getSearch()->getString(),
-        $entity->getSearchNoSnippet()->getString(),
-      ],
-    ],
-    '#create_placeholder' => TRUE,
-  ];
-  $attachments['#attached']['html_head'][] = [
-    $build,
-    'robots',
-  ];
 }
 
 /**

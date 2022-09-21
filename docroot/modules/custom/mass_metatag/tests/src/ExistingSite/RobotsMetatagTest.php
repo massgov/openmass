@@ -2,7 +2,6 @@
 
 namespace Drupal\Tests\mass_metatag\ExistingSite;
 
-use Drupal\Core\Cache\Cache;
 use Drupal\mass_content_moderation\MassModeration;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 use Drupal\file\Entity\File;
@@ -54,39 +53,27 @@ class RobotsMetatagTest extends ExistingSiteBase {
     $session = $this->getSession();
 
     // Check robots metatag on resources page.
-    $session->visit($service_page->toUrl()->toString() . '/resources');
+    $session->visit('/node/' . $service_page->id() . '/resources');
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Page loads');
     $content = $session->getPage()->find('xpath', '//meta[@name="robots"]')->getAttribute('content');
     $this->assertStringContainsString('noindex', $content);
     $this->assertStringContainsString('follow', $content);
 
     // Check the regular service node does NOT have a robots metatag.
-    $session->visit($service_page->toUrl()->toString());
+    $session->visit('/node/' . $service_page->id());
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Page loads');
     $robots_metatag = $session->getPage()->find('xpath', '//meta[@name="robots"]');
     $this->assertNull($robots_metatag);
 
     // Now edit that service node so it is excluded from index.
-    $service_page->set('search_nosnippet', FALSE)->set('search', TRUE)->save();
-    $session->visit($service_page->toUrl()->toString());
+    $service_page->set('search', TRUE)->save();
+    $session->visit('/node/' . $service_page->id());
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Page loads');
     $robots_metatag = $session->getPage()->find('xpath', '//meta[@name="robots"]');
     $this->assertNotNull($robots_metatag);
     $content = $robots_metatag->getAttribute('content');
     $this->assertStringContainsString('noindex', $content);
-    $this->assertStringContainsString('nofollow', $content);
-    $this->assertStringNotContainsString('nosnippet', $content);
-
-    // Now edit that service node so it doesn't show a snippet.
-    $service_page->set('search_nosnippet', TRUE)->set('search', FALSE)->save();
-    // Cache::invalidateTags(['rendered']);
-    $session->visit($service_page->toUrl()->toString());
-    $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Page loads');
-    $robots_metatag = $session->getPage()->find('xpath', '//meta[@name="robots"]');
-    $this->assertNotNull($robots_metatag);
-    $content = $robots_metatag->getAttribute('content');
-    $this->assertStringNotContainsString('noindex', $content);
-    $this->assertStringContainsString('nosnippet', $content);
+    $this->assertStringContainsString('follow', $content);
   }
 
 }
