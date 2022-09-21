@@ -1,5 +1,35 @@
 
 
+## [0.336.0] - September 20, 2022
+
+### Added
+  - DP-25559: Added Total No, Total Yes, and Total Feedback to Content Performance.
+  
+### Removed
+  - DP-25808: Removed feedback survey from public site.
+  
+### Fixed
+  - DP-25861: Fixed permissions issue preventing authors and editors from viewing the entity browser.
+  
+
+
+## [0.335.0] - September 13, 2022
+
+### Added
+  - DP-25204: Add confirmation warning when bulk transitioning documents.
+  - DP-25248: Add testing for saving QAG pages.
+  
+### Removed
+  - DP-25692: Hide "Media" and remove "Moderated Content" from All Content view.
+  
+### Fixed
+  - DP-25803: Fix TOC jump link target margin top that blocks page content.
+  - DP-25805: Fix accordions collapsing while scrolling on Android/iOS devices issue.
+  - DP-25828: Resolve 500 error on decision tree page.
+  - DP-25832: Fix accordion tests in patternlab.
+  
+
+
 ## [0.334.0] - September 6, 2022
 
 ### Added

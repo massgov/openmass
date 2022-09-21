@@ -131,6 +131,51 @@ function mass_superset_views_data() {
     ],
   ];
 
+  $data['mass_superset_data']['total_no'] = [
+    'title' => t('Total No'),
+    'help' => t('The total number of no responses by month.'),
+    'field' => [
+      'id' => 'numeric',
+      'float' => TRUE,
+    ],
+    'filter' => [
+      'title' => t('Total No'),
+      'help' => t('Limit pages to those with a certain number of no responses by month.'),
+      'field' => 'total_no',
+      'id' => 'numeric',
+    ],
+  ];
+
+  $data['mass_superset_data']['total_yes'] = [
+    'title' => t('Total Yes'),
+    'help' => t('The total number of yes responses by month.'),
+    'field' => [
+      'id' => 'numeric',
+      'float' => TRUE,
+    ],
+    'filter' => [
+      'title' => t('Total Yes'),
+      'help' => t('Limit pages to those with a certain number of yes responses by month.'),
+      'field' => 'total_yes',
+      'id' => 'numeric',
+    ],
+  ];
+
+  $data['mass_superset_data']['total_feedback'] = [
+    'title' => t('Total Feedback'),
+    'help' => t('The total feedback for month.'),
+    'field' => [
+      'id' => 'numeric',
+      'float' => TRUE,
+    ],
+    'filter' => [
+      'title' => t('Total Feedback'),
+      'help' => t('Limit pages to those with a certain number of feedback by month.'),
+      'field' => 'total_feedback',
+      'id' => 'numeric',
+    ],
+  ];
+
   $data['snooze'] = [];
   $data['snooze']['table'] = [];
   $data['snooze']['table']['group'] = t('Snooze data');
