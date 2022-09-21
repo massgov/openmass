@@ -29,14 +29,14 @@
       autoCompleteField.addEventListener("change", e => {
         console.log("EVENT");
         console.log(index);
-        console.log(e.target.attribute("aria-expanded"));
+        console.log(e.target.getAttribute("aria-expanded"));
         // Find the matching index UL.
         console.log("list index: " + optionLists[index]);
         // Check the UL has display: none;
         if(optionLists[index].style.display === "none") {
-          this.setAttribute("aria-expanded", "false");
+          e.target.setAttribute("aria-expanded", "false");
         } else {
-          this.setAttribute("aria-expanded", "true");
+          e.target.setAttribute("aria-expanded", "true");
         }
         // If no, change aria-expanded value to true.
 
@@ -50,5 +50,5 @@
         // optionLists[XX].querySelectorAll("li a").setAttribute("role", "option");
       });
     });
-  }, 1000);
+  }, 500);
 })();
