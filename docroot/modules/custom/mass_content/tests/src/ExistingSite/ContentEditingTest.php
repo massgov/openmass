@@ -71,7 +71,7 @@ class ContentEditingTest extends ExistingSiteBase {
     foreach ($paths as $path) {
       // Edit the node.
       $session->visit($path . '/edit');
-      $this->assertEquals(200, $this->session->getStatusCode(), 'Failed to retrieve ' . $path . '/edit');
+      $this->assertEquals(200, $session->getStatusCode(), 'Failed to retrieve ' . $path . '/edit');
       $page = $session->getPage();
       $page->findButton('Save')->press();
       $this->assertEquals($this->baseUrl . $path, $session->getCurrentUrl());
