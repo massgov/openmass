@@ -7,6 +7,9 @@ services:
   mass_content.log_in_links_builder:
     class: Drupal\mass_content\LogInLinksBuilder
     arguments: ['@descendant_manager']
+  mass_content.lazy_builders:
+    class: Drupal\mass_content\MassContentLazyBuilders
+    arguments: []
   mass_content.route_subscriber:
     class: Drupal\mass_content\Routing\RouteSubscriber
     tags:
