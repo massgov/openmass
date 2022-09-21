@@ -562,8 +562,8 @@ function mass_content_page_attachments_alter(array &$attachments) {
     if ($values) {
       $attachments['#attached']['html_head'][] = [
         [
-          // Redirect through a 'Refresh' meta tag if JavaScript is disabled.
           '#tag' => 'meta',
+          '#cache' => ['tags' => $entity->getCacheTags()],
           '#attributes' => [
             'name' => 'robots',
             'content' => implode(', ', $values),
