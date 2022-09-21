@@ -1,6 +1,6 @@
 @api @contentteam
 Feature: Content Management
-  As a content team member,
+  As a content team member (content_team + editor role),
   I want a role to be able to create / edit / delete all content
   so I can create the best content experience for the constituents of Massachusetts.
 
@@ -52,7 +52,6 @@ Feature: Content Management
     # Has broad permission to deal with all content and can use workbench
     Then the "content_team" role should have the permissions:
       | Permission           |
-      | administer nodes     |
       | revert all revisions |
       | view any unpublished content |
       | view latest version          |
@@ -70,7 +69,7 @@ Feature: Content Management
       | access draggableviews |
 
   Scenario: Ensure Content Administrators can create, edit and otherwise manage News, Event, Form, Rules and Guide nodes.
-    Then the "content_team" role should have the permissions:
+    Then the "content_team,editor" role should have the permissions:
       | Permission                      |
       | create event content            |
       | create news content             |
@@ -111,7 +110,7 @@ Feature: Content Management
       | delete own rules content        |
 
   Scenario: Ensure Content Administrators can create, edit and otherwise manage Person nodes.
-    Then the "content_team" role should have the permissions:
+    Then the "content_team,editor" role should have the permissions:
       | Permission               |
       | create person content    |
       | edit any person content  |
@@ -124,7 +123,7 @@ Feature: Content Management
       | delete own person content|
 
   Scenario: Ensure Content Administrators can create, edit and otherwise manage Regulation nodes.
-    Then the "content_team" role should have the permissions:
+    Then the "content_team,editor" role should have the permissions:
       | Permission                   |
       | create regulation content    |
       | edit any regulation content  |
@@ -137,7 +136,7 @@ Feature: Content Management
       | delete own regulation content|
 
   Scenario: Ensure Content Administrators can create, edit and otherwise manage Advisory nodes.
-    Then the "content_team" role should have the permissions:
+    Then the "content_team,editor" role should have the permissions:
       | Permission                 |
       | create advisory content    |
       | edit any advisory content  |
@@ -150,7 +149,7 @@ Feature: Content Management
       | delete own advisory content|
 
   Scenario: Ensure Content Administrators can create, edit and otherwise manage Decision nodes.
-    Then the "content_team" role should have the permissions:
+    Then the "content_team,editor" role should have the permissions:
       | Permission               |
       | create decision content    |
       | edit any decision content  |
