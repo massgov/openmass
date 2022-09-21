@@ -70,6 +70,7 @@ class ContentEditingTest extends ExistingSiteBase {
     foreach ($paths as $path) {
       // Edit the node.
       $session->visit($path . '/edit');
+      $this->assertSession()->statusCodeEquals(200);
       $page = $session->getPage();
       $page->findButton('Save')->press();
       $this->assertEquals($this->baseUrl . $path, $session->getCurrentUrl());
