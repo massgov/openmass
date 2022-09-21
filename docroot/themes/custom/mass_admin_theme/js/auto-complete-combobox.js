@@ -36,12 +36,11 @@
         console.log("list 1: " + optionLists[0].appendChild(generateListFromArray(array)));
         console.log("list index: " + optionLists[index].appendChild(generateListFromArray(array)));
         // Check the UL has display: none;
-        if(optionLists[index].style.display === "none") {
+        if(optionLists[index].style.display) {
           e.target.setAttribute("aria-expanded", "false");
         } else {
           e.target.setAttribute("aria-expanded", "true");
         }
-        // If no, change aria-expanded value to true.
 
         // Get ID of the UL.
         var listId = optionLists[index].getAttribute("id")
@@ -49,8 +48,8 @@
         e.target.setAttribute("aria-controls", listId);
 
         // Set role to LIs and their child As.
-        optionLists[index].querySelectorAll("li").setAttribute("role", "none");
-        optionLists[index].querySelectorAll("li > a").setAttribute("role", "option");
+        optionLists[index].querySelectorAll(".ui-menu-item").setAttribute("role", "none");
+        optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").setAttribute("role", "option");
       });
     });
   }, 500);
