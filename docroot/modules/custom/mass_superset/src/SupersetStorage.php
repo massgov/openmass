@@ -150,6 +150,9 @@ class SupersetStorage implements SupersetStorageInterface {
           'eject_rate' => $stat['eject_rate'],
           'broken_links' => $stat['broken_links'],
           'grade_level' => $stat['grade_level'],
+          'total_no' => $stat['total_no'],
+          'total_yes' => $stat['total_yes'],
+          'total_feedback' => $stat['total_feedback'],
         ])
         ->execute();
     }

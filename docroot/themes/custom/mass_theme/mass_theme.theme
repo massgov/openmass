@@ -2773,7 +2773,7 @@ function mass_theme_preprocess_node_rules(&$variables) {
  * Prepare the variables for the Event page.
  */
 function mass_theme_preprocess_node_event(&$variables) {
-  /** @var \Drupal\node\Entity\Node $node */
+  /** @var \Drupal\mass_content\Entity\Bundle\node\EventBundle $node */
   $node = $variables['node'];
   $cache_tags = [];
 
@@ -2796,8 +2796,6 @@ function mass_theme_preprocess_node_event(&$variables) {
   // Determines which field names to use from the map.
   $fields = Helper::getMappedFields($node, $map);
 
-  $is_public_meeting = $node->{$fields['type']}->value == 'public_meeting';
-
   $optionalContents = [];
 
   // Build date and time optional contents.
@@ -2816,34 +2814,36 @@ function mass_theme_preprocess_node_event(&$variables) {
     ];
   }
 
-  if (Helper::isFieldPopulated($node, $fields['posted_date']) && $is_public_meeting) {
+  if (Helper::isFieldPopulated($node, $fields['posted_date']) && $node->isPublicMeeting()) {
     $postedDate = Helper::getMayflowerDate($node->{$fields['posted_date']}->value, ['date_format' => 'F j, Y']);
     // Use the value of field_updated_date as the changedDate value.
-    if (Helper::isFieldPopulated($node, $fields['posted_date'])) {
+    if (Helper::isFieldPopulated($node, $fields['updated_date'])) {
       $changedDate = Helper::getMayflowerDate($node->{$fields['updated_date']}->value, ['date_format' => 'F j, Y']);
     }
     else {
-      // Otherwise, display the posted date as last modified.
-      $changedDate = $postedDate;
+      // Otherwise, display nothing.
+      $changedDate = [];
     }
 
     array_shift($postedDate);
     array_shift($changedDate);
 
+    $items[] = [
+      'label' => 'Posted:',
+      'text' => implode(' ', $postedDate),
+    ];
+    if ($changedDate) {
+      $items[] = [
+        'label' => 'Last Updated:',
+        'text' => implode(' ', $changedDate),
+      ];
+    }
+
     $optionalContents[] = [
       'path' => '@molecules/labelled-list.twig',
       'data' => [
         'labelledList' => [
-          'items' => [
-            [
-              'label' => 'Posted:',
-              'text' => implode(' ', $postedDate),
-            ],
-            [
-              'label' => 'Last Updated:',
-              'text' => implode(' ', $changedDate),
-            ],
-          ],
+          'items' => $items,
         ],
       ],
     ];
@@ -2851,8 +2851,8 @@ function mass_theme_preprocess_node_event(&$variables) {
 
   // Get the address type.
   $address_type = '';
-  if (Helper::isFieldPopulated($node, 'field_event_address_type')) {
-    $address_type = $node->field_event_address_type->getValue();
+  if (!$node->getAddressType()->isEmpty()) {
+    $address_type = $node->getAddressType()->getValue();
     $address_type = reset($address_type);
     $address_type = $address_type['value'];
   }
@@ -2870,7 +2870,7 @@ function mass_theme_preprocess_node_event(&$variables) {
 
   // Build call out time.
   if (Helper::isFieldPopulated($node, 'field_event_public_testimony')
-    && $is_public_meeting) {
+    && $node->isPublicMeeting()) {
     $optionalContents[] = [
       'path' => '@organisms/by-author/callout-time.twig',
       'data' => [
@@ -2910,12 +2910,11 @@ function mass_theme_preprocess_node_event(&$variables) {
   }
 
   // Build title for pageHeader.
-  $event_type = $node->{$fields['type']}->value;
   $category_title = '';
-  if ($event_type === 'public_meeting') {
+  if ($node->isPublicMeeting()) {
     $category_title = t('Public Meeting Notice');
   }
-  elseif ($event_type === 'public_hearing') {
+  elseif ($node->isPublicHearing()) {
     $category_title = t('Public Hearing Notice');
   }
 
@@ -3183,32 +3182,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
   // Make the introPageContent data structure available in twig template.
   $variables['introPageContent'] = $intro_page_content;
 
-  // Make the mappedLocations data structure available in twig template.
-  if (Helper::isFieldPopulated($node, 'field_service_ref_locations')) {
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $mappedLocations_options = [
-      'heading' => [
-        'title' => t('Locations'),
-        'titleContext' => $titleContext,
-        'type' => 'compHeading',
-      ],
-      'locationDetailsLink' => [
-        'display' => TRUE,
-        'nid' => $node->id(),
-        'path' => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()),
-      ],
-    ];
-
-    // Use aside for the text that displays next to the map with the button.
-    $mappedLocations_options['aside'] = [
-      'button' => $node->field_location_button_label->value,
-      'paragraph' => [
-        'text' => Helper::fieldFullView($node, 'field_location_button_short_desc'),
-      ],
-    ];
-    $variables['mappedLocations'] = Organisms::prepareMappedLocations($node->field_service_ref_locations->referencedEntities(), $mappedLocations_options, $cache_tags);
-  }
-
   // Prepare the split columns data structure (send only if there is content).
   $split_columns = [];
 
@@ -3233,55 +3206,6 @@ function mass_theme_preprocess_node_service_page(&$variables) {
         'linkList' => Organisms::prepareLinkList($node, 'field_service_ref_services_6', $linkList_options),
       ],
     ];
-  }
-
-  // Build Additional Resources sidebar heading and action downloads.
-  if (Helper::isFieldPopulated($node, 'field_service_file') || Helper::isFieldPopulated($node, 'field_service_links')) {
-
-    $titleContext = t(' for @title', ['@title' => $page_title]);
-    $download_options = [
-      'heading' => [
-        'type' => 'sidebarHeading',
-        'title' => t('Additional Resources'),
-        'titleContext' => $titleContext,
-        'level' => 2,
-      ],
-    ];
-
-    // Prepare the formDownloads data object, including all downloadLinks, not
-    // just the visible ones.
-    $formDownloads = Organisms::prepareFormDownloads($node, $download_options, $cache_tags);
-
-    // Creates 'more' link when more than 6 resources are referenced, trims
-    // visible resources down to 6.
-    $num_download_links = count($formDownloads['downloadLinks']);
-    if ($num_download_links > 6) {
-      // Just get the max visible items we want to render.
-      $visibleDownloads = array_slice($formDownloads['downloadLinks'], 0, 6);
-      unset($formDownloads['downloadLinks']);
-      $formDownloads['downloadLinks'] = $visibleDownloads;
-
-      // Use the total number of items (including non-visible) in the more link.
-      $text_download_links = t("See all @count", ['@count' => $num_download_links]);
-      $formDownloads['more'] = [
-        'href' => $node->toUrl()->toString() . '/resources',
-        'text' => $text_download_links,
-        'chevron' => TRUE,
-        'labelContext' => t('additional resources for the @label', ['@label' => $node->label()]),
-      ];
-    }
-
-    $split_columns['columns'][]['items'][] =
-      [
-        'path' => '@organisms/by-author/form-downloads.twig',
-        'data' => [
-          'formDownloads' => $formDownloads,
-        ],
-      ];
-  }
-
-  if ($variables['view_mode'] === 'listing') {
-    $variables['featured_tasks_links'] = Helper::separatedLinks($node, 'field_service_ref_actions_2');
   }
 
   // Make the mappedLocations data structure available in twig template.
@@ -5959,6 +5883,20 @@ function mass_theme_preprocess_views_view(&$variables) {
   $function = __FUNCTION__ . '_' . $variables['id'] . '_' . $variables['display_id'];
   if (function_exists($function)) {
     $function($variables);
+  }
+}
+
+/**
+ * Preprocess entity_embed_container template.
+ */
+function mass_theme_preprocess_entity_embed_container(array &$variables) {
+  // image_loading is hidden from entity_embed dialog.
+  // See docroot/themes/custom/mass_admin_theme/mass_admin_theme.theme:27
+  // This code will prevent warnings for the content that already
+  // has image_loading attribute set.
+  // @TODO Remove this code when entity_embed start supporting lazy loading attribute.
+  if (isset($variables['attributes']['data-entity-embed-display-settings']['image_loading'])) {
+    unset($variables['attributes']['data-entity-embed-display-settings']['image_loading']);
   }
 }
 

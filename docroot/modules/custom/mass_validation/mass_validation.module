@@ -5,16 +5,16 @@
  * Contains mass_validation.module.
  */
 
-use Drupal\Component\Utility\Unicode;
-use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\WidgetInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
-use Drupal\Component\Utility\UrlHelper;
 
 /**
  * Implements hook_help().
@@ -72,9 +72,19 @@ function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInte
       ],
     ]);
   }
-  if ($entity_type->id() === 'paragraph' && $bundle === 'iframe') {
-    $url_field =& $fields['field_url'];
-    $url_field->addConstraint('AllowedIframeUrl');
+  if ($entity_type->id() === 'paragraph') {
+    switch ($bundle) {
+      case 'org_locations':
+        $locations_field =& $fields['field_org_ref_locations'];
+        $locations_field->addConstraint('MassDuplicateReference');
+        break;
+
+      case 'iframe':
+        $url_field =& $fields['field_url'];
+        $url_field->addConstraint('AllowedIframeUrl');
+        break;
+
+    }
   }
 }
 
@@ -134,6 +144,17 @@ function _mass_validation_form_node_alert_form_validate(array &$form, FormStateI
         break;
     }
   }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function mass_validation_theme($existing, $type, $theme, $path) {
+  return [
+    'warning_draft' => [
+      'variables' => ['link' => NULL]
+    ]
+  ];
 }
 
 /**
@@ -348,12 +369,6 @@ function mass_validation_form_node_service_page_form_alter(&$form, FormStateInte
 function mass_validation_service_page_alter_helper(array &$form) {
   $form['#validate'][] = '_mass_validation_form_node_service_page_form_validate';
   $form['#attached']['library'][] = 'mass_validation/service_page_edit_form';
-  // Hide the Service page template field except for specific permissions.
-  // @todo Remove once all authors are allowed to edit this field.
-  $user = \Drupal::currentUser();
-  if (!$user->hasPermission('set service page template')) {
-    $form['field_template']['#attributes']['class'][] = 'js-hide';
-  }
 }
 
 /**
@@ -385,32 +400,7 @@ function _mass_validation_service_page_sections_validate(array &$form, FormState
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_service_page_form_validate(array &$form, FormStateInterface $form_state) {
-  _mass_link_validate($form_state, 'field_service_ref_actions_2');
-  _mass_link_validate($form_state, 'field_service_ref_actions');
-  _mass_link_validate($form_state, 'field_service_links');
-  _mass_link_validate($form_state, 'field_service_key_info_links_6');
   _mass_validation_service_page_sections_validate($form, $form_state);
-
-  $template = $form_state->getValue('field_template');
-  $template_value = isset($template[0]['value']) ? $template[0]['value'] : '';
-  if ($template_value === 'custom') {
-    $link_groups = $form_state->getvalue('field_link_group');
-    if (count($link_groups) <= 1) {
-      $form_state->setErrorByName('field_link_group', t('A service page using a custom link groups template requires at least one link group.'));
-    }
-  }
-  // Require only specific permission to update the Service Page Template.
-  // @todo Remove once all authors are allowed to edit this field.
-  $user = \Drupal::currentUser();
-  if (!$user->hasPermission('set service page template')) {
-    $entity = $form_state->getFormObject()->getEntity();
-    $is_new = $entity->isNew();
-    $is_custom = $template_value === 'custom';
-    $changed = $template_value !== $entity->field_template->value;
-    if ($is_new && $is_custom || $changed) {
-      $form_state->setError($form, t('You do not have permission to change the Service Page Template'));
-    }
-  }
 
   // Check that the KPIs have values if the box is checked.
   // Map the KPI fields with the Key performance indicators options in the form.
@@ -1479,6 +1469,26 @@ function mass_validation_preprocess_input(&$variables) {
  * Implements hook_form_alter().
  */
 function mass_validation_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  if ($form_state->getFormObject() instanceof EntityForm) {
+    if ($entity = $form_state->getFormObject()->getEntity()) {
+      if ($entity instanceof \Drupal\media\Entity\Media || $entity instanceof Node) {
+        if (!$entity->isNew() && $entity->get('moderation_state')->getString() == MassModeration::DRAFT) {
+          $entity_label = $entity->getEntityTypeId();
+          $route_name = "entity." . $entity_label . ".version_history";
+          $url = Url::fromRoute($route_name, [$entity_label => $entity->id()]);
+          $rendarable = [
+            "#theme" => "warning_draft",
+            "#link" => "internal:" . $url->toString()
+          ];
+          $rendered = \Drupal::service('renderer')->render($rendarable);
+          $form['#prefix'] = $rendered;
+          $form['#attached']['library'][] = 'mass_validation/warning-draft';
+        }
+      }
+    }
+  }
+
   // Avoids client-side validation on all the forms in the system.
   // See: https://developer.mozilla.org/en-US/docs/Learn/Forms/Form_validation
   // Fields may be not focusable but required, for instance when they are
