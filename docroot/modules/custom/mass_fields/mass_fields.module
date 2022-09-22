@@ -284,11 +284,12 @@ function mass_fields_entity_base_field_info(\Drupal\Core\Entity\EntityTypeInterf
 
   if (in_array($entity_type->id(), ['media', 'node'])) {
     $fields['search'] = $search;
+
+    if ($entity_type->id() == 'node') {
+      $fields['search_nosnippet'] = $nosnippet;
+    }
+    return $fields;
   }
-  if ($entity_type->id() == 'node') {
-    $fields['search_nosnippet'] = $nosnippet;
-  }
-  return $fields;
 }
 
 /**
