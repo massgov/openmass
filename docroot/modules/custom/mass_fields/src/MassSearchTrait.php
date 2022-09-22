@@ -12,4 +12,5 @@ trait MassSearchTrait {
   public function getSearch(): FieldItemListInterface {
     return $this->get('search');
   }
+
 }
