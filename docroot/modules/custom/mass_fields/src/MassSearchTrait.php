@@ -12,12 +12,4 @@ trait MassSearchTrait {
   public function getSearch(): FieldItemListInterface {
     return $this->get('search');
   }
-
-  /**
-   * Get search snippet value.
-   */
-  public function getSearchNoSnippet(): FieldItemListInterface {
-    return $this->get('search_nosnippet');
-  }
-
 }
