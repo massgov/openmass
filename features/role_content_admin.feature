@@ -1,5 +1,5 @@
-@api @contentteam
-Feature: Content Management
+@api @contentadmin
+Feature: Content Administrator
   As a content administrator (content_team + editor role),
   I want a role to be able to create / edit / delete all content
   so I can create the best content experience for the constituents of Massachusetts.
