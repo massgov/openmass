@@ -40,7 +40,7 @@ class MassUrlGenerator extends EntityUrlGenerator {
       }
 
       // Also, respect our custom checkbox for omitting from search
-      if (method_exists($entity, 'getSearch') && !$entity->getSearch()->getString()) {
+      if (method_exists($entity, 'getSearch') && $entity->getSearch()->getString()) {
         continue;
       }
 
