@@ -1,7 +1,7 @@
 @api @editor
 Feature: Editor Role
   As an editor,
-  I want a role to be able to create / edit / delete all content
+  I want a role to be able to create / edit / publish certain targeted types of content
   so I can create the best content experience for the constituents of Massachusetts.
 
   #http response 200 is a successful response
