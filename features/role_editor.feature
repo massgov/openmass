@@ -24,11 +24,14 @@ Feature: Editor Role
   Scenario: Verify that editor users have appropriate permissions
     # Has broad permission to deal with all content and can use workbench
     Then the "editor" role should have the permissions:
-      | Permission           |
-      | administer nodes     |
-      | revert all revisions |
+      | Permission                   |
+      | administer nodes             |
+      | revert all revisions         |
       | view any unpublished content |
       | view latest version          |
+      | create media                 |
+      | update media                 |
+      | update any media             |
 
     # Does not have permission to change site code or administer users
     Then the "editor" role should not have the permissions:
@@ -42,7 +45,17 @@ Feature: Editor Role
       | Permission            |
       | access draggableviews |
 
-  Scenario: Ensure Content Administrators can create, edit and otherwise manage News, Event, Form, Rules and Guide nodes.
+  # Unpublished meaning in the context is for creating a new org page content
+  Scenario: Verify that editor can edit and publish unpublished content
+    Given I am logged in as a user with the "editor" role
+    And I am editing an unpublished "org_page" with the title "Behat Org Page"
+    Then the select list "#edit-moderation-state-0-state" should contain the option "prepublished_draft"
+    And the select list "#edit-moderation-state-0-state" should contain the option "prepublished_needs_review"
+    And the select list "#edit-moderation-state-0-state" should contain the option "published"
+    And the select list "#edit-moderation-state-0-state" should contain the option "trash"
+
+
+  Scenario: Ensure Editors can create, edit and otherwise manage News, Event, Form, Rules and Guide nodes.
     Then the "editor" role should have the permissions:
       | Permission                      |
       | create event content            |
@@ -83,7 +96,7 @@ Feature: Editor Role
       | delete own guide_page content   |
       | delete own rules content        |
 
-  Scenario: Ensure Content Administrators can create, edit and otherwise manage Person nodes.
+  Scenario: Ensure Editors can create, edit and otherwise manage Person nodes.
     Then the "editor" role should have the permissions:
       | Permission               |
       | create person content    |
@@ -96,7 +109,7 @@ Feature: Editor Role
       | delete any person content|
       | delete own person content|
 
-  Scenario: Ensure Content Administrators can create, edit and otherwise manage Regulation nodes.
+  Scenario: Ensure Editors can create, edit and otherwise manage Regulation nodes.
     Then the "editor" role should have the permissions:
       | Permission                   |
       | create regulation content    |
@@ -109,7 +122,7 @@ Feature: Editor Role
       | delete any regulation content|
       | delete own regulation content|
 
-  Scenario: Ensure Content Administrators can create, edit and otherwise manage Advisory nodes.
+  Scenario: Ensure Editors can create, edit and otherwise manage Advisory nodes.
     Then the "editor" role should have the permissions:
       | Permission                 |
       | create advisory content    |
@@ -122,7 +135,7 @@ Feature: Editor Role
       | delete any advisory content|
       | delete own advisory content|
 
-  Scenario: Ensure Content Administrators can create, edit and otherwise manage Decision nodes.
+  Scenario: Ensure Editors can create, edit and otherwise manage Decision nodes.
     Then the "editor" role should have the permissions:
       | Permission               |
       | create decision content    |
@@ -134,3 +147,33 @@ Feature: Editor Role
       | delete any decision content|
       | delete own decision content|
       | delete decision revisions  |
+
+  Scenario: Ensure Editors can create, edit and otherwise manage Curated List nodes.
+    Then the "editor" role should have the permissions:
+      | Permission               |
+      | create curated_list content    |
+      | edit any curated_list content  |
+      | edit own curated_list content  |
+      | view curated_list revisions    |
+    Then the "editor" role should not have the permissions:
+      | Permission                   |
+      | delete curated_list revisions  |
+      | delete any curated_list content|
+      | delete own curated_list content|
+
+  Scenario: Ensure Editors can create, edit and otherwise manage Promotional Page (campaign_landing) nodes.
+    Then the "editor" role should have the permissions:
+      | Permission                        |
+      | create campaign_landing content   |
+      | edit any campaign_landing content |
+      | edit own campaign_landing content |
+      | view campaign_landing revisions   |
+      | use campaign_landing_page transition needs_review              |
+      | use campaign_landing_page transition prepublished_draft        |
+      | use campaign_landing_page transition prepublished_needs_review |
+      | use campaign_landing_page transition to_draft                  |
+    Then the "editor" role should not have the permissions:
+      | Permission                          |
+      | delete campaign_landing revisions   |
+      | delete any campaign_landing content |
+      | delete own campaign_landing content |
