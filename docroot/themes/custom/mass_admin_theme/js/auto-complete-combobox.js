@@ -35,7 +35,7 @@
     autoCompleteFields.forEach((autoCompleteField, index) => {
       // Add missing accessibility components to pairng a field and its combobox(option list).
       autoCompleteField.setAttribute("role", "combobox");
-      // autoCompleteField.setAttribute("aria-autocomplete", "none");
+      autoCompleteField.setAttribute("aria-autocomplete", "list");
       autoCompleteField.setAttribute("aria-expanded", "false");
 
       autoCompleteField.addEventListener("change", e => {
@@ -48,13 +48,28 @@
         // Get ID of the UL.
         var listId = optionLists[index].getAttribute("id")
         // Add aria-controls with the UL ID value.
-        e.target.setAttribute("aria-controls", listId);
+        // e.target.setAttribute("aria-controls", listId);
+        e.target.setAttribute("aria-activedescendant", listId);
 
         setTimeout(function () {
           // Set role to LIs and their child As.
           optionLists[index].querySelectorAll(".ui-menu-item").forEach(item => {
             item.setAttribute("role", "none");
             item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
+
+            item.querySelector(".ui-menu-item-wrapper").addEventListener("click", (e) => {
+
+              console.log("option clicked");
+
+              // Remove aria-selected from one currently has the attribute.
+              optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(option => {
+                if(option.hasAttribute("aria-selected")) {
+                  option.removeAttribute("aria-selected");
+                }
+              });
+              // Set the item selected.
+              e.target.setAttribute("aria-selected", true);
+            })
           });
         }, 100);
       });
