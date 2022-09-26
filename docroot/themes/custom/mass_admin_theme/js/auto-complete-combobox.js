@@ -17,9 +17,11 @@
       // Add missing accessibility components to pairng a field and its combobox(option list).
       optionList.setAttribute("role", "listbox");
 
+      console.log("option list foreach");
+
       optionList.addEventListener("change", e => {
         var listId = optionList.getAttribute("id");
-        if(e.target.style.display) {
+        if(e.target.style.display === "none") {
 
           console.log(e.target.style.display);
 
