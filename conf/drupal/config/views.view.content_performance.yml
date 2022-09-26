@@ -6913,73 +6913,16 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-        total_feedback:
-          id: total_feedback
-          table: mass_superset_data
-          field: total_feedback
-          relationship: nid
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          label: '# Responses'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          set_precision: false
-          precision: 0
-          decimal: .
-          separator: ','
-          format_plural: false
-          format_plural_string: !!binary MQNAY291bnQ=
-          prefix: ''
-          suffix: ''
         operations:
           id: operations
-          table: node_revision
+          table: node
           field: operations
-          relationship: none
+          relationship: nid
           group_type: group
           admin_label: ''
           entity_type: node
           plugin_id: entity_operations
-          label: Actions
+          label: 'Operations links'
           exclude: false
           alter:
             alter_text: false
@@ -7533,7 +7476,7 @@ display:
           value:
             min: ''
             max: ''
-            value: '250'
+            value: '20'
           group: 1
           exposed: true
           expose:
@@ -7594,7 +7537,7 @@ display:
           value:
             min: ''
             max: ''
-            value: '6'
+            value: ''
           group: 1
           exposed: true
           expose:
@@ -7713,7 +7656,7 @@ display:
           value:
             min: ''
             max: ''
-            value: '5'
+            value: '3'
           group: 1
           exposed: true
           expose:
@@ -7840,7 +7783,7 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: "<p>This report will show you pages where a large number of visitors didn't find what they wanted and answered \"No\" to the queston \"Did you find what you were looking for on this webpage\" that is in the footer of all pages on the site. </p>\r\n<ol>\r\n<li>Filter by your organization</li>\r\n<li>Adjust the \"Pageviews\" and \"No's per Thousand\" responses to find the pages that get the most negative feedback.\r\n<ul>\r\n<li>This report initially shows pages with moderate traffic. Try adjusting to find pages with lower or higher traffic.<br>\r\n- Higher traffic:  pageviews > 500, No's per 1000 pageviews > 4 <br>\r\n- Lower traffic: pageviews > 50, No's per 1000 pageviews > 50\r\n</li>\r\n</ul>\r\n<li>Some content types get more or less negative feedback because of the nature of the type, so try filtering for your key content types individually, while setting the limit for No's per 1000 page views to zero and compare those pages to each other. Try to understand why some pages are not performing as well as others.</li>\r\n<li>Pages are sorted by the number of no responses per thousand page views (descending).  You may want to click the column heading for \"Page views\" to  see the pages with the highest page views at the top.</li>\r\n<li>Click the number in the \"No's per 1000\" column to see the feedback for that page. Look for any common patterns in the feedback that suggest improvements.\r\n</ol>"
+            value: "<p>This report will show you pages where a large number of visitors didn't find what they wanted and answered \"No\" to the queston \"Did you find what you were looking for on this webpage\" that is in the footer of all pages on the site. </p>\r\n<ol>\r\n<li>Filter by your organization</li>\r\n<li>By default, the report shows pages that have at least 20 pageviews and get at least 3 \"no\" responses in the past month. You can adjust filters as needed.\r\n<li>Pages are sorted by the number of \"no\" responses per thousand page views (descending).  You may want to click the column heading for \"Page views\" to  see the pages with the highest page views at the top.</li>\r\n<li>Click the number in the \"No's per 1000\" column to see the feedback for that page. Look for any common patterns in the feedback that suggest improvements.</li>\r\n<li>Try filtering by specific content types and try to understand why some pages of the same type get different feedback scores than others.</li>\r\n</ol>"
             format: basic_html
           tokenize: false
       display_extenders: {  }
