@@ -63,20 +63,26 @@
   }, 100);
 
 
-
-  document.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
-    option.addEventListener("click", (e) => {
-
-      console.log("option clicked");
-
-      // Remove aria-selected from one currently has the attribute.
-      optionLists.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
-        if(option.hasAttribute("aria-selected")) {
-          option.removeAttribute("aria-selected");
-        }
-      });
-      // Set the item selected.
-      e.target.setAttribute("aria-selected", true);
+  document.querySelectorAll("a").forEach(item => {
+    item.addEventListener("click", (e) => {
+      console.log(e.target);
     });
   });
+
+
+  // document.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
+  //   option.addEventListener("click", (e) => {
+
+  //     console.log("option clicked");
+
+  //     // Remove aria-selected from one currently has the attribute.
+  //     optionLists.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
+  //       if(option.hasAttribute("aria-selected")) {
+  //         option.removeAttribute("aria-selected");
+  //       }
+  //     });
+  //     // Set the item selected.
+  //     e.target.setAttribute("aria-selected", true);
+  //   });
+  // });
 })();
