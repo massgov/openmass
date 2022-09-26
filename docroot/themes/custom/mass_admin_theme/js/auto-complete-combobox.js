@@ -32,14 +32,18 @@
       autoCompleteField.addEventListener("keyUp", e => {
 
         console.log("keyup");
-        console.log(optionLists[index]);
+        // console.log(optionLists[index]);
 
-        if(!optionLists[index].innerHTML.trim()) {
-          e.target.setAttribute("aria-expanded", "false");
-        } else {
-          e.target.setAttribute("aria-expanded", "true");
-          console.log("hippo");
-        }
+        // if(optionLists[index].innerHTML.trim()) {
+
+        //   console.log("options!");
+
+
+        //   e.target.setAttribute("aria-expanded", "true");
+        // } else {
+        //   e.target.setAttribute("aria-expanded", "false");
+        //   console.log("hippo");
+        // }
 
 
         // if(optionLists[index].style.display === "none") {
@@ -52,9 +56,15 @@
         setTimeout(function () {
           // Set role to LIs and their child As.
           optionLists[index].querySelectorAll(".ui-menu-item").forEach(item => {
+
+            console.log("apple");
+
             item.setAttribute("role", "none");
             item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
           });
+
+          console.log(autoCompleteFields[index]);
+
           autoCompleteFields[index].setAttribute("aria-expanded", "true");
           console.log("panda");
         }, 100);
@@ -81,10 +91,11 @@
   // });
 
 
-  // document.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
-  //   option.addEventListener("click", (e) => {
+  document.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
+    option.addEventListener("click", (e) => {
 
-  //     console.log("option clicked");
+      console.log("option clicked");
+      console.log(e.target);
 
   //     // Remove aria-selected from one currently has the attribute.
   //     optionLists.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
@@ -94,6 +105,6 @@
   //     });
   //     // Set the item selected.
   //     e.target.setAttribute("aria-selected", true);
-  //   });
-  // });
+    });
+  });
 })();
