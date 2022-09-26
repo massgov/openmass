@@ -46,10 +46,11 @@
 
         setTimeout(function () {
           // Set role to LIs and their child As.
-          optionList[index].querySelectorAll(".ui-menu-item").forEach(item => {
+          optionLists[index].querySelectorAll(".ui-menu-item").forEach(item => {
             item.setAttribute("role", "none");
             item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
           });
+          console.log(optionLists);
         }, 1000);
       });
     });
