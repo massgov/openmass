@@ -10,27 +10,11 @@
 
   // The timeout function is necessary to recognize the fields and the lists.
   setTimeout(function () {
-    var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
-    var optionLists = document.querySelectorAll(".ui-autocomplete");
+    let autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
+    let optionLists = document.querySelectorAll(".ui-autocomplete");
 
     optionLists.forEach(optionList => {
-      // Add missing accessibility components to pairng a field and its combobox(option list).
       optionList.setAttribute("role", "listbox");
-
-      // console.log("option list foreach");
-
-      optionList.addEventListener("change", e => {
-
-        console.log(e.target.style.display);
-
-
-        var listId = optionList.getAttribute("id");
-        if(e.target.style.display === "none") {
-          document.querySelector("[aria-activedescendant='${listId}']").setAttribute("aria-expanded", "false");
-        } else {
-          document.querySelector("[aria-activedescendant='${listId}']").setAttribute("aria-expanded", "true");
-        }
-      });
     });
 
     autoCompleteFields.forEach((autoCompleteField, index) => {
@@ -39,36 +23,61 @@
       autoCompleteField.setAttribute("aria-autocomplete", "list");
       autoCompleteField.setAttribute("aria-expanded", "false");
 
-      autoCompleteField.addEventListener("change", e => {
-        if(optionLists[index].style.display === "none") {
+      // Get ID of the UL.
+      let listId = optionLists[index].getAttribute("id");
+      // Add aria-controls with the UL ID value.
+      // e.target.setAttribute("aria-controls", listId);
+      e.target.setAttribute("aria-activedescendant", listId);
+
+      autoCompleteField.addEventListener("keyUp", e => {
+
+        console.log(optionLists[index]);
+
+        if(!optionLists[index].innerHTML.trim()) {
           e.target.setAttribute("aria-expanded", "false");
         } else {
           e.target.setAttribute("aria-expanded", "true");
+          console.log("hippo");
         }
 
-        // Get ID of the UL.
-        var listId = optionLists[index].getAttribute("id")
-        // Add aria-controls with the UL ID value.
-        // e.target.setAttribute("aria-controls", listId);
-        e.target.setAttribute("aria-activedescendant", listId);
 
+        // if(optionLists[index].style.display === "none") {
+        //   e.target.setAttribute("aria-expanded", "false");
+        // } else {
+        //   e.target.setAttribute("aria-expanded", "true");
+        // }
+
+        // Wait till the options are added to the list container .ui-autocomplete.
         setTimeout(function () {
           // Set role to LIs and their child As.
           optionLists[index].querySelectorAll(".ui-menu-item").forEach(item => {
             item.setAttribute("role", "none");
             item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
           });
+          autoCompleteFields[index].setAttribute("aria-expanded", "true");
+          console.log("panda");
         }, 100);
       });
     });
   }, 100);
 
+  // After the initial rendering
+  // if (document.querySelectorAll(".ui-autocomplete-input")) {
+  //   var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
+  //   var optionLists = document.querySelectorAll(".ui-autocomplete");
 
-  document.querySelectorAll("a").forEach(item => {
-    item.addEventListener("click", (e) => {
-      console.log(e.target);
-    });
-  });
+
+  // }
+
+
+
+
+
+  // document.querySelectorAll("a").forEach(item => {
+  //   item.addEventListener("click", (e) => {
+  //     console.log(e.target);
+  //   });
+  // });
 
 
   // document.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
