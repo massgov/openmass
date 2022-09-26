@@ -56,23 +56,27 @@
           optionLists[index].querySelectorAll(".ui-menu-item").forEach(item => {
             item.setAttribute("role", "none");
             item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
-
-            item.querySelector(".ui-menu-item-wrapper").addEventListener("click", (e) => {
-
-              console.log("option clicked");
-
-              // Remove aria-selected from one currently has the attribute.
-              optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(option => {
-                if(option.hasAttribute("aria-selected")) {
-                  option.removeAttribute("aria-selected");
-                }
-              });
-              // Set the item selected.
-              e.target.setAttribute("aria-selected", true);
-            })
           });
         }, 100);
       });
     });
   }, 100);
+
+
+
+  document.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
+    option.addEventListener("click", (e) => {
+
+      console.log("option clicked");
+
+      // Remove aria-selected from one currently has the attribute.
+      optionLists.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
+        if(option.hasAttribute("aria-selected")) {
+          option.removeAttribute("aria-selected");
+        }
+      });
+      // Set the item selected.
+      e.target.setAttribute("aria-selected", true);
+    });
+  });
 })();
