@@ -44,12 +44,14 @@
         // Add aria-controls with the UL ID value.
         e.target.setAttribute("aria-controls", listId);
 
-        // Set role to LIs and their child As.
-        optionList[index].querySelectorAll(".ui-menu-item").forEach(item => {
-          item.setAttribute("role", "none");
-          item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
-        });
+        setTimeout(function () {
+          // Set role to LIs and their child As.
+          optionList[index].querySelectorAll(".ui-menu-item").forEach(item => {
+            item.setAttribute("role", "none");
+            item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
+          });
+        }, 300);
       });
     });
-  }, 500);
+  }, 300);
 })();
