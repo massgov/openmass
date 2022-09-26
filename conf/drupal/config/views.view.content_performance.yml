@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.storage.node.field_organizations
+    - field.storage.node.field_parent
     - node.type.action
     - node.type.advisory
     - node.type.alert
@@ -2280,110 +2281,15 @@ display:
           summary: ''
           description: ''
           columns:
-            node_bulk_form: node_bulk_form
-            title: title
-            nid: nid
-            type: type
-            uid: uid
-            status: status
-            changed: changed
+            field_organizations: field_organizations
             pageviews: pageviews
-            last_updated: last_updated
-            score: score
             nos_per_1000: nos_per_1000
-            eject_rate: eject_rate
-            broken_links: broken_links
-            grade_level: grade_level
-            total_feedback: total_feedback
+            field_views_simple_math_field: field_views_simple_math_field
+            title: title
+            field_parent: field_parent
             total_no: total_no
-            total_yes: total_yes
-            operations: operations
           info:
-            node_bulk_form:
-              align: ''
-              separator: ''
-              empty_column: 0
-              responsive: ''
-              has_aggr: 0
-              aggr:
-                views_aggregator_first: views_aggregator_first
-              aggr_par: ''
-              has_aggr_column: 0
-              aggr_column: views_aggregator_sum
-              aggr_par_column: ''
-            title:
-              sortable: 1
-              default_sort_order: desc
-              align: ''
-              separator: ''
-              empty_column: 0
-              responsive: ''
-              has_aggr: 0
-              aggr:
-                views_aggregator_first: views_aggregator_first
-              aggr_par: ''
-              has_aggr_column: 0
-              aggr_column: views_aggregator_sum
-              aggr_par_column: ''
-            nid:
-              sortable: 0
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: 0
-              responsive: ''
-              has_aggr: 0
-              aggr:
-                views_aggregator_first: views_aggregator_first
-              aggr_par: ''
-              has_aggr_column: 0
-              aggr_column: views_aggregator_sum
-              aggr_par_column: ''
-            type:
-              sortable: 0
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: 0
-              responsive: ''
-              has_aggr: 0
-              aggr:
-                views_aggregator_first: views_aggregator_first
-              aggr_par: ''
-              has_aggr_column: 0
-              aggr_column: views_aggregator_sum
-              aggr_par_column: ''
-            uid:
-              sortable: 0
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: 0
-              responsive: ''
-              has_aggr: 0
-              aggr:
-                views_aggregator_first: views_aggregator_first
-              aggr_par: ''
-              has_aggr_column: 0
-              aggr_column: views_aggregator_sum
-              aggr_par_column: ''
-            status:
-              sortable: 0
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: 0
-              responsive: ''
-              has_aggr: 0
-              aggr:
-                views_aggregator_first: views_aggregator_first
-              aggr_par: ''
-              has_aggr_column: 0
-              aggr_column: views_aggregator_sum
-              aggr_par_column: ''
-            changed:
-              sortable: 0
-              default_sort_order: asc
+            field_organizations:
               align: ''
               separator: ''
               empty_column: 0
@@ -2409,9 +2315,9 @@ display:
               has_aggr_column: 0
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
-            last_updated:
-              sortable: 0
-              default_sort_order: asc
+            nos_per_1000:
+              sortable: 1
+              default_sort_order: desc
               align: ''
               separator: ''
               empty_column: 0
@@ -2425,6 +2331,34 @@ display:
               aggr_par_column: ''
             field_views_simple_math_field:
               sortable: 0
+              default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: 0
+              responsive: ''
+              has_aggr: 0
+              aggr:
+                views_aggregator_first: views_aggregator_first
+              aggr_par: ''
+              has_aggr_column: 0
+              aggr_column: views_aggregator_sum
+              aggr_par_column: ''
+            title:
+              sortable: 1
+              default_sort_order: desc
+              align: ''
+              separator: ''
+              empty_column: 0
+              responsive: ''
+              has_aggr: 0
+              aggr:
+                views_aggregator_first: views_aggregator_first
+              aggr_par: ''
+              has_aggr_column: 0
+              aggr_column: views_aggregator_sum
+              aggr_par_column: ''
+            field_parent:
+              sortable: 0
               default_sort_order: asc
               align: ''
               separator: ''
@@ -2437,38 +2371,12 @@ display:
               has_aggr_column: 0
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
-            eject_rate:
+            total_no:
               sortable: 1
               default_sort_order: desc
               align: ''
               separator: ''
-              empty_column: false
-              responsive: ''
-            total_feedback:
-              sortable: true
-              default_sort_order: desc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            total_no:
-              sortable: true
-              default_sort_order: desc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            total_yes:
-              sortable: true
-              default_sort_order: desc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            operations:
-              align: ''
-              separator: ''
-              empty_column: false
+              empty_column: 0
               responsive: ''
               has_aggr: 0
               aggr:
@@ -2477,7 +2385,7 @@ display:
               has_aggr_column: 0
               aggr_column: views_aggregator_sum
               aggr_par_column: ''
-          default: eject_rate
+          default: nos_per_1000
           empty_table: 0
           group_aggregation:
             group_aggregation_results: '0'
@@ -5542,71 +5450,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        uid:
-          id: uid
-          table: node_field_revision
-          field: uid
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: uid
-          plugin_id: field
-          label: 'Authored by'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: target_id
-          type: entity_reference_label
-          settings:
-            link: false
-          group_column: target_id
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
         status:
           id: status
           table: node_field_data
@@ -5855,7 +5698,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: numeric
-          label: 'No''s per 1000'
+          label: 'No''s per K page views'
           exclude: false
           alter:
             alter_text: false
@@ -5904,14 +5747,14 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-        field_views_simple_math_field:
-          id: field_views_simple_math_field
-          table: views_simple_math_field
-          field: field_views_simple_math_field
-          relationship: none
+        total_no:
+          id: total_no
+          table: mass_superset_data
+          field: total_no
+          relationship: nid
           group_type: group
           admin_label: ''
-          plugin_id: field_views_simple_math_field
+          plugin_id: numeric
           label: '# of No''s'
           exclude: false
           alter:
@@ -5953,29 +5796,128 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          set_precision: 1
-          precision: '0'
+          set_precision: false
+          precision: 0
           decimal: .
           separator: ','
-          format_plural: 0
+          format_plural: false
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
-          fieldset_one:
-            data_field:
-              pageviews: pageviews
-              nos_per_1000: nos_per_1000
-              node_bulk_form: 0
-              title: 0
-              nid: 0
-              type: 0
-              uid: 0
-              status: 0
-              changed: 0
-              last_updated: 0
-              score: 0
-              operations: 0
-            formula: '@pageviews / 1000 * @nos_per_1000 '
+        total_yes:
+          id: total_yes
+          table: mass_superset_data
+          field: total_yes
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          label: '# of Yes''s'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          set_precision: false
+          precision: 0
+          decimal: .
+          separator: ','
+          format_plural: false
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
+        total_feedback:
+          id: total_feedback
+          table: mass_superset_data
+          field: total_feedback
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          label: '# Responses'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          set_precision: false
+          precision: 0
+          decimal: .
+          separator: ','
+          format_plural: false
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
         operations:
           id: operations
           table: node_revision
@@ -6649,6 +6591,180 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        total_feedback:
+          id: total_feedback
+          table: mass_superset_data
+          field: total_feedback
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '>='
+          value:
+            min: ''
+            max: ''
+            value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: total_feedback_op
+            label: 'Minimum # of Feedback responses'
+            description: ''
+            use_operator: false
+            operator: total_feedback_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: total_feedback
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        total_no:
+          id: total_no
+          table: mass_superset_data
+          field: total_no
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '>='
+          value:
+            min: ''
+            max: ''
+            value: '5'
+          group: 1
+          exposed: true
+          expose:
+            operator_id: total_no_op
+            label: 'Minimum # of No''s'
+            description: ''
+            use_operator: false
+            operator: total_no_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: total_no
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        total_yes:
+          id: total_yes
+          table: mass_superset_data
+          field: total_yes
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '>='
+          value:
+            min: ''
+            max: ''
+            value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: total_yes_op
+            label: 'Minimum # of Yes''s'
+            description: ''
+            use_operator: false
+            operator: total_yes_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: total_yes
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
       filter_groups:
         operator: AND
         groups:
@@ -6889,6 +7005,72 @@ display:
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
+        field_views_simple_math_field:
+          id: field_views_simple_math_field
+          table: views_simple_math_field
+          field: field_views_simple_math_field
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: field_views_simple_math_field
+          label: 'No''s per 1000 pv'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          set_precision: 1
+          precision: '1'
+          decimal: .
+          separator: ','
+          format_plural: 0
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
+          fieldset_one:
+            data_field:
+              pageviews: pageviews
+              total_no: total_no
+              field_organizations: 0
+              nos_per_1000: 0
+              title: 0
+              field_parent: 0
+            formula: '@total_no/@pageviews*1000'
         title:
           id: title
           table: node_field_revision
@@ -6958,6 +7140,126 @@ display:
           precision: 0
           decimal: .
           format_plural: 0
+          format_plural_string: !!binary MQNAY291bnQ=
+          prefix: ''
+          suffix: ''
+        field_parent:
+          id: field_parent
+          table: node__field_parent
+          field: field_parent
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: field
+          label: 'Parent Organization'
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_label
+          settings:
+            link: false
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+        total_no:
+          id: total_no
+          table: mass_superset_data
+          field: total_no
+          relationship: nid
+          group_type: sum
+          admin_label: ''
+          plugin_id: numeric
+          label: 'Total No'
+          exclude: true
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          set_precision: false
+          precision: 0
+          decimal: .
+          separator: ','
+          format_plural: false
           format_plural_string: !!binary MQNAY291bnQ=
           prefix: ''
           suffix: ''
@@ -7467,7 +7769,7 @@ display:
           exposed: true
           expose:
             operator_id: nos_per_1000_op
-            label: 'No''s per 1000 Pageviews'
+            label: 'Avg No''s per 1000 Pageviews'
             description: ''
             use_operator: true
             operator: nos_per_1000_op
@@ -7568,6 +7870,7 @@ display:
         - user.permissions
       tags:
         - 'config:field.storage.node.field_organizations'
+        - 'config:field.storage.node.field_parent'
         - 'config:workflow_list'
   page_4:
     id: page_4
