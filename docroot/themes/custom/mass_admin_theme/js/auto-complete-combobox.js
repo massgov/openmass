@@ -35,11 +35,11 @@
     autoCompleteFields.forEach((autoCompleteField, index) => {
       // Add missing accessibility components to pairng a field and its combobox(option list).
       autoCompleteField.setAttribute("role", "combobox");
-      autoCompleteField.setAttribute("aria-autocomplete", "none");
+      // autoCompleteField.setAttribute("aria-autocomplete", "none");
       autoCompleteField.setAttribute("aria-expanded", "false");
 
       autoCompleteField.addEventListener("change", e => {
-        if(optionLists[index].style.display) {
+        if(optionLists[index].style.display === "none") {
           e.target.setAttribute("aria-expanded", "false");
         } else {
           e.target.setAttribute("aria-expanded", "true");
@@ -56,8 +56,8 @@
             item.setAttribute("role", "none");
             item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
           });
-        }, 200);
+        }, 100);
       });
     });
-  }, 200);
+  }, 100);
 })();
