@@ -27,10 +27,11 @@
       let listId = optionLists[index].getAttribute("id");
       // Add aria-controls with the UL ID value.
       // e.target.setAttribute("aria-controls", listId);
-      e.target.setAttribute("aria-activedescendant", listId);
+      autoCompleteField.setAttribute("aria-activedescendant", listId);
 
       autoCompleteField.addEventListener("keyUp", e => {
 
+        console.log("keyup");
         console.log(optionLists[index]);
 
         if(!optionLists[index].innerHTML.trim()) {
