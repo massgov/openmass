@@ -12,12 +12,22 @@
   setTimeout(function () {
     var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
     var optionLists = document.querySelectorAll(".ui-autocomplete");
-    // var listIndex;
 
     optionLists.forEach((optionList) => {
-      // listIndex = index;
       // Add missing accessibility components to pairng a field and its combobox(option list).
       optionList.setAttribute("role", "listbox");
+
+      optionList.addEventListener("change", e => {
+        var listId = optionList.getAttribute("id");
+        if(e.target.style.display) {
+
+          console.log(e.target.style.display);
+
+          document.querySelector("[aria-controls='${listId}']").setAttribute("aria-expanded", "false");
+        } else {
+          document.querySelector("[aria-controls='${listId}']").setAttribute("aria-expanded", "true");
+        }
+      });
     });
 
     autoCompleteFields.forEach((autoCompleteField, index) => {
@@ -27,12 +37,6 @@
       autoCompleteField.setAttribute("aria-expanded", "false");
 
       autoCompleteField.addEventListener("change", e => {
-        // console.log("EVENT");
-        // console.log(index);
-        // console.log(e.target.getAttribute("aria-expanded"));
-        // Find the matching index UL.
-        // console.log(optionLists[index]);
-        // Check the UL has display: none;
         if(optionLists[index].style.display) {
           e.target.setAttribute("aria-expanded", "false");
         } else {
@@ -50,9 +54,8 @@
             item.setAttribute("role", "none");
             item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
           });
-          console.log(optionLists);
-        }, 1000);
+        }, 200);
       });
     });
-  }, 300);
+  }, 200);
 })();
