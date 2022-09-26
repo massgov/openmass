@@ -29,9 +29,12 @@
       // e.target.setAttribute("aria-controls", listId);
       autoCompleteField.setAttribute("aria-activedescendant", listId);
 
-      autoCompleteField.addEventListener("keyUp", e => {
+      autoCompleteField.addEventListener("change", e => {
 
-        console.log("keyup");
+        if(optionLists[index].innerHTML.trim()) {
+          e.target.backgroundColor = "teal";
+        }
+        console.log("change");
         // console.log(optionLists[index]);
 
         // if(optionLists[index].innerHTML.trim()) {
@@ -56,17 +59,11 @@
         setTimeout(function () {
           // Set role to LIs and their child As.
           optionLists[index].querySelectorAll(".ui-menu-item").forEach(item => {
-
-            console.log("apple");
-
             item.setAttribute("role", "none");
             item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
           });
 
-          console.log(autoCompleteFields[index]);
-
           autoCompleteFields[index].setAttribute("aria-expanded", "true");
-          console.log("panda");
         }, 100);
       });
     });
@@ -92,10 +89,12 @@
 
 
   document.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
+
+    option.getElementsByClassName.backgroundColor = "yellow";
+
     option.addEventListener("click", (e) => {
 
-      console.log("option clicked");
-      console.log(e.target);
+      e.target.backgroundColor = "pink";
 
   //     // Remove aria-selected from one currently has the attribute.
   //     optionLists.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
