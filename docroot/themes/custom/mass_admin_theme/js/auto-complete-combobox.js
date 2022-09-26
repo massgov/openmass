@@ -13,21 +13,22 @@
     var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
     var optionLists = document.querySelectorAll(".ui-autocomplete");
 
-    optionLists.forEach((optionList) => {
+    optionLists.forEach(optionList => {
       // Add missing accessibility components to pairng a field and its combobox(option list).
       optionList.setAttribute("role", "listbox");
 
-      console.log("option list foreach");
+      // console.log("option list foreach");
 
       optionList.addEventListener("change", e => {
+
+        console.log(e.target.style.display);
+
+
         var listId = optionList.getAttribute("id");
         if(e.target.style.display === "none") {
-
-          console.log(e.target.style.display);
-
-          document.querySelector("[aria-controls='${listId}']").setAttribute("aria-expanded", "false");
+          document.querySelector("[aria-activedescendant='${listId}']").setAttribute("aria-expanded", "false");
         } else {
-          document.querySelector("[aria-controls='${listId}']").setAttribute("aria-expanded", "true");
+          document.querySelector("[aria-activedescendant='${listId}']").setAttribute("aria-expanded", "true");
         }
       });
     });
