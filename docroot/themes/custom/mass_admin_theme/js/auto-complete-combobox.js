@@ -50,7 +50,7 @@
             item.setAttribute("role", "none");
             item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
           });
-        }, 300);
+        }, 1000);
       });
     });
   }, 300);
