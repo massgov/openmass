@@ -26,8 +26,8 @@
       // Get ID of the UL.
       let listId = optionLists[index].getAttribute("id");
       // Add aria-controls with the UL ID value.
-      autoCompleteField.setAttribute("aria-controls", listId); // doesn't work with VoiceOver.
-      // autoCompleteField.setAttribute("aria-activedescendant", listId);
+      // autoCompleteField.setAttribute("aria-controls", listId); // doesn't work with VoiceOver.
+      autoCompleteField.setAttribute("aria-activedescendant", listId);
 
       autoCompleteField.addEventListener("change", e => {
         // if(optionLists[index].innerHTML.trim() &&
@@ -79,8 +79,8 @@
     option.addEventListener("click", (e) => {
 
       let pId = e.target.closest(".ui-autocomplete").getAttribute("id");
-      document.querySelector("[aria-controls='${pId}']").style.backgroundColor = "pink";
-      // document.querySelector("[aria-activedescendant='${pId}']").style.backgroundColor = "pink";
+      // document.querySelector("[aria-controls='${pId}']").style.backgroundColor = "pink";
+      document.querySelector("[aria-activedescendant='${pId}']").style.backgroundColor = "pink";
       console.log("e.target");
 
   //     // Remove aria-selected from one currently has the attribute.
