@@ -26,7 +26,7 @@
       // Get ID of the UL.
       let listId = optionLists[index].getAttribute("id");
       // Add aria-controls with the UL ID value.
-      autoCompleteField.setAttribute.setAttribute("aria-controls", listId); // doesn't work with VoiceOver.
+      autoCompleteField.setAttribute("aria-controls", listId); // doesn't work with VoiceOver.
       // autoCompleteField.setAttribute("aria-activedescendant", listId);
 
       autoCompleteField.addEventListener("change", e => {
@@ -46,10 +46,10 @@
           });
 
           autoCompleteFields[index].setAttribute("aria-expanded", "true");
-        }, 300);
+        }, 200);
       });
     });
-  }, 300);
+  }, 200);
 
   // List box display status for aria.
   // let activeField = document.activeElement;
