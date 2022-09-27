@@ -30,30 +30,12 @@
       autoCompleteField.setAttribute("aria-activedescendant", listId);
 
       autoCompleteField.addEventListener("change", e => {
-
-        if(optionLists[index].innerHTML.trim()) {
-          e.target.style.backgroundColor = "teal";
+        // if(optionLists[index].innerHTML.trim() &&
+        if(!optionLists[index].style.display) {
+          e.target.setAttribute("aria-expanded", "true");
+        } else {
+          e.target.setAttribute("aria-expanded", "false");
         }
-        console.log("change");
-        // console.log(optionLists[index]);
-
-        // if(optionLists[index].innerHTML.trim()) {
-
-        //   console.log("options!");
-
-
-        //   e.target.setAttribute("aria-expanded", "true");
-        // } else {
-        //   e.target.setAttribute("aria-expanded", "false");
-        //   console.log("hippo");
-        // }
-
-
-        // if(optionLists[index].style.display === "none") {
-        //   e.target.setAttribute("aria-expanded", "false");
-        // } else {
-        //   e.target.setAttribute("aria-expanded", "true");
-        // }
 
         // Wait till the options are added to the list container .ui-autocomplete.
         setTimeout(function () {
@@ -90,11 +72,11 @@
 
   document.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
 
-    option.getElementsByClassName.style.backgroundColor = "yellow";
-
     option.addEventListener("click", (e) => {
 
-      e.target.style.backgroundColor = "pink";
+      let pId = e.target.closest(".ui-autocomplete").getAttribute("id");
+      document.querySelector("[aria-activedescendant='${pId}']").style.backgroundColor = "pink";
+      console.log("e.target");
 
   //     // Remove aria-selected from one currently has the attribute.
   //     optionLists.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
