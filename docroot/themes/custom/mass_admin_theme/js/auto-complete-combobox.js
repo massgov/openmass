@@ -26,8 +26,8 @@
       // Get ID of the UL.
       let listId = optionLists[index].getAttribute("id");
       // Add aria-controls with the UL ID value.
-      // e.target.setAttribute("aria-controls", listId);
-      autoCompleteField.setAttribute("aria-activedescendant", listId);
+      e.target.setAttribute("aria-controls", listId);
+      // autoCompleteField.setAttribute("aria-activedescendant", listId);
 
       autoCompleteField.addEventListener("change", e => {
         // if(optionLists[index].innerHTML.trim() &&
@@ -53,7 +53,8 @@
 
   // List box display status for aria.
   let activeField = document.activeElement;
-  let matchedListId = activeField.getAttribute("aria-activedescendant");
+  let matchedListId = activeField.getAttribute("aria-controls");
+  // let matchedListId = activeField.getAttribute("aria-activedescendant");
   let matchedList = document.querySelector(matchedListId);
 
   let observer = new MutationObserver(function(mutations) {
@@ -78,7 +79,8 @@
     option.addEventListener("click", (e) => {
 
       let pId = e.target.closest(".ui-autocomplete").getAttribute("id");
-      document.querySelector("[aria-activedescendant='${pId}']").style.backgroundColor = "pink";
+      document.querySelector("[aria-controls='${pId}']").style.backgroundColor = "pink";
+      // document.querySelector("[aria-activedescendant='${pId}']").style.backgroundColor = "pink";
       console.log("e.target");
 
   //     // Remove aria-selected from one currently has the attribute.
