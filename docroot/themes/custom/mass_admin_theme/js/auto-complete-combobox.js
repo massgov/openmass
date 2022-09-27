@@ -45,7 +45,8 @@
         // Mark selected item.
         let activeValue = e.target.value;
         optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
-          console.log(item.value);
+          console.log(activeValue);
+          console.log(item.innerHTML);
           if (item.value === activeValue) {
               item.setAttribute("aria-selected", true);
           } else {
