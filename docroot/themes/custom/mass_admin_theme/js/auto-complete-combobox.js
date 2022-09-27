@@ -41,22 +41,15 @@
           autoCompleteFields[index].setAttribute("aria-expanded", "true");
         }, 200);
 
-
         // Mark selected item.
         let activeValue = e.target.value;
         optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
-          console.log(activeValue);
-          console.log(item.innerHTML);
           if (item.value === activeValue) {
-            console.log("MATCH!");
             item.setAttribute("aria-selected", true);
           } else {
-            console.log("NOT MATCH!");
             item.removeAttribute("aria-selected");
           }
         });
-
-
       });
     });
   }, 200);
