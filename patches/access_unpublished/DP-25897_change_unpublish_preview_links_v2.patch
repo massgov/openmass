@@ -19,13 +19,13 @@ index ccf83fc..88220ff 100644
  use Drupal\Core\Entity\EntityTypeManagerInterface;
  use Drupal\Core\Language\LanguageInterface;
 +use Symfony\Component\HttpFoundation\RequestStack;
- 
+
  /**
   * Service to work with access tokens.
 @@ -34,6 +35,13 @@ class AccessTokenManager {
     */
    protected $moderationInfo;
- 
+
 +  /**
 +   * The request stack.
 +   *
@@ -50,7 +50,7 @@ index ccf83fc..88220ff 100644
      $this->moderationInfo = $moderationInformation;
 +    $this->requestStack = $request_stack->getCurrentRequest();
    }
- 
+
    /**
 @@ -168,10 +179,23 @@ class AccessTokenManager {
      if ($this->moderationInfo && $this->moderationInfo->hasPendingRevision($token->getHost()) && $token->getHost()->getEntityType()->hasLinkTemplate('latest-version')) {
@@ -59,7 +59,7 @@ index ccf83fc..88220ff 100644
 +    $host = $this->requestStack->getSchemeAndHttpHost();
 +    switch ($host) {
 +      case 'https://edit.stage.mass.gov':
-+        $base_url = 'https://stage.mass.gov/';
++        $base_url = 'https://stage.mass.gov';
 +        break;
 +      case 'https://edit.mass.gov':
 +        $base_url = 'https://www.mass.gov';
@@ -75,4 +75,4 @@ index ccf83fc..88220ff 100644
 +      'base_url' => $base_url
      ])->toString();
    }
- 
+
