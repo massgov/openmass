@@ -1,5 +1,17 @@
 
 
+## [0.337.0] - September 27, 2022
+
+### Changed
+  - DP-25216: Add field for exclusing content from search
+  - DP-25636: Delete unused fields for documents.
+  - DP-25897: Change unpublished preview links to always display a "www.mass.gov" domain.
+  
+### Fixed
+  - DP-25914: Fix duplicated feedback component on event agenda and minutes.
+  
+
+
 ## [0.336.0] - September 20, 2022
 
 ### Added
