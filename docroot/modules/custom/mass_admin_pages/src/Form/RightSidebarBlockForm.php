@@ -36,7 +36,6 @@ class RightSidebarBlockForm extends ConfigFormBase {
     \Drupal::state()->get('mass_admin_pages.right_sidebar_block_settings', []);
     $text_field = \Drupal::state()->get('mass_admin_pages.right_sidebar_block_settings.text_field');
 
-
     $form['text_field'] = [
       '#type' => 'text_format',
       '#title' => $this->t('Right Sidebar content'),
