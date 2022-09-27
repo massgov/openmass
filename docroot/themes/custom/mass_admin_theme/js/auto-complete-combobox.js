@@ -31,11 +31,11 @@
 
       autoCompleteField.addEventListener("change", e => {
         // if(optionLists[index].innerHTML.trim() &&
-        if(!optionLists[index].style.display) {
-          e.target.setAttribute("aria-expanded", "true");
-        } else {
-          e.target.setAttribute("aria-expanded", "false");
-        }
+        // if(!optionLists[index].style.display) {
+        //   e.target.setAttribute("aria-expanded", "true");
+        // } else {
+        //   e.target.setAttribute("aria-expanded", "false");
+        // }
 
         // Wait till the options are added to the list container .ui-autocomplete.
         setTimeout(function () {
@@ -51,24 +51,27 @@
     });
   }, 100);
 
-  // After the initial rendering
-  // if (document.querySelectorAll(".ui-autocomplete-input")) {
-  //   var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
-  //   var optionLists = document.querySelectorAll(".ui-autocomplete");
+  // List box display status for aria.
+  let activeField = document.activeElement;
+  let matchedListId = activeField.getAttribute("aria-activedescendant");
+  let matchedList = document.querySelector(matchedListId);
+
+  let observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutationRecord) {
+      console.log('style changed!');
+    });
+  });
+
+  let target = matchedList;
+  // var target = document.getElementById('myId');
+
+  observer.observe(target, {
+    attributes: true,
+    attributeFilter: ['style']
+  });
 
 
-  // }
-
-
-
-
-
-  // document.querySelectorAll("a").forEach(item => {
-  //   item.addEventListener("click", (e) => {
-  //     console.log(e.target);
-  //   });
-  // });
-
+  ////////////////
 
   document.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
 
