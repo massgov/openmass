@@ -46,10 +46,10 @@
           });
 
           autoCompleteFields[index].setAttribute("aria-expanded", "true");
-        }, 200);
+        }, 300);
       });
     });
-  }, 200);
+  }, 300);
 
   // List box display status for aria.
   // let activeField = document.activeElement;
