@@ -11,7 +11,7 @@ use Drupal\Core\Form\ConfigFormBase;
  */
 
 /**
- * Configure Site Wide Notification.
+ * Configure Right Sidebar content.
  */
 class RightSidebarBlockForm extends ConfigFormBase {
 
