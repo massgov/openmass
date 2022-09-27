@@ -48,8 +48,10 @@
           console.log(activeValue);
           console.log(item.innerHTML);
           if (item.value === activeValue) {
-              item.setAttribute("aria-selected", true);
+            console.log("MATCH!");
+            item.setAttribute("aria-selected", true);
           } else {
+            console.log("NOT MATCH!");
             item.removeAttribute("aria-selected");
           }
         });
