@@ -18,7 +18,7 @@
     });
 
     autoCompleteFields.forEach((autoCompleteField, index) => {
-      // Add missing accessibility components to pairng a field and its combobox(option list).
+      // Add missing accessibility components to pair a field and its combobox(option list).
       autoCompleteField.setAttribute("role", "combobox");
       autoCompleteField.setAttribute("aria-autocomplete", "list");
       autoCompleteField.setAttribute("aria-expanded", "false");
@@ -37,41 +37,47 @@
             item.setAttribute("role", "none");
             item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
           });
-
-          autoCompleteFields[index].setAttribute("aria-expanded", "true");
         }, 200);
 
         // Mark selected item.
         let activeValue = e.target.value;
         optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
           if (item.value === activeValue) {
-            item.setAttribute("aria-selected", true);
+            item.setAttribute("aria-selected", "true");
           } else {
             item.removeAttribute("aria-selected");
           }
         });
       });
+
+
+      /////  TEST
+      autoCompleteField.addEventListener("focus", e => {
+        let optionListStyle = optionLists[index].getStyle;
+        console.log(optionListStyle);
+      });
+      ///////
     });
   }, 200);
 
-  // List box display status for aria.
-  // let activeField = document.activeElement;
-  // let matchedListId = activeField.getAttribute("aria-activedescendant");
-  // let matchedList =  document.getElementById(matchedListId);
+  // List box display status for aria-expanded on input fields.
+  let activeField = document.activeElement;
+  let matchedListId = activeField.getAttribute("aria-activedescendant");
+  let matchedList =  document.getElementById(matchedListId);
 
-  // let observer = new MutationObserver(function(mutations) {
-  //   mutations.forEach(function(mutationRecord) {
-  //     console.log('style changed!');
-  //   });
-  // });
+  let observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutationRecord) {
+      console.log('style changed!');
+    });
+  });
 
-  // let target = matchedList;
-  // // var target = document.getElementById('myId');
+  let target = matchedList;
+  // var target = document.getElementById('myId');
 
-  // observer.observe(target, {
-  //   attributes: true,
-  //   attributeFilter: ['style']
-  // });
+  observer.observe(target, {
+    attributes: true,
+    attributeFilter: ['style']
+  });
 
 
   ////////////////
