@@ -32,7 +32,7 @@
       autoCompleteField.addEventListener("change", e => {
 
         if(optionLists[index].innerHTML.trim()) {
-          e.target.backgroundColor = "teal";
+          e.target.style.backgroundColor = "teal";
         }
         console.log("change");
         // console.log(optionLists[index]);
@@ -90,11 +90,11 @@
 
   document.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
 
-    option.getElementsByClassName.backgroundColor = "yellow";
+    option.getElementsByClassName.style.backgroundColor = "yellow";
 
     option.addEventListener("click", (e) => {
 
-      e.target.backgroundColor = "pink";
+      e.target.style.backgroundColor = "pink";
 
   //     // Remove aria-selected from one currently has the attribute.
   //     optionLists.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
