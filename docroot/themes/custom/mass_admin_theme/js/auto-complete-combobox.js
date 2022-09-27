@@ -26,7 +26,7 @@
       // Get ID of the UL.
       let listId = optionLists[index].getAttribute("id");
       // Add aria-controls with the UL ID value.
-      e.target.setAttribute("aria-controls", listId);
+      autoCompleteField.setAttribute.setAttribute("aria-controls", listId); // doesn't work with VoiceOver.
       // autoCompleteField.setAttribute("aria-activedescendant", listId);
 
       autoCompleteField.addEventListener("change", e => {
