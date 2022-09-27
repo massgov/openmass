@@ -45,6 +45,8 @@
         // Mark selected item.
         let activeValue = e.target.value;
         optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
+          console.log("checking...");
+          console.log(activeValue);
           if (item.value === activeValue) {
               item.setAttribute("aria-selected", true);
           } else {
@@ -58,23 +60,23 @@
   }, 200);
 
   // List box display status for aria.
-  let activeField = document.activeElement;
-  let matchedListId = activeField.getAttribute("aria-activedescendant");
-  let matchedList =  document.getElementById(matchedListId);
+  // let activeField = document.activeElement;
+  // let matchedListId = activeField.getAttribute("aria-activedescendant");
+  // let matchedList =  document.getElementById(matchedListId);
 
-  let observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutationRecord) {
-      console.log('style changed!');
-    });
-  });
+  // let observer = new MutationObserver(function(mutations) {
+  //   mutations.forEach(function(mutationRecord) {
+  //     console.log('style changed!');
+  //   });
+  // });
 
-  let target = matchedList;
-  // var target = document.getElementById('myId');
+  // let target = matchedList;
+  // // var target = document.getElementById('myId');
 
-  observer.observe(target, {
-    attributes: true,
-    attributeFilter: ['style']
-  });
+  // observer.observe(target, {
+  //   attributes: true,
+  //   attributeFilter: ['style']
+  // });
 
 
   ////////////////
