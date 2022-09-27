@@ -40,16 +40,19 @@
 
           autoCompleteFields[index].setAttribute("aria-expanded", "true");
         }, 200);
-      });
 
-      // Mark selected item.
-      let activeValue = e.target.value;
-      optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
-        if (item.value === activeValue) {
-            item.setAttribute("aria-selected", true);
-        } else {
-          item.removeAttribute("aria-selected");
-        }
+
+        // Mark selected item.
+        let activeValue = e.target.value;
+        optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
+          if (item.value === activeValue) {
+              item.setAttribute("aria-selected", true);
+          } else {
+            item.removeAttribute("aria-selected");
+          }
+        });
+
+
       });
     });
   }, 200);
