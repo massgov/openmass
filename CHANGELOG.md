@@ -3,26 +3,26 @@
 ## [0.337.0] - September 27, 2022
 
 ### Changed
-  - DP-25216: Add field for exclusing content from search
+  - DP-25216: Add field for excluding content from search
   - DP-25636: Delete unused fields for documents.
   - DP-25897: Change unpublished preview links to always display a "www.mass.gov" domain.
-  
+
 ### Fixed
   - DP-25914: Fix duplicated feedback component on event agenda and minutes.
-  
+
 
 
 ## [0.336.0] - September 20, 2022
 
 ### Added
   - DP-25559: Added Total No, Total Yes, and Total Feedback to Content Performance.
-  
+
 ### Removed
   - DP-25808: Removed feedback survey from public site.
-  
+
 ### Fixed
   - DP-25861: Fixed permissions issue preventing authors and editors from viewing the entity browser.
-  
+
 
 
 ## [0.335.0] - September 13, 2022
@@ -30,16 +30,16 @@
 ### Added
   - DP-25204: Add confirmation warning when bulk transitioning documents.
   - DP-25248: Add testing for saving QAG pages.
-  
+
 ### Removed
   - DP-25692: Hide "Media" and remove "Moderated Content" from All Content view.
-  
+
 ### Fixed
   - DP-25803: Fix TOC jump link target margin top that blocks page content.
   - DP-25805: Fix accordions collapsing while scrolling on Android/iOS devices issue.
   - DP-25828: Resolve 500 error on decision tree page.
   - DP-25832: Fix accordion tests in patternlab.
-  
+
 
 
 ## [0.334.0] - September 6, 2022
@@ -48,29 +48,29 @@
   - DP-25215: Change description field in collection taxonomy to reflect use for search filtering.
   - DP-25248: Add testing for saving QAG pages.
   - DP-25551: Add rich text field to Service Section paragraph.
-  
+
 ### Changed
   - DP-25339: Extensive help text improvements.
-  
+
 ### Fixed
   - DP-25642: Duplicates of locations exist on service location listing pages.
   - DP-25755: Fixed Behat test failure due to the entity_embed module array to string conversion warning.
   - DP-25762: Fix bug with updated date on events that are public meetings
-  
+
 
 
 ## [0.333.0] - August 30, 2022
 
 ### Changed
   - DP-24286: Adjust the keyboard navigation on the main nav to more make sense to users.
-  
+
 ### Fixed
   - DP-25175: Improve sticky TOC accessibility - make section headings the jump link targets.
   - DP-25638: Missing breadcrumb on some events pages.
-  
+
 ### Removed
   - DP-25409: Cleanup and remove old service page fields no longer needed after flexibility changes.
-  
+
 
 
 ## [0.332.0] - August 9, 2022
@@ -81,18 +81,18 @@
   - DP-25519: Search in some collections doesn't show expected results.
   - DP-25583: Fix issue with thumbnail image when saving content types locally.
   - DP-25597: Fix Bulk watch / unwatch error.
-  
+
 ### Changed
   - DP-25173: Reduce Collection Header vertical spacing, make title H1, and reduce H1 line height, fix logo alignment.
-  
+
 ### Added
   - DP-25211: Enable latest Upgrade Status module.
   - DP-25285: Add a warning message for authors if editing a page that has an existing draft.
   - DP-25408: Add description to curated list content type for each list.
-  
+
 ### Removed
   - DP-25410: Cleanup and remove old ORG page fields no longer needed after flexibility changes.
-  
+
 
 
 ## [0.331.0] - July 26, 2022
@@ -102,22 +102,22 @@
   - DP-25157: Fixes the relationship indicators script on Mayflower to avoid failures on Backstop tests.
   - DP-25473: Fixed mg_organizations metatag value generation on organization pages.
   - DP-25506: Fixed flaky media bulk action tests.
-  
+
 ### Added
   - DP-24958: Add a skip link target indicator at click to verify users' whereabout. Set focus on the target (= anchor) at click to ensure users can navigate page below the TOC.
-  
+
 ### Removed
   - DP-25205: Remove author options to bulk edit or save pages.
-  
+
 ### Security
   - DP-25324: Resolve dependabot security issues on openmass, update Drupal core to 9.4.2.
   - DP-25522: Drupal core update to version 9.4.3.
-  
+
 ### Changed
   - DP-25406: Allow Topic Pages to be a parent page of Form Pages.
   - DP-25468: Allow Rules of Court Pages to be a parent page of Rules of Court Pages.
   - DP-25527: In local development, pin portainer and fix DB persistence
-  
+
 
 
 ## [0.330.0] - July 19, 2022
