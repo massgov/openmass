@@ -30,13 +30,6 @@
       autoCompleteField.setAttribute("aria-activedescendant", listId);
 
       autoCompleteField.addEventListener("change", e => {
-        // if(optionLists[index].innerHTML.trim() &&
-        // if(!optionLists[index].style.display) {
-        //   e.target.setAttribute("aria-expanded", "true");
-        // } else {
-        //   e.target.setAttribute("aria-expanded", "false");
-        // }
-
         // Wait till the options are added to the list container .ui-autocomplete.
         setTimeout(function () {
           // Set role to LIs and their child As.
@@ -48,13 +41,23 @@
           autoCompleteFields[index].setAttribute("aria-expanded", "true");
         }, 200);
       });
+
+      // Mark selected item.
+      let activeValue = e.target.value;
+      optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
+        if (item.value === activeValue) {
+            item.setAttribute("aria-selected", true);
+        } else {
+          item.removeAttribute("aria-selected");
+        }
+      });
     });
   }, 200);
 
   // List box display status for aria.
   let activeField = document.activeElement;
   let matchedListId = activeField.getAttribute("aria-activedescendant");
-  let matchedList = document.querySelector(matchedListId);
+  let matchedList =  document.getElementById(matchedListId);
 
   let observer = new MutationObserver(function(mutations) {
     mutations.forEach(function(mutationRecord) {
@@ -73,14 +76,19 @@
 
   ////////////////
 
-  document.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
 
-    option.addEventListener("click", (e) => {
 
-      let pId = e.target.closest(".ui-autocomplete").getAttribute("id");
-      // document.querySelector("[aria-controls='${pId}']").style.backgroundColor = "pink";
-      document.querySelector("[aria-activedescendant='${pId}']").style.backgroundColor = "pink";
-      console.log("e.target");
+  // document.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
+
+    // option.addEventListener("change", (e) => {
+
+
+
+
+      // let pId = e.target.closest(".ui-autocomplete").getAttribute("id");
+      // // document.querySelector("[aria-controls='${pId}']").style.backgroundColor = "pink";
+      // document.querySelector("[aria-activedescendant='${pId}']").style.backgroundColor = "pink";
+      // console.log("e.target");
 
   //     // Remove aria-selected from one currently has the attribute.
   //     optionLists.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
@@ -90,6 +98,6 @@
   //     });
   //     // Set the item selected.
   //     e.target.setAttribute("aria-selected", true);
-    });
-  });
+    // });
+  // });
 })();
