@@ -26,7 +26,7 @@
       // Get ID of the UL.
       let listId = optionLists[index].getAttribute("id");
       // Add aria-controls with the UL ID value.
-      // autoCompleteField.setAttribute("aria-controls", listId); // doesn't work with VoiceOver.
+      // aria-controls doesn't work with VoiceOver.
       autoCompleteField.setAttribute("aria-activedescendant", listId);
 
       autoCompleteField.addEventListener("change", e => {
@@ -52,24 +52,23 @@
   }, 200);
 
   // List box display status for aria.
-  // let activeField = document.activeElement;
-  // let matchedListId = activeField.getAttribute("aria-controls");
-  // // let matchedListId = activeField.getAttribute("aria-activedescendant");
-  // let matchedList = document.querySelector(matchedListId);
+  let activeField = document.activeElement;
+  let matchedListId = activeField.getAttribute("aria-activedescendant");
+  let matchedList = document.querySelector(matchedListId);
 
-  // let observer = new MutationObserver(function(mutations) {
-  //   mutations.forEach(function(mutationRecord) {
-  //     console.log('style changed!');
-  //   });
-  // });
+  let observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutationRecord) {
+      console.log('style changed!');
+    });
+  });
 
-  // let target = matchedList;
-  // // var target = document.getElementById('myId');
+  let target = matchedList;
+  // var target = document.getElementById('myId');
 
-  // observer.observe(target, {
-  //   attributes: true,
-  //   attributeFilter: ['style']
-  // });
+  observer.observe(target, {
+    attributes: true,
+    attributeFilter: ['style']
+  });
 
 
   ////////////////
