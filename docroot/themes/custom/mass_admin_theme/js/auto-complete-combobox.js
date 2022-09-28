@@ -57,7 +57,7 @@
         // console.log(optionListStyle);
 
         let list = optionLists[index];
-        console.log(document.getComputedStyle(list, null));
+        console.log(window.getComputedStyle(list, null));
         console.log(list.computedStyle);
       });
       ///////
