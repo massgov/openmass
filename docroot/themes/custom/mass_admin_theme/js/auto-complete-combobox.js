@@ -55,29 +55,31 @@
       autoCompleteField.addEventListener("focus", e => {
         let optionListStyle = optionLists[index].getStyle;
         console.log(optionListStyle);
+        console.log(optionLists[index].getComputedStyle("display"));
+        console.log(optionLists[index].computedStyle);
       });
       ///////
     });
   }, 200);
 
-  // List box display status for aria-expanded on input fields.
-  let activeField = document.activeElement;
-  let matchedListId = activeField.getAttribute("aria-activedescendant");
-  let matchedList =  document.getElementById(matchedListId);
+  // // List box display status for aria-expanded on input fields.
+  // let activeField = document.activeElement;
+  // let matchedListId = activeField.getAttribute("aria-activedescendant");
+  // let matchedList =  document.getElementById(matchedListId);
 
-  let observer = new MutationObserver(function(mutations) {
-    mutations.forEach(function(mutationRecord) {
-      console.log('style changed!');
-    });
-  });
+  // let observer = new MutationObserver(function(mutations) {
+  //   mutations.forEach(function(mutationRecord) {
+  //     console.log('style changed!');
+  //   });
+  // });
 
-  let target = matchedList;
-  // var target = document.getElementById('myId');
+  // let target = matchedList;
+  // // var target = document.getElementById('myId');
 
-  observer.observe(target, {
-    attributes: true,
-    attributeFilter: ['style']
-  });
+  // observer.observe(target, {
+  //   attributes: true,
+  //   attributeFilter: ['style']
+  // });
 
 
   ////////////////
