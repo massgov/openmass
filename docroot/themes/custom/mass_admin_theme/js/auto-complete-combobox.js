@@ -54,8 +54,8 @@
       /////  TEST
       autoCompleteField.addEventListener("focus", e => {
         let optionListStyle = optionLists[index].getStyle;
-        console.log(optionListStyle);
-        console.log(optionLists[index].getComputedStyle("display"));
+        // console.log(optionListStyle);
+        console.log(document.getComputedStyle(optionLists[index], null));
         console.log(optionLists[index].computedStyle);
       });
       ///////
