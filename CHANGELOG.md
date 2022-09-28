@@ -9,7 +9,6 @@
 
 ### Fixed
   - DP-25914: Fix duplicated feedback component on event agenda and minutes.
-  - Undo purger change https://github.com/massgov/openmass/pull/1725
 
 
 
