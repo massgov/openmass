@@ -1157,7 +1157,7 @@ function mass_theme_preprocess_node_location(&$variables) {
   }
 
   if ($variables['elements']['#view_mode'] == 'teaser') {
-
+    $cache_tags = [];
     $contacts = [];
 
     if (!empty($node->field_ref_contact_info_1)) {
@@ -1277,6 +1277,7 @@ function mass_theme_preprocess_node_location(&$variables) {
 
     if (!$node->field_ref_contact_info_1->isEmpty()) {
       $contact_information_entity = $node->field_ref_contact_info_1->entity;
+      $cache_tags = array_merge($cache_tags, $contact_information_entity->getCacheTags());
       // Get phone number from the referenced contact info node.
       if (!empty($contact_information_entity->field_ref_phone_number->entity->field_phone->value)) {
         $phone = $contact_information_entity->field_ref_phone_number->entity->field_phone->value;
@@ -1313,6 +1314,12 @@ function mass_theme_preprocess_node_location(&$variables) {
           }
         }
       }
+    }
+    if (!empty($cache_tags)) {
+      // Merge arrays of existing and new cache tags and removes duplicates.
+      $merged_tags = Cache::mergeTags($node->getCacheTags(), $cache_tags);
+      // Add the cache tags to the render array.
+      $variables['#cache']['tags'] = $merged_tags;
     }
   }
 }
