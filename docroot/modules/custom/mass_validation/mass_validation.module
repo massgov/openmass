@@ -106,7 +106,7 @@ function mass_validation_form_node_alert_form_alter(&$form, FormStateInterface $
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_alert_form_validate(array &$form, FormStateInterface $form_state) {
-  _mass_link_validate($form_state, 'field_alert_related_links_5');
+  _mass_validation_mass_link_validate($form_state, 'field_alert_related_links_5');
 
   // Ensure link and content values match the selected link type.
   // Get the field on the node and then load its emergency_alert paragraph fields below.
@@ -504,8 +504,8 @@ function mass_validation_form_node_how_to_page_edit_form_alter(&$form, FormState
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_how_to_page_form_validate(array &$form, FormStateInterface $form_state) {
-  _mass_link_validate($form_state, 'field_how_to_links_5');
-  _mass_link_validate($form_state, 'field_how_to_link_1');
+  _mass_validation_mass_link_validate($form_state, 'field_how_to_links_5');
+  _mass_validation_mass_link_validate($form_state, 'field_how_to_link_1');
   _mass_validation_mass_link_validate_paragraph($form_state, 'field_how_to_next_steps', ['field_next_step_link']);
 }
 
@@ -529,7 +529,7 @@ function mass_validation_form_node_service_details_edit_form_alter(&$form, FormS
 function _mass_validation_form_node_service_details_form_validate(array &$form, FormStateInterface $form_state) {
   // Verify links have titles.
   _mass_validation_mass_link_validate_paragraph($form_state, 'field_service_detail_sections', ['field_section_links']);
-  _mass_link_validate($form_state, 'field_service_detail_links_5');
+  _mass_validation_mass_link_validate($form_state, 'field_service_detail_links_5');
 }
 
 /**
@@ -553,7 +553,7 @@ function _mass_validation_form_node_location_details_form_validate(array &$form,
 
   // Verify links have titles.
   _mass_validation_mass_link_validate_paragraph($form_state, 'field_location_details_sections', ['field_section_links']);
-  _mass_link_validate($form_state, 'field_location_details_links_5');
+  _mass_validation_mass_link_validate($form_state, 'field_location_details_links_5');
 
   // Validate that the Related Links fields
   // have no more than 5 values between them.
@@ -628,7 +628,7 @@ function mass_validation_form_node_executive_order_form_alter(&$form, FormStateI
  * Validates submission values in the FORM_ID() form.
  */
 function _mass_validation_form_node_executive_order_form_validate(array &$form, FormStateInterface $form_state) {
-  _mass_link_validate($form_state, 'field_executive_order_related');
+  _mass_validation_mass_link_validate($form_state, 'field_executive_order_related');
 
   // Get the paragraphs field that contain the link fields.
   if ($form_state->hasValue('field_executive_order_adjustment')) {
@@ -764,8 +764,8 @@ function mass_validation_form_node_decision_form_alter(&$form, FormStateInterfac
 function _mass_validation_form_node_decision_form_validate(array &$form, FormStateInterface $form_state) {
 
   // Link fields.
-  _mass_link_validate($form_state, 'field_decision_related');
-  _mass_link_validate($form_state, 'field_decision_sources');
+  _mass_validation_mass_link_validate($form_state, 'field_decision_related');
+  _mass_validation_mass_link_validate($form_state, 'field_decision_sources');
 
   $section = $form_state->getValue('field_decision_section');
   $downloads = $form_state->getValue('field_decision_download');
@@ -800,10 +800,10 @@ function mass_validation_form_node_rules_form_alter(&$form, FormStateInterface $
 function _mass_validation_form_node_rules_form_validate(array &$form, FormStateInterface $form_state) {
 
   // Link fields.
-  _mass_link_validate($form_state, 'field_rules_courts');
-  _mass_link_validate($form_state, 'field_rules_referenced_sources');
-  _mass_link_validate($form_state, 'field_rules_related');
-  _mass_link_validate($form_state, 'field_rules_related_collections');
+  _mass_validation_mass_link_validate($form_state, 'field_rules_courts');
+  _mass_validation_mass_link_validate($form_state, 'field_rules_referenced_sources');
+  _mass_validation_mass_link_validate($form_state, 'field_rules_related');
+  _mass_validation_mass_link_validate($form_state, 'field_rules_related_collections');
 
   $section = $form_state->getValue('field_rules_section');
   $downloads = $form_state->getValue('field_rules_download');
@@ -837,8 +837,8 @@ function mass_validation_form_node_advisory_form_alter(&$form, FormStateInterfac
  */
 function _mass_validation_form_node_advisory_form_validate(array &$form, FormStateInterface $form_state) {
   // Link fields.
-  _mass_link_validate($form_state, 'field_advisory_links');
-  _mass_link_validate($form_state, 'field_advisory_ref_sources');
+  _mass_validation_mass_link_validate($form_state, 'field_advisory_links');
+  _mass_validation_mass_link_validate($form_state, 'field_advisory_ref_sources');
 
   $section = $form_state->getValue('field_advisory_section');
   $downloads = $form_state->getValue('field_advisory_download');
@@ -874,10 +874,10 @@ function _mass_validation_form_node_regulation_form_validate(array &$form, FormS
   $official_version = $form_state->getValue('field_regluation_official_ver');
 
   // Link fields.
-  _mass_link_validate($form_state, 'field_regulation_reg_authority');
+  _mass_validation_mass_link_validate($form_state, 'field_regulation_reg_authority');
   // If official version link is submitted, make sure title text is added.
   if (!empty($official_version)) {
-    _mass_link_validate($form_state, 'field_regluation_official_ver');
+    _mass_validation_mass_link_validate($form_state, 'field_regluation_official_ver');
   }
 
   // Get Regulation type taxonomy terms that make field optional: "Draft",
@@ -901,8 +901,8 @@ function _mass_validation_form_node_regulation_form_validate(array &$form, FormS
       }
     }
   }
-  _mass_link_validate($form_state, 'field_regulation_related');
-  _mass_link_validate($form_state, 'field_regulation_link_org');
+  _mass_validation_mass_link_validate($form_state, 'field_regulation_related');
+  _mass_validation_mass_link_validate($form_state, 'field_regulation_link_org');
 
   $agency_cmr = $form_state->getValue('field_regulation_agency_cmr');
 
@@ -939,9 +939,9 @@ function mass_validation_form_node_event_form_alter(&$form, FormStateInterface $
  */
 function _mass_validation_form_node_event_form_validate(array &$form, FormStateInterface $form_state) {
 
-  _mass_link_validate($form_state, 'field_event_links');
-  _mass_link_validate($form_state, 'field_event_participating_orgs');
-  _mass_link_validate($form_state, 'field_event_link_sign_up');
+  _mass_validation_mass_link_validate($form_state, 'field_event_links');
+  _mass_validation_mass_link_validate($form_state, 'field_event_participating_orgs');
+  _mass_validation_mass_link_validate($form_state, 'field_event_link_sign_up');
 
   $num_links = 0;
   // Validate that the Links and Downloads fields
@@ -1280,7 +1280,7 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
  * @param string $field_name
  *   The name of the link field to validate.
  */
-function _mass_link_validate(FormStateInterface &$form_state, $field_name) {
+function _mass_validation_mass_link_validate(FormStateInterface &$form_state, $field_name) {
   // Fetch the field values.
   if ($form_state->hasValue($field_name)) {
     $featured_tasks = $form_state->getValue($field_name);
