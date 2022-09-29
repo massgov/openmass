@@ -311,7 +311,7 @@ function mass_validation_form_node_guide_page_form_alter(&$form, FormStateInterf
 function _mass_validation_form_node_guide_page_form_validate(array &$form, FormStateInterface $form_state) {
 
   // Verify links have titles.
-  _mass_link_validate_paragraph($form_state, 'field_guide_page_sections', ['field_guide_section_links_4', 'field_guide_section_link']);
+  _mass_validation_mass_link_validate_paragraph($form_state, 'field_guide_page_sections', ['field_guide_section_links_4', 'field_guide_section_link']);
 
   // Validate that the Links and Downloads fields
   // have no more than 6 values between them.
@@ -506,7 +506,7 @@ function mass_validation_form_node_how_to_page_edit_form_alter(&$form, FormState
 function _mass_validation_form_node_how_to_page_form_validate(array &$form, FormStateInterface $form_state) {
   _mass_link_validate($form_state, 'field_how_to_links_5');
   _mass_link_validate($form_state, 'field_how_to_link_1');
-  _mass_link_validate_paragraph($form_state, 'field_how_to_next_steps', ['field_next_step_link']);
+  _mass_validation_mass_link_validate_paragraph($form_state, 'field_how_to_next_steps', ['field_next_step_link']);
 }
 
 /**
@@ -528,7 +528,7 @@ function mass_validation_form_node_service_details_edit_form_alter(&$form, FormS
  */
 function _mass_validation_form_node_service_details_form_validate(array &$form, FormStateInterface $form_state) {
   // Verify links have titles.
-  _mass_link_validate_paragraph($form_state, 'field_service_detail_sections', ['field_section_links']);
+  _mass_validation_mass_link_validate_paragraph($form_state, 'field_service_detail_sections', ['field_section_links']);
   _mass_link_validate($form_state, 'field_service_detail_links_5');
 }
 
@@ -552,7 +552,7 @@ function mass_validation_form_node_location_details_form_alter(&$form, FormState
 function _mass_validation_form_node_location_details_form_validate(array &$form, FormStateInterface $form_state) {
 
   // Verify links have titles.
-  _mass_link_validate_paragraph($form_state, 'field_location_details_sections', ['field_section_links']);
+  _mass_validation_mass_link_validate_paragraph($form_state, 'field_location_details_sections', ['field_section_links']);
   _mass_link_validate($form_state, 'field_location_details_links_5');
 
   // Validate that the Related Links fields
@@ -1063,7 +1063,7 @@ function _mass_validation_form_node_topic_page_form_validate(array &$form, FormS
   }
 
   // Verify links have titles.
-  _mass_link_validate_paragraph($form_state, 'field_topic_content_cards', ['field_content_card_link_cards']);
+  _mass_validation_mass_link_validate_paragraph($form_state, 'field_topic_content_cards', ['field_content_card_link_cards']);
 
   // Verify multiple Link Groups have Category values.
   if ($form_state->hasValue('field_topic_content_cards')) {
@@ -1311,7 +1311,7 @@ function _mass_link_validate(FormStateInterface &$form_state, $field_name) {
  * @param array $field_names
  *   An array of link field titles in the paragraph to check.
  */
-function _mass_link_validate_paragraph(FormStateInterface &$form_state, $paragraph_field_name, array $field_names) {
+function _mass_validation_mass_link_validate_paragraph(FormStateInterface &$form_state, $paragraph_field_name, array $field_names) {
   // Get the paragraphs field that contain the link fields.
   if ($form_state->hasValue($paragraph_field_name)) {
     $paragraphs = $form_state->getValue($paragraph_field_name);
