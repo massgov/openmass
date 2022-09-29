@@ -21,6 +21,35 @@ const MASS_CONTENT_API_FLAT = 'flat';
 const MASS_CONTENT_API_DEPTH = 'depth';
 
 /**
+ * Implements hook_node_update().
+ *
+ * When a node is updated, add a queue item to update relationships.
+ */
+function mass_content_api_node_update(EntityInterface $node) {
+  mass_content_api_crud($node);
+}
+
+/**
+ * Implements hook_node_insert().
+ *
+ * When a node is inserted, add a queue item to update relationships.
+ */
+function mass_content_api_node_insert(EntityInterface $node) {
+  mass_content_api_crud($node);
+}
+
+/**
+ * Implements hook_node_delete().
+ *
+ * When a node is deleted, add a queue item to update relationships.
+ */
+function mass_content_api_node_delete(EntityInterface $node) {
+  /** @var \Drupal\mass_content_api\DescendantManagerInterface $dm */
+  $dm = \Drupal::service('descendant_manager');
+  $dm->deindex($node);
+}
+
+/**
  * Handles updating relationships for decision trees on CRUD operations.
  *
  * @param Drupal\Core\Entity\EntityInterface $node
