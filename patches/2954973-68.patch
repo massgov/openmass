@@ -1,8 +1,8 @@
 diff --git a/src/EntityUpdateManager.php b/src/EntityUpdateManager.php
-index 2cc0e0d..4aa2ae6 100644
+index 28a91b7e51f5a568a3579dc0283e44513655c3f5..ff0ee8f23431c622f025e053a0108d99ee837bb9 100644
 --- a/src/EntityUpdateManager.php
 +++ b/src/EntityUpdateManager.php
-@@ -16,7 +16,7 @@ class EntityUpdateManager {
+@@ -16,7 +16,7 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
    /**
     * The usage track service.
     *
@@ -10,8 +10,8 @@ index 2cc0e0d..4aa2ae6 100644
 +   * @var \Drupal\entity_usage\EntityUsageInterface
     */
    protected $usageService;
- 
-@@ -37,14 +37,14 @@ class EntityUpdateManager {
+
+@@ -37,14 +37,14 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
    /**
     * EntityUpdateManager constructor.
     *
@@ -29,28 +29,29 @@ index 2cc0e0d..4aa2ae6 100644
      $this->trackManager = $track_manager;
      $this->config = $config_factory->get('entity_usage.settings');
 diff --git a/src/EntityUsageTrackBase.php b/src/EntityUsageTrackBase.php
-index 34db9ad..d10c36a 100644
+index f8aae7fc962a7eaf9551bf8f7adb4894c6d21c25..61c6f436279f0d622c15b0c529d5775ef7bf3f34 100644
 --- a/src/EntityUsageTrackBase.php
 +++ b/src/EntityUsageTrackBase.php
-@@ -2,14 +2,17 @@
- 
+@@ -2,6 +2,7 @@
+
  namespace Drupal\entity_usage;
- 
+
 +use Drupal\Core\Url;
  use Drupal\Core\Config\ConfigFactoryInterface;
  use Drupal\Core\Entity\EntityFieldManagerInterface;
  use Drupal\Core\Entity\EntityInterface;
- use Drupal\Core\Entity\EntityRepositoryInterface;
+@@ -9,8 +10,10 @@ use Drupal\Core\Entity\EntityRepositoryInterface;
  use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Entity\FieldableEntityInterface;
  use Drupal\Core\Entity\RevisionableInterface;
 +use Drupal\Core\Path\PathValidatorInterface;
  use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
  use Drupal\Core\Plugin\PluginBase;
 +use Drupal\Core\StreamWrapper\PublicStream;
  use Symfony\Component\DependencyInjection\ContainerInterface;
- 
+
  /**
-@@ -20,7 +23,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+@@ -21,7 +24,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
    /**
     * The usage tracking service.
     *
@@ -58,11 +59,12 @@ index 34db9ad..d10c36a 100644
 +   * @var \Drupal\entity_usage\EntityUsageInterface
     */
    protected $usageService;
- 
+
 @@ -52,6 +55,20 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+    * @var \Drupal\Core\Entity\EntityRepositoryInterface
     */
    protected $entityRepository;
- 
++
 +  /**
 +   * The Drupal Path Validator service.
 +   *
@@ -76,11 +78,10 @@ index 34db9ad..d10c36a 100644
 +   * @var string
 +   */
 +  protected $publicFileDirectory;
-+
+
    /**
     * Plugin constructor.
-    *
-@@ -61,7 +78,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+@@ -62,7 +79,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
     *   The plugin_id for the plugin instance.
     * @param mixed $plugin_definition
     *   The plugin implementation definition.
@@ -89,7 +90,7 @@ index 34db9ad..d10c36a 100644
     *   The usage tracking service.
     * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
     *   The EntityTypeManager service.
-@@ -71,8 +88,12 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+@@ -72,8 +89,12 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
     *   The factory for configuration objects.
     * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
     *   The EntityRepositoryInterface service.
@@ -103,16 +104,16 @@ index 34db9ad..d10c36a 100644
      parent::__construct($configuration, $plugin_id, $plugin_definition);
      $this->configuration += $this->defaultConfiguration();
      $this->usageService = $usage_service;
-@@ -80,6 +101,8 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+@@ -81,6 +102,8 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
      $this->entityFieldManager = $entity_field_manager;
      $this->config = $config_factory->get('entity_usage.settings');
      $this->entityRepository = $entity_repository;
 +    $this->pathValidator = $path_validator;
 +    $this->publicFileDirectory = $public_stream->getDirectoryPath();
    }
- 
+
    /**
-@@ -94,7 +117,9 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+@@ -95,7 +118,9 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
        $container->get('entity_type.manager'),
        $container->get('entity_field.manager'),
        $container->get('config.factory'),
@@ -122,11 +123,12 @@ index 34db9ad..d10c36a 100644
 +      $container->get('stream_wrapper.public')
      );
    }
- 
-@@ -240,4 +265,140 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+
+@@ -246,5 +271,141 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+
      return $referencing_fields_on_bundle;
    }
- 
++
 +  /**
 +   * Process the url to a Url object.
 +   *
@@ -262,15 +264,15 @@ index 34db9ad..d10c36a 100644
 +    }
 +    return $this->publicFileDirectory;
 +  }
-+
+
  }
 diff --git a/src/Plugin/EntityUsage/Track/HtmlLink.php b/src/Plugin/EntityUsage/Track/HtmlLink.php
-index 5b1893b..c0fbf16 100644
+index 5b1893bd568108ea5cee95ca4f26d1aba84dff53..50f804a6114d08a598f562f57ac5415340b79724 100644
 --- a/src/Plugin/EntityUsage/Track/HtmlLink.php
 +++ b/src/Plugin/EntityUsage/Track/HtmlLink.php
 @@ -3,14 +3,6 @@
  namespace Drupal\entity_usage\Plugin\EntityUsage\Track;
- 
+
  use Drupal\Component\Utility\Html;
 -use Drupal\Core\Config\ConfigFactoryInterface;
 -use Drupal\Core\Entity\EntityFieldManagerInterface;
@@ -280,13 +282,13 @@ index 5b1893b..c0fbf16 100644
 -use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 -use Drupal\entity_usage\EntityUsage;
 -use Symfony\Component\DependencyInjection\ContainerInterface;
- 
+
  /**
   * Tracks usage of entities referenced from regular HTML Links.
 @@ -24,68 +16,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
   */
  class HtmlLink extends TextFieldEmbedBase {
- 
+
 -  /**
 -   * The Drupal Path Validator service.
 -   *
@@ -352,10 +354,11 @@ index 5b1893b..c0fbf16 100644
    /**
     * {@inheritdoc}
     */
-@@ -102,55 +32,20 @@ class HtmlLink extends TextFieldEmbedBase {
+@@ -101,56 +31,20 @@ class HtmlLink extends TextFieldEmbedBase {
+       try {
          // Get the href value of the <a> element.
          $href = $element->getAttribute('href');
- 
+-
 -        // Strip off the scheme and host, so we only get the path.
 -        $site_domains = $this->config->get('site_domains') ?: [];
 -        foreach ($site_domains as $site_domain) {
@@ -421,7 +424,7 @@ index 5b1893b..c0fbf16 100644
        }
        catch (\Exception $e) {
 diff --git a/src/Plugin/EntityUsage/Track/LayoutBuilder.php b/src/Plugin/EntityUsage/Track/LayoutBuilder.php
-index f51952c..acab5df 100644
+index 106abbd0e36ac1b002572c91e74233576ee3d473..3a4af181e3090029835d7cfb2387d5abdb52b43c 100644
 --- a/src/Plugin/EntityUsage/Track/LayoutBuilder.php
 +++ b/src/Plugin/EntityUsage/Track/LayoutBuilder.php
 @@ -9,10 +9,12 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
@@ -435,7 +438,7 @@ index f51952c..acab5df 100644
  use Symfony\Component\DependencyInjection\ContainerInterface;
 +use Drupal\Core\Path\PathValidatorInterface;
 +use Drupal\Core\StreamWrapper\PublicStream;
- 
+
  /**
   * Tracks usage of entities related in Layout Builder layouts.
 @@ -42,7 +44,7 @@ class LayoutBuilder extends EntityUsageTrackBase {
@@ -462,7 +465,7 @@ index f51952c..acab5df 100644
 +    parent::__construct($configuration, $plugin_id, $plugin_definition, $usage_service, $entity_type_manager, $entity_field_manager, $config_factory, $entity_repository, $path_validator, $public_stream);
      $this->blockManager = $blockManager;
    }
- 
+
 @@ -73,7 +79,9 @@ class LayoutBuilder extends EntityUsageTrackBase {
        $container->get('entity_field.manager'),
        $container->get('config.factory'),
@@ -473,9 +476,9 @@ index f51952c..acab5df 100644
 +      $container->get('stream_wrapper.public')
      );
    }
- 
+
 diff --git a/src/Plugin/EntityUsage/Track/Link.php b/src/Plugin/EntityUsage/Track/Link.php
-index 288b618..52836f6 100644
+index 288b61861f29cfa0cfe014e6ba89a6cb3f41f692..52836f6cd94c82e8b33985a770f2a0df45d772d3 100644
 --- a/src/Plugin/EntityUsage/Track/Link.php
 +++ b/src/Plugin/EntityUsage/Track/Link.php
 @@ -22,28 +22,20 @@ class Link extends EntityUsageTrackBase {
@@ -510,21 +513,22 @@ index 288b618..52836f6 100644
 +    if (!$entity) {
        return [];
      }
- 
+
 -    return [$target_type . '|' . $target_id];
 +    return [$entity->getEntityTypeId() . '|' . $entity->id()];
    }
- 
+
  }
 diff --git a/tests/src/FunctionalJavascript/IntegrationTest.php b/tests/src/FunctionalJavascript/IntegrationTest.php
-index 9c5c781..30d0dd8 100644
+index 163db83535dec73b36bfd7c122d4cae3073291f6..827e4dcb881c50278d71771fd21db8b33b26e6df 100644
 --- a/tests/src/FunctionalJavascript/IntegrationTest.php
 +++ b/tests/src/FunctionalJavascript/IntegrationTest.php
-@@ -434,6 +434,40 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
+@@ -434,6 +434,39 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
      $node2->delete();
      $usage = $usage_service->listSources($node1);
      $this->assertEquals([], $usage);
-+
+-  }
+
 +    // Create Node 3 referencing Node 1 with an absolute URL in the link field.
 +    // Whitelist the local hostname so we can test absolute URLs.
 +    $current_request = \Drupal::request();
@@ -558,6 +562,5 @@ index 9c5c781..30d0dd8 100644
 +      ],
 +    ];
 +    $this->assertEquals($expected, $usage);
-   }
- 
++  }
  }

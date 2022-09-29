@@ -1,0 +1,264 @@
+diff --git a/README.txt b/README.txt
+index a76dd0d2785d773850ab374ec0b3ceab32e17ae2..3e0c98bca7ade28cf5f5ce0aead73cac2ad3ad52 100644
+--- a/README.txt
++++ b/README.txt
+@@ -54,6 +54,19 @@ usage of entities on your site.
+ Go to the URL /admin/config/entity-usage/batch-update in order to start the
+ batch operation.
+
++Tracking using background process
++============
++The module supports tracking entity usage via a background process. When the
++entity usage is tracked via a background process, the tracking information will
++be updated after the page was loaded in the background.
++
++Since this is for advanced users only, this setting is not exposed in the UI.
++This can be enabled by importing config, setting the value programmatically
++with custom code, or overriding it at runtime by adding the following line to
++your settings.php file:
++
++$config['entity_usage.settings']['background_tracking'] = TRUE;
++
+ Project page and Online handbook
+ ================================
+
+diff --git a/config/schema/entity_usage.schema.yml b/config/schema/entity_usage.schema.yml
+index 3c5c8942a7a0eb8abacccdb9e9d0e3e16de1a8fd..100cbe38f0bd93c22910b8396020f30306e77ee4 100644
+--- a/config/schema/entity_usage.schema.yml
++++ b/config/schema/entity_usage.schema.yml
+@@ -44,6 +44,9 @@ entity_usage.settings:
+       type: sequence
+       sequence:
+         type: string
++    background_tracking:
++      type: boolean
++      label: Track entity usage via a background process
+     usage_controller_items_per_page:
+       label: Number of items per page on the usage page
+       type: integer
+diff --git a/entity_usage.module b/entity_usage.module
+index acca35a036a498843c81606c6cf08eac4c3f779e..0ccf71970b344b7eff2d83f7dbc9068d117b2a23 100644
+--- a/entity_usage.module
++++ b/entity_usage.module
+@@ -7,10 +7,11 @@
+
+ use Drupal\Core\Routing\RouteMatchInterface;
+ use Drupal\entity_usage\EntityUpdateManager;
+-use Drupal\field\FieldStorageConfigInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Url;
++use Drupal\entity_usage\EntityUsageBackgroundTracking;
++use Drupal\field\FieldStorageConfigInterface;
+
+ /**
+  * Implements hook_help().
+@@ -32,43 +33,68 @@ function entity_usage_help($route_name, RouteMatchInterface $route_match) {
+  * Implements hook_entity_insert().
+  */
+ function entity_usage_entity_insert(EntityInterface $entity) {
+-  \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnCreation($entity);
++  if (\Drupal::configFactory()->get('entity_usage.settings')->get('background_tracking')) {
++    \Drupal::service('entity_usage.background_tracking')->registerEntity(EntityUsageBackgroundTracking::OPERATION_INSERT, $entity);
++  }
++  else {
++    \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnCreation($entity);
++  }
+ }
+
+ /**
+  * Implements hook_entity_update().
+  */
+ function entity_usage_entity_update(EntityInterface $entity) {
+-  $entity_usage_update_manager = \Drupal::service('entity_usage.entity_update_manager');
+-  assert($entity_usage_update_manager instanceof EntityUpdateManager);
+-  $entity_usage_update_manager->trackUpdateOnEdition($entity);
++  if (\Drupal::configFactory()->get('entity_usage.settings')->get('background_tracking')) {
++    \Drupal::service('entity_usage.background_tracking')->registerEntity(EntityUsageBackgroundTracking::OPERATION_UPDATE, $entity);
++  }
++  else {
++    $entity_usage_update_manager = \Drupal::service('entity_usage.entity_update_manager');
++    assert($entity_usage_update_manager instanceof EntityUpdateManager);
++    $entity_usage_update_manager->trackUpdateOnEdition($entity);
++  }
+ }
+
+ /**
+  * Implements hook_entity_predelete().
+  */
+ function entity_usage_entity_predelete(EntityInterface $entity) {
+-  $entity_usage_update_manager = \Drupal::service('entity_usage.entity_update_manager');
+-  assert($entity_usage_update_manager instanceof EntityUpdateManager);
+-  $entity_usage_update_manager->trackUpdateOnDeletion($entity);
++  if (\Drupal::configFactory()->get('entity_usage.settings')->get('background_tracking')) {
++    \Drupal::service('entity_usage.background_tracking')->registerEntity(EntityUsageBackgroundTracking::OPERATION_PREDELETE, $entity);
++  }
++  else {
++    $entity_usage_update_manager = \Drupal::service('entity_usage.entity_update_manager');
++    assert($entity_usage_update_manager instanceof EntityUpdateManager);
++    $entity_usage_update_manager->trackUpdateOnDeletion($entity);
++  }
+ }
+
+ /**
+  * Implements hook_entity_translation_delete().
+  */
+ function entity_usage_entity_translation_delete(EntityInterface $translation) {
+-  $entity_usage_update_manager = \Drupal::service('entity_usage.entity_update_manager');
+-  assert($entity_usage_update_manager instanceof EntityUpdateManager);
+-  $entity_usage_update_manager->trackUpdateOnDeletion($translation, 'translation');
++  if (\Drupal::configFactory()->get('entity_usage.settings')->get('background_tracking')) {
++    \Drupal::service('entity_usage.background_tracking')->registerEntity(EntityUsageBackgroundTracking::OPERATION_TRANSLATION_DELETE, $translation);
++  }
++  else {
++    $entity_usage_update_manager = \Drupal::service('entity_usage.entity_update_manager');
++    assert($entity_usage_update_manager instanceof EntityUpdateManager);
++    $entity_usage_update_manager->trackUpdateOnDeletion($translation, 'translation');
++  }
+ }
+
+ /**
+  * Implements hook_entity_revision_delete().
+  */
+ function entity_usage_entity_revision_delete(EntityInterface $entity) {
+-  $entity_usage_update_manager = \Drupal::service('entity_usage.entity_update_manager');
+-  assert($entity_usage_update_manager instanceof EntityUpdateManager);
+-  $entity_usage_update_manager->trackUpdateOnDeletion($entity, 'revision');
++  if (\Drupal::configFactory()->get('entity_usage.settings')->get('background_tracking')) {
++    \Drupal::service('entity_usage.background_tracking')->registerEntity(EntityUsageBackgroundTracking::OPERATION_REVISION_DELETE, $entity);
++  }
++  else {
++    $entity_usage_update_manager = \Drupal::service('entity_usage.entity_update_manager');
++    assert($entity_usage_update_manager instanceof EntityUpdateManager);
++    $entity_usage_update_manager->trackUpdateOnDeletion($entity, 'revision');
++  }
+ }
+
+ /**
+diff --git a/entity_usage.services.yml b/entity_usage.services.yml
+index f1fe59fd611a1a374a6b3377cba7d0f69a6df821..0c00562189b52395149320d1e39f3c223368b7fe 100644
+--- a/entity_usage.services.yml
++++ b/entity_usage.services.yml
+@@ -19,3 +19,8 @@ services:
+     arguments: ['@entity_type.manager', '@config.factory']
+     tags:
+       - { name: event_subscriber }
++  entity_usage.background_tracking:
++    class: Drupal\entity_usage\EntityUsageBackgroundTracking
++    arguments: ['@entity_usage.entity_update_manager']
++    tags:
++      - { name: needs_destruction }
+diff --git a/src/EntityUsageBackgroundTracking.php b/src/EntityUsageBackgroundTracking.php
+new file mode 100644
+index 0000000000000000000000000000000000000000..24605363ee27f43ce5203cb78314f52fe3e69158
+--- /dev/null
++++ b/src/EntityUsageBackgroundTracking.php
+@@ -0,0 +1,108 @@
++<?php
++
++namespace Drupal\entity_usage;
++
++use Drupal\Core\DestructableInterface;
++use Drupal\Core\Entity\EntityInterface;
++
++/**
++ * Track entity usage in the background.
++ */
++class EntityUsageBackgroundTracking implements DestructableInterface {
++
++  /**
++   * Key for the insert operation.
++   */
++  const OPERATION_INSERT = 'insert';
++
++  /**
++   * Key for the update operation.
++   */
++  const OPERATION_UPDATE = 'update';
++
++  /**
++   * Key for the predelete operation.
++   */
++  const OPERATION_PREDELETE = 'predelete';
++
++  /**
++   * Key for the translation delete operation.
++   */
++  const OPERATION_TRANSLATION_DELETE = 'translation_delete';
++
++  /**
++   * Key for the revision delete operation.
++   */
++  const OPERATION_REVISION_DELETE = 'revision_delete';
++
++  /**
++   * A list of entities that should be tracked per operation.
++   *
++   * The nested array is keyed by operation and has arrays of entities to index
++   * for the specific operation as values.
++   *
++   * @var \Drupal\Core\Entity\EntityInterface[][]
++   */
++  protected $entity_operations = [];
++
++  /**
++   * The entity usage update manager.
++   *
++   * @var \Drupal\entity_usage\EntityUpdateManager
++   */
++  protected $entityUsageUpdateManager;
++
++  /**
++   * Constructs a new background tracking service.
++   *
++   * @param \Drupal\entity_usage\EntityUpdateManager $entity_usage_update_manager
++   *   The entity usage update manager.
++   */
++  public function __construct(EntityUpdateManager $entity_usage_update_manager) {
++    $this->entityUsageUpdateManager = $entity_usage_update_manager;
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function destruct() {
++    foreach ($this->entity_operations as $operation => $entities) {
++      foreach ($entities as $entity) {
++        switch ($operation) {
++          case static::OPERATION_INSERT:
++            $this->entityUsageUpdateManager->trackUpdateOnCreation($entity);
++            break;
++
++          case static::OPERATION_UPDATE:
++            $this->entityUsageUpdateManager->trackUpdateOnEdition($entity);
++            break;
++
++          case static::OPERATION_PREDELETE:
++            $this->entityUsageUpdateManager->trackUpdateOnDeletion($entity);
++            break;
++
++          case static::OPERATION_TRANSLATION_DELETE:
++            $this->entityUsageUpdateManager->trackUpdateOnDeletion($entity, 'translation');
++            break;
++
++          case static::OPERATION_REVISION_DELETE:
++            $this->entityUsageUpdateManager->trackUpdateOnDeletion($entity, 'revision');
++            break;
++        }
++      }
++    }
++  }
++
++  /**
++   * Add an entity for background tracking.
++   *
++   * @param string $operation
++   *   The operation causing changes in entity usage.
++   * @param \Drupal\Core\Entity\EntityInterface $entity
++   *   The entity to track.
++   */
++  public function registerEntity($operation, EntityInterface $entity) {
++    $this->entity_operations[$operation][] = clone $entity;
++  }
++
++}

@@ -1,5 +1,5 @@
 diff --git a/config/install/entity_usage.settings.yml b/config/install/entity_usage.settings.yml
-index 5be2839d21e16ce89075e44a4d60a6a88ced1ce8..8e80ed0427b501f94c410f56a6a7f55cc3c6ea13 100644
+index 5be2839..8e80ed0 100644
 --- a/config/install/entity_usage.settings.yml
 +++ b/config/install/entity_usage.settings.yml
 @@ -1,3 +1,4 @@
@@ -8,7 +8,7 @@ index 5be2839d21e16ce89075e44a4d60a6a88ced1ce8..8e80ed0427b501f94c410f56a6a7f55c
  usage_controller_items_per_page: 25
 +usage_controller_subquery: false
 diff --git a/config/schema/entity_usage.schema.yml b/config/schema/entity_usage.schema.yml
-index 3c5c8942a7a0eb8abacccdb9e9d0e3e16de1a8fd..acc94664499aae22fbe4d6687cd1e653a3dfbdc6 100644
+index 3c5c894..acc9466 100644
 --- a/config/schema/entity_usage.schema.yml
 +++ b/config/schema/entity_usage.schema.yml
 @@ -47,3 +47,6 @@ entity_usage.settings:
@@ -19,10 +19,10 @@ index 3c5c8942a7a0eb8abacccdb9e9d0e3e16de1a8fd..acc94664499aae22fbe4d6687cd1e653
 +      type: boolean
 +      label: Improve usage page performance for a large number of entities.
 diff --git a/entity_usage.install b/entity_usage.install
-index c5c7ccf01e11efc64beb133ec028e582ba8da3fc..14f77569f52414b2e4980a6499a4600545db05b8 100644
+index 6a83e47..69122e8 100644
 --- a/entity_usage.install
 +++ b/entity_usage.install
-@@ -386,3 +386,14 @@ function entity_usage_update_8205(&$sandbox) {
+@@ -283,3 +283,14 @@ function entity_usage_update_8205(&$sandbox) {
      $config->set('usage_controller_items_per_page', ListUsageController::ITEMS_PER_PAGE_DEFAULT)->save(TRUE);
    }
  }
@@ -38,7 +38,7 @@ index c5c7ccf01e11efc64beb133ec028e582ba8da3fc..14f77569f52414b2e4980a6499a46005
 +  }
 +}
 diff --git a/entity_usage.routing.yml b/entity_usage.routing.yml
-index a56a5755cc45ce629ba2a76f937ec081b585ab8c..35c55e7eb01411c2795981fc41a1345f9020918f 100644
+index a56a575..35c55e7 100644
 --- a/entity_usage.routing.yml
 +++ b/entity_usage.routing.yml
 @@ -6,6 +6,14 @@ entity_usage.usage_list:
@@ -57,7 +57,7 @@ index a56a5755cc45ce629ba2a76f937ec081b585ab8c..35c55e7eb01411c2795981fc41a1345f
    path: '/admin/config/entity-usage/batch-update'
    defaults:
 diff --git a/src/Controller/ListUsageController.php b/src/Controller/ListUsageController.php
-index 038a7fac48e1021daaac6929486e1e049f6ea13e..01fce55fd54f07f7aeb66aaafb773b094ce9631e 100644
+index 038a7fa..01fce55 100644
 --- a/src/Controller/ListUsageController.php
 +++ b/src/Controller/ListUsageController.php
 @@ -11,7 +11,6 @@ use Drupal\Core\Entity\EntityInterface;
@@ -71,7 +71,7 @@ index 038a7fac48e1021daaac6929486e1e049f6ea13e..01fce55fd54f07f7aeb66aaafb773b09
 @@ -40,6 +39,11 @@ class ListUsageController extends ControllerBase {
     */
    protected $entityUsage;
- 
+
 +  /**
 +   * @var  \Drupal\Core\Entity\EntityInterface
 +   */
@@ -243,7 +243,7 @@ index 038a7fac48e1021daaac6929486e1e049f6ea13e..01fce55fd54f07f7aeb66aaafb773b09
 @@ -238,28 +382,7 @@ class ListUsageController extends ControllerBase {
        }
      }
- 
+
 -    $this->allRows = $rows;
 -    return $this->allRows;
 -  }
@@ -268,7 +268,7 @@ index 038a7fac48e1021daaac6929486e1e049f6ea13e..01fce55fd54f07f7aeb66aaafb773b09
 -    return array_slice($this->getRows($entity_type, $entity_id), $offset, $num_per_page);
 +    return $rows;
    }
- 
+
    /**
 @@ -274,9 +397,9 @@ class ListUsageController extends ControllerBase {
     *   The title to be used on this page.
@@ -296,7 +296,7 @@ index 038a7fac48e1021daaac6929486e1e049f6ea13e..01fce55fd54f07f7aeb66aaafb773b09
      return AccessResult::allowed();
 diff --git a/src/Controller/LocalTaskUsageSubQueryController.php b/src/Controller/LocalTaskUsageSubQueryController.php
 new file mode 100644
-index 0000000000000000000000000000000000000000..0930f99eca4c2d5030e00c2afdea3eac20201231
+index 0000000..0930f99
 --- /dev/null
 +++ b/src/Controller/LocalTaskUsageSubQueryController.php
 @@ -0,0 +1,68 @@
@@ -369,7 +369,7 @@ index 0000000000000000000000000000000000000000..0930f99eca4c2d5030e00c2afdea3eac
 +
 +}
 diff --git a/src/EntityUsage.php b/src/EntityUsage.php
-index baad859d851c2f3eab96c34a93d67fefcbcd7037..e8f1c8d5696347a74961197c10dfe3e245e007b9 100644
+index 4779a67..c5c83ba 100644
 --- a/src/EntityUsage.php
 +++ b/src/EntityUsage.php
 @@ -6,6 +6,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
@@ -380,10 +380,10 @@ index baad859d851c2f3eab96c34a93d67fefcbcd7037..e8f1c8d5696347a74961197c10dfe3e2
  use Drupal\entity_usage\Events\Events;
  use Drupal\entity_usage\Events\EntityUsageEvent;
  use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-@@ -245,6 +246,89 @@ class EntityUsage implements EntityUsageInterface {
-       ->orderBy('source_langcode')
-       ->execute();
- 
+@@ -249,7 +250,89 @@ class EntityUsage implements EntityUsageInterface {
+     }
+
+     $result = $query->execute();
 +    return $this->prepareListSources($result, $nest_results);
 +  }
 +
@@ -458,7 +458,7 @@ index baad859d851c2f3eab96c34a93d67fefcbcd7037..e8f1c8d5696347a74961197c10dfe3e2
 +    $query->orderBy('source_id', 'DESC');
 +    $query->orderBy('source_vid', 'DESC');
 +    $query->orderBy('source_langcode');
-+
+
 +    $result = $query->execute();
 +    return $this->prepareListSources($result, $nest_results);
 +  }
@@ -471,7 +471,7 @@ index baad859d851c2f3eab96c34a93d67fefcbcd7037..e8f1c8d5696347a74961197c10dfe3e2
      foreach ($result as $usage) {
        $source_id_value = !empty($usage->source_id) ? (string) $usage->source_id : (string) $usage->source_id_string;
 diff --git a/src/EntityUsageInterface.php b/src/EntityUsageInterface.php
-index ae2a366a0d038ad17dadab7021f2a69627caeb3f..eb4590035149a88d82e5e69cf4cef8cce3c7220c 100644
+index d0a8dc4..45e6e4e 100644
 --- a/src/EntityUsageInterface.php
 +++ b/src/EntityUsageInterface.php
 @@ -98,6 +98,59 @@ interface EntityUsageInterface {
@@ -534,7 +534,7 @@ index ae2a366a0d038ad17dadab7021f2a69627caeb3f..eb4590035149a88d82e5e69cf4cef8cc
     * Examples:
     *  - Return example 1:
     *  [
-@@ -135,11 +188,10 @@ interface EntityUsageInterface {
+@@ -135,16 +188,12 @@ interface EntityUsageInterface {
     *    ]
     *  ]
     *
@@ -545,21 +545,27 @@ index ae2a366a0d038ad17dadab7021f2a69627caeb3f..eb4590035149a88d82e5e69cf4cef8cc
     * @param bool $nest_results
 -   *   (optional) Whether the results should be returned in a nested structure.
 -   *   Defaults to TRUE.
+-   * @param int $limit
+-   *   (optional) Limit number of results returned. Defaults to 0, which
+-   *   will return all sources.
 +   *   Whether the results should be returned in a nested structure.
     *
-    * @return array
+-   * @return ($nest_results is true ? array<string, array<string, array<array{source_langcode: string, source_vid: string, method: string, field_name: string, count: string}>>> : array<array{source_type: string, source_id: string, source_langcode: string, source_vid: string, method: string, field_name: string, count: string}>)
++   * @return array
     *   A nested array with usage data. The first level is keyed by the type of
-@@ -149,7 +201,7 @@ interface EntityUsageInterface {
+    *   the source entities, the second by the source id. The value of the second
+    *   level contains all other information like the method used by the source
+@@ -152,7 +201,7 @@ interface EntityUsageInterface {
     *   $nest_results is FALSE, the returned array will be an indexed array where
     *   values are arrays containing all DB columns for the records.
     */
--  public function listSources(EntityInterface $target_entity, $nest_results = TRUE);
+-  public function listSources(EntityInterface $target_entity, $nest_results = TRUE, int $limit = 0);
 +  public function prepareListSources($results, $nest_results);
- 
+
    /**
     * Provide a list of all referenced target entities for a source entity.
 diff --git a/src/Form/EntityUsageSettingsForm.php b/src/Form/EntityUsageSettingsForm.php
-index 94faf65094753cb3e8ac27caabf8e483fc7fad02..11baa59a5473cc5bf3ae24e914ab7b63adc2dbc1 100644
+index 94faf65..11baa59 100644
 --- a/src/Form/EntityUsageSettingsForm.php
 +++ b/src/Form/EntityUsageSettingsForm.php
 @@ -259,6 +259,12 @@ class EntityUsageSettingsForm extends ConfigFormBase {
@@ -572,7 +578,7 @@ index 94faf65094753cb3e8ac27caabf8e483fc7fad02..11baa59a5473cc5bf3ae24e914ab7b63
 +      '#description' => $this->t('If enabled, usage records will be retrieved per page instead of all at once. This is helpful for massive numbers of entities which cause the usage page to break.'),
 +      '#default_value' => (bool) $config->get('usage_controller_subquery'),
 +    ];
- 
+
      return parent::buildForm($form, $form_state);
    }
 @@ -283,7 +289,8 @@ class EntityUsageSettingsForm extends ConfigFormBase {
@@ -583,16 +589,16 @@ index 94faf65094753cb3e8ac27caabf8e483fc7fad02..11baa59a5473cc5bf3ae24e914ab7b63
 +      ->set('usage_controller_items_per_page', (bool) $form_state->getValue('usage_controller_items_per_page'))
 +      ->set('usage_controller_subquery', $form_state->getValue('usage_controller_subquery'))
        ->save();
- 
+
      if ($local_tasks_updated) {
 diff --git a/src/Routing/RouteSubscriber.php b/src/Routing/RouteSubscriber.php
-index d52861555a5263bf8c3c836d648a9b433b91a848..6bc21292b815fed5231a629167de46bb0818cf72 100644
+index 761abe0..4c5bc71 100644
 --- a/src/Routing/RouteSubscriber.php
 +++ b/src/Routing/RouteSubscriber.php
 @@ -69,18 +69,34 @@ class RouteSubscriber extends RouteSubscriberBase {
          ],
        ];
- 
+
 -      $route = new Route(
 -        $template . '/usage',
 -        [
@@ -633,17 +639,17 @@ index d52861555a5263bf8c3c836d648a9b433b91a848..6bc21292b815fed5231a629167de46bb
 +          $options
 +        );
 +      }
- 
+
        $collection->add("entity.$entity_type_id.entity_usage", $route);
      }
 diff --git a/tests/src/FunctionalJavascript/ListControllerTest.php b/tests/src/FunctionalJavascript/ListControllerTest.php
-index 11d8409ba77aba2ab66c2a10fb837d1301918b76..a5b4080a2bb678e95d923a26dabbf4a4e63d2deb 100644
+index 9a18c9f..cd72aab 100644
 --- a/tests/src/FunctionalJavascript/ListControllerTest.php
 +++ b/tests/src/FunctionalJavascript/ListControllerTest.php
 @@ -117,6 +117,43 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
      $second_row_status = $this->xpath('//table/tbody/tr[2]/td[5]')[0];
      $this->assertEquals('Published', $second_row_status->getText());
- 
+
 +    // Visit the subquery version of the usage page that tracks usage of node 1
 +    // and check everything is there.
 +    $this->drupalGet("/admin/content/entity-usage-subquery/node/{$node1->id()}");
@@ -687,7 +693,7 @@ index 11d8409ba77aba2ab66c2a10fb837d1301918b76..a5b4080a2bb678e95d923a26dabbf4a4
 @@ -124,6 +161,11 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
      $second_row_status = $this->xpath('//table/tbody/tr[2]/td[5]')[0];
      $this->assertEquals('Unpublished', $second_row_status->getText());
- 
+
 +    // Check the subquery version of the usage page.
 +    $this->drupalGet("/admin/content/entity-usage-subquery/node/{$node1->id()}");
 +    $second_row_status = $this->xpath('//table/tbody/tr[2]/td[5]')[0];
@@ -699,7 +705,7 @@ index 11d8409ba77aba2ab66c2a10fb837d1301918b76..a5b4080a2bb678e95d923a26dabbf4a4
 @@ -155,6 +197,19 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
      $assert_session->pageTextNotContains('Used in');
      $assert_session->pageTextNotContains('Translations or previous revisions');
- 
+
 +    // Check the subquery version of the usage page.
 +    $this->drupalGet("/admin/content/entity-usage-subquery/node/{$node1->id()}");
 +    $assert_session->pageTextContains('Entity usage information for Node 1');
@@ -719,7 +725,7 @@ index 11d8409ba77aba2ab66c2a10fb837d1301918b76..a5b4080a2bb678e95d923a26dabbf4a4
 @@ -170,6 +225,17 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
      // Make sure we only have 2 rows (so no previous revision shows up).
      $this->assertEquals(2, count($this->xpath('//table/tbody/tr')));
- 
+
 +    // Check the subquery version of the usage page.
 +    $this->drupalGet("/admin/content/entity-usage-subquery/node/{$node1->id()}");
 +    $assert_session->pageTextContains('Used in');
@@ -737,7 +743,7 @@ index 11d8409ba77aba2ab66c2a10fb837d1301918b76..a5b4080a2bb678e95d923a26dabbf4a4
 @@ -217,10 +283,22 @@ class ListControllerTest extends EntityUsageJavascriptTestBase {
      $this->assertEquals('Translations or previous revisions', $second_row_used_in->getText());
      $this->assertEquals(2, count($this->xpath('//table/tbody/tr')));
- 
+
 +    // Subquery usage now should be the same as before.
 +    $this->drupalGet("/admin/content/entity-usage-subquery/node/{$node1->id()}");
 +    $assert_session->pageTextContains('Used in');
@@ -774,5 +780,5 @@ index 11d8409ba77aba2ab66c2a10fb837d1301918b76..a5b4080a2bb678e95d923a26dabbf4a4
 +    $this->assertEquals('Node 2', $first_row_title_link->getText());
 +    $assert_session->elementNotExists('xpath', '//table/tbody/tr[2]');
    }
- 
+
  }
