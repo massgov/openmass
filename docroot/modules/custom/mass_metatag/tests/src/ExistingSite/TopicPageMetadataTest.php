@@ -43,7 +43,7 @@ class TopicPageMetadataTest extends MetadataTestCase {
       ],
       'field_topic_ref_related_topics' => [
         $this->createNode([
-          'type' => 'topic',
+          'type' => 'topic_page',
           'title' => 'Test Topic',
         ]),
       ],

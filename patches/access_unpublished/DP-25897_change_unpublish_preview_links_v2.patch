@@ -1,0 +1,78 @@
+diff --git a/access_unpublished.services.yml b/access_unpublished.services.yml
+index ca9b4db..b4f68b0 100644
+--- a/access_unpublished.services.yml
++++ b/access_unpublished.services.yml
+@@ -5,6 +5,7 @@ services:
+       - '@config.factory'
+       - '@entity_type.manager'
+       - '@?content_moderation.moderation_information'
++      - '@request_stack'
+   access_unpublished.token_getter:
+     class: Drupal\access_unpublished\TokenGetter
+     arguments: ['@config.factory']
+diff --git a/src/AccessTokenManager.php b/src/AccessTokenManager.php
+index ccf83fc..88220ff 100644
+--- a/src/AccessTokenManager.php
++++ b/src/AccessTokenManager.php
+@@ -7,6 +7,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Language\LanguageInterface;
++use Symfony\Component\HttpFoundation\RequestStack;
+
+ /**
+  * Service to work with access tokens.
+@@ -34,6 +35,13 @@ class AccessTokenManager {
+    */
+   protected $moderationInfo;
+
++  /**
++   * The request stack.
++   *
++   * @var \Symfony\Component\HttpFoundation\RequestStack
++   */
++  protected $requestStack;
++
+   /**
+    * AccessTokenManager constructor.
+    *
+@@ -43,11 +51,14 @@ class AccessTokenManager {
+    *   The entity type manager.
+    * @param \Drupal\content_moderation\ModerationInformationInterface|null $moderationInformation
+    *   The moderation information service.
++   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
++   *   The request stack.
+    */
+-  public function __construct(ConfigFactoryInterface $configFactory, EntityTypeManagerInterface $entityTypeManager, ModerationInformationInterface $moderationInformation = NULL) {
++  public function __construct(ConfigFactoryInterface $configFactory, EntityTypeManagerInterface $entityTypeManager, ModerationInformationInterface $moderationInformation = NULL, RequestStack $request_stack) {
+     $this->configFactory = $configFactory;
+     $this->entityTypeManager = $entityTypeManager;
+     $this->moderationInfo = $moderationInformation;
++    $this->requestStack = $request_stack->getCurrentRequest();
+   }
+
+   /**
+@@ -168,10 +179,23 @@ class AccessTokenManager {
+     if ($this->moderationInfo && $this->moderationInfo->hasPendingRevision($token->getHost()) && $token->getHost()->getEntityType()->hasLinkTemplate('latest-version')) {
+       $rel = 'latest-version';
+     }
++    $host = $this->requestStack->getSchemeAndHttpHost();
++    switch ($host) {
++      case 'https://edit.stage.mass.gov':
++        $base_url = 'https://stage.mass.gov';
++        break;
++      case 'https://edit.mass.gov':
++        $base_url = 'https://www.mass.gov';
++        break;
++      default:
++        $base_url = $host;
++        break;
++    }
+     return $token->getHost()->toUrl($rel, [
+       'query' => [$tokenKey => $token->get('value')->value],
+       'absolute' => TRUE,
+       'language' => $language,
++      'base_url' => $base_url
+     ])->toString();
+   }
+

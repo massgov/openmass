@@ -1366,4 +1366,9 @@ function mass_utility_form_alter(&$form, FormStateInterface $form_state, $form_i
   // Hide "Reset to alphabetical" option on the
   // collection admin form (https://massgov.atlassian.net/browse/DP-24413).
   $form['actions']['reset_alphabetical']['#access'] = FALSE;
+
+  // Always hide simple sitemap, in favor of 'search' custom field (boolean).
+  if (isset($form['simple_sitemap'])) {
+    $form['simple_sitemap']['#access'] = FALSE;
+  }
 }
