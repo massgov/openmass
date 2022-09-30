@@ -28,6 +28,10 @@ class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
   private function createRandomUser($role) {
     $user = User::create(['name' => $this->randomMachineName(20)]);
     $user->addRole($role);
+    // Also add editor role for testing Content Administrator permissions.
+    if ($role == 'content_team') {
+      $user->addRole('editor');
+    }
     $user->activate();
     $user->save();
     return $user;
