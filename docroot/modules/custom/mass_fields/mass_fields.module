@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
@@ -251,6 +252,62 @@ function mass_fields_entity_extra_field_info() {
   }
 
   return $extra;
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function mass_fields_entity_base_field_info(\Drupal\Core\Entity\EntityTypeInterface $entity_type) {
+  $options = [
+    'type' => 'boolean_checkbox',
+    'weight' => 99,
+    'settings' => [
+      'display_label' => TRUE,
+    ]
+  ];
+  $search = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Exclude from search'))
+    ->setDefaultValueCallback('mass_fields_search_default_value')
+    ->setRevisionable(TRUE)
+    ->setTranslatable(FALSE)
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayOptions('form', $options)
+    ->setDescription('If you need to publish this content but hide it from search engines, check this box. If you change the value of this checkbox, it may take multiple days for your page to be added or removed from search.');
+  $nosnippet = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Omit snippet in search results'))
+    ->setDefaultValue(FALSE)
+    ->setRevisionable(TRUE)
+    ->setTranslatable(FALSE)
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayOptions('form', $options)
+    ->setDescription('Tell search engines not to show a page description or excerpt after the result title. We recommend that you do not use this option as snippets help users choose a search result.');
+
+  if (in_array($entity_type->id(), ['media', 'node'])) {
+    $fields['search'] = $search;
+
+    if ($entity_type->id() == 'node') {
+      $fields['search_nosnippet'] = $nosnippet;
+    }
+    return $fields;
+  }
+}
+
+/**
+ * A default value field api callback for 'search' field.
+ *
+ * @see https://chromatichq.com/insights/dynamic-default-and-allowed-values-list-fields-drupal-8/
+ */
+function mass_fields_search_default_value(ContentEntityInterface $entity) {
+  $settings = \Drupal::service('simple_sitemap.generator')->getBundleSettings();
+  $default = FALSE;
+  if (!$settings[$entity->getEntityTypeId()][$entity->bundle()]['index']) {
+    // Bundle is not part of the sitemap so turn on 'Exclude from content'.
+    $default = TRUE;
+  }
+
+  return [
+    ['value' => $default],
+  ];
 }
 
 /**
@@ -690,6 +747,52 @@ function mass_fields_theme() {
       ],
     ],
   ];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_fields_form_node_form_alter(&$form, FormStateInterface $form_state) {
+  mass_fields_do_form_alter($form, $form_state);
+  // Do same for no snippet field.
+  $form['search_status']['search_nosnippet'] = $form['search_nosnippet'];
+  // Nosnippet only makes sense if search is enabled.
+  $form['search_status']['search_nosnippet']['#states'] = [
+    'enabled' => [
+      ':input[name="search[value]"]' => ['checked' => FALSE],
+    ],
+  ];
+  // Remove the original checkbox in the main section.
+  unset($form['search_nosnippet']);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_fields_form_media_form_alter(&$form, FormStateInterface $form_state) {
+  mass_fields_do_form_alter($form, $form_state);
+}
+
+/**
+ * Place the 'Exclude from search' checkbox.
+ */
+function mass_fields_do_form_alter(&$form, FormStateInterface $form_state) {
+  /** @var ContentEntityInterface $entity */
+  $entity = $form_state->getFormObject()->getEntity();
+  $settings = \Drupal::service('simple_sitemap.generator')->getBundleSettings();
+  $form['search_status'] = [
+    '#type' => 'details',
+    '#group' => 'advanced',
+    '#open' => FALSE,
+    '#title' => t('Search status'),
+    '#weight' => 55,
+    '#access' => $settings[$entity->getEntityTypeId()][$entity->bundle()]['index'],
+  ];
+  // Copy the checkbox field into the advanced group.
+  $form['search_status']['search'] = $form['search'];
+
+  // Remove the original checkbox in the main section.
+  unset($form['search']);
 }
 
 /**
