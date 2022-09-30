@@ -1,0 +1,55 @@
+diff --git a/core/lib/Drupal/Core/Render/HtmlResponse.php b/core/lib/Drupal/Core/Render/HtmlResponse.php
+index 5f651faf34..d770545ff0 100644
+--- a/core/lib/Drupal/Core/Render/HtmlResponse.php
++++ b/core/lib/Drupal/Core/Render/HtmlResponse.php
+@@ -2,10 +2,12 @@
+ 
+ namespace Drupal\Core\Render;
+ 
++use Drupal\Component\Datetime\DateTimePlus;
+ use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\Cache\CacheableResponseInterface;
+ use Drupal\Core\Cache\CacheableResponseTrait;
+ use Symfony\Component\HttpFoundation\Response;
++use Drupal\Core\Cache\Cache;
+ 
+ /**
+  * Response that contains and can expose cacheability metadata and attachments.
+@@ -63,6 +65,17 @@ public function setContent($content) {
+       ];
+       $this->addCacheableDependency(CacheableMetadata::createFromRenderArray($content));
+       $this->setAttachments($content['#attached']);
++
++      // Propagate max-age to the response headers.
++      $max_age = $this->getCacheableMetadata()->getCacheMaxAge();
++      if ($max_age && $max_age !== Cache::PERMANENT) {
++        $this->setMaxAge($max_age);
++        $this->headers->addCacheControlDirective('public');
++        // Add Revalidate Headers.
++        $this->setLastModified(new \DateTime(gmdate(DateTimePlus::RFC7231, REQUEST_TIME)));
++        $this->setEtag(REQUEST_TIME);
++      }
++
+       $content = $content['#markup'];
+     }
+ 
+diff --git a/core/modules/block/src/Plugin/DisplayVariant/BlockPageVariant.php b/core/modules/block/src/Plugin/DisplayVariant/BlockPageVariant.php
+index cab172faa2..05d02c5ae8 100644
+--- a/core/modules/block/src/Plugin/DisplayVariant/BlockPageVariant.php
++++ b/core/modules/block/src/Plugin/DisplayVariant/BlockPageVariant.php
+@@ -108,6 +108,7 @@ public static function create(ContainerInterface $container, array $configuratio
+    */
+   public function setMainContent(array $main_content) {
+     $this->mainContent = $main_content;
++    $this->addCacheableDependency(CacheableMetadata::createFromRenderArray($main_content));
+     return $this;
+   }
+ 
+@@ -193,6 +194,7 @@ public function build() {
+     // This would need to be changed to allow caching of block regions, as each
+     // region must then have the relevant cacheable metadata.
+     $merged_cacheable_metadata = CacheableMetadata::createFromRenderArray($build);
++    $merged_cacheable_metadata->addCacheableDependency($this);
+     foreach ($cacheable_metadata_list as $cacheable_metadata) {
+       $merged_cacheable_metadata = $merged_cacheable_metadata->merge($cacheable_metadata);
+     }
