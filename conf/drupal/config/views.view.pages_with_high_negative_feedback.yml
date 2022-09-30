@@ -3,41 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_organizations
-    - field.storage.node.field_parent
-    - node.type.action
-    - node.type.advisory
-    - node.type.alert
-    - node.type.binder
-    - node.type.contact_information
-    - node.type.curated_list
-    - node.type.decision
-    - node.type.decision_tree
-    - node.type.decision_tree_branch
-    - node.type.decision_tree_conclusion
-    - node.type.error_page
-    - node.type.event
-    - node.type.executive_order
-    - node.type.fee
-    - node.type.form_page
-    - node.type.guide_page
-    - node.type.how_to_page
-    - node.type.info_details
-    - node.type.interstitial
-    - node.type.location
-    - node.type.location_details
-    - node.type.news
-    - node.type.org_page
-    - node.type.page
-    - node.type.person
-    - node.type.regulation
-    - node.type.rules
-    - node.type.service_details
-    - node.type.service_page
-    - node.type.sitewide_alert
-    - node.type.stacked_layout
-    - node.type.topic_page
-    - node.type.utility_drawer
     - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
     - workflows.workflow.campaign_landing_page
@@ -45,19 +10,14 @@ dependencies:
     - workflows.workflow.topic_page
   module:
     - content_moderation
-    - csv_serialization
     - mass_superset
     - mass_views
     - node
-    - rest
-    - serialization
     - taxonomy
     - user
     - views_aggregator
     - views_autocomplete_filters
-    - views_data_export
     - views_porter_stemmer
-    - views_simple_math_field
 id: pages_with_high_negative_feedback
 label: 'Pages with high negative feedback'
 module: views
@@ -3922,7 +3882,7 @@ display:
             format: basic_html
           tokenize: false
       display_extenders: {  }
-      path: admin/content/performance/feedback
+      path: admin/content/pages_with_negative_feedback
       menu:
         type: none
         title: 'Content Performance'
