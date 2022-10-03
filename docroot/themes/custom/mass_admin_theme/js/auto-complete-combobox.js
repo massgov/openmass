@@ -30,7 +30,7 @@
       autoCompleteField.setAttribute("aria-activedescendant", listId);
 
       autoCompleteField.addEventListener("change", e => {
-        console.log("CHANGE");
+        // console.log("CHANGE");
         // Wait till the options are added to the list container .ui-autocomplete.
         setTimeout(function () {
           // Set role to LIs and their child As.
@@ -41,15 +41,17 @@
         }, 200);
 
         // Mark selected item.
-        let activeValue = e.target.value;
-        console.log(activeValue);
-        optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
-          if (item.value === activeValue) {
-            item.setAttribute("aria-selected", "true");
-          } else {
-            item.removeAttribute("aria-selected");
-          }
-        });
+        setTimeout(function () {
+          let activeValue = e.target.value;
+          console.log(activeValue);
+          optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
+            if (item.value === activeValue) {
+              item.setAttribute("aria-selected", "true");
+            } else {
+              item.removeAttribute("aria-selected");
+            }
+          });
+        }, 200);
       });
 
 
