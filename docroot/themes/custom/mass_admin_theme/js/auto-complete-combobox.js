@@ -10,30 +10,41 @@
 
   // The timeout function is necessary to recognize the fields and the lists.
   setTimeout(function () {
+    const instructionForAll = document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header");
+    const instructionForSrContent = document.createTextNode("Use tab key to navigate in the main content area.");
+
+    const instructionForCombobox = document.createTag("p");
+    const instructionForComboboxContent = document.createTextNode("Use enter key to select an option.");
+
     let autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
     let optionLists = document.querySelectorAll(".ui-autocomplete");
-    // let statusBoxes = document.querySelectorAll(".ui-helper-hidden-accessible");
 
-    // This is announced for selected option, not actual list item.
-    // Hide selected option status alert for each auto complete field since they get announced for wrong fields.
-    // statusBoxes.forEach(statusBox => {
-      // Cannot read properties of undefined (reading 'style')
-      // statusBox.setAttribute("style","display: none;");
-      // statusBox.setAttribute("aria-hidden","true;");
-      // statusBox.removeAttribute("role");
-      // statusBox.removeAttribute("aria-live");
-      // statusBox.removeAttribute("aria-relevant");
-    // });
+    // Add instructions for screen reader users.
+    if (instructionForAll.innerHTML.includes("Search for content using any of the filters below.")) {
+      const instructionForSr = document.createTag("p").className = "visually-hidden";
+      instructionForSr.appendChild(instructionForSrContent);
+      instructionForAll.appendChild(instructionForSr);
+    }
+
+    // Set up aria-describedby content for auto complete field option box.
+    instructionForCombobox.setAttribute("id", "comboboxInfo");
+    instructionForCombobox.setAttribute("style", "display: none;");
+    instructionForCombobox.setAttribute("aria-hidden", "true");
+    instructionForCombobox.appendChild(instructionForComboboxContent);
+    document.querySelector("main.page-content").appendChild(instructionForCombobox);
+
+
 
     optionLists.forEach(optionList => {
       optionList.setAttribute("role", "listbox");
+      optionList.setAttribute("aria-describedby", "comboboxInfo");
     });
 
     autoCompleteFields.forEach((autoCompleteField, index) => {
       // Add missing accessibility components to pair a field and its combobox(option list).
       autoCompleteField.setAttribute("role", "combobox");
       autoCompleteField.setAttribute("aria-autocomplete", "list");
-      autoCompleteField.setAttribute("aria-expanded", "false");
+      // autoCompleteField.setAttribute("aria-expanded", "false");
 
       // Get ID of the UL.
       let listId = optionLists[index].getAttribute("id");
@@ -51,78 +62,7 @@
             item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
           });
         }, 200);
-
-        // Since actual item option is not announced by screen readers, no point of setting this.
-        // Mark selected item.
-        // let activeValue = e.target.value.split(" ")[0];
-        // console.log(activeValue);
-        // setTimeout(function () {
-        //   optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
-        //     console.log(item.innerHTML.split(" ")[1]);
-        //     if (item.value === activeValue) {
-        //       item.setAttribute("aria-selected", "true");
-        //     } else {
-        //       item.removeAttribute("aria-selected");
-        //     }
-        //   });
-        // }, 500);
       });
-
-
-      /////  TEST
-      // autoCompleteField.addEventListener("focus", e => {
-      //   let list = optionLists[index];
-      //   let optionListStyle = window.getComputedStyle(list, null);
-
-      // });
-      ///////
     });
   }, 200);
-
-  // // List box display status for aria-expanded on input fields.
-  // let activeField = document.activeElement;
-  // let matchedListId = activeField.getAttribute("aria-activedescendant");
-  // let matchedList =  document.getElementById(matchedListId);
-
-  // let observer = new MutationObserver(function(mutations) {
-  //   mutations.forEach(function(mutationRecord) {
-  //     console.log('style changed!');
-  //   });
-  // });
-
-  // let target = matchedList;
-  // // var target = document.getElementById('myId');
-
-  // observer.observe(target, {
-  //   attributes: true,
-  //   attributeFilter: ['style']
-  // });
-
-
-  ////////////////
-
-
-
-  // document.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
-
-    // option.addEventListener("change", (e) => {
-
-
-
-
-      // let pId = e.target.closest(".ui-autocomplete").getAttribute("id");
-      // // document.querySelector("[aria-controls='${pId}']").style.backgroundColor = "pink";
-      // document.querySelector("[aria-activedescendant='${pId}']").style.backgroundColor = "pink";
-      // console.log("e.target");
-
-  //     // Remove aria-selected from one currently has the attribute.
-  //     optionLists.querySelectorAll(".ui-menu-item-wrapper").forEach(option => {
-  //       if(option.hasAttribute("aria-selected")) {
-  //         option.removeAttribute("aria-selected");
-  //       }
-  //     });
-  //     // Set the item selected.
-  //     e.target.setAttribute("aria-selected", true);
-    // });
-  // });
 })();
