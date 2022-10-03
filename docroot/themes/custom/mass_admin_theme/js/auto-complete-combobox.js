@@ -12,17 +12,18 @@
   setTimeout(function () {
     let autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
     let optionLists = document.querySelectorAll(".ui-autocomplete");
-    let statusBoxes = document.querySelectorAll(".ui-helper-hidden-accessible");
+    // let statusBoxes = document.querySelectorAll(".ui-helper-hidden-accessible");
 
+    // This is announced for selected option, not actual list item.
     // Hide selected option status alert for each auto complete field since they get announced for wrong fields.
-    statusBoxes.forEach(statusBox => {
+    // statusBoxes.forEach(statusBox => {
       // Cannot read properties of undefined (reading 'style')
       // statusBox.setAttribute("style","display: none;");
       // statusBox.setAttribute("aria-hidden","true;");
-      statusBox.removeAttribute("role");
-      statusBox.removeAttribute("aria-live");
-      statusBox.removeAttribute("aria-relevant-live");
-    });
+      // statusBox.removeAttribute("role");
+      // statusBox.removeAttribute("aria-live");
+      // statusBox.removeAttribute("aria-relevant");
+    // });
 
     optionLists.forEach(optionList => {
       optionList.setAttribute("role", "listbox");
@@ -51,28 +52,29 @@
           });
         }, 200);
 
+        // Since actual item option is not announced by screen readers, no point of setting this.
         // Mark selected item.
-        let activeValue = e.target.value.split(" ")[0];
-        console.log(activeValue);
-        setTimeout(function () {
-          optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
-            console.log(item.innerHTML.split(" ")[1]);
-            if (item.value === activeValue) {
-              item.setAttribute("aria-selected", "true");
-            } else {
-              item.removeAttribute("aria-selected");
-            }
-          });
-        }, 500);
+        // let activeValue = e.target.value.split(" ")[0];
+        // console.log(activeValue);
+        // setTimeout(function () {
+        //   optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
+        //     console.log(item.innerHTML.split(" ")[1]);
+        //     if (item.value === activeValue) {
+        //       item.setAttribute("aria-selected", "true");
+        //     } else {
+        //       item.removeAttribute("aria-selected");
+        //     }
+        //   });
+        // }, 500);
       });
 
 
       /////  TEST
-      autoCompleteField.addEventListener("focus", e => {
-        let list = optionLists[index];
-        let optionListStyle = window.getComputedStyle(list, null);
+      // autoCompleteField.addEventListener("focus", e => {
+      //   let list = optionLists[index];
+      //   let optionListStyle = window.getComputedStyle(list, null);
 
-      });
+      // });
       ///////
     });
   }, 200);
