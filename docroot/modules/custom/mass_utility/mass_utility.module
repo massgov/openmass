@@ -5,7 +5,6 @@
  * Contains mass_utility.module.
  */
 
-use Drupal\block\BlockViewBuilder;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -18,7 +17,6 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\file\Entity\File;
-use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Url;
@@ -307,7 +305,7 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
   }
 
   if ($form_id === 'media_document_add_form' || $form_id === 'media_document_edit_form') {
-    $form['actions']['submit']['#submit'][] = 'media_document_redirect';
+    $form['actions']['submit']['#submit'][] = 'mass_utility_media_document_redirect';
   }
 
   if ($media_form->getOperation() === 'add') {
@@ -335,7 +333,7 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
 /**
  * Redirects media forms to "all documents" view.
  */
-function media_document_redirect($form, FormStateInterface $form_state) {
+function mass_utility_media_document_redirect($form, FormStateInterface $form_state) {
   $form_state->setRedirect('view.all_documents.page_1');
 }
 
@@ -570,7 +568,7 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
     }
   }
   elseif ($type == 'image' && $field_name == 'field_state_org_photo') {
-    $element['#process'][] = 'mass_upload_widget_process';
+    $element['#process'][] = 'mass_utility_mass_upload_widget_process';
   }
   elseif ($type == 'string') {
     // Conditionally hide Manual Description except when chosen to display.
@@ -641,7 +639,7 @@ function mass_utility_form_node_news_edit_form_alter(&$form, FormStateInterface 
  * @return array
  *   Returns back the element array.
  */
-function mass_upload_widget_process(array $element) {
+function mass_utility_mass_upload_widget_process(array $element) {
   // Adds in another #submit callback.
   if (isset($element['upload_button'])) {
     $element['upload_button']['#ajax']['callback'] = 'mass_utility_get_signee_ajax_callback';
@@ -1114,7 +1112,6 @@ function mass_utility_entity_extra_field_info() {
 function mass_utility_media_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   // Get the attached file from the media entity because media fields
   // can be removed from the entity.
-
   if ($entity->field_upload_file != NULL) {
     $file = $entity->field_upload_file->entity;
 
