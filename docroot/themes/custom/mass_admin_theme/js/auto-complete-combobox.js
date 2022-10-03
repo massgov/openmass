@@ -10,18 +10,18 @@
 
   // The timeout function is necessary to recognize the fields and the lists.
   setTimeout(function () {
-    const instructionForAll = document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header");
+    const instructionForAll = document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header") ?? document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header");
     const instructionForSrContent = document.createTextNode("Use tab key to navigate in the main content area.");
 
     const instructionForCombobox = document.createElement("p");
-    const instructionForComboboxContent = document.createTextNode("Use enter key to select an option.");
+    const instructionForComboboxContent = document.createTextNode("Use enter key to select an option from the list.");
 
     let autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
     let optionLists = document.querySelectorAll(".ui-autocomplete");
 
     // Add instructions for screen reader users.
-    if (instructionForAll.innerHTML.includes("Search for content using any of the filters below.")) {
-      const instructionForSr = document.createElement("p").className = "visually-hidden";
+    if (instructionForAll && instructionForAll.innerHTML.includes("Search for content using any of the filters below.")) {
+      const instructionForSr = document.createElement("p").classList.add("visually-hidden");
       instructionForSr.appendChild(instructionForSrContent);
       instructionForAll.appendChild(instructionForSr);
     }
@@ -37,7 +37,6 @@
 
     optionLists.forEach(optionList => {
       optionList.setAttribute("role", "listbox");
-      optionList.setAttribute("aria-describedby", "comboboxInfo");
     });
 
     autoCompleteFields.forEach((autoCompleteField, index) => {
@@ -45,6 +44,7 @@
       autoCompleteField.setAttribute("role", "combobox");
       autoCompleteField.setAttribute("aria-autocomplete", "list");
       // autoCompleteField.setAttribute("aria-expanded", "false");
+      autoCompleteField.setAttribute("aria-describedby", "comboboxInfo");
 
       // Get ID of the UL.
       let listId = optionLists[index].getAttribute("id");
@@ -53,7 +53,6 @@
       autoCompleteField.setAttribute("aria-activedescendant", listId);
 
       autoCompleteField.addEventListener("change", e => {
-        // console.log("CHANGE");
         // Wait till the options are added to the list container .ui-autocomplete.
         setTimeout(function () {
           // Set role to LIs and their child As.
