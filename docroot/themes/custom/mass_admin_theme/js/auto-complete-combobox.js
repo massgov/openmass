@@ -17,7 +17,11 @@
     // Hide selected option status alert for each auto complete field since they get announced for wrong fields.
     statusBoxes.forEach(statusBox => {
       // Cannot read properties of undefined (reading 'style')
-      statusBox.setAttribute("style","display: none;");
+      // statusBox.setAttribute("style","display: none;");
+      // statusBox.setAttribute("aria-hidden","true;");
+      statusBox.removeAttribute("role");
+      statusBox.removeAttribute("aria-live");
+      statusBox.removeAttribute("aria-relevant-live");
     });
 
     optionLists.forEach(optionList => {
