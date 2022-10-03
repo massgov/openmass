@@ -21,7 +21,8 @@
 
     // Add instructions for screen reader users.
     if (instructionForAll && instructionForAll.innerHTML.includes("Search for content using any of the filters below.")) {
-      const instructionForSr = document.createElement("p").classList.add("visually-hidden");
+      const instructionForSr = document.createElement("p");
+      instructionForSr.classList.add("visually-hidden");
       instructionForSr.appendChild(instructionForSrContent);
       instructionForAll.appendChild(instructionForSr);
     }
