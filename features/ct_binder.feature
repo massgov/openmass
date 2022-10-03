@@ -19,11 +19,6 @@ Feature: Binder Content type
     When I go to "/node/add/binder"
     Then I should get a "200" HTTP response
 
-  Scenario: Verify editors can access binder
-    Given I am logged in as a user with the "content_team" role
-    When I go to "/node/add/binder"
-    Then I should get a "200" HTTP response
-
   Scenario: Verify administrators can access binder
     Given I am logged in as a user with the "administrator" role
     When I go to "/node/add/binder"

@@ -170,6 +170,10 @@ class TopicPageRestrictionTest extends ExistingSiteBase {
     // Create user.
     $user = User::create(['name' => $this->randomMachineName()]);
     $user->addRole($data['role']);
+    // Content administrators also require permissions from the editor role.
+    if ($data['role'] == 'content_team') {
+      $user->addRole('editor');
+    }
     $user->activate();
     $user->save();
     $this->user = $user;
