@@ -13,7 +13,7 @@
     const instructionForAll = document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header");
     const instructionForSrContent = document.createTextNode("Use tab key to navigate in the main content area.");
 
-    const instructionForCombobox = document.createTag("p");
+    const instructionForCombobox = document.createElement("p");
     const instructionForComboboxContent = document.createTextNode("Use enter key to select an option.");
 
     let autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
@@ -21,7 +21,7 @@
 
     // Add instructions for screen reader users.
     if (instructionForAll.innerHTML.includes("Search for content using any of the filters below.")) {
-      const instructionForSr = document.createTag("p").className = "visually-hidden";
+      const instructionForSr = document.createElement("p").className = "visually-hidden";
       instructionForSr.appendChild(instructionForSrContent);
       instructionForAll.appendChild(instructionForSr);
     }
