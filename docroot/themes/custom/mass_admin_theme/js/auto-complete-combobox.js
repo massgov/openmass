@@ -41,17 +41,18 @@
         }, 200);
 
         // Mark selected item.
+        let activeValue = e.target.value;
+        console.log(activeValue);
         setTimeout(function () {
-          let activeValue = e.target.value;
-          console.log(activeValue);
           optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
+            console.log(item.value);
             if (item.value === activeValue) {
               item.setAttribute("aria-selected", "true");
             } else {
               item.removeAttribute("aria-selected");
             }
           });
-        }, 200);
+        }, 500);
       });
 
 
