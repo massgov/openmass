@@ -12,6 +12,13 @@
   setTimeout(function () {
     let autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
     let optionLists = document.querySelectorAll(".ui-autocomplete");
+    let statusBoxes = document.querySelectorAll(".ui-helper-hidden-accessible");
+
+    // Hide selected option status alert for each auto complete field since they get announced for wrong fields.
+    statusBoxes.forEach(statusBox => {
+      // Cannot read properties of undefined (reading 'style')
+      statusBox.setAttribute("style","display: none;");
+    });
 
     optionLists.forEach(optionList => {
       optionList.setAttribute("role", "listbox");
@@ -41,11 +48,11 @@
         }, 200);
 
         // Mark selected item.
-        let activeValue = e.target.value;
+        let activeValue = e.target.value.split(" ")[0];
         console.log(activeValue);
         setTimeout(function () {
           optionLists[index].querySelectorAll(".ui-menu-item .ui-menu-item-wrapper").forEach(item => {
-            console.log(item.value);
+            console.log(item.innerHTML.split(" ")[1]);
             if (item.value === activeValue) {
               item.setAttribute("aria-selected", "true");
             } else {
