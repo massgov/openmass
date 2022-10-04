@@ -9,7 +9,7 @@ Feature: Content Administrator
     And I am on "admin"
     Then I should see the link "Content" in the admin_menu
     And I should see the link "Edit blocks"
-    And I should see the link "Help and support"
+    And I should see the link "Right Sidebar"
     And I should see the link "Node feedback"
     And I should not see the link "Structure" in the admin_menu
     And I should not see the link "Appearance" in the admin_menu
