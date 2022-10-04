@@ -6626,14 +6626,9 @@ function mass_theme_preprocess_media_document(array &$variables) {
       ];
     }
 
-    $creator = $media->field_creator->entity;
     $language = $media->language();
 
     $display_fields = [
-      'field_creator' => [
-        'label' => 'Author:',
-        'text' => $creator ? Html::escape($creator->label()) : '',
-      ],
       'langcode' => [
         'label' => 'Language:',
         'text' => $language ? $language->getName() : '',
