@@ -49,3 +49,14 @@ mass_utility.header:
     _title: 'Header'
   requirements:
     _permission: 'access header config page'
+
+mass_utility.move_redirects:
+  path: '/node/{node}/move-redirects'
+  defaults:
+    _title: 'Move redirects'
+    _form: 'Drupal\mass_utility\Form\MoveRedirectsForm'
+  options:
+    _node_operation_route: TRUE
+    parameters: { node: { type: 'entity:node' } }
+  requirements:
+    _custom_access: 'Drupal\mass_utility\Form\MoveRedirectsForm::access'
