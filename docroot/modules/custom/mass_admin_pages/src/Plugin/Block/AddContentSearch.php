@@ -21,7 +21,7 @@ class AddContentSearch extends BlockBase {
   public function build() {
     // Make category terms into links.
     $links = [];
-    $categories = _get_used_categories();
+    $categories = _mass_admin_pages_get_used_categories();
     foreach ($categories as $key => $value) {
       $links[] = [
         '#markup' => $this->t('<a href="#:key">@value</a>', [
