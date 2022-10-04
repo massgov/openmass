@@ -1356,6 +1356,13 @@ function mass_utility_path_alias_update(PathAliasInterface $path) {
   }
 }
 
+function mass_utility_entity_type_alter(array &$entity_types) {
+  /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  $handlers = $entity_types['node']->getHandlerClasses();
+  $handlers['form']['move-redirects'] = \Drupal\mass_utility\Form\MoveRedirectsForm::class;
+  $entity_types['node']->setHandlerClass('form', $handlers['form']);
+}
+
 /**
  * Implements hook_form_alter().
  */
