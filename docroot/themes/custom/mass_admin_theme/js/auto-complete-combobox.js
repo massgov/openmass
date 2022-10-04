@@ -10,18 +10,18 @@
 
   // The timeout function is necessary to recognize the fields and the lists.
   setTimeout(function () {
-    const instructionForAll = document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header") ?? document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header");
-    const instructionForSrContent = document.createTextNode("Use tab key to navigate.");
+    var instructionForAll = document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header") ?? document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header");
+    var instructionForSrContent = document.createTextNode("Use tab key to navigate.");
 
-    const instructionForCombobox = document.createElement("p");
-    const instructionForComboboxContent = document.createTextNode("Use enter key to select an option from the list.");
+    var instructionForCombobox = document.createElement("p");
+    var instructionForComboboxContent = document.createTextNode("Use enter key to select an option from the list.");
 
-    let autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
-    let optionLists = document.querySelectorAll(".ui-autocomplete");
+    var autoCompleteFields = document.querySelectorAll(".ui-autocomplete-input");
+    var optionLists = document.querySelectorAll(".ui-autocomplete");
 
     // Add instructions for screen reader users.
     if (instructionForAll && instructionForAll.innerHTML.includes("Search for content using any of the filters below.")) {
-      const instructionForSr = document.createElement("p");
+      var instructionForSr = document.createElement("p");
       instructionForSr.classList.add("visually-hidden");
       instructionForSr.appendChild(instructionForSrContent);
       instructionForAll.appendChild(instructionForSr);
@@ -49,7 +49,7 @@
       autoCompleteField.setAttribute("aria-describedby", "comboboxInfo");
 
       // Get ID of the UL.
-      let listId = optionLists[index].getAttribute("id");
+      var listId = optionLists[index].getAttribute("id");
       // Add aria-controls with the UL ID value.
       // aria-controls doesn't work with VoiceOver.
       autoCompleteField.setAttribute("aria-activedescendant", listId);
