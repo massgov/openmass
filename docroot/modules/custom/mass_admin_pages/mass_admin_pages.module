@@ -189,7 +189,7 @@ function _mass_admin_pages_form_node_type_edit_form_builder($entity_type, NodeTy
  * @return array
  *   Content type categories with sub-items.
  */
-function _get_used_categories() {
+function _mass_admin_pages_get_used_categories() {
   $content_types = \Drupal::service('entity_type.manager')->getStorage('node_type')->loadMultiple();
   $categories_in_use = [];
   $user = \Drupal::currentUser();
@@ -219,7 +219,7 @@ function mass_admin_pages_preprocess_node_add_list(&$variables) {
       $variables['types'][$type->id()]['node_type_thumbnail_path'] = UrlHelper::filterBadProtocol($type->getThirdPartySetting('mass_admin_pages', 'node_type_thumbnail_path'));
     }
   }
-  $variables['categories'] = _get_used_categories();
+  $variables['categories'] = _mass_admin_pages_get_used_categories();
 }
 
 /**

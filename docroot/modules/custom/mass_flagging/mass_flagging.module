@@ -193,7 +193,7 @@ function mass_flagging_node_update_insert_add_watcher(EntityInterface $node) {
       // Adds the flag.
       $flag_service->flag($watch_flag, $node, $current_user);
 
-      $unwatch_flag = get_unwatch_flag_link($watch_flag, $node);
+      $unwatch_flag = mass_flagging_get_unwatch_flag_link($watch_flag, $node);
 
       // Notifies user that they are now automatically watching the node.
       \Drupal::messenger()->addStatus(t('You are now watching @node_type %node_title. You will be notified of any future changes made to this content. <a href=":help_url" title="Mass Flagging help page">Learn more about this functionality</a>, <a href=":flag_url" title="@flag_title">stop watching this content</a>, or <a href=":watched_content" title="View all watched content">view all content you are currently watching</a>.', [
@@ -286,7 +286,7 @@ function mass_flagging_mail_alter(&$message) {
  * @return array
  *   Array with flag_title and flag_url
  */
-function get_unwatch_flag_link(Flag $watch_flag, Node $node, array $options = []) {
+function mass_flagging_get_unwatch_flag_link(Flag $watch_flag, Node $node, array $options = []) {
   // Gets flag link for unwatching content.
   $flag_link_type_plugin = $watch_flag->getLinkTypePlugin();
   $flag_url = $flag_link_type_plugin->getAsLink($watch_flag, $node)->getUrl();
