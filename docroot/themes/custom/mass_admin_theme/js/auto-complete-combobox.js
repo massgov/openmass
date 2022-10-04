@@ -53,7 +53,6 @@
       // Add aria-controls with the UL ID value.
       // aria-controls doesn't work with VoiceOver.
       autoCompleteField.setAttribute("aria-activedescendant", listId);
-      autoCompleteField.setAttribute("aria-controls", listId);
 
       autoCompleteField.addEventListener("change", e => {
         // Wait till the options are added to the list container .ui-autocomplete.
