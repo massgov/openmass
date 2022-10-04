@@ -27,7 +27,9 @@ class UnpublishParentConstraintTest extends ExistingSiteBase {
   protected function setUp() {
     parent::setUp();
     $user = User::create(['name' => $this->randomMachineName()]);
+    // Content Administrators also have the Editor role.
     $user->addRole('content_team');
+    $user->addRole('editor');
     $user->activate();
     $user->save();
     $this->user = $user;

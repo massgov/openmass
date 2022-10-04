@@ -17,13 +17,22 @@ mass_admin_pages.help_block_form:
     _permission: 'administer form for support block'
 
 #Route for Updates block form.
-mass_admin_pages.updates_block_form:
-  path: '/admin/edit-blocks/updates-block'
+mass_admin_pages.alert_block_form:
+  path: '/admin/edit-blocks/alert-block'
   defaults:
-    _form: '\Drupal\mass_admin_pages\Form\UpdatesBlockForm'
-    _title: 'Updates and Alert messages'
+    _form: '\Drupal\mass_admin_pages\Form\AlertBlockForm'
+    _title: 'Alert message'
   requirements:
-    _permission: 'administer form for updates block'
+    _permission: 'administer form for alert block'
+
+#Route for Rigth Sidebar block form.
+mass_admin_pages.right_sidebar_block_form:
+  path: '/admin/edit-blocks/sidebar-block'
+  defaults:
+    _form: '\Drupal\mass_admin_pages\Form\RightSidebarBlockForm'
+    _title: 'Right Sidebar'
+  requirements:
+    _permission: 'administer form for right sidebar block'
 
 mass_admin_pages.reports_author_block_form:
   path: '/admin/edit-blocks/author-reports'

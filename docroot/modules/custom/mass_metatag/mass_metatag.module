@@ -407,6 +407,7 @@ function mass_metatag_page_attachments(array &$attachments) {
   $uri_end = end($uri_parts);
   $noindex_and_follow = FALSE;
 
+  // The /download route is provided via simple_sitemap so don't index the canonical.
   if (\Drupal::routeMatch()->getRouteName() === 'entity.media.canonical') {
     $noindex_and_follow = TRUE;
   }
@@ -660,19 +661,19 @@ function mass_metatag_form_node_form_alter(&$form, FormStateInterface $form_stat
     }
   }
 
+  // We've decided to hide the whole metatag section of the node form except Admins.
+  if (isset($metatags_labels[$content_type])) {
+    $form[$metatags_labels[$content_type]]['#access'] = Drupal::currentUser()->hasPermission('administer meta tags');
+  }
 }
 
 /**
  * Implements hook_metatags_attachments_alter().
- *
- * This takes the description and twitter description metatags
- * and assigns them the body preview value for news items.
  */
 function mass_metatag_metatags_attachments_alter(array &$metatag_attachments) {
   if (!empty($metatag_attachments['#attached']['html_head'])) {
     $metatags = $metatag_attachments['#attached']['html_head'];
 
-    // Find the mg_metatag_body_preview to grab the value.
     foreach ($metatags as $tag) {
       // Verify that we are in the news content type.
       if ($tag[1] == "schema_news_article_id") {
