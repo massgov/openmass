@@ -81,14 +81,21 @@ function mass_utility_invalidate_tags_submit($form, FormStateInterface $form_sta
 /**
  * Give hint about Move Redirects feature.
  *
+ * We can't easily use hook_node_update since the node URL changes to ---unpublished in pathauto_alias_alter hook.
+ *
  * @param \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node
  *
  * @return void
  */
-function mass_utility_node_update(NodeBundle $node) {
-  if ($node->getModerationState()->getString() == \Drupal\mass_content_moderation\MassModeration::TRASH) {
-    $url = Url::fromRoute('mass_utility.move_redirects', ['node' => $node->id()])->toString();
-    $message = 'You may be able to <a href="@redirect-page">Move redirects</a> that are pointing to this trashed content.';
+function mass_utility_entity_update(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() !== 'node') {
+    return;
+  }
+
+  if ($entity->getModerationState()->getString() == \Drupal\mass_content_moderation\MassModeration::TRASH) {
+    $id = $entity->id();
+    $url = Url::fromUserInput("/node/$id/move-redirects")->toString();
+    $message = 'You may be able to <a href="@redirect-page">Move redirects</a> that are pointing to the trashed content.';
     Drupal::messenger()->addStatus(t($message, ['@redirect-page' => $url]));
   }
 }
@@ -116,6 +123,11 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
   if (isset($form['url_redirects']) && empty($form['url_redirects']['#access'])) {
     // Only display our element in entity edit forms.
     $form['url_redirects']['#access'] = $is_operation_edit_default;
+  }
+
+  if (isset($form['rabbit_hole']) && empty($form['rabbit_hole']['#access'])) {
+    // Only display our element in entity edit forms.
+    $form['rabbit_hole']['#access'] = $is_operation_edit_default;
   }
 
   // Remove 'Unlimited' option for Temporary Unpublished Access.
@@ -904,7 +916,7 @@ function mass_utility_get_media_contact_ajax_callback(array &$form, FormStateInt
  */
 function mass_utility_module_implements_alter(&$implementations, $hook) {
   // Implementations to be moved to the end of the list.
-  if (in_array($hook, ['page_attachments_alter', 'entity_view'])) {
+  if (in_array($hook, ['page_attachments_alter', 'entity_view', 'entity_update'])) {
     $mass_utility = $implementations['mass_utility'];
     unset($implementations['mass_utility']);
     $implementations['mass_utility'] = $mass_utility;
