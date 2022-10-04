@@ -21,6 +21,7 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Element;
+use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
 use Drupal\node\Entity\Node;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Database\Query\AlterableInterface;
@@ -78,6 +79,21 @@ function mass_utility_invalidate_tags_submit($form, FormStateInterface $form_sta
 }
 
 /**
+ * Give hint about Move Redirects feature.
+ * 
+ * @param \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node
+ *
+ * @return void
+ */
+function mass_utility_node_update(NodeBundle $node) {
+  if ($node->getModerationState()->getString() == \Drupal\mass_content_moderation\MassModeration::TRASH) {
+    $url = Url::fromRoute('mass_utility.move_redirects', ['node' => $node->id()])->toString();
+    $message = 'You may be able to <a href="@redirect-page">Move redirects</a> that are pointing to this trashed content.';
+    Drupal::messenger()->addStatus(t($message, ['@redirect-page' => $url]));
+  }
+}
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -85,10 +101,21 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
   $node_form = $form_state->getFormObject();
   /** @var \Drupal\node\Entity\Node $node */
   $node = $node_form->getEntity();
+  $is_operation_edit_default = in_array( $node_form->getOperation(), ['edit', 'default']);
 
-  // Update access unpublished generate token button label.
   if (isset($form['access_unpublished_settings'])) {
+    // Update access unpublished generate token button label.
     $form['access_unpublished_settings']['generate_token']['#value'] = t('Get link');
+
+    if (empty($form['access_unpublished_settings']['#access'])) {
+      // Only display our element in entity edit forms.
+      $form['access_unpublished_settings']['#access'] = $is_operation_edit_default;
+    }
+  }
+
+  if (isset($form['url_redirects']) && empty($form['url_redirects']['#access'])) {
+    // Only display our element in entity edit forms.
+    $form['url_redirects']['#access'] = $is_operation_edit_default;
   }
 
   // Remove 'Unlimited' option for Temporary Unpublished Access.

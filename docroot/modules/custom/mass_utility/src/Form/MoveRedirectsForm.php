@@ -30,7 +30,6 @@ class MoveRedirectsForm extends ContentEntityForm {
   public static function create(ContainerInterface $container) {
     // Instantiates this form class.
     return new static(
-    // Load the service required to construct this class.
       $container->get('redirect.repository'),
     );
   }
@@ -60,29 +59,36 @@ class MoveRedirectsForm extends ContentEntityForm {
 
     /** @var NodeBundle $node */
     $node = $this->getEntity();
-    $items = $this->getRedirectItems($node, $items);
+    $items = $this->getRedirectsItems($node, $items);
     $items = $this->getAliasItems($node, $items);
 
-    $form['target'] = [
-      '#type' => 'entity_autocomplete',
-      '#target_type' => 'node',
-      '#title' => $this->t('Pick a target for the URLs'),
-      '#required' => TRUE,
-    ];
+    if (empty($items)) {
+      $form['sorry'] = [
+        '#markup' => $this->t('There are no URLs to move.'),
+      ];
+    }
+    else {
+      $form['target'] = [
+        '#type' => 'entity_autocomplete',
+        '#target_type' => 'node',
+        '#title' => $this->t('Pick a target for the URLs'),
+        '#required' => TRUE,
+      ];
+      $form['list'] = [
+        '#theme' => 'item_list',
+        '#items' => $items,
+        '#title' => 'The following URLs will be redirected',
+      ];
 
-    $form['list'] = [
-      '#theme' => 'item_list',
-      '#items' => $items,
-      '#title' => 'The following URLs will be redirected',
-    ];
-
-    $form['actions'] = [
-      '#type' => 'actions',
-    ];
-    $form['actions']['submit'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Save'),
-    ];
+      $form['actions'] = [
+        '#type' => 'actions',
+      ];
+      $form['actions']['submit'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Save'),
+        '#submit' => ['::submitFormLocal'],
+      ];
+    }
 
     return $form;
   }
@@ -97,25 +103,49 @@ class MoveRedirectsForm extends ContentEntityForm {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitFormLocal(array &$form, FormStateInterface $form_state) {
     $node = $this->getEntity();
-    $redirects = $this->redirectRepository->findByDestinationUri(['internal:/node/' . $node->id()]);
+    $redirects = $this->getRedirects($node);
     foreach ($redirects as $redirect) {
-      $redirect->setRedirect('node/' . $form['target']);
+      $redirect->setRedirect('node/' . $form_state->getValues()['target']);
+      $redirect->save();
+    }
+    $aliases = $this->getAliasItems($node);
+    foreach ($redirects as $redirect) {
+      $redirect->setRedirect('node/' . $form_state->getValues()['target']);
+      $redirect->save();
     }
     $this->messenger()->addStatus($this->t('The URLs have been redirected.'));
   }
 
   /**
-   * Get any redirects to move.
+   * @param \Drupal\Core\Entity\EntityInterface $node
+   *
+   * @return \Drupal\redirect\Entity\Redirect[]
+   */
+  public function getRedirects(\Drupal\Core\Entity\EntityInterface $node): array {
+    $id = $node->id();
+    $redirects = $this->redirectRepository->findByDestinationUri(["internal:/node/$id", "entity:node/$id"]);
+    return $redirects;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state): void {
+    // Not saving.
+  }
+
+  /**
+   * Get any Redirects to move.
    *
    * @param \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node
    * @param array $items
    *
    * @return array
    */
-  public function getRedirectItems(NodeBundle $node, array $items): array {
-    $redirects = $this->redirectRepository->findByDestinationUri(['internal:/node/' . $node->id()]);
+  public function getRedirectsItems(NodeBundle $node, array $items): array {
+    $redirects = $this->getRedirects($node);
     foreach ($redirects as $redirect) {
       $items[] = $redirect->getSourceUrl();
     }
@@ -123,7 +153,7 @@ class MoveRedirectsForm extends ContentEntityForm {
   }
 
   /**
-   * Get any potential alias.
+   * The alias with 'unpublished' is eligible to be redirected.
    *
    * @param \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node
    * @param array $items
@@ -131,14 +161,27 @@ class MoveRedirectsForm extends ContentEntityForm {
    * @return array
    * @throws \Drupal\Core\Entity\EntityMalformedException
    */
-  public function getAliasItems(NodeBundle $node, array $items): array {
-    $url = $node->toUrl()->toString();
-    // Strip off unwanted suffix
-    $url = str_replace('---unpublished', '', $url);
-    if (strpos($url, 'node/') === FALSE) {
+  public function getAliasItems(NodeBundle $node): array {
+    $url = $this->shortenUrl($node);
+    if (!$this->redirectRepository->findBySourcePath($url)) {
       $items[] = Link::fromTextAndUrl($url, Url::fromUserInput($url));
     }
-    return $items;
+    return $items ?? [];
+  }
+
+  /**
+   * @param \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node
+   *
+   * @return string
+   * @throws \Drupal\Core\Entity\EntityMalformedException
+   */
+  public function shortenUrl(NodeBundle $node): string {
+    $url = $node->toUrl()->toString();
+    // Strip off unwanted suffix.
+    $url = str_replace('---unpublished', '', $url);
+    // Strip leading slash.
+    $url = ltrim($url, '/');
+    return $url;
   }
 
 }
