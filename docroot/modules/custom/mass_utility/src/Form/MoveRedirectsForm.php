@@ -10,6 +10,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\redirect\Entity\Redirect;
 use Drupal\redirect\RedirectRepository;
 use Psr\Container\ContainerInterface;
 
@@ -59,8 +60,8 @@ class MoveRedirectsForm extends ContentEntityForm {
 
     /** @var NodeBundle $node */
     $node = $this->getEntity();
-    $items = $this->getRedirectsItems($node, $items);
-    $items = $this->getAliasItems($node, $items);
+    $items = $this->getRedirectsItems($node);
+    $items = array_merge($items, $this->getAliasItems($node));
 
     if (empty($items)) {
       $form['sorry'] = [
@@ -111,11 +112,22 @@ class MoveRedirectsForm extends ContentEntityForm {
       $redirect->save();
     }
     $aliases = $this->getAliasItems($node);
-    foreach ($redirects as $redirect) {
-      $redirect->setRedirect('node/' . $form_state->getValues()['target']);
-      $redirect->save();
+    foreach ($aliases as $alias) {
+      $redirect = Redirect::create();
+      $redirect->setSource($alias);
+      $redirect->setRedirect('node/' . $node->id());
+      $redirect->setLanguage($node->language()->getId());
+      $redirect->setStatusCode(\Drupal::config('redirect.settings')->get('default_status_code'));
+      if ($violations = $redirect->validate()) {
+        // We should not get here. If we do, we'll want to adjust code so we don't try to create an invalid redirect.
+        $this->messenger()->addError($this->t("Unable to redirect URLs. Please report this content id."));
+      }
+      else {
+        $success = $redirect->save();
+        $this->messenger()->addStatus($this->t('The URLs have been redirected.'));
+        $form_state->setRedirectUrl($node->toUrl());
+      }
     }
-    $this->messenger()->addStatus($this->t('The URLs have been redirected.'));
   }
 
   /**
@@ -126,7 +138,13 @@ class MoveRedirectsForm extends ContentEntityForm {
   public function getRedirects(\Drupal\Core\Entity\EntityInterface $node): array {
     $id = $node->id();
     $redirects = $this->redirectRepository->findByDestinationUri(["internal:/node/$id", "entity:node/$id"]);
-    return $redirects;
+    // '--unpublished' are not eligible.
+    foreach ($redirects as $redirect) {
+      if (strpos($redirect->getSourceUrl(), '---unpublished') === FALSE) {
+        $return[] = $redirect;
+      }
+    }
+    return $return ?? [];
   }
 
   /**
@@ -138,18 +156,13 @@ class MoveRedirectsForm extends ContentEntityForm {
 
   /**
    * Get any Redirects to move.
-   *
-   * @param \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node
-   * @param array $items
-   *
-   * @return array
    */
-  public function getRedirectsItems(NodeBundle $node, array $items): array {
+  public function getRedirectsItems(NodeBundle $node): array {
     $redirects = $this->getRedirects($node);
     foreach ($redirects as $redirect) {
       $items[] = $redirect->getSourceUrl();
     }
-    return $items;
+    return $items ?? [];
   }
 
   /**
@@ -162,9 +175,11 @@ class MoveRedirectsForm extends ContentEntityForm {
    * @throws \Drupal\Core\Entity\EntityMalformedException
    */
   public function getAliasItems(NodeBundle $node): array {
-    $url = $this->shortenUrl($node);
-    if (!$this->redirectRepository->findBySourcePath($url)) {
-      $items[] = Link::fromTextAndUrl($url, Url::fromUserInput($url));
+    $short_url = $this->shortenUrl($node);
+    // Strip leading slash.
+    $shorter_url = ltrim($short_url, '/');
+    if (!$this->redirectRepository->findBySourcePath($shorter_url)) {
+      $items[] = $short_url;
     }
     return $items ?? [];
   }
@@ -179,8 +194,6 @@ class MoveRedirectsForm extends ContentEntityForm {
     $url = $node->toUrl()->toString();
     // Strip off unwanted suffix.
     $url = str_replace('---unpublished', '', $url);
-    // Strip leading slash.
-    $url = ltrim($url, '/');
     return $url;
   }
 
