@@ -21,7 +21,6 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Url;
 use Drupal\Core\Render\Element;
-use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
 use Drupal\node\Entity\Node;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Core\Database\Query\AlterableInterface;
@@ -76,48 +75,6 @@ function mass_utility_invalidate_tags_submit($form, FormStateInterface $form_sta
   if (ctype_digit($nid)) {
     Cache::invalidateTags(['node:' . $nid]);
   }
-}
-
-/**
- * Give hint about Move Redirects feature.
- *
- * We can't easily use hook_node_update since the node URL changes to ---unpublished in pathauto_alias_alter hook.
- *
- * @param \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node
- *
- * @return void
- */
-function mass_utility_entity_update(EntityInterface $entity) {
-  if ($entity->getEntityTypeId() !== 'node') {
-    return;
-  }
-
-  if ($entity->getModerationState()->getString() == \Drupal\mass_content_moderation\MassModeration::TRASH) {
-    $id = $entity->id();
-    $url = Url::fromUserInput("/node/$id/move-redirects")->toString();
-    $message = 'You may be able to <a href="@redirect-page">Move redirects</a> that are pointing to the trashed content.';
-    Drupal::messenger()->addStatus(t($message, ['@redirect-page' => $url]));
-  }
-}
-
-/**
- * Implements hook_entity_operation().
- */
-function mass_utility_entity_operation(EntityInterface $entity): array {
-  $operations = [];
-
-  $routeName = 'mass_utility.move_redirects';
-  $url = Url::fromRoute($routeName, [$entity->getEntityTypeId() => $entity->id()]);
-  $user = \Drupal::currentUser();
-  if (TRUE === $url->access($user)) {
-    $operations['move_redirects'] = [
-      'title' => \t('Move redirects'),
-      'url' => $url,
-      'weight' => 50,
-    ];
-  }
-
-  return $operations;
 }
 
 /**
@@ -936,7 +893,7 @@ function mass_utility_get_media_contact_ajax_callback(array &$form, FormStateInt
  */
 function mass_utility_module_implements_alter(&$implementations, $hook) {
   // Implementations to be moved to the end of the list.
-  if (in_array($hook, ['page_attachments_alter', 'entity_view', 'entity_update'])) {
+  if (in_array($hook, ['page_attachments_alter', 'entity_view'])) {
     $mass_utility = $implementations['mass_utility'];
     unset($implementations['mass_utility']);
     $implementations['mass_utility'] = $mass_utility;
@@ -1413,13 +1370,6 @@ function mass_utility_path_alias_update(PathAliasInterface $path) {
       }
     }
   }
-}
-
-function mass_utility_entity_type_alter(array &$entity_types) {
-  /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
-  $handlers = $entity_types['node']->getHandlerClasses();
-  $handlers['form']['move-redirects'] = \Drupal\mass_utility\Form\MoveRedirectsForm::class;
-  $entity_types['node']->setHandlerClass('form', $handlers['form']);
 }
 
 /**

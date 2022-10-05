@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\mass_utility\Form;
+namespace Drupal\mass_redirects\Form;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\ContentEntityForm;
@@ -47,7 +47,7 @@ class MoveRedirectsForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'mass_utility_move_redirects';
+    return 'mass_redirects_move_redirects';
   }
 
   /**
@@ -116,9 +116,11 @@ class MoveRedirectsForm extends ContentEntityForm {
       $redirect->setRedirect('node/' . $node->id());
       $redirect->setLanguage($node->language()->getId());
       $redirect->setStatusCode(\Drupal::config('redirect.settings')->get('default_status_code'));
-      if ($violations = $redirect->validate()) {
+      $failed = $redirect->validate()->getEntityViolations()->count();
+      if ($failed) {
         // We should not get here. If we do, we'll want to adjust code so we don't try to create an invalid redirect.
         $this->messenger()->addError($this->t("Unable to redirect URLs. Please report this content id."));
+        break;
       }
       else {
         $success = $redirect->save();
@@ -164,7 +166,7 @@ class MoveRedirectsForm extends ContentEntityForm {
   }
 
   /**
-   * The alias with 'unpublished' is eligible to be redirected.
+   * The alias with 'unpublished' suffix is eligible to be redirected.
    *
    * @param \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node
    * @param array $items
