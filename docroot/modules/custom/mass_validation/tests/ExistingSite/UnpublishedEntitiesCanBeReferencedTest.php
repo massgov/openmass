@@ -59,8 +59,9 @@ class UnpublishedEntitiesCanBeReferencedTest extends ExistingSiteBase {
     $this->drupalLogin($this->user);
 
     // We should be able to transition the child from trash to unpublished.
-    // Check cotent administrators.
+    // Check content administrators, who also have the editor role.
     $this->user->addRole('content_team');
+    $this->user->addRole('editor');
     $this->user->save();
     $this->drupalGet('node/' . $child->id() . '/edit');
     $this->getCurrentPage()->selectFieldOption('Change to', MassModeration::UNPUBLISHED);
