@@ -1,37 +1,46 @@
-@api
-Feature: editor Role
+@api @editor
+Feature: Editor Role
   As an editor,
-  I want a role to be able to create / edit / delete / publish certain targeted types of content
+  I want a role to be able to create / edit / publish certain targeted types of content
   so I can create the best content experience for the constituents of Massachusetts.
 
-  Scenario: Verify that content team member can only see content menu item
-    Given I am logged in as a user with the "editor" role
-    And I am on "admin"
-    Then I should not see the link "Manage" in the "toolbar" region
-    Then I should see the link "Content" in the "toolbar" region
-
-  Scenario: Verify that editor does not have permission to change site code or administer users
-    Given I am logged in as a user with the "editor" role
-    Then I should not have the "administer modules, administer software updates, administer themes, administer users" permissions
-
   #http response 200 is a successful response
-  Scenario: Verify editor can create content
+  Scenario: Verify that editor can perform necessary actions
     Given I am logged in as a user with the "editor" role
     And I am on "/user"
     Then I should see the dashboard tabs
-    # editor can see 'Add content' button
     Then I should have access to "/node/add"
     And I should have access to "/node/add/contact_information"
-    # Then I should have access to "/node/add/guide_page"
-    # Then I should have access to "/node/add/how_to_page"
-    # Then I should have access to "/node/add/location"
+    And I should have access to "/node/add/guide_page"
+    And I should have access to "/node/add/how_to_page"
+    And I should have access to "/node/add/location"
     And I should have access to "/node/add/org_page"
     And I should have access to "/node/add/service_page"
-    And I should have access to "/admin/ma-dash/needs-review"
+    And I should have access to "/node/add/service_details"
+    And I should not have access to "/admin/reports"
+    And I should not have access to "/node/add/error_page"
+    And I should not have access to "/node/add/interstitial"
 
-    And I should not have access to "/admin/people"
+  Scenario: Verify that editor users have appropriate permissions
+    # Has broad permission to deal with all content and can use workbench
+    Then the "editor" role should have the permissions:
+      | Permission                   |
+      | administer nodes             |
+      | revert all revisions         |
+      | view any unpublished content |
+      | view latest version          |
+      | create media                 |
+      | update media                 |
+      | update any media             |
 
-  Scenario: An editor should be able to use draggable views
+    # Does not have permission to change site code or administer users
+    Then the "editor" role should not have the permissions:
+      | Permission                  |
+      | administer modules          |
+      | administer software updates |
+      | administer themes           |
+
+    # Access draggableviews
     Then the "editor" role should have the permissions:
       | Permission            |
       | access draggableviews |
@@ -45,15 +54,8 @@ Feature: editor Role
     And the select list "#edit-moderation-state-0-state" should contain the option "published"
     And the select list "#edit-moderation-state-0-state" should contain the option "trash"
 
-  Scenario: An editor should be able to add new or existing Documents to content and edit any Documents
-    Then the "editor" role should have the permission:
-      | Permission            |
-      | create media |
-      | update media |
-      | access media overview |
-      | update any media      |
 
-  Scenario: Ensure Editors can create, edit and otherwise manage News, Event, Form and Guide nodes.
+  Scenario: Ensure Editors can create, edit and otherwise manage News, Event, Form, Rules and Guide nodes.
     Then the "editor" role should have the permissions:
       | Permission                      |
       | create event content            |
@@ -107,7 +109,7 @@ Feature: editor Role
       | delete any person content|
       | delete own person content|
 
-Scenario: Ensure Editors can create, edit and otherwise manage Regulation nodes.
+  Scenario: Ensure Editors can create, edit and otherwise manage Regulation nodes.
     Then the "editor" role should have the permissions:
       | Permission                   |
       | create regulation content    |
@@ -142,9 +144,9 @@ Scenario: Ensure Editors can create, edit and otherwise manage Regulation nodes.
       | view decision revisions    |
     Then the "editor" role should not have the permissions:
       | Permission                 |
-      | delete decision revisions  |
       | delete any decision content|
       | delete own decision content|
+      | delete decision revisions  |
 
   Scenario: Ensure Editors can create, edit and otherwise manage Curated List nodes.
     Then the "editor" role should have the permissions:

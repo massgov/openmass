@@ -49,6 +49,7 @@ dependencies:
     - user
     - views_autocomplete_filters
     - views_bulk_operations
+    - views_porter_stemmer
 id: mass_dashboard_trash
 label: 'Mass Dashboard Trash'
 module: views
@@ -63,7 +64,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: Trash
+      title: 'Trash (content)'
       fields:
         views_bulk_operations_bulk_form:
           id: views_bulk_operations_bulk_form
@@ -119,14 +120,14 @@ display:
           form_step: true
           buttons: true
           action_title: Action
+          clear_on_exposed: true
+          force_selection_info: false
           selected_actions:
             2:
               action_id: mass_content_moderation_restore_action
               preconfiguration:
+                add_confirmation: false
                 label_override: 'Restore to unpublished state'
-                add_confirmation: 0
-          clear_on_exposed: true
-          force_selection_info: 0
         title:
           id: title
           table: node_field_revision
@@ -1519,8 +1520,8 @@ display:
           plugin_id: text
           empty: false
           content:
-            value: '<p>Learn how to <a href="https://massgovdigital.gitbook.io/knowledge-base/authoring-and-editing-1/navigating-the-cms/trash" target="_blank">move items to and recover them from the trash.</a></p>'
-            format: basic_html
+            value: '<p>These items will be permanently deleted after being in the Trash for 90 days. Learn how to <a href="https://www.mass.gov/kb/trash-content" target="_blank">move items to and recover them from the trash.</a></p>'
+            format: full_html
           tokenize: false
       footer: {  }
       display_extenders: {  }

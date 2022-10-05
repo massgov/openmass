@@ -173,7 +173,7 @@ function mass_map_views_query_alter(ViewExecutable $view, $query) {
         $location_nodes = [];
 
         // Get Location nodes from Service and Location nodes.
-        $fields = ['field_related_locations', 'field_service_ref_locations'];
+        $fields = ['field_related_locations'];
         foreach ($fields as $field_name) {
           if (Helper::isFieldPopulated($node, $field_name)) {
             $location_nodes += Helper::getReferencedEntitiesFromField($node, $field_name);
@@ -191,12 +191,11 @@ function mass_map_views_query_alter(ViewExecutable $view, $query) {
 
         // Get Location nodes from Service nodes.
         if (Helper::isFieldPopulated($node, 'field_service_sections')) {
-          $location_nodes +=
-            Helper::getReferencedEntitiesFromSectionField($node, [
-              'field_service_sections',
-              'field_service_section_content',
-              'field_org_ref_locations',
-            ]);
+          $location_nodes += Helper::getReferencedEntitiesFromSectionField($node, [
+            'field_service_sections',
+            'field_service_section_content',
+            'field_org_ref_locations',
+          ]);
         }
 
         // Populate NIDs for location map.
@@ -234,7 +233,7 @@ function mass_map_views_query_alter(ViewExecutable $view, $query) {
     if (!empty($nids)) {
       $query->where[0]['conditions'][] = [
         'field' => 'node_field_data.nid',
-        'value' => $nids,
+        'value' => array_unique($nids),
         'operator' => 'in'
       ];
     }

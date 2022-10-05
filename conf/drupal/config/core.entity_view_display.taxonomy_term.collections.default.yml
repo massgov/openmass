@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.taxonomy_term.collections.field_additional_no_items_found
+    - field.field.taxonomy_term.collections.field_additional_search_keywords
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_collection_logo
     - field.field.taxonomy_term.collections.field_default_sort
@@ -32,6 +33,13 @@ content:
     settings: {  }
     third_party_settings: {  }
     weight: 0
+    region: content
+  field_additional_search_keywords:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
     region: content
   field_collection_logo:
     type: image

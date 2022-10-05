@@ -49,6 +49,18 @@ function mass_superset_schema() {
         'type' => 'int',
         'description' => 'The grade level.',
       ],
+      'total_no' => [
+        'type' => 'int',
+        'description' => 'The total no.',
+      ],
+      'total_yes' => [
+        'type' => 'int',
+        'description' => 'The total yes.',
+      ],
+      'total_feedback' => [
+        'type' => 'int',
+        'description' => 'The total feedback.',
+      ],
     ],
     'indexes' => [
       'nid' => ['nid'],
@@ -164,4 +176,23 @@ function mass_superset_update_8004() {
  */
 function mass_superset_update_8005() {
   Database::getConnection()->schema()->dropField('mass_superset_data', 'rate_of_traffic_to_children');
+}
+
+/**
+ * Update schema with new fields.
+ */
+function mass_superset_update_8006() {
+  $fields_to_add = [
+    'total_no',
+    'total_yes',
+    'total_feedback',
+  ];
+
+  $schema = Database::getConnection()->schema();
+  $table = 'mass_superset_data';
+  $spec = mass_superset_schema();
+
+  foreach ($fields_to_add as $field_to_add) {
+    $schema->addField($table, $field_to_add, $spec[$table]['fields'][$field_to_add]);
+  }
 }
