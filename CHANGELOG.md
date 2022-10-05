@@ -1,6 +1,6 @@
 
 
-## [0.337.0] - October 4, 2022
+## [0.337.0] - October 5, 2022
 
 ### Changed
   - DP-15470: Disable late runtime purger module
