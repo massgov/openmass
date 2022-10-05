@@ -754,6 +754,10 @@ function mass_fields_theme() {
  */
 function mass_fields_form_node_form_alter(&$form, FormStateInterface $form_state) {
   mass_fields_do_form_alter($form, $form_state);
+  if (empty($form['search_nosnippet'])) {
+    return;
+  }
+
   // Do same for no snippet field.
   $form['search_status']['search_nosnippet'] = $form['search_nosnippet'];
   // Nosnippet only makes sense if search is enabled.
@@ -777,6 +781,10 @@ function mass_fields_form_media_form_alter(&$form, FormStateInterface $form_stat
  * Place the 'Exclude from search' checkbox.
  */
 function mass_fields_do_form_alter(&$form, FormStateInterface $form_state) {
+  if (empty($form['search'])) {
+    return;
+  }
+
   /** @var ContentEntityInterface $entity */
   $entity = $form_state->getFormObject()->getEntity();
   $settings = \Drupal::service('simple_sitemap.generator')->getBundleSettings();
