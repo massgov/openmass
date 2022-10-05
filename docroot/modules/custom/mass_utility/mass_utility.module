@@ -101,6 +101,26 @@ function mass_utility_entity_update(EntityInterface $entity) {
 }
 
 /**
+ * Implements hook_entity_operation().
+ */
+function mass_utility_entity_operation(EntityInterface $entity): array {
+  $operations = [];
+
+  $routeName = 'mass_utility.move_redirects';
+  $url = Url::fromRoute($routeName, [$entity->getEntityTypeId() => $entity->id()]);
+  $user = \Drupal::currentUser();
+  if (TRUE === $url->access($user)) {
+    $operations['move_redirects'] = [
+      'title' => \t('Move redirects'),
+      'url' => $url,
+      'weight' => 50,
+    ];
+  }
+
+  return $operations;
+}
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
