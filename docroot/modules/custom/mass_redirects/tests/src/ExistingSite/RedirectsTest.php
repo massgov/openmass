@@ -1,4 +1,4 @@
-<?php declare(strict_types = 1);
+<?php
 
 namespace Drupal\Tests\mass_redirects\ExistingSite;
 
@@ -19,7 +19,7 @@ class RedirectsTest extends ExistingSiteBase {
   private $editor;
   private $orgNode;
   private $orgNodeTarget;
-  private $source_paths;
+  private $sourcePaths;
 
   /**
    * Create an editor and a node with url redirects.
@@ -48,8 +48,8 @@ class RedirectsTest extends ExistingSiteBase {
       MassModeration::FIELD_NAME => MassModeration::PUBLISHED,
     ]);
 
-    $this->source_paths = [$this->randomMachineName(), $this->randomMachineName()];
-    foreach ($this->source_paths as $source_path) {
+    $this->sourcePaths = [$this->randomMachineName(), $this->randomMachineName()];
+    foreach ($this->sourcePaths as $source_path) {
       $redirect = Redirect::create();
       $redirect->setRedirect("node/$id");
       $redirect->setSource($source_path);
@@ -81,10 +81,11 @@ class RedirectsTest extends ExistingSiteBase {
     $this->assertSession()->pageTextContains('Redirected');
     $session->visit($url);
     $this->assertSession()->pageTextContains('There are no URLs to move.');
-    foreach ($this->source_paths as $source_path) {
+    foreach ($this->sourcePaths as $source_path) {
       $this->drupalGet($source_path);
       $this->assertSession()->addressEquals($this->orgNodeTarget->toUrl()->toString());
       $this->assertEquals(200, $session->getStatusCode());
     }
   }
+
 }

@@ -4,6 +4,7 @@ namespace Drupal\mass_redirects\Form;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\ContentEntityForm;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
@@ -133,12 +134,7 @@ class MoveRedirectsForm extends ContentEntityForm {
     $form_state->setRedirectUrl($node->toUrl());
   }
 
-  /**
-   * @param \Drupal\Core\Entity\EntityInterface $node
-   *
-   * @return \Drupal\redirect\Entity\Redirect[]
-   */
-  public function getRedirects(\Drupal\Core\Entity\EntityInterface $node): array {
+  public function getRedirects(EntityInterface $node): array {
     $id = $node->id();
     $redirects = $this->redirectRepository->findByDestinationUri(["internal:/node/$id", "entity:node/$id"]);
     return $redirects ?? [];
@@ -164,12 +160,6 @@ class MoveRedirectsForm extends ContentEntityForm {
 
   /**
    * The alias with 'unpublished' suffix is eligible to be redirected.
-   *
-   * @param \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node
-   * @param array $items
-   *
-   * @return array
-   * @throws \Drupal\Core\Entity\EntityMalformedException
    */
   public function getAliasItems(NodeBundle $node): array {
     $short_url = $this->shortenUrl($node);

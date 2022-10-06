@@ -9,10 +9,8 @@ use Drupal\mass_redirects\Form\MoveRedirectsForm;
  * Upon saving a trashed node, give link to Move Redirects form.
  *
  * We can't easily use hook_node_update since the node URL changes to ---unpublished in pathauto_alias_alter hook.
- *
- * @return void
  */
-function mass_redirects_entity_update(EntityInterface $entity) {
+function mass_redirects_entity_update(EntityInterface $entity): void {
   if ($entity->getEntityTypeId() !== 'node') {
     return;
   }

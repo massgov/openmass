@@ -85,7 +85,7 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
   $node_form = $form_state->getFormObject();
   /** @var \Drupal\node\Entity\Node $node */
   $node = $node_form->getEntity();
-  $is_operation_edit_default = in_array( $node_form->getOperation(), ['edit', 'default']);
+  $is_operation_edit_default = in_array($node_form->getOperation(), ['edit', 'default']);
 
   if (isset($form['access_unpublished_settings'])) {
     // Update access unpublished generate token button label.
