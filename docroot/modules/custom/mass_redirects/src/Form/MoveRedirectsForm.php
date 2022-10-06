@@ -170,13 +170,7 @@ class MoveRedirectsForm extends ContentEntityForm {
     }
     return $items ?? [];
   }
-
-  /**
-   * @param \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node
-   *
-   * @return string
-   * @throws \Drupal\Core\Entity\EntityMalformedException
-   */
+  
   public static function shortenUrl(NodeBundle $node): string {
     $url = $node->toUrl()->toString();
     // Strip off unwanted suffix.
