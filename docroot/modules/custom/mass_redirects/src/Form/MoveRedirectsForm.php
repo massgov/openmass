@@ -170,7 +170,7 @@ class MoveRedirectsForm extends ContentEntityForm {
     }
     return $items ?? [];
   }
-  
+
   public static function shortenUrl(NodeBundle $node): string {
     $url = $node->toUrl()->toString();
     // Strip off unwanted suffix.
