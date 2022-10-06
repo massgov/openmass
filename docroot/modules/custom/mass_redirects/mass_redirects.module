@@ -29,20 +29,19 @@ function mass_redirects_entity_update(EntityInterface $entity) {
  * Implements hook_entity_operation().
  */
 function mass_redirects_entity_operation(EntityInterface $entity): array {
-  $operations = [];
-
-  $routeName = 'mass_redirects.move_redirects';
-  $url = Url::fromRoute($routeName, [$entity->getEntityTypeId() => $entity->id()]);
-  $user = \Drupal::currentUser();
-  if ($url->access($user)) {
-    $operations['move_redirects'] = [
-      'title' => \t('Move redirects'),
-      'url' => $url,
-      'weight' => 50,
-    ];
+  if ($entity->getEntityTypeId() == 'node') {
+    $routeName = 'mass_redirects.move_redirects';
+    $url = Url::fromRoute($routeName, [$entity->getEntityTypeId() => $entity->id()]);
+    if ($url->access()) {
+      $operations['move_redirects'] = [
+        'title' => \t('Move redirects'),
+        'url' => $url,
+        'weight' => 50,
+      ];
+    }
   }
 
-  return $operations;
+  return $operations ?? [];
 }
 
 /**

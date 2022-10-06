@@ -39,8 +39,8 @@ class MoveRedirectsForm extends ContentEntityForm {
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
    */
-  public function access(NodeBundle $node, AccountInterface $account) {
-    return AccessResult::allowedIf($node->access('edit', $account) && $node->getModerationState()->getString() == MassModeration::TRASH);
+  public static function access(NodeBundle $node, AccountInterface $account) {
+    return AccessResult::allowedIf($node->getModerationState()->getString() == MassModeration::TRASH);
   }
 
   /**
@@ -84,7 +84,7 @@ class MoveRedirectsForm extends ContentEntityForm {
       ];
       $form['actions']['submit'] = [
         '#type' => 'submit',
-        '#value' => $this->t('Save'),
+        '#value' => $this->t('Move redirects'),
         '#submit' => ['::submitFormLocal'],
       ];
     }
@@ -103,11 +103,13 @@ class MoveRedirectsForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function submitFormLocal(array &$form, FormStateInterface $form_state) {
+    $done = [];
     $node = $this->getEntity();
     $redirects = $this->getRedirects($node);
     foreach ($redirects as $redirect) {
       $redirect->setRedirect('node/' . $form_state->getValues()['target']);
       $redirect->save();
+      $done[] = $redirect->getSourceUrl();
     }
     $aliases = $this->getAliasItems($node);
     foreach ($aliases as $alias) {
@@ -124,10 +126,11 @@ class MoveRedirectsForm extends ContentEntityForm {
       }
       else {
         $success = $redirect->save();
-        $this->messenger()->addStatus($this->t('The URLs have been redirected.'));
-        $form_state->setRedirectUrl($node->toUrl());
+        $done[] = $redirect->getSourceUrl();
       }
     }
+    $this->messenger()->addStatus($this->t('Redirected @list to @dest.', ['@list' => implode(', ', $done), '@dest' => $node->toUrl()->toString()]));
+    $form_state->setRedirectUrl($node->toUrl());
   }
 
   /**
@@ -138,13 +141,7 @@ class MoveRedirectsForm extends ContentEntityForm {
   public function getRedirects(\Drupal\Core\Entity\EntityInterface $node): array {
     $id = $node->id();
     $redirects = $this->redirectRepository->findByDestinationUri(["internal:/node/$id", "entity:node/$id"]);
-    // '--unpublished' are not eligible.
-    foreach ($redirects as $redirect) {
-      if (strpos($redirect->getSourceUrl(), '---unpublished') === FALSE) {
-        $return[] = $redirect;
-      }
-    }
-    return $return ?? [];
+    return $redirects ?? [];
   }
 
   /**
@@ -190,7 +187,7 @@ class MoveRedirectsForm extends ContentEntityForm {
    * @return string
    * @throws \Drupal\Core\Entity\EntityMalformedException
    */
-  public function shortenUrl(NodeBundle $node): string {
+  public static function shortenUrl(NodeBundle $node): string {
     $url = $node->toUrl()->toString();
     // Strip off unwanted suffix.
     $url = str_replace('---unpublished', '', $url);

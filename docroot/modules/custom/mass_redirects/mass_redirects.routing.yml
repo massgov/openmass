@@ -3,5 +3,10 @@ mass_redirects.move_redirects:
   defaults:
     _title: 'Move redirects'
     _entity_form: 'node.move-redirects'
+  options:
+    _node_operation_route: TRUE
+    _admin_route: TRUE
   requirements:
+    _entity_access: 'node.view'
+    node: \d+
     _custom_access: 'Drupal\mass_redirects\Form\MoveRedirectsForm::access'
