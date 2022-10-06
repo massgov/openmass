@@ -153,8 +153,8 @@ function _mass_validation_form_node_alert_form_validate(array &$form, FormStateI
 function mass_validation_theme($existing, $type, $theme, $path) {
   return [
     'warning_draft' => [
-      'variables' => ['link' => NULL]
-    ]
+      'variables' => ['link' => NULL],
+    ],
   ];
 }
 
@@ -954,6 +954,7 @@ function _mass_validation_check_paragraph_bundle($node, $bundle): bool {
       $section_field_label = 'field_service_sections';
       $section_content_field_label = 'field_service_section_content';
       break;
+
     case 'org_page':
       $section_field_label = 'field_organization_sections';
       $section_content_field_label = 'field_section_long_form_content';
@@ -979,11 +980,12 @@ function _mass_validation_check_paragraph_bundle($node, $bundle): bool {
   return FALSE;
 }
 
-
 /**
+ * Submit hanlder for event nodes.
+ *
  * Submit handler to add warning if there is a
  * service or organization node without event
- * component in associated pages field
+ * component in associated pages field.
  */
 function _mass_validation_form_node_event_form_submit(array &$form, FormStateInterface $form_state) {
   $associated_pages = $form_state->getValue('field_event_ref_parents');
@@ -1552,7 +1554,7 @@ function mass_validation_form_alter(&$form, FormStateInterface $form_state, $for
           $url = Url::fromRoute($route_name, [$entity_label => $entity->id()]);
           $rendarable = [
             "#theme" => "warning_draft",
-            "#link" => "internal:" . $url->toString()
+            "#link" => "internal:" . $url->toString(),
           ];
           $rendered = \Drupal::service('renderer')->render($rendarable);
           $form['#prefix'] = $rendered;
