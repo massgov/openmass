@@ -17,6 +17,7 @@
   };
 
   if (typeof CKEDITOR != 'undefined') {
+    CKEDITOR.config.contentsLangDirection = 'auto';
     CKEDITOR.on('instanceReady', function (e) {
       if (e.editor.contextMenu) {
         e.editor.removeMenuItem('tablecell_merge');

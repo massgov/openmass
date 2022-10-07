@@ -1,5 +1,24 @@
 
 
+## [0.337.0] - October 5, 2022
+
+### Changed
+  - DP-15470: Disable late runtime purger module
+  - DP-25216: Add field for exclusing content from search
+  - DP-25636: Delete unused fields for documents.
+  - DP-25727: Permission cleanup of all roles in the system to correct errors and streamline permissions.
+  - DP-25831: Restructure the CMS Welcome screen for authors.
+  - DP-25897: Change unpublished preview links to always display a "www.mass.gov" domain.
+  
+### Fixed
+  - DP-25914: Fix duplicated feedback component on event agenda and minutes.
+  - DP-25957: Menus on Org Page do not work correctly on mobile devices.
+  
+### Security
+  - DP-25945: Drupal Core security update to 9.4.7.
+  
+
+
 ## [0.336.0] - September 20, 2022
 
 ### Added

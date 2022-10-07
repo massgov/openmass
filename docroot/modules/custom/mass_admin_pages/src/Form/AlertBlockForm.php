@@ -7,13 +7,13 @@ use Drupal\Core\Form\ConfigFormBase;
 
 /**
  * @file
- * Contains \Drupal\mass_admin_pages\Form\UpdatesBlockForm.
+ * Contains \Drupal\mass_admin_pages\Form\AlertBlockForm.
  */
 
 /**
  * Configure Site Wide Notification.
  */
-class UpdatesBlockForm extends ConfigFormBase {
+class AlertBlockForm extends ConfigFormBase {
 
   /**
    * Constructs a UpdatesBlockForm object.
@@ -23,7 +23,7 @@ class UpdatesBlockForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'mass_updates_block_form';
+    return 'mass_alert_block_form';
   }
 
   /**
@@ -33,21 +33,13 @@ class UpdatesBlockForm extends ConfigFormBase {
     $form = parent::buildForm($form, $form_state);
     $form['#tree'] = TRUE;
 
-    $text_field = \Drupal::state()->get('mass_admin_pages.updates_block_settings.text_field');
     $alert_text = \Drupal::state()->get('mass_admin_pages.updates_block_settings.alert_text');
-
-    $form['text_field'] = [
-      '#type' => 'text_format',
-      '#title' => $this->t('Update content'),
-      '#description' => $this->t('Add content to provide important updates for content authors. Use HTML markup to add links or basic styling.  For simple text, be sure to add a P tag around it so that it takes default styling.'),
-      '#default_value' => isset($text_field) ? $text_field : '',
-    ];
 
     $form['alert_text'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Alert content'),
       '#description' => $this->t('Add text to this block to display a message to logged in users (authors and editors) on every page on edit.mass.gov. Use HTML markup to add links or basic styling.'),
-      '#default_value' => isset($alert_text) ? $alert_text : '',
+      '#default_value' => $alert_text ?? '',
     ];
 
     return $form;
@@ -65,7 +57,6 @@ class UpdatesBlockForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    \Drupal::state()->set('mass_admin_pages.updates_block_settings.text_field', $form_state->getValue('text_field')['value']);
     \Drupal::state()->set('mass_admin_pages.updates_block_settings.alert_text', $form_state->getValue('alert_text'));
     parent::submitForm($form, $form_state);
 
