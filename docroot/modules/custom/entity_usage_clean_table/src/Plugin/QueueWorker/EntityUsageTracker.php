@@ -110,6 +110,7 @@ class EntityUsageTracker extends QueueWorkerBase implements ContainerFactoryPlug
             // Delete records from non-current revision ids.
             $this->database
               ->delete('entity_usage')
+              ->condition('source_type', $entity->getEntityTypeId())
               ->condition('source_id', $entity->id())
               ->condition('source_vid', $entity->getRevisionId(), '<>')
               ->execute();

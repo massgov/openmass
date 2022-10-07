@@ -49,8 +49,9 @@ class CleanUsageTable {
   /**
    * Delete references from other revisions.
    */
-  private function deleteOtherRevisions($id, $vid, $suffix = '') {
+  private function deleteOtherRevisions($id, $vid, $source_type, $suffix = '') {
     $this->database->delete('entity_usage')
+      ->condition('source_type', $source_type)
       ->condition('source_id' . $suffix, $id)
       ->condition('source_vid' . $suffix, $vid, '<>')
       ->execute();
@@ -104,7 +105,7 @@ class CleanUsageTable {
           continue;
         }
         $vid = $entity->getRevisionId();
-        $this->deleteOtherRevisions($source_id, $vid, $key);
+        $this->deleteOtherRevisions($source_id, $vid, $source_type, $key);
       }
     }
   }
