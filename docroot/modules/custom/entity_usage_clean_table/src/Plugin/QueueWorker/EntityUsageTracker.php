@@ -63,8 +63,6 @@ class EntityUsageTracker extends QueueWorkerBase implements ContainerFactoryPlug
    *   Entity type manager service.
    * @param \Drupal\entity_usage\EntityUpdateManager $entity_usage_update_manager
    *   Entity usage update manager.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The config factory.
    * @param \Drupal\Core\Database\Connection $database_service
    *   The Drupal Database service.
    */
