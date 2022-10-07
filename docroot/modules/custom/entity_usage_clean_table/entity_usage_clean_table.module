@@ -15,7 +15,7 @@ function entity_usage_clean_table_module_implements_alter(&$implementations, $ho
   ];
 
   // Completely take over entity_usage hooks.
-  if (in_array($hook, $overrides)) {
+  if (in_array($hook, $overrides) && \Drupal::config('entity_usage_clean_table.settings')->get('queue_tracking')) {
     unset($implementations['entity_usage']);
   }
 }
@@ -24,53 +24,63 @@ function entity_usage_clean_table_module_implements_alter(&$implementations, $ho
  * Implements hook_entity_insert().
  */
 function entity_usage_clean_table_entity_insert(EntityInterface $entity) {
-  \Drupal::queue('entity_usage_tracker')->createItem([
-    'operation' => 'insert',
-    'entity_type' => $entity->getEntityTypeId(),
-    'entity_id' => $entity->id(),
-  ]);
+  if (\Drupal::config('entity_usage_clean_table.settings')->get('queue_tracking')) {
+    \Drupal::queue('entity_usage_tracker')->createItem([
+      'operation' => 'insert',
+      'entity_type' => $entity->getEntityTypeId(),
+      'entity_id' => $entity->id(),
+    ]);
+  }
 }
 
 /**
  * Implements hook_entity_update().
  */
 function entity_usage_clean_table_entity_update(EntityInterface $entity) {
-  \Drupal::queue('entity_usage_tracker')->createItem([
-    'operation' => 'update',
-    'entity_type' => $entity->getEntityTypeId(),
-    'entity_id' => $entity->id(),
-  ]);
+  if (\Drupal::config('entity_usage_clean_table.settings')->get('queue_tracking')) {
+    \Drupal::queue('entity_usage_tracker')->createItem([
+      'operation' => 'update',
+      'entity_type' => $entity->getEntityTypeId(),
+      'entity_id' => $entity->id(),
+    ]);
+  }
 }
 
 /**
  * Implements hook_entity_predelete().
  */
 function entity_usage_clean_table_entity_predelete(EntityInterface $entity) {
-  \Drupal::queue('entity_usage_tracker')->createItem([
-    'operation' => 'predelete',
-    'entity_type' => $entity->getEntityTypeId(),
-    'entity_id' => $entity->id(),
-  ]);
+  if (\Drupal::config('entity_usage_clean_table.settings')->get('queue_tracking')) {
+    \Drupal::queue('entity_usage_tracker')->createItem([
+      'operation' => 'predelete',
+      'entity_type' => $entity->getEntityTypeId(),
+      'entity_id' => $entity->id(),
+    ]);
+  }
 }
 
 /**
  * Implements hook_entity_translation_delete().
  */
 function entity_usage_clean_table_entity_translation_delete(EntityInterface $translation) {
-  \Drupal::queue('entity_usage_tracker')->createItem([
-    'operation' => 'translation_delete',
-    'entity_type' => $translation->getEntityTypeId(),
-    'entity_id' => $translation->id(),
-  ]);
+  if (\Drupal::config('entity_usage_clean_table.settings')->get('queue_tracking')) {
+    \Drupal::queue('entity_usage_tracker')->createItem([
+      'operation' => 'translation_delete',
+      'entity_type' => $translation->getEntityTypeId(),
+      'entity_id' => $translation->id(),
+    ]);
+  }
 }
 
 /**
  * Implements hook_entity_revision_delete().
  */
 function entity_usage_clean_table_entity_revision_delete(EntityInterface $entity) {
-  \Drupal::queue('entity_usage_tracker')->createItem([
-    'operation' => 'revision_delete',
-    'entity_type' => $entity->getEntityTypeId(),
-    'entity_id' => $entity->id(),
-  ]);
+  if (\Drupal::config('entity_usage_clean_table.settings')->get('queue_tracking')) {
+    \Drupal::queue('entity_usage_tracker')->createItem([
+      'operation' => 'revision_delete',
+      'entity_type' => $entity->getEntityTypeId(),
+      'entity_id' => $entity->id(),
+    ]);
+  }
 }
