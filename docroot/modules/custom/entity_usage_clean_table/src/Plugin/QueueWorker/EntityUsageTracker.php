@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entity_usage\Plugin\QueueWorker;
+namespace Drupal\entity_usage_clean_table\Plugin\QueueWorker;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -9,6 +9,7 @@ use Drupal\entity_usage\EntityUpdateManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\RevisionableInterface;
+use Drupal\Core\Database\Connection;
 
 /**
  * Processes the entity usage tracking via a queue.
@@ -62,6 +63,10 @@ class EntityUsageTracker extends QueueWorkerBase implements ContainerFactoryPlug
    *   Entity type manager service.
    * @param \Drupal\entity_usage\EntityUpdateManager $entity_usage_update_manager
    *   Entity usage update manager.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   * @param \Drupal\Core\Database\Connection $database_service
+   *   The Drupal Database service.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, EntityUpdateManager $entity_usage_update_manager, ConfigFactoryInterface $config_factory, Connection $database_service) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
@@ -81,6 +86,8 @@ class EntityUsageTracker extends QueueWorkerBase implements ContainerFactoryPlug
       $plugin_definition,
       $container->get('entity_type.manager'),
       $container->get('entity_usage.entity_update_manager'),
+      $container->get('config.factory'),
+      $container->get('database')
     );
   }
 

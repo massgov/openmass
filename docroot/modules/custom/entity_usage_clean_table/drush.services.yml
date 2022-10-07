@@ -1,6 +1,6 @@
 services:
-  entity_usage.clean_usage_table_command:
-    class: \Drupal\entity_usage\Commands\CleanUsageTableCommand
-    arguments: [ '@entity_usage.clean_usage_table' ]
+  entity_usage_clean_table.clean_usage_table_command:
+    class: \Drupal\entity_usage_clean_table\Commands\CleanUsageTableCommand
+    arguments: [ '@entity_usage_clean_table.clean_usage_table' ]
     tags:
       - { name: drush.command }

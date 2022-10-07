@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entity_usage\Commands;
+namespace Drupal\entity_usage_clean_table\Commands;
 
 use Drush\Commands\DrushCommands;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entity_usage;
+namespace Drupal\entity_usage_clean_table;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Database\Connection;
