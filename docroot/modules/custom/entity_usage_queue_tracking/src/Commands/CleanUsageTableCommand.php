@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entity_usage_clean_table\Commands;
+namespace Drupal\entity_usage_queue_tracking\Commands;
 
 use Drush\Commands\DrushCommands;
 

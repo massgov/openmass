@@ -1,0 +1,6 @@
+services:
+  entity_usage_queue_tracking.clean_usage_table_command:
+    class: \Drupal\entity_usage_queue_tracking\Commands\CleanUsageTableCommand
+    arguments: [ '@entity_usage_queue_tracking.clean_usage_table' ]
+    tags:
+      - { name: drush.command }

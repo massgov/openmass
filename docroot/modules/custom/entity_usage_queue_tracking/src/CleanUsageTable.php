@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entity_usage_clean_table;
+namespace Drupal\entity_usage_queue_tracking;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Database\Connection;
