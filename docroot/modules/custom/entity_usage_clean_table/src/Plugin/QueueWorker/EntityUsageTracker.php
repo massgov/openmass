@@ -68,11 +68,10 @@ class EntityUsageTracker extends QueueWorkerBase implements ContainerFactoryPlug
    * @param \Drupal\Core\Database\Connection $database_service
    *   The Drupal Database service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, EntityUpdateManager $entity_usage_update_manager, ConfigFactoryInterface $config_factory, Connection $database_service) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, EntityUpdateManager $entity_usage_update_manager, Connection $database_service) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
     $this->entityUsageUpdateManager = $entity_usage_update_manager;
-    $this->config = $config_factory->get('entity_usage.settings');
     $this->database = $database_service;
   }
 
@@ -86,7 +85,6 @@ class EntityUsageTracker extends QueueWorkerBase implements ContainerFactoryPlug
       $plugin_definition,
       $container->get('entity_type.manager'),
       $container->get('entity_usage.entity_update_manager'),
-      $container->get('config.factory'),
       $container->get('database')
     );
   }
@@ -112,16 +110,14 @@ class EntityUsageTracker extends QueueWorkerBase implements ContainerFactoryPlug
       case 'insert':
       case 'update':
         $this->entityUsageUpdateManager->trackUpdateOnCreation($entity);
-        if ($this->config->get('queue_tracking')) {
-          if ($entity instanceof RevisionableInterface) {
-            // Delete records from non-current revision ids.
-            $this->database
-              ->delete('entity_usage')
-              ->condition('source_type', $entity->getEntityTypeId())
-              ->condition('source_id', $entity->id())
-              ->condition('source_vid', $entity->getRevisionId(), '<>')
-              ->execute();
-          }
+        if ($entity instanceof RevisionableInterface) {
+          // Delete records from non-current revision ids.
+          $this->database
+            ->delete('entity_usage')
+            ->condition('source_type', $entity->getEntityTypeId())
+            ->condition('source_id', $entity->id())
+            ->condition('source_vid', $entity->getRevisionId(), '<>')
+            ->execute();
         }
         break;
 
