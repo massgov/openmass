@@ -1,3 +1,6 @@
+/**
+ * This is a copy of docroot/core/themes/seven/js/nav-tabs.js
+ */
 (function ($, Drupal) {
   function init(tab) {
 
