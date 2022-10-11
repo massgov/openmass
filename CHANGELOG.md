@@ -1,3 +1,10 @@
+
+
+## [0.338.0] - October 11, 2022
+
+### Fixed
+  - DP-25952: Right to left languages on manually translated pages not rendering correctly.
+  
 ## [0.337.1] - October 8, 2022
   - DP-25875 Hotfix. Bubble max-age to response headers. Fixes event listing staleness
 
