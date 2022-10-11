@@ -28,7 +28,6 @@ dependencies:
     - field.field.node.person.field_reusable_label
     - field.field.node.person.field_short_bio
     - field.field.node.person.field_social_links
-    - field.field.node.person.field_state_organization_tax
     - image.style.thumbnail
     - node.type.person
     - workflows.workflow.editorial
@@ -459,16 +458,6 @@ content:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 32
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 9
@@ -491,6 +480,20 @@ content:
     weight: 1
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield

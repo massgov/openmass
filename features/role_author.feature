@@ -190,5 +190,4 @@ Feature: Author Role
 
     Given I am logged in as "userWithOrg"
     And I am on "node/add/service_details"
-    Then I should see the text "Choose SiteImprove groups"
     And the response should contain "behatOrgTestTerm"

@@ -33,7 +33,6 @@ dependencies:
     - field.field.node.org_page.field_secondary_person_bio
     - field.field.node.org_page.field_short_title
     - field.field.node.org_page.field_social_links
-    - field.field.node.org_page.field_state_organization_tax
     - field.field.node.org_page.field_sub_brand
     - field.field.node.org_page.field_sub_title
     - field.field.node.org_page.field_subtype
@@ -601,17 +600,6 @@ content:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 3
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings:
-      conditional_fields: {  }
   field_sub_brand:
     type: image_image
     weight: 128
@@ -697,6 +685,20 @@ content:
     weight: 3
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
