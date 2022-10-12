@@ -537,6 +537,7 @@ function mass_content_theme() {
  */
 function mass_content_page_attachments(array &$attachments) {
   $attachments['#attached']['library'][] = 'mass_content/contextual-nav';
+  $attachments['#attached']['library'][] = 'mass_content/session_organizations';
 }
 
 /**
@@ -573,10 +574,6 @@ function mass_content_page_attachments_alter(array &$attachments) {
       ];
     }
   }
-  $host = \Drupal::request()->getSchemeAndHttpHost();
-  // Add if ($host == 'https://www.mass.gov') {.
-  $attachments['#attached']['library'][] = 'mass_content/session_organizations';
-  // }.
 }
 
 /**
