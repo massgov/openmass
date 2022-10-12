@@ -45,10 +45,10 @@
         sessionStorage.setItem('session_start', new Date().toString());
       }
 
-      var sessionOrgs = sessionStorage.getItem('session_orgs');
-      if (sessionOrgs && sessionOrgs.length > 0) {
+      var sessionOrgsExisting = sessionStorage.getItem('session_orgs');
+      if (sessionOrgsExisting && sessionOrgsExisting.length > 0) {
         // Convert string to array to filter for unique values.
-        var existingValues = sessionOrgs.split(',')
+        var existingValues = sessionOrgsExisting.split(',')
         if (orgsFiltered.length > 0) {
           // Combine existing and new data together in 1 array.
           var resultValues = existingValues.concat(orgsFiltered);
