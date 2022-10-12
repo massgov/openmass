@@ -22,8 +22,14 @@
       "info": '',
       "property": '',
     },
+    "language": content.field_language[0]['#plain_text'],
     "size": content.calculated_file_size,
     "format": content.extra_file_extension
   }
 } %}
-{{ content | without('field_title', 'calculated_file_size', 'extra_file_extension', 'extra_file_icon') }}
+  {% if translationLinks %}
+    {% include "@organisms/by-author/inline-links.twig" with {
+      "inlineLinks": translationLinks
+    } %}
+  {% endif %}
+{{ content | without('field_title', 'calculated_file_size', 'extra_file_extension', 'extra_file_icon', 'field_language') }}

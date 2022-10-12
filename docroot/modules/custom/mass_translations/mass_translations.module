@@ -13,9 +13,61 @@ use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\mayflower\Prepare\Organisms;
+use Drupal\media\MediaInterface;
 use Drupal\node\NodeInterface;
 use Drupal\mass_translations\Controller\TranslationsController;
 use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_preprocess_media().
+ */
+function mass_translations_preprocess_media(&$variables) {
+  $media = $variables['media'];
+  $lang_default = Drupal::languageManager()->getCurrentLanguage();
+  $languages = NULL;
+  $media_storage = Drupal::service('entity_type.manager')->getStorage('media');
+  $translations_controller = new TranslationsController($media_storage);
+  $current_url = Drupal::request()->getUri();
+  $lang_codes = Drupal::languageManager()->getLanguages();
+
+  // Get all the translations for this node.
+  $all_translations = $translations_controller->getTranslationLanguages($media, $media_storage, 'field_media_english_version');
+  // Replace "x-default" with the default language id.
+  $all_translations[$lang_default->getId()] = $all_translations["x-default"];
+  unset($all_translations["x-default"]);
+  // Sort translations in the same order as languages in the UI.
+  $sorted_translations = array_replace($lang_codes, array_flip(array_keys($lang_codes)), $all_translations);
+  // Build links for translations.
+  foreach ($sorted_translations as $language_id => $translation) {
+    if ($translation instanceof MediaInterface) {
+      // Skip any translation that cannot be viewed.
+      $access = $translation->access('view', NULL, TRUE);
+      if (!$access->isAllowed()) {
+        continue;
+      }
+
+      $name = NULL;
+      $predefined = LanguageManager::getStandardLanguageList();
+      // Get the native name for each language.
+      if (isset($predefined[$language_id])) {
+        $name = $predefined[$language_id][1];
+        // Build the translation link.
+        $url = Url::fromRoute('media_entity_download.download', ['media' => $translation->id()])
+//        $url = $translation->toUrl('canonical')
+          ->setOption('language', $lang_default)
+          ->setAbsolute()
+          ->toString();
+
+        $languages[] = ["title" => $name, "url" => ($url != $current_url) ? $url : NULL];
+      }
+    }
+  }
+
+  if (count($languages) > 1) {
+    $inlineLinks = Organisms::prepareInlineLinks($languages, ["ariaLabel" => "Available Translations"]);
+    $variables += ["translationLinks" => $inlineLinks];
+  }
+}
 
 /**
  * Implements hook_preprocess_HOOK().
