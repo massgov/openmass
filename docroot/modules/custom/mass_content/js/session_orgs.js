@@ -5,7 +5,7 @@
    * Helper function to calculate the hours difference.
    */
   function diff_hours(dt2, dt1) {
-    let diff = (dt2.getTime() - dt1.getTime()) / 1000;
+    var diff = (dt2.getTime() - dt1.getTime()) / 1000;
     diff /= (60 * 60);
     return Math.abs(Math.round(diff));
   }
@@ -17,21 +17,21 @@
     attach: function (context) {
 
       // Get data from the metatag element.
-      let orgs = $("meta[name='mg_organization']").attr('content');
-      let orgsArr = orgs.split(',')
-      let orgsFiltered = [];
+      var orgs = $("meta[name='mg_organization']").attr('content');
+      var orgsArr = orgs.split(',')
+      var orgsFiltered = [];
       // Filter the array and keep only unique values.
       $.each(orgsArr, function(i, el){
         if($.inArray(el, orgsFiltered) === -1) orgsFiltered.push(el);
       });
       // Set Session start time for each user.
-      let sessionStart = sessionStorage.getItem('session_start');
+      var sessionStart = sessionStorage.getItem('session_start');
       if (sessionStart && sessionStart.length > 0) {
         // Remove session_orgs from storage only if the hours difference
         // is more than 1 hour.
         if (diff_hours(new Date(), new Date(sessionStart)) >= 1) {
           sessionStorage.setItem('session_start', new Date().toString());
-          let sessionOrgs = sessionStorage.getItem('session_orgs');
+          var sessionOrgs = sessionStorage.getItem('session_orgs');
           if (sessionOrgs && sessionOrgs.length > 0) {
             if (orgsFiltered.length > 0) {
               // Set session_orgs value to storage.
@@ -45,14 +45,14 @@
         sessionStorage.setItem('session_start', new Date().toString());
       }
 
-      let sessionOrgs = sessionStorage.getItem('session_orgs');
+      var sessionOrgs = sessionStorage.getItem('session_orgs');
       if (sessionOrgs && sessionOrgs.length > 0) {
         // Convert string to array to filter for unique values.
-        let existingValues = sessionOrgs.split(',')
+        var existingValues = sessionOrgs.split(',')
         if (orgsFiltered.length > 0) {
           // Combine existing and new data together in 1 array.
-          let resultValues = existingValues.concat(orgsFiltered);
-          let resultFiltered = [];
+          var resultValues = existingValues.concat(orgsFiltered);
+          var resultFiltered = [];
           // Filter the array and keep only unique values.
           $.each(resultValues, function(i, el){
             if($.inArray(el, resultFiltered) === -1) resultFiltered.push(el);
