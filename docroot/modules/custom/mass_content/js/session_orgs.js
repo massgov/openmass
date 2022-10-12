@@ -5,9 +5,8 @@
    * Helper function to calculate the hours difference.
    */
   function diff_hours(dt2, dt1) {
-    var diff = (dt2.getTime() - dt1.getTime()) / 1000;
-    diff /= (60 * 60);
-    return Math.abs(Math.round(diff));
+    // 36e5 is the scientific notation for 60*60*1000
+    return Math.floor(Math.abs(dt2.getTime() - dt1.getTime()) / 36e5);
   }
 
   /**
