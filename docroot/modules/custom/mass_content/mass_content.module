@@ -574,8 +574,8 @@ function mass_content_page_attachments_alter(array &$attachments) {
     }
   }
   $host = \Drupal::request()->getSchemeAndHttpHost();
-  // if ($host == 'https://www.mass.gov') {.
-    $attachments['#attached']['library'][] = 'mass_content/session_organizations';
+  // Add if ($host == 'https://www.mass.gov') {.
+  $attachments['#attached']['library'][] = 'mass_content/session_organizations';
   // }.
 }
 
