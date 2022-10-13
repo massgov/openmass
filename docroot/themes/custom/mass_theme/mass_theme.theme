@@ -1277,7 +1277,7 @@ function mass_theme_preprocess_node_location(&$variables) {
 
     if (!$node->field_ref_contact_info_1->isEmpty()) {
       $contact_information_entity = $node->field_ref_contact_info_1->entity;
-      $cache_tags = array_merge($cache_tags, $contact_information_entity->getCacheTags());
+      $cache_tags = $contact_information_entity->getCacheTags();
       // Get phone number from the referenced contact info node.
       if (!empty($contact_information_entity->field_ref_phone_number->entity->field_phone->value)) {
         $phone = $contact_information_entity->field_ref_phone_number->entity->field_phone->value;
