@@ -63,7 +63,6 @@ class GuidePageMetadataTest extends MetadataTestCase {
       'twitter:card' => 'summary_large_image',
       'twitter:description' => 'Test Lede',
       'twitter:image' => $file_uri,
-      'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_organization' => 'testorgpage',
     ]);
   }

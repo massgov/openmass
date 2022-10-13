@@ -15,7 +15,6 @@ dependencies:
     - field.field.node.alert.field_english_version
     - field.field.node.alert.field_organizations
     - field.field.node.alert.field_reusable_label
-    - field.field.node.alert.field_state_organization_tax
     - field.field.node.alert.field_target_organization
     - field.field.node.alert.field_target_page
     - node.type.alert
@@ -352,16 +351,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 6
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   field_target_organization:
     type: entity_reference_autocomplete
     weight: 7
@@ -453,6 +442,20 @@ content:
     weight: 4
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield

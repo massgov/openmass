@@ -36,7 +36,6 @@ class FormPageMetadataTest extends MetadataTestCase {
    */
   public function getExpectedMetatags(ContentEntityInterface $entity) {
     return array_merge(parent::getExpectedMetatags($entity), [
-      'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_organization' => 'testorgpage',
     ]);
   }
