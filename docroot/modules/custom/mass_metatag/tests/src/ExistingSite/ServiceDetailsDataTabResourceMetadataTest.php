@@ -71,7 +71,6 @@ class ServiceDetailsDataTabResourceMetadataTest extends MetadataTestCase {
     return array_merge(parent::getExpectedMetatags($entity), [
       'og:description' => 'Test Lede',
       'twitter:description' => 'Test Lede',
-      'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_organization' => 'testorgpage',
       'category' => 'data',
       'mg_type' => 'test-resource-tag',

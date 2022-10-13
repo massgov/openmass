@@ -9,8 +9,8 @@ dependencies:
     - field.field.node.fee.field_fee_unit
     - field.field.node.fee.field_organizations
     - field.field.node.fee.field_reusable_label
-    - field.field.node.fee.field_state_organization_tax
     - node.type.fee
+    - workflows.workflow.editorial
   module:
     - content_moderation
     - field_group
@@ -115,6 +115,20 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   title:
     type: string_textfield
     weight: 0
@@ -136,7 +150,6 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
-  field_state_organization_tax: true
   path: true
   promote: true
   publish_on: true

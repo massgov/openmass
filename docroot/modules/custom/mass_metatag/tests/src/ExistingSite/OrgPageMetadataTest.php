@@ -72,7 +72,6 @@ class OrgPageMetadataTest extends MetadataTestCase {
       'twitter:description' => 'Test Subtitle',
       'twitter:image' => $large,
       'mg_phone_number' => '123-456-7890',
-      'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_online_contact_url' => '[{"name":"foo@bar.com","url":"foo@bar.com"},{"name":"Link Contact Label","url":"http:\/\/contact.com"}]',
       'mg_location_listing_url' => '[{"name":"Test Org Locations","url":' . json_encode($url . '/locations') . '}]',
       'mg_contact_details' => 'Contact Caption',

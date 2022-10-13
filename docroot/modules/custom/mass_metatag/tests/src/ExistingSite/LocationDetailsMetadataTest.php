@@ -44,7 +44,6 @@ class LocationDetailsMetadataTest extends MetadataTestCase {
       // @todo: og:description does not seem to be working here.
       // 'og:description' => '',
       'twitter:description' => 'Test LD Lede',
-      'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_organization' => 'testorgpage',
     ]);
   }

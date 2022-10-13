@@ -32,7 +32,6 @@ dependencies:
     - field.field.node.how_to_page.field_primary_parent
     - field.field.node.how_to_page.field_reusable_label
     - field.field.node.how_to_page.field_short_title
-    - field.field.node.how_to_page.field_state_organization_tax
     - field.field.node.how_to_page.field_what_you_need_header
     - node.type.how_to_page
     - workflows.workflow.editorial
@@ -552,16 +551,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 4
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   field_what_you_need_header:
     type: string_textfield
     weight: 54
@@ -616,6 +605,20 @@ content:
     weight: 2
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield

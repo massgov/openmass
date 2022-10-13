@@ -61,13 +61,6 @@ function mass_schema_event_tokens($type, $tokens, array $data, array $options, B
         $name = $field_name;
       }
 
-      // If the token is [node:field_state_organization_tax:entity:name] skip
-      // the remaining logic. This token is used in the
-      // mg_stakeholder_org metatag; see DP-8191.
-      if (isset($field_name) && $field_name == 'field_state_organization_tax') {
-        continue;
-      }
-
       // If the node entity doesn't have the field, continue.
       if (!$entity->hasField($name)) {
         continue;
