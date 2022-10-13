@@ -50,7 +50,6 @@ class NewsMetadataTest extends MetadataTestCase {
       'og:type' => 'article',
       'mg_date' => '20121231',
       'mg_type' => 'press-release',
-      'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_organization' => 'testorgpage',
     ]);
   }

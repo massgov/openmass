@@ -4,15 +4,14 @@ status: true
 dependencies:
   config:
     - field.field.node.topic_page.field_collections
-    - field.field.node.topic_page.field_image_credit
     - field.field.node.topic_page.field_display_short_description
+    - field.field.node.topic_page.field_image_credit
     - field.field.node.topic_page.field_intended_audience
     - field.field.node.topic_page.field_organizations
     - field.field.node.topic_page.field_primary_parent
     - field.field.node.topic_page.field_restrict_link_management
     - field.field.node.topic_page.field_reusable_label
     - field.field.node.topic_page.field_short_title
-    - field.field.node.topic_page.field_state_organization_tax
     - field.field.node.topic_page.field_topic_bg_narrow
     - field.field.node.topic_page.field_topic_bg_wide
     - field.field.node.topic_page.field_topic_content_cards
@@ -29,11 +28,11 @@ dependencies:
   module:
     - content_moderation
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - maxlength
     - metatag
     - paragraphs
-    - term_reference_tree
 third_party_settings:
   field_group:
     group_topic_page_edit_form:
@@ -196,16 +195,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 6
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   field_topic_content_cards:
     type: entity_reference_paragraphs
     weight: 1
@@ -272,6 +261,20 @@ content:
     weight: 1
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
