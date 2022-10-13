@@ -41,8 +41,7 @@ IMPORTANT: You will need input from both the content and the design teams to ful
 
 **THIS IS SECTION OUTLINES CURRENT PRACTICE BUT IS UNDER REVIEW**
 
-- **Reuse** -- Don't re-use fields across content types unless there's a good reason to do so. Exceptions include:
-  - the `reusable_label` field, which is reused on all the law library types (advisory, decisions, regs, rules of court, exec orders) plus forms
+- **Reuse** -- Re-use fields across content types unless there's a good reason to not to.
   - the "Organization Stakeholder" field, which is reused and should be added to every content type (see below).
 - **Naming**
   - Include the content type name in the field, e.g. `field_content_type_name_of_field`
@@ -66,8 +65,7 @@ IMPORTANT: You will need input from both the content and the design teams to ful
     - Add a field of type "metatag."
     - Save it (to make tokens available) and then open again to fill in any settings that differ from the defaults.
   - Org Stakeholders
-    - Add an instance of the existing `field field_state_organization_tax`
-    - In the Mass Metatag group, populate the `mg_stakeholder_org tag` with the token value `[node:field_state_organization_tax:entity:name]`.
+    - Add an instance of the existing `
 
 ### Manage Form Display
 

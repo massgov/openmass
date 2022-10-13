@@ -47,7 +47,6 @@ class RegulationMetadataTest extends MetadataTestCase {
       'twitter:description' => 'Test Short Description',
       'mg_date' => '20121231',
       'mg_type' => 'regulation',
-      'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_organization' => 'testorgpage',
     ]);
   }
