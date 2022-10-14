@@ -51,7 +51,6 @@ class ServicePageMetadataTest extends MetadataTestCase {
       'og:image' => $file_uri,
       'twitter:card' => 'summary_large_image',
       'twitter:image' => $file_uri,
-      'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_organization' => 'testorgpage',
     ]);
   }

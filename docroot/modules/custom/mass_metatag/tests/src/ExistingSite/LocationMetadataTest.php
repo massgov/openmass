@@ -59,7 +59,6 @@ class LocationMetadataTest extends MetadataTestCase {
       'geo.region' => 'US-MA',
       'mg_phone_number' => '123-456-7890',
       'mg_address' => "123 Test Way\nBoston, MA 12345\nUnited States",
-      'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_organization' => 'testorgpage',
     ]);
   }
