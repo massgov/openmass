@@ -59,11 +59,6 @@ function mass_schema_collection_page_tokens($type, $tokens, array $data, array $
 
         $name = $field_name;
       }
-      // If the token is [node:field_state_organization_tax:entity:name] used in the
-      // mg_stakeholder_org metatag, skip the remaining logic; see DP-8191.
-      if (isset($field_name) && $field_name == 'field_state_organization_tax') {
-        continue;
-      }
 
       // If the node entity doesn't have the field, continue.
       if (!$entity->hasField($name)) {
