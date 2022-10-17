@@ -10,7 +10,6 @@ dependencies:
     - field.field.node.decision_tree_branch.field_multiple_answers
     - field.field.node.decision_tree_branch.field_organizations
     - field.field.node.decision_tree_branch.field_reusable_label
-    - field.field.node.decision_tree_branch.field_state_organization_tax
     - node.type.decision_tree_branch
     - workflows.workflow.editorial
   module:
@@ -129,16 +128,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 6
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 8
@@ -161,6 +150,20 @@ content:
     weight: 1
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield

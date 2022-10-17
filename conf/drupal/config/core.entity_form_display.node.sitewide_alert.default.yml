@@ -9,7 +9,6 @@ dependencies:
     - field.field.node.sitewide_alert.field_reusable_label
     - field.field.node.sitewide_alert.field_sitewide_alert
     - field.field.node.sitewide_alert.field_sitewide_alert_severity
-    - field.field.node.sitewide_alert.field_state_organization_tax
     - node.type.sitewide_alert
     - workflows.workflow.editorial
   module:
@@ -139,16 +138,6 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 5
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   langcode:
     type: language_select
     weight: 6
@@ -167,6 +156,20 @@ content:
     weight: 4
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
