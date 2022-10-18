@@ -106,7 +106,7 @@ class MoveRedirectsForm extends ContentEntityForm {
     foreach ($redirects as $redirect) {
       $redirect->setRedirect($target_uri);
       $redirect->save();
-      $done[] = $this->t('<a href="@href">@title</a>', ['@href' => $redirect->getSourceUrl(), '@title' => $redirect->getSourceUrl()]);
+      $done[] = $redirect->getSourceUrl();
     }
     $aliases = $this->getAliasItems($node);
     foreach ($aliases as $alias) {
@@ -123,7 +123,7 @@ class MoveRedirectsForm extends ContentEntityForm {
       }
       else {
         $success = $redirect->save();
-        $done[] = $this->t('<a href="@href">@title</a>', ['@href' => $redirect->getSourceUrl(), '@title' => $redirect->getSourceUrl()]);
+        $done[] = $redirect->getSourceUrl();
       }
     }
     $this->messenger()->addStatus($this->t('Redirected @list to <a href="@href">@title</a>.', ['@list' => implode(', ', $done), '@title' => $target_entity->label(), '@href' => $target_entity->toUrl()->toString()]));
