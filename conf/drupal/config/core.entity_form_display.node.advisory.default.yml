@@ -23,7 +23,6 @@ dependencies:
     - field.field.node.advisory.field_primary_parent
     - field.field.node.advisory.field_reusable_label
     - field.field.node.advisory.field_short_title
-    - field.field.node.advisory.field_state_organization_tax
     - node.type.advisory
     - workflows.workflow.editorial
   module:
@@ -31,6 +30,7 @@ dependencies:
     - datetime
     - entity_browser_entity_form
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - inline_entity_form
     - link
@@ -38,7 +38,6 @@ dependencies:
     - maxlength
     - metatag
     - paragraphs
-    - term_reference_tree
     - text
 third_party_settings:
   field_group:
@@ -318,16 +317,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 3
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 4
@@ -350,6 +339,20 @@ content:
     weight: 3
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
