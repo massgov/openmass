@@ -885,10 +885,6 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
       'document',
     ];
     $query->condition('type', $types_with_consolidated_date_field, 'IN');
-
-    // Files doesn't have a published date, hence we don't need to make to
-    // make a Union to include media/files results.
-    return;
   }
 
   // Override sort with the sort_bef_combine query parameter.
@@ -937,12 +933,11 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
 
   // Same alias from the node title to be able to sort nodes and media by title.
   $media_query->addField('media__field_title', 'field_title_value', 'node_field_data_title');
-
+  $media_query->addField('media__field_start_date', 'field_start_date_value', 'node__field_date_published_field_date_published_value');
   $media_query->addField('media_field_data', 'mid', 'extra_column_3');
-  $media_query->addField('media_field_data', 'mid', 'extra_column_4');
 
   // If the sort is for news of event do not show media.
-  if ($order_by_event || $order_by_published_date) {
+  if ($order_by_event) {
     $media_query->condition('mid', -1);
   }
 
