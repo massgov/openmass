@@ -5,7 +5,6 @@ namespace Drupal\mass_redirects\Form;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Form\FormInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
@@ -13,7 +12,6 @@ use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\redirect\RedirectRepository;
-use Psr\Container\ContainerInterface;
 
 /**
  * Provides a Move Redirects entity form.
@@ -23,17 +21,7 @@ class MoveRedirectsForm extends ContentEntityForm {
   protected RedirectRepository $redirectRepository;
 
   public function __construct($redirectRepository) {
-    $this->redirectRepository = $redirectRepository;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    // Instantiates this form class.
-    return new static(
-      $container->get('redirect.repository'),
-    );
+    $this->redirectRepository = \Drupal::service('redirect.repository');
   }
 
   /**
@@ -194,7 +182,7 @@ class MoveRedirectsForm extends ContentEntityForm {
         $target = $redirect->getRedirect();
         $params = Url::fromUri($target['uri'])->getRouteParameters();
         $entity_type = key($params);
-        $target_entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($params[$entity_type]);
+        $target_entity = $this->entityTypeManager->getStorage($entity_type)->load($params[$entity_type]);
         $parts = [
           '@source_path' => $this->t('<a href="@href">@title</a>', ['@title' => $redirect->getSourceUrl(), '@href' => $redirect->getSourceUrl()]),
           '@href' => $target_entity->toUrl()->toString(),
