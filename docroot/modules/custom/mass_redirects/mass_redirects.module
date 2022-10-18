@@ -15,11 +15,11 @@ function mass_redirects_entity_update(EntityInterface $entity): void {
     return;
   }
 
-  if ($entity->getModerationState()->getString() == MassModeration::TRASH) {
+  if (PHP_SAPI !== 'cli' && $entity->getModerationState()->getString() == MassModeration::TRASH) {
     $id = $entity->id();
     $url = Url::fromUserInput("/node/$id/move-redirects")->toString();
-    $message = 'You may be able to <a href="@redirect-page">Move redirects</a> that are pointing to the trashed content.';
-    Drupal::messenger()->addStatus(t($message, ['@redirect-page' => $url]));
+    $message = 'You may be able to <a href="@redirect-page">Redirect this trashed page</a> so that visitors will not get a <em>Page not Found</em> error.';
+    Drupal::messenger()->addWarning(t($message, ['@redirect-page' => $url]));
   }
 }
 
@@ -28,11 +28,11 @@ function mass_redirects_entity_update(EntityInterface $entity): void {
  */
 function mass_redirects_entity_operation(EntityInterface $entity): array {
   if ($entity->getEntityTypeId() == 'node') {
-    $routeName = 'mass_redirects.move_redirects';
+    $routeName = 'mass_redirects.redirects';
     $url = Url::fromRoute($routeName, [$entity->getEntityTypeId() => $entity->id()]);
     if ($url->access()) {
-      $operations['move_redirects'] = [
-        'title' => \t('Move redirects'),
+      $operations['redirects'] = [
+        'title' => \t('Redirect'),
         'url' => $url,
         'weight' => 50,
       ];

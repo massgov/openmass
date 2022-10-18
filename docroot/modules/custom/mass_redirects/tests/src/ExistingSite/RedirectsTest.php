@@ -3,6 +3,7 @@
 namespace Drupal\Tests\mass_redirects\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\mass_redirects\Form\MoveRedirectsForm;
 use Drupal\node\Entity\Node;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\user\Entity\User;
@@ -65,9 +66,11 @@ class RedirectsTest extends ExistingSiteBase {
    */
   public function testRedirects() {
     $session = $this->getSession();
+
+    // Test outbound.
     $this->visit($this->orgNode->toUrl()->toString());
     $this->assertEquals(200, $session->getStatusCode());
-    $url = $this->orgNode->toUrl()->toString() . '/move-redirects';
+    $url = $this->orgNode->toUrl()->toString() . '/redirects';
     $session->visit($url);
     $this->assertEquals(403, $session->getStatusCode());
     $this->orgNode->setUnpublished()->set(MassModeration::FIELD_NAME, MassModeration::TRASH)->save();
@@ -77,15 +80,24 @@ class RedirectsTest extends ExistingSiteBase {
     $session->visit($url);
     $this->assertEquals(200, $session->getStatusCode());
     $this->getCurrentPage()->fillField('target', $this->orgNodeTarget->label() . ' (' . $this->orgNodeTarget->id() . ')');
-    $this->getCurrentPage()->pressButton('Move redirects');
+    $this->getCurrentPage()->pressButton('Add redirects');
     $this->assertSession()->pageTextContains('Redirected');
-    $session->visit($url);
-    $this->assertSession()->pageTextContains('There are no URLs to move.');
     foreach ($this->sourcePaths as $source_path) {
       $this->drupalGet($source_path);
       $this->assertSession()->addressEquals($this->orgNodeTarget->toUrl()->toString());
       $this->assertEquals(200, $session->getStatusCode());
     }
+
+    // Test Inbound.
+    $session->visit($url);
+    $msg = 'which currently points to ' . $this->orgNodeTarget->label();
+    $this->assertSession()->pageTextContains($msg);
+    $this->getCurrentPage()->pressButton('Remove redirect');
+    $this->assertSession()->pageTextContains('Removed redirect.');
+    $path  = MoveRedirectsForm::shortenUrl($this->orgNode);
+    $this->drupalGet($path);
+    $this->assertSession()->addressEquals($this->orgNode->toUrl()->toString());
+    $this->assertEquals(200, $session->getStatusCode());
   }
 
 }
