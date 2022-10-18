@@ -94,7 +94,7 @@ class RedirectsTest extends ExistingSiteBase {
     $this->assertSession()->pageTextContains($msg);
     $this->getCurrentPage()->pressButton('Remove redirect');
     $this->assertSession()->pageTextContains('Removed redirect.');
-    $path  = MoveRedirectsForm::shortenUrl($this->orgNode);
+    $path = MoveRedirectsForm::shortenUrl($this->orgNode);
     $this->drupalGet($path);
     $this->assertSession()->addressEquals($this->orgNode->toUrl()->toString());
     $this->assertEquals(200, $session->getStatusCode());

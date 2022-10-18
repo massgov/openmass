@@ -224,12 +224,6 @@ class MoveRedirectsForm extends ContentEntityForm {
     return $form;
   }
 
-  /**
-   * @param array $form
-   * @param array $items
-   *
-   * @return array
-   */
   public function buildFormOutbound(array $form, array $items): array {
     $form['target'] = [
       '#type' => 'entity_autocomplete',
