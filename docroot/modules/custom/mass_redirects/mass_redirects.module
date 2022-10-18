@@ -17,9 +17,8 @@ function mass_redirects_entity_update(EntityInterface $entity): void {
 
   if (PHP_SAPI !== 'cli' && $entity->getModerationState()->getString() == MassModeration::TRASH) {
     $id = $entity->id();
-    $url = Url::fromUserInput("/node/$id/move-redirects")->toString();
     $message = 'You may be able to <a href="@redirect-page">Redirect this trashed page</a> so that visitors will not get a <em>Page not Found</em> error.';
-    Drupal::messenger()->addWarning(t($message, ['@redirect-page' => $url]));
+    Drupal::messenger()->addWarning(t($message, ['@redirect-page' => $entity->toUrl('redirects')->toString()]));
   }
 }
 
@@ -28,11 +27,10 @@ function mass_redirects_entity_update(EntityInterface $entity): void {
  */
 function mass_redirects_entity_operation(EntityInterface $entity): array {
   if ($entity->getEntityTypeId() == 'node') {
-    $routeName = 'mass_redirects.redirects';
-    $url = Url::fromRoute($routeName, [$entity->getEntityTypeId() => $entity->id()]);
+    $url = $entity->toUrl('redirects');
     if ($url->access()) {
       $operations['redirects'] = [
-        'title' => \t('Redirect'),
+        'title' => \t('Redirects'),
         'url' => $url,
         'weight' => 50,
       ];
@@ -67,4 +65,7 @@ function mass_redirects_entity_type_alter(array &$entity_types) {
   $handlers = $entity_types['node']->getHandlerClasses();
   $handlers['form']['move-redirects'] = MoveRedirectsForm::class;
   $entity_types['node']->setHandlerClass('form', $handlers['form']);
+
+  $redirects_path = $entity_types['node']->getLinkTemplate('canonical') . '/redirects';
+  $entity_types['node']->setLinkTemplate('redirects', $redirects_path);
 }

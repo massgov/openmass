@@ -70,7 +70,7 @@ class RedirectsTest extends ExistingSiteBase {
     // Test outbound.
     $this->visit($this->orgNode->toUrl()->toString());
     $this->assertEquals(200, $session->getStatusCode());
-    $url = $this->orgNode->toUrl()->toString() . '/redirects';
+    $url = $this->orgNode->toUrl('redirects')->toString();
     $session->visit($url);
     $this->assertEquals(403, $session->getStatusCode());
     $this->orgNode->setUnpublished()->set(MassModeration::FIELD_NAME, MassModeration::TRASH)->save();

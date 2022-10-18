@@ -99,7 +99,7 @@ class MoveRedirectsForm extends ContentEntityForm {
         '@href' => $node->toUrl()->toString(),
       ];
       $this->messenger()->addStatus($this->t('Removed redirect. @short_url now points to <a href="@href">@title</a>.', $parts));
-      $form_state->setRedirectUrl(Url::fromUri('internal:' . $node->toUrl('canonical', ['alias' => TRUE])->toString() . '/redirects'));
+      $form_state->setRedirectUrl($node->toUrl('redirects'));
     }
   }
 
