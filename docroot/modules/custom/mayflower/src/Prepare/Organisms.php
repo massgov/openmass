@@ -1642,6 +1642,7 @@ class Organisms {
       'mail' => 'mail',
       'fax' => 'fax-icon',
       'in person' => 'profile',
+      'text' => 'message',
     ];
 
     // Roll up our action steps.
