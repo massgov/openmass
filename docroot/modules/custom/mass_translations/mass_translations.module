@@ -53,7 +53,6 @@ function mass_translations_preprocess_media(&$variables) {
         $name = $predefined[$language_id][1];
         // Build the translation link.
         $url = Url::fromRoute('media_entity_download.download', ['media' => $translation->id()])
-//        $url = $translation->toUrl('canonical')
           ->setOption('language', $lang_default)
           ->setAbsolute()
           ->toString();
