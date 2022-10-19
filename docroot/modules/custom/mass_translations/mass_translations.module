@@ -51,19 +51,20 @@ function mass_translations_preprocess_media(&$variables) {
       // Get the native name for each language.
       if (isset($predefined[$language_id])) {
         $name = $predefined[$language_id][1];
+        $name_en = $predefined[$language_id][0];
         // Build the translation link.
         $url = Url::fromRoute('media_entity_download.download', ['media' => $translation->id()])
           ->setOption('language', $lang_default)
           ->setAbsolute()
           ->toString();
 
-        $languages[] = ["title" => $name, "url" => ($url != $current_url) ? $url : NULL];
+        $languages[] = ["title" => $name, "lang_label" => $name_en, "url" => ($url != $current_url) ? $url : NULL];
       }
     }
   }
 
   if (count($languages) > 1) {
-    $inlineLinks = Organisms::prepareInlineLinks($languages, ["ariaLabel" => "Available Translations"]);
+    $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
     $variables += ["translationLinks" => $inlineLinks];
   }
 }
