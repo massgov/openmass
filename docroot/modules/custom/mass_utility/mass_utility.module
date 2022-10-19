@@ -135,18 +135,6 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
       t('6 weeks');
   }
 
-  // Add Organization Stakeholders field to 'advanced' vertical tabs group.
-  if (isset($form['field_state_organization_tax'])) {
-    $form['organization_stakeholders'] = [
-      '#type' => 'details',
-      '#title' => t('SiteImprove Groups'),
-      '#group' => 'advanced',
-      '#weight' => 90,
-    ];
-  }
-  // Attach the fields to group.
-  $form['field_state_organization_tax']['#group'] = 'organization_stakeholders';
-
   // Hide the preview button when a node is unsaved.
   if (isset($form['actions']['preview'])) {
     if ($node->isNew()) {

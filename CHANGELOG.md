@@ -1,5 +1,31 @@
 
 
+## [0.338.0] - October 18, 2022
+
+### Changed
+  - DP-25407: Added v1 of Feedback view.
+  
+### Removed
+  - DP-25693: Remove siteimprove group field from all content types
+  - DP-26114: Eliminate links to top level topics in main navigation.
+  
+### Added
+  - DP-25704: Warn authors if they associate an event to a service or org page that doesn't have an events component.
+  - DP-25877: Set JS variable to collect the organization meta values of all pages in session.
+  - DP-26127: Add Swahili, Pashto, and Dari to the list of available languages on Mass.gov
+  
+### Fixed
+  - DP-25830: Caches on location summary pages not clearing when updates made to individual location pages.
+  - DP-25899: Fix issue with edit menus cutting off for authors when screen it not super wide.
+  - DP-25952: Right to left languages on manually translated pages not rendering correctly.
+  - DP-26151: Date filter on Collections is not working for document collections.
+  
+### Security
+  - DP-26110: Twig field value module update.
+  
+## [0.337.1] - October 8, 2022
+  - DP-25875 Hotfix. Bubble max-age to response headers. Fixes event listing staleness
+
 ## [0.337.0] - October 5, 2022
 
 ### Changed
@@ -9,27 +35,27 @@
   - DP-25727: Permission cleanup of all roles in the system to correct errors and streamline permissions.
   - DP-25831: Restructure the CMS Welcome screen for authors.
   - DP-25897: Change unpublished preview links to always display a "www.mass.gov" domain.
-  
+
 ### Fixed
   - DP-25914: Fix duplicated feedback component on event agenda and minutes.
   - DP-25957: Menus on Org Page do not work correctly on mobile devices.
-  
+
 ### Security
   - DP-25945: Drupal Core security update to 9.4.7.
-  
+
 
 
 ## [0.336.0] - September 20, 2022
 
 ### Added
   - DP-25559: Added Total No, Total Yes, and Total Feedback to Content Performance.
-  
+
 ### Removed
   - DP-25808: Removed feedback survey from public site.
-  
+
 ### Fixed
   - DP-25861: Fixed permissions issue preventing authors and editors from viewing the entity browser.
-  
+
 
 
 ## [0.335.0] - September 13, 2022
@@ -37,16 +63,16 @@
 ### Added
   - DP-25204: Add confirmation warning when bulk transitioning documents.
   - DP-25248: Add testing for saving QAG pages.
-  
+
 ### Removed
   - DP-25692: Hide "Media" and remove "Moderated Content" from All Content view.
-  
+
 ### Fixed
   - DP-25803: Fix TOC jump link target margin top that blocks page content.
   - DP-25805: Fix accordions collapsing while scrolling on Android/iOS devices issue.
   - DP-25828: Resolve 500 error on decision tree page.
   - DP-25832: Fix accordion tests in patternlab.
-  
+
 
 
 ## [0.334.0] - September 6, 2022
@@ -55,29 +81,29 @@
   - DP-25215: Change description field in collection taxonomy to reflect use for search filtering.
   - DP-25248: Add testing for saving QAG pages.
   - DP-25551: Add rich text field to Service Section paragraph.
-  
+
 ### Changed
   - DP-25339: Extensive help text improvements.
-  
+
 ### Fixed
   - DP-25642: Duplicates of locations exist on service location listing pages.
   - DP-25755: Fixed Behat test failure due to the entity_embed module array to string conversion warning.
   - DP-25762: Fix bug with updated date on events that are public meetings
-  
+
 
 
 ## [0.333.0] - August 30, 2022
 
 ### Changed
   - DP-24286: Adjust the keyboard navigation on the main nav to more make sense to users.
-  
+
 ### Fixed
   - DP-25175: Improve sticky TOC accessibility - make section headings the jump link targets.
   - DP-25638: Missing breadcrumb on some events pages.
-  
+
 ### Removed
   - DP-25409: Cleanup and remove old service page fields no longer needed after flexibility changes.
-  
+
 
 
 ## [0.332.0] - August 9, 2022
@@ -88,18 +114,18 @@
   - DP-25519: Search in some collections doesn't show expected results.
   - DP-25583: Fix issue with thumbnail image when saving content types locally.
   - DP-25597: Fix Bulk watch / unwatch error.
-  
+
 ### Changed
   - DP-25173: Reduce Collection Header vertical spacing, make title H1, and reduce H1 line height, fix logo alignment.
-  
+
 ### Added
   - DP-25211: Enable latest Upgrade Status module.
   - DP-25285: Add a warning message for authors if editing a page that has an existing draft.
   - DP-25408: Add description to curated list content type for each list.
-  
+
 ### Removed
   - DP-25410: Cleanup and remove old ORG page fields no longer needed after flexibility changes.
-  
+
 
 
 ## [0.331.0] - July 26, 2022
@@ -109,22 +135,22 @@
   - DP-25157: Fixes the relationship indicators script on Mayflower to avoid failures on Backstop tests.
   - DP-25473: Fixed mg_organizations metatag value generation on organization pages.
   - DP-25506: Fixed flaky media bulk action tests.
-  
+
 ### Added
   - DP-24958: Add a skip link target indicator at click to verify users' whereabout. Set focus on the target (= anchor) at click to ensure users can navigate page below the TOC.
-  
+
 ### Removed
   - DP-25205: Remove author options to bulk edit or save pages.
-  
+
 ### Security
   - DP-25324: Resolve dependabot security issues on openmass, update Drupal core to 9.4.2.
   - DP-25522: Drupal core update to version 9.4.3.
-  
+
 ### Changed
   - DP-25406: Allow Topic Pages to be a parent page of Form Pages.
   - DP-25468: Allow Rules of Court Pages to be a parent page of Rules of Court Pages.
   - DP-25527: In local development, pin portainer and fix DB persistence
-  
+
 
 
 ## [0.330.0] - July 19, 2022

@@ -14,6 +14,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
 
 /**
@@ -152,8 +153,8 @@ function _mass_validation_form_node_alert_form_validate(array &$form, FormStateI
 function mass_validation_theme($existing, $type, $theme, $path) {
   return [
     'warning_draft' => [
-      'variables' => ['link' => NULL]
-    ]
+      'variables' => ['link' => NULL],
+    ],
   ];
 }
 
@@ -925,6 +926,11 @@ function _mass_validation_form_node_regulation_form_validate(array &$form, FormS
  */
 function mass_validation_form_node_event_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_validation_form_node_event_form_validate';
+  foreach (array_keys($form['actions']) as $action) {
+    if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+      $form['actions'][$action]['#submit'][] = '_mass_validation_form_node_event_form_submit';
+    }
+  }
 }
 
 /**
@@ -932,6 +938,75 @@ function mass_validation_form_node_event_edit_form_alter(&$form, FormStateInterf
  */
 function mass_validation_form_node_event_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $form['#validate'][] = '_mass_validation_form_node_event_form_validate';
+  foreach (array_keys($form['actions']) as $action) {
+    if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+      $form['actions'][$action]['#submit'][] = '_mass_validation_form_node_event_form_submit';
+    }
+  }
+}
+
+/**
+ * Helper function to check if paragraph of given type is already populated.
+ */
+function _mass_validation_check_paragraph_bundle($node, $bundle): bool {
+  switch ($node->bundle()) {
+    case 'service_page':
+      $section_field_label = 'field_service_sections';
+      $section_content_field_label = 'field_service_section_content';
+      break;
+
+    case 'org_page':
+      $section_field_label = 'field_organization_sections';
+      $section_content_field_label = 'field_section_long_form_content';
+      break;
+  }
+  if ($node->hasField($section_field_label)) {
+    $p_sections = Helper::getReferencedEntitiesFromField($node, $section_field_label);
+    if ($p_sections) {
+      foreach ($p_sections as $p_section) {
+        if ($p_section->hasField($section_content_field_label)) {
+          $p_contents = Helper::getReferencedEntitiesFromField($p_section, $section_content_field_label);
+          if ($p_contents) {
+            foreach ($p_contents as $p_content) {
+              if ($p_content->bundle() == $bundle) {
+                return TRUE;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Submit handler for event nodes.
+ *
+ * Submit handler to add warning if there is a
+ * service or organization node without event
+ * component in associated pages field.
+ */
+function _mass_validation_form_node_event_form_submit(array &$form, FormStateInterface $form_state) {
+  $associated_pages = $form_state->getValue('field_event_ref_parents');
+  foreach ($associated_pages as $associated_page) {
+    if (is_array($associated_page)) {
+      if (isset($associated_page['target_id'])) {
+        $node = Drupal::entityTypeManager()
+          ->getStorage('node')
+          ->load($associated_page['target_id']);
+        if (in_array($node->bundle(), ['org_page', 'service_page'])) {
+          if (!_mass_validation_check_paragraph_bundle($node, 'org_events')) {
+            $args = [
+              ':url' => $node->toUrl()->toString(),
+              ':title' => $node->label(),
+            ];
+            Drupal::messenger()->addWarning(t('The “Events” component is missing on the page <a href=":url">:title</a>. Verify that you have the “Events” component in a section or the event will not be linked there.', $args));
+          }
+        }
+      }
+    }
+  }
 }
 
 /**
@@ -1479,7 +1554,7 @@ function mass_validation_form_alter(&$form, FormStateInterface $form_state, $for
           $url = Url::fromRoute($route_name, [$entity_label => $entity->id()]);
           $rendarable = [
             "#theme" => "warning_draft",
-            "#link" => "internal:" . $url->toString()
+            "#link" => "internal:" . $url->toString(),
           ];
           $rendered = \Drupal::service('renderer')->render($rendarable);
           $form['#prefix'] = $rendered;
