@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "61fc899da03300d8ad3e08d8e103eee3",
+    "content-hash": "fcd9dd52b817adb36a4d79e53f02fb6a",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -6036,6 +6036,60 @@
             }
         },
         {
+            "name": "drupal/externalauth",
+            "version": "2.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/externalauth.git",
+                "reference": "2.0.2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/externalauth-2.0.2.zip",
+                "reference": "2.0.2",
+                "shasum": "65c6f5ff85eea294516e7e4e6d13818f70861c72"
+            },
+            "require": {
+                "drupal/core": "^9 || ^10"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "2.0.2",
+                    "datestamp": "1656486698",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Sven Decabooter",
+                    "homepage": "https://www.drupal.org/u/svendecabooter",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "snufkin",
+                    "homepage": "https://www.drupal.org/user/58645"
+                },
+                {
+                    "name": "svendecabooter",
+                    "homepage": "https://www.drupal.org/user/35369"
+                }
+            ],
+            "description": "Helper module to authenticate users using an external site / service and storing identification details",
+            "homepage": "https://drupal.org/project/externalauth",
+            "support": {
+                "source": "https://git.drupalcode.org/project/externalauth",
+                "issues": "https://www.drupal.org/project/issues/externalauth"
+            }
+        },
+        {
             "name": "drupal/field_group",
             "version": "3.2.0",
             "source": {
@@ -8094,6 +8148,145 @@
                 "source": "http://cgit.drupalcode.org/office_hours",
                 "issues": "http://drupal.org/project/office_hours",
                 "irc": "irc://irc.freenode.org/drupal-contribute"
+            }
+        },
+        {
+            "name": "drupal/openid_connect",
+            "version": "dev-3.x",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/openid_connect.git",
+                "reference": "72a6c34e883c0a54002314b24cc12e60c398b655"
+            },
+            "require": {
+                "drupal/core": "^9.3 || ^10",
+                "drupal/externalauth": "*",
+                "ext-json": "*",
+                "php": ">=7.1.0"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-3.x": "3.x-dev"
+                },
+                "drupal": {
+                    "version": "3.0.0-alpha1+0-dev",
+                    "datestamp": "1665936503",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "balintk",
+                    "homepage": "https://www.drupal.org/user/613760"
+                },
+                {
+                    "name": "bojanz",
+                    "homepage": "https://www.drupal.org/user/86106"
+                },
+                {
+                    "name": "jcnventura",
+                    "homepage": "https://www.drupal.org/user/122464"
+                },
+                {
+                    "name": "Mario Steinitz",
+                    "homepage": "https://www.drupal.org/user/2536014"
+                },
+                {
+                    "name": "pfrilling",
+                    "homepage": "https://www.drupal.org/user/169695"
+                },
+                {
+                    "name": "pjcdawkins",
+                    "homepage": "https://www.drupal.org/user/1025236"
+                },
+                {
+                    "name": "robertDouglass",
+                    "homepage": "https://www.drupal.org/user/5449"
+                },
+                {
+                    "name": "sanduhrs",
+                    "homepage": "https://www.drupal.org/user/28074"
+                }
+            ],
+            "description": "A pluggable client implementation for the OpenID Connect protocol.",
+            "homepage": "https://www.drupal.org/project/openid_connect",
+            "keywords": [
+                "Drupal"
+            ],
+            "support": {
+                "source": "https://git.drupalcode.org/project/openid_connect",
+                "issues": "https://www.drupal.org/project/issues/openid_connect"
+            }
+        },
+        {
+            "name": "drupal/openid_connect_windows_aad",
+            "version": "dev-2.0.x",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/openid_connect_windows_aad.git",
+                "reference": "91d4332457968fe97aee56974b341e42462759c8"
+            },
+            "require": {
+                "drupal/core": "^8.8.4 || ^9",
+                "drupal/key": "*",
+                "drupal/openid_connect": "*"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-2.0.x": "2.0.x-dev"
+                },
+                "drupal": {
+                    "version": "2.0.x-dev",
+                    "datestamp": "1637093779",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "acrazyanimal",
+                    "homepage": "https://www.drupal.org/user/696648"
+                },
+                {
+                    "name": "ajayNimbolkar",
+                    "homepage": "https://www.drupal.org/user/2876727"
+                },
+                {
+                    "name": "arjenk",
+                    "homepage": "https://www.drupal.org/user/34503"
+                },
+                {
+                    "name": "fabianderijk",
+                    "homepage": "https://www.drupal.org/user/278745"
+                },
+                {
+                    "name": "tomvv",
+                    "homepage": "https://www.drupal.org/user/2748021"
+                }
+            ],
+            "description": "A CTools plugin that adds a Windows Azure AD client to OpenID Connect.",
+            "homepage": "https://www.drupal.org/project/openid_connect_windows_aad",
+            "keywords": [
+                "Drupal"
+            ],
+            "support": {
+                "source": "http://cgit.drupalcode.org/openid_connect_windows_aad",
+                "issues": "https://www.drupal.org/project/issues/openid_connect_windows_aad"
             }
         },
         {
@@ -22953,6 +23146,8 @@
         "drupal/maxlength": 5,
         "drupal/media_entity_download": 20,
         "drupal/node_title_help_text": 20,
+        "drupal/openid_connect": 20,
+        "drupal/openid_connect_windows_aad": 20,
         "drupal/path_redirect_import": 10,
         "drupal/security_review": 20,
         "drupal/views_aggregator": 10,
@@ -22969,5 +23164,5 @@
     "platform-overrides": {
         "php": "8.0"
     },
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
