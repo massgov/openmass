@@ -25,7 +25,6 @@ dependencies:
     - field.field.node.news.field_organizations
     - field.field.node.news.field_primary_parent
     - field.field.node.news.field_reusable_label
-    - field.field.node.news.field_state_organization_tax
     - image.style.thumbnail
     - node.type.news
     - workflows.workflow.editorial
@@ -429,16 +428,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 3
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   langcode:
     type: language_select
     weight: 10
@@ -468,6 +457,20 @@ content:
     weight: 2
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield

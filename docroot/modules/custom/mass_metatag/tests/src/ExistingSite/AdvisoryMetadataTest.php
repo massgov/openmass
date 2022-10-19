@@ -67,7 +67,6 @@ class AdvisoryMetadataTest extends MetadataTestCase {
       'mg_date' => '20121231',
       'mg_organization' => 'testorgpage,testorgpagetwo',
       'mg_type' => 'testtype',
-      'mg_stakeholder_org' => 'TestOrgTerm',
     ]);
   }
 
