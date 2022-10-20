@@ -25,7 +25,7 @@ function mass_translations_preprocess_media(&$variables) {
   $media = $variables['media'];
   if ($variables["view_mode"] == 'media_download_link' && $media->hasField('field_media_english_version')) {
     $lang_default = Drupal::languageManager()->getCurrentLanguage();
-    $languages = NULL;
+    $languages = [];
     $media_storage = Drupal::service('entity_type.manager')
       ->getStorage('media');
     $translations_controller = new TranslationsController($media_storage);
