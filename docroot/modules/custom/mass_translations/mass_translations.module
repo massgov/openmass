@@ -22,56 +22,60 @@ use Drupal\Core\Entity\EntityInterface;
  * Implements hook_preprocess_media().
  */
 function mass_translations_preprocess_media(&$variables) {
-
-  // @todo add if similar to below function
-
-
   $media = $variables['media'];
-  $lang_default = Drupal::languageManager()->getCurrentLanguage();
-  $languages = NULL;
-  $media_storage = Drupal::service('entity_type.manager')->getStorage('media');
-  $translations_controller = new TranslationsController($media_storage);
-  $current_url = Url::fromRoute('media_entity_download.download', ['media' => $media->id()])
-    ->setAbsolute()
-    ->toString();
-  $lang_codes = Drupal::languageManager()->getLanguages();
+  if ($variables["view_mode"] == 'media_download_link' && $media->hasField('field_media_english_version')) {
+    $lang_default = Drupal::languageManager()->getCurrentLanguage();
+    $languages = NULL;
+    $media_storage = Drupal::service('entity_type.manager')
+      ->getStorage('media');
+    $translations_controller = new TranslationsController($media_storage);
+    $current_url = Url::fromRoute('media_entity_download.download', ['media' => $media->id()])
+      ->setAbsolute()
+      ->toString();
+    $lang_codes = Drupal::languageManager()->getLanguages();
 
-  // Get all the translations for this node.
-  $all_translations = $translations_controller->getTranslationLanguages($media, $media_storage, 'field_media_english_version');
-  // Replace "x-default" with the default language id.
-  $all_translations[$lang_default->getId()] = $all_translations["x-default"];
-  unset($all_translations["x-default"]);
-  // Sort translations in the same order as languages in the UI.
-  $sorted_translations = array_replace($lang_codes, array_flip(array_keys($lang_codes)), $all_translations);
-  // Build links for translations.
-  foreach ($sorted_translations as $language_id => $translation) {
-    if ($translation instanceof MediaInterface) {
-      // Skip any translation that cannot be viewed.
-      $access = $translation->access('view', NULL, TRUE);
-      if (!$access->isAllowed()) {
-        continue;
-      }
+    // Get all the translations for this node.
+    $all_translations = $translations_controller->getTranslationLanguages($media, $media_storage, 'field_media_english_version');
+    // Replace "x-default" with the default language id.
+    $all_translations[$lang_default->getId()] = $all_translations["x-default"];
+    unset($all_translations["x-default"]);
+    // Sort translations in the same order as languages in the UI.
+    $sorted_translations = array_replace($lang_codes, array_flip(array_keys($lang_codes)), $all_translations);
+    // Build links for translations.
+    foreach ($sorted_translations as $language_id => $translation) {
+      if ($translation instanceof MediaInterface) {
+        // Skip any translation that cannot be viewed.
+        $access = $translation->access('view', NULL, TRUE);
+        if (!$access->isAllowed()) {
+          continue;
+        }
 
-      $name = NULL;
-      $predefined = LanguageManager::getStandardLanguageList();
-      // Get the native name for each language.
-      if (isset($predefined[$language_id])) {
-        $name = $predefined[$language_id][1];
-        $name_en = $predefined[$language_id][0];
-        // Build the translation link.
-        $url = Url::fromRoute('media_entity_download.download', ['media' => $translation->id()])
-          ->setOption('language', $lang_default)
-          ->setAbsolute()
-          ->toString();
+        $name = NULL;
+        $predefined = LanguageManager::getStandardLanguageList();
+        // Get the native name for each language.
+        if (isset($predefined[$language_id])) {
+          $name = $predefined[$language_id][1];
+          $name_en = $predefined[$language_id][0];
+          // Build the translation link.
+          $url = Url::fromRoute('media_entity_download.download', ['media' => $translation->id()])
+            ->setOption('language', $lang_default)
+            ->setAbsolute()
+            ->toString();
 
-        $languages[] = ["title" => $name, "lang_label" => $name_en, "url" => ($url != $current_url) ? $url : NULL];
+          if ($url != $current_url) {
+            $languages[] = [
+              "title" => $name,
+              "lang_label" => $name_en,
+              "url" => $url,
+            ];
+          }
+        }
       }
     }
-  }
-
-  if (count($languages) > 1) {
-    $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
-    $variables += ["translationLinks" => $inlineLinks];
+    if (count($languages) >= 1) {
+      $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
+      $variables += ["translationLinks" => $inlineLinks];
+    }
   }
 }
 
