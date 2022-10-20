@@ -22,12 +22,18 @@ use Drupal\Core\Entity\EntityInterface;
  * Implements hook_preprocess_media().
  */
 function mass_translations_preprocess_media(&$variables) {
+
+  // @todo add if similar to below function
+
+
   $media = $variables['media'];
   $lang_default = Drupal::languageManager()->getCurrentLanguage();
   $languages = NULL;
   $media_storage = Drupal::service('entity_type.manager')->getStorage('media');
   $translations_controller = new TranslationsController($media_storage);
-  $current_url = Drupal::request()->getUri();
+  $current_url = Url::fromRoute('media_entity_download.download', ['media' => $media->id()])
+    ->setAbsolute()
+    ->toString();
   $lang_codes = Drupal::languageManager()->getLanguages();
 
   // Get all the translations for this node.
