@@ -15,16 +15,18 @@
   Drupal.behaviors.massContentOrgStore = {
     attach: function (context) {
 
-      // Get data from the metatag element.
-      var orgs = $("meta[name='mg_organization']").attr('content');
-      var orgsArr = orgs.split(',');
-      var orgsFiltered = [];
-      // Filter the array and keep only unique values.
-      $.each(orgsArr, function (i, el) {
-        if ($.inArray(el, orgsFiltered) === -1) {
-          orgsFiltered.push(el);
-        }
-      });
+      if ($("meta[name='mg_organization']").length > 0) {
+        // Get data from the metatag element.
+        var orgs = $("meta[name='mg_organization']").attr('content');
+        var orgsArr = orgs.split(',');
+        var orgsFiltered = [];
+        // Filter the array and keep only unique values.
+        $.each(orgsArr, function (i, el) {
+          if ($.inArray(el, orgsFiltered) === -1) {
+            orgsFiltered.push(el);
+          }
+        });
+      }
       // Set Session start time for each user.
       var sessionStart = sessionStorage.getItem('session_start');
       if (sessionStart && sessionStart.length > 0) {
@@ -34,7 +36,7 @@
           sessionStorage.setItem('session_start', new Date().toString());
           var sessionOrgs = sessionStorage.getItem('session_orgs');
           if (sessionOrgs && sessionOrgs.length > 0) {
-            if (orgsFiltered.length > 0) {
+            if (orgsFiltered !== undefined && orgsFiltered.length > 0) {
               // Set session_orgs value to storage.
               sessionStorage.setItem('session_orgs', orgsFiltered.join(','));
             }
@@ -50,7 +52,7 @@
       if (sessionOrgsExisting && sessionOrgsExisting.length > 0) {
         // Convert string to array to filter for unique values.
         var existingValues = sessionOrgsExisting.split(',');
-        if (orgsFiltered.length > 0) {
+        if (orgsFiltered !== undefined && orgsFiltered.length > 0) {
           // Combine existing and new data together in 1 array.
           var resultValues = existingValues.concat(orgsFiltered);
           var resultFiltered = [];
@@ -66,7 +68,7 @@
       }
       else {
         if (typeof orgs === 'string') {
-          if (orgsFiltered.length > 0) {
+          if (orgsFiltered !== undefined && orgsFiltered.length > 0) {
             // Set session_orgs value to storage.
             sessionStorage.setItem('session_orgs', orgsFiltered.join(','));
           }
