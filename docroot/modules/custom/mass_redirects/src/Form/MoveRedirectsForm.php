@@ -5,6 +5,7 @@ namespace Drupal\mass_redirects\Form;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
@@ -12,26 +13,43 @@ use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\redirect\RedirectRepository;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a Move Redirects entity form.
  */
 class MoveRedirectsForm extends ContentEntityForm {
 
+  protected $entityTypeManager;
   protected RedirectRepository $redirectRepository;
 
-  public function __construct($redirectRepository) {
+  public function __construct(EntityTypeManagerInterface $entityTypeManager, RedirectRepository $redirectRepository) {
+    $this->entityRepository = $entityTypeManager;
     $this->redirectRepository = \Drupal::service('redirect.repository');
   }
 
   /**
-   * User must have edit access and the node must be in Trash.
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity_type.manager'),
+      $container->get('redirect.repository'),
+    );
+  }
+
+  /**
+   * Entity must have its own page and the node must be in Trash.
    *
    * @return \Drupal\Core\Access\AccessResultInterface
    *   The access result.
    */
   public static function access(NodeBundle $node, AccountInterface $account) {
-    return AccessResult::allowedIf($node->getModerationState()->getString() == MassModeration::TRASH);
+    // Note that this is a static function called during routing so has to get own services.
+    $settings = \Drupal::service('simple_sitemap.generator')->getBundleSettings();
+    $has_page = $settings[$node->getEntityTypeId()][$node->bundle()]['index'];
+    $is_trash = $node->getModerationState()->getString() == MassModeration::TRASH;
+    return AccessResult::allowedIf($is_trash && $has_page);
   }
 
   /**
@@ -99,7 +117,7 @@ class MoveRedirectsForm extends ContentEntityForm {
     $target_uri = 'node/' . $form_state->getValues()['target'];
     $params = Url::fromUri('internal:/' . $target_uri)->getRouteParameters();
     $entity_type = key($params);
-    $target_entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($params[$entity_type]);
+    $target_entity = $this->entityTypeManager->getStorage($entity_type)->load($params[$entity_type]);
 
     $node = $this->getEntity();
     $redirects = $this->getRedirects($node);
@@ -216,21 +234,26 @@ class MoveRedirectsForm extends ContentEntityForm {
     $form['target'] = [
       '#type' => 'entity_autocomplete',
       '#target_type' => 'node',
-      '#title' => $this->t('Pick a target for the URLs'),
+      '#title' => $this->formatPlural(count($items), 'Pick a target for the URL', 'Pick a target for the URLs'),
       '#required' => TRUE,
     ];
     $form['list'] = [
       '#theme' => 'item_list',
       '#items' => $items,
-      '#title' => 'The following URLs will be redirected',
+      '#title' => $this->formatPlural(count($items), 'The following URL will be redirected', 'The following URLs will be redirected'),
     ];
+    if (count($items) > 1) {
+      $form['note'] = [
+        '#markup' => 'Note: You see more than one redirect because there is already a redirect pointing to this page (a friendly URL, a manually created redirect, or a redirect from a page title change).',
+      ];
+    }
 
     $form['actions'] = [
       '#type' => 'actions',
     ];
     $form['actions']['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Add redirects'),
+      '#value' => $this->formatPlural(count($items), 'Add redirect', 'Add redirects'),
       '#submit' => ['::submitFormOutbound'],
     ];
     return $form;
