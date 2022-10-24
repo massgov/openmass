@@ -2,15 +2,12 @@
 
 namespace Drupal\mass_redirects\Form;
 
-use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
-use Drupal\mass_content_moderation\MassModeration;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\redirect\RedirectRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -36,20 +33,6 @@ class MoveRedirectsForm extends ContentEntityForm {
       $container->get('entity_type.manager'),
       $container->get('redirect.repository'),
     );
-  }
-
-  /**
-   * Entity must have its own page and the node must be in Trash.
-   *
-   * @return \Drupal\Core\Access\AccessResultInterface
-   *   The access result.
-   */
-  public static function access(NodeBundle $node, AccountInterface $account) {
-    // Note that this is a static function called during routing so has to get own services.
-    $settings = \Drupal::service('simple_sitemap.generator')->getBundleSettings();
-    $has_page = $settings[$node->getEntityTypeId()][$node->bundle()]['index'];
-    $is_trash = $node->getModerationState()->getString() == MassModeration::TRASH;
-    return AccessResult::allowedIf($is_trash && $has_page);
   }
 
   /**
