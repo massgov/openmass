@@ -11,18 +11,12 @@ use Symfony\Component\Routing\Route;
 
 class NodeHasPageAccessChecker implements AccessInterface {
 
-  /**
-   * @var \Drupal\simple_sitemap\Simplesitemap
-   */
   private Simplesitemap $sitemap;
 
   public function __construct(Simplesitemap $sitemap) {
     $this->sitemap = $sitemap;
   }
 
-  /**
-   * Access callback.
-   */
   public function access(Route $route, NodeInterface $node): AccessResultInterface {
     $settings = $this->sitemap->getBundleSettings();
     $has_page = $settings[$node->getEntityTypeId()][$node->bundle()]['index'];
