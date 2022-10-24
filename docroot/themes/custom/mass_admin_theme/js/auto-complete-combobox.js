@@ -10,8 +10,7 @@
 
   // The timeout function is necessary to recognize the fields and the lists.
   setTimeout(function () {
-    var instructionForAll = null;
-    // = document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header") ?? document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header");
+    var instructionForAll = document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header") ? document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header") : null;
     var instructionForSrContent = document.createTextNode("Use tab key to navigate.");
 
     var instructionForCombobox = document.createElement("p");
@@ -21,9 +20,9 @@
     var optionLists = document.querySelectorAll(".ui-autocomplete");
 
     // Define instructionForAll
-    if (document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header")) {
-      instructionForAll = document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header");
-    }
+    // if (document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header")) {
+    //   instructionForAll = document.querySelector("#block-mass-admin-theme-mainpagecontent .view-header");
+    // }
 
     // Add instructions for screen reader users.
     if (instructionForAll && instructionForAll.innerHTML.includes("Search for content using any of the filters below.")) {
