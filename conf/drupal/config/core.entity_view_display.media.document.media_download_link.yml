@@ -38,14 +38,6 @@ content:
   extra_file_icon:
     settings: {  }
     third_party_settings: {  }
-    weight: 3
-    region: content
-  field_language:
-    type: entity_reference_label
-    label: hidden
-    settings:
-      link: false
-    third_party_settings: {  }
     weight: 2
     region: content
   field_title:
@@ -64,6 +56,15 @@ content:
   generated_file_icon_twig_path:
     weight: 100
     region: content
+  langcode:
+    type: language
+    label: hidden
+    settings:
+      link_to_entity: false
+      native_language: false
+    third_party_settings: {  }
+    weight: 3
+    region: content
 hidden:
   content_moderation_control: true
   created: true
@@ -75,12 +76,12 @@ hidden:
   field_document_type: true
   field_file_mime: true
   field_internal_notes: true
+  field_language: true
   field_media_english_version: true
   field_organizations: true
   field_size: true
   field_start_date: true
   field_upload_file: true
-  langcode: true
   name: true
   thumbnail: true
   uid: true
