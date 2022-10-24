@@ -40,7 +40,7 @@
       optionList.setAttribute("role", "listbox");
     });
 
-    autoCompleteFields.forEach((autoCompleteField, index) => {
+    autoCompleteFields.forEach(function (autoCompleteField, index) {
       // Add missing accessibility components to pair a field and its combobox(option list).
       autoCompleteField.setAttribute("role", "combobox");
       autoCompleteField.setAttribute("aria-autocomplete", "list");
