@@ -54,11 +54,11 @@
       // aria-controls doesn't work with VoiceOver.
       autoCompleteField.setAttribute("aria-activedescendant", listId);
 
-      autoCompleteField.addEventListener("change", e => {
+      autoCompleteField.addEventListener("change", function (e) {
         // Wait till the options are added to the list container .ui-autocomplete.
         setTimeout(function () {
           // Set role to LIs and their child As.
-          optionLists[index].querySelectorAll(".ui-menu-item").forEach(item => {
+          optionLists[index].querySelectorAll(".ui-menu-item").forEach(function (item) {
             item.setAttribute("role", "none");
             item.querySelector(".ui-menu-item-wrapper").setAttribute("role", "option");
           });
