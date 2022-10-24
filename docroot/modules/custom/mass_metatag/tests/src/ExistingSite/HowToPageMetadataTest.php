@@ -54,7 +54,6 @@ class HowToPageMetadataTest extends MetadataTestCase {
     return array_merge(parent::getExpectedMetatags($entity), [
       'category' => 'services',
       'twitter:description' => 'Test Lede',
-      'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_organization' => 'testorgpage',
       'mg_key_actions' => '[{"name":"Take Action!","url":"https:\/\/www.google.com"}]',
     ]);

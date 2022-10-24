@@ -23,13 +23,13 @@ dependencies:
     - field.field.node.curated_list.field_related_links
     - field.field.node.curated_list.field_reusable_label
     - field.field.node.curated_list.field_short_title
-    - field.field.node.curated_list.field_state_organization_tax
     - node.type.curated_list
     - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - link
     - maxlength
@@ -423,16 +423,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 4
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   langcode:
     type: language_select
     weight: 15
@@ -462,6 +452,20 @@ content:
     weight: 4
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
