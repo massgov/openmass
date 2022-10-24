@@ -36,7 +36,7 @@
 
 
 
-    optionLists.forEach((optionList) => {
+    optionLists.forEach(optionList => {
       optionList.setAttribute("role", "listbox");
     });
 
