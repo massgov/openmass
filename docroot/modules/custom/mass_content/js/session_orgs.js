@@ -15,16 +15,19 @@
   Drupal.behaviors.massContentOrgStore = {
     attach: function (context) {
 
-      // Get data from the metatag element.
-      var orgs = $("meta[name='mg_organization']").attr('content');
-      var orgsArr = orgs.split(',');
       var orgsFiltered = [];
-      // Filter the array and keep only unique values.
-      $.each(orgsArr, function (i, el) {
-        if ($.inArray(el, orgsFiltered) === -1) {
-          orgsFiltered.push(el);
-        }
-      });
+      var orgs = '';
+      if ($("meta[name='mg_organization']").length > 0) {
+        // Get data from the metatag element.
+        orgs = $("meta[name='mg_organization']").attr('content');
+        var orgsArr = orgs.split(',');
+        // Filter the array and keep only unique values.
+        $.each(orgsArr, function (i, el) {
+          if ($.inArray(el, orgsFiltered) === -1) {
+            orgsFiltered.push(el);
+          }
+        });
+      }
       // Set Session start time for each user.
       var sessionStart = sessionStorage.getItem('session_start');
       if (sessionStart && sessionStart.length > 0) {
@@ -65,11 +68,9 @@
         }
       }
       else {
-        if (typeof orgs === 'string') {
-          if (orgsFiltered.length > 0) {
-            // Set session_orgs value to storage.
-            sessionStorage.setItem('session_orgs', orgsFiltered.join(','));
-          }
+        if (orgsFiltered.length > 0) {
+          // Set session_orgs value to storage.
+          sessionStorage.setItem('session_orgs', orgsFiltered.join(','));
         }
       }
     }
