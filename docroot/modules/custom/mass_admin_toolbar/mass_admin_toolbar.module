@@ -14,7 +14,7 @@ use Drupal\mass_admin_toolbar\MassAdminToolbarRender;
  * Implements hook_preprocess_HOOK().
  */
 function mass_admin_toolbar_preprocess_toolbar(&$variables) {
-  $variables['#attached']['library'][] = 'mass_admin_toolbar/custom_toolbar_styles';
+  // $variables['#attached']['library'][] = 'mass_admin_toolbar/custom_toolbar_styles';
 }
 
 /**
@@ -24,17 +24,17 @@ function mass_admin_toolbar_preprocess_toolbar(&$variables) {
  */
 function mass_admin_toolbar_css_alter(&$css, $assets) {
   // Disable style sheets from core toolbar module.
-  unset($css[drupal_get_path('module', 'toolbar') . '/css/toolbar.icons.theme.css']);
-  unset($css[drupal_get_path('module', 'toolbar') . '/css/toolbar.module.css']);
-  unset($css[drupal_get_path('module', 'toolbar') . '/css/toolbar.menu.css']);
-  unset($css[drupal_get_path('module', 'toolbar') . '/css/toolbar.theme.css']);
-  // Disable stylesheet from admin_toolbar module.
-  unset($css[drupal_get_path('module', 'admin_toolbar') . '/css/admin.toolbar.css']);
-  // Disable styles coming from Stable because somehow they are getting into the admin theme.
-  unset($css[drupal_get_path('theme', 'stable') . '/css/toolbar/toolbar.icons.theme.css']);
-  unset($css[drupal_get_path('theme', 'stable') . '/css/toolbar/toolbar.module.css']);
-  unset($css[drupal_get_path('theme', 'stable') . '/css/toolbar/toolbar.menu.css']);
-  unset($css[drupal_get_path('theme', 'stable') . '/css/toolbar/toolbar.theme.css']);
+//  unset($css[drupal_get_path('module', 'toolbar') . '/css/toolbar.icons.theme.css']);
+//  unset($css[drupal_get_path('module', 'toolbar') . '/css/toolbar.module.css']);
+//  unset($css[drupal_get_path('module', 'toolbar') . '/css/toolbar.menu.css']);
+//  unset($css[drupal_get_path('module', 'toolbar') . '/css/toolbar.theme.css']);
+//  // Disable stylesheet from admin_toolbar module.
+//  unset($css[drupal_get_path('module', 'admin_toolbar') . '/css/admin.toolbar.css']);
+//  // Disable styles coming from Stable because somehow they are getting into the admin theme.
+//  unset($css[drupal_get_path('theme', 'stable') . '/css/toolbar/toolbar.icons.theme.css']);
+//  unset($css[drupal_get_path('theme', 'stable') . '/css/toolbar/toolbar.module.css']);
+//  unset($css[drupal_get_path('theme', 'stable') . '/css/toolbar/toolbar.menu.css']);
+//  unset($css[drupal_get_path('theme', 'stable') . '/css/toolbar/toolbar.theme.css']);
 }
 
 /**
@@ -152,28 +152,28 @@ function mass_admin_toolbar_toolbar() {
  * Adds a css class to the user toolbar tab, and changes username to just 'User.'
  */
 function mass_admin_toolbar_toolbar_alter(&$items) {
-  if (isset($items['acquia_connector'])) {
-    unset($items['acquia_connector']);
-  }
-
-  $user = \Drupal::currentUser();
-
-  if (!$user->hasPermission('display manage tab')) {
-    unset($items['administration']);
-  }
-
-  $items['user']['#wrapper_attributes']['class'][] = 'user-toolbar-tab';
-  $items['user']['tab']['#title'] = t('Account');
-
-  // Adjust weights on core tabs so our custom ones can be mixed into the ordering.
-  $items['home']['#weight'] = -49;
-  $items['administration']['#weight'] = -48;
-  $items['author_content']['#weight'] = -47;
-  $items['user']['#weight'] = 150;
-  $items['tour']['#weight'] = 100;
-
-  // Hide original home button until we need it again. Comment this out to show the home button.
-  $items['home']['#wrapper_attributes']['class'][] = 'visually-hidden';
+//  if (isset($items['acquia_connector'])) {
+//    unset($items['acquia_connector']);
+//  }
+//
+//  $user = \Drupal::currentUser();
+//
+//  if (!$user->hasPermission('display manage tab')) {
+//    unset($items['administration']);
+//  }
+//
+//  $items['user']['#wrapper_attributes']['class'][] = 'user-toolbar-tab';
+//  $items['user']['tab']['#title'] = t('Account');
+//
+//  // Adjust weights on core tabs so our custom ones can be mixed into the ordering.
+//  $items['home']['#weight'] = -49;
+//  $items['administration']['#weight'] = -48;
+//  $items['author_content']['#weight'] = -47;
+//  $items['user']['#weight'] = 150;
+//  $items['tour']['#weight'] = 100;
+//
+//  // Hide original home button until we need it again. Comment this out to show the home button.
+//  $items['home']['#wrapper_attributes']['class'][] = 'visually-hidden';
 
 }
 
@@ -193,23 +193,23 @@ function mass_admin_toolbar_toolbar_alter(&$items) {
  * @see drupal_render()
  */
 function mass_admin_toolbar_toolbar_prerender_tray(array $element) {
-  $menu_tree = \Drupal::service('toolbar.menu_tree');
-
-  $parameters = new MenuTreeParameters();
-  $parameters->setMinDepth(1)->setMaxDepth(1);
-
-  $tree = $menu_tree->load('mass-dashboard', $parameters);
-
-  $manipulators = [
-    ['callable' => 'menu.default_tree_manipulators:checkAccess'],
-    ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
-    ['callable' => 'toolbar_menu_navigation_links'],
-  ];
-
-  $tree = $menu_tree->transform($tree, $manipulators);
-
-  $element['administration_menu'] = $menu_tree->build($tree);
-  return $element;
+//  $menu_tree = \Drupal::service('toolbar.menu_tree');
+//
+//  $parameters = new MenuTreeParameters();
+//  $parameters->setMinDepth(1)->setMaxDepth(1);
+//
+//  $tree = $menu_tree->load('mass-dashboard', $parameters);
+//
+//  $manipulators = [
+//    ['callable' => 'menu.default_tree_manipulators:checkAccess'],
+//    ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
+//    ['callable' => 'toolbar_menu_navigation_links'],
+//  ];
+//
+//  $tree = $menu_tree->transform($tree, $manipulators);
+//
+//  $element['administration_menu'] = $menu_tree->build($tree);
+//  return $element;
 }
 
 /**

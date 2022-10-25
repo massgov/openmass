@@ -1,8 +1,17 @@
+#A top level item containing Mass specific links below it.
+mass_admin_pages.mass:
+  title: "Mass"
+  url: 'internal:##'
+  parent: system.admin
+  description: "A placeholder parent link"
+  weight: -20
+
+
 #Config for a parent link that provides access to selected block forms for content admins and developers.
 mass_admin_pages.edit_blocks:
   title: "Edit blocks"
   url: 'internal:##'
-  parent: system.admin
+  parent: mass_admin_pages.mass
   description: "A placeholder parent link to allow access to selected block forms."
   weight: 10
 
@@ -21,7 +30,7 @@ mass_admin_pages.right_sidebar_block_form:
 mass_admin_pages.reports_menu:
   title: 'Reports'
   route_name: mass_admin_pages.reports
-  menu_name: mass-dashboard
+  parent: mass_admin_pages.mass
   description: 'Reports for Authors'
   weight: -1
 
