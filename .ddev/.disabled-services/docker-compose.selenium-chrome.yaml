@@ -6,26 +6,19 @@ services:
   selenium-chrome:
     image: seleniarm/standalone-chromium:4.1.4-20220429
     container_name: ddev-${DDEV_SITENAME}-selenium-chrome
-    # todo: Enable this and remove the port below when ddev's router is fixed.
-    # Remember that ddev _copies_ this file so it will need to be updated or
-    # deleted to take effect.
-    # https://discord.com/channels/664580571770388500/976181828341866526
-    # https://github.com/drud/ddev/pull/3861
-    # expose:
-      # The internal noVNC port, which operates over HTTP so it can be exposed
-      # through the router.
-      # - 7900
-    #    environment:
-    #      - VIRTUAL_HOST=$DDEV_HOSTNAME
-    #      - HTTPS_EXPOSE=7900:7900
-    #      - HTTP_EXPOSE=7910:7900
-    #    external_links:
-    #      - ddev-router:${DDEV_SITENAME}.${DDEV_TLD}
-    ports:
+    expose:
+      #      The internal noVNC port, which operates over HTTP so it can be exposed
+      #      through the router.
+      - 7900
+    environment:
+      - VIRTUAL_HOST=$DDEV_HOSTNAME
+      - HTTPS_EXPOSE=7900:7900
+      - HTTP_EXPOSE=7910:7900
+    external_links:
+      - ddev-router:${DDEV_SITENAME}.${DDEV_TLD}
+      #ports:
       # VNC access for a traditional VNC client like macOS "Screen Sharing".
-      - "5900:5900"
-      # Remove this when the router is enabled.
-      - "7910:7900"
+      # - "5900:5900"
     labels:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT
