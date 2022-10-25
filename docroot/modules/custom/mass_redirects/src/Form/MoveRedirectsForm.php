@@ -189,7 +189,7 @@ class MoveRedirectsForm extends ContentEntityForm {
           '@href' => $target_entity->toUrl()->toString(),
           '@title' => $target_entity->label(),
         ];
-        $items[] = $this->t('@source_path which currently points to <a href="@href">@title</a>?', $parts);
+        $items[] = $this->t('@source_path currently points to <a href="@href">@href</a>', $parts);
       }
       $form['list'] = [
         '#theme' => 'item_list',
@@ -227,7 +227,7 @@ class MoveRedirectsForm extends ContentEntityForm {
     ];
     if (count($items) > 1) {
       $form['note'] = [
-        '#markup' => 'Note: You see more than one redirect because there is already a redirect pointing to this page (a friendly URL, a manually created redirect, or a redirect from a page title change).',
+        '#markup' => '<p>Note: You see more than one redirect because there is already a redirect pointing to this page (a friendly URL, a manually created redirect, or a redirect from a page title change).</p>',
       ];
     }
 
