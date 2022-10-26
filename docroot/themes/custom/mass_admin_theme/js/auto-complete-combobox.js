@@ -10,10 +10,6 @@
 
   Drupal.behaviors.autoCompleteCombobox = {
     attach: function (context, settings) {
-
-    // window.addEventListener('load', function (e) {
-    // The timeout function is necessary to recognize the fields and the lists.
-    // setTimeout(function () {
       var instructionForAll = document.querySelector('#block-mass-admin-theme-mainpagecontent .view-header') ? document.querySelector('#block-mass-admin-theme-mainpagecontent .view-header') : null;
       var instructionForSrContent = document.createTextNode('Use tab key to navigate.');
 
@@ -60,18 +56,22 @@
 
         autoCompleteField.addEventListener('change', function (e) {
           // Wait till the options are added to the list container .ui-autocomplete.
-          setTimeout(function () {
-            // Set role to LIs and their child As.
+          window.onload = function () {
             optionLists[index].querySelectorAll('.ui-menu-item').forEach(function (item) {
               item.setAttribute('role', 'none');
               item.querySelector('.ui-menu-item-wrapper').setAttribute('role', 'option');
             });
-          }, 200);
+          };
+
+          // setTimeout(function () {
+          // Set role to LIs and their child As.
+          // optionLists[index].querySelectorAll('.ui-menu-item').forEach(function (item) {
+          //   item.setAttribute('role', 'none');
+          //   item.querySelector('.ui-menu-item-wrapper').setAttribute('role', 'option');
+          // });
+          // // }, 200);
         });
       });
-    // }, 200);
-    // });
-
     }
   };
 })();
