@@ -17,7 +17,7 @@
       var instructionForComboboxContent = document.createTextNode('Use enter key to select an option from the list.');
 
       var autoCompleteFields = document.querySelectorAll('.ui-autocomplete-input');
-      var optionLists = document.querySelectorAll('.ui-autocomplete');
+      var optionLists = context.querySelectorAll('.ui-autocomplete');
 
       // Add instructions for screen reader users.
       if (instructionForAll && instructionForAll.innerHTML.includes('Search for content using any of the filters below.')) {
