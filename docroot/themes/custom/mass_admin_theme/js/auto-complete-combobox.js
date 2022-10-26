@@ -8,8 +8,9 @@
 (function () {
   'use strict';
 
+  window.addEventListener('load', function (e) {
   // The timeout function is necessary to recognize the fields and the lists.
-  setTimeout(function () {
+  // setTimeout(function () {
     var instructionForAll = document.querySelector('#block-mass-admin-theme-mainpagecontent .view-header') ? document.querySelector('#block-mass-admin-theme-mainpagecontent .view-header') : null;
     var instructionForSrContent = document.createTextNode('Use tab key to navigate.');
 
@@ -65,5 +66,6 @@
         }, 200);
       });
     });
-  }, 200);
+  // }, 200);
+  });
 })();
