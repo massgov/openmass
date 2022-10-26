@@ -5,7 +5,7 @@
  *
  * This addresses the accessibility issue with JAWS:  DP-25848
  */
-(function () {
+(function (Drupal) {
   'use strict';
 
   Drupal.behaviors.autoCompleteCombobox = {
