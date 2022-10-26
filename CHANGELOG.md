@@ -1,5 +1,20 @@
 
 
+## [0.339.0] - October 25, 2022
+
+### Changed
+  - DP-25181: Ensure the skip link target gets focused after the link gets clicked.
+  - DP-26208: Allow internal URL for social links field on org page.
+  
+### Added
+  - DP-26126: Add method for How-to page for text messages.
+  
+### Fixed
+  - DP-26170: Fix JS error when there are no organizations on a page.
+  - DP-26192: Fixed bug with collection tagging for authors and editors.
+  
+
+
 ## [0.338.0] - October 18, 2022
 
 ### Changed
