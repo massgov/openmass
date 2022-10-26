@@ -62,14 +62,6 @@
               item.querySelector('.ui-menu-item-wrapper').setAttribute('role', 'option');
             });
           };
-
-          // setTimeout(function () {
-          // Set role to LIs and their child As.
-          // optionLists[index].querySelectorAll('.ui-menu-item').forEach(function (item) {
-          //   item.setAttribute('role', 'none');
-          //   item.querySelector('.ui-menu-item-wrapper').setAttribute('role', 'option');
-          // });
-          // // }, 200);
         });
       });
     }
