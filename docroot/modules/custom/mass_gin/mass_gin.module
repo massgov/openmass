@@ -3,3 +3,15 @@
 function mass_gin_toolbar_alter(&$items) {
   unset($items['acquia_connector']);
 }
+
+/**
+ * Implements hook_link_alter().
+ */
+function mass_gin_link_alter(&$variables) {
+
+  /** @var \Drupal\Core\Url $url */
+  $url = $variables['url'];
+  if ($url->getRouteName() == 'help.main') {
+    $variables['url'] = \Drupal\Core\Url::fromUri('https://massgovdigital.gitbook.io/ma-digital-service-knowledge-base/-Ll81dJA-iKEduEa4iKe/cms/information-details-as-a-landing-page');
+  }
+}
