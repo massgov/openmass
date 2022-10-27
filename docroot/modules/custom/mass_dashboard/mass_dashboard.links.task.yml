@@ -30,6 +30,19 @@ mass_dashboard.orphaned_service_details:
   weight: 35
 mass_dashboard.trash:
   title: 'Trash'
-  route_name: mass_dashboard.trash
+  route_name: mass_dashboard.trash_collection
   base_route: system.admin
   weight: 40
+ma_dashboard.trash_content:
+  title: 'Trash (content)'
+  route_name: mass_dashboard.trash
+  parent_id: mass_dashboard.trash
+  base_route: mass_dashboard.trash_collection
+  weight: 40
+ma_dashboard.trash_docs:
+  title: 'Trash (docs)'
+  route_name: view.trash_media.page_1
+  parent_id: mass_dashboard.trash
+  base_route: mass_dashboard.trash_collection
+  weight: 40
+
