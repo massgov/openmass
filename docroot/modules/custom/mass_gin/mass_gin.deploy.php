@@ -17,7 +17,7 @@ use Drupal\workflows\Entity\Workflow;
 function mass_gin_deploy_initial(&$sandbox) {
   // 'Taxonomy' and 'Menu' links
   foreach ([416, 426] as $id) {
-    MenuLinkContent::load('mass_admin_pages.mass')->delete();
+    MenuLinkContent::load($id)->delete();
   }
   // D2d redirects link - move under Mass.
   $link =  MenuLinkContent::load(411);
