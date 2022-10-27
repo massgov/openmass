@@ -1,0 +1,25 @@
+uuid: c4b5beb7-5bdf-4f90-9284-3d15e04200c0
+langcode: en
+status: true
+dependencies:
+  module:
+    - mass_feedback_form
+    - system
+  theme:
+    - gin
+id: nodefeedbackcontainer_2
+theme: gin
+region: content
+weight: -4
+provider: null
+plugin: node_feedback_container
+settings:
+  id: node_feedback_container
+  label: 'Node Feedback Container'
+  label_display: visible
+  provider: mass_feedback_form
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: /admin
