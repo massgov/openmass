@@ -16,10 +16,10 @@ use Drupal\Core\Url;
 /**
  * Implements hook_user_login().
  *
- * Redirect users to the my-work page on successful login.
+ * Redirect users to the admin home on successful login.
  */
 function mass_admin_pages_user_login(AccountInterface $account) {
-  $url = Url::fromRoute('mass_admin_pages.author_home')->toString();
+  $url = Url::fromRoute('syste.admin')->toString();
 
   // If there are no password reset parameters in the URL, then bypass the user edit
   // page and go straight to my-work.
