@@ -19,7 +19,7 @@ use Drupal\Core\Url;
  * Redirect users to the admin home on successful login.
  */
 function mass_admin_pages_user_login(AccountInterface $account) {
-  $url = Url::fromRoute('syste.admin')->toString();
+  $url = Url::fromRoute('system.admin')->toString();
 
   // If there are no password reset parameters in the URL, then bypass the user edit
   // page and go straight to my-work.
