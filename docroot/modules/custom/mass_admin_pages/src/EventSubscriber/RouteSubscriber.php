@@ -12,7 +12,6 @@ class RouteSubscriber extends RouteSubscriberBase {
    */
   protected function alterRoutes(RouteCollection $collection) {
     if ($route = $collection->get('system.admin')) {
-      // $route_new = $collection->get('mass_admin_pages.author_home');
       $route->setDefault('_controller', '\Drupal\mass_admin_pages\Controller\AuthorHomePageController::authorHome');
     }
   }
