@@ -44,7 +44,7 @@ function mass_admin_pages_form_user_form_alter(&$form, FormStateInterface $form_
 function _mass_admin_pages_user_redirect(&$form, FormStateInterface $form_state) {
   // Redirect from user form on save only when user first logs in.
   if (\Drupal::request()->query->has('pass-reset-token')) {
-    $form_state->setRedirect('mass_admin_pages.author_home');
+    $form_state->setRedirect('system.admin');
   }
 }
 
@@ -54,7 +54,7 @@ function _mass_admin_pages_user_redirect(&$form, FormStateInterface $form_state)
 function mass_admin_pages_preprocess_html(&$variables) {
   $current_route = \Drupal::routeMatch()->getRouteName();
 
-  if ($current_route == 'mass_admin_pages.author_home') {
+  if ($current_route == 'mass_admin_pages.author_home' || $current_route == 'system.admin') {
     $variables['attributes']['class'][] = 'author-home';
   }
 }
