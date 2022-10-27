@@ -13,6 +13,18 @@ use Drupal\node\Entity\NodeType;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 
+
+/**
+ * Add icon to Mass menu item thats shown in admin toolbar.
+ */
+function mass_admin_pages_preprocess_menu(&$variables) {
+  if (isset($variables['items']['mass_admin_pages.mass'])) {
+    $options = $variables['items']['mass_admin_pages.mass']['url']->getOptions();
+    $options['attributes']['class'][] = 'toolbar-icon-tmgmt-admin-tmgmt';
+    $variables['items']['mass_admin_pages.mass']['url']->setOptions($options);
+  }
+}
+
 /**
  * Implements hook_user_login().
  *
