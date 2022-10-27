@@ -1,7 +1,114 @@
 <?php
 
+use Drupal\Core\Url;
+
 function mass_gin_toolbar_alter(&$items) {
   unset($items['acquia_connector']);
+}
+
+/**
+ * Implements hook_toolbar().
+ *
+ * Adds a dashboard link to the admin toolbar.
+ *
+ * Adds an add new content and an add new documents button to the admin toolbar.
+ */
+function mass_gin_toolbar() {
+  $items = [];
+
+//  $items['admin_home'] = [
+//    '#type' => 'toolbar_item',
+//    'tab' => [
+//      '#type' => 'link',
+//      '#title' => t('Admin home'),
+//      '#url' => Url::fromRoute('mass_admin_pages.author_home'),
+//      '#attributes' => [
+//        'class' => ['toolbar-admin-home-tab'],
+//      ],
+//    ],
+//    '#weight' => -50,
+//    '#wrapper_attributes' => [
+//      'class' => [
+//        'admin-home-toolbar-tab'
+//      ],
+//    ],
+//
+//  ];
+
+//  $items['author_content'] = [
+//    '#type' => 'toolbar_item',
+//    // The tab appears in the admin bar and toggles the "tray" menu.
+//    'tab' => [
+//      '#type' => 'link',
+//      '#title' => t('Content'),
+//      '#url' => Url::fromRoute('mass_admin_toolbar.my_work'),
+//      '#options' => [
+//        'attributes' => [
+//          'title' => t('Mass.gov editorial dashboard'),
+//        ],
+//      ],
+//      '#attributes' => [
+//        'class' => ['toolbar-icon', 'toolbar-icon-mass-dashboard-tab'],
+//      ],
+//    ],
+//    // Pre_render adds tray items dynamically from the mass-dashboard menu.
+//    'tray' => [
+//      '#heading' => t('Editorial Dashboard'),
+//      'mass_admin_toolbar_toolbar' => [
+//        '#pre_render' => [[MassAdminToolbarRender::class, 'massAdminToolbarToolbarPrerenderTray']],
+//      ],
+//      '#type' => 'container',
+//      '#attributes' => [
+//        'class' => ['toolbar-menu-administration'],
+//      ],
+//    ],
+//    '#attached' => [
+//      'library' => [
+//        'mass_admin_toolbar/mass_admin_toolbar.toolbar',
+//      ],
+//    ],
+//    '#weight' => -40,
+//  ];
+
+  $items['add_content_link'] = [
+    '#type' => 'toolbar_item',
+    'tab' => [
+      '#type' => 'link',
+      '#title' => t('Add content'),
+      '#url' => Url::fromRoute('node.add_page'),
+      '#attributes' => [
+        'class' => ['toolbar-icon', 'toolbar-icon-media-edit'],
+      ],
+    ],
+    '#weight' => 5,
+    '#wrapper_attributes' => [
+      'class' => [
+//        'add-content-toolbar-tab'
+      ],
+    ],
+  ];
+
+  $items['add_document_link'] = [
+    '#type' => 'toolbar_item',
+    'tab' => [
+      '#type' => 'link',
+      '#title' => t('Add document'),
+      '#url' => Url::fromRoute('entity.media.add_form', [
+        'media_type' => 'document',
+      ]),
+      '#attributes' => [
+        'class' => ['toolbar-icon', 'toolbar-icon-media-edit'],
+      ],
+    ],
+    '#weight' => 5,
+    '#wrapper_attributes' => [
+      'class' => [
+//        'add-document-toolbar-tab'
+      ],
+    ],
+  ];
+
+  return $items;
 }
 
 /**
@@ -13,7 +120,7 @@ function mass_gin_link_alter(&$variables) {
   $url = $variables['url'];
   try {
     if ($url->getRouteName() == 'help.main') {
-      $variables['url'] = \Drupal\Core\Url::fromUri('https://massgovdigital.gitbook.io/ma-digital-service-knowledge-base/-Ll81dJA-iKEduEa4iKe/cms/information-details-as-a-landing-page');
+      $variables['url'] = Url::fromUri('https://massgovdigital.gitbook.io/ma-digital-service-knowledge-base/-Ll81dJA-iKEduEa4iKe/cms/information-details-as-a-landing-page');
     }
   }
   catch (Exception) {
