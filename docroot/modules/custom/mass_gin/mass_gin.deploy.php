@@ -24,7 +24,9 @@ function mass_gin_deploy_initial(&$sandbox) {
   $link->set('parent', 'mass_admin_pages.mass')->save();
 
   // Move links under Help.
-  foreach ([481, 471, 466, 476] as $id) {
+  foreach ([471, 466, 476, 461] as $id) {
     MenuLinkContent::load($id)->set('parent', 'help.main')->save();
   }
+  // Delete 'Need Help' menu item.
+  MenuLinkContent::load(481)->delete();
 }
