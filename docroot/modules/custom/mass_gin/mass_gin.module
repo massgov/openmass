@@ -23,13 +23,13 @@ function mass_gin_toolbar() {
 //      '#title' => t('Admin home'),
 //      '#url' => Url::fromRoute('mass_admin_pages.author_home'),
 //      '#attributes' => [
-//        'class' => ['toolbar-admin-home-tab'],
+////        'class' => ['toolbar-admin-home-tab'],
 //      ],
 //    ],
 //    '#weight' => -50,
 //    '#wrapper_attributes' => [
 //      'class' => [
-//        'admin-home-toolbar-tab'
+////        'admin-home-toolbar-tab'
 //      ],
 //    ],
 //
@@ -120,7 +120,7 @@ function mass_gin_link_alter(&$variables) {
   $url = $variables['url'];
   try {
     if ($url->getRouteName() == 'help.main') {
-      $variables['url'] = Url::fromUri('https://massgovdigital.gitbook.io/ma-digital-service-knowledge-base/-Ll81dJA-iKEduEa4iKe/cms/information-details-as-a-landing-page');
+      $variables['url'] = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/');
     }
   }
   catch (Exception) {
