@@ -81,7 +81,7 @@ class CleanUsageTable {
         SELECT
           {$field}, source_type, COUNT({$field})
         FROM entity_usage
-        GROUP BY {$field} HAVING COUNT({$field}) > 1
+        GROUP BY {$field}, source_type HAVING COUNT({$field}) > 1
     ")->fetchAll();
   }
 
