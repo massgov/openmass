@@ -138,7 +138,7 @@
 {% block pageContent %}
 
   {{ content.field_info_details_sections }}
-  
+
   {{ content.field_contact }}
 
   {% if node.field_footnotes[0].value %}
@@ -160,11 +160,13 @@
     }%}
   {% endif %}
 
-  {% include "@molecules/listing-table.twig" with {
-    "listingTable": {
-      "rows": table_rows
-    }
-  }%}
+  {% if table_rows %}
+    {% include "@molecules/listing-table.twig" with {
+      "listingTable": {
+        "rows": table_rows
+      }
+    }%}
+  {% endif %}
 
   {% if sideContent and sideContent.linkList %}
     {% set linkList = sideContent.linkList %}
