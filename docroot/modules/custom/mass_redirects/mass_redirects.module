@@ -1,0 +1,71 @@
+<?php
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
+use Drupal\mass_content_moderation\MassModeration;
+use Drupal\mass_redirects\Form\MoveRedirectsForm;
+
+/**
+ * Upon saving a trashed node, give link to Move Redirects form.
+ *
+ * We can't easily use hook_node_update since the node URL changes to ---unpublished in pathauto_alias_alter hook.
+ */
+function mass_redirects_entity_update(EntityInterface $entity): void {
+  if ($entity->getEntityTypeId() !== 'node') {
+    return;
+  }
+
+  if (PHP_SAPI !== 'cli' && $entity->getModerationState()->getString() == MassModeration::TRASH) {
+    $id = $entity->id();
+    $message = 'You may be able to <a href="@redirect-page">Redirect this trashed page</a> so that visitors will not get a <em>Page not Found</em> error.';
+    Drupal::messenger()->addWarning(t($message, ['@redirect-page' => $entity->toUrl('redirects')->toString()]));
+  }
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function mass_redirects_entity_operation(EntityInterface $entity): array {
+  if ($entity->getEntityTypeId() == 'node') {
+    $url = $entity->toUrl('redirects');
+    if ($url->access()) {
+      $operations['redirects'] = [
+        'title' => \t('Redirects'),
+        'url' => $url,
+        'weight' => 50,
+      ];
+    }
+  }
+
+  return $operations ?? [];
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function mass_redirects_module_implements_alter(&$implementations, $hook) {
+  // Implementations to be moved to the end of the list.
+  if (in_array($hook, ['entity_update'])) {
+    $mass_redirects = $implementations['mass_redirects'];
+    unset($implementations['mass_redirects']);
+    $implementations['mass_redirects'] = $mass_redirects;
+  }
+  // Implementations to be moved to the start of the list.
+  if (in_array($hook, [])) {
+    $mass_redirects = $implementations['mass_redirects'];
+    $implementations = ['mass_redirects' => $mass_redirects] + $implementations;
+  }
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function mass_redirects_entity_type_alter(array &$entity_types) {
+  /** @var $entity_types \Drupal\Core\Entity\EntityTypeInterface[] */
+  $handlers = $entity_types['node']->getHandlerClasses();
+  $handlers['form']['move-redirects'] = MoveRedirectsForm::class;
+  $entity_types['node']->setHandlerClass('form', $handlers['form']);
+
+  $redirects_path = $entity_types['node']->getLinkTemplate('canonical') . '/redirects';
+  $entity_types['node']->setLinkTemplate('redirects', $redirects_path);
+}
