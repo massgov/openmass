@@ -15,7 +15,7 @@
   Drupal.behaviors.massContentOrgStore = {
     attach: function (context) {
       // window.dataLayer[0].entityBundle stores content_type label.
-      if (window.dataLayer[0].entityBundle !== undefined ) {
+      if (window.dataLayer.length && typeof window.dataLayer[0].entityBundle !== 'undefined') {
         if (window.dataLayer[0].entityBundle !== 'topic_page') {
           var orgsFiltered = [];
           var orgs = '';
