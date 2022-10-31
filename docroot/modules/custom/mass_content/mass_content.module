@@ -537,14 +537,7 @@ function mass_content_theme() {
  */
 function mass_content_page_attachments(array &$attachments) {
   $attachments['#attached']['library'][] = 'mass_content/contextual-nav';
-  $route_name = \Drupal::routeMatch()->getRouteName();
-  if ($route_name === 'entity.node.canonical') {
-    $attachments['#cache']['contexts'][] = 'route.name:entity.node.canonical';
-    $entity = \Drupal::routeMatch()->getParameter('node');
-    if ($entity && $entity->bundle() !== 'topic_page') {
-      $attachments['#attached']['library'][] = 'mass_content/session_organizations';
-    }
-  }
+  $attachments['#attached']['library'][] = 'mass_content/session_organizations';
 }
 
 /**
