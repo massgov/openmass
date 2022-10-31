@@ -90,7 +90,7 @@ class RedirectsTest extends ExistingSiteBase {
 
     // Test Inbound.
     $session->visit($url);
-    $msg = 'which currently points to ' . $this->orgNodeTarget->label();
+    $msg = 'currently points to ' . $this->orgNodeTarget->toUrl()->toString();
     $this->assertSession()->pageTextContains($msg);
     $this->getCurrentPage()->pressButton('Remove redirect');
     $this->assertSession()->pageTextContains('Removed redirect.');
