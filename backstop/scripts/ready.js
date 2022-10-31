@@ -185,8 +185,14 @@ module.exports = async function (page, scenario, vp) {
 
   // Wait for iframes to be resized at least once.
   // Avoid iframes with fixed height.
-  await page.waitForFunction("jQuery('.js-ma-responsive-iframe iframe[height=auto]').length === 0");
-
+  try {
+    await page.waitForFunction("jQuery('.js-ma-responsive-iframe iframe[height=auto]').length === 0", {
+      timeout: 30000,
+    });
+  }
+  catch (e) {
+    throw new Error(`${e.constructor.name}: Resizing iframe failed on this page: ${page.url()}.`)
+  }
   switch (scenario.label) {
     case "InfoDetailsImageWrapLeft":
     case "InfoDetailsImageWrapRight":
