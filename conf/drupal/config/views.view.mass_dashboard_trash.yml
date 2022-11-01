@@ -36,6 +36,7 @@ dependencies:
     - node.type.stacked_layout
     - node.type.topic_page
     - node.type.utility_drawer
+    - system.menu.admin
     - taxonomy.vocabulary.label
     - workflows.workflow.campaign_landing_page
     - workflows.workflow.editorial
@@ -1545,6 +1546,15 @@ display:
     display_options:
       display_extenders: {  }
       path: admin/ma-dash/trash
+      menu:
+        type: normal
+        title: 'Trash (content)'
+        description: ''
+        weight: 0
+        expanded: false
+        menu_name: admin
+        parent: mass_admin_pages.trash_collection
+        context: '0'
     cache_metadata:
       max-age: 0
       contexts:

@@ -6,7 +6,7 @@ dependencies:
     - field.storage.media.field_organizations
     - field.storage.media.field_title
     - media.type.document
-    - system.menu.mass-dashboard
+    - system.menu.admin
     - workflows.workflow.media_states
   module:
     - content_moderation
@@ -1640,12 +1640,12 @@ display:
       path: admin/ma-dash/trash/documents
       menu:
         type: normal
-        title: 'Trash (Docs)'
+        title: 'Trash (docs)'
         description: ''
-        weight: -40
+        weight: 40
         expanded: false
-        menu_name: mass-dashboard
-        parent: ''
+        menu_name: admin
+        parent: mass_admin_pages.trash_collection
         context: '0'
       tab_options:
         type: none
