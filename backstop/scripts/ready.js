@@ -38,7 +38,7 @@ module.exports = async function (page, scenario, vp) {
   // Since we're waiting on the page, the above can pass early, before jQuery
   // and other JS has had a chance to initialize.
   try {
-    await page.waitForFunction("typeof window.jQuery == 'function'")
+    await page.waitForFunction("typeof window.jQuery == 'function'", {timeout: 60 * 1000})
   }
   catch (e) {
     throw new Error(`${e.constructor.name}: jQuery was not found. This is usually caused by the server returning a 500 response. Please check ${page.url()} in your browser.`)
@@ -104,10 +104,24 @@ module.exports = async function (page, scenario, vp) {
   // Finally, wait for ajax to complete - this is to give alerts
   // time to finish rendering. This can take a while, especially
   // in local environments.
-  await page.waitForFunction('jQuery.active == 0');
+  try {
+    await page.waitForFunction('jQuery.active == 0', {
+      timeout: 60 * 1000,
+    });
+  }
+  catch (e) {
+    throw new Error(`${e.constructor.name}: Failed waiting for jQuery.active == 0 on this page: ${page.url()}.`)
+  }
 
   // All the alerts on the page must be processed.
-  await page.waitForFunction("jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0");
+  try {
+    await page.waitForFunction("jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0", {
+      timeout: 60 * 1000,
+    });
+  }
+  catch (e) {
+    throw new Error(`${e.constructor.name}: Failed waiting for "jQuery('.mass-alerts-block:not([data-alert-processed])').length === 0" on this page: ${page.url()}.`)
+  }
 
   if (scenario.label === 'InfoDetails1') {
     await page.waitForSelector('.cbFormErrorMarker', {visible: true})
@@ -187,7 +201,7 @@ module.exports = async function (page, scenario, vp) {
   // Avoid iframes with fixed height.
   try {
     await page.waitForFunction("jQuery('.js-ma-responsive-iframe iframe[height=auto]').length === 0", {
-      timeout: 30000,
+      timeout: 60 * 1000,
     });
   }
   catch (e) {
@@ -198,7 +212,14 @@ module.exports = async function (page, scenario, vp) {
     case "InfoDetailsImageWrapRight":
     case "InfoDetailsImageNoWrapLeft":
     case "InfoDetailsImageNoWrapRight":
-      await page.waitForFunction("document.readyState === 'complete'");
+      try {
+        await page.waitForFunction("document.readyState === 'complete'", {
+          timeout: 60 * 1000,
+        });
+      }
+      catch (e) {
+        throw new Error(`${e.constructor.name}: Failed waiting for document.readyState === 'complete' on this page: ${page.url()}.`)
+      }
       await page.waitForSelector('form.ma__mass-feedback-form__form', {
         visible: true,
         timeout: 10000,
@@ -242,7 +263,14 @@ module.exports = async function (page, scenario, vp) {
     case "Service1":
     case "ExpansionOfAccordions1_toggle":
     case "ExpansionOfAccordions2_toggle":
-      await page.waitForFunction("document.readyState === 'complete'");
+      try {
+        await page.waitForFunction("document.readyState === 'complete'", {
+          timeout: 60 * 1000,
+        });
+      }
+      catch (e) {
+        throw new Error(`${e.constructor.name}: Failed waiting for document.readyState === 'complete' on this page: ${page.url()}.`)
+      }
       await page.evaluate(async function () {
         jQuery(".js-accordion-link").not('.ma__emergency-header__toggle').click();
       });
