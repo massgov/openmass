@@ -85,10 +85,26 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
   $node_form = $form_state->getFormObject();
   /** @var \Drupal\node\Entity\Node $node */
   $node = $node_form->getEntity();
+  $is_operation_edit_default = in_array($node_form->getOperation(), ['edit', 'default']);
 
-  // Update access unpublished generate token button label.
   if (isset($form['access_unpublished_settings'])) {
+    // Update access unpublished generate token button label.
     $form['access_unpublished_settings']['generate_token']['#value'] = t('Get link');
+
+    if (empty($form['access_unpublished_settings']['#access'])) {
+      // Only display our element in entity edit forms.
+      $form['access_unpublished_settings']['#access'] = $is_operation_edit_default;
+    }
+  }
+
+  if (isset($form['url_redirects']) && empty($form['url_redirects']['#access'])) {
+    // Only display our element in entity edit forms.
+    $form['url_redirects']['#access'] = $is_operation_edit_default;
+  }
+
+  if (isset($form['rabbit_hole']) && empty($form['rabbit_hole']['#access'])) {
+    // Only display our element in entity edit forms.
+    $form['rabbit_hole']['#access'] = $is_operation_edit_default;
   }
 
   // Remove 'Unlimited' option for Temporary Unpublished Access.

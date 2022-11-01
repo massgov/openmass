@@ -18,6 +18,7 @@ class MassModeration {
   const PUBLISHED = 'published';
   const TRASH = 'trash';
   const UNPUBLISHED = 'unpublished';
+  const FIELD_NAME = 'moderation_state';
 
   /**
    * Get an array of states that come "before" published.
