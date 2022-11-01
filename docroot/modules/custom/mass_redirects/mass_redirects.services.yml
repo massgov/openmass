@@ -1,0 +1,6 @@
+services:
+  access_check.mass_redirects.node_has_page:
+    class: Drupal\mass_redirects\Access\NodeHasPageAccessChecker
+    arguments: ['@simple_sitemap.generator']
+    tags:
+      - { name: access_check, applies_to: _node_has_page }
