@@ -6,8 +6,8 @@ dependencies:
     - field.field.node.guide_page.field_collections
     - field.field.node.guide_page.field_data_flag
     - field.field.node.guide_page.field_data_format
-    - field.field.node.guide_page.field_data_hub_search_content
     - field.field.node.guide_page.field_data_resource_type
+    - field.field.node.guide_page.field_data_search_content
     - field.field.node.guide_page.field_data_topic
     - field.field.node.guide_page.field_details_data_type
     - field.field.node.guide_page.field_guide_page_bg_wide
@@ -65,7 +65,7 @@ third_party_settings:
         - field_data_resource_type
         - field_data_format
         - field_data_topic
-        - field_data_hub_search_content
+        - field_data_search_content
         - field_intended_audience
         - field_reusable_label
         - field_collections
@@ -168,32 +168,6 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
-  field_data_hub_search_content:
-    type: string_textarea
-    weight: 9
-    region: content
-    settings:
-      rows: 5
-      placeholder: ''
-    third_party_settings:
-      conditional_fields:
-        8f93db88-1e49-4570-9aa9-1f7eabbd6d76:
-          entity_type: node
-          bundle: guide_page
-          dependee: field_data_flag
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: data
-            effect: show
-            effect_options: {  }
-            selector: ''
   field_data_resource_type:
     type: options_buttons
     weight: 6
@@ -215,6 +189,32 @@ content:
             value_form:
               -
                 target_id: '77936'
+            effect: show
+            effect_options: {  }
+            selector: ''
+  field_data_search_content:
+    type: string_textarea
+    weight: 9
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        c48577b7-87bf-4796-9057-9e7072a47aaf:
+          entity_type: node
+          bundle: guide_page
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
             effect: show
             effect_options: {  }
             selector: ''
@@ -291,7 +291,7 @@ content:
     third_party_settings: {  }
   field_guide_page_metatags:
     type: metatag_firehose
-    weight: 3
+    weight: 5
     region: content
     settings:
       sidebar: true
@@ -373,7 +373,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 4
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -396,14 +396,14 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 6
+    weight: 99
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 7
+    weight: 99
     region: content
     settings:
       display_label: true
@@ -443,7 +443,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 5
+    weight: 50
     region: content
     settings: {  }
     third_party_settings: {  }
