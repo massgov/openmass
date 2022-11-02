@@ -1,9 +1,16 @@
 #A top level item containing Mass specific links below it.
 mass_admin_pages.mass:
-  title: "Dashboard"
+  title: "Mass.gov"
   route_name: system.admin
   parent: system.admin
   description: "Mass.gov admin home"
+  weight: -150
+
+mass_admin_pages.dashboard:
+  title: "Dashboard"
+  route_name: system.admin
+  parent: mass_admin_pages.mass
+  description: "Mass.gov author dashboard"
   weight: -150
 
 #A top level item containing Drupal admin links below it.

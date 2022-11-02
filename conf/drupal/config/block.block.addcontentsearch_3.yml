@@ -1,20 +1,25 @@
-uuid: ac5e9d56-0148-4fbd-a1e9-52a080a6b4bc
+uuid: f5842ca9-763e-41c0-bb75-db10e2ed09b0
 langcode: en
-status: false
+status: true
 dependencies:
   module:
     - mass_admin_pages
+    - system
   theme:
     - gin
-id: addcontentsearch_2
+id: addcontentsearch_3
 theme: gin
 region: content
-weight: 0
+weight: -6
 provider: null
 plugin: add_content_search
 settings:
   id: add_content_search
   label: 'Add Content Search'
-  label_display: '0'
+  label_display: visible
   provider: mass_admin_pages
-visibility: {  }
+visibility:
+  request_path:
+    id: request_path
+    negate: false
+    pages: /node/add
