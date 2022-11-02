@@ -46,6 +46,13 @@ module.exports = async function (page, scenario, vp) {
 
   await require('./clickAndHoverHelper')(page, scenario);
 
+  try {
+    await page.waitForNavigation( { timeout: 80000, waitUntil: 'domcontentloaded' });
+  }
+  catch (e) {
+    throw new Error(`${e.constructor.name}: Failed to navigate to the ${page.url()} url in your browser.`)
+  }
+
   await page.evaluate(function (url) {
     // Disable jQuery animation for any future calls.
     jQuery.fx.off = true;
