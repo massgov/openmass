@@ -16,60 +16,6 @@ function mass_gin_toolbar_alter(&$items) {
 function mass_gin_toolbar() {
   $items = [];
 
-//  $items['admin_home'] = [
-//    '#type' => 'toolbar_item',
-//    'tab' => [
-//      '#type' => 'link',
-//      '#title' => t('Admin home'),
-//      '#url' => Url::fromRoute('mass_admin_pages.author_home'),
-//      '#attributes' => [
-////        'class' => ['toolbar-admin-home-tab'],
-//      ],
-//    ],
-//    '#weight' => -50,
-//    '#wrapper_attributes' => [
-//      'class' => [
-////        'admin-home-toolbar-tab'
-//      ],
-//    ],
-//
-//  ];
-
-//  $items['author_content'] = [
-//    '#type' => 'toolbar_item',
-//    // The tab appears in the admin bar and toggles the "tray" menu.
-//    'tab' => [
-//      '#type' => 'link',
-//      '#title' => t('Content'),
-//      '#url' => Url::fromRoute('mass_admin_toolbar.my_work'),
-//      '#options' => [
-//        'attributes' => [
-//          'title' => t('Mass.gov editorial dashboard'),
-//        ],
-//      ],
-//      '#attributes' => [
-//        'class' => ['toolbar-icon', 'toolbar-icon-mass-dashboard-tab'],
-//      ],
-//    ],
-//    // Pre_render adds tray items dynamically from the mass-dashboard menu.
-//    'tray' => [
-//      '#heading' => t('Editorial Dashboard'),
-//      'mass_admin_toolbar_toolbar' => [
-//        '#pre_render' => [[MassAdminToolbarRender::class, 'massAdminToolbarToolbarPrerenderTray']],
-//      ],
-//      '#type' => 'container',
-//      '#attributes' => [
-//        'class' => ['toolbar-menu-administration'],
-//      ],
-//    ],
-//    '#attached' => [
-//      'library' => [
-//        'mass_admin_toolbar/mass_admin_toolbar.toolbar',
-//      ],
-//    ],
-//    '#weight' => -40,
-//  ];
-
   $items['add_content_link'] = [
     '#type' => 'toolbar_item',
     'tab' => [
@@ -109,21 +55,4 @@ function mass_gin_toolbar() {
   ];
 
   return $items;
-}
-
-/**
- * Implements hook_link_alter().
- */
-function mass_gin_link_alter(&$variables) {
-
-  /** @var \Drupal\Core\Url $url */
-  $url = $variables['url'];
-  try {
-    if ($url->getRouteName() == 'help.main') {
-      $variables['url'] = Url::fromUri('https://massgovdigital.gitbook.io/knowledge-base/');
-    }
-  }
-  catch (Exception) {
-    // Do nothing.
-  }
 }
