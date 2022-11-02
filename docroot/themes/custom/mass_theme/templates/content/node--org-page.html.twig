@@ -301,7 +301,11 @@
                   {{ icon('search') }} {{ 'Find a contact'|t }}
                 </span>
                   <ul class="ma__link-list__items ma__link-list__items--no-bullets">
-                    {{ content.field_org_directory_page }}
+                    {% for key,value in node.field_org_directory_page.value %}
+                      <li class="ma__link-list__item">
+                        {{ content.field_org_directory_page[key] }}
+                      </li>
+                    {% endfor %}
                   </ul>
                 </div>
               {% endif %}
@@ -314,7 +318,11 @@
                     {{ icon('alert') }} {{ 'Get updates'|t }}
                   </span>
                   <ul class="ma__link-list__items ma__link-list__items--no-bullets">
-                    {{ content.field_get_updates_links }}
+                    {% for key,value in node.field_get_updates_links.value %}
+                      <li class="ma__link-list__item">
+                        {{ content.field_get_updates_links[key] }}
+                      </li>
+                    {% endfor %}
                   </ul>
                 </div>
               {% endif %}
@@ -327,7 +335,11 @@
                     {{ icon('lg-scroll') }} {{ 'Public records request'|t }}
                   </span>
                   <ul class="ma__link-list__items ma__link-list__items--no-bullets">
-                    {{ content.field_public_records_link }}
+                    {% for key,value in node.field_public_records_link.value %}
+                      <li class="ma__link-list__item">
+                        {{ content.field_public_records_link[key] }}
+                      </li>
+                    {% endfor %}
                   </ul>
                 </div>
               {% endif %}
