@@ -9,6 +9,7 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\node\Entity\NodeType;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
@@ -21,6 +22,7 @@ function mass_admin_pages_preprocess_menu(&$variables) {
   // A menu item to css class mapping.
   $map = [
     'mass_admin_pages.mass' => 'toolbar-icon-tmgmt-admin-tmgmt',
+    'mass_admin_pages.help' => 'toolbar-icon-help-main',
     'mass_admin_pages.drupal' => 'toolbar-icon-system-modules-list',
     'mass_admin_pages.all_collection' => 'toolbar-icon-entity-webform-collection',
     'mass_admin_pages.trash_collection' => 'toolbar-icon-rebuild-cache-access',
@@ -109,6 +111,14 @@ function mass_admin_pages_help($route_name, RouteMatchInterface $route_match) {
 
     default:
   }
+}
+
+/**
+ * Implements hook_menu_links_discovered_alter().
+ */
+
+function mass_admin_pages_menu_links_discovered_alter(&$links) {
+  $links['system.admin_content']['title'] = new TranslatableMarkup('All (content)');
 }
 
 /**

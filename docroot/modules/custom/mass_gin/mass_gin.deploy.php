@@ -6,9 +6,7 @@
  */
 
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\mass_content_moderation\MassModeration;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
-use Drupal\scheduled_transitions\Entity\ScheduledTransition;
 use Drupal\workflows\Entity\Workflow;
 
 /**
@@ -25,8 +23,8 @@ function mass_gin_deploy_initial(&$sandbox) {
 
   // Move links under Help.
   foreach ([471, 466, 476, 461] as $id) {
-    MenuLinkContent::load($id)->set('parent', 'help.main')->save();
+    MenuLinkContent::load($id)->set('parent', 'mass_admin_pages.help')->save();
   }
-  // Delete 'Need Help' menu item.
+  // Delete old 'Need Help' menu item.
   MenuLinkContent::load(481)->delete();
 }
