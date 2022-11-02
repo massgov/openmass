@@ -31,7 +31,7 @@ class ThemeNegotiator implements ThemeNegotiatorInterface {
    * {@inheritdoc}
    */
   public function determineActiveTheme(RouteMatchInterface $route_match) {
-    return 'mass_admin_theme';
+    return \Drupal::config('system.theme')->get('admin') ?: 'seven';
   }
 
 }
