@@ -6041,9 +6041,14 @@ function mass_theme_preprocess_views_view_locations_page(&$variables) {
 function mass_theme_preprocess_form_element_label(&$variables) {
   // Add a class to the form element label for a views exposed filter title
   // field.
-  $labels_id = ['edit-title', 'edit-sort-bef-combine'];
-  if (in_array($variables['element']['#id'], $labels_id)) {
-    $variables['attributes']['class'][] = 'ma__sidebar-heading ma__legend';
+  switch ($variables['element']['#id']) {
+    case 'edit-title':
+      $variables['attributes']['class'][] = 'ma__sidebar-heading ma__legend';
+      break;
+
+    case 'edit-sort-bef-combine':
+      unset($variables['title']);
+      break;
   }
 }
 
@@ -7283,7 +7288,7 @@ function mass_theme_paragraphs_sections_check_wrapping_field($paragraph, $fields
 function mass_theme_preprocess_select(&$variables) {
   if ($variables['attributes']['name'] == 'sort_bef_combine') {
     $variables['selectBox'] = [];
-    $variables['selectBox']['label'] = '';
+    $variables['selectBox']['label'] = $variables['element']['#title'] ?? '';
 
     $variables['selectBox']['required'] = TRUE;
     $variables['selectBox']['id'] = $variables['attributes']['name'];
