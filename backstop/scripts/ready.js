@@ -47,10 +47,10 @@ module.exports = async function (page, scenario, vp) {
   await require('./clickAndHoverHelper')(page, scenario);
 
   try {
-    await page.waitForNavigation( {waitUntil: 'domcontentloaded'});
+    await page.waitForNavigation( { timeout: 60000, waitUntil: 'domcontentloaded' });
   }
   catch (e) {
-    throw new Error(`${e.constructor.name}: Failed to navigate to the ${page.url()} url in your browser.`)
+    throw new Error(`${e.constructor.name}: Failed to navigate to the ${page.url()}`)
   }
 
   await page.evaluate(function (url) {
