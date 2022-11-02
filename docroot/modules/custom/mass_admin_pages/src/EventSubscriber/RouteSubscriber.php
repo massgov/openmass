@@ -3,6 +3,7 @@
 namespace Drupal\mass_admin_pages\EventSubscriber;
 
 use Drupal\Core\Routing\RouteSubscriberBase;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\Routing\RouteCollection;
 
 class RouteSubscriber extends RouteSubscriberBase {
@@ -14,6 +15,7 @@ class RouteSubscriber extends RouteSubscriberBase {
     if ($route = $collection->get('system.admin')) {
       $route
         ->setDefault('_controller', '\Drupal\mass_admin_pages\Controller\AuthorHomePageController::authorHome')
+        ->setDefault('_title', 'Dashboard')
         ->setRequirement('_permission', 'use mass dashboard');
     }
   }
