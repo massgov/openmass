@@ -12,7 +12,9 @@ class RouteSubscriber extends RouteSubscriberBase {
    */
   protected function alterRoutes(RouteCollection $collection) {
     if ($route = $collection->get('system.admin')) {
-      $route->setDefault('_controller', '\Drupal\mass_admin_pages\Controller\AuthorHomePageController::authorHome');
+      $route
+        ->setDefault('_controller', '\Drupal\mass_admin_pages\Controller\AuthorHomePageController::authorHome')
+        ->setRequirement('_permission', 'use mass dashboard');
     }
   }
 
