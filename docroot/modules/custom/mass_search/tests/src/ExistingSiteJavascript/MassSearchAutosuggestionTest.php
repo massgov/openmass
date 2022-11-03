@@ -14,7 +14,7 @@ class MassSearchAutosuggestionTest extends ExistingSiteSelenium2DriverTestBase {
   /**
    * Asserts the banner search provides autosuggestions.
    */
-  public function testHomepageBannerSearch () {
+  public function testHomepageBannerSearch() {
     // Navigate to front page.
     $this->drupalGet("");
     $this->testSearch('banner');
@@ -23,7 +23,7 @@ class MassSearchAutosuggestionTest extends ExistingSiteSelenium2DriverTestBase {
   /**
    * Asserts the header search provides autosuggestions.
    */
-  public function testHeaderSearch () {
+  public function testHeaderSearch() {
 
     // Navigate to internal page.
     $this->drupalGet("/info-details/qag-information-details2");
