@@ -5,7 +5,6 @@
  * Contains mass_utility.module.
  */
 
-use Drupal\block\BlockViewBuilder;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -18,7 +17,6 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\file\Entity\File;
-use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Extension\Extension;
 use Drupal\Core\Url;
@@ -87,10 +85,26 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
   $node_form = $form_state->getFormObject();
   /** @var \Drupal\node\Entity\Node $node */
   $node = $node_form->getEntity();
+  $is_operation_edit_default = in_array($node_form->getOperation(), ['edit', 'default']);
 
-  // Update access unpublished generate token button label.
   if (isset($form['access_unpublished_settings'])) {
+    // Update access unpublished generate token button label.
     $form['access_unpublished_settings']['generate_token']['#value'] = t('Get link');
+
+    if (empty($form['access_unpublished_settings']['#access'])) {
+      // Only display our element in entity edit forms.
+      $form['access_unpublished_settings']['#access'] = $is_operation_edit_default;
+    }
+  }
+
+  if (isset($form['url_redirects']) && empty($form['url_redirects']['#access'])) {
+    // Only display our element in entity edit forms.
+    $form['url_redirects']['#access'] = $is_operation_edit_default;
+  }
+
+  if (isset($form['rabbit_hole']) && empty($form['rabbit_hole']['#access'])) {
+    // Only display our element in entity edit forms.
+    $form['rabbit_hole']['#access'] = $is_operation_edit_default;
   }
 
   // Remove 'Unlimited' option for Temporary Unpublished Access.
@@ -120,18 +134,6 @@ function mass_utility_form_node_form_alter(&$form, FormStateInterface $form_stat
     $form['access_unpublished_settings']['duration']['#options'][3628800] =
       t('6 weeks');
   }
-
-  // Add Organization Stakeholders field to 'advanced' vertical tabs group.
-  if (isset($form['field_state_organization_tax'])) {
-    $form['organization_stakeholders'] = [
-      '#type' => 'details',
-      '#title' => t('SiteImprove Groups'),
-      '#group' => 'advanced',
-      '#weight' => 90,
-    ];
-  }
-  // Attach the fields to group.
-  $form['field_state_organization_tax']['#group'] = 'organization_stakeholders';
 
   // Hide the preview button when a node is unsaved.
   if (isset($form['actions']['preview'])) {
@@ -307,7 +309,7 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
   }
 
   if ($form_id === 'media_document_add_form' || $form_id === 'media_document_edit_form') {
-    $form['actions']['submit']['#submit'][] = 'media_document_redirect';
+    $form['actions']['submit']['#submit'][] = 'mass_utility_media_document_redirect';
   }
 
   if ($media_form->getOperation() === 'add') {
@@ -335,7 +337,7 @@ function mass_utility_form_media_form_alter(&$form, FormStateInterface $form_sta
 /**
  * Redirects media forms to "all documents" view.
  */
-function media_document_redirect($form, FormStateInterface $form_state) {
+function mass_utility_media_document_redirect($form, FormStateInterface $form_state) {
   $form_state->setRedirect('view.all_documents.page_1');
 }
 
@@ -570,7 +572,7 @@ function mass_utility_field_widget_form_alter(&$element, FormStateInterface $for
     }
   }
   elseif ($type == 'image' && $field_name == 'field_state_org_photo') {
-    $element['#process'][] = 'mass_upload_widget_process';
+    $element['#process'][] = 'mass_utility_mass_upload_widget_process';
   }
   elseif ($type == 'string') {
     // Conditionally hide Manual Description except when chosen to display.
@@ -641,7 +643,7 @@ function mass_utility_form_node_news_edit_form_alter(&$form, FormStateInterface 
  * @return array
  *   Returns back the element array.
  */
-function mass_upload_widget_process(array $element) {
+function mass_utility_mass_upload_widget_process(array $element) {
   // Adds in another #submit callback.
   if (isset($element['upload_button'])) {
     $element['upload_button']['#ajax']['callback'] = 'mass_utility_get_signee_ajax_callback';
@@ -1114,7 +1116,6 @@ function mass_utility_entity_extra_field_info() {
 function mass_utility_media_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   // Get the attached file from the media entity because media fields
   // can be removed from the entity.
-
   if ($entity->field_upload_file != NULL) {
     $file = $entity->field_upload_file->entity;
 
@@ -1366,4 +1367,9 @@ function mass_utility_form_alter(&$form, FormStateInterface $form_state, $form_i
   // Hide "Reset to alphabetical" option on the
   // collection admin form (https://massgov.atlassian.net/browse/DP-24413).
   $form['actions']['reset_alphabetical']['#access'] = FALSE;
+
+  // Always hide simple sitemap, in favor of 'search' custom field (boolean).
+  if (isset($form['simple_sitemap'])) {
+    $form['simple_sitemap']['#access'] = FALSE;
+  }
 }

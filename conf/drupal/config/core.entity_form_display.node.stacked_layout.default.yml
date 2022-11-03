@@ -17,7 +17,6 @@ dependencies:
     - field.field.node.stacked_layout.field_photo
     - field.field.node.stacked_layout.field_related_content
     - field.field.node.stacked_layout.field_reusable_label
-    - field.field.node.stacked_layout.field_state_organization_tax
     - field.field.node.stacked_layout.field_topic_callout_links
     - field.field.node.stacked_layout.field_use_alt_header
     - node.type.stacked_layout
@@ -259,16 +258,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 7
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   field_topic_callout_links:
     type: link_default
     weight: 2
@@ -306,6 +295,20 @@ content:
     weight: 2
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield

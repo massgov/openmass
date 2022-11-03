@@ -68,7 +68,6 @@ class EventMetadataTest extends MetadataTestCase {
       'twitter:description' => 'Test Lede',
       'og:description' => 'Test Lede',
       'mg_date' => '20121231',
-      'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_organization' => 'testorgpage',
     ]);
   }

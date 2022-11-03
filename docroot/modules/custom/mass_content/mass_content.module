@@ -537,6 +537,43 @@ function mass_content_theme() {
  */
 function mass_content_page_attachments(array &$attachments) {
   $attachments['#attached']['library'][] = 'mass_content/contextual-nav';
+  $attachments['#attached']['library'][] = 'mass_content/session_organizations';
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ *
+ * Honor custom fields for hiding from Search (robots meta tag). This overrides
+ * any robot tag set by metatag module (which is now unused for robots tag).
+ */
+function mass_content_page_attachments_alter(array &$attachments) {
+  $values = [];
+  $entity = NULL;
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($route_name === 'entity.node.canonical') {
+    $entity = \Drupal::routeMatch()->getParameter('node');
+  }
+  if ($entity) {
+    if ($entity->getSearch()->getString()) {
+      $values = ['noindex', 'nofollow'];
+    }
+    elseif ($entity->getSearchNoSnippet()->getString()) {
+      $values = ['nosnippet'];
+    }
+    if ($values) {
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#tag' => 'meta',
+          '#cache' => ['tags' => $entity->getCacheTags()],
+          '#attributes' => [
+            'name' => 'robots',
+            'content' => implode(', ', $values),
+          ],
+        ],
+        'robots',
+      ];
+    }
+  }
 }
 
 /**
@@ -848,10 +885,6 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
       'document',
     ];
     $query->condition('type', $types_with_consolidated_date_field, 'IN');
-
-    // Files doesn't have a published date, hence we don't need to make to
-    // make a Union to include media/files results.
-    return;
   }
 
   // Override sort with the sort_bef_combine query parameter.
@@ -900,12 +933,11 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
 
   // Same alias from the node title to be able to sort nodes and media by title.
   $media_query->addField('media__field_title', 'field_title_value', 'node_field_data_title');
-
+  $media_query->addField('media__field_start_date', 'field_start_date_value', 'node__field_date_published_field_date_published_value');
   $media_query->addField('media_field_data', 'mid', 'extra_column_3');
-  $media_query->addField('media_field_data', 'mid', 'extra_column_4');
 
   // If the sort is for news of event do not show media.
-  if ($order_by_event || $order_by_published_date) {
+  if ($order_by_event) {
     $media_query->condition('mid', -1);
   }
 

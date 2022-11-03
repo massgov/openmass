@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.service_page.field_data_flag
     - field.field.node.service_page.field_data_format
     - field.field.node.service_page.field_data_resource_type
+    - field.field.node.service_page.field_data_search_content
     - field.field.node.service_page.field_data_topic
     - field.field.node.service_page.field_image_credit
     - field.field.node.service_page.field_intended_audience
@@ -36,7 +37,6 @@ dependencies:
     - field.field.node.service_page.field_service_video
     - field.field.node.service_page.field_services_social_links
     - field.field.node.service_page.field_short_title
-    - field.field.node.service_page.field_state_organization_tax
     - image.style.action_banner_large
     - node.type.service_page
   module:
@@ -57,7 +57,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 25
+    weight: 15
     region: content
   content_moderation_control:
     settings: {  }
@@ -67,26 +67,26 @@ content:
   extra_node_all_actions:
     settings: {  }
     third_party_settings: {  }
-    weight: 27
+    weight: 17
     region: content
   extra_org_feedback_form:
     settings: {  }
     third_party_settings: {  }
-    weight: 26
+    weight: 16
     region: content
   field_data_flag:
     type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 32
+    weight: 19
     region: content
   field_data_format:
     type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 35
+    weight: 22
     region: content
   field_data_resource_type:
     type: entity_reference_label
@@ -94,7 +94,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 34
+    weight: 21
     region: content
   field_data_topic:
     type: entity_reference_label
@@ -102,7 +102,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 45
+    weight: 32
     region: content
   field_image_credit:
     type: string
@@ -110,14 +110,14 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 17
+    weight: 10
     region: content
   field_intended_audience:
     type: list_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    weight: 22
+    weight: 14
     region: content
   field_kpi_pl_avg_cl_comp_time:
     type: number_integer
@@ -126,7 +126,7 @@ content:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
-    weight: 39
+    weight: 26
     region: content
   field_kpi_pl_cl_app_starts:
     type: number_integer
@@ -135,7 +135,7 @@ content:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
-    weight: 37
+    weight: 24
     region: content
   field_kpi_pl_cl_app_subs:
     type: number_integer
@@ -144,7 +144,7 @@ content:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
-    weight: 38
+    weight: 25
     region: content
   field_kpi_pl_cl_task_rate:
     type: number_decimal
@@ -155,7 +155,7 @@ content:
       scale: 2
       prefix_suffix: true
     third_party_settings: {  }
-    weight: 43
+    weight: 30
     region: content
   field_kpi_pl_em_app_review_rate:
     type: number_decimal
@@ -166,7 +166,7 @@ content:
       scale: 2
       prefix_suffix: true
     third_party_settings: {  }
-    weight: 44
+    weight: 31
     region: content
   field_kpi_pl_em_app_review_time:
     type: number_integer
@@ -175,7 +175,7 @@ content:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
-    weight: 41
+    weight: 28
     region: content
   field_kpi_pl_em_app_reviews:
     type: number_integer
@@ -184,7 +184,7 @@ content:
       thousand_separator: ''
       prefix_suffix: true
     third_party_settings: {  }
-    weight: 40
+    weight: 27
     region: content
   field_kpi_sessions_clicks_pl_pct:
     type: number_decimal
@@ -195,7 +195,7 @@ content:
       scale: 2
       prefix_suffix: true
     third_party_settings: {  }
-    weight: 42
+    weight: 29
     region: content
   field_list_data_type:
     type: entity_reference_label
@@ -203,7 +203,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 33
+    weight: 20
     region: content
   field_log_in_links:
     type: link
@@ -215,7 +215,7 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    weight: 29
+    weight: 18
     region: content
   field_organizations:
     type: entity_reference_label
@@ -223,7 +223,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 21
+    weight: 13
     region: content
   field_ref_contact_info:
     type: entity_reference_label
@@ -231,7 +231,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 20
+    weight: 12
     region: content
   field_service_bg_wide:
     type: image_safe_string_url
@@ -246,7 +246,7 @@ content:
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 5
+    weight: 4
     region: content
   field_service_eligibility_info:
     type: entity_reference_label
@@ -254,14 +254,14 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 15
+    weight: 9
     region: content
   field_service_kpi_choice:
     type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 36
+    weight: 23
     region: content
   field_service_lede:
     type: string
@@ -276,7 +276,7 @@ content:
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 19
+    weight: 11
     region: content
   field_service_ref_guide_page_1:
     type: entity_reference_label
@@ -284,7 +284,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 12
+    weight: 7
     region: content
   field_service_ref_services_6:
     type: entity_reference_label
@@ -292,7 +292,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 9
+    weight: 6
     region: content
   field_service_sections:
     type: entity_reference_revisions_entity_view
@@ -301,7 +301,7 @@ content:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    weight: 46
+    weight: 33
     region: content
   field_service_video:
     type: entity_reference_label
@@ -309,7 +309,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 14
+    weight: 8
     region: content
   field_services_social_links:
     type: link
@@ -321,7 +321,7 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    weight: 6
+    weight: 5
     region: content
   links:
     settings: {  }
@@ -335,8 +335,8 @@ content:
     region: content
 hidden:
   field_collections: true
+  field_data_search_content: true
   field_primary_parent: true
   field_reusable_label: true
   field_short_title: true
-  field_state_organization_tax: true
   langcode: true

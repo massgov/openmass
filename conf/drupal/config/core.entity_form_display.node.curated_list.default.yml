@@ -12,6 +12,7 @@ dependencies:
     - field.field.node.curated_list.field_data_flag
     - field.field.node.curated_list.field_data_format
     - field.field.node.curated_list.field_data_resource_type
+    - field.field.node.curated_list.field_data_search_content
     - field.field.node.curated_list.field_data_topic
     - field.field.node.curated_list.field_english_version
     - field.field.node.curated_list.field_intended_audience
@@ -23,13 +24,13 @@ dependencies:
     - field.field.node.curated_list.field_related_links
     - field.field.node.curated_list.field_reusable_label
     - field.field.node.curated_list.field_short_title
-    - field.field.node.curated_list.field_state_organization_tax
     - node.type.curated_list
     - workflows.workflow.editorial
   module:
     - conditional_fields
     - content_moderation
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - link
     - maxlength
@@ -64,6 +65,7 @@ third_party_settings:
         - field_organizations
         - field_data_flag
         - field_data_topic
+        - field_data_search_content
         - field_list_data_type
         - field_data_resource_type
         - field_data_format
@@ -120,7 +122,7 @@ mode: default
 content:
   field_collections:
     type: entity_reference_tree
-    weight: 19
+    weight: 20
     region: content
     settings:
       theme: default
@@ -207,7 +209,7 @@ content:
     third_party_settings: {  }
   field_data_format:
     type: options_buttons
-    weight: 14
+    weight: 15
     region: content
     settings: {  }
     third_party_settings:
@@ -231,7 +233,7 @@ content:
             selector: ''
   field_data_resource_type:
     type: options_buttons
-    weight: 13
+    weight: 14
     region: content
     settings: {  }
     third_party_settings:
@@ -250,6 +252,32 @@ content:
             value_form:
               -
                 target_id: '85296'
+            effect: show
+            effect_options: {  }
+            selector: ''
+  field_data_search_content:
+    type: string_textarea
+    weight: 12
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        37584a0c-b148-46e5-affc-a3b53f70eea7:
+          entity_type: node
+          bundle: curated_list
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
             effect: show
             effect_options: {  }
             selector: ''
@@ -284,7 +312,7 @@ content:
             selector: ''
   field_english_version:
     type: entity_reference_autocomplete
-    weight: 16
+    weight: 17
     region: content
     settings:
       match_operator: CONTAINS
@@ -312,13 +340,13 @@ content:
             selector: ''
   field_intended_audience:
     type: options_buttons
-    weight: 17
+    weight: 18
     region: content
     settings: {  }
     third_party_settings: {  }
   field_list_data_type:
     type: options_buttons
-    weight: 12
+    weight: 13
     region: content
     settings: {  }
     third_party_settings:
@@ -399,7 +427,7 @@ content:
     third_party_settings: {  }
   field_related_links:
     type: link_default
-    weight: 110
+    weight: 111
     region: content
     settings:
       placeholder_url: ''
@@ -407,7 +435,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 18
+    weight: 19
     region: content
     settings:
       match_operator: CONTAINS
@@ -423,19 +451,9 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 4
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 15
+    weight: 16
     region: content
     settings:
       include_locked: false
@@ -462,6 +480,20 @@ content:
     weight: 4
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield

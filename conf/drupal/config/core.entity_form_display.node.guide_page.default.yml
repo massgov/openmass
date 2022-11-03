@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.guide_page.field_data_flag
     - field.field.node.guide_page.field_data_format
     - field.field.node.guide_page.field_data_resource_type
+    - field.field.node.guide_page.field_data_search_content
     - field.field.node.guide_page.field_data_topic
     - field.field.node.guide_page.field_details_data_type
     - field.field.node.guide_page.field_guide_page_bg_wide
@@ -20,7 +21,6 @@ dependencies:
     - field.field.node.guide_page.field_primary_parent
     - field.field.node.guide_page.field_reusable_label
     - field.field.node.guide_page.field_short_title
-    - field.field.node.guide_page.field_state_organization_tax
     - image.style.large
     - node.type.guide_page
     - workflows.workflow.editorial
@@ -28,6 +28,7 @@ dependencies:
     - conditional_fields
     - content_moderation
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - focal_point
     - maxlength
@@ -64,6 +65,7 @@ third_party_settings:
         - field_data_resource_type
         - field_data_format
         - field_data_topic
+        - field_data_search_content
         - field_intended_audience
         - field_reusable_label
         - field_collections
@@ -120,7 +122,7 @@ mode: default
 content:
   field_collections:
     type: entity_reference_tree
-    weight: 11
+    weight: 12
     region: content
     settings:
       theme: default
@@ -187,6 +189,32 @@ content:
             value_form:
               -
                 target_id: '77936'
+            effect: show
+            effect_options: {  }
+            selector: ''
+  field_data_search_content:
+    type: string_textarea
+    weight: 9
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        c48577b7-87bf-4796-9057-9e7072a47aaf:
+          entity_type: node
+          bundle: guide_page
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
             effect: show
             effect_options: {  }
             selector: ''
@@ -300,7 +328,7 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 9
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -327,7 +355,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 10
+    weight: 11
     region: content
     settings:
       match_operator: CONTAINS
@@ -340,16 +368,6 @@ content:
     weight: -2
     region: content
     settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 6
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
@@ -375,6 +393,20 @@ content:
     weight: 2
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield

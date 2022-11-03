@@ -22,6 +22,7 @@ dependencies:
     - field.field.node.binder.field_data_flag
     - field.field.node.binder.field_data_format
     - field.field.node.binder.field_data_resource_type
+    - field.field.node.binder.field_data_search_content
     - field.field.node.binder.field_data_topic
     - field.field.node.binder.field_date_published
     - field.field.node.binder.field_downloads
@@ -30,7 +31,6 @@ dependencies:
     - field.field.node.binder.field_primary_parent
     - field.field.node.binder.field_reusable_label
     - field.field.node.binder.field_short_title
-    - field.field.node.binder.field_state_organization_tax
     - image.style.thumbnail
     - node.type.binder
     - workflows.workflow.editorial
@@ -40,6 +40,7 @@ dependencies:
     - datetime
     - entity_browser_entity_form
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - image
     - inline_entity_form
@@ -85,6 +86,7 @@ third_party_settings:
         - field_data_resource_type
         - field_data_format
         - field_data_topic
+        - field_data_search_content
         - field_reusable_label
         - field_intended_audience
         - field_collections
@@ -137,7 +139,7 @@ mode: default
 content:
   field_binder_appendix:
     type: entity_reference_paragraphs
-    weight: 30
+    weight: 34
     region: content
     settings:
       title: Appendix
@@ -210,7 +212,7 @@ content:
     third_party_settings: {  }
   field_binder_pages:
     type: entity_reference_paragraphs
-    weight: 29
+    weight: 33
     region: content
     settings:
       title: Page
@@ -381,6 +383,32 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_data_search_content:
+    type: string_textarea
+    weight: 28
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        a91e480f-10e2-4354-93e9-87a3bbd50dca:
+          entity_type: node
+          bundle: binder
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_data_topic:
     type: term_reference_tree
     weight: 27
@@ -418,7 +446,7 @@ content:
     third_party_settings: {  }
   field_downloads:
     type: inline_entity_form_complex
-    weight: 32
+    weight: 35
     region: content
     settings:
       form_mode: default
@@ -465,7 +493,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 28
+    weight: 29
     region: content
     settings:
       match_operator: CONTAINS
@@ -478,16 +506,6 @@ content:
     weight: 11
     region: content
     settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 3
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
@@ -513,6 +531,20 @@ content:
     weight: 2
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield

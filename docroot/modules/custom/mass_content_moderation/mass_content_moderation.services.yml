@@ -1,0 +1,5 @@
+services:
+  access_check.mass_content_moderation.entity_is_state:
+    class: Drupal\mass_content_moderation\Access\EntityIsStateAccessChecker
+    tags:
+      - { name: access_check, applies_to: _entity_is_state }

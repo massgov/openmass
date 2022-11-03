@@ -1157,7 +1157,7 @@ function mass_theme_preprocess_node_location(&$variables) {
   }
 
   if ($variables['elements']['#view_mode'] == 'teaser') {
-
+    $cache_tags = [];
     $contacts = [];
 
     if (!empty($node->field_ref_contact_info_1)) {
@@ -1277,6 +1277,9 @@ function mass_theme_preprocess_node_location(&$variables) {
 
     if (!$node->field_ref_contact_info_1->isEmpty()) {
       $contact_information_entity = $node->field_ref_contact_info_1->entity;
+      // Convert to array_merge to avoid rewriting results
+      // if you are adding cache tags above.
+      $cache_tags = $contact_information_entity->getCacheTags();
       // Get phone number from the referenced contact info node.
       if (!empty($contact_information_entity->field_ref_phone_number->entity->field_phone->value)) {
         $phone = $contact_information_entity->field_ref_phone_number->entity->field_phone->value;
@@ -1313,6 +1316,12 @@ function mass_theme_preprocess_node_location(&$variables) {
           }
         }
       }
+    }
+    if (!empty($cache_tags)) {
+      // Merge arrays of existing and new cache tags and removes duplicates.
+      $merged_tags = Cache::mergeTags($node->getCacheTags(), $cache_tags);
+      // Add the cache tags to the render array.
+      $variables['#cache']['tags'] = $merged_tags;
     }
   }
 }
@@ -6032,9 +6041,14 @@ function mass_theme_preprocess_views_view_locations_page(&$variables) {
 function mass_theme_preprocess_form_element_label(&$variables) {
   // Add a class to the form element label for a views exposed filter title
   // field.
-  $labels_id = ['edit-title', 'edit-sort-bef-combine'];
-  if (in_array($variables['element']['#id'], $labels_id)) {
-    $variables['attributes']['class'][] = 'ma__sidebar-heading ma__legend';
+  switch ($variables['element']['#id']) {
+    case 'edit-title':
+      $variables['attributes']['class'][] = 'ma__sidebar-heading ma__legend';
+      break;
+
+    case 'edit-sort-bef-combine':
+      unset($variables['title']);
+      break;
   }
 }
 
@@ -6626,14 +6640,9 @@ function mass_theme_preprocess_media_document(array &$variables) {
       ];
     }
 
-    $creator = $media->field_creator->entity;
     $language = $media->language();
 
     $display_fields = [
-      'field_creator' => [
-        'label' => 'Author:',
-        'text' => $creator ? Html::escape($creator->label()) : '',
-      ],
       'langcode' => [
         'label' => 'Language:',
         'text' => $language ? $language->getName() : '',
@@ -7279,7 +7288,7 @@ function mass_theme_paragraphs_sections_check_wrapping_field($paragraph, $fields
 function mass_theme_preprocess_select(&$variables) {
   if ($variables['attributes']['name'] == 'sort_bef_combine') {
     $variables['selectBox'] = [];
-    $variables['selectBox']['label'] = '';
+    $variables['selectBox']['label'] = $variables['element']['#title'] ?? '';
 
     $variables['selectBox']['required'] = TRUE;
     $variables['selectBox']['id'] = $variables['attributes']['name'];

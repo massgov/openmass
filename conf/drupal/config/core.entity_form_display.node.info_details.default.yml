@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.info_details.field_data_flag
     - field.field.node.info_details.field_data_format
     - field.field.node.info_details.field_data_resource_type
+    - field.field.node.info_details.field_data_search_content
     - field.field.node.info_details.field_data_topic
     - field.field.node.info_details.field_date_published
     - field.field.node.info_details.field_details_data_type
@@ -31,7 +32,6 @@ dependencies:
     - field.field.node.info_details.field_reusable_label
     - field.field.node.info_details.field_short_desc
     - field.field.node.info_details.field_short_title
-    - field.field.node.info_details.field_state_organization_tax
     - image.style.large
     - node.type.info_details
     - workflows.workflow.editorial
@@ -83,15 +83,16 @@ third_party_settings:
         - field_primary_parent
         - field_organizations
         - field_data_flag
+        - field_collections
         - field_details_data_type
         - field_data_resource_type
         - field_data_format
         - field_data_topic
+        - field_data_search_content
         - langcode
         - field_english_version
         - field_intended_audience
         - field_reusable_label
-        - field_collections
       label: Overview
       region: content
       parent_name: group_information_details_edit_f
@@ -211,7 +212,7 @@ content:
     third_party_settings: {  }
   field_data_format:
     type: options_buttons
-    weight: 21
+    weight: 22
     region: content
     settings: {  }
     third_party_settings:
@@ -235,7 +236,7 @@ content:
             selector: ''
   field_data_resource_type:
     type: options_buttons
-    weight: 20
+    weight: 21
     region: content
     settings: {  }
     third_party_settings:
@@ -257,9 +258,35 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_data_search_content:
+    type: string_textarea
+    weight: 24
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        86eec891-47e3-4d11-aa86-018898ff4aab:
+          entity_type: node
+          bundle: info_details
+          dependee: field_data_flag
+          settings:
+            state: visible
+            condition: value
+            grouping: AND
+            values_set: 1
+            value: ''
+            values: {  }
+            value_form:
+              -
+                value: data
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_data_topic:
     type: term_reference_tree
-    weight: 22
+    weight: 23
     region: content
     settings:
       start_minimized: true
@@ -294,7 +321,7 @@ content:
     third_party_settings: {  }
   field_details_data_type:
     type: options_buttons
-    weight: 19
+    weight: 20
     region: content
     settings: {  }
     third_party_settings:
@@ -325,7 +352,7 @@ content:
     third_party_settings: {  }
   field_english_version:
     type: entity_reference_autocomplete
-    weight: 24
+    weight: 26
     region: content
     settings:
       match_operator: CONTAINS
@@ -433,7 +460,7 @@ content:
     third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
-    weight: 25
+    weight: 27
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -466,7 +493,7 @@ content:
     third_party_settings: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
-    weight: 26
+    weight: 28
     region: content
     settings:
       match_operator: CONTAINS
@@ -490,19 +517,9 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_state_organization_tax:
-    type: entity_reference_autocomplete
-    weight: 3
-    region: content
-    settings:
-      match_operator: CONTAINS
-      match_limit: 10
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   langcode:
     type: language_select
-    weight: 23
+    weight: 25
     region: content
     settings:
       include_locked: false
@@ -524,6 +541,20 @@ content:
     weight: 30
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 99
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield

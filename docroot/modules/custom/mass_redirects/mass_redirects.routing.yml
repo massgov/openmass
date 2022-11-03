@@ -1,0 +1,13 @@
+entity.node.redirects:
+  path: '/node/{node}/redirects'
+  defaults:
+    _title: 'Redirects'
+    _entity_form: 'node.move-redirects'
+  options:
+    _node_operation_route: TRUE
+    _admin_route: TRUE
+  requirements:
+    _entity_access: 'node.view'
+    _node_has_page: 'TRUE'
+    _entity_is_state: 'trash'
+    node: \d+

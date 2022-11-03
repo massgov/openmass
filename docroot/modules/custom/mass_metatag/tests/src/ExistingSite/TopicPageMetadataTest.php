@@ -43,7 +43,7 @@ class TopicPageMetadataTest extends MetadataTestCase {
       ],
       'field_topic_ref_related_topics' => [
         $this->createNode([
-          'type' => 'topic',
+          'type' => 'topic_page',
           'title' => 'Test Topic',
         ]),
       ],
@@ -64,7 +64,6 @@ class TopicPageMetadataTest extends MetadataTestCase {
       'twitter:card' => 'summary_large_image',
       'twitter:image' => $large,
       'twitter:description' => 'Test Lede',
-      'mg_stakeholder_org' => 'TestOrgTerm',
     ]);
   }
 

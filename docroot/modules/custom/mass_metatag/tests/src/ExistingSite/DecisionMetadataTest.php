@@ -88,7 +88,6 @@ class DecisionMetadataTest extends MetadataTestCase {
       'twitter:description' => 'TestOverview',
       'mg_date' => '20121231',
       'mg_type' => 'testtype',
-      'mg_stakeholder_org' => 'TestOrgTerm',
       'mg_organization' => 'testorgpage',
     ]);
   }
