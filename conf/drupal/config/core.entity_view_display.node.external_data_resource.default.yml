@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.external_data_resource.field_data_flag
     - field.field.node.external_data_resource.field_data_format
     - field.field.node.external_data_resource.field_data_resource_type
+    - field.field.node.external_data_resource.field_data_search_content
     - field.field.node.external_data_resource.field_data_topic
     - field.field.node.external_data_resource.field_details_data_type
     - field.field.node.external_data_resource.field_external_organization
@@ -26,7 +27,7 @@ content:
   content_moderation_control:
     settings: {  }
     third_party_settings: {  }
-    weight: -20
+    weight: 0
     region: content
   field_collections:
     type: entity_reference_label
@@ -34,21 +35,21 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 9
+    weight: 10
     region: content
   field_data_flag:
     type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 8
+    weight: 9
     region: content
   field_data_format:
     type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    weight: 6
+    weight: 7
     region: content
   field_data_resource_type:
     type: entity_reference_label
@@ -56,7 +57,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 5
+    weight: 6
     region: content
   field_data_topic:
     type: entity_reference_label
@@ -64,7 +65,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 7
+    weight: 8
     region: content
   field_details_data_type:
     type: entity_reference_label
@@ -72,7 +73,7 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 4
+    weight: 5
     region: content
   field_external_organization:
     type: string
@@ -80,14 +81,14 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 10
+    weight: 11
     region: content
   field_externaldata_description:
     type: basic_string
     label: inline
     settings: {  }
     third_party_settings: {  }
-    weight: 2
+    weight: 3
     region: content
   field_externaldata_url:
     type: link
@@ -99,7 +100,7 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    weight: 1
+    weight: 2
     region: content
   field_organizations:
     type: entity_reference_label
@@ -107,12 +108,13 @@ content:
     settings:
       link: true
     third_party_settings: {  }
-    weight: 3
+    weight: 4
     region: content
   links:
     settings: {  }
     third_party_settings: {  }
-    weight: 0
+    weight: 1
     region: content
 hidden:
+  field_data_search_content: true
   langcode: true
