@@ -130,6 +130,15 @@ function mass_admin_pages_page_attachments(array &$page) {
 }
 
 /**
+ * @see https://drupal.stackexchange.com/a/269258/549
+ */
+function mass_admin_pages_theme_suggestions_node_add_list(array $variables) {
+  $suggestions = [];
+  $suggestions[] = 'node_add_list__' . 'custom';
+  return $suggestions;
+}
+
+/**
  * Implements hook_theme().
  */
 function mass_admin_pages_theme($existing, $type, $theme, $path) {
@@ -141,6 +150,10 @@ function mass_admin_pages_theme($existing, $type, $theme, $path) {
     'block__alerts_block' => [
       'template' => 'block--alerts-block',
       'base hook' => 'block',
+    ],
+    // https://drupal.stackexchange.com/a/269258/549
+    'node_add_list__custom' => [
+      'base hook' => 'node_add_list',
     ],
   ];
 }
