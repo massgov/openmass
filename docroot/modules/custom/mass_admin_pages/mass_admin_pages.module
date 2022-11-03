@@ -159,6 +159,22 @@ function mass_admin_pages_theme($existing, $type, $theme, $path) {
 }
 
 /**
+ * Use our template for breadcrumb in Gin secondary toolbar.
+ */
+function mass_admin_pages_theme_registry_alter(&$theme_registry) {
+  $templates_path = \Drupal::service('extension.list.module')->getPath('mass_admin_pages') . '/templates';
+  $theme_registry['toolbar']['path'] = $templates_path;
+}
+
+function mass_admin_pages_module_implements_alter(&$implementations, $hook) {
+  if ($hook == 'theme_registry_alter') {
+    $group = $implementations['mass_admin_pages'];
+    unset($implementations['mass_admin_pages']);
+    $implementations['mass_admin_pages'] = $group;
+  }
+}
+
+/**
  * Implements hook_form_form_ID_alter().
  */
 function mass_admin_pages_form_node_type_edit_form_alter(&$form, FormStateInterface $form_state) {

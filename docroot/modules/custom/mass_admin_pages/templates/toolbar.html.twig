@@ -1,0 +1,30 @@
+{#
+/**
+ * @file
+ * Include toolbar.html.twig template from Gin.
+ */
+#}
+{% include '@gin/navigation/toolbar--gin.html.twig' ignore missing %}
+{% if secondary_toolbar_frontend and toolbar_variant != 'classic' %}
+<div class="gin-secondary-toolbar gin-secondary-toolbar--frontend">
+  <div class="gin-secondary-toolbar__layout-container">
+    <div class="gin-breadcrumb-wrapper">
+      <div class="region-breadcrumb">
+        <nav class="gin-breadcrumb" role="navigation" aria-labelledby="system-breadcrumb">
+          <h2 id="system-breadcrumb" class="visually-hidden">{{ 'Breadcrumb'|t }}</h2>
+          <ol class="gin-breadcrumb__list">
+            <li class="gin-breadcrumb__item">
+              {% if entity_edit_url and entity_title %}
+                <a class="gin-breadcrumb__link gin-back-to-admin" href="{{ entity_edit_url }}"><strong>EDIT</strong> {{ '%title'|t({ '%title': entity_title }) }}</a>
+              {% else %}
+                <a class="gin-breadcrumb__link gin-back-to-admin" href="{{ path('system.admin_content') }}">{{ 'Back to Administration'|t }}</a>
+              {% endif %}
+            </li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+    {% include '@gin/navigation/toolbar--gin--secondary.html.twig' ignore missing %}
+  </div>
+</div>
+{% endif %}

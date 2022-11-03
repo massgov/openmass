@@ -1,9 +1,92 @@
 <?php
 
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\Url;
 
 function mass_gin_toolbar_alter(&$items) {
   unset($items['acquia_connector']);
+
+  // Change the label+class of the local tasks toolbar item from admin_toolbar_tools module.
+  // Technique borrowed from moderation_sidebar module.
+  $item_name = 'admin_toolbar_local_tasks';
+  if (!isset($items[$item_name])) {
+    return;
+  }
+
+  $cacheability = (new CacheableMetadata())
+    ->addCacheContexts(['route'])
+    ->addCacheContexts(['user.permissions']);
+
+  if (!\Drupal::currentUser()->hasPermission('use mass dashboard')) {
+    $cacheability->applyTo($items[$item_name]);
+    return $items;
+  }
+
+  /** @var \Drupal\Core\Routing\AdminContext $admin_context */
+  $admin_context = \Drupal::service('router.admin_context');
+
+  /** @var \Drupal\Core\Entity\ContentEntityInterface $entity */
+  $current_route = \Drupal::routeMatch();
+  $entity = NULL;
+  foreach ($current_route->getParameters() as $param) {
+    if ($param instanceof ContentEntityInterface) {
+      $entity = $param;
+      // Stop at the first found instance.
+      break;
+    }
+  }
+
+  if (!($entity instanceof ContentEntityInterface) || !($entity->getEntityType()->isRevisionable()) || $admin_context->isAdminRoute()) {
+    $cacheability->applyTo($items[$item_name]);
+    return $items;
+  }
+
+  if ($entity->isNew()) {
+    return $items;
+  }
+
+  $cacheability->addCacheableDependency($entity);
+
+  /** @var \Drupal\content_moderation\ModerationInformation $moderation_information */
+  $moderation_information = \Drupal::service('content_moderation.moderation_information');
+
+  $params = [
+    'entity' => $entity->id(),
+    'entity_type' => $entity->getEntityTypeId(),
+  ];
+
+  // Grab the state label for the quick hover feature.
+  $is_published = TRUE;
+  if ($entity instanceof EntityPublishedInterface) {
+    $is_published = $entity->isPublished();
+  }
+
+  if ($moderation_information->isModeratedEntity($entity)) {
+    $state_label = $moderation_information
+      ->getWorkflowForEntity($entity)
+      ->getTypePlugin()
+      ->getState($entity->moderation_state->value)
+      ->label();
+  }
+  else {
+    $state_label = $is_published ? t('Published') : t('Draft');
+  }
+
+  if ($moderation_information->hasPendingRevision($entity) && $entity->isDefaultRevision()) {
+    $state_label = t('Draft available');
+    $label_class = 'moderation-label-draft-available';
+  }
+  else {
+    $label_class = 'moderation-label-' . ($is_published ? 'published' : 'draft');
+  }
+
+  $items[$item_name]['tab']['#title'] = $state_label;
+  $items[$item_name]['tab']['#attributes']['class'][] = $label_class;
+  $items[$item_name]['tab']['#attributes']['data-label'] = $state_label;
+  $items[$item_name]['#attached']['library'][] = 'mass_admin_pages/toolbar';
+  $cacheability->applyTo($items[$item_name]);
 }
 
 /**
