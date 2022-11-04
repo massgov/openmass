@@ -785,18 +785,14 @@ function mass_fields_do_form_alter(&$form, FormStateInterface $form_state) {
   /** @var ContentEntityInterface $entity */
   $entity = $form_state->getFormObject()->getEntity();
 
-  $build['tip'] = [
-    '#type' => 'item',
-    '#title' => 'Publish state',
-    '#plain_text' => 'The state dropdown has moved to the right hand sidebar.',
-    '#weight' => 888,
-  ];
-  $build['tip2'] = [
-    '#markup' => '<div role="contentinfo" aria-label="Status message" class="messages messages--status">
-                    Publish state has moved to the right hand sidebar.
-                  </div>'
-  ];
-  $form['foo'] = $build;
+  //  For CSS, see the admonition library is mass_admin_pages module.
+  $markup = <<<EOM
+<div class="admonition tip">
+    <div class="title">Publish state</div>
+    <div class="content">The Publish state dropdown has moved to the right hand sidebar.</div>
+</div>
+EOM;
+  $form['pub_state']['#markup'] = $markup;
 
   if (empty($form['search'])) {
     return;
