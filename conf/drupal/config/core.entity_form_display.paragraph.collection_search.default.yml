@@ -4,8 +4,10 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.collection_search.field_collection
+    - field.field.paragraph.collection_search.field_search_footer
     - field.field.paragraph.collection_search.field_search_heading
     - field.field.paragraph.collection_search.field_search_query_param_name
+    - field.field.paragraph.collection_search.field_search_related_info
     - field.field.paragraph.collection_search.field_search_site_url
     - field.field.paragraph.collection_search.field_search_type
     - field.field.paragraph.collection_search.field_secondary_heading
@@ -14,6 +16,7 @@ dependencies:
     - paragraphs.paragraphs_type.collection_search
   module:
     - link
+    - text
 id: paragraph.collection_search.default
 targetEntityType: paragraph
 bundle: collection_search
@@ -43,6 +46,14 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_search_footer:
+    type: text_textarea
+    weight: 9
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
   field_search_heading:
     type: string_textfield
     weight: 4
@@ -77,6 +88,14 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_search_related_info:
+    type: text_textarea
+    weight: 8
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
   field_search_site_url:
     type: string_textfield
     weight: 2

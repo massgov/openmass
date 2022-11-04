@@ -1,10 +1,10 @@
-uuid: 18142b47-c89a-46c9-9eae-c7ff1cbfd4a2
+uuid: e6902134-883e-415f-b112-074c71673f43
 langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.paragraph.field_body
-    - paragraphs.paragraphs_type.rich_text
+    - field.storage.paragraph.field_search_footer
+    - paragraphs.paragraphs_type.collection_search
   module:
     - allowed_formats
     - text
@@ -20,12 +20,12 @@ third_party_settings:
     mailchimp: '0'
     rules_of_court_section: '0'
     plain_text: '0'
-id: paragraph.rich_text.field_body
-field_name: field_body
+id: paragraph.collection_search.field_search_footer
+field_name: field_search_footer
 entity_type: paragraph
-bundle: rich_text
-label: Body
-description: ''
+bundle: collection_search
+label: 'Search footer'
+description: 'Optional. Any content here, such as a link to all results, will appear directly under the search box. Keep this short.'
 required: false
 translatable: false
 default_value: {  }

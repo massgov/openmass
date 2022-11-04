@@ -4,8 +4,10 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.collection_search.field_collection
+    - field.field.paragraph.collection_search.field_search_footer
     - field.field.paragraph.collection_search.field_search_heading
     - field.field.paragraph.collection_search.field_search_query_param_name
+    - field.field.paragraph.collection_search.field_search_related_info
     - field.field.paragraph.collection_search.field_search_site_url
     - field.field.paragraph.collection_search.field_search_type
     - field.field.paragraph.collection_search.field_secondary_heading
@@ -15,6 +17,7 @@ dependencies:
   module:
     - link
     - options
+    - text
 id: paragraph.collection_search.default
 targetEntityType: paragraph
 bundle: collection_search
@@ -27,6 +30,13 @@ content:
       link: true
     third_party_settings: {  }
     weight: 0
+    region: content
+  field_search_footer:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 9
     region: content
   field_search_heading:
     type: string
@@ -43,6 +53,13 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: 7
+    region: content
+  field_search_related_info:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 8
     region: content
   field_search_site_url:
     type: string
