@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entity_usage_queue_tracking\Plugin\QueueWorker;
+namespace Drupal\mass_entity_usage\Plugin\QueueWorker;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entity_usage_queue_tracking\Commands;
+namespace Drupal\mass_entity_usage\Commands;
 
 use Drush\Commands\DrushCommands;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\entity_usage_queue_tracking;
+namespace Drupal\mass_entity_usage;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Database\Connection;

@@ -4,7 +4,7 @@ The Entity Usage Queue Tracking module adds support to Entity Usage for tracking
 
 Since this is for advanced users only, this setting is not exposed in the UI. This can be enabled through the settings.php file by adding the following line:
 
-$config['entity_usage_queue_tracking.settings']['queue_tracking'] = TRUE;
+$config['mass_entity_usage.settings']['queue_tracking'] = TRUE;
 
 You also need to periodically run `drush clean_usage_table` to clean references
 to outdated revisions.
