@@ -5,6 +5,8 @@ dependencies:
   config:
     - field.field.paragraph.collection_search.field_collection
     - field.field.paragraph.collection_search.field_search_heading
+    - field.field.paragraph.collection_search.field_search_query_param_name
+    - field.field.paragraph.collection_search.field_search_site_url
     - field.field.paragraph.collection_search.field_search_type
     - field.field.paragraph.collection_search.field_secondary_heading
     - field.field.paragraph.collection_search.field_secondary_link
@@ -43,12 +45,64 @@ content:
             selector: ''
   field_search_heading:
     type: string_textfield
-    weight: 2
+    weight: 4
     region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_search_query_param_name:
+    type: string_textfield
+    weight: 3
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        3a2d891a-21ea-42ed-bfdc-87faf7ec8fed:
+          entity_type: paragraph
+          bundle: collection_search
+          dependee: field_search_type
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 5
+            value: ''
+            values: custom
+            value_form:
+              -
+                value: collection
+            effect: show
+            effect_options: {  }
+            selector: ''
+  field_search_site_url:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields:
+        9b68121d-ec7b-4ccc-a5e4-462f52725f30:
+          entity_type: paragraph
+          bundle: collection_search
+          dependee: field_search_type
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 5
+            value: ''
+            values: custom
+            value_form:
+              -
+                value: collection
+            effect: show
+            effect_options: {  }
+            selector: ''
   field_search_type:
     type: options_select
     weight: 0
@@ -57,7 +111,7 @@ content:
     third_party_settings: {  }
   field_secondary_heading:
     type: string_textfield
-    weight: 3
+    weight: 5
     region: content
     settings:
       size: 60
@@ -65,7 +119,7 @@ content:
     third_party_settings: {  }
   field_secondary_link:
     type: link_default
-    weight: 5
+    weight: 7
     region: content
     settings:
       placeholder_url: ''
@@ -73,7 +127,7 @@ content:
     third_party_settings: {  }
   field_see_all_items_link_text:
     type: string_textfield
-    weight: 4
+    weight: 6
     region: content
     settings:
       size: 60

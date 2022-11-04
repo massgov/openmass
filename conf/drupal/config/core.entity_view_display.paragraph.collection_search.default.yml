@@ -5,6 +5,8 @@ dependencies:
   config:
     - field.field.paragraph.collection_search.field_collection
     - field.field.paragraph.collection_search.field_search_heading
+    - field.field.paragraph.collection_search.field_search_query_param_name
+    - field.field.paragraph.collection_search.field_search_site_url
     - field.field.paragraph.collection_search.field_search_type
     - field.field.paragraph.collection_search.field_secondary_heading
     - field.field.paragraph.collection_search.field_secondary_link
@@ -33,6 +35,22 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: 1
+    region: content
+  field_search_query_param_name:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 7
+    region: content
+  field_search_site_url:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 6
     region: content
   field_search_type:
     type: list_default
