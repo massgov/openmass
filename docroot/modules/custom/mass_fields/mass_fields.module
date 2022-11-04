@@ -779,14 +779,30 @@ function mass_fields_form_media_form_alter(&$form, FormStateInterface $form_stat
 
 /**
  * Place the 'Exclude from search' checkbox.
+ * Append temporary 'Its moved' text.
  */
 function mass_fields_do_form_alter(&$form, FormStateInterface $form_state) {
+  /** @var ContentEntityInterface $entity */
+  $entity = $form_state->getFormObject()->getEntity();
+
+  $build['tip'] = [
+    '#type' => 'item',
+    '#title' => 'Publish state',
+    '#plain_text' => 'The state dropdown has moved to the right hand sidebar.',
+    '#weight' => 888,
+  ];
+  $build['tip2'] = [
+    '#markup' => '<div role="contentinfo" aria-label="Status message" class="messages messages--status">
+                    Publish state has moved to the right hand sidebar.
+                  </div>'
+  ];
+  $form['foo'] = $build;
+
   if (empty($form['search'])) {
     return;
   }
 
-  /** @var ContentEntityInterface $entity */
-  $entity = $form_state->getFormObject()->getEntity();
+
   $settings = \Drupal::service('simple_sitemap.generator')->getBundleSettings();
   $form['search_status'] = [
     '#type' => 'details',
