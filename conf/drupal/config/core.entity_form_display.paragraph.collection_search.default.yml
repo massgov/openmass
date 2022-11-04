@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.paragraph.collection_search.field_collection
     - field.field.paragraph.collection_search.field_search_heading
+    - field.field.paragraph.collection_search.field_search_type
     - field.field.paragraph.collection_search.field_secondary_heading
     - field.field.paragraph.collection_search.field_secondary_link
     - field.field.paragraph.collection_search.field_see_all_items_link_text
@@ -18,19 +19,29 @@ mode: default
 content:
   field_collection:
     type: options_select
-    weight: 0
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  field_search_heading:
-    type: string_textfield
     weight: 1
     region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_secondary_heading:
+    settings: {  }
+    third_party_settings:
+      conditional_fields:
+        07bec623-c7f6-47a2-bdc4-33dce11f2a5d:
+          entity_type: paragraph
+          bundle: collection_search
+          dependee: field_search_type
+          settings:
+            state: '!visible'
+            condition: value
+            grouping: AND
+            values_set: 5
+            value: ''
+            values: collection
+            value_form:
+              -
+                value: collection
+            effect: show
+            effect_options: {  }
+            selector: ''
+  field_search_heading:
     type: string_textfield
     weight: 2
     region: content
@@ -38,9 +49,23 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_search_type:
+    type: options_select
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_secondary_heading:
+    type: string_textfield
+    weight: 3
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_secondary_link:
     type: link_default
-    weight: 4
+    weight: 5
     region: content
     settings:
       placeholder_url: ''
@@ -48,7 +73,7 @@ content:
     third_party_settings: {  }
   field_see_all_items_link_text:
     type: string_textfield
-    weight: 3
+    weight: 4
     region: content
     settings:
       size: 60

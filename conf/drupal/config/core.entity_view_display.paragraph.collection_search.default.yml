@@ -5,12 +5,14 @@ dependencies:
   config:
     - field.field.paragraph.collection_search.field_collection
     - field.field.paragraph.collection_search.field_search_heading
+    - field.field.paragraph.collection_search.field_search_type
     - field.field.paragraph.collection_search.field_secondary_heading
     - field.field.paragraph.collection_search.field_secondary_link
     - field.field.paragraph.collection_search.field_see_all_items_link_text
     - paragraphs.paragraphs_type.collection_search
   module:
     - link
+    - options
 id: paragraph.collection_search.default
 targetEntityType: paragraph
 bundle: collection_search
@@ -31,6 +33,13 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: 1
+    region: content
+  field_search_type:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 5
     region: content
   field_secondary_heading:
     type: string
