@@ -24,6 +24,7 @@ dependencies:
     - paragraphs.paragraphs_type.organization_grid
     - paragraphs.paragraphs_type.pull_quote
     - paragraphs.paragraphs_type.rich_text
+    - paragraphs.paragraphs_type.search_band
     - paragraphs.paragraphs_type.social_media
     - paragraphs.paragraphs_type.stat
     - paragraphs.paragraphs_type.tableau_embed
@@ -68,6 +69,7 @@ settings:
       tableau_embed: tableau_embed
       video: video
       what_would_you_like_to_do: what_would_you_like_to_do
+      search_band: search_band
       collection_search: collection_search
     negate: 0
     target_bundles_drag_drop:
@@ -161,6 +163,9 @@ settings:
       contact_info:
         weight: 48
         enabled: false
+      contact_placeholder:
+        weight: 161
+        enabled: false
       content_card_group:
         weight: 49
         enabled: false
@@ -215,6 +220,9 @@ settings:
       file_download_single:
         weight: 63
         enabled: false
+      flexible_link_group:
+        weight: 180
+        enabled: false
       footnotes:
         weight: 64
         enabled: false
@@ -262,9 +270,6 @@ settings:
         enabled: false
       key_message_section:
         weight: 76
-        enabled: false
-      link_group:
-        weight: 77
         enabled: false
       link_group_accordion:
         weight: 90
@@ -394,7 +399,7 @@ settings:
         enabled: false
       search_band:
         weight: 111
-        enabled: false
+        enabled: true
       search_banner:
         weight: 112
         enabled: false
@@ -412,6 +417,12 @@ settings:
         enabled: false
       section_with_heading:
         weight: 117
+        enabled: false
+      service_rich_text:
+        weight: 246
+        enabled: false
+      service_section:
+        weight: 247
         enabled: false
       sitewide_alert_message:
         weight: 242
