@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_seacrh\ExistingSiteJavascript;
 
+use Behat\Mink\Exception\ExpectationException;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
 
 /**
@@ -45,17 +46,22 @@ class MassSearchAutosuggestionTest extends ExistingSiteSelenium2DriverTestBase {
     }
 
     // Give some time for the response with the results.
-    $this->getSession()->wait(5000);
+    $element = $assert_session->waitForElement('css', $suggestion_element);
+    if ($element) {
+      $assert_session->elementExists('css', $suggestion_element);
+      // Element is populated with js and means at least 1 suggestion is available.
+      $suggestion = $this->getCurrentPage()->find('css', $suggestion_element);
 
-    $assert_session->elementExists('css', $suggestion_element);
-    // Element is populated with js and means at least 1 suggestion is available.
-    $suggestion = $this->getCurrentPage()->find('css', $suggestion_element);
+      // Make sure the element has value.
+      $this->assertNotNull($suggestion->getText());
 
-    // Make sure the element has value.
-    $this->assertNotNull($suggestion->getText());
-
-    // Make sure the search value exists in the string.
-    $this->assertStringContainsString(self::SEARCH, $suggestion->getText());
+      // Make sure the search value exists in the string.
+      $this->assertStringContainsString(self::SEARCH, $suggestion->getText());
+    }
+    throw new ExpectationException(
+      "'$suggestion_element' not found on the page",
+      $this->getSession()->getDriver()
+    );
   }
 
 }
