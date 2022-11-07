@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.external_data_resource.field_data_flag
     - field.field.node.external_data_resource.field_data_format
     - field.field.node.external_data_resource.field_data_resource_type
+    - field.field.node.external_data_resource.field_data_search_content
     - field.field.node.external_data_resource.field_data_topic
     - field.field.node.external_data_resource.field_details_data_type
     - field.field.node.external_data_resource.field_external_organization
@@ -45,7 +46,6 @@ third_party_settings:
         - field_data_resource_type
         - field_data_format
         - field_data_topic
-        - field_data_sub_topic
       label: 'External data resource'
       region: content
       parent_name: group_externaldata_edit_form
@@ -167,7 +167,7 @@ content:
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
-    weight: 8
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -187,6 +187,20 @@ content:
     weight: 2
     region: content
     settings: {  }
+    third_party_settings: {  }
+  search:
+    type: boolean_checkbox
+    weight: 5
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 6
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
@@ -219,7 +233,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 7
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -227,6 +241,7 @@ hidden:
   created: true
   field_collections: true
   field_data_flag: true
+  field_data_search_content: true
   field_external_organization: true
   path: true
   promote: true
