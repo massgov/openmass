@@ -32,30 +32,25 @@ class MassSearchAutosuggestionTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   private function testSearch(string $identifier) {
-    $search_input = sprintf("#%s-search", $identifier);
-    $suggestion_element = sprintf("#%s-search-0", $identifier);
+    $search_id = sprintf("#%s-search", $identifier);
+    $suggestion_id = sprintf("#%s-search-0", $identifier);
     $assert_session = $this->assertSession();
-    $assert_session->elementExists('css', $search_input);
+    $assert_session->elementExists('css', $search_id);
 
-    // Get search input.
-    $fields = $this->getCurrentPage()->findAll('css', $search_input);
+    // Populate search input.
+    $fields = $this->getCurrentPage()->findAll('css', $search_id);
     foreach ($fields as $field) {
       if ($field->isVisible()) {
         $field->setValue(self::SEARCH);
       }
     }
-
-    // Give some time for the response with the results.
-    $this->getSession()->wait(5000);
-    $assert_session->elementExists('css', $suggestion_element);
-    // Element is populated with js and means at least 1 suggestion is available.
-    $suggestion = $this->getCurrentPage()->find('css', $suggestion_element);
+    $suggestion_element = $this->assertSession()->waitForElement('css', $suggestion_id);
 
     // Make sure the element has value.
-    $this->assertNotNull($suggestion->getText());
+    $this->assertNotNull($suggestion_element->getText());
 
     // Make sure the search value exists in the string.
-    $this->assertStringContainsString(self::SEARCH, $suggestion->getText());
+    $this->assertStringContainsString(self::SEARCH, $suggestion_element->getText());
 
   }
 
