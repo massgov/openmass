@@ -3,6 +3,7 @@
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityPublishedInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 
 function mass_gin_toolbar_alter(&$items) {
@@ -87,6 +88,19 @@ function mass_gin_toolbar_alter(&$items) {
   $items[$item_name]['tab']['#attributes']['data-label'] = $state_label;
   $items[$item_name]['#attached']['library'][] = 'mass_admin_pages/toolbar';
   $cacheability->applyTo($items[$item_name]);
+
+  // Also add link for Watch/Unwatch.
+  $watch_flag = Drupal::service('flag')->getFlagById('watch_content');
+  $items['admin_toolbar_local_tasks']['tray']['mass_flag'] = [
+    '#lazy_builder' => [
+      'flag.link_builder:build', [
+        $entity->getEntityTypeId(),
+        $entity->id(),
+        $watch_flag->id(),
+      ],
+    ],
+    '#create_placeholder' => TRUE,
+  ];
 }
 
 /**

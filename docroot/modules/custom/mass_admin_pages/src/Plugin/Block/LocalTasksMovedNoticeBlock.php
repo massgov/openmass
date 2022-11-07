@@ -21,7 +21,7 @@ class LocalTasksMovedNoticeBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    $body = 'The Edit link has moved to the left side of toolbar. The <em>Revisions</em> and similar links have moved under the <em>Published</em> link in upper right.';
+    $body = 'The Edit link has moved to the left side of toolbar. The <em>Revisions</em>, <em>Watch</em> and similar links have moved to the <em>Published</em> dropdown in upper right.';
     $title = 'Edit links moved';
     $markup = <<<EOM
 <div class="admonition tip">
@@ -40,7 +40,6 @@ EOM;
   * {@inheritdoc}
   */
   protected function blockAccess(AccountInterface $account) {
-    // @todo cacheability.
     $node = \Drupal::routeMatch()->getParameter('node');
     return AccessResult::allowedIfHasPermission($account, 'use mass dashboard')
       ->andIf(AccessResult::allowedIf($node))
