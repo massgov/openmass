@@ -1688,7 +1688,7 @@ function _mass_validation_form_node_info_details_form_validate(array &$form, For
   }
 
   if ($overview_populated === FALSE && $section_populated === FALSE) {
-    $form_state->setErrorByName('field_info_detail_overview', t('One of these fields should be populated: "Overview" or "Sections"'));
+    $form_state->setError($form['field_info_detail_overview']['widget'][0]['value'], t('One of these fields should be populated: "Overview" or "Sections"'));
     $form_state->setErrorByName('group_content', t('One of these fields should be populated: "Overview" or "Sections"'));
   }
 }
