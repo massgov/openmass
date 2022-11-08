@@ -6694,6 +6694,12 @@ function mass_theme_preprocess_paragraph__collection_search(&$variables) {
   $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
   $variables['searchBoxWithLinks']['form']['actionUrl'] = $collection_url;
 
+  $variables['searchBoxWithLinks']['form']['footerText'] = [
+    'rteElements' => [
+      Atoms::prepareTextField($p, 'field_search_footer'),
+    ],
+  ];
+
   $variables['searchBoxWithLinks']['secondary']['relatedInfo'] = [
     'rteElements' => [
       Atoms::prepareTextField($p, 'field_search_related_info'),
