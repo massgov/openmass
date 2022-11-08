@@ -1081,7 +1081,7 @@ function mass_content_update_8018(&$sandbox) {
   if (!empty($entities)) {
     foreach ($entities as $entity) {
       $sandbox['current'] = $entity->id();
-      $secondary_heading = '<h3>' . $entity->field_secondary_heading->value . '</h3>';
+      $secondary_heading = '<h3>' . $entity->field_secondary_heading->value . '</h3><p></p>';
       $entity->field_search_related_info->value = $secondary_heading;
       $entity->field_search_related_info->format = 'basic_html';
       $entity->save();
