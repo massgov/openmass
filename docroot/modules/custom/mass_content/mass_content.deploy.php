@@ -699,7 +699,7 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
 /**
  * Migrate Secondary Header field to Related Information field on Search.
  */
-function mass_content_post_update_search_related_info(&$sandbox) {
+function mass_content_deploy_search_related_info(&$sandbox) {
   $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
   $query = \Drupal::entityQuery('paragraph');
   $query->condition('type', 'collection_search');
