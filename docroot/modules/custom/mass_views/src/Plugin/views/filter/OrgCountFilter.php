@@ -39,7 +39,7 @@ class OrgCountFilter extends FilterPluginBase {
       $org_table_alias = $this->query->ensureTable('node__field_organizations', $this->relationship, $join);
       $this->query->addGroupBy("$org_table_alias.entity_id");
       $placeholder = $this->placeholder();
-      $this->query->addHavingExpression($this->options['group'],"COUNT($org_table_alias.field_organizations_target_id) $this->operator $placeholder", [$placeholder => $value]);
+      $this->query->addHavingExpression($this->options['group'], "COUNT($org_table_alias.field_organizations_target_id) $this->operator $placeholder", [$placeholder => $value]);
     }
   }
 
