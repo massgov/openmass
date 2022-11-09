@@ -695,3 +695,50 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
     return t('All Event "Updated date" fields have been set.');
   }
 }
+
+/**
+ * Migrate Secondary Header field to Related Information field on Search.
+ */
+function mass_content_post_update_search_related_info(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+  $query = \Drupal::entityQuery('paragraph');
+  $query->condition('type', 'collection_search');
+  $query->condition('field_secondary_heading', '', '<>');
+  $query->accessCheck(FALSE);
+
+  if (empty($sandbox)) {
+    // Initialize other variables.
+    $sandbox['current'] = 0;
+    $sandbox['progress'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  $pids = $query->condition('id', $sandbox['current'], '>')
+    ->sort('id')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $storage_handler = \Drupal::entityTypeManager()->getStorage('paragraph');
+  $entities = $storage_handler->loadMultiple($pids);
+  if (!empty($entities)) {
+    foreach ($entities as $entity) {
+      $sandbox['current'] = $entity->id();
+      $secondary_heading = '<h3>' . $entity->field_secondary_heading->value . '</h3><p></p>';
+      $entity->set('field_search_related_info', [
+        'value' => $secondary_heading,
+        'format' => 'basic_html',
+      ]);
+      $entity->save();
+      $sandbox['progress']++;
+    }
+    Drupal::logger('Mass Content')->info('Migrated !count collection_search paragraphs from !max.', ['!count' => $sandbox['progress'], '!max' => $sandbox['max']]);
+  }
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('Migrated collection_search paragraphs.');
+  }
+}
