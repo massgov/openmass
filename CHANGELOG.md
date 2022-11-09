@@ -1,5 +1,23 @@
 
 
+## [0.341.0] - November 8, 2022
+
+### Added
+  - DP-24421: Add test coverage for search autocomplete on www.mass.gov.
+  - DP-26260: Add field to data metadata fields so we can paste in additional content to search.
+  
+### Fixed
+  - DP-25745: Fix Accordion IDs to be unique on the page.
+  - DP-26115: Fix mainNav submenu skipping the first item using arrow keys.
+  - DP-26229: A11y - Brand banner lock icon accessibility fix.
+  - DP-26315: Force wordbreak and restrain content container width to enforce layout.
+  
+### Changed
+  - DP-26266: Backstop version update.
+  - DP-26299: Update page/org alert rendering to include "Updated" string with the date.
+  
+
+
 ## [0.340.0] - November 1, 2022
 
 ### Fixed
