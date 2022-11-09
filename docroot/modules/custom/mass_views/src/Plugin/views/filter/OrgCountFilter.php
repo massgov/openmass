@@ -28,7 +28,6 @@ class OrgCountFilter extends FilterPluginBase {
 
   public function query() {
     // ONLY add the relationships if we have a value to filter on.
-
     if ($value = $this->value[0]) {
       // Pre-create the join we need, but convert it to an INNER JOIN for
       // performance.
