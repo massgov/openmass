@@ -30,7 +30,7 @@ class OrgCountFilter extends FilterPluginBase {
     // ONLY add the relationships if we have a value to filter on.
     if ($value = $this->value[0]) {
 
-      // create subquery using database api
+      // Create subquery using database api.
       $sub_query = \Drupal::database()->select('node__field_organizations', 'orgs');
       $sub_query->addField('orgs', 'entity_id');
       $sub_query->addExpression("COUNT(orgs.field_organizations_target_id)", 'orgs_count');
