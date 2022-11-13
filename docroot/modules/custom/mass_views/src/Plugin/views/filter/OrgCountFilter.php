@@ -29,16 +29,26 @@ class OrgCountFilter extends FilterPluginBase {
   public function query() {
     // ONLY add the relationships if we have a value to filter on.
     if ($value = $this->value[0]) {
-      // Pre-create the join we need, but convert it to an INNER JOIN for
-      // performance.
-      $relationship = 'node_field_data';
-      $join = $this->query->getJoinData('node__field_organizations', $relationship);
-      $join->type = 'INNER';
-      // Ensure we have the tables we need.
+
+      // create subquery using database api
+      $sub_query = \Drupal::database()->select('node__field_organizations', 'orgs');
+      $sub_query->addField('orgs', 'entity_id');
+      $sub_query->addExpression("COUNT(orgs.field_organizations_target_id)", 'orgs_count');
+      $sub_query->groupBy("orgs.entity_id");
+
+      $join_definition = [
+        'table formula' => $sub_query,
+        'field' => 'entity_id',
+        'left_table' => 'node_field_data',
+        'left_field' => 'nid',
+        'adjust' => TRUE,
+      ];
+      $join = \Drupal::service('plugin.manager.views.join')->createInstance('standard', $join_definition);
       $org_table_alias = $this->query->ensureTable('node__field_organizations', $this->relationship, $join);
-      $this->query->addGroupBy("$org_table_alias.entity_id");
-      $placeholder = $this->placeholder();
-      $this->query->addHavingExpression($this->options['group'], "COUNT($org_table_alias.field_organizations_target_id) $this->operator $placeholder", [$placeholder => $value]);
+      $p1 = $this->placeholder();
+      $snippet = "$org_table_alias.orgs_count " . $this->operator . " $p1";
+      $this->query->addWhereExpression($this->options['group'], $snippet, [$p1 => $value]);
+
     }
   }
 
