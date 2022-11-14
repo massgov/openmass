@@ -26,7 +26,6 @@ dependencies:
     - field.field.node.org_page.field_primary_parent
     - field.field.node.org_page.field_public_records_link
     - field.field.node.org_page.field_ref_contact_info_1
-    - field.field.node.org_page.field_response_expectations
     - field.field.node.org_page.field_reusable_label
     - field.field.node.org_page.field_secondary_person_bio
     - field.field.node.org_page.field_short_title
@@ -158,7 +157,6 @@ third_party_settings:
     group_feedback:
       children:
         - field_feedback_com_link
-        - field_response_expectations
         - field_urgent_warning
         - field_org_sentence_phrasing
       label: 'Setup Feedback'
@@ -455,21 +453,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_response_expectations:
-    type: string_textarea
-    weight: 108
-    region: content
-    settings:
-      rows: 5
-      placeholder: ''
-    third_party_settings:
-      maxlength:
-        maxlength_js: 300
-        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
-        maxlength_js_enforce: false
-        maxlength_js_truncate_html: false
-        maxlength_js_enforce_attribute: true
-      conditional_fields: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
     weight: 15
