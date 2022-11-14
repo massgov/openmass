@@ -81,7 +81,6 @@
       }).join(', ');
 
       var conditionallyRequiredFields = [
-        'field_approver',
         'field_response_expectations',
         'field_feedback_com_link'
       ].map(function (field) {
