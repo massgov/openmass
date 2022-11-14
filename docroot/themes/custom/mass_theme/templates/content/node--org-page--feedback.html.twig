@@ -10,53 +10,6 @@
 {% set responseRequired = false %}
 {% set noResponseDescription = false %}
 {% set contactInputs = [] %}
-{% if node.field_constituent_communication.value == 'contact' %}
-  {% set response = "Would you like a response from" %}
-  {% set responseRequired = {
-    "responseDescription": content.field_response_expectations,
-  } %}
-  {% set contactInputs = [
-    {
-      "hiddenLabel": false,
-      "labelText": "First Name",
-      "required": false,
-      "id": "field70611807",
-      "name": "field70611807",
-      "type": "text",
-      "noOptionalLabel": true
-    },
-    {
-      "hiddenLabel": false,
-      "labelText": "Last Name",
-      "required": false,
-      "id": "field70611815",
-      "name": "field70611815",
-      "type": "text",
-      "noOptionalLabel": true
-    },
-    {
-      "hiddenLabel": false,
-      "labelText": "Phone",
-      "required": false,
-      "id": "field70611804",
-      "name": "field70611804",
-      "type": "tel",
-      "noOptionalLabel": true
-    },
-    {
-      "hiddenLabel": false,
-      "labelText": "Email",
-      "required": false,
-      "id": "field70611812",
-      "name": "field70611812",
-      "type": "email",
-      "noOptionalLabel": true
-    }
-  ] %}
-{% else %}
-  {% set response = "Your feedback will not receive a response." %}
-  {% set noResponseDescription = "This form only gathers feedback about the website." %}
-{% endif %}
 {% if node.field_urgent_warning is empty or node.field_urgent_warning.value == 0 %}
   {% set reportMessage = false %}
 {% else %}

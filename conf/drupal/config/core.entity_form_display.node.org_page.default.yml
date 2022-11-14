@@ -9,7 +9,6 @@ dependencies:
     - field.field.node.org_page.field_bg_wide
     - field.field.node.org_page.field_billing_organization
     - field.field.node.org_page.field_career_opportunities
-    - field.field.node.org_page.field_constituent_communication
     - field.field.node.org_page.field_feedback_com_link
     - field.field.node.org_page.field_get_updates_links
     - field.field.node.org_page.field_hide_short_description
@@ -160,7 +159,6 @@ third_party_settings:
         required_fields: true
     group_feedback:
       children:
-        - field_constituent_communication
         - field_verification
         - field_approver
         - field_feedback_com_link
@@ -217,24 +215,7 @@ content:
         maxlength_js: null
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce_attribute: true
-      conditional_fields:
-        aa815e94-ef9e-4e1f-a826-6d0361ccded8:
-          entity_type: node
-          bundle: org_page
-          dependee: field_constituent_communication
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: contact
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_banner_image:
     type: image_image
     weight: 11
@@ -315,12 +296,6 @@ content:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-  field_constituent_communication:
-    type: options_select
-    weight: 103
-    region: content
-    settings: {  }
-    third_party_settings: {  }
   field_feedback_com_link:
     type: link_default
     weight: 107
@@ -329,24 +304,7 @@ content:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings:
-      conditional_fields:
-        12a8c118-4973-4bd9-be23-4fcc282b5b66:
-          entity_type: node
-          bundle: org_page
-          dependee: field_constituent_communication
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: link
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_get_updates_links:
     type: link_default
     weight: 127
@@ -528,24 +486,7 @@ content:
         maxlength_js_enforce: false
         maxlength_js_truncate_html: false
         maxlength_js_enforce_attribute: true
-      conditional_fields:
-        42d24a46-72e8-4134-8f68-0cb40e52d942:
-          entity_type: node
-          bundle: org_page
-          dependee: field_constituent_communication
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: contact
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   field_reusable_label:
     type: entity_reference_autocomplete
     weight: 15
@@ -645,24 +586,7 @@ content:
     settings:
       display_label: true
     third_party_settings:
-      conditional_fields:
-        a290caf4-d898-4217-a93c-e99235b4ea6f:
-          entity_type: node
-          bundle: org_page
-          dependee: field_constituent_communication
-          settings:
-            state: visible
-            condition: value
-            grouping: AND
-            values_set: 1
-            value: ''
-            values: {  }
-            value_form:
-              -
-                value: contact
-            effect: show
-            effect_options: {  }
-            selector: ''
+      conditional_fields: {  }
   moderation_state:
     type: moderation_state_default
     weight: 5

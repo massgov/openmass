@@ -1317,35 +1317,6 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
       }
     }
   }
-  if ($form_state->hasValue('field_constituent_communication')) {
-    $option = $form_state->getValue('field_constituent_communication');
-    if ($option[0]['value'] === 'contact') {
-      $verification = $form_state->getValue('field_verification', FALSE);
-      $approver = $form_state->getValue('field_approver', FALSE);
-      $response_expectations = $form_state->getValue('field_response_expectations', FALSE);
-      if (empty($verification['value']) || $verification['value'] === 0) {
-        $form_state->setErrorByName('field_verification', t('You must agree to respond to feedback.'));
-      }
-      if (empty($approver[0]['value'])) {
-        $form_state->setErrorByName('field_approver', t('You must provide an approver.'));
-      }
-      if (empty($response_expectations[0]['value'])) {
-        $form_state->setErrorByName('field_response_expectations', t('You must provide a response expectations message.'));
-      }
-    }
-    if ($option[0]['value'] !== 'none') {
-      $field_org_sentence_phrasing = $form_state->getValue('field_org_sentence_phrasing', FALSE);
-      if (empty($field_org_sentence_phrasing[0]['value'])) {
-        $form_state->setErrorByName('field_org_sentence_phrasing', t('For this selection of constituent communication options, you must provide a sentence phrasing of org.'));
-      }
-    }
-    if ($option[0]['value'] === 'link') {
-      $field_feedback_com_link = $form_state->getValue('field_feedback_com_link', FALSE);
-      if (empty($field_feedback_com_link[0]['uri'])) {
-        $form_state->setErrorByName('field_feedback_com_link', t('A communications page must be selected.'));
-      }
-    }
-  }
 }
 
 /**
