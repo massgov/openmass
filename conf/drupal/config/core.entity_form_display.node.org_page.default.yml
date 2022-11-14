@@ -37,7 +37,6 @@ dependencies:
     - field.field.node.org_page.field_subtype
     - field.field.node.org_page.field_title_sub_text
     - field.field.node.org_page.field_urgent_warning
-    - field.field.node.org_page.field_verification
     - image.style.large
     - image.style.thumbnail
     - node.type.org_page
@@ -159,7 +158,6 @@ third_party_settings:
         required_fields: true
     group_feedback:
       children:
-        - field_verification
         - field_approver
         - field_feedback_com_link
         - field_response_expectations
@@ -579,14 +577,6 @@ content:
     settings:
       display_label: true
     third_party_settings: {  }
-  field_verification:
-    type: boolean_checkbox
-    weight: 104
-    region: content
-    settings:
-      display_label: true
-    third_party_settings:
-      conditional_fields: {  }
   moderation_state:
     type: moderation_state_default
     weight: 5
