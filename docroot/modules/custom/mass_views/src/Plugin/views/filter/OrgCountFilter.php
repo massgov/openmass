@@ -70,6 +70,12 @@ class OrgCountFilter extends FilterPluginBase {
         'short' => $this->t('doesn’t equal'),
         'values' => 0,
       ],
+            '>=' => [
+        'title' => $this->t('Greater than or equal'),
+        'method' => 'opEmpty',
+        'short' => $this->t('greater than or equal'),
+        'values' => 0,
+      ],
     ];
     foreach ($operators as $id => $info) {
       $options[$id] = $info[$which];
