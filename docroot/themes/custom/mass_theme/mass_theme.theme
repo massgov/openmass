@@ -6700,13 +6700,13 @@ function mass_theme_preprocess_paragraph__collection_search(&$variables) {
     ],
   ];
 
-  $variables['searchBoxWithLinks']['secondary']['relatedInfo'] = [
-    'rteElements' => [
-      Atoms::prepareTextField($p, 'field_search_related_info'),
-    ],
-  ];
-  $variables['searchBoxWithLinks']['secondary']['firstLink']['href'] = $collection_url;
-  $variables['searchBoxWithLinks']['secondary']['firstLink']['text'] = $p->field_see_all_items_link_text->value;
+  if (!$p->field_search_related_info->isEmpty()) {
+    $variables['searchBoxWithLinks']['secondary']['relatedInfo'] = [
+      'rteElements' => [
+        Atoms::prepareTextField($p, 'field_search_related_info'),
+      ],
+    ];
+  }
 }
 
 /**

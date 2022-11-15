@@ -7,6 +7,8 @@
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 
@@ -726,9 +728,15 @@ function mass_content_deploy_search_related_info(&$sandbox) {
   if (!empty($entities)) {
     foreach ($entities as $entity) {
       $sandbox['current'] = $entity->id();
-      $secondary_heading = '<h3>' . $entity->field_secondary_heading->value . '</h3><p></p>';
+      $secondary_heading = '<h3>' . $entity->field_secondary_heading->value . '</h3>';
+
+      $entity = $storage_handler->load($entity->id());
+      $see_all_items_link_url = Url::fromUserInput('/collections/' . $entity->field_collection->referencedEntities()[0]->field_url_name->value);
+      $see_all_items_link_text = $entity->field_see_all_items_link_text->value;
+      $see_all_items_link_rendered = '<p>'. Link::fromTextAndUrl($see_all_items_link_text, $see_all_items_link_url)->toString() . '</p>';
+
       $entity->set('field_search_related_info', [
-        'value' => $secondary_heading,
+        'value' => $secondary_heading . $see_all_items_link_rendered,
         'format' => 'basic_html',
       ]);
       $entity->save();
