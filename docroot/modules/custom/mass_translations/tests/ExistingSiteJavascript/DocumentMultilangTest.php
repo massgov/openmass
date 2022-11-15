@@ -112,7 +112,7 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
     $this->assertSession()->elementExists('css', ".ma__download-link .ma__inline-links .lang-toggle-container");
 
     // Check if the translation link has attribute data-label with correct value.
-    $this->assertSession()->elementAttributeContains('css','.ma__download-link .ma__inline-links .ma__inline-links__item:first-child a','data-label', $this->translatedLangLabelEN);
+    $this->assertSession()->elementAttributeContains('css', '.ma__download-link .ma__inline-links .ma__inline-links__item:first-child a', 'data-label', $this->translatedLangLabelEN);
 
     // Check if language toggle functionality works.
     $lang_toggle = $page->find('css', '.ma__download-link .ma__inline-links .lang-toggle-container .lang-toggle');
