@@ -70,6 +70,28 @@ function mass_views_views_data_alter(array &$data) {
     ],
   ];
 
+  // Adds an org count filter for nodes.
+  $data['node_field_data']['node_org_count_filter'] = [
+    'title' => 'Organization Count Filter',
+    'filter' => [
+      'title' => t('Organization Count Filter'),
+      'help' => t('Filter nodes by their organization reference count'),
+      'field' => 'nid',
+      'id' => 'mass_views_node_org_count_filter',
+    ],
+  ];
+
+  // Adds parent page autocomplete filter for nodes.
+  $data['node_field_data']['node_parent_filter'] = [
+    'title' => 'Parent Page Filter',
+    'filter' => [
+      'title' => t('Parent Page Filter'),
+      'help' => t('Filter nodes by their parent page.'),
+      'field' => 'nid',
+      'id' => 'mass_views_node_parent_filter',
+    ],
+  ];
+
   // Adds an org parent filter for nodes.
   $data['node_field_data']['node_parent_org_filter'] = [
     'title' => 'Organization Parent Filter',
