@@ -15,7 +15,7 @@ dependencies:
     - field.field.paragraph.collection_search.field_see_all_items_link_text
     - paragraphs.paragraphs_type.collection_search
   module:
-    - link
+    - conditional_fields
     - text
 id: paragraph.collection_search.default
 targetEntityType: paragraph
@@ -48,7 +48,7 @@ content:
             selector: ''
   field_search_footer:
     type: text_textarea
-    weight: 9
+    weight: 6
     region: content
     settings:
       rows: 5
@@ -90,7 +90,7 @@ content:
             selector: ''
   field_search_related_info:
     type: text_textarea
-    weight: 8
+    weight: 5
     region: content
     settings:
       rows: 5
@@ -128,30 +128,9 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_secondary_heading:
-    type: string_textfield
-    weight: 5
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_secondary_link:
-    type: link_default
-    weight: 7
-    region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
-    third_party_settings: {  }
-  field_see_all_items_link_text:
-    type: string_textfield
-    weight: 6
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
 hidden:
   created: true
+  field_secondary_heading: true
+  field_secondary_link: true
+  field_see_all_items_link_text: true
   status: true
