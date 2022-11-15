@@ -1659,7 +1659,14 @@ function mass_validation_form_node_info_details_form_alter(&$form, FormStateInte
  */
 function _mass_validation_form_node_info_details_form_validate(array &$form, FormStateInterface $form_state) {
   $sections = $form_state->getValue('field_info_details_sections');
+  $overview_populated = FALSE;
+  $section_populated = FALSE;
+  $overview = $form_state->getValue('field_info_detail_overview');
   foreach ($sections as $section_key => $section) {
+    if ($section_key != 'add_more') {
+      // If at least 1 section is populated, validation passed.
+      $section_populated = isset($section['subform']);
+    }
     if (isset($section['subform']['field_section_long_form_content'])) {
       $paragraphs = $section['subform']['field_section_long_form_content'];
       foreach ($paragraphs as $paragraph_key => $paragraph) {
@@ -1674,5 +1681,14 @@ function _mass_validation_form_node_info_details_form_validate(array &$form, For
         }
       }
     }
+  }
+
+  if (!empty($overview[0]['value'])) {
+    $overview_populated = TRUE;
+  }
+
+  if ($overview_populated === FALSE && $section_populated === FALSE) {
+    $form_state->setError($form['field_info_detail_overview']['widget'][0]['value'], t('One of these fields should be populated: "Overview" or "Sections"'));
+    $form_state->setErrorByName('group_content', t('One of these fields should be populated: "Overview" or "Sections"'));
   }
 }

@@ -49,14 +49,14 @@ anchor link in field--extra-org-nav-featured-services.html.twig. #}
         "id": "what-would-you-like-to-do",
         "title": content.field_wwyltd_heading,
         "featuredLinks": content.field_wwyltd_top_s_links['#items'],
-        "links": content.field_wwyltd_more_services,
+        "links": content.field_wwyltd_more_services['#items'],
         "color": "green"
       }
     } %}
-    {% block featuredLinksList %}
-        {{ content.field_wwyltd_top_s_links }}
+      {% block featuredLinksList %}
+          {{ content.field_wwyltd_top_s_links }}
       {% endblock %}
       {% block actionFinderLinksList %}
-       {{ content.field_wwyltd_more_services }}
+        {{ content.field_wwyltd_more_services }}
       {% endblock %}
     {% endembed %}
