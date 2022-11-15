@@ -348,16 +348,4 @@ class Atoms {
     return $video;
   }
 
-  public static function prepareDecorativeLink($href, $text) {
-    return [
-      'path' => '@atoms/decorative-link.twig',
-      'data' => [
-        'decorativeLink' => [
-          'href' => $href,
-          'text' => $text,
-        ],
-      ],
-    ];
-  }
-
 }
