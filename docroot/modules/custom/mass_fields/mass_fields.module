@@ -726,6 +726,9 @@ function mass_fields_entity_field_access($operation, FieldDefinitionInterface $f
       case 'field_details_data_type':
       case 'field_binder_data_type':
       case 'field_list_data_type':
+        // See DP-26260: Add field to data metadata fields so we can
+        // paste in additional content to search.
+      case 'field_data_search_content':
         return AccessResult::forbiddenIf(!$account->hasPermission("access data flag fields"));
     }
   }

@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.section_long_form.field_hide_heading
     - field.field.paragraph.section_long_form.field_section_long_form_addition
     - field.field.paragraph.section_long_form.field_section_long_form_content
     - field.field.paragraph.section_long_form.field_section_long_form_heading
@@ -31,7 +32,7 @@ third_party_settings:
       label: 'Section Content'
       region: content
       parent_name: ''
-      weight: 1
+      weight: 2
       format_type: details
       format_settings:
         classes: ''
@@ -43,6 +44,13 @@ targetEntityType: paragraph
 bundle: section_long_form
 mode: default
 content:
+  field_hide_heading:
+    type: boolean_checkbox
+    weight: 1
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   field_section_long_form_addition:
     type: entity_reference_paragraphs
     weight: 3
