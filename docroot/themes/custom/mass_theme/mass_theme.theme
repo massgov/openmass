@@ -6711,7 +6711,7 @@ function mass_theme_preprocess_paragraph__collection_search(&$variables) {
     case 'collection':
       $collection_url = '/collections/' . $p->field_collection->referencedEntities()[0]->field_url_name->value;
       $variables['searchBoxWithLinks']['form']['actionUrl'] = $collection_url;
-      $variables['searchBoxWithLinks']['form']['inputName'] = 'title';
+      $variables['searchBoxWithLinks']['form']['inputName'] = t('title');
 
       break;
   }
