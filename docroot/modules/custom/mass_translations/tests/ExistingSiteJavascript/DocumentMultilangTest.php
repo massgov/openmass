@@ -33,7 +33,9 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
   public function setUp() {
     parent::setUp();
 
+    // Generate and store a random string for tests.
     $this->random = $this->randomString();
+    
     // Create a user with editor role.
     $user = User::create(['name' => $this->randomMachineName()]);
     $user->addRole('editor');
@@ -50,6 +52,15 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
     // Generate media item in English.
     $this->generateMedia();
 
+    // Generate node.
+    $this->generateBinder();
+
+  }
+
+  /**
+   * Helper method to generate node of type 'binder'.
+   */
+  public function generateBinder() {
     // Create a node of type 'binder'.
     $this->binder = $this->createNode([
       'type' => 'binder',
@@ -74,6 +85,9 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
     ]);
   }
 
+  /**
+   * Helper method to generate translated version of media item.
+   */
   public function generateTranslatedMedia() {
     $langcode = self::LANGCODE;
     $this->translatedMedia = $this->createMedia([
