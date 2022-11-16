@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\mass_seacrh\ExistingSiteJavascript;
+namespace Drupal\Tests\mass_search\ExistingSiteJavascript;
 
 use Behat\Mink\Exception\ExpectationException;
 use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
