@@ -35,7 +35,7 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
 
     // Generate and store a random string for tests.
     $this->random = $this->randomString();
-    
+
     // Create a user with editor role.
     $user = User::create(['name' => $this->randomMachineName()]);
     $user->addRole('editor');
@@ -138,7 +138,8 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
     // Generate the translated version of the media.
     $this->generateTranslatedMedia();
 
-    // We rerun the initial test to make sure everything is rendered the same way.
+    // We rerun the initial test to make sure
+    // everything is rendered the same way.
     $this->runMainMediaCheck();
 
     // Check if translation link is rendered and has correct value.
@@ -149,7 +150,8 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
     // Check if the "Translate labels" is rendered.
     $this->assertSession()->elementExists('css', ".ma__download-link .ma__inline-links .lang-toggle-container");
 
-    // Check if the translation link has attribute data-label with correct value.
+    // Check if the translation link has
+    // attribute data-label with correct value.
     $this->assertSession()->elementAttributeContains('css', '.ma__download-link .ma__inline-links .ma__inline-links__item:first-child a', 'data-label', $this->translatedLangLabelEN);
 
     // Check if language toggle functionality works.
