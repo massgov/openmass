@@ -375,6 +375,14 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       $this->logger()->success("Selective Purge enqueued at $target.");
     }
 
+    // Perform a final cache rebuild just in case. Root cause is unknown.
+    // @todo Explore removing this in future.
+    if ($options['cache_rebuild']) {
+      $process = Drush::drush($targetRecord, 'cache:rebuild');
+      $process->mustRun();
+      $this->logger()->success("Extra cache rebuild completed at $target.");
+    }
+
     if ($options['skip-maint'] == FALSE) {
       // Disable Maintenance mode.
       $args = array('system.maintenance_mode', '0');
