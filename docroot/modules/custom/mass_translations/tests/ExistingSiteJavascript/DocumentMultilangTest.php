@@ -24,6 +24,8 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
   private $media;
   private $translatedMedia;
   private $file;
+  private $random;
+  private $page;
 
   /**
    * {@inheritdoc}
@@ -31,6 +33,7 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
   public function setUp() {
     parent::setUp();
 
+    $this->random = $this->randomString();
     // Create a user with editor role.
     $user = User::create(['name' => $this->randomMachineName()]);
     $user->addRole('editor');
@@ -44,10 +47,10 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
       'uri' => 'public://llama-44.txt',
     ]);
 
-    // Generate media items.
+    // Generate media item in English.
     $this->generateMedia();
 
-    // Create a node if type 'binder'.
+    // Create a node of type 'binder'.
     $this->binder = $this->createNode([
       'type' => 'binder',
       'title' => $this->randomMachineName(),
@@ -58,23 +61,27 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
-   * Helper method to generate required media items.
+   * Helper method to generate media item.
    */
   public function generateMedia() {
-    $langcode = self::LANGCODE;
-    $random = $this->randomString();
+
     $media = $this->createMedia([
       'bundle' => 'document',
-      'field_title' => "Test Document en $random",
+      'field_title' => "Test Document en $this->random",
       'field_upload_file' => [$this->file],
       'moderation_state' => 'published',
+      'langcode' => 'en',
     ]);
+    $this->media = $media;
+  }
 
+  public function generateTranslatedMedia() {
+    $langcode = self::LANGCODE;
     $translatedMedia = $this->createMedia([
       'bundle' => 'document',
-      'field_title' => "Test Document $langcode $random",
+      'field_title' => "Test Document $langcode $this->random",
       'field_upload_file' => [$this->file],
-      'field_media_english_version' => [$media],
+      'field_media_english_version' => [$this->media],
       'moderation_state' => 'published',
       'langcode' => $langcode,
     ]);
@@ -83,29 +90,49 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
     $this->translatedLangLabelEN = $predefined[$langcode][0];
     // Example: Español.
     $this->translatedLangLabel = $predefined[$langcode][1];
-    $this->media = $media;
+
     $this->translatedMedia = $translatedMedia;
   }
 
   /**
-   * Test Multilanguage document functionality.
+   * Test single media rendering.
    */
-  public function testHasTranslationLinks() {
+  public function runMainMediaCheck() {
     $this->drupalLogin($this->editor);
     $this->drupalGet($this->binder->toUrl());
-    $page = $this->getSession()->getPage();
-
+    $this->page = $this->getSession()->getPage();
     // Check if Media rendered on the page.
-    $media_element = $page->find('css', '.ma__download-link__file-link')->getText();
+    $media_element = $this->page->find('css', '.ma__download-link__file-link')->getText();
     $this->assertStringContainsString($this->media->field_title->value, $media_element, 'Media not found on the page.');
 
     // Check if Media original language is rendered.
-    $language_label = $page->find('css', '.ma__download-link__file-spec')->getText();
+    $language_label = $this->page->find('css', '.ma__download-link__file-spec')->getText();
     $this->assertStringContainsString('English', $language_label, 'Document default language not found.');
+  }
+
+  /**
+   * Test single media rendering without translation links.
+   */
+  public function testNoTranslationLinks() {
+    $this->runMainMediaCheck();
+    // Check if translation link are not rendered.
+    $this->assertSession()->elementNotExists('css', ".ma__download-link .ma__inline-links .ma__inline-links__item");
+
+  }
+
+  /**
+   * Test single media rendering with translation links.
+   */
+  public function testHasTranslationLinks() {
+    // Generate the translated version of the media.
+    $this->generateTranslatedMedia();
+
+    // We rerun the initial test to make sure everything is rendered the same way.
+    $this->runMainMediaCheck();
 
     // Check if translation link is rendered and has correct value.
     $this->assertSession()->elementExists('css', ".ma__download-link .ma__inline-links .ma__inline-links__item");
-    $translation_label = $page->find('css', '.ma__download-link .ma__inline-links .ma__inline-links__item:first-child')->getText();
+    $translation_label = $this->page->find('css', '.ma__download-link .ma__inline-links .ma__inline-links__item:first-child')->getText();
     $this->assertStringContainsString($this->translatedLangLabel, $translation_label, 'Translated Document language label not found.');
 
     // Check if the "Translate labels" is rendered.
@@ -115,9 +142,9 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
     $this->assertSession()->elementAttributeContains('css', '.ma__download-link .ma__inline-links .ma__inline-links__item:first-child a', 'data-label', $this->translatedLangLabelEN);
 
     // Check if language toggle functionality works.
-    $lang_toggle = $page->find('css', '.ma__download-link .ma__inline-links .lang-toggle-container .lang-toggle');
+    $lang_toggle = $this->page->find('css', '.ma__download-link .ma__inline-links .lang-toggle-container .lang-toggle');
     $lang_toggle->click();
-    $translation_label_en = $page->find('css', '.ma__download-link .ma__inline-links .ma__inline-links__item:first-child')->getText();
+    $translation_label_en = $this->page->find('css', '.ma__download-link .ma__inline-links .ma__inline-links__item:first-child')->getText();
     $this->assertStringContainsString($this->translatedLangLabelEN, $translation_label_en, 'Translated Document language English version label not found.');
 
   }
