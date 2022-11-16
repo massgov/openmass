@@ -65,19 +65,18 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
    */
   public function generateMedia() {
 
-    $media = $this->createMedia([
+    $this->media = $this->createMedia([
       'bundle' => 'document',
       'field_title' => "Test Document en $this->random",
       'field_upload_file' => [$this->file],
       'moderation_state' => 'published',
       'langcode' => 'en',
     ]);
-    $this->media = $media;
   }
 
   public function generateTranslatedMedia() {
     $langcode = self::LANGCODE;
-    $translatedMedia = $this->createMedia([
+    $this->translatedMedia = $this->createMedia([
       'bundle' => 'document',
       'field_title' => "Test Document $langcode $this->random",
       'field_upload_file' => [$this->file],
@@ -90,8 +89,6 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
     $this->translatedLangLabelEN = $predefined[$langcode][0];
     // Example: Español.
     $this->translatedLangLabel = $predefined[$langcode][1];
-
-    $this->translatedMedia = $translatedMedia;
   }
 
   /**
