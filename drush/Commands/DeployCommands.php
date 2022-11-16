@@ -377,7 +377,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
 
     // Perform a final cache rebuild just in case. Root cause is unknown.
     // @todo Explore removing this in future.
-    if ($options['cache_rebuild']) {
+    if ($options['cache-rebuild']) {
       $process = Drush::drush($targetRecord, 'cache:rebuild');
       $process->mustRun();
       $this->logger()->success("Extra cache rebuild completed at $target.");
