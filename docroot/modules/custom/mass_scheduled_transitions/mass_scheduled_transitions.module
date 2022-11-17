@@ -196,59 +196,6 @@ function mass_scheduled_transitions_entity_form_do_alter(&$form, FormStateInterf
 }
 
 /**
- * Add helpful link to node edit form to ease migration.
- *
- * Implements hook_form_node_form_alter().
- */
-function mass_scheduled_transitions_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $form = mass_scheduled_transitions_do_form_alter($form_state, $form);
-}
-
-/**
- * Add helpful link to media edit form to ease migration.
- *
- * Implements hook_form_media_form_alter().
- */
-function mass_scheduled_transitions_form_media_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $form = mass_scheduled_transitions_do_form_alter($form_state, $form);
-}
-
-/**
- * Alters both the media and node forms.
- *
- * @param \Drupal\Core\Form\FormStateInterface $form_state
- *   The form's state.
- * @param array $form
- *   The form array.
- *
- * @return array
- *   An altered form array.
- */
-function mass_scheduled_transitions_do_form_alter(FormStateInterface $form_state, array $form) {
-  $entity = $form_state->getFormObject()->getEntity();
-
-  if ($entity->isNew()) {
-    $markup = t('Scheduled publishing has moved to a new <em>Scheduled Transitions</em> tab, near the Edit tab. It will become visible after you save this content.');
-  }
-  else {
-    $url = $entity->toUrl('canonical')->toString() . '/scheduled-transitions';
-    $replacements = [':url' => $url];
-    $markup = t('Scheduled publishing has moved to a new <em>Scheduled Transitions</em> tab, near the Edit tab. <a href=":url">Go there</a>.', $replacements);
-  }
-  $form['mass_scheduled_transitions'] = [
-    '#type' => 'details',
-    '#title' => t('Scheduling'),
-    '#group' => 'advanced',
-    '#open' => FALSE,
-    // @todo Remove anytime after Sep 4.
-    '#access' => time() < strtotime('9/4/2021'),
-    '#markup' => $markup,
-    '#weight' => 39,
-  ];
-  return $form;
-}
-
-/**
  * Implements hook_menu_local_actions_alter().
  *
  * Make ST modal shorter, since it no longer shows a revision table.

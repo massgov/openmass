@@ -1424,7 +1424,11 @@ class Organisms {
       $description = [];
     };
 
-    $tabularData = array_merge($heading, $description, ['table' => ['head' => (!empty($items) ? $head : []), 'bodies' => $items]]);
+    $table = [];
+    if (!empty($items)) {
+      $table = ['table' => ['head' => $head, 'bodies' => $items]];
+    }
+    $tabularData = array_merge($heading, $description, $table);
 
     return $tabularData;
   }
@@ -1642,6 +1646,7 @@ class Organisms {
       'mail' => 'mail',
       'fax' => 'fax-icon',
       'in person' => 'profile',
+      'text' => 'message',
     ];
 
     // Roll up our action steps.

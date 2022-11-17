@@ -340,7 +340,7 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
           $timestamp = '';
         }
 
-        $alert['suffix'] = $timestamp;
+        $alert['suffix'] = $this->t('Updated @timestamp', ['@timestamp' => $timestamp]);
         $alerts[$unix_timestamp . '-' . $node->uuid()] = $alert;
       }
 
