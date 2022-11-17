@@ -25,7 +25,7 @@ use Drupal\Core\Entity\EntityInterface;
 function mass_translations_preprocess_media(&$variables) {
   $media = $variables['media'];
   if ($variables["view_mode"] == 'media_download_link' && $media->hasField('field_media_english_version')) {
-    $cache_tags = [];
+    $cache_tags[] = 'media-list:document';
     $lang_default = Drupal::languageManager()->getCurrentLanguage();
     $languages = [];
     $media_storage = Drupal::service('entity_type.manager')
@@ -78,32 +78,10 @@ function mass_translations_preprocess_media(&$variables) {
       $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
       $variables += ["translationLinks" => $inlineLinks];
     }
-    $variables['#cache']['tags'] = Cache::mergeTags($media->getCacheTags(), $cache_tags);
-  }
-}
-
-/**
- * Implements hook_ENTITY_TYPE_presave().
- */
-function mass_translations_media_presave(MediaInterface $entity) {
-  if ($entity->bundle() == 'document') {
-    if ($entity->hasField('field_media_english_version')) {
-      if ($entity->get('langcode')->value == 'en') {
-        // If the Language is English, there isn't a seperate English version.
-        $entity->set('field_media_english_version', '');
-      }
-      else {
-        if (!$entity->get('field_media_english_version')->isEmpty()) {
-          if ($entity->get('field_media_english_version')->entity instanceof MediaInterface) {
-            $en_mid = $entity->get('field_media_english_version')->entity;
-            if ($en_mid->getCacheTags()) {
-              // Invalidate english version tags.
-              Cache::invalidateTags($en_mid->getCacheTags());
-            }
-          }
-        }
-      }
-    }
+    // Bubble cache tag to the current render. Based on template_preprocess_pager()
+    // Needed until core implements https://www.drupal.org/project/drupal/issues/3028976
+    (new CacheableMetadata())->addCacheTags($cache_tags)
+      ->applyTo($variables);
   }
 }
 
