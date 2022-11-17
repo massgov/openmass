@@ -1,5 +1,17 @@
 
 
+## [0.342.0] - November 15, 2022
+
+### Changed
+  - DP-25549: Reduce action finder vertical spacing on org and service pages.
+  - DP-26343: Change validation on info details to either require a content section or a populated overview field.
+  
+### Added
+  - DP-26344: Add option to hide section heading display on info details pages.
+  - DP-26356: Add filters to advanced search view.
+  
+
+
 ## [0.341.0] - November 8, 2022
 
 ### Added
