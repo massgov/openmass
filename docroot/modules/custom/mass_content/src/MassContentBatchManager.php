@@ -151,7 +151,7 @@ class MassContentBatchManager {
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
     $uri = $node->field_feedback_com_link->uri ?? 'entity:node/' . $node->id();
     $title = sprintf('contact %s.', $node->field_org_sentence_phrasing->value ?? $node->label());
-    $node->set('field_feedback_com_link',[
+    $node->set('field_feedback_com_link', [
       'uri' => $uri,
       'title' => $title
     ]);
