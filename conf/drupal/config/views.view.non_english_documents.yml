@@ -12,11 +12,15 @@ dependencies:
     - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
     - taxonomy.vocabulary.language
+    - workflows.workflow.media_states
   content:
     - 'taxonomy_term:language:2c8c1198-7487-48bc-9f44-3da3cd064f1f'
     - 'taxonomy_term:language:962a0522-8090-453d-9880-654463772f0b'
   module:
+    - content_moderation
     - datetime
+    - file
+    - mass_views
     - media
     - taxonomy
     - user
@@ -654,6 +658,14 @@ display:
           empty_zero: false
           hide_alter_empty: true
           destination: false
+        filename:
+          id: filename
+          table: file_managed
+          field: filename
+          relationship: field_upload_file_target_id
+          entity_type: file
+          entity_field: filename
+          plugin_id: field
       pager:
         type: mini
         options:
@@ -711,7 +723,7 @@ display:
             description: ''
             use_operator: true
             operator: ''
-            operator_limit_selection: true
+            operator_limit_selection: false
             operator_list:
               contains: contains
               word: word
@@ -789,13 +801,78 @@ display:
           expose:
             operator_limit_selection: false
             operator_list: {  }
-        field_organizations_target_id:
-          id: field_organizations_target_id
-          table: media__field_organizations
-          field: field_organizations_target_id
+        filename:
+          id: filename
+          table: file_managed
+          field: filename
+          relationship: field_upload_file_target_id
+          group_type: group
+          admin_label: ''
+          entity_type: file
+          entity_field: filename
+          plugin_id: views_porter_stemmer_autocomplete_string
+          operator: contains
+          value: ''
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: 'Filename contains'
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: filename
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
+            placeholder: ''
+            autocomplete_filter: 0
+            autocomplete_min_chars: '0'
+            autocomplete_items: '10'
+            autocomplete_field: filename
+            autocomplete_raw_suggestion: 1
+            autocomplete_raw_dropdown: 1
+            autocomplete_dependent: 0
+            stem_query: 0
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        mid:
+          id: mid
+          table: media_field_data
+          field: mid
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: media
+          entity_field: mid
           plugin_id: numeric
           operator: '='
           value:
@@ -805,14 +882,14 @@ display:
           group: 1
           exposed: true
           expose:
-            operator_id: field_organizations_target_id_op
-            label: Organization(s)
+            operator_id: mid_op
+            label: ID
             description: ''
             use_operator: false
-            operator: field_organizations_target_id_op
+            operator: mid_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: field_organizations_target_id
+            identifier: mid
             required: false
             remember: false
             multiple: false
@@ -847,32 +924,28 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-        uid:
-          id: uid
+        media_org_filter:
+          id: media_org_filter
           table: media_field_data
-          field: uid
+          field: media_org_filter
           relationship: none
           group_type: group
           admin_label: ''
           entity_type: media
-          entity_field: uid
-          plugin_id: numeric
+          plugin_id: mass_views_media_org_filter
           operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
+          value: null
           group: 1
           exposed: true
           expose:
-            operator_id: uid_op
-            label: 'Authored by'
+            operator_id: ''
+            label: Organization
             description: ''
             use_operator: false
-            operator: uid_op
+            operator: media_org_filter_op
             operator_limit_selection: false
             operator_list: {  }
-            identifier: uid
+            identifier: media_org_filter
             required: false
             remember: false
             multiple: false
@@ -889,12 +962,77 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        langcode:
+          id: langcode
+          table: media_field_data
+          field: langcode
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: media
+          entity_field: langcode
+          plugin_id: language
+          operator: in
+          value:
+            en: en
+            es: es
+            zh-hans: zh-hans
+            vi: vi
+            pt-pt: pt-pt
+            ht: ht
+            ru: ru
+            km: km
+            ar: ar
+            fr: fr
+            cv: cv
+            ko: ko
+            it: it
+            af: af
+            lo: lo
+            uk: uk
+            pt-br: pt-br
+          group: 1
+          exposed: true
+          expose:
+            operator_id: langcode_op
+            label: Language
+            description: ''
+            use_operator: false
+            operator: langcode_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: langcode
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+              campaign_landing_page_publisher: '0'
               d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
+            reduce: true
           is_grouped: false
           group_info:
             label: ''
@@ -966,6 +1104,99 @@ display:
           hierarchy: false
           limit: true
           error_message: true
+        uid:
+          id: uid
+          table: users_field_data
+          field: uid
+          relationship: uid
+          group_type: group
+          admin_label: ''
+          entity_type: user
+          entity_field: uid
+          plugin_id: user_name
+          operator: in
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: uid_op
+            label: Author
+            description: ''
+            use_operator: false
+            operator: uid_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: uid
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              author: '0'
+              editor: '0'
+              emergency_alert_publisher: '0'
+              executive_orders: '0'
+              redirect_creators: '0'
+              content_team: '0'
+              developer: '0'
+              administrator: '0'
+              tester: '0'
+              doc_deletion: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        moderation_state:
+          id: moderation_state
+          table: media_field_data
+          field: moderation_state
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: media
+          plugin_id: moderation_state_filter
+          operator: 'not in'
+          value:
+            media_states-trash: media_states-trash
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
         field_collections_target_id:
           id: field_collections_target_id
           table: media__field_collections
@@ -1021,65 +1252,6 @@ display:
             group_items: {  }
           reduce_duplicates: false
           vid: collections
-          type: textfield
-          hierarchy: false
-          limit: true
-          error_message: true
-        field_language_target_id_2:
-          id: field_language_target_id_2
-          table: media__field_language
-          field: field_language_target_id
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: taxonomy_index_tid
-          operator: or
-          value: {  }
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_language_target_id_2_op
-            label: 'Language '
-            description: ''
-            use_operator: false
-            operator: field_language_target_id_2_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: field_language_target_id_2
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          vid: language
           type: textfield
           hierarchy: false
           limit: true
@@ -1313,7 +1485,27 @@ display:
           disable_automatic_base_fields: false
           replica: false
           query_tags: {  }
-      relationships: {  }
+      relationships:
+        uid:
+          id: uid
+          table: media_field_data
+          field: uid
+          relationship: none
+          group_type: group
+          admin_label: User
+          entity_type: media
+          entity_field: uid
+          plugin_id: standard
+          required: false
+        field_upload_file_target_id:
+          id: field_upload_file_target_id
+          table: media__field_upload_file
+          field: field_upload_file_target_id
+          relationship: none
+          group_type: group
+          admin_label: 'file from field_upload_file'
+          plugin_id: standard
+          required: false
       header: {  }
       footer: {  }
       display_extenders: {  }
@@ -1332,6 +1524,7 @@ display:
         - 'config:field.storage.media.field_organizations'
         - 'config:field.storage.media.field_start_date'
         - 'config:field.storage.media.field_title'
+        - 'config:workflow_list'
   page_1:
     id: page_1
     display_title: Page
@@ -1355,3 +1548,4 @@ display:
         - 'config:field.storage.media.field_organizations'
         - 'config:field.storage.media.field_start_date'
         - 'config:field.storage.media.field_title'
+        - 'config:workflow_list'
