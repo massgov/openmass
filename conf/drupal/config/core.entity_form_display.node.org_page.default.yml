@@ -16,6 +16,7 @@ dependencies:
     - field.field.node.org_page.field_metatags
     - field.field.node.org_page.field_more_about_agency_link
     - field.field.node.org_page.field_more_about_leadership
+    - field.field.node.org_page.field_org_always_show_help_page
     - field.field.node.org_page.field_org_directory_page
     - field.field.node.org_page.field_org_page_thumbnail
     - field.field.node.org_page.field_org_sentence_phrasing
@@ -157,6 +158,7 @@ third_party_settings:
     group_feedback:
       children:
         - field_feedback_com_link
+        - field_org_always_show_help_page
         - field_urgent_warning
       label: 'Setup Feedback'
       region: content
@@ -190,7 +192,7 @@ mode: default
 content:
   field_application_login_links:
     type: link_default
-    weight: 123
+    weight: 124
     region: content
     settings:
       placeholder_url: ''
@@ -270,7 +272,7 @@ content:
     third_party_settings: {  }
   field_career_opportunities:
     type: link_default
-    weight: 122
+    weight: 123
     region: content
     settings:
       placeholder_url: ''
@@ -287,7 +289,7 @@ content:
       conditional_fields: {  }
   field_get_updates_links:
     type: link_default
-    weight: 127
+    weight: 126
     region: content
     settings:
       placeholder_url: ''
@@ -338,6 +340,13 @@ content:
       match_limit: 10
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  field_org_always_show_help_page:
+    type: boolean_checkbox
+    weight: 108
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   field_org_directory_page:
     type: link_default
@@ -428,7 +437,7 @@ content:
     third_party_settings: {  }
   field_public_records_link:
     type: link_default
-    weight: 124
+    weight: 125
     region: content
     settings:
       placeholder_url: ''
