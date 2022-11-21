@@ -87,18 +87,11 @@ display:
           clear_on_exposed: true
           force_selection_info: false
           selected_actions:
-            13:
-              action_id: 'entity:publish_action:node'
+            -
+              action_id: 'moderation_state_change:node'
               preconfiguration:
                 add_confirmation: false
-            14:
-              action_id: 'entity:save_action:node'
-              preconfiguration:
-                add_confirmation: false
-            15:
-              action_id: 'entity:unpublish_action:node'
-              preconfiguration:
-                add_confirmation: false
+                label_override: 'Change moderation state'
         nid:
           id: nid
           table: node_field_data
