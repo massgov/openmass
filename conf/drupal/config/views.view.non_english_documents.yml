@@ -3,7 +3,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.media.field_language
     - field.storage.media.field_media_english_version
     - field.storage.media.field_organizations
     - field.storage.media.field_start_date
@@ -11,11 +10,7 @@ dependencies:
     - media.type.document
     - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
-    - taxonomy.vocabulary.language
     - workflows.workflow.media_states
-  content:
-    - 'taxonomy_term:language:2c8c1198-7487-48bc-9f44-3da3cd064f1f'
-    - 'taxonomy_term:language:962a0522-8090-453d-9880-654463772f0b'
   module:
     - content_moderation
     - datetime
@@ -234,7 +229,7 @@ display:
           entity_type: media
           entity_field: media
           plugin_id: field
-          label: Name
+          label: 'File name'
           exclude: false
           alter:
             alter_text: false
@@ -289,13 +284,15 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        field_language:
-          id: field_language
-          table: media__field_language
-          field: field_language
+        langcode:
+          id: langcode
+          table: media_field_data
+          field: langcode
           relationship: none
           group_type: group
           admin_label: ''
+          entity_type: media
+          entity_field: langcode
           plugin_id: field
           label: Language
           exclude: false
@@ -338,11 +335,12 @@ display:
           hide_empty: false
           empty_zero: false
           hide_alter_empty: true
-          click_sort_column: target_id
-          type: entity_reference_label
+          click_sort_column: value
+          type: language
           settings:
-            link: false
-          group_column: target_id
+            link_to_entity: false
+            native_language: false
+          group_column: value
           group_columns: {  }
           group_rows: true
           delta_limit: 0
@@ -658,14 +656,6 @@ display:
           empty_zero: false
           hide_alter_empty: true
           destination: false
-        filename:
-          id: filename
-          table: file_managed
-          field: filename
-          relationship: field_upload_file_target_id
-          entity_type: file
-          entity_field: filename
-          plugin_id: field
       pager:
         type: mini
         options:
@@ -986,23 +976,33 @@ display:
           plugin_id: language
           operator: in
           value:
-            en: en
             es: es
             zh-hans: zh-hans
-            vi: vi
-            pt-pt: pt-pt
-            ht: ht
-            ru: ru
-            km: km
-            ar: ar
-            fr: fr
-            cv: cv
-            ko: ko
-            it: it
-            af: af
-            lo: lo
-            uk: uk
+            zh-hant: zh-hant
             pt-br: pt-br
+            pt-pt: pt-pt
+            fr: fr
+            ru: ru
+            ko: ko
+            vi: vi
+            ar: ar
+            it: it
+            cv: cv
+            ht: ht
+            pl: pl
+            lo: lo
+            km: km
+            af: af
+            sq: sq
+            am: am
+            hi: hi
+            ne: ne
+            so: so
+            uk: uk
+            el: el
+            sw: sw
+            pst: pst
+            prs: prs
           group: 1
           exposed: true
           expose:
@@ -1015,7 +1015,7 @@ display:
             operator_list: {  }
             identifier: langcode
             required: false
-            remember: false
+            remember: true
             multiple: false
             remember_roles:
               authenticated: authenticated
@@ -1030,8 +1030,9 @@ display:
               administrator: '0'
               tester: '0'
               doc_deletion: '0'
-              campaign_landing_page_publisher: '0'
               d2d_redirect_manager: '0'
+              data_administrator: '0'
+              collection_administrator: '0'
             reduce: true
           is_grouped: false
           group_info:
@@ -1256,98 +1257,6 @@ display:
           hierarchy: false
           limit: true
           error_message: true
-        field_language_target_id_3:
-          id: field_language_target_id_3
-          table: media__field_language
-          field: field_language_target_id
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: taxonomy_index_tid
-          operator: 'not empty'
-          value: {  }
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          vid: language
-          type: textfield
-          hierarchy: false
-          limit: true
-          error_message: true
-        field_language_target_id_4:
-          id: field_language_target_id_4
-          table: media__field_language
-          field: field_language_target_id
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: taxonomy_index_tid
-          operator: not
-          value:
-            - 8876
-            - 8866
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            reduce: false
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-          reduce_duplicates: false
-          vid: language
-          type: textfield
-          hierarchy: false
-          limit: true
-          error_message: true
         field_media_english_version_target_id:
           id: field_media_english_version_target_id
           table: media__field_media_english_version
@@ -1397,6 +1306,49 @@ display:
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        langcode_1:
+          id: langcode_1
+          table: media_field_data
+          field: langcode
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: media
+          entity_field: langcode
+          plugin_id: language
+          operator: 'not in'
+          value:
+            '***LANGUAGE_site_default***': '***LANGUAGE_site_default***'
+            en: en
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
           is_grouped: false
           group_info:
             label: ''
@@ -1519,7 +1471,6 @@ display:
         - user
         - user.permissions
       tags:
-        - 'config:field.storage.media.field_language'
         - 'config:field.storage.media.field_media_english_version'
         - 'config:field.storage.media.field_organizations'
         - 'config:field.storage.media.field_start_date'
@@ -1543,7 +1494,6 @@ display:
         - user
         - user.permissions
       tags:
-        - 'config:field.storage.media.field_language'
         - 'config:field.storage.media.field_media_english_version'
         - 'config:field.storage.media.field_organizations'
         - 'config:field.storage.media.field_start_date'
