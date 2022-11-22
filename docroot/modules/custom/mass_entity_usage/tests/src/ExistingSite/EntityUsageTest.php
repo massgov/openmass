@@ -35,7 +35,7 @@ class EntityUsageTest extends ExistingSiteBase {
     parent::setUp();
 
     $config_factory = \Drupal::configFactory();
-    $config = $config_factory->getEditable('entity_usage_queue_tracking.settings');
+    $config = $config_factory->getEditable('mass_entity_usage.settings');
     $this->tracking = $config->get('queue_tracking');
     $config->set('queue_tracking', TRUE);
     $config->save();
@@ -62,7 +62,7 @@ class EntityUsageTest extends ExistingSiteBase {
     parent::tearDown();
 
     $config_factory = \Drupal::configFactory();
-    $config = $config_factory->getEditable('entity_usage_queue_tracking.settings');
+    $config = $config_factory->getEditable('mass_entity_usage.settings');
     $config->set('queue_tracking', $this->tracking);
     $config->save();
   }
@@ -148,7 +148,7 @@ class EntityUsageTest extends ExistingSiteBase {
   private function emptyEntityUsageQueues() {
     $this->clearQueue('entity_usage_tracker');
     $this->clearQueue('entity_usage_regenerate_queue');
-    \Drupal::service('entity_usage_queue_tracking.clean_usage_table')->clean();
+    \Drupal::service('mass_entity_usage.clean_usage_table')->clean();
   }
 
   /**
@@ -156,7 +156,7 @@ class EntityUsageTest extends ExistingSiteBase {
    */
   private function processEntityUsageQueues() {
     $this->runQueue('entity_usage_tracker');
-    \Drupal::service('entity_usage_queue_tracking.clean_usage_table')->clean();
+    \Drupal::service('mass_entity_usage.clean_usage_table')->clean();
   }
 
   /**
