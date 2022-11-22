@@ -1,5 +1,56 @@
 
 
+## [0.342.0] - November 15, 2022
+
+### Changed
+  - DP-25549: Reduce action finder vertical spacing on org and service pages.
+  - DP-26343: Change validation on info details to either require a content section or a populated overview field.
+  
+### Added
+  - DP-26344: Add option to hide section heading display on info details pages.
+  - DP-26356: Add filters to advanced search view.
+  
+
+
+## [0.341.0] - November 8, 2022
+
+### Added
+  - DP-24421: Add test coverage for search autocomplete on www.mass.gov.
+  - DP-26260: Add field to data metadata fields so we can paste in additional content to search.
+  
+### Fixed
+  - DP-25745: Fix Accordion IDs to be unique on the page.
+  - DP-26115: Fix mainNav submenu skipping the first item using arrow keys.
+  - DP-26229: A11y - Brand banner lock icon accessibility fix.
+  - DP-26315: Force wordbreak and restrain content container width to enforce layout.
+  
+### Changed
+  - DP-26266: Backstop version update.
+  - DP-26299: Update page/org alert rendering to include "Updated" string with the date.
+  
+
+
+## [0.340.0] - November 1, 2022
+
+### Fixed
+  - DP-25594: A11y - Fix sort labels in collections view.
+  - DP-25835: Change organization navigation IDs to be unique.
+  - DP-25916: A11y - Collection featured image on blogs does not have alt tag set.
+  - DP-26239: A11y - Organization navigation content markup fix.
+  - DP-26240: Listing table with no content rendering.
+  - DP-26287: Avoid error message when an unused field data table has already been deleted.
+  
+### Added
+  - DP-25782: Author redirect form for pages that are trashed
+  
+### Changed
+  - DP-25848: Make autocomplete fields accessible with JAWS.
+  - DP-26224: Add aria-label to the footer navigation.
+  - DP-26241: A11y - Fix table with no content rendering in Fee.
+  - DP-26263: Do not add or change JS org variable tracking when on a topic page.
+  
+
+
 ## [0.339.0] - October 25, 2022
 
 ### Changed
