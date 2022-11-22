@@ -1,5 +1,18 @@
 
 
+## [0.343.0] - November 22, 2022
+
+### Fixed
+  - DP-26357: Fix Mayflower JS error due to null mainNav and focusTrapping modal.
+  
+### Added
+  - DP-26403: Add final cache rebuild to deployments
+  
+### Removed
+  - DP-26434: Removed search autocomplete tests
+  
+
+
 ## [0.342.0] - November 15, 2022
 
 ### Changed
