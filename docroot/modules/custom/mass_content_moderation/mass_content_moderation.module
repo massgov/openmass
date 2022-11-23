@@ -54,6 +54,12 @@ function mass_content_moderation_form_views_bulk_operations_configure_action_alt
       '#value' => 'editorial',
     ];
   }
+
+  if (isset($form['state-wrapper'])) {
+    $options = $form['state-wrapper']['state']['#options'];
+    $options_slim = array_intersect_key($options, array_flip(['trash', 'unpublished']));
+    $form['state-wrapper']['state']['#options'] = $options_slim;
+  }
 }
 
 function mass_content_moderation_form_views_form_bulk_unpublish_news_or_events_page_1_alter($form, FormState $form_state, $form_id) {
