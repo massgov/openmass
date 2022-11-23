@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 
@@ -53,4 +54,8 @@ function mass_content_moderation_form_views_bulk_operations_configure_action_alt
       '#value' => 'editorial',
     ];
   }
+}
+
+function mass_content_moderation_form_views_form_bulk_unpublish_news_or_events_page_1_alter($form, FormState $form_state, $form_id) {
+  // @todo limit the Actions in the select list to just Trash and Unpublish.
 }
