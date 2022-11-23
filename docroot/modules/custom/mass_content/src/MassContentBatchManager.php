@@ -177,8 +177,6 @@ class MassContentBatchManager {
 
   /**
    * Set feedback fields and save entity.
-   *
-   * @param $node
    */
   private function setFeedbackFields($node) {
     $uri = $node->field_feedback_com_link->uri ?? 'entity:node/' . $node->id();
