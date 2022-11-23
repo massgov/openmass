@@ -4,7 +4,6 @@ namespace Drupal\mass_content;
 
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityBase;
-use Drush\Drush;
 
 /**
  * Manages Mass Content batch processing.
@@ -149,6 +148,39 @@ class MassContentBatchManager {
   public static function processFeedback($id, ContentEntityBase $node, $operation_details, &$context) {
     // Don't spam all the users with content update emails.
     $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+    $self = new self();
+    $self->setFeedbackFields($node);
+
+    if (!$node->isLatestRevision()) {
+      $storage = \Drupal::entityTypeManager()->getStorage('node');
+      $query = $storage->getQuery();
+      $query->condition('nid', $node->id());
+      $query->latestRevision();
+      $nids = $query->execute();
+      foreach ($nids as $nid) {
+        $latest_revision = $storage->loadRevision($nid);
+        $self->setFeedbackFields($latest_revision);
+      }
+    }
+
+    // Store some results for post-processing in the 'finished' callback.
+    // The contents of 'results' will be available as $results in the
+    // 'finished' function (in this example, batch_example_finished()).
+    $context['results'][] = $id;
+
+    // Optional message displayed under the progressbar.
+    $context['message'] = t('Running Batch "@id" @details',
+      ['@id' => $id, '@details' => $operation_details]
+    );
+  }
+
+  /**
+   * Set feedback fields and save entity.
+   *
+   * @param $node
+   */
+  private function setFeedbackFields($node) {
     $uri = $node->field_feedback_com_link->uri ?? 'entity:node/' . $node->id();
     $title = sprintf('contact %s.', $node->field_org_sentence_phrasing->value ?? $node->label());
     $node->set('field_feedback_com_link', [
@@ -160,16 +192,6 @@ class MassContentBatchManager {
     // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
     $node->setSyncing(TRUE);
     $node->save();
-
-    // Store some results for post-processing in the 'finished' callback.
-    // The contents of 'results' will be available as $results in the
-    // 'finished' function (in this example, batch_example_finished()).
-    $context['results'][] = $id;
-
-    // Optional message displayed under the progressbar.
-    $context['message'] = t('Running Batch "@id" @details',
-      ['@id' => $id, '@details' => $operation_details]
-    );
   }
 
   /**
