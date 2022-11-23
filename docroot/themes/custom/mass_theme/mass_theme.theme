@@ -6693,19 +6693,19 @@ function mass_theme_preprocess_paragraph__collection_search(&$variables) {
 
   switch ($p->field_search_type->value) {
     case 'external':
-      $param_name = $p->field_search_query_param_name->value;
-      $parsed_url = UrlHelper::parse($p->field_search_site_url->value);
-      if (array_key_exists($param_name, $parsed_url['query'])) {
-        unset($parsed_url['query'][$param_name]);
+      if ($param_name = $p->field_search_query_param_name->value) {
+        $parsed_url = UrlHelper::parse($p->field_search_site_url->value);
+        if (array_key_exists($param_name, $parsed_url['query'])) {
+          unset($parsed_url['query'][$param_name]);
+        }
+        $action_url = Url::fromUri($parsed_url['path'], [
+          'query' => $parsed_url['query'],
+          'absolute' => TRUE,
+          'https' => TRUE,
+        ]);
+        $variables['searchBoxWithLinks']['form']['actionUrl'] = $action_url->toString();
+        $variables['searchBoxWithLinks']['form']['inputName'] = $param_name;
       }
-      $action_url = Url::fromUri($parsed_url['path'], [
-        'query' => $parsed_url['query'],
-        'absolute' => TRUE,
-        'https' => TRUE,
-      ]);
-      $variables['searchBoxWithLinks']['form']['actionUrl'] = $action_url->toString();
-      $variables['searchBoxWithLinks']['form']['inputName'] = $param_name;
-
       break;
 
     case 'collection':
