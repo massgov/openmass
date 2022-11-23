@@ -358,7 +358,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: 'English version'
+          label: 'English version field'
           exclude: false
           alter:
             alter_text: false
@@ -1265,7 +1265,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: numeric
-          operator: '='
+          operator: 'not empty'
           value:
             min: ''
             max: ''
@@ -1274,13 +1274,12 @@ display:
           exposed: true
           expose:
             operator_id: field_media_english_version_target_id_op
-            label: 'English version'
+            label: 'English version is linked'
             description: ''
             use_operator: true
             operator: field_media_english_version_target_id_op
             operator_limit_selection: true
             operator_list:
-              '=': '='
               empty: empty
               'not empty': 'not empty'
             identifier: field_media_english_version_target_id
@@ -1458,7 +1457,20 @@ display:
           admin_label: 'file from field_upload_file'
           plugin_id: standard
           required: false
-      header: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: false
+          content:
+            value: '<p>Use the “English version field” filter to see whether your non-English documents are linked to English versions. If they are, it may affect the way those documents display on pages (you may see redundancies). Review pages to ensure documents are displaying effectively.</p>'
+            format: basic_html
+          tokenize: false
       footer: {  }
       display_extenders: {  }
     cache_metadata:
