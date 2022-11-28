@@ -10,7 +10,6 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_views_pre_view().
@@ -96,7 +95,8 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
         if ($term->hasField('field_landing_page') && !$term->field_landing_page->isEmpty()) {
           // Retrieve the field value.
           $field_landing_page = $term->get('field_landing_page')->getValue();
-          // Create a link from the field value and convert it to a markup string.
+          // Create a link from the field value
+          // and convert it to a markup string.
           $landing_page_link = Link::fromTextAndUrl(
             $field_landing_page[0]['title'],
             Url::fromUri($field_landing_page[0]['uri'])
