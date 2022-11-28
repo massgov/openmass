@@ -5,14 +5,19 @@
  *
  */
  #}
-{% extends '@templates/stacked-row-template.twig' %}
-
+{# This template initially extended '@templates/stacked-row-template.twig',
+    but that caused to add second set of <main> from that tempate. #}
 {% block header %}
+  {% if ajaxEmergencyAlerts %}
+    {% set ajaxPattern = ajaxEmergencyAlerts %}
+    {% include "@organisms/by-template/ajax-pattern.twig" %}
+  {% endif %}
 {% endblock %}
 
 {# Set top heading level for the page. #}
 {% set level = 1 %}
 
+<div class="pre-content">
 {% block preContent %}
   {# If the contextual navigation should be set for this node, then add it. #}
   {% if node.computed_log_in_links is not empty %}
@@ -86,13 +91,15 @@
     },
   } %}
 {% endblock %}
-
+</div>
+<div class="ma__stacked-row">
 {% block stackedRowContent %}
   {# Increase heading number by 1 from the parent heading. #}
   {% set level = level + 1 %}
     {{ content.field_guide_page_sections }}
 {% endblock %}
-
+</div>
+<div class="post-content">
 {% block postContent %}
   {% if content.field_image_credit is not empty %}
     {{ content.field_image_credit }}
@@ -102,6 +109,8 @@
   {% endif %}
   {{ content.extra_org_feedback_form }}
 {% endblock %}
-
+</div>
+{% block schemaContent %}{% endblock %}
 {% block footer %}
+  {% include "@organisms/by-template/footer.twig" %}
 {% endblock %}
