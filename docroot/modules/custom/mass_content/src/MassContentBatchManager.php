@@ -157,10 +157,12 @@ class MassContentBatchManager {
       $query = $storage->getQuery();
       $query->condition('nid', $node->id());
       $query->latestRevision();
-      $nids = $query->execute();
-      foreach ($nids as $nid) {
-        $latest_revision = $storage->loadRevision($nid);
-        $self->setFeedbackFields($latest_revision);
+      $rids = $query->execute();
+      foreach ($rids as $rid) {
+        $latest_revision = $storage->loadRevision($rid);
+        if (isset($latest_revision)) {
+          $self->setFeedbackFields($latest_revision);
+        }
       }
     }
 
