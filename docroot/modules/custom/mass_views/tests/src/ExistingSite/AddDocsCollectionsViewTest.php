@@ -82,7 +82,7 @@ class AddDocsCollectionsViewTest extends ExistingSiteBase {
 
     // Check if the "New Collection" element exists.
     $this->assertSession()->pageTextContains('New Collection');
-    $this->assertSession()->elementExists('css','.field--widget-term-reference-tree');
+    $this->assertSession()->elementExists('css', '.field--widget-term-reference-tree');
 
     // Use "Test 2 (87956)" collection and trigger the batch.
     $this->submitForm(['new_collection[0][87861][87861-children][87956][87956]' => TRUE], $this->t('Add collections'), 'views-bulk-operations-configure-action');
@@ -100,7 +100,7 @@ class AddDocsCollectionsViewTest extends ExistingSiteBase {
       $this->drupalGet("media/$mid/edit");
       $page = $this->getSession()->getPage();
       // Verify the value of the "Collections" field.
-      $this->assertEquals($page->find('css','#edit-field-collections-0-target-id')->getValue(),'Test 2 (87956)');
+      $this->assertEquals($page->find('css', '#edit-field-collections-0-target-id')->getValue(), 'Test 2 (87956)');
     }
   }
 
