@@ -358,7 +358,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: 'English version field'
+          label: 'English version'
           exclude: false
           alter:
             alter_text: false
@@ -1371,22 +1371,45 @@ display:
           row_class: ''
           default_row_class: true
           columns:
+            media_bulk_form: media_bulk_form
+            mid: mid
+            field_title: field_title
             name: name
-            field_language: field_language
+            langcode: langcode
             field_media_english_version: field_media_english_version
             field_organizations: field_organizations
-            field_start_date: field_start_date
             uid: uid
+            field_start_date: field_start_date
+            operations: operations
           default: field_start_date
           info:
-            name:
-              sortable: false
+            media_bulk_form:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            mid:
+              sortable: true
               default_sort_order: asc
               align: ''
               separator: ''
               empty_column: false
               responsive: ''
-            field_language:
+            field_title:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            name:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            langcode:
               sortable: true
               default_sort_order: asc
               align: ''
@@ -1405,6 +1428,13 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
+            uid:
+              sortable: true
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
             field_start_date:
               sortable: true
               default_sort_order: desc
@@ -1412,9 +1442,7 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            uid:
-              sortable: true
-              default_sort_order: asc
+            operations:
               align: ''
               separator: ''
               empty_column: false
@@ -1468,7 +1496,7 @@ display:
           plugin_id: text
           empty: false
           content:
-            value: '<p>Use the “English version field” filter to see whether your non-English documents are linked to English versions. If they are, it may affect the way those documents display on pages (you may see redundancies). Review pages to ensure documents are displaying effectively.</p>'
+            value: '<p>Use the “English version is linked” filter to see whether your non-English documents are linked to English versions. If they are, it may affect the way those documents display on pages (you may see redundancies). Review pages to ensure documents are displaying effectively.</p>'
             format: basic_html
           tokenize: false
       footer: {  }
