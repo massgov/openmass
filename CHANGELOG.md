@@ -4,7 +4,6 @@
 
 ### Fixed
   - DP-26357: Fix Mayflower JS error due to null mainNav and focusTrapping modal.
-  - DP-26492: Unpublished pages with maps still have published location listing pages.
   - DP-26556: Bug adding documents to collections in bulk.
 
 ### Added
