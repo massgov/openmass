@@ -34,7 +34,7 @@ class EntityUsageTest extends ExistingSiteBase {
   protected function setUp() {
     parent::setUp();
 
-    $GLOBALS['config']['mass_entity_usage.settings']['defaults']['queue_tracking'] = TRUE;
+    $GLOBALS['config']['mass_entity_usage.settings']['queue_tracking'] = TRUE;
     $this->container->get('config.factory')->clearStaticCache();
 
     // Remove everything from the entity_usage table
