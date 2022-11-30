@@ -3,6 +3,7 @@
 namespace Drupal\mass_views\Plugin\Action;
 
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -136,7 +137,7 @@ class AddCollectionsDocuments extends ViewsBulkOperationsActionBase implements C
 
     // Other entity types may have different
     // access methods and properties.
-    return TRUE;
+    return AccessResult::allowed();
   }
 
   /**
@@ -149,7 +150,7 @@ class AddCollectionsDocuments extends ViewsBulkOperationsActionBase implements C
     /** @var int[] */
     $list = $this->context['list'];
     foreach ($list as $item_id) {
-      $media = $media_storage->load(array_reverse($item_id)[0]);
+      $media = $media_storage->load($item_id[0]);
       if (!empty($media)) {
         /** @var \Drupal\entity_hierarchy\Plugin\Field\FieldType\EntityReferenceHierarchyFieldItemList */
         $collections = $media->hasField('field_collections') ?? FALSE;

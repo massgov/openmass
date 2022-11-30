@@ -1,15 +1,30 @@
 
 
+## [0.343.0] - November 29, 2022
+
+### Fixed
+  - DP-26357: Fix Mayflower JS error due to null mainNav and focusTrapping modal.
+  - DP-26556: Bug adding documents to collections in bulk.
+
+### Added
+  - DP-26403: Add final cache rebuild to deployments
+  - DP-26408: Add new view for trashing event and news content.
+
+### Removed
+  - DP-26434: Removed search autocomplete tests
+
+
+
 ## [0.342.0] - November 15, 2022
 
 ### Changed
   - DP-25549: Reduce action finder vertical spacing on org and service pages.
   - DP-26343: Change validation on info details to either require a content section or a populated overview field.
-  
+
 ### Added
   - DP-26344: Add option to hide section heading display on info details pages.
   - DP-26356: Add filters to advanced search view.
-  
+
 
 
 ## [0.341.0] - November 8, 2022
@@ -17,17 +32,17 @@
 ### Added
   - DP-24421: Add test coverage for search autocomplete on www.mass.gov.
   - DP-26260: Add field to data metadata fields so we can paste in additional content to search.
-  
+
 ### Fixed
   - DP-25745: Fix Accordion IDs to be unique on the page.
   - DP-26115: Fix mainNav submenu skipping the first item using arrow keys.
   - DP-26229: A11y - Brand banner lock icon accessibility fix.
   - DP-26315: Force wordbreak and restrain content container width to enforce layout.
-  
+
 ### Changed
   - DP-26266: Backstop version update.
   - DP-26299: Update page/org alert rendering to include "Updated" string with the date.
-  
+
 
 
 ## [0.340.0] - November 1, 2022
@@ -39,16 +54,16 @@
   - DP-26239: A11y - Organization navigation content markup fix.
   - DP-26240: Listing table with no content rendering.
   - DP-26287: Avoid error message when an unused field data table has already been deleted.
-  
+
 ### Added
   - DP-25782: Author redirect form for pages that are trashed
-  
+
 ### Changed
   - DP-25848: Make autocomplete fields accessible with JAWS.
   - DP-26224: Add aria-label to the footer navigation.
   - DP-26241: A11y - Fix table with no content rendering in Fee.
   - DP-26263: Do not add or change JS org variable tracking when on a topic page.
-  
+
 
 
 ## [0.339.0] - October 25, 2022
@@ -56,39 +71,39 @@
 ### Changed
   - DP-25181: Ensure the skip link target gets focused after the link gets clicked.
   - DP-26208: Allow internal URL for social links field on org page.
-  
+
 ### Added
   - DP-26126: Add method for How-to page for text messages.
-  
+
 ### Fixed
   - DP-26170: Fix JS error when there are no organizations on a page.
   - DP-26192: Fixed bug with collection tagging for authors and editors.
-  
+
 
 
 ## [0.338.0] - October 18, 2022
 
 ### Changed
   - DP-25407: Added v1 of Feedback view.
-  
+
 ### Removed
   - DP-25693: Remove siteimprove group field from all content types
   - DP-26114: Eliminate links to top level topics in main navigation.
-  
+
 ### Added
   - DP-25704: Warn authors if they associate an event to a service or org page that doesn't have an events component.
   - DP-25877: Set JS variable to collect the organization meta values of all pages in session.
   - DP-26127: Add Swahili, Pashto, and Dari to the list of available languages on Mass.gov
-  
+
 ### Fixed
   - DP-25830: Caches on location summary pages not clearing when updates made to individual location pages.
   - DP-25899: Fix issue with edit menus cutting off for authors when screen it not super wide.
   - DP-25952: Right to left languages on manually translated pages not rendering correctly.
   - DP-26151: Date filter on Collections is not working for document collections.
-  
+
 ### Security
   - DP-26110: Twig field value module update.
-  
+
 ## [0.337.1] - October 8, 2022
   - DP-25875 Hotfix. Bubble max-age to response headers. Fixes event listing staleness
 
