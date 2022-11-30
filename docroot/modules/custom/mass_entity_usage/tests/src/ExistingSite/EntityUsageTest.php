@@ -34,11 +34,8 @@ class EntityUsageTest extends ExistingSiteBase {
   protected function setUp() {
     parent::setUp();
 
-    $config_factory = \Drupal::configFactory();
-    $config = $config_factory->getEditable('mass_entity_usage.settings');
-    $this->tracking = $config->get('queue_tracking');
-    $config->set('queue_tracking', TRUE);
-    $config->save();
+    $GLOBALS['config']['mass_entity_usage.settings']['defaults']['queue_tracking'] = TRUE;
+    $this->container->get('config.factory')->clearStaticCache();
 
     // Remove everything from the entity_usage table
     // to avoid long cleaning times that break this test.
@@ -60,11 +57,6 @@ class EntityUsageTest extends ExistingSiteBase {
    */
   public function tearDown() {
     parent::tearDown();
-
-    $config_factory = \Drupal::configFactory();
-    $config = $config_factory->getEditable('mass_entity_usage.settings');
-    $config->set('queue_tracking', $this->tracking);
-    $config->save();
   }
 
   /**
