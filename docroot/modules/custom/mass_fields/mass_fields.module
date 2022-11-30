@@ -1004,9 +1004,9 @@ function _mass_fields_conditions_for_paragraphs(&$element, \Drupal\Core\Form\For
 
       ];
     }
-    elseif ($paragraph_type == 'collection_search') {
+    if ($paragraph_type == 'collection_search') {
       $dependee_field_name = 'field_search_type';
-      $selector = sprintf('input[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+      $selector = sprintf('select[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
 
       $element['subform']['field_collection']['#states'] = [
         'visible' => [
