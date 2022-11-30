@@ -3,6 +3,8 @@
 declare(strict_types=1);
 
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Form\FormState;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Logger\RfcLogLevel;
 
 /**
@@ -37,5 +39,25 @@ function mass_content_moderation_log_state_change(ContentEntityInterface $entity
       '!currentState' => $currentState,
     ];
     \Drupal::logger('mass_content_moderation')->log(RfcLogLevel::NOTICE, $message, $variables);
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter()
+ *
+ * Simplify bulk action form for the admin/content/bulk-unpublish-news-or-events view.
+ */
+function mass_content_moderation_form_views_bulk_operations_configure_action_alter(&$form, FormStateInterface $form_state) {
+  if (isset($form['workflow'])) {
+    $form['workflow'] = [
+      '#type' => 'hidden',
+      '#value' => 'editorial',
+    ];
+  }
+
+  if (isset($form['state-wrapper'])) {
+    $options = $form['state-wrapper']['state']['#options'];
+    $options_slim = array_intersect_key($options, array_flip(['trash', 'unpublished']));
+    $form['state-wrapper']['state']['#options'] = $options_slim;
   }
 }
