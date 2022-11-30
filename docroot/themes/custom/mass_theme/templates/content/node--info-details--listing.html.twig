@@ -72,6 +72,8 @@
 #}
 {# Determine how the node should display based on the existence of data listing data. #}
 {% set headingLevel = 3 %}
+<p>{{ headingLevel }}</p>
+
 {% if content.field_data_flag is defined
   and content.field_data_flag['#items'] is not empty
   and content.field_data_flag['#items'].0.value == 'data' %}
