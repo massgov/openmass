@@ -7,7 +7,7 @@ use Drush\Commands\DrushCommands;
 /**
  * Exposes the CleanUsageTable service to clean the usage table.
  */
-class CleanUsageTableCommand extends DrushCommands {
+class CleanUsageTableCommands extends DrushCommands {
 
   private $cleanUsageTableService;
 
