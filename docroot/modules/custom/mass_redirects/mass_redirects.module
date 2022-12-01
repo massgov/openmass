@@ -1,20 +1,31 @@
 <?php
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Url;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mass_redirects\Form\MoveRedirectsForm;
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function mass_redirects_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  foreach (array_keys($form['actions']) as $action) {
+    if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+      $form['actions'][$action]['#submit'][] = 'mass_redirects_node_form_submit';
+    }
+  }
+  return $form;
+}
 
 /**
  * Upon saving a trashed node, give link to Move Redirects form.
  *
  * We can't easily use hook_node_update since the node URL changes to ---unpublished in pathauto_alias_alter hook.
+ * We don't use hook_entity_update since that was spamming during bulk update. See https://massgov.atlassian.net/browse/DP-26408
  */
-function mass_redirects_entity_update(EntityInterface $entity): void {
-  if ($entity->getEntityTypeId() !== 'node') {
-    return;
-  }
-
+function mass_redirects_node_form_submit($form, FormStateInterface $form_state) {
+  /** @var \Drupal\mass_content\Entity\Bundle\node\NodeBundle $entity */
+  $entity = $form_state->getFormObject()->getEntity();
   if (PHP_SAPI !== 'cli' && $entity->getModerationState()->getString() == MassModeration::TRASH) {
     $id = $entity->id();
     $message = 'You may be able to <a href="@redirect-page">Redirect this trashed page</a> so that visitors will not get a <em>Page not Found</em> error.';
@@ -38,23 +49,6 @@ function mass_redirects_entity_operation(EntityInterface $entity): array {
   }
 
   return $operations ?? [];
-}
-
-/**
- * Implements hook_module_implements_alter().
- */
-function mass_redirects_module_implements_alter(&$implementations, $hook) {
-  // Implementations to be moved to the end of the list.
-  if (in_array($hook, ['entity_update'])) {
-    $mass_redirects = $implementations['mass_redirects'];
-    unset($implementations['mass_redirects']);
-    $implementations['mass_redirects'] = $mass_redirects;
-  }
-  // Implementations to be moved to the start of the list.
-  if (in_array($hook, [])) {
-    $mass_redirects = $implementations['mass_redirects'];
-    $implementations = ['mass_redirects' => $mass_redirects] + $implementations;
-  }
 }
 
 /**
