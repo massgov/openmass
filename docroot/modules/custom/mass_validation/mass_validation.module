@@ -16,6 +16,7 @@ use Drupal\Core\Url;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
+use Drupal\Component\Utility\UrlHelper;
 
 /**
  * Implements hook_help().
@@ -1279,6 +1280,50 @@ function _mass_validation_validate_caspio(FormStateInterface $form_state, $parag
   }
 }
 
+function _mass_validation_validate_custom_search(FormStateInterface $form_state, $paragraph, $section_key, $paragraph_key, $field_wrapper, $field) {
+  if (!isset($paragraph['subform']['field_search_type'])) {
+    return;
+  }
+
+  $subtype = $paragraph['subform']['field_search_type'][0]['value'];
+
+  switch ($subtype) {
+    case 'collection':
+      if (empty($paragraph['subform']['field_collection'])) {
+        $form_state->setErrorByName(
+          $field_wrapper . '][' . $section_key . '][subform][' . $field . '][' . $paragraph_key . '][subform][field_collection][0][target_id',
+          t('The "Collection" field required.')
+        );
+      }
+
+      break;
+
+    case 'external':
+      if (!empty($paragraph['subform']['field_search_site_url'][0]['value'])) {
+        if (!UrlHelper::isValid($paragraph['subform']['field_search_site_url'][0]['value'], TRUE)) {
+          $form_state->setErrorByName(
+            $field_wrapper . '][' . $section_key . '][subform][' . $field . '][' . $paragraph_key . '][subform][field_search_site_url][0][value',
+            t('The value entered for the "Search site URL" field is invalid. See help text on field for more information.')
+          );
+        }
+      } else {
+        $form_state->setErrorByName(
+          $field_wrapper . '][' . $section_key . '][subform][' . $field . '][' . $paragraph_key . '][subform][field_search_site_url][0][value',
+          t('The "Search site URL" field is required.')
+        );
+      }
+
+      if (empty($paragraph['subform']['field_search_query_param_name'][0]['value'])) {
+        $form_state->setErrorByName(
+          $field_wrapper . '][' . $section_key . '][subform][' . $field . '][' . $paragraph_key . '][subform][field_search_query_param_name][0][value',
+          t('The "Name for query parameter" field is required.')
+        );
+      }
+
+      break;
+  }
+}
+
 /**
  * Validates submission values in the FORM_ID() form.
  */
@@ -1294,6 +1339,7 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
         foreach ($paragraphs as $paragraph_key => $paragraph) {
           _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $paragraph_key, 'field_organization_sections', 'field_section_long_form_content');
           _mass_validation_validate_mosaic_items($form_state, $paragraph);
+          _mass_validation_validate_custom_search($form_state, $paragraph, $section_key, $paragraph_key, 'field_organization_sections', 'field_section_long_form_content');
         }
       }
     }
