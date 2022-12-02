@@ -35,8 +35,7 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
   }
 
   /**
-   * Assert that the Custom Search paragraph validation works properly
-   * on organization nodes.
+   * Assert that the Custom Search paragraph validation works properly on organization nodes.
    */
   public function testOrgCollectionSearchValidation() {
 
@@ -84,8 +83,7 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
   }
 
   /**
-   * Assert that the Custom Search paragraph validation works properly
-   * on promotional page nodes.
+   * Assert that the Custom Search paragraph validation works properly on promotional page nodes.
    */
   public function testPromoPageCollectionSearchValidation() {
 
@@ -127,5 +125,5 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
     $validation_text = 'The "Name for query parameter" field is required.';
     $this->assertStringContainsString($validation_text, $page_contents, 'Validation message for the "Name for query parameter" field not found.');
   }
-}
 
+}
