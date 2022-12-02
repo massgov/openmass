@@ -974,12 +974,17 @@ function _mass_fields_conditions_for_paragraphs(&$element, \Drupal\Core\Form\For
     switch ($paragraph_type) {
       case 'collection_search':
         $dependee_field_name = 'field_search_type';
-        $selector = sprintf('select[name="%s[%d][subform][%s][%d][subform][%s]"]',
-          $element['#field_parents'][0],
-          $element['#field_parents'][1],
-          $paragraph_entity_reference_field_name,
-          $element['#delta'],
-          $dependee_field_name);
+
+        if ($paragraph_entity_reference_field_name == 'field_section_long_form_content') {
+          $selector = sprintf('select[name="%s[%d][subform][%s][%d][subform][%s]"]',
+            $element['#field_parents'][0],
+            $element['#field_parents'][1],
+            $paragraph_entity_reference_field_name,
+            $element['#delta'],
+            $dependee_field_name);
+        } else {
+          $selector = sprintf('select[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
+        }
 
         // Dependent fields.
         $element['subform']['field_collection']['#states'] = [
