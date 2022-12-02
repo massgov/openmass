@@ -982,7 +982,8 @@ function _mass_fields_conditions_for_paragraphs(&$element, \Drupal\Core\Form\For
             $paragraph_entity_reference_field_name,
             $element['#delta'],
             $dependee_field_name);
-        } else {
+        }
+        else {
           $selector = sprintf('select[name="%s[%d][subform][%s]"]', $paragraph_entity_reference_field_name, $element['#delta'], $dependee_field_name);
         }
 

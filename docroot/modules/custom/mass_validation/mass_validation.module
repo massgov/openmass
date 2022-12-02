@@ -1316,7 +1316,8 @@ function _mass_validation_validate_custom_search(FormStateInterface $form_state,
             t('The value entered for the "Search site URL" field is invalid. See help text on field for more information.')
           );
         }
-      } else {
+      }
+      else {
         $form_state->setErrorByName(
           $paragraph_error_string . '[field_search_site_url][0][value',
           t('The "Search site URL" field is required.')
