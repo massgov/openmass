@@ -695,3 +695,91 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
     return t('All Event "Updated date" fields have been set.');
   }
 }
+
+/**
+ * Migrate "Organization Communications page" data for feedback.
+ */
+function mass_content_deploy_feedback_com(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  $query = \Drupal::entityQuery('node');
+  $query->condition('type', 'org_page');
+
+  if (empty($sandbox)) {
+    // Get a list of all nodes of type event.
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  // Turn off entity_hierarchy writes while processing the item.
+  \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
+
+  $nids = $query->condition('nid', $sandbox['current'], '>')
+    ->sort('nid')
+    ->range(0, $batch_size)
+    ->execute();
+
+
+  $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+
+  $nodes = $node_storage->loadMultiple($nids);
+
+  foreach ($nodes as $node) {
+    $sandbox['current'] = $node->id();
+    try {
+      mass_content_setFeedback_fields($node);
+    }
+    catch (\Exception $e) {
+      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    }
+    if (!$node->isLatestRevision()) {
+      $storage = \Drupal::entityTypeManager()->getStorage('node');
+      $query = $storage->getQuery();
+      $query->condition('nid', $node->id());
+      $query->latestRevision();
+      $rids = $query->execute();
+      foreach ($rids as $rid) {
+        $latest_revision = $storage->loadRevision($rid);
+        if (isset($latest_revision)) {
+          try {
+            mass_content_setFeedback_fields($latest_revision);
+          }
+          catch (\Exception $e) {
+            \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+          }
+        }
+      }
+    }
+    $sandbox['progress']++;
+  }
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    // Turn on entity_hierarchy writes after processing the item.
+    \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+    return t('Migrated "Organization Communications page" data for feedback. Processed @total items.', ['@total' => $sandbox['progress']]);
+  }
+  return "Processed {$sandbox['progress']} items.";
+}
+
+/**
+ * Set feedback fields and save entity.
+ */
+function mass_content_setFeedback_fields($node) {
+  $uri = $node->field_feedback_com_link->uri ?? 'entity:node/' . $node->id();
+  $contact = $node->field_org_sentence_phrasing->value ?? $node->label();
+  $title = sprintf('contact the %s', trim($contact));
+  $node->set('field_feedback_com_link', [
+    'uri' => $uri,
+    'title' => $title
+  ]);
+  // Save the node.
+  // Save without updating the last modified date. This requires a core patch
+  // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
+  $node->setSyncing(TRUE);
+  $node->save();
+}
