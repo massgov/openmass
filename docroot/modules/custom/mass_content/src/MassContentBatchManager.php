@@ -143,59 +143,6 @@ class MassContentBatchManager {
   }
 
   /**
-   * Process the node to migrate date field values.
-   */
-  public static function processFeedback($id, ContentEntityBase $node, $operation_details, &$context) {
-    // Don't spam all the users with content update emails.
-    $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
-
-    $self = new self();
-    $self->setFeedbackFields($node);
-
-    if (!$node->isLatestRevision()) {
-      $storage = \Drupal::entityTypeManager()->getStorage('node');
-      $query = $storage->getQuery();
-      $query->condition('nid', $node->id());
-      $query->latestRevision();
-      $rids = $query->execute();
-      foreach ($rids as $rid) {
-        $latest_revision = $storage->loadRevision($rid);
-        if (isset($latest_revision)) {
-          $self->setFeedbackFields($latest_revision);
-        }
-      }
-    }
-
-    // Store some results for post-processing in the 'finished' callback.
-    // The contents of 'results' will be available as $results in the
-    // 'finished' function (in this example, batch_example_finished()).
-    $context['results'][] = $id;
-
-    // Optional message displayed under the progressbar.
-    $context['message'] = t('Running Batch "@id" @details',
-      ['@id' => $id, '@details' => $operation_details]
-    );
-  }
-
-  /**
-   * Set feedback fields and save entity.
-   */
-  private function setFeedbackFields($node) {
-    $uri = $node->field_feedback_com_link->uri ?? 'entity:node/' . $node->id();
-    $contact = $node->field_org_sentence_phrasing->value ?? $node->label();
-    $title = sprintf('contact the %s', trim($contact));
-    $node->set('field_feedback_com_link', [
-      'uri' => $uri,
-      'title' => $title
-    ]);
-    // Save the node.
-    // Save without updating the last modified date. This requires a core patch
-    // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
-    $node->setSyncing(TRUE);
-    $node->save();
-  }
-
-  /**
    * Batch Finished callback.
    *
    * @param bool $success
