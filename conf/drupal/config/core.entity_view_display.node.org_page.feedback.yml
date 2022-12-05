@@ -39,7 +39,7 @@ dependencies:
     - field.field.node.org_page.field_urgent_warning
     - node.type.org_page
   module:
-    - mass_content
+    - link
     - user
 id: node.org_page.feedback
 targetEntityType: node
@@ -75,14 +75,14 @@ content:
     weight: 136
     region: content
   field_feedback_com_link:
-    type: dynamic_link_separate
+    type: link
     label: above
     settings:
-      trim_length: '80'
-      url_only: ''
-      url_plain: ''
-      rel: ''
-      target: ''
+      trim_length: null
+      url_only: false
+      url_plain: false
+      rel: '0'
+      target: '0'
     third_party_settings: {  }
     weight: 1
     region: content
