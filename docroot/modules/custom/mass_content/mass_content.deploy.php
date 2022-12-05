@@ -723,7 +723,6 @@ function mass_content_deploy_feedback_com(&$sandbox) {
     ->range(0, $batch_size)
     ->execute();
 
-
   $node_storage = \Drupal::entityTypeManager()->getStorage('node');
 
   $nodes = $node_storage->loadMultiple($nids);
@@ -731,7 +730,7 @@ function mass_content_deploy_feedback_com(&$sandbox) {
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
     try {
-      mass_content_setFeedback_fields($node);
+      mass_content_set_feedback_fields($node);
     }
     catch (\Exception $e) {
       \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
@@ -746,7 +745,7 @@ function mass_content_deploy_feedback_com(&$sandbox) {
         $latest_revision = $storage->loadRevision($rid);
         if (isset($latest_revision)) {
           try {
-            mass_content_setFeedback_fields($latest_revision);
+            mass_content_set_feedback_fields($latest_revision);
           }
           catch (\Exception $e) {
             \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
@@ -769,7 +768,7 @@ function mass_content_deploy_feedback_com(&$sandbox) {
 /**
  * Set feedback fields and save entity.
  */
-function mass_content_setFeedback_fields($node) {
+function mass_content_set_feedback_fields($node) {
   $uri = $node->field_feedback_com_link->uri ?? 'entity:node/' . $node->id();
   $contact = $node->field_org_sentence_phrasing->value ?? $node->label();
   $title = sprintf('contact the %s', trim($contact));
