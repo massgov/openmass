@@ -11,10 +11,10 @@ dependencies:
   module:
     - better_exposed_filters
     - geofield
+    - mass_views
     - node
     - paragraphs
     - taxonomy
-    - user
     - views_autocomplete_filters
     - views_porter_stemmer
 id: locations
@@ -137,9 +137,8 @@ display:
                   collapsible: false
                   is_secondary: false
       access:
-        type: perm
-        options:
-          perm: 'access content'
+        type: mass_views_node_argument_access
+        options: {  }
       cache:
         type: tag
         options: {  }
@@ -462,7 +461,6 @@ display:
         - url.query_args
         - user
         - 'user.node_grants:view'
-        - user.permissions
       tags: {  }
   page:
     id: page
@@ -483,5 +481,4 @@ display:
         - url.query_args
         - user
         - 'user.node_grants:view'
-        - user.permissions
       tags: {  }
