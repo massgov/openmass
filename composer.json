@@ -128,6 +128,19 @@
                     "type": "zip"
                 }
             }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "drupal/entity_usage_queue_tracking",
+                "type": "drupal-module",
+                "version": "9.1.x-dev",
+                "source": {
+                    "type": "git",
+                    "url": "https://git.drupalcode.org/project/entity_usage_queue_tracking.git",
+                    "reference": "9290c86e9c1ed10a3f976c9090c7108e8fcc487e"
+                }
+            }
         }
     ],
     "require": {
@@ -177,7 +190,8 @@
         "drupal/entity_hierarchy": "^3.0",
         "drupal/entity_reference_revisions": "^1.7",
         "drupal/entity_reference_tree": "^2.0",
-        "drupal/entity_usage": "^2.0-beta5",
+        "drupal/entity_usage": "^2.0.0-beta7",
+        "drupal/entity_usage_queue_tracking": "9.1.x-dev",
         "drupal/entityreference_filter": "^1.4",
         "drupal/environment_indicator": "^4",
         "drupal/field_group": "^3.1",
@@ -382,10 +396,9 @@
                 "Undefined array key \"title\" entityreference_filter.views.inc (https://www.drupal.org/project/entityreference_filter/issues/3295497)": "https://www.drupal.org/files/issues/2022-07-12/3295497_2.patch"
             },
             "drupal/entity_usage": {
-                "3007752 - Entity usage list does not scale (https://www.drupal.org/project/entity_usage/issues/3007752)": "patches/entity_usage-usage_list_scale-3007752-17.patch",
+                "3007752 - Entity usage list does not scale (https://www.drupal.org/project/entity_usage/issues/3007752)": "patches/entity_usage-usage_list_scale-3007752-25.patch",
                 "Hides language column and shows bundle" : "patches/entity-usage--hide-language--show-bundle.patch",
-                "3254437 - Delete queue items for `entity_usage_regenerate_queue` when `running drush entity-usage:recreate`  ": "https://www.drupal.org/files/issues/2021-12-14/issue-3254437--remove-items-from-queue-before-recreating-it.patch",
-                "2954973-3015287-3101451-combined patch" : "patches/2954973-3015287-3101451.patch"
+                "2954973 - Track absolute URLs in link fields" : "patches/2954973-68.patch"
             },
             "drupal/field_group": {
                 "Provide page level error messaging when publishing validation is not met": "https://www.drupal.org/files/issues/2021-02-21/2787179-highlight-html5-validation-60.patch",
