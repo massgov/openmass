@@ -6,6 +6,7 @@ use Drupal\migrate\Plugin\migrate\source\SqlBase;
 use Drupal\migrate\Row;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\path_alias\AliasManager;
 use Drupal\path_alias\Entity\PathAlias;
 use Drupal\pathauto\PathautoState;
 
@@ -60,9 +61,6 @@ class ServiceDetails extends SqlBase {
   public function prepareRow(Row $row) {
     /** @var \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node */
     $node = Node::load($row->getSourceProperty('nid'));
-    // $path = new \stdClass;
-//    $path->pathauto = PathautoState::SKIP;
-//    $path->alias = 'foo';
     // @todo migrate rabbit hole ?
     $map_destination = [
       'title' => $node->getTitle(),
@@ -72,7 +70,6 @@ class ServiceDetails extends SqlBase {
       'type' => 'info_details',
       'langcode' => $node->language()->getId(),
       'status' => $node->isPublished(),
-      'alias' => 'foo',
       'moderation_state' => $node->getModerationState()->getValue(),
       'search' => $node->getSearch()->getValue(),
       'search_nosnippet' => $node->getSearchNoSnippet()->getValue(),
@@ -96,6 +93,7 @@ class ServiceDetails extends SqlBase {
     $map_source = [
       // @todo Possibly use 2 migrations for this.
       'field_english_version' => $node->get('field_english_version')->getString() === '0' ? NULL : $node->get('field_english_version')->getString(),
+      'alias' => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()),
     ];
     foreach ($map_source as $key => $value) {
       $row->setSourceProperty($key, $value);
