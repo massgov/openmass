@@ -7,15 +7,12 @@ use Drupal\migrate\Plugin\migrate\source\SqlBase;
 use Drupal\migrate\Row;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\path_alias\AliasManager;
-use Drupal\path_alias\Entity\PathAlias;
-use Drupal\pathauto\PathautoState;
 
 /**
  * Migrate Source plugin.
  *
  * @MigrateSource(
- *   id = "mass_content_service_details"
+ *   id = "service_details"
  * )
  */
 class ServiceDetails extends SqlBase {
