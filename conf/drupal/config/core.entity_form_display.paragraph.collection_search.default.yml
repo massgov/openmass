@@ -4,13 +4,19 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.collection_search.field_collection
+    - field.field.paragraph.collection_search.field_search_footer
     - field.field.paragraph.collection_search.field_search_heading
+    - field.field.paragraph.collection_search.field_search_query_param_name
+    - field.field.paragraph.collection_search.field_search_related_info
+    - field.field.paragraph.collection_search.field_search_site_url
+    - field.field.paragraph.collection_search.field_search_type
     - field.field.paragraph.collection_search.field_secondary_heading
     - field.field.paragraph.collection_search.field_secondary_link
     - field.field.paragraph.collection_search.field_see_all_items_link_text
     - paragraphs.paragraphs_type.collection_search
   module:
-    - link
+    - conditional_fields
+    - text
 id: paragraph.collection_search.default
 targetEntityType: paragraph
 bundle: collection_search
@@ -18,42 +24,62 @@ mode: default
 content:
   field_collection:
     type: options_select
-    weight: 0
+    weight: 1
     region: content
     settings: {  }
+    third_party_settings:
+      conditional_fields: {  }
+  field_search_footer:
+    type: text_textarea
+    weight: 6
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
     third_party_settings: {  }
   field_search_heading:
     type: string_textfield
-    weight: 1
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_secondary_heading:
-    type: string_textfield
-    weight: 2
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  field_secondary_link:
-    type: link_default
     weight: 4
     region: content
     settings:
-      placeholder_url: ''
-      placeholder_title: ''
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
-  field_see_all_items_link_text:
+  field_search_query_param_name:
     type: string_textfield
     weight: 3
     region: content
     settings:
       size: 60
       placeholder: ''
+    third_party_settings:
+      conditional_fields: {  }
+  field_search_related_info:
+    type: text_textarea
+    weight: 5
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_search_site_url:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      conditional_fields: {  }
+  field_search_type:
+    type: options_select
+    weight: 0
+    region: content
+    settings: {  }
     third_party_settings: {  }
 hidden:
   created: true
+  field_secondary_heading: true
+  field_secondary_link: true
+  field_see_all_items_link_text: true
   status: true
