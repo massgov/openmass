@@ -1,4 +1,5 @@
 <?php
+
 namespace Drupal\mass_content\Plugin\migrate\source;
 
 use Drupal\migrate\MigrateSkipRowException;
@@ -85,9 +86,8 @@ class ServiceDetails extends SqlBase {
     foreach ($map_destination as $key => $value) {
       $row->setDestinationProperty($key, $value);
     }
-    // @todo redirects.
 
-    $this->prepareRowSections($row, $node) ;
+    $this->prepareRowSections($row, $node);
 
     // Map for use in process plugins.
     $map_source = [
@@ -134,18 +134,21 @@ class ServiceDetails extends SqlBase {
             }
           }
           break;
+
         case 'iframe':
           $info_details_section->set('field_section_long_form_heading', 'Iframe');
           $info_details_section->set('field_hide_heading', TRUE);
           // Re-use paragraph.
           $info_details_section->set('field_section_long_form_content', $paragraph);
           break;
+
         case 'video':
           $info_details_section->set('field_section_long_form_heading', 'Video');
           $info_details_section->set('field_hide_heading', TRUE);
           // Re-use paragraph.
           $info_details_section->set('field_section_long_form_content', $paragraph);
           break;
+
         default:
           throw new MigrateSkipRowException('Unknown para type: ' . $paragraph->getType(), TRUE);
       }
