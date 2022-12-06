@@ -72,6 +72,7 @@
  *
  */
 #}
+{% set headingLevel = 3 %}
 {% set eyebrow = {} %}
 {% if data_listing_icon is defined and data_listing_icon_label is defined %}
   {% set eyebrow = {
@@ -97,7 +98,6 @@
 {% if node.field_external_organization.value|render|trim is not empty %}
   {% set organizations = [node.field_external_organization.value] %}
 {% endif %}
-
 {% include "@molecules/general-teaser.twig" with {
   "generalTeaser" : {
     "eyebrow": eyebrow,
@@ -107,7 +107,7 @@
       "info": "",
       "property": ""
     },
-    "level": "",
+    "level": headingLevel,
     "emphasizedText": organizations,
     "tags": formats,
     "contents": [{

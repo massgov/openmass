@@ -71,6 +71,7 @@
  *
  */
 #}
+{% set headingLevel = 3 %}
 {% if content.field_data_flag is defined
   and content.field_data_flag['#items'] is not empty
   and content.field_data_flag['#items'].0.value == 'data' %}
@@ -105,7 +106,7 @@
         "info": "",
         "property": ""
       },
-      "level": "",
+      "level": headingLevel,
       "emphasizedText": organizations,
       "tags": formats,
       "contents": [{
@@ -127,7 +128,7 @@
         "info": "",
         "property": ""
       },
-      "level": "",
+      "level": headingLevel,
       "emphasizedText": "",
       "tags": "",
       "contents": [{
