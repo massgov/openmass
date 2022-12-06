@@ -1,0 +1,160 @@
+<?php
+namespace Drupal\mass_content\Plugin\migrate\source;
+
+use Drupal\migrate\MigrateSkipRowException;
+use Drupal\migrate\Plugin\migrate\source\SqlBase;
+use Drupal\migrate\Row;
+use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\path_alias\Entity\PathAlias;
+use Drupal\pathauto\PathautoState;
+
+/**
+ * Migrate Source plugin.
+ *
+ * @MigrateSource(
+ *   id = "mass_content_service_details"
+ * )
+ */
+class ServiceDetails extends SqlBase {
+
+  /**
+   * {@inheritdoc}
+   */
+  public function query() {
+    $query = $this->select('node', 'n')
+      ->fields('n', ['nid'])
+      ->condition('n.type', 'service_details')
+      ->condition('n.nid', 384431)
+      ->condition('nfd.status', Node::PUBLISHED);
+    $query->innerJoin('node_field_data', 'nfd', 'nfd.nid=n.nid AND nfd.vid=n.vid');
+    return $query;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function fields() {
+    $fields = [
+      'nid' => $this->t('Node ID'),
+    ];
+
+    return $fields;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getIds() {
+    return [
+      'nid' => [
+        'type' => 'integer',
+        'alias' => 'n',
+      ],
+    ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function prepareRow(Row $row) {
+    /** @var \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node */
+    $node = Node::load($row->getSourceProperty('nid'));
+    // $path = new \stdClass;
+//    $path->pathauto = PathautoState::SKIP;
+//    $path->alias = 'foo';
+    // @todo migrate rabbit hole ?
+    $map_destination = [
+      'title' => $node->getTitle(),
+      'uid' => $node->getOwnerId(),
+      'created' => $node->getCreatedTime(),
+      'changed' => $node->getChangedTime(),
+      'type' => 'info_details',
+      'langcode' => $node->language()->getId(),
+      'status' => $node->isPublished(),
+      'alias' => 'foo',
+      'moderation_state' => $node->getModerationState()->getValue(),
+      'search' => $node->getSearch()->getValue(),
+      'search_nosnippet' => $node->getSearchNoSnippet()->getValue(),
+      'field_contact' => $node->get('field_service_detail_contact')->getValue(),
+      'field_intended_audience' => $node->get('field_intended_audience')->getValue(),
+      'field_organizations' => $node->get('field_organizations')->getValue(),
+      'field_primary_parent' => $node->get('field_primary_parent')->getValue(),
+      'field_reusable_label' => $node->get('field_reusable_label')->getValue(),
+      'field_short_desc' => $node->get('field_service_detail_lede')->getValue(),
+      'field_info_details_related' => $node->get('field_service_detail_links_5')->getValue(),
+      'field_info_detail_overview' => $node->get('field_service_detail_overview')->getValue(),
+    ];
+    foreach ($map_destination as $key => $value) {
+      $row->setDestinationProperty($key, $value);
+    }
+    // @todo redirects.
+
+    $this->prepareRowSections($row, $node) ;
+
+    // Map for use in process plugins.
+    $map_source = [
+      // @todo Possibly use 2 migrations for this.
+      'field_english_version' => $node->get('field_english_version')->getString() === '0' ? NULL : $node->get('field_english_version')->getString(),
+    ];
+    foreach ($map_source as $key => $value) {
+      $row->setSourceProperty($key, $value);
+    }
+    return parent::prepareRow($row);
+  }
+
+  private function prepareRowSections(Row $row, \Drupal\mass_content\Entity\Bundle\node\NodeBundle $node) {
+    /** @var Paragraph[] $paragraphs */
+    $paragraphs = $node->get('field_service_detail_sections')->referencedEntities();
+    if (empty($paragraphs)) {
+      return [];
+    }
+
+    $values['type'] = 'section_long_form';
+    $list = [];
+    foreach ($paragraphs as $delta => $paragraph) {
+      $info_details_section = Paragraph::create($values);
+      switch ($paragraph->getType()) {
+        case 'section':
+          $info_details_section->set('field_section_long_form_heading', $paragraph->get('field_section_title')->getString());
+
+          $info_details_section->set('field_hide_heading', FALSE);
+          $body = $paragraph->get('field_section_body');
+          if (!$body->isEmpty()) {
+            $rich = Paragraph::create(['type' => 'rich_text']);
+            $item = $body->first();
+            $rich->field_body->value = $item->value;
+            $rich->field_body->format = $item->format;
+            $rich->save();
+            $info_details_section->set('field_section_long_form_content', $rich);
+            if (!$paragraph->get('field_section_downloads')->isEmpty() || !$paragraph->get('field_section_links')->isEmpty()) {
+              $links_and_downloads = Paragraph::create(['type' => 'links_downloads']);
+              $links_and_downloads->set('field_links_downloads_down', $paragraph->get('field_section_downloads')->getValue());
+              $links_and_downloads->set('field_links_downloads_link', $paragraph->get('field_section_links')->getValue());
+              $links_and_downloads->save();
+              $info_details_section->set('field_section_long_form_addition', $links_and_downloads);
+            }
+          }
+          break;
+        case 'iframe':
+          $info_details_section->set('field_section_long_form_heading', 'Iframe');
+          $info_details_section->set('field_hide_heading', TRUE);
+          // Re-use paragraph.
+          $info_details_section->set('field_section_long_form_content', $paragraph);
+          break;
+        case 'video':
+          $info_details_section->set('field_section_long_form_heading', 'Video');
+          $info_details_section->set('field_hide_heading', TRUE);
+          // Re-use paragraph.
+          $info_details_section->set('field_section_long_form_content', $paragraph);
+          break;
+        default:
+          throw new MigrateSkipRowException('Unknown para type: ' . $paragraph->getType(), TRUE);
+      }
+      $info_details_section->save();
+      $list[] = $info_details_section;
+    }
+    $row->setDestinationProperty('field_info_details_sections', $list);
+  }
+
+}

@@ -1,0 +1,29 @@
+id: mass_content_service_details
+label: Service Details
+source:
+  plugin: mass_content_service_details
+destination:
+  plugin: entity:node
+process:
+  type:
+    plugin: default_value
+    default_value: info_details
+  # From https://www.calebthorne.com/blog/drupal/2016/07/16/drupal-8-migrate-pathauto
+  'path/pathauto':
+     plugin: default_value
+     default_value: 0 # Disable pathauto.
+  'path/alias': alias
+  field_english_version:
+    -
+      plugin: skip_on_empty
+      method: process
+      source: field_english_version
+      message: 'Field field_english_version is missing'
+    -
+      plugin: migration_lookup
+      migration: mass_content_service_details
+      source: field_english_version
+##migration_dependencies:
+##  required:
+##    - beer_term
+##    - beer_user
