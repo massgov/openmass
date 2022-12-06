@@ -24,8 +24,7 @@ class ServiceDetails extends SqlBase {
     $query = $this->select('node', 'n')
       ->fields('n', ['nid'])
       ->condition('n.type', 'service_details')
-      ->condition('n.nid', 384431)
-      ->condition('nfd.status', Node::PUBLISHED);
+      ->condition('n.nid', 384431);
     $query->innerJoin('node_field_data', 'nfd', 'nfd.nid=n.nid AND nfd.vid=n.vid');
     return $query;
   }
