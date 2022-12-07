@@ -1,4 +1,5 @@
 <?php
+
 namespace Drupal\mass_content\Plugin\migrate\source;
 
 use Drupal\Core\Database\Query\SelectInterface;
@@ -20,17 +21,14 @@ class UpdateRedirects extends SqlBase {
     $query = $this->select('node', 'n')
       ->fields('n', ['nid'])
       ->condition('n.type', 'service_details');
-      // ->condition('n.nid', 384431);
     $query->innerJoin('node_field_data', 'nfd', 'nfd.nid=n.nid AND nfd.vid=n.vid');
     return $query;
   }
 
-
   /**
-   * Gets all redirects for all services pages and yields them as per
-   * https://www.drupal.org/project/drupal/issues/3017237
+   * Gets all redirects for all services pages.
    *
-   * @return \Generator
+   * Then yield per https://www.drupal.org/project/drupal/issues/3017237.
    */
   protected function initializeIterator() {
     $rows = [];
@@ -69,4 +67,5 @@ class UpdateRedirects extends SqlBase {
       ],
     ];
   }
+
 }

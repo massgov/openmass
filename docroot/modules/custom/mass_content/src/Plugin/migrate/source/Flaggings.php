@@ -1,4 +1,5 @@
 <?php
+
 namespace Drupal\mass_content\Plugin\migrate\source;
 
 use Drupal\Core\Database\Query\SelectInterface;
@@ -50,10 +51,4 @@ class Flaggings extends SqlBase {
     ];
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function prepareRow(Row $row) {
-    $a=1;
-  }
 }
