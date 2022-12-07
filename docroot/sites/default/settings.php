@@ -224,5 +224,4 @@ if (PHP_SAPI === 'cli' && ini_get('memory_limit')) {
   ini_set('memory_limit', '2048M');
 }
 
-$config['entity_usage.settings']['queue_tracking'] = TRUE;
 $settings['entity_usage_tracker'] = 'queue_unique.database';

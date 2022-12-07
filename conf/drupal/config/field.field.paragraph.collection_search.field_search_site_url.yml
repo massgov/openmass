@@ -1,0 +1,19 @@
+uuid: 52acf558-936d-48e2-aefc-2513c3956d6b
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_search_site_url
+    - paragraphs.paragraphs_type.collection_search
+id: paragraph.collection_search.field_search_site_url
+field_name: field_search_site_url
+entity_type: paragraph
+bundle: collection_search
+label: 'Search site URL'
+description: '<p>Enter the full URL that the search form will submit, but exclude the search parameter. Be sure to include "https://" in your URL. Only sites that use a query string (GET method) to display results are supported (after searching there, you will see your search term in the URL). If you are unsure, talk to the team that manages the search application.</p><p>Example URL after searching for "developer" directly on external site: https://massanf.taleo.net/careersection/ex/jobsearch.ftl?f=JOB_FIELD%287500120189%29&a=null&multiline=true&keyword=developer</p><p>You can see "keyword=developer" at the end of the URL. You will need to omit this as well as the ampersand before it when you enter the URL here. So, the URL you enter in this field would be https://massanf.taleo.net/careersection/ex/jobsearch.ftl?f=JOB_FIELD%287500120189%29&a=null&multiline=true</p>'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

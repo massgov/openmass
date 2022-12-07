@@ -54,6 +54,19 @@ function mass_views_views_pre_view(ViewExecutable $view, $display_id, array &$ar
 function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $view = $form_state->getStorage('view');
 
+  if ($view['view']->id() === "non_english_documents" && $view['view']->getDisplay()->display['id'] === "page_1") {
+    if ($form['field_media_english_version_target_id_wrapper']['field_media_english_version_target_id_op']) {
+      $form['field_media_english_version_target_id_wrapper']['field_media_english_version_target_id_op']['#type'] = 'radios';
+      $options = [
+        "" => t('Any'),
+        "empty" => t('No'),
+        "not empty" => t('Yes'),
+      ];
+      $form['field_media_english_version_target_id_wrapper']['field_media_english_version_target_id_op']['#default_value'] = $form_state->getUserInput()['field_media_english_version_target_id_op'] ?? "";
+      $form['field_media_english_version_target_id_wrapper']['field_media_english_version_target_id_op']['#options'] = $options;
+    }
+  }
+
   if ($view['view']->id() == 'data_listing_all' && $view['view']->getDisplay()->getPluginId() == 'page') {
     // Remove sub topics from the data topic filter.
     if (isset($form['topicid'])) {

@@ -1,304 +1,8 @@
-diff --git a/README.txt b/README.txt
-index a76dd0d..f394d9b 100644
---- a/README.txt
-+++ b/README.txt
-@@ -54,6 +54,22 @@ usage of entities on your site.
- Go to the URL /admin/config/entity-usage/batch-update in order to start the
- batch operation.
- 
-+Tracking via queue
-+============
-+The module support tracking entity usage via a queue. When the entity usage is
-+tracked via a queue, the tracking information will be updated when cron runs.
-+This means some references between entities could be missing. Only use this setting
-+when you are sure there are no automatic processes using the tracking information
-+to update or delete content.
-+
-+Since this is for advanced users only, this setting is not exposed in the UI.
-+This can be enabled through the settings.php by adding the following line:
-+
-+$config['entity_usage.settings']['queue_tracking'] = TRUE;
-+
-+You also need to periodically run `drush clean_usage_table` to clean references
-+to outdated revisions.
-+
- Project page and Online handbook
- ================================
- 
-diff --git a/drush.services.yml b/drush.services.yml
-index cbedcc2..024ff1f 100644
---- a/drush.services.yml
-+++ b/drush.services.yml
-@@ -4,3 +4,9 @@ services:
-     arguments: ['@entity_usage.batch_manager', '@entity_usage.queue_batch_manager', '@entity_type.manager', '@config.factory']
-     tags:
-       - { name: drush.command }
-+
-+  entity_usage.clean_usage_table_command:
-+    class: \Drupal\entity_usage\Commands\CleanUsageTableCommand
-+    arguments: [ '@entity_usage.clean_usage_table' ]
-+    tags:
-+      - { name: drush.command }
-diff --git a/entity_usage.module b/entity_usage.module
-index 2dd3f72..3f358cf 100644
---- a/entity_usage.module
-+++ b/entity_usage.module
-@@ -31,35 +31,80 @@ function entity_usage_help($route_name, RouteMatchInterface $route_match) {
-  * Implements hook_entity_insert().
-  */
- function entity_usage_entity_insert(EntityInterface $entity) {
--  \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnCreation($entity);
-+  if (\Drupal::configFactory()->get('entity_usage.settings')->get('queue_tracking')) {
-+    \Drupal::queue('entity_usage_tracker')->createItem([
-+      'operation' => 'insert',
-+      'entity_type' => $entity->getEntityTypeId(),
-+      'entity_id' => $entity->id(),
-+    ]);
-+  }
-+  else {
-+    \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnCreation($entity);
-+  }
- }
- 
- /**
-  * Implements hook_entity_update().
-  */
- function entity_usage_entity_update(EntityInterface $entity) {
--  \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnEdition($entity);
-+  if (\Drupal::configFactory()->get('entity_usage.settings')->get('queue_tracking')) {
-+    \Drupal::queue('entity_usage_tracker')->createItem([
-+      'operation' => 'update',
-+      'entity_type' => $entity->getEntityTypeId(),
-+      'entity_id' => $entity->id(),
-+    ]);
-+  }
-+  else {
-+    \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnEdition($entity);
-+  }
- }
- 
- /**
-  * Implements hook_entity_predelete().
-  */
- function entity_usage_entity_predelete(EntityInterface $entity) {
--  \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnDeletion($entity);
-+  if (\Drupal::configFactory()->get('entity_usage.settings')->get('queue_tracking')) {
-+    \Drupal::queue('entity_usage_tracker')->createItem([
-+      'operation' => 'predelete',
-+      'entity_type' => $entity->getEntityTypeId(),
-+      'entity_id' => $entity->id(),
-+    ]);
-+  }
-+  else {
-+    \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnDeletion($entity);
-+  }
- }
- 
- /**
-  * Implements hook_entity_translation_delete().
-  */
- function entity_usage_entity_translation_delete(EntityInterface $translation) {
--  \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnDeletion($translation, 'translation');
-+  if (\Drupal::configFactory()->get('entity_usage.settings')->get('queue_tracking')) {
-+    \Drupal::queue('entity_usage_tracker')->createItem([
-+      'operation' => 'translation_delete',
-+      'entity_type' => $translation->getEntityTypeId(),
-+      'entity_id' => $translation->id(),
-+    ]);
-+  }
-+  else {
-+    \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnDeletion($translation, 'translation');
-+  }
- }
- 
- /**
-  * Implements hook_entity_revision_delete().
-  */
- function entity_usage_entity_revision_delete(EntityInterface $entity) {
--  \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnDeletion($entity, 'revision');
-+  if (\Drupal::configFactory()->get('entity_usage.settings')->get('queue_tracking')) {
-+    \Drupal::queue('entity_usage_tracker')->createItem([
-+      'operation' => 'revision_delete',
-+      'entity_type' => $entity->getEntityTypeId(),
-+      'entity_id' => $entity->id(),
-+    ]);
-+  }
-+  else {
-+    \Drupal::service('entity_usage.entity_update_manager')->trackUpdateOnDeletion($entity, 'revision');
-+  }
- }
- 
- /**
-diff --git a/entity_usage.services.yml b/entity_usage.services.yml
-index f1fe59f..c47ed17 100644
---- a/entity_usage.services.yml
-+++ b/entity_usage.services.yml
-@@ -19,3 +19,6 @@ services:
-     arguments: ['@entity_type.manager', '@config.factory']
-     tags:
-       - { name: event_subscriber }
-+  entity_usage.clean_usage_table:
-+    class: Drupal\entity_usage\CleanUsageTable
-+    arguments: ['@entity_type.manager', '@database']
-diff --git a/src/CleanUsageTable.php b/src/CleanUsageTable.php
-new file mode 100644
-index 0000000..2afb35f
---- /dev/null
-+++ b/src/CleanUsageTable.php
-@@ -0,0 +1,112 @@
-+<?php
-+
-+namespace Drupal\entity_usage;
-+
-+use Drupal\Core\Entity\EntityTypeManagerInterface;
-+use Drupal\Core\Database\Connection;
-+use Drupal\Core\Entity\RevisionableInterface;
-+
-+/**
-+ * Cleans entity usage table from repeated records.
-+ */
-+class CleanUsageTable {
-+
-+  /**
-+   * Database service.
-+   *
-+   * @var \Drupal\Core\Database\Connection
-+   */
-+  private $database;
-+
-+  /**
-+   * Entity Type Manager Service.
-+   *
-+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-+   */
-+  private $entityTypeManager;
-+
-+  /**
-+   * Returns a CleanUsageTable object with populated properties.
-+   *
-+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-+   * @param \Drupal\Core\Database\Connection $database
-+   *
-+   * @return void
-+   */
-+  public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $database) {
-+    $this->entityTypeManager = $entity_type_manager;
-+    $this->database = $database;
-+  }
-+
-+  /**
-+   * Execute private methods for cleanining.
-+   */
-+  public function clean() {
-+    $this->deleteRecordsWithNonCurrentRevisions();
-+    $this->deleteRecordsPointingThemselves();
-+  }
-+
-+  /**
-+   * Delete references from other revisions.
-+   */
-+  private function deleteOtherRevisions($id, $vid, $suffix = '') {
-+    $this->database->delete('entity_usage')
-+      ->condition('source_id' . $suffix, $id)
-+      ->condition('source_vid' . $suffix, $vid, '<>')
-+      ->execute();
-+  }
-+
-+  /**
-+   * Deletes records where the target is the same as the source.
-+   */
-+  private function deleteRecordsPointingThemselves() {
-+    $this->database->query("
-+      DELETE FROM entity_usage
-+      WHERE target_id = source_id
-+    ")->execute();
-+
-+    $this->database->query("
-+      DELETE FROM entity_usage
-+      WHERE target_id_string = source_id_string
-+    ")->execute();
-+
-+  }
-+
-+  /**
-+   * Returns records with repeated entity IDs.
-+   */
-+  private function getRepeatedRecords($field) {
-+    return $this->database->query("
-+        SELECT
-+          {$field}, source_type, COUNT({$field})
-+        FROM entity_usage
-+        GROUP BY {$field} HAVING COUNT({$field}) > 1
-+    ")->fetchAll();
-+  }
-+
-+  /**
-+   * Deletes records with revisions that are not the current one.
-+   */
-+  private function deleteRecordsWithNonCurrentRevisions() {
-+    $res = [];
-+    $res[''] = $this->getRepeatedRecords('source_id');
-+    $res['_string'] = $this->getRepeatedRecords('source_id_string');
-+
-+    foreach ($res as $key => $records) {
-+
-+      foreach ($records as $record) {
-+        $source_type = $record->source_type;
-+        $source_id = $record->source_id;
-+        $storage = $this->entityTypeManager->getStorage($source_type);
-+        /** @var \Drupal\Core\Entity\RevisionableInterface */
-+        $entity = $storage->load($source_id);
-+        if (!($entity instanceof RevisionableInterface)) {
-+          continue;
-+        }
-+        $vid = $entity->getRevisionId();
-+        $this->deleteOtherRevisions($source_id, $vid, $key);
-+      }
-+    }
-+  }
-+
-+}
-diff --git a/src/Commands/CleanUsageTableCommand.php b/src/Commands/CleanUsageTableCommand.php
-new file mode 100644
-index 0000000..cb1ab1e
---- /dev/null
-+++ b/src/Commands/CleanUsageTableCommand.php
-@@ -0,0 +1,30 @@
-+<?php
-+
-+namespace Drupal\entity_usage\Commands;
-+
-+use Drush\Commands\DrushCommands;
-+
-+/**
-+ * Exposes the CleanUsageTable service to clean the usage table.
-+ */
-+class CleanUsageTableCommand extends DrushCommands {
-+
-+  private $cleanUsageTableService;
-+
-+  /**
-+   * {@inheritdoc}
-+   */
-+  public function __construct($clean_usage_table) {
-+    $this->cleanUsageTableService = $clean_usage_table;
-+  }
-+
-+  /**
-+   * Drush command that clean the usage table.
-+   *
-+   * @command clean_usage_table
-+   */
-+  public function clean() {
-+    $this->cleanUsageTableService->clean();
-+  }
-+
-+}
 diff --git a/src/EntityUpdateManager.php b/src/EntityUpdateManager.php
-index 2cc0e0d..4aa2ae6 100644
+index 28a91b7e51f5a568a3579dc0283e44513655c3f5..ff0ee8f23431c622f025e053a0108d99ee837bb9 100644
 --- a/src/EntityUpdateManager.php
 +++ b/src/EntityUpdateManager.php
-@@ -16,7 +16,7 @@ class EntityUpdateManager {
+@@ -16,7 +16,7 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
    /**
     * The usage track service.
     *
@@ -306,8 +10,8 @@ index 2cc0e0d..4aa2ae6 100644
 +   * @var \Drupal\entity_usage\EntityUsageInterface
     */
    protected $usageService;
- 
-@@ -37,14 +37,14 @@ class EntityUpdateManager {
+
+@@ -37,14 +37,14 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
    /**
     * EntityUpdateManager constructor.
     *
@@ -325,30 +29,29 @@ index 2cc0e0d..4aa2ae6 100644
      $this->trackManager = $track_manager;
      $this->config = $config_factory->get('entity_usage.settings');
 diff --git a/src/EntityUsageTrackBase.php b/src/EntityUsageTrackBase.php
-index 34db9ad..b73659e 100644
+index f8aae7fc962a7eaf9551bf8f7adb4894c6d21c25..61c6f436279f0d622c15b0c529d5775ef7bf3f34 100644
 --- a/src/EntityUsageTrackBase.php
 +++ b/src/EntityUsageTrackBase.php
-@@ -2,14 +2,19 @@
- 
+@@ -2,6 +2,7 @@
+
  namespace Drupal\entity_usage;
- 
+
 +use Drupal\Core\Url;
  use Drupal\Core\Config\ConfigFactoryInterface;
-+use Drupal\Core\Database\Connection;
  use Drupal\Core\Entity\EntityFieldManagerInterface;
  use Drupal\Core\Entity\EntityInterface;
- use Drupal\Core\Entity\EntityRepositoryInterface;
+@@ -9,8 +10,10 @@ use Drupal\Core\Entity\EntityRepositoryInterface;
  use Drupal\Core\Entity\EntityTypeManagerInterface;
-+use Drupal\Core\Entity\FieldableEntityInterface;
+ use Drupal\Core\Entity\FieldableEntityInterface;
  use Drupal\Core\Entity\RevisionableInterface;
 +use Drupal\Core\Path\PathValidatorInterface;
  use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
  use Drupal\Core\Plugin\PluginBase;
 +use Drupal\Core\StreamWrapper\PublicStream;
  use Symfony\Component\DependencyInjection\ContainerInterface;
- 
+
  /**
-@@ -20,7 +25,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+@@ -21,7 +24,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
    /**
     * The usage tracking service.
     *
@@ -356,25 +59,12 @@ index 34db9ad..b73659e 100644
 +   * @var \Drupal\entity_usage\EntityUsageInterface
     */
    protected $usageService;
- 
-@@ -45,6 +50,13 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
-    */
-   protected $config;
- 
-+  /**
-+   * The Database service.
-+   *
-+   * @var \Drupal\Core\Database\Connection
-+   */
-+  protected $database;
-+
-   /**
-    * The EntityRepository service.
-    *
-@@ -52,6 +64,20 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+
+@@ -52,6 +55,20 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+    * @var \Drupal\Core\Entity\EntityRepositoryInterface
     */
    protected $entityRepository;
- 
++
 +  /**
 +   * The Drupal Path Validator service.
 +   *
@@ -388,11 +78,10 @@ index 34db9ad..b73659e 100644
 +   * @var string
 +   */
 +  protected $publicFileDirectory;
-+
+
    /**
     * Plugin constructor.
-    *
-@@ -61,7 +87,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+@@ -62,7 +79,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
     *   The plugin_id for the plugin instance.
     * @param mixed $plugin_definition
     *   The plugin implementation definition.
@@ -401,7 +90,7 @@ index 34db9ad..b73659e 100644
     *   The usage tracking service.
     * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
     *   The EntityTypeManager service.
-@@ -71,8 +97,14 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+@@ -72,8 +89,12 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
     *   The factory for configuration objects.
     * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
     *   The EntityRepositoryInterface service.
@@ -409,100 +98,37 @@ index 34db9ad..b73659e 100644
 +   *   The Drupal Path Validator service.
 +   * @param \Drupal\Core\StreamWrapper\PublicStream $public_stream
 +   *   The Public Stream service.
-+   * @param \Drupal\Core\Database\Connection $database_service
-+   *   The Drupal Database service.
     */
 -  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityUsage $usage_service, EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, ConfigFactoryInterface $config_factory, EntityRepositoryInterface $entity_repository) {
-+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityUsageInterface $usage_service, EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, ConfigFactoryInterface $config_factory, EntityRepositoryInterface $entity_repository, PathValidatorInterface $path_validator, PublicStream $public_stream, Connection $database_service) {
++  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityUsageInterface $usage_service, EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, ConfigFactoryInterface $config_factory, EntityRepositoryInterface $entity_repository, PathValidatorInterface $path_validator, PublicStream $public_stream) {
      parent::__construct($configuration, $plugin_id, $plugin_definition);
      $this->configuration += $this->defaultConfiguration();
      $this->usageService = $usage_service;
-@@ -80,6 +112,9 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+@@ -81,6 +102,8 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
      $this->entityFieldManager = $entity_field_manager;
      $this->config = $config_factory->get('entity_usage.settings');
      $this->entityRepository = $entity_repository;
 +    $this->pathValidator = $path_validator;
 +    $this->publicFileDirectory = $public_stream->getDirectoryPath();
-+    $this->database = $database_service;
    }
- 
+
    /**
-@@ -94,7 +129,10 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+@@ -95,7 +118,9 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
        $container->get('entity_type.manager'),
        $container->get('entity_field.manager'),
        $container->get('config.factory'),
 -      $container->get('entity.repository')
 +      $container->get('entity.repository'),
 +      $container->get('path.validator'),
-+      $container->get('stream_wrapper.public'),
-+      $container->get('database')
++      $container->get('stream_wrapper.public')
      );
    }
- 
-@@ -138,6 +176,18 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
-    */
-   public function trackOnEntityCreation(EntityInterface $source_entity) {
-     $trackable_field_types = $this->getApplicableFieldTypes();
-+
-+    if ($this->config->get('queue_tracking')) {
-+      if ($source_entity instanceof RevisionableInterface) {
-+        // Delete records from non-current revision ids.
-+        $this->database
-+          ->delete('entity_usage')
-+          ->condition('source_id', $source_entity->id())
-+          ->condition('source_vid', $source_entity->getRevisionId(), '<>')
-+          ->execute();
-+      }
-+    }
-+
-     $fields = array_keys($this->getReferencingFields($source_entity, $trackable_field_types));
-     foreach ($fields as $field_name) {
-       if ($source_entity->hasField($field_name) && !$source_entity->{$field_name}->isEmpty()) {
-@@ -147,7 +197,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
-           // need to add a tracking record.
-           $target_entities = $this->getTargetEntities($field_item);
-           foreach ($target_entities as $target_entity) {
--            list($target_type, $target_id) = explode("|", $target_entity);
-+            [$target_type, $target_id] = explode("|", $target_entity);
-             $source_vid = ($source_entity instanceof RevisionableInterface && $source_entity->getRevisionId()) ? $source_entity->getRevisionId() : 0;
-             $this->usageService->registerUsage($target_id, $target_type, $source_entity->id(), $source_entity->getEntityTypeId(), $source_entity->language()->getId(), $source_vid, $this->pluginId, $field_name);
-           }
-@@ -202,12 +252,12 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
-       $removed_ids = array_diff($original_targets, $current_targets);
- 
-       foreach ($added_ids as $added_entity) {
--        list($target_type, $target_id) = explode('|', $added_entity);
-+        [$target_type, $target_id] = explode('|', $added_entity);
-         $source_vid = ($source_entity instanceof RevisionableInterface && $source_entity->getRevisionId()) ? $source_entity->getRevisionId() : 0;
-         $this->usageService->registerUsage($target_id, $target_type, $source_entity->id(), $source_entity->getEntityTypeId(), $source_entity->language()->getId(), $source_vid, $this->pluginId, $field_name);
-       }
-       foreach ($removed_ids as $removed_entity) {
--        list($target_type, $target_id) = explode('|', $removed_entity);
-+        [$target_type, $target_id] = explode('|', $removed_entity);
-         $source_vid = ($source_entity instanceof RevisionableInterface && $source_entity->getRevisionId()) ? $source_entity->getRevisionId() : 0;
-         $this->usageService->registerUsage($target_id, $target_type, $source_entity->id(), $source_entity->getEntityTypeId(), $source_entity->language()->getId(), $source_vid, $this->pluginId, $field_name, 0);
-       }
-@@ -218,11 +268,13 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
-    * {@inheritdoc}
-    */
-   public function getReferencingFields(EntityInterface $source_entity, array $field_types) {
--    $source_entity_type_id = $source_entity->getEntityTypeId();
-+    $referencing_fields_on_bundle = [];
-+    if (!($source_entity instanceof FieldableEntityInterface)) {
-+      return $referencing_fields_on_bundle;
-+    }
- 
-+    $source_entity_type_id = $source_entity->getEntityTypeId();
-     $all_fields_on_bundle = $this->entityFieldManager->getFieldDefinitions($source_entity_type_id, $source_entity->bundle());
--
--    $referencing_fields_on_bundle = [];
-     foreach ($all_fields_on_bundle as $field_name => $field) {
-       if (in_array($field->getType(), $field_types)) {
-         $referencing_fields_on_bundle[$field_name] = $field;
-@@ -240,4 +292,140 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+
+@@ -246,5 +271,141 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+
      return $referencing_fields_on_bundle;
    }
- 
++
 +  /**
 +   * Process the url to a Url object.
 +   *
@@ -638,15 +264,15 @@ index 34db9ad..b73659e 100644
 +    }
 +    return $this->publicFileDirectory;
 +  }
-+
+
  }
 diff --git a/src/Plugin/EntityUsage/Track/HtmlLink.php b/src/Plugin/EntityUsage/Track/HtmlLink.php
-index 5b1893b..c0fbf16 100644
+index 5b1893bd568108ea5cee95ca4f26d1aba84dff53..50f804a6114d08a598f562f57ac5415340b79724 100644
 --- a/src/Plugin/EntityUsage/Track/HtmlLink.php
 +++ b/src/Plugin/EntityUsage/Track/HtmlLink.php
 @@ -3,14 +3,6 @@
  namespace Drupal\entity_usage\Plugin\EntityUsage\Track;
- 
+
  use Drupal\Component\Utility\Html;
 -use Drupal\Core\Config\ConfigFactoryInterface;
 -use Drupal\Core\Entity\EntityFieldManagerInterface;
@@ -656,13 +282,13 @@ index 5b1893b..c0fbf16 100644
 -use Drupal\Core\StreamWrapper\StreamWrapperInterface;
 -use Drupal\entity_usage\EntityUsage;
 -use Symfony\Component\DependencyInjection\ContainerInterface;
- 
+
  /**
   * Tracks usage of entities referenced from regular HTML Links.
 @@ -24,68 +16,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
   */
  class HtmlLink extends TextFieldEmbedBase {
- 
+
 -  /**
 -   * The Drupal Path Validator service.
 -   *
@@ -728,10 +354,11 @@ index 5b1893b..c0fbf16 100644
    /**
     * {@inheritdoc}
     */
-@@ -102,55 +32,20 @@ class HtmlLink extends TextFieldEmbedBase {
+@@ -101,56 +31,20 @@ class HtmlLink extends TextFieldEmbedBase {
+       try {
          // Get the href value of the <a> element.
          $href = $element->getAttribute('href');
- 
+-
 -        // Strip off the scheme and host, so we only get the path.
 -        $site_domains = $this->config->get('site_domains') ?: [];
 -        foreach ($site_domains as $site_domain) {
@@ -797,7 +424,7 @@ index 5b1893b..c0fbf16 100644
        }
        catch (\Exception $e) {
 diff --git a/src/Plugin/EntityUsage/Track/LayoutBuilder.php b/src/Plugin/EntityUsage/Track/LayoutBuilder.php
-index 906b8d9..d979618 100644
+index 106abbd0e36ac1b002572c91e74233576ee3d473..3a4af181e3090029835d7cfb2387d5abdb52b43c 100644
 --- a/src/Plugin/EntityUsage/Track/LayoutBuilder.php
 +++ b/src/Plugin/EntityUsage/Track/LayoutBuilder.php
 @@ -9,10 +9,12 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
@@ -811,7 +438,7 @@ index 906b8d9..d979618 100644
  use Symfony\Component\DependencyInjection\ContainerInterface;
 +use Drupal\Core\Path\PathValidatorInterface;
 +use Drupal\Core\StreamWrapper\PublicStream;
- 
+
  /**
   * Tracks usage of entities related in Layout Builder layouts.
 @@ -42,7 +44,7 @@ class LayoutBuilder extends EntityUsageTrackBase {
@@ -838,7 +465,7 @@ index 906b8d9..d979618 100644
 +    parent::__construct($configuration, $plugin_id, $plugin_definition, $usage_service, $entity_type_manager, $entity_field_manager, $config_factory, $entity_repository, $path_validator, $public_stream);
      $this->blockManager = $blockManager;
    }
- 
+
 @@ -73,7 +79,9 @@ class LayoutBuilder extends EntityUsageTrackBase {
        $container->get('entity_field.manager'),
        $container->get('config.factory'),
@@ -849,9 +476,9 @@ index 906b8d9..d979618 100644
 +      $container->get('stream_wrapper.public')
      );
    }
- 
+
 diff --git a/src/Plugin/EntityUsage/Track/Link.php b/src/Plugin/EntityUsage/Track/Link.php
-index 288b618..52836f6 100644
+index 288b61861f29cfa0cfe014e6ba89a6cb3f41f692..52836f6cd94c82e8b33985a770f2a0df45d772d3 100644
 --- a/src/Plugin/EntityUsage/Track/Link.php
 +++ b/src/Plugin/EntityUsage/Track/Link.php
 @@ -22,28 +22,20 @@ class Link extends EntityUsageTrackBase {
@@ -886,133 +513,22 @@ index 288b618..52836f6 100644
 +    if (!$entity) {
        return [];
      }
- 
+
 -    return [$target_type . '|' . $target_id];
 +    return [$entity->getEntityTypeId() . '|' . $entity->id()];
    }
- 
+
  }
-diff --git a/src/Plugin/QueueWorker/EntityUsageTracker.php b/src/Plugin/QueueWorker/EntityUsageTracker.php
-new file mode 100644
-index 0000000..b41d3c9
---- /dev/null
-+++ b/src/Plugin/QueueWorker/EntityUsageTracker.php
-@@ -0,0 +1,106 @@
-+<?php
-+
-+namespace Drupal\entity_usage\Plugin\QueueWorker;
-+
-+use Drupal\Core\Entity\EntityTypeManagerInterface;
-+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-+use Drupal\Core\Queue\QueueWorkerBase;
-+use Drupal\entity_usage\EntityUpdateManager;
-+use Symfony\Component\DependencyInjection\ContainerInterface;
-+
-+/**
-+ * Processes the entity usage tracking via a queue.
-+ *
-+ * @QueueWorker(
-+ *   id = "entity_usage_tracker",
-+ *   title = @Translation("Entity usage tracker"),
-+ *   cron = {"time" = 300}
-+ * )
-+ */
-+class EntityUsageTracker extends QueueWorkerBase implements ContainerFactoryPluginInterface {
-+
-+  /**
-+   * The entity type manager service.
-+   *
-+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-+   */
-+  protected $entityTypeManager;
-+
-+  /**
-+   * The entity usage update manager.
-+   *
-+   * @var \Drupal\entity_usage\EntityUpdateManager
-+   */
-+  protected $entityUsageUpdateManager;
-+
-+  /**
-+   * Constructs a new class instance.
-+   *
-+   * @param array $configuration
-+   *   A configuration array containing information about the plugin instance.
-+   * @param string $plugin_id
-+   *   The plugin_id for the plugin instance.
-+   * @param mixed $plugin_definition
-+   *   The plugin implementation definition.
-+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-+   *   Entity type manager service.
-+   * @param \Drupal\entity_usage\EntityUpdateManager $entity_usage_update_manager
-+   *   Entity usage update manager.
-+   */
-+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, EntityUpdateManager $entity_usage_update_manager) {
-+    parent::__construct($configuration, $plugin_id, $plugin_definition);
-+    $this->entityTypeManager = $entity_type_manager;
-+    $this->entityUsageUpdateManager = $entity_usage_update_manager;
-+  }
-+
-+  /**
-+   * {@inheritdoc}
-+   */
-+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-+    return new static(
-+      $configuration,
-+      $plugin_id,
-+      $plugin_definition,
-+      $container->get('entity_type.manager'),
-+      $container->get('entity_usage.entity_update_manager')
-+    );
-+  }
-+
-+  /**
-+   * {@inheritdoc}
-+   */
-+  public function processItem($data) {
-+
-+    $storage = $this->entityTypeManager->getStorage($data['entity_type']);
-+
-+    if (!$storage) {
-+      return;
-+    }
-+
-+    $entity = $storage->load($data['entity_id']);
-+
-+    if (!$entity) {
-+      return;
-+    }
-+
-+    switch ($data['operation']) {
-+      case 'insert':
-+      case 'update':
-+        $this->entityUsageUpdateManager->trackUpdateOnCreation($entity);
-+        break;
-+
-+      case 'predelete':
-+        $this->entityUsageUpdateManager->trackUpdateOnDeletion($entity);
-+        break;
-+
-+      case 'translation_delete':
-+        $this->entityUsageUpdateManager->trackUpdateOnDeletion($entity, 'translation');
-+        break;
-+
-+      case 'revision_delete':
-+        $this->entityUsageUpdateManager->trackUpdateOnDeletion($entity, 'revision');
-+        break;
-+    }
-+  }
-+
-+}
 diff --git a/tests/src/FunctionalJavascript/IntegrationTest.php b/tests/src/FunctionalJavascript/IntegrationTest.php
-index 9c5c781..30d0dd8 100644
+index 163db83535dec73b36bfd7c122d4cae3073291f6..827e4dcb881c50278d71771fd21db8b33b26e6df 100644
 --- a/tests/src/FunctionalJavascript/IntegrationTest.php
 +++ b/tests/src/FunctionalJavascript/IntegrationTest.php
-@@ -434,6 +434,40 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
+@@ -434,6 +434,39 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
      $node2->delete();
      $usage = $usage_service->listSources($node1);
      $this->assertEquals([], $usage);
-+
+-  }
+
 +    // Create Node 3 referencing Node 1 with an absolute URL in the link field.
 +    // Whitelist the local hostname so we can test absolute URLs.
 +    $current_request = \Drupal::request();
@@ -1046,6 +562,5 @@ index 9c5c781..30d0dd8 100644
 +      ],
 +    ];
 +    $this->assertEquals($expected, $usage);
-   }
- 
++  }
  }
