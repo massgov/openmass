@@ -22,8 +22,8 @@ class Flaggings extends SqlBase {
     $query = $this->select('flagging', 'f')
       ->fields('f', ['id', 'uid'])
       ->fields('mmsd', ['destid1'])
-      ->condition('nfd.type', 'service_details')
-      ->condition('nfd.nid', 384431);
+      ->condition('nfd.type', 'service_details');
+      // ->condition('nfd.nid', 384431);
     $query->innerJoin('node_field_data', 'nfd', "nfd.nid=f.entity_id AND f.entity_type='node'");
     $query->innerJoin('migrate_map_service_details', 'mmsd', "mmsd.sourceid1=f.entity_id AND f.entity_type='node'");
     return $query;
