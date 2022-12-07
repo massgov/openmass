@@ -71,6 +71,7 @@
  *
  */
 #}
+{% set headingLevel = 3 %}
 {# Determine how the node should display based on the existence of data listing data. #}
 {% if content.field_data_flag is defined
   and content.field_data_flag['#items'] is not empty
@@ -106,7 +107,7 @@
         "info": "",
         "property": ""
       },
-      "level": "",
+      "level": headingLevel,
       "emphasizedText": organizations,
       "tags": formats,
       "contents": [{
@@ -128,7 +129,7 @@
         "info": "",
         "property": ""
       },
-      "level": "",
+      "level": headingLevel,
       "emphasizedText": "",
       "tags": "",
       "contents": [{

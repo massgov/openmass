@@ -2,8 +2,6 @@
 
 namespace Drupal\mass_views\Plugin\views\access;
 
-use Drupal\Core\Cache\Cache;
-use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\views\Plugin\views\access\AccessPluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -20,7 +18,7 @@ use Symfony\Component\Routing\Route;
  *   help = @Translation("Access will be granted to users if they have access to the node in the passed argument.")
  * )
  */
-class NodeArgumentAccess extends AccessPluginBase implements CacheableDependencyInterface {
+class NodeArgumentAccess extends AccessPluginBase {
 
   /**
    * Node Argument Access Handler service.
@@ -77,27 +75,6 @@ class NodeArgumentAccess extends AccessPluginBase implements CacheableDependency
 
   public function summaryTitle() {
     return $this->t('Node Argument access');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCacheMaxAge() {
-    return Cache::PERMANENT;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCacheContexts() {
-    return ['user'];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCacheTags() {
-    return [];
   }
 
 }
