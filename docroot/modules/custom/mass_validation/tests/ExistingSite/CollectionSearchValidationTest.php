@@ -53,10 +53,8 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
     $page = $this->getSession()->getPage();
     $page->selectFieldOption('edit-moderation-state-0-state', 'Unpublished');
     $page->pressButton('edit-field-organization-sections-add-more-add-more-button-org-section-long-form');
-    $page->fillField('edit-field-organization-sections-0-subform-field-section-long-form-heading-0-value', 'Test Section');
     $page->pressButton('edit-field-organization-sections-0-subform-field-section-long-form-content-add-more-add-more-button-collection-search');
     $page->selectFieldOption('edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-search-type', 'Collection');
-    $page->fillField('edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-search-heading-0-value', 'Test Heading');
     $page->pressButton('edit-submit');
     $page_contents = $page->getContent();
 
@@ -68,10 +66,8 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
     $page = $this->getSession()->getPage();
     $page->selectFieldOption('edit-moderation-state-0-state', 'Unpublished');
     $page->pressButton('edit-field-organization-sections-add-more-add-more-button-org-section-long-form');
-    $page->fillField('edit-field-organization-sections-0-subform-field-section-long-form-heading-0-value', 'Test Section');
     $page->pressButton('edit-field-organization-sections-0-subform-field-section-long-form-content-add-more-add-more-button-collection-search');
     $page->selectFieldOption('edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-search-type', 'External search destination (using query string)');
-    $page->fillField('edit-field-organization-sections-0-subform-field-section-long-form-content-0-subform-field-search-heading-0-value', 'Test Heading');
     $page->pressButton('edit-submit');
     $page_contents = $page->getContent();
 
@@ -102,7 +98,6 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
     $page->selectFieldOption('edit-moderation-state-0-state', 'Unpublished');
     $page->pressButton('field-sections-collection-search-add-more');
     $page->selectFieldOption('edit-field-sections-0-subform-field-search-type', 'Collection');
-    $page->fillField('edit-field-sections-0-subform-field-search-heading-0-value', 'Test Heading');
     $page->pressButton('edit-submit');
     $page_contents = $page->getContent();
 
@@ -115,7 +110,49 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
     $page->selectFieldOption('edit-moderation-state-0-state', 'Unpublished');
     $page->pressButton('field-sections-collection-search-add-more');
     $page->selectFieldOption('edit-field-sections-0-subform-field-search-type', 'External search destination (using query string)');
-    $page->fillField('edit-field-sections-0-subform-field-search-heading-0-value', 'Test Heading');
+    $page->pressButton('edit-submit');
+    $page_contents = $page->getContent();
+
+    $validation_text = 'The "Search site URL" field is required.';
+    $this->assertStringContainsString($validation_text, $page_contents, 'Validation message for the "Search site URL" field not found.');
+
+    $validation_text = 'The "Name for query parameter" field is required.';
+    $this->assertStringContainsString($validation_text, $page_contents, 'Validation message for the "Name for query parameter" field not found.');
+  }
+
+  /**
+   * Assert that the Custom Search paragraph validation works properly on service page nodes.
+   */
+  public function testServicePageCollectionSearchValidation() {
+
+    $org_node = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'Test Service Page ',
+      'uid' => $this->user->id(),
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $this->drupalLogin($this->user);
+
+    $this->visit($org_node->toUrl()->toString() . '/edit');
+    $this->assertEquals($this->getSession()->getStatusCode(), 200);
+    $page = $this->getSession()->getPage();
+    $page->selectFieldOption('edit-moderation-state-0-state', 'Unpublished');
+    $page->pressButton('edit-field-service-sections-add-more-add-more-button-service-section');
+    $page->pressButton('edit-field-service-sections-0-subform-field-service-section-content-add-more-add-more-button-collection-search');
+    $page->selectFieldOption('edit-field-service-sections-0-subform-field-service-section-content-0-subform-field-search-type', 'Collection');
+    $page->pressButton('edit-submit');
+    $page_contents = $page->getContent();
+
+    $validation_text = 'The "Collection" field required.';
+    $this->assertStringContainsString($validation_text, $page_contents, 'Validation message for the "Collection" field not found.');
+
+    $this->visit($org_node->toUrl()->toString() . '/edit');
+    $this->assertEquals($this->getSession()->getStatusCode(), 200);
+    $page = $this->getSession()->getPage();
+    $page->selectFieldOption('edit-moderation-state-0-state', 'Unpublished');
+    $page->pressButton('edit-field-service-sections-add-more-add-more-button-service-section');$page->pressButton('edit-field-service-sections-0-subform-field-service-section-content-add-more-add-more-button-collection-search');
+    $page->selectFieldOption('edit-field-service-sections-0-subform-field-service-section-content-0-subform-field-search-type', 'External search destination (using query string)');
     $page->pressButton('edit-submit');
     $page_contents = $page->getContent();
 
