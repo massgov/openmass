@@ -34,6 +34,9 @@ class EntityUsageTest extends ExistingSiteBase {
   protected function setUp() {
     parent::setUp();
 
+    $GLOBALS['config']['entity_usage_queue_tracking.settings']['queue_tracking'] = TRUE;
+    $this->container->get('config.factory')->clearStaticCache();
+
     // Remove everything from the entity_usage table
     // to avoid long cleaning times that break this test.
     // Note this avoids triggering events on bulk deletes, such as at
@@ -47,6 +50,13 @@ class EntityUsageTest extends ExistingSiteBase {
     $user->save();
     $this->user = $user;
     $this->drupalLogin($user);
+  }
+
+  /**
+   * Reset the queue tracking setting.
+   */
+  public function tearDown() {
+    parent::tearDown();
   }
 
   /**
@@ -130,7 +140,7 @@ class EntityUsageTest extends ExistingSiteBase {
   private function emptyEntityUsageQueues() {
     $this->clearQueue('entity_usage_tracker');
     $this->clearQueue('entity_usage_regenerate_queue');
-    \Drupal::service('entity_usage.clean_usage_table')->clean();
+    \Drupal::service('entity_usage_queue_tracking.clean_usage_table')->clean();
   }
 
   /**
@@ -138,42 +148,42 @@ class EntityUsageTest extends ExistingSiteBase {
    */
   private function processEntityUsageQueues() {
     $this->runQueue('entity_usage_tracker');
-    \Drupal::service('entity_usage.clean_usage_table')->clean();
+    \Drupal::service('entity_usage_queue_tracking.clean_usage_table')->clean();
   }
 
   /**
    * Assert that usage records are tracked properly.
    */
   public function testEntityUsageTracking() {
-    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PREPUBLISHED_NEEDS_REVIEW);
+    [$media, $node_org, $node_curated_list] = $this->createEntities(MassModeration::PREPUBLISHED_NEEDS_REVIEW);
     $this->processEntityUsageQueues();
     // All created entities should be unused.
     $this->assertUsageRows($media, 0);
     $this->assertUsageRows($node_curated_list, 0);
     $this->assertUsageRows($node_org, 0);
 
-    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::TRASH);
+    [$media, $node_org, $node_curated_list] = $this->createEntities(MassModeration::TRASH);
     $this->processEntityUsageQueues();
     // All created entities should be unused.
     $this->assertUsageRows($media, 0);
     $this->assertUsageRows($node_curated_list, 0);
     $this->assertUsageRows($node_org, 0);
 
-    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PREPUBLISHED_DRAFT);
+    [$media, $node_org, $node_curated_list] = $this->createEntities(MassModeration::PREPUBLISHED_DRAFT);
     $this->processEntityUsageQueues();
     // All created entities should be unused.
     $this->assertUsageRows($media, 0);
     $this->assertUsageRows($node_curated_list, 0);
     $this->assertUsageRows($node_org, 0);
 
-    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::PUBLISHED);
+    [$media, $node_org, $node_curated_list] = $this->createEntities(MassModeration::PUBLISHED);
     $this->processEntityUsageQueues();
     // Media and Org should have 1 reference.
     $this->assertUsageRows($media, 1);
     $this->assertUsageRows($node_curated_list, 0);
     $this->assertUsageRows($node_org, 1);
 
-    list($media, $node_org, $node_curated_list) = $this->createEntities(MassModeration::UNPUBLISHED);
+    [$media, $node_org, $node_curated_list] = $this->createEntities(MassModeration::UNPUBLISHED);
     $this->processEntityUsageQueues();
     // All created entities should be unused.
     $this->assertUsageRows($media, 0);
