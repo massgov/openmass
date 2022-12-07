@@ -151,7 +151,8 @@ class CollectionSearchValidationTest extends ExistingSiteBase {
     $this->assertEquals($this->getSession()->getStatusCode(), 200);
     $page = $this->getSession()->getPage();
     $page->selectFieldOption('edit-moderation-state-0-state', 'Unpublished');
-    $page->pressButton('edit-field-service-sections-add-more-add-more-button-service-section');$page->pressButton('edit-field-service-sections-0-subform-field-service-section-content-add-more-add-more-button-collection-search');
+    $page->pressButton('edit-field-service-sections-add-more-add-more-button-service-section');
+    $page->pressButton('edit-field-service-sections-0-subform-field-service-section-content-add-more-add-more-button-collection-search');
     $page->selectFieldOption('edit-field-service-sections-0-subform-field-service-section-content-0-subform-field-search-type', 'External search destination (using query string)');
     $page->pressButton('edit-submit');
     $page_contents = $page->getContent();
