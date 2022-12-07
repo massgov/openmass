@@ -110,7 +110,7 @@ class ServiceDetails extends SqlBase {
       $info_details_section = Paragraph::create($values);
       switch ($paragraph->getType()) {
         case 'section':
-          $info_details_section->set('field_section_long_form_heading', $paragraph->get('field_section_title')->getString());
+          $info_details_section->set('field_section_long_form_heading', substr($paragraph->get('field_section_title')->getString(), 0, 99);
 
           $info_details_section->set('field_hide_heading', FALSE);
           $body = $paragraph->get('field_section_body');
