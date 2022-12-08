@@ -70,7 +70,6 @@
  *   in different view modes.
  */
 #}
-
 {# Initalize the contents array for the component. #}
 {% set contents = [{
   "path": "@atoms/11-text/paragraph.twig",
@@ -109,7 +108,7 @@
 {% endfor %}
 
 {% set eyebrow = content.field_news_type[0]['#markup'] != 'Blog Post' ? content.field_news_type[0]['#markup']  : '' %}
-
+{% set headingLevel = 3 %}
 {% include "@molecules/general-teaser.twig" with {
   "generalTeaser" : {
     "imageAfter": true,
@@ -126,7 +125,7 @@
     },
     "layout": "stacked",
     "eyebrow": eyebrow,
-    "level": "",
+    "level": headingLevel,
     "emphasizedText": [content.field_date_published[0]['#markup'], content.field_organizations[0]['#title']],
     "tags": "",
     "contents": [{
