@@ -60,7 +60,6 @@
           $form.addClass('hidden');
           $success.removeClass('hidden')
           feedback.scrollIntoView();
-
         });
 
         $form.ajaxForm({
