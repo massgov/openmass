@@ -128,6 +128,19 @@
                     "type": "zip"
                 }
             }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "drupal/entity_usage_queue_tracking",
+                "type": "drupal-module",
+                "version": "9.1.x-dev",
+                "source": {
+                    "type": "git",
+                    "url": "https://git.drupalcode.org/project/entity_usage_queue_tracking.git",
+                    "reference": "9290c86e9c1ed10a3f976c9090c7108e8fcc487e"
+                }
+            }
         }
     ],
     "require": {
@@ -177,7 +190,8 @@
         "drupal/entity_hierarchy": "^3.0",
         "drupal/entity_reference_revisions": "^1.7",
         "drupal/entity_reference_tree": "^2.0",
-        "drupal/entity_usage": "^2.0-beta5",
+        "drupal/entity_usage": "^2.0.0-beta7",
+        "drupal/entity_usage_queue_tracking": "9.1.x-dev",
         "drupal/entityreference_filter": "^1.4",
         "drupal/environment_indicator": "^4",
         "drupal/field_group": "^3.1",
@@ -210,7 +224,7 @@
         "drupal/node_edit_protection": "^1.0",
         "drupal/node_title_help_text": "1.x-dev",
         "drupal/office_hours": "^1.5",
-        "drupal/openid_connect": "dev-3.x",
+        "drupal/openid_connect": "dev-3.x as 2.0",
         "drupal/openid_connect_windows_aad":  "dev-2.0.x",
         "drupal/paragraphs": "^1.10",
         "drupal/password_policy": "^3",
@@ -345,6 +359,7 @@
                 "Link error The internal path component is invalid (https://www.drupal.org/project/drupal/issues/2943135)":  "https://www.drupal.org/files/issues/2021-12-01/2943135-31.patch",
                 "Ensure to have build info on View Page Controller before getting the view title" : "patches/DP-24420--View-pages-arguments-title-overrides-not-working--2.patch",
                 "Bubbling of elements' max-age to the page's headers and the page cache (https://www.drupal.org/project/drupal/issues/2352009#comment-14724015)": "https://www.drupal.org/files/issues/2022-10-07/bubble.patch",
+                "Dynamically provide action plugins for every moderation state change (https://www.drupal.org/project/drupal/issues/2797583#comment-14699699)": "https://www.drupal.org/files/issues/2022-09-20/core-provide-moderation-states-as-actions-2797583-207.patch",
                 "Deletion of field_deleted_data_xxxxxx tables not working (https://www.drupal.org/project/drupal/issues/2836539#comment-13418275)": "https://www.drupal.org/files/issues/2020-01-10/2836539-34.patch"
             },
 
@@ -383,10 +398,9 @@
                 "Undefined array key \"title\" entityreference_filter.views.inc (https://www.drupal.org/project/entityreference_filter/issues/3295497)": "https://www.drupal.org/files/issues/2022-07-12/3295497_2.patch"
             },
             "drupal/entity_usage": {
-                "3007752 - Entity usage list does not scale (https://www.drupal.org/project/entity_usage/issues/3007752)": "patches/entity_usage-usage_list_scale-3007752-17.patch",
+                "3007752 - Entity usage list does not scale (https://www.drupal.org/project/entity_usage/issues/3007752)": "patches/entity_usage-usage_list_scale-3007752-25.patch",
                 "Hides language column and shows bundle" : "patches/entity-usage--hide-language--show-bundle.patch",
-                "3254437 - Delete queue items for `entity_usage_regenerate_queue` when `running drush entity-usage:recreate`  ": "https://www.drupal.org/files/issues/2021-12-14/issue-3254437--remove-items-from-queue-before-recreating-it.patch",
-                "2954973-3015287-3101451-combined patch" : "patches/2954973-3015287-3101451.patch"
+                "2954973 - Track absolute URLs in link fields" : "patches/2954973-68.patch"
             },
             "drupal/field_group": {
                 "Provide page level error messaging when publishing validation is not met": "https://www.drupal.org/files/issues/2021-02-21/2787179-highlight-html5-validation-60.patch",
@@ -444,9 +458,6 @@
             "drupal/views_bulk_operations": {
                 "Remove the select/deselect all results within VBO": "patches/DP-11179-hide-select-all-results-from-views.patch",
                 "Sometimes the selected items get lost -> all items in the view get processed (https://www.drupal.org/project/views_bulk_operations/issues/3277611)": "https://www.drupal.org/files/issues/2022-07-25/views_bulk_operations_prevent_all_items_processing_3277611_19.patch"
-            },
-            "drupal/openid_connect_windows_aad": {
-                "Make AAD compatible with openid_connect version 2.x (https://git.drupalcode.org/project/openid_connect_windows_aad/-/merge_requests/13/diffs)": "https://git.drupalcode.org/project/openid_connect_windows_aad/-/merge_requests/13.patch"
             },
             "drupal/quick_node_clone": {
                 "2979426 - Ensures per-content type permissions are respected": "https://www.drupal.org/files/issues/2022-05-05/quick_node_clone-permissions_not_respected-2979426-34.patch"
