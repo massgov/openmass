@@ -757,7 +757,6 @@ function mass_content_deploy_search_related_info(&$sandbox) {
   }
 }
 
-
 /**
  * Migrate "Organization Communications page" data for feedback.
  */
