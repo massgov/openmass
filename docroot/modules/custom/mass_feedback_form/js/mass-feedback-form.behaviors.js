@@ -58,13 +58,13 @@
         });
         $form.on('submit', function (e) {
           $form.addClass('hidden');
-          $success.removeClass('hidden')
+          $success.removeClass('hidden');
           feedback.scrollIntoView();
         });
 
         $form.ajaxForm({
           data: {jsonp: 1},
-          dataType: 'script',
+          dataType: 'script'
         });
 
         window['form' + $form.attr('id')] = {
