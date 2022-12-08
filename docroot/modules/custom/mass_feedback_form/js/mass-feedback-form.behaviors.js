@@ -77,8 +77,6 @@
             // If MG_FEEDBACK_ID is 'uniqueId', then we are submitting the first (feedback) form
             // so we now need to set the MG_FEEDBACK_ID value with the ID returned from formstack.
             var submissionId = message.submission;
-            console.log(message.submission);
-            console.log(message);
             if ($('#' + MG_FEEDBACK_ID).val() === 'uniqueId') {
               $('#' + MG_FEEDBACK_ID).val(submissionId);
             }
