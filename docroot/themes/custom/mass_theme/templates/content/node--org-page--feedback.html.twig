@@ -1,3 +1,5 @@
+{{ attach_library('mass_feedback_form/feedback-form-behaviors') }}
+
 {% if node.field_urgent_warning is empty or node.field_urgent_warning.value == 0 %}
   {% set reportMessage = false %}
 {% else %}
@@ -74,8 +76,14 @@
   }
 ] %}
 
-<span id="feedback" class="visually-hidden"></span>
+{% if node.field_org_always_show_help_page is empty or node.field_org_always_show_help_page.value == 0 %}
+  {% set showHelp = false %}
+{% else %}
+  {% set showHelp = true %}
+{% endif %}
+
 {% include "@organisms/feedback/mass-feedback.twig" with {
+
   "formAction": 'https://www.formstack.com/forms/index.php',
   "formId": "2521317",
   "heading": "Help Us Improve Mass.gov",
@@ -135,5 +143,11 @@
   "warnMsg": "If you need assistance, please " ~ content.field_feedback_com_link | render ~ ".",
   "alertMsg": "Please remove any contact information or personal data from your feedback.",
   "alert": reportMessage,
-  "hiddenElements": hiddenElements
+  "hiddenElements": hiddenElements,
+  "showWarnMsg": showHelp,
+  "submitted": false,
+  "success":  {
+    "before": "Thank you for your website feedback! We will use this information to improve this page.",
+    "after": "If you would like to continue helping us improve Mass.gov, <a href=\"https://www.mass.gov/user-panel?utm_source=survey\">join our user panel<\/a> to test new features for the site."
+  }
 } %}
