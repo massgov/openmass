@@ -65,12 +65,8 @@
         $form.ajaxForm({
           data: {jsonp: 1},
           dataType: 'script',
-          beforeSubmit: test
         });
 
-        function test(data, $form) {
-          console.log(data);
-        }
         window['form' + $form.attr('id')] = {
           onPostSubmit: function (message) {
             // If MG_FEEDBACK_ID is 'uniqueId', then we are submitting the first (feedback) form
