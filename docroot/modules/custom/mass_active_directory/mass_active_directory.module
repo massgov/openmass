@@ -3,7 +3,7 @@
 use Drupal\Core\Form\FormStateInterface;
 
 function mass_active_directory_form_openid_connect_login_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-    $form['preamble'] = [
+    $form['preamble-ad'] = [
       '#type' => 'item',
       '#weight' => -10,
       '#title' => t('One-Click Login'),
@@ -15,7 +15,7 @@ function mass_active_directory_form_openid_connect_login_form_alter(&$form, Form
  * To get rid of user login form, see config for openid_connect module.
  */
 function mass_active_directory_form_user_login_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  $form['preamble'] = [
+  $form['preamble-legacy'] = [
     '#type' => 'item',
     '#weight' => -10,
     '#title' => t('If the One-Click login method doesn’t work…..'),
