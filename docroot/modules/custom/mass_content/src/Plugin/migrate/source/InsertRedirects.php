@@ -3,6 +3,7 @@
 namespace Drupal\mass_content\Plugin\migrate\source;
 
 use Drupal\Core\Database\Query\SelectInterface;
+use Drupal\migrate\MigrateSkipRowException;
 use Drupal\migrate\Plugin\migrate\source\SqlBase;
 use Drupal\migrate\Row;
 use Drupal\node\Entity\Node;
@@ -23,8 +24,10 @@ class InsertRedirects extends SqlBase {
   public function query(): SelectInterface {
     $query = $this->select('node', 'n')
       ->fields('n', ['nid'])
+      ->fields('p', ['alias'])
       ->condition('n.type', 'service_details');
-    $query->innerJoin('node_field_data', 'nfd', 'nfd.nid=n.nid AND nfd.vid=n.vid');
+    // $query->innerJoin('node_field_data', 'nfd', 'nfd.nid=n.nid AND nfd.vid=n.vid');
+    $query->innerJoin('path_alias', 'p', 'p.id=n.nid');
     return $query;
   }
 
@@ -54,9 +57,13 @@ class InsertRedirects extends SqlBase {
    */
   public function prepareRow(Row $row) {
     $service_nid = $row->getSourceProperty('nid');
-    $info_nid = \Drupal::service('migrate.lookup')->lookup('service_details', ['nid' => $service_nid])[0]['nid'];
-    $row->setSourceProperty('redirect_source', "node/$service_nid");
-    $row->setSourceProperty('redirect_redirect', "entity:node/$info_nid");
+    if ($info_nid = \Drupal::service('migrate.lookup')->lookup('service_details', ['nid' => $service_nid])) {
+      $row->setSourceProperty('redirect_source', $row->getSourceProperty('alias'));
+      $row->setSourceProperty('redirect_redirect', 'entity:node/' . $info_nid[0]['nid']);
+    }
+    else {
+      throw new MigrateSkipRowException('No info details nid found', TRUE);
+    }
   }
 
 }
