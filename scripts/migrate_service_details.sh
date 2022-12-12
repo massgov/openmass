@@ -1,3 +1,7 @@
+#Pre-migration checklist
+- Ensure you have a backup before running on Prod.
+
+
 #Show starting status. Re-run this as desired to see status.
 drush migrate:status
 

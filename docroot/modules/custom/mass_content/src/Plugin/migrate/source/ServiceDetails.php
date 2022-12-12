@@ -64,6 +64,7 @@ class ServiceDetails extends SqlBase {
       'created' => $node->getCreatedTime(),
       'changed' => $node->getChangedTime(),
       'type' => 'info_details',
+      'field_hide_table_of_contents' => TRUE,
       'langcode' => $node->language()->getId(),
       'status' => $node->isPublished(),
       'moderation_state' => $node->getModerationState()->getValue(),
