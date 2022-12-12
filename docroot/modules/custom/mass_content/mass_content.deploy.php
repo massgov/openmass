@@ -790,14 +790,12 @@ function mass_content_deploy_feedback_com(&$sandbox) {
 
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
-    if ($node->isLatestRevision()) {
-      try {
-        mass_content_set_feedback_fields($node);
-      } catch (\Exception $e) {
-        \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
-      }
+    try {
+      mass_content_set_feedback_fields($node);
+    } catch (\Exception $e) {
+      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
     }
-    else {
+    if (!$node->isLatestRevision()) {
       $storage = \Drupal::entityTypeManager()->getStorage('node');
       $query = $storage->getQuery();
       $query->condition('nid', $node->id());
