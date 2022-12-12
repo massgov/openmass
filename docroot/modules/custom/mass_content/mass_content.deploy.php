@@ -790,13 +790,14 @@ function mass_content_deploy_feedback_com(&$sandbox) {
 
   foreach ($nodes as $node) {
     $sandbox['current'] = $node->id();
-    try {
-      mass_content_set_feedback_fields($node);
+    if ($node->isLatestRevision()) {
+      try {
+        mass_content_set_feedback_fields($node);
+      } catch (\Exception $e) {
+        \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
+      }
     }
-    catch (\Exception $e) {
-      \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
-    }
-    if (!$node->isLatestRevision()) {
+    else {
       $storage = \Drupal::entityTypeManager()->getStorage('node');
       $query = $storage->getQuery();
       $query->condition('nid', $node->id());
@@ -832,11 +833,15 @@ function mass_content_deploy_feedback_com(&$sandbox) {
 function mass_content_set_feedback_fields($node) {
   $uri = $node->field_feedback_com_link->uri ?? 'entity:node/' . $node->id();
   $contact = $node->field_org_sentence_phrasing->value ?? $node->label();
-  $title = sprintf('contact the %s', trim($contact));
+  $title = sprintf('contact the %s', trim(preg_replace('#^the #i', '', $contact)));
   $node->set('field_feedback_com_link', [
     'uri' => $uri,
     'title' => $title
   ]);
+
+  if ($node->field_constituent_communication->value == 'link' || $node->field_constituent_communication->value == 'contact') {
+    $node->set('field_org_always_show_help_page', TRUE);
+  }
   // Save the node.
   // Save without updating the last modified date. This requires a core patch
   // from the issue: https://www.drupal.org/project/drupal/issues/2329253.
