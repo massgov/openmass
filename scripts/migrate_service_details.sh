@@ -8,8 +8,13 @@ drush migrate:import service_details
 drush migrate:import flaggings
 
 # Migrate old redirects and add redirects from old service details alias to new node.
-drush migrate:import update_redirects
+drush migrate:import update_redirects --update
 drush migrate:import insert_redirects
 
 #Delete all service details nodes.
 drush entity:delete node --bundle=service_details
+
+#Regenerate sitemap (optional - we can just wait for next run)
+drush simple-sitemap:rebuild-queue
+#This is very slow.
+drush simple-sitemap:generate
