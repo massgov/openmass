@@ -1,0 +1,24 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+
+function mass_active_directory_form_openid_connect_login_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['preamble-ad'] = [
+    '#weight' => -10,
+    '#markup' => t('<h2>One-Click Login</h2><p>We are moving to have ALL authors login with Azure AD (the same credentials most state users have for their primary email login). This will improve security and make logging in quicker. You should start using this new method now.</p>')
+  ];
+  $form['openid_connect_client_azure_ad_login']['#attributes']['class'][] = 'ma__button';
+
+}
+
+/**
+ * To get rid of user login form, see config for openid_connect module.
+ */
+function mass_active_directory_form_user_login_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['preamble-legacy'] = [
+    '#weight' => -10,
+    '#markup' => t('<h2>If the One-Click login method doesn\'t work...</h2><p>For now, you can use the old login method below. We will disable this method after 1/31/2023, so please <a href="https://massgov.service-now.com/sp?id=sc_cat_item&sys_id=b3fa99491ba895903d8ba82b234bcbcb">make a ServiceNow request</a> so that we can get Azure AD working for you.</p>'),
+    '#prefix' => '<hr />',
+  ];
+  $form['actions']['submit']['#attributes']['class'][] = 'ma__button';
+}
