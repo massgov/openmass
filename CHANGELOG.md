@@ -1,5 +1,23 @@
 
 
+## [0.345.0] - December 13, 2022
+
+### Changed
+  - DP-25839: Removed the second set of <main> with its duplilcate ID from guide page.
+  - DP-26300: Hide Offered By on Executive Order content.
+  
+### Added
+  - DP-26013: Added Azure AD integration.
+  
+### Fixed
+  - DP-26312: Fixed issue with referencing nodes with long titles via the Redirects tab.
+  - DP-26642: Fixed missing validation for custom search components on service pages.
+  
+### Removed
+  - DP-26700: Eliminate author message to setup 2 factor auth that users see when logging in.
+  
+
+
 ## [0.344.0] - December 6, 2022
 
 ### Added
