@@ -116,6 +116,7 @@ class Helper {
               $url = $style->buildUrl($uri);
             }
             break;
+
           case 'service_page':
             if ($style_name == 'hero1600x400_fp') {
               $url = $style->buildUrl($uri);
