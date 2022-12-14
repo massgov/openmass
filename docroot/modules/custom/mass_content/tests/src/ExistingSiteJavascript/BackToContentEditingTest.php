@@ -83,7 +83,7 @@ class BackToContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
     // Back to editing.
     $this->clickLink('Back to content editing');
     $title = $this->getSession()->getPage()->find('css', 'h1')->getText();
-    $this->assertEqual($title, 'EDIT TOPIC PAGE Test');
+    $this->assertEquals($title, 'EDIT TOPIC PAGE Test');
   }
 
 }

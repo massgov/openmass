@@ -61,7 +61,7 @@ class ScheduledTransitionsTest extends ExistingSiteBase {
     $transitions = mass_scheduled_transitions_load_by_host_entity($node, FALSE, MassModeration::UNPUBLISHED);
     $this->assertCount(1, $transitions);
     $transition = current($transitions);
-    $this->assertEqual($transition->getTransitionDate()->format(self::FORMAT), $this->getExpectedDate($node));
+    $this->assertEquals($transition->getTransitionDate()->format(self::FORMAT), $this->getExpectedDate($node));
   }
 
   /**
