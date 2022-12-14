@@ -393,8 +393,10 @@ function _mass_validation_service_page_sections_validate(array &$form, FormState
       if (!is_int($key)) {
         continue;
       }
+      $paragraph_error_string = 'field_service_sections][' . $section_key . '][subform][field_service_section_content][' . $key . '][subform]';
       _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $key, 'field_service_sections', 'field_service_section_content');
       _mass_validation_validate_mosaic_items($form_state, $paragraph);
+      _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
     }
   }
 }
