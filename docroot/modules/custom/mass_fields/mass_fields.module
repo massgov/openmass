@@ -506,7 +506,7 @@ function mass_fields_node_view(array &$build, EntityInterface $entity, EntityVie
     // Whether there is a location listings page.
     $has_location_listing_page =
       $entity->field_org_ref_locations ?? FALSE &&
-    !$entity->field_org_ref_locations->isEmpty();
+      !$entity->field_org_ref_locations->isEmpty();
     // The org page's location listing URL.
     $location_listings_url = Url::fromRoute('view.locations.page', ['node' => $entity->id()])->toString();
 
