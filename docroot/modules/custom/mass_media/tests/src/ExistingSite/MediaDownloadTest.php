@@ -47,7 +47,7 @@ class MediaDownloadTest extends ExistingSiteBase {
     ]);
 
     $this->visit($media->toUrl()->toString() . '/download');
-    $this->assertEquals(file_create_url($file->getFileUri()), $this->getSession()->getCurrentUrl()) 'Download URL is redirected to the file.');
+    $this->assertEquals(file_create_url($file->getFileUri()), $this->getSession()->getCurrentUrl());
     $this->assertEquals('text/plain', $this->getSession()->getResponseHeader('Content-Type'), 'url.site cache context is added to the response.');
   }
 
