@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "029a782e0cc3a1ec30e97c1bec4f1997",
+    "content-hash": "e6867f52ce545c26efeda5a183d04d25",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -4768,21 +4768,22 @@
         },
         {
             "name": "drupal/devel",
-            "version": "5.0.1",
+            "version": "5.1.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/devel.git",
-                "reference": "5.0.1"
+                "reference": "5.1.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/devel-5.0.1.zip",
-                "reference": "5.0.1",
-                "shasum": "5242bb7578ee80933da86d980277894d1c033ebc"
+                "url": "https://ftp.drupal.org/files/projects/devel-5.1.0.zip",
+                "reference": "5.1.0",
+                "shasum": "92ad0e11e6403681d15591a7572000391efc5432"
             },
             "require": {
-                "doctrine/common": "^2.7",
+                "doctrine/common": "^2.7 || ^3.4",
                 "drupal/core": "^9 || ^10",
+                "php": ">=7.4",
                 "symfony/var-dumper": "^4 || ^5 || ^6"
             },
             "conflict": {
@@ -4797,8 +4798,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "5.0.1",
-                    "datestamp": "1663955055",
+                    "version": "5.1.0",
+                    "datestamp": "1671039217",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -9895,17 +9896,17 @@
         },
         {
             "name": "drupal/upgrade_status",
-            "version": "3.17.0",
+            "version": "3.18.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/upgrade_status.git",
-                "reference": "8.x-3.17"
+                "reference": "8.x-3.18"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/upgrade_status-8.x-3.17.zip",
-                "reference": "8.x-3.17",
-                "shasum": "b7961c580b48f5ad4e6b711fdf4283cc0063a5b9"
+                "url": "https://ftp.drupal.org/files/projects/upgrade_status-8.x-3.18.zip",
+                "reference": "8.x-3.18",
+                "shasum": "09a9c75603de8e5ce2254ce75603c00981d6f6d4"
             },
             "require": {
                 "drupal/core": "^8 || ^9",
@@ -9919,8 +9920,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-3.17",
-                    "datestamp": "1662479791",
+                    "version": "8.x-3.18",
+                    "datestamp": "1669215749",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -10455,21 +10456,21 @@
         },
         {
             "name": "drupal/views_data_export",
-            "version": "1.0.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/views_data_export.git",
-                "reference": "8.x-1.0"
+                "reference": "8.x-1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/views_data_export-8.x-1.0.zip",
-                "reference": "8.x-1.0",
-                "shasum": "f1d16fd06ee7574f680e30f6bf5d6a152e3e9f42"
+                "url": "https://ftp.drupal.org/files/projects/views_data_export-8.x-1.2.zip",
+                "reference": "8.x-1.2",
+                "shasum": "168c0d3de19f2182f2c1bc16066498342015970e"
             },
             "require": {
-                "drupal/core": "^8.8 || ^9",
-                "drupal/csv_serialization": "~1.4 || ~2.0"
+                "drupal/core": "^9 || ^10",
+                "drupal/csv_serialization": "~1.4 || ~2.0 || ~3"
             },
             "require-dev": {
                 "drupal/search_api": "~1.12",
@@ -10478,8 +10479,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.0",
-                    "datestamp": "1592589996",
+                    "version": "8.x-1.2",
+                    "datestamp": "1665515238",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -23021,36 +23022,17 @@
         },
         {
             "name": "weitzman/drupal-test-traits",
-            "version": "1.5.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
-                "url": "https://gitlab.com/weitzman/drupal-test-traits.git",
-                "reference": "039104658adeb6a1691db788b53eb02b21a32487"
+                "url": "git@gitlab.com:weitzman/drupal-test-traits.git",
+                "reference": "4d3ab4c628eb8d5d5255e2db187d17301a8eeb7e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://gitlab.com/api/v4/projects/weitzman%2Fdrupal-test-traits/repository/archive.zip?sha=039104658adeb6a1691db788b53eb02b21a32487",
-                "reference": "039104658adeb6a1691db788b53eb02b21a32487",
+                "url": "https://gitlab.com/api/v4/projects/weitzman%2Fdrupal-test-traits/repository/archive.zip?sha=4d3ab4c628eb8d5d5255e2db187d17301a8eeb7e",
+                "reference": "4d3ab4c628eb8d5d5255e2db187d17301a8eeb7e",
                 "shasum": ""
-            },
-            "require": {
-                "behat/mink": "^1.8 | 1.7.1 | 1.7.x-dev",
-                "behat/mink-goutte-driver": "^1.2",
-                "php": ">=7.0.8",
-                "phpunit/phpunit": ">=6.5",
-                "webflo/drupal-finder": "^1.1"
-            },
-            "require-dev": {
-                "behat/mink-selenium2-driver": "1.4.0 | 1.3.1 | 1.3.x-dev",
-                "composer/installers": "^1.2",
-                "dmore/chrome-mink-driver": "^2.6",
-                "drupal/core-composer-scaffold": "^9",
-                "drupal/core-dev": "^9",
-                "drupal/core-recommended": "^9",
-                "drush/drush": "^10",
-                "jakub-onderka/php-parallel-lint": "^1.0",
-                "squizlabs/php_codesniffer": "^3.2",
-                "zaporylie/composer-drupal-optimizations": "^1.0"
             },
             "type": "library",
             "extra": {
@@ -23086,10 +23068,7 @@
                 }
             ],
             "description": "Traits for testing Drupal sites that have user content (versus unpopulated sites).",
-            "support": {
-                "issues": "https://gitlab.com/api/v4/projects/6878188/issues"
-            },
-            "time": "2020-06-21T13:47:52+00:00"
+            "time": "2022-12-14T13:23:45+00:00"
         },
         {
             "name": "weitzman/logintrait",
@@ -23138,6 +23117,12 @@
             "version": "dev-3.x",
             "alias": "2.0",
             "alias_normalized": "2.0.0.0"
+        },
+        {
+            "package": "weitzman/drupal-test-traits",
+            "version": "2.0.0.0",
+            "alias": "1.6.0",
+            "alias_normalized": "1.6.0.0"
         }
     ],
     "minimum-stability": "dev",
