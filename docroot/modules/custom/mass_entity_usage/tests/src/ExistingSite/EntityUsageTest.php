@@ -53,13 +53,6 @@ class EntityUsageTest extends ExistingSiteBase {
   }
 
   /**
-   * Reset the queue tracking setting.
-   */
-  public function tearDown() {
-    parent::tearDown();
-  }
-
-  /**
    * Counts how many usage rows an entity has on its /mass-usage page.
    */
   private function countUsageRows($entity) {

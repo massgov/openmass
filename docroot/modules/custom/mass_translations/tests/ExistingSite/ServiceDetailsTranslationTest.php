@@ -127,7 +127,7 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function tearDown() {
+  protected function tearDown(): void {
     parent::tearDown();
     $this->editor = NULL;
     $this->orgNode = NULL;

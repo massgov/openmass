@@ -63,7 +63,7 @@ class EventManagerTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function tearDown() {
+  protected function tearDown(): void {
     parent::tearDown();
     // Zero out any remaining references to prevent memory leaks.
     $this->org = NULL;

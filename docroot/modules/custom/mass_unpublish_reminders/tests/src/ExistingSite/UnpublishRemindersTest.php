@@ -74,7 +74,7 @@ class UnpublishRemindersTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function tearDown() {
+  protected function tearDown(): void {
     $this->organization = NULL;
     $this->author = NULL;
     $this->users = NULL;
