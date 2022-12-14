@@ -25,7 +25,7 @@ class RedirectsTest extends ExistingSiteBase {
   /**
    * Create an editor and a node with url redirects.
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $user1 = User::create(['name' => $this->randomMachineName()]);

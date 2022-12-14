@@ -20,7 +20,7 @@ class EventManagerTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->org = $this->createNode([
       'type' => 'org_page',

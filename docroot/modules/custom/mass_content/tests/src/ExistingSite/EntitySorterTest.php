@@ -30,7 +30,7 @@ class EntitySorterTest extends ExistingSiteBase {
   /**
    * Create the user.
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $this->entitySorter = new EntitySorter();

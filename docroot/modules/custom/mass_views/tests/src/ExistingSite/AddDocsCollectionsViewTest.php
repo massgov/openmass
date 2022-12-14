@@ -24,7 +24,7 @@ class AddDocsCollectionsViewTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     // An admin is needed.
     $admin = User::create(['name' => $this->randomMachineName()]);
