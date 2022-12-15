@@ -111,7 +111,7 @@ class AddCollectionsViewTest extends ExistingSiteBase {
     $checked = [];
     $nids = [];
 
-    // Create 3 media items to bulk add collections later.
+    // Create 3 node items to bulk add collections later.
     for ($x = 0; $x < 3; $x++) {
       // Adding one node, to show one result.
       $node = $this->createNode([
@@ -119,7 +119,7 @@ class AddCollectionsViewTest extends ExistingSiteBase {
         'title' => 'bulktestcollections',
         'moderation_state' => MassModeration::PUBLISHED,
       ]);
-      // Store media ids to check the result later.
+      // Store node ids to check the result later.
       $nids[] = $node->id();
       // Generate an array of values to submit the form.
       $checked["views_bulk_operations_bulk_form[$x]"] = TRUE;
@@ -146,7 +146,7 @@ class AddCollectionsViewTest extends ExistingSiteBase {
       return $page->hasContent('Your changes have been successfully made.');
     });
 
-    // Go to each media item and verify the value is set correctly.
+    // Go to each node item and verify the value is set correctly.
     foreach ($nids as $nid) {
       $this->drupalGet("node/$nid/edit");
       $page = $this->getSession()->getPage();
