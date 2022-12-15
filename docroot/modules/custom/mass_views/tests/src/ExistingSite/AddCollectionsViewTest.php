@@ -58,7 +58,6 @@ class AddCollectionsViewTest extends ExistingSiteBase {
     ]);
   }
 
-
   /**
    * Run through test steps.
    */
