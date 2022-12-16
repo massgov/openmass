@@ -107,6 +107,11 @@ function mass_theme_theme_suggestions_views_view_alter(array &$suggestions, arra
   if (strpos($view->id(), 'collection') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
     $suggestions[] = 'views_view__data_listing';
   }
+
+  // Allow all press release views pages to use the same template file.
+  if (strpos($view->id(), 'press_releases') !== FALSE && $view->getDisplay()->getPluginId() == 'page') {
+    $suggestions[] = 'views_view__data_listing';
+  }
 }
 
 /**
