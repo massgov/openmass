@@ -1,5 +1,46 @@
 
 
+## [0.345.0] - December 13, 2022
+
+### Changed
+  - DP-25839: Removed the second set of <main> with its duplilcate ID from guide page.
+  - DP-26300: Hide Offered By on Executive Order content.
+  
+### Added
+  - DP-26013: Added Azure AD integration.
+  
+### Fixed
+  - DP-26312: Fixed issue with referencing nodes with long titles via the Redirects tab.
+  - DP-26642: Fixed missing validation for custom search components on service pages.
+  
+### Removed
+  - DP-26700: Eliminate author message to setup 2 factor auth that users see when logging in.
+  
+
+
+## [0.344.0] - December 6, 2022
+
+### Added
+  - DP-25357: Added entity usage queue tracking module, and improved entity usage performance.
+  - DP-26467: Report showing non-English documents and their English relatives.
+  
+### Changed
+  - DP-25587: Set up the correct heading level to pass on to the MF template for collection page listing items.
+  - DP-25901: Changed Collection Search to a general search component for either collections or custom searches.
+  - DP-26593: Feedback manager and Pages with high level of negative feedback report headers changed to have links to each other.
+  - DP-26593: Allow transition of pages and documents from trash to published
+  - DP-26593: Remove unused DFML KPI fields from service type as well as performance indicator field
+  - DP-26593: Add exposed filter for “Exclude from search” field to advanced search content view and all documents view.
+  - DP-26593: Advanced search report - Added org and parent fields to results, default order for pageviews changed to descending
+  - DP-26593: All documents view - added filter for search status, any org filter will be remembered for future searches
+  - DP-26593: All documents CSV export - added fields - extension, file size, created date, english version, search status, language.
+  
+### Fixed
+  - DP-26284: Un-install jsonapi_page_limit module to fix jsonapi page limit and offset query parameters.
+  - DP-26492: Unpublished pages with maps still have published location listing pages, follow-up fix of breadcrumb rendering.
+  
+
+
 ## [0.343.0] - November 29, 2022
 
 ### Fixed

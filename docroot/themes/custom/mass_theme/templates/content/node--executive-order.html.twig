@@ -20,13 +20,6 @@
   {% endif %}
   #}
   {% set secondaryIndicators = false %}
-  {% if content.field_organizations is not empty %}
-    {% set secondaryIndicators = {
-      "icon": "building",
-      "label": "offered by",
-      "groupAfter": 3
-    } %}
-  {% endif %}
 
   {% embed "@molecules/relationship-indicators.twig" with {
     "relationshipIndicators": {
@@ -37,9 +30,6 @@
   } %}
     {% block primaryRelationship %}
       {{ primaryRelationshipContent }}
-    {% endblock %}
-    {% block secondaryRelationship %}
-      {{ content.field_organizations }}
     {% endblock %}
   {% endembed %}
   {{ content.referencing_binders }}
