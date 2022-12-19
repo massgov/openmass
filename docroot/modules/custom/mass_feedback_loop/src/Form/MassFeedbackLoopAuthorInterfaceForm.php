@@ -102,7 +102,7 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
 
     // Adds help text for using Feedback Manager.
     $form['help_text_wrapper']['help_text'] = [
-      '#markup' => $this->t('Find out how users are responding to your content. <a href="https://www.mass.gov/kb/feedback-manager">Learn how to use the Feedback Manager.</a>'),
+      '#markup' => $this->t('<p>Find out how users are responding to your content. <a href="https://www.mass.gov/kb/feedback-manager">Learn how to use the Feedback Manager.</a></p><p>Also see: <a href="/admin/content/pages_with_negative_feedback">Pages with high negative feedback</a>.</p>'),
     ];
 
     $form['filter_by_org'] = [
