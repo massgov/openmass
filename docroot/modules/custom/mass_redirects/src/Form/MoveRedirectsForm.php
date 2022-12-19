@@ -219,6 +219,7 @@ class MoveRedirectsForm extends ContentEntityForm {
       '#target_type' => 'node',
       '#title' => $this->formatPlural(count($items), 'Pick a target for the URL', 'Pick a target for the URLs'),
       '#required' => TRUE,
+      '#maxlength' => 2048,
     ];
     $form['list'] = [
       '#theme' => 'item_list',
