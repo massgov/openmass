@@ -3,6 +3,7 @@
 namespace Drupal\mass_views\Plugin\Action;
 
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -154,7 +155,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
 
     // Other entity types may have different
     // access methods and properties.
-    return TRUE;
+    return AccessResult::allowed();
   }
 
   /**
@@ -167,7 +168,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
     /** @var int[] */
     $list = $this->context['list'];
     foreach ($list as $item_id) {
-      $node = $node_storage->load(array_reverse($item_id)[0]);
+      $node = $node_storage->load(array_reverse($item_id)[1]);
       if (!empty($node)) {
         /** @var \Drupal\entity_hierarchy\Plugin\Field\FieldType\EntityReferenceHierarchyFieldItemList */
         $collections = $node->hasField('field_collections') ?? FALSE;
