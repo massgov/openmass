@@ -1,5 +1,16 @@
 
 
+## [0.346.0] - December 20, 2022
+
+### Changed
+  - DP-25823: Upgrade a few dependencies like Views Data Export
+  - DP-26750: Modifications to the user view used by administrators, including downloadable CSV.
+  
+### Fixed
+  - DP-26715: Bug - error in bulk job to add items to collection.
+  
+
+
 ## [0.345.0] - December 13, 2022
 
 ### Changed
