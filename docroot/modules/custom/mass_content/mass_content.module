@@ -5,6 +5,7 @@
  * Contains mass_content.module.
  */
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Database\Query\AlterableInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -947,6 +948,15 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
 
   // Put together nodes and media on the same query.
   $query->union($media_query);
+}
+
+function mass_views_preprocess_views_view(&$variables) {
+  $view = $variables['view'];
+  if ($view->id() == "collection_all") {
+    (new CacheableMetadata())->addCacheTags($variables['view_array']['#cache']['tags'])
+      ->addCacheContexts($variables['view_array']['#cache']['contexts'])
+      ->applyTo($variables);
+  }
 }
 
 /**
