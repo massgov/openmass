@@ -39,7 +39,7 @@ class UnpublishRemindersTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->startMailCollection();
     $this->clearQueue('mass_unpublish_reminders_queue');
@@ -74,7 +74,7 @@ class UnpublishRemindersTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function tearDown() {
+  protected function tearDown(): void {
     $this->organization = NULL;
     $this->author = NULL;
     $this->users = NULL;
