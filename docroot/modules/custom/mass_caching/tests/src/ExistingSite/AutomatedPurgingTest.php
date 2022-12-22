@@ -16,7 +16,7 @@ class AutomatedPurgingTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp(): void {
+  protected function setUp(): void {
     parent::setUp();
     /** @var \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $queue */
     $queue = \Drupal::service('purge.queue');
