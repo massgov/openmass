@@ -448,20 +448,13 @@ class MassFeedbackLoopContentFetcher {
         'class' => ['feedback-medium'],
       ];
     }
-    if (empty($limit_fields) || in_array('survey', $limit_fields)) {
-      $table['#header'][] = [
-        'data' => [
-          '#markup' => $this->t('Survey'),
-        ],
-      ];
-    }
     if (empty($limit_fields) || in_array('tags', $limit_fields)) {
       $table['#header'][] = [
         'data' => [
           '#markup' => $this->t('Tags'),
         ],
       ];
-      // Adds an additional empty column to match results column count.
+      // Adds an empty column to match results column count.
       // Needed for the 'Add Tag' results column.
       $table['#header'][] = [];
     }
@@ -511,57 +504,6 @@ class MassFeedbackLoopContentFetcher {
             else {
               $row['source_page'] = [
                 '#markup' => $node_check->title,
-              ];
-            }
-          }
-
-          if (empty($limit_fields) || in_array('text', $limit_fields)) {
-            // Builds "Feedback Text".
-            $feedback_text = (!empty($feedback['text'])) ? $feedback['text'] : '';
-            $row['text'] = [
-              '#markup' => '<span class="survey-text">' . Html::escape($feedback_text) . '</span><span class="feedback-text-toggle">Show More</span>',
-              '#wrapper_attributes' => ['class' => 'survey-response'],
-            ];
-          }
-
-          if (empty($limit_fields) || in_array('requested_response', $limit_fields)) {
-            $response_info = 'N/A';
-            if (!empty($feedback['requested_response'])) {
-              if ($feedback['requested_response'] === 'Yes') {
-                $response_info = '<span class="feedback-bold">Yes</span>';
-                if (!empty($feedback['first_name'])) {
-                  $response_info .= $feedback['first_name'] . ' ';
-                }
-                if (!empty($feedback['last_name'])) {
-                  $response_info .= $feedback['last_name'] . '<br />';
-                }
-                if (!empty($feedback['email'])) {
-                  $response_info .= $feedback['email'] . '<br />';
-                }
-                if (!empty($feedback['phone'])) {
-                  $response_info .= $feedback['phone'];
-                }
-              }
-              else {
-                $response_info = 'No';
-              }
-            }
-
-            $row['requires_response'] = [
-              '#markup' => $response_info,
-            ];
-          }
-
-          if (empty($limit_fields) || in_array('survey', $limit_fields)) {
-            if (!empty($feedback['survey_id'])) {
-              $row['survey'] = [
-                '#markup' => '<span class="survey-toggle">Yes</span>',
-                '#wrapper_attributes' => ['class' => 'survey-yes'],
-              ];
-            }
-            else {
-              $row['survey'] = [
-                '#markup' => 'No',
               ];
             }
           }
@@ -645,27 +587,6 @@ class MassFeedbackLoopContentFetcher {
           }
 
           $table[$key] = $row;
-
-          if (empty($limit_fields) || in_array('survey', $limit_fields)) {
-            if (!empty($feedback['survey_id'])) {
-              $table[$key . '_details']['details'] = [
-                '#theme' => 'mass_survey_row',
-                '#wrapper_attributes' => ['colspan' => 8, 'class' => ['survey-results-cell']],
-                '#data' => [
-                  'helpful' => $feedback['helpful'],
-                  'easy' => $feedback['easy_to_use'],
-                  'findable' => $feedback['confident'],
-                  'reason' => $feedback['professional_or_personal'],
-                  'email' => $feedback['survey_email'],
-                  'purpose' => $feedback['visit_purpose'],
-                  'other' => $feedback['other_feedback'],
-                ],
-              ];
-              $table[$key . '_details']['#attributes'] = [
-                'class' => ['survey-results-row'],
-              ];
-            }
-          }
         }
       }
     }
