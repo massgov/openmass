@@ -43,7 +43,7 @@ class ContentEditingTest extends ExistingSiteBase {
   /**
    * Temporarily uncomment to avoid failures when new validation is added or Prod content has become invalid.
    */
-  protected function setUp() {
+  protected function setUp(): void {
     if (FALSE) {
       $this->markTestSkipped('Please comment out this skip after next deployment');
     }

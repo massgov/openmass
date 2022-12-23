@@ -9,9 +9,3 @@ services:
   descendant_manager:
     class: Drupal\mass_content_api\DescendantManager
     arguments: ['@descendant.storage', '@descendant.extractor']
-
-  mass_content_api.route_subscriber:
-    class: Drupal\mass_content_api\Routing\RouteSubscriber
-    tags:
-      - { name: event_subscriber }
-    weight: 200

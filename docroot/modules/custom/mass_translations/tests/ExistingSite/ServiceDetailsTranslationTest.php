@@ -20,7 +20,7 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $user = User::create(['name' => $this->randomMachineName()]);
@@ -89,7 +89,7 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
     $this->assertEquals(200, $this->getSession()->getStatusCode(), 'Entity page was loadable');
     $page = $this->getSession()->getPage();
     $element = $page->find('css', 'link[hreflang="x-default"]')->getAttribute('href');
-    $this->assertEqual($element, $entity->toUrl()->setOption('language', $entity->language())->setAbsolute()->toString());
+    $this->assertEquals($element, $entity->toUrl()->setOption('language', $entity->language())->setAbsolute()->toString());
     $tabs = $page->find('css', '.primary-tabs')->getText();
     $this->assertStringContainsString('Translations', $tabs, 'No Translations tab was found');
   }
@@ -127,7 +127,7 @@ class ServiceDetailsTranslationTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function tearDown() {
+  protected function tearDown(): void {
     parent::tearDown();
     $this->editor = NULL;
     $this->orgNode = NULL;
