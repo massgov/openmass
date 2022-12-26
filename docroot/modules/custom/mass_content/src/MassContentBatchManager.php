@@ -4,7 +4,6 @@ namespace Drupal\mass_content;
 
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityBase;
-use Drush\Drush;
 
 /**
  * Manages Mass Content batch processing.
@@ -31,7 +30,7 @@ class MassContentBatchManager {
       'regulation' => 'field_regulation_last_updated',
       'rules' => 'field_rules_effective_date',
       'advisory' => 'field_advisory_date',
-      'news' => 'field_news_date'
+      'news' => 'field_news_date',
     ];
 
     try {

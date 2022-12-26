@@ -14,7 +14,6 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Drupal\file\Entity\File;
-use Drupal\taxonomy\Entity\Term;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 
@@ -833,7 +832,7 @@ function _mass_content_collection_all_only_future_events(QueryPluginBase $query)
       [
         'field' => 'node__field_event_date.field_event_date_value',
         'value' => NULL,
-        'operator' => 'IS NULL'
+        'operator' => 'IS NULL',
       ],
       [
         'field' =>
@@ -841,7 +840,7 @@ function _mass_content_collection_all_only_future_events(QueryPluginBase $query)
         "DATE_FORMAT(('" . $now_formatted . "'), '%Y-%m-%d\T%H:%i:%s')",
         'value' => [],
         'operator' => 'formula',
-      ]
+      ],
     ],
   ];
 }

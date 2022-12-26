@@ -2,10 +2,8 @@
 
 namespace Drupal\mayflower;
 
-use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Url;
 use Drupal\Component\Utility\UrlHelper;
-use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\mayflower\Prepare\Atoms;
 use Drupal\mayflower\Prepare\Molecules;
@@ -66,7 +64,7 @@ class Helper {
   public static function getMappedFields(ContentEntityBase $entity, array $map) {
     $fields = [];
     // Determines which field names to use from the map.
-    // @todo refactor to make use array functions (map, filter, reduce)
+    // @todo Refactor to make use array functions (map, filter, reduce)
     foreach ($map as $id => $key) {
       foreach ($key as $field) {
         if ($entity->hasField($field)) {
@@ -1447,7 +1445,7 @@ class Helper {
    *   Date object.
    */
   public static function getDate($timestamp) {
-    // @todo: DP-7978 determine why we aren't using the drupal date service
+    // @todo DP-7978 determine why we aren't using the drupal date service
     // 'date.formatter'.
     $dateTime = new \DateTime($timestamp, new \DateTimeZone('UTC'));
     $timezone = 'America/New_York';

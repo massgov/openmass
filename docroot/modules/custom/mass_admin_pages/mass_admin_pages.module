@@ -14,7 +14,6 @@ use Drupal\node\Entity\NodeType;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 
-
 /**
  * Add icon to Mass menu item thats shown in admin toolbar.
  */
@@ -117,7 +116,6 @@ function mass_admin_pages_help($route_name, RouteMatchInterface $route_match) {
 /**
  * Implements hook_menu_links_discovered_alter().
  */
-
 function mass_admin_pages_menu_links_discovered_alter(&$links) {
   $links['system.admin_content']['title'] = new TranslatableMarkup('All (content)');
 }
@@ -285,18 +283,6 @@ function mass_admin_pages_preprocess_node_add_list(&$variables) {
   }
   $variables['categories'] = _mass_admin_pages_get_used_categories();
 }
-
-/**
- * Implements hook_preprocess_HOOK().
- */
-// @todo this is no longer functional, and not clear what it used to do.
-//function mass_admin_pages_preprocess_page(&$variables) {
-//  $current_route = \Drupal::routeMatch()->getRouteName();
-//
-//  if ($current_route == 'system.admin_content') {
-//    unset($variables['page']['content']['mass_admin_theme_local_actions']);
-//  }
-//}
 
 /**
  * Implements hook_form_FORM_ID_alter().

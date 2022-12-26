@@ -2,7 +2,6 @@
 
 namespace Drupal\mass_content_api\Plugin\rest\resource;
 
-use Drupal\Component\Serialization\Json;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\mass_content_api\DescendantManagerInterface;
 use Drupal\rest\Plugin\ResourceBase;

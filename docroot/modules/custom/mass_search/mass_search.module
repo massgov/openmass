@@ -45,7 +45,7 @@ function mass_search_menu_link_content_access(EntityInterface $entity, string $o
   $allowed_menus = [
     'footer-1',
     'footer-2',
-    'footer-3'
+    'footer-3',
   ];
   if ($operation === 'view' && in_array($entity->menu_name->value, $allowed_menus)) {
     return AccessResult::allowed();

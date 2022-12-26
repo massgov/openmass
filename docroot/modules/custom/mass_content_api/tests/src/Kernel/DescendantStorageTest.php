@@ -49,8 +49,8 @@ class DescendantStorageTest extends UnitTestCase {
           'type' => 'int',
           'size' => 'tiny',
           'default' => 1,
-        ]
-      ]
+        ],
+      ],
     ]);
     $connection->insert('node_field_data')
       ->fields(['nid', 'type', 'status'])
@@ -94,8 +94,8 @@ class DescendantStorageTest extends UnitTestCase {
       1 => [
         'id' => '1',
         'child' => '2',
-        'type' => 'type_1'
-      ]
+        'type' => 'type_1',
+      ],
     ], $this->storage->getParents([2]));
   }
 
@@ -114,8 +114,8 @@ class DescendantStorageTest extends UnitTestCase {
       2 => [
         'id' => '2',
         'parent' => '1',
-        'type' => 'type_2'
-      ]
+        'type' => 'type_2',
+      ],
     ], $this->storage->getChildren([1]));
   }
 

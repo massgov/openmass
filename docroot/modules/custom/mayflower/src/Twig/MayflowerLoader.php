@@ -14,7 +14,7 @@ class MayflowerLoader extends \Twig_Loader_Filesystem {
     'organisms' => '03-organisms',
     'templates' => '04-templates',
     'pages' => '05-pages',
-    'meta' => '07-meta'
+    'meta' => '07-meta',
   ];
 
   /**

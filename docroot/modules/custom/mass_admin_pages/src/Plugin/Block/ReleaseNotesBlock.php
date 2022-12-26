@@ -62,7 +62,7 @@ class ReleaseNotesBlock extends BlockBase {
             'class' => [
               'more-link',
             ],
-          ]
+          ],
         ],
 
       ];

@@ -37,8 +37,8 @@ EOM;
   }
 
   /**
-  * {@inheritdoc}
-  */
+   * {@inheritdoc}
+   */
   protected function blockAccess(AccountInterface $account) {
     $node = \Drupal::routeMatch()->getParameter('node');
     return AccessResult::allowedIfHasPermission($account, 'use mass dashboard')

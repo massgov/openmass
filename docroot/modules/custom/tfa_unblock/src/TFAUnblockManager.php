@@ -97,7 +97,7 @@ class TFAUnblockManager {
     $query->condition('name', 'tfa_user_settings');
 
     // Subquery finds users who have set up a totp seed.
-    // @todo - Alter/extend this query to cover additional plugins.
+    // @todo Alter/extend this query to cover additional plugins.
     $sub_query = $this->database->select('users_data', 'ud2');
     $sub_query->addField('ud2', 'uid');
     $sub_query->distinct();
@@ -106,7 +106,7 @@ class TFAUnblockManager {
     $query->condition('ud.uid', $sub_query, 'NOT IN');
 
     $result = $query->execute();
-    // @todo - Consider pagination.
+    // @todo Consider adding pagination.
     $records = $result->fetchAllAssoc('uid');
     $users = User::loadMultiple(array_keys($records));
 

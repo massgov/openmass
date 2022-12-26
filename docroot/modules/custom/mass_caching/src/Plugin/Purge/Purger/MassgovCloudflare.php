@@ -151,7 +151,7 @@ class MassgovCloudflare extends PurgerBase {
    * state write per request that has invalidations seems unlikely to cause a
    * meltdown.
    *
-   * @todo: Remove this once and clean up state we've collected our data.
+   * @todo Remove this once and clean up state we've collected our data.
    */
   private function incrementInvalidations(string $type, int $count) {
     $stateKey = "mass.cloudflare.${type}.counts";

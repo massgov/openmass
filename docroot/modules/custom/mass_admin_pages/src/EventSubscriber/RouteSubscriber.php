@@ -3,7 +3,6 @@
 namespace Drupal\mass_admin_pages\EventSubscriber;
 
 use Drupal\Core\Routing\RouteSubscriberBase;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\Routing\RouteCollection;
 
 class RouteSubscriber extends RouteSubscriberBase {

@@ -11,7 +11,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactory;
 use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Core\Datetime\DateFormatter;
-use Drupal\scheduler_media\SchedulerMediaEvent;
 use Drupal\scheduler\SchedulerEvents;
 
 /**

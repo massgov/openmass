@@ -50,8 +50,8 @@ class DescendantManager implements DescendantManagerInterface {
     $this->storage->removeRelationships($node->getEntityTypeId(), $node->id());
 
     $descendants = $this->extractor->extract($node);
-    // @todo: Getting duplicate records from the extractor.  Does this matter?
-    // @todo: Rename 'entity' to 'entity_type' for clarity.
+    // @todo Getting duplicate records from the extractor.  Does this matter?
+    // @todo Rename 'entity' to 'entity_type' for clarity.
     foreach ($descendants as $dependency_status => $fields) {
       foreach ($fields as $field) {
         if ($dependency_status === 'parents') {

@@ -13,7 +13,6 @@ use Drupal\media\Entity\MediaType;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -246,7 +245,7 @@ function _scheduler_media_get_scheduler_media_enabled_media_types($action) {
   $config = \Drupal::config('scheduler_media.settings');
   $media_types = MediaType::loadMultiple();
   return array_filter($media_types, function ($bundle) use ($action, $config) {
-    /* @var \Drupal\media\MediaTypeInterface $bundle */
+    /** @var \Drupal\media\MediaTypeInterface $bundle */
     return $bundle->getThirdPartySetting('scheduler_media', $action . '_enable', $config->get('default_' . $action . '_enable'));
   });
 }

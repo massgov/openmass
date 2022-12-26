@@ -42,7 +42,6 @@ class AkamaiPurger extends \Drupal\akamai\Plugin\Purge\Purger\AkamaiPurger {
     $urls_to_clear = array_unique(array_filter($urls_to_clear));
     // Mass: Add back normalization just in case that caused the earlier errors.
     // $urls_to_clear = $this->client->normalizeUrls($urls_to_clear);
-
     // Log if a bad URL is passed.
     foreach ($urls_to_clear as $key => $url) {
       if (!is_string($url)) {
