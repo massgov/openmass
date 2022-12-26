@@ -53,8 +53,6 @@ function mass_redirects_entity_operation(EntityInterface $entity): array {
 
 /**
  * Implements hook_entity_type_alter().
- *
- * @param $entity_types \Drupal\Core\Entity\EntityTypeInterface[]
  */
 function mass_redirects_entity_type_alter(array &$entity_types) {
   $handlers = $entity_types['node']->getHandlerClasses();

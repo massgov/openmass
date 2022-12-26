@@ -18,7 +18,7 @@ function mass_gin_deploy_initial(&$sandbox) {
     MenuLinkContent::load($id)->delete();
   }
   // D2d redirects link - move under Mass.
-  $link =  MenuLinkContent::load(411);
+  $link = MenuLinkContent::load(411);
   $link->set('parent', 'mass_admin_pages.mass')->save();
 
   // Move links under Help.

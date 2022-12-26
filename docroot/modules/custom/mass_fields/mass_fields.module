@@ -787,7 +787,7 @@ function mass_fields_do_form_alter(&$form, FormStateInterface $form_state) {
   /** @var ContentEntityInterface $entity */
   $entity = $form_state->getFormObject()->getEntity();
 
-  //  For CSS, see the admonition library is mass_admin_pages module.
+  // For CSS, see the admonition library is mass_admin_pages module.
   $markup = <<<EOM
 <div class="admonition tip">
     <div class="title">Publish state</div>
@@ -801,7 +801,6 @@ EOM;
   if (empty($form['search'])) {
     return;
   }
-
 
   $settings = \Drupal::service('simple_sitemap.generator')->getBundleSettings();
   $form['search_status'] = [
