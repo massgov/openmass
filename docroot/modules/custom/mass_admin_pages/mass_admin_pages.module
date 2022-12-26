@@ -128,11 +128,13 @@ function mass_admin_pages_page_attachments(array &$page) {
 }
 
 /**
+ * Implements hook_theme_suggestions_node_add_list.
+ *
  * @see https://drupal.stackexchange.com/a/269258/549
  */
 function mass_admin_pages_theme_suggestions_node_add_list(array $variables) {
   $suggestions = [];
-  $suggestions[] = 'node_add_list__' . 'custom';
+  $suggestions[] = 'node_add_list__custom';
   return $suggestions;
 }
 
