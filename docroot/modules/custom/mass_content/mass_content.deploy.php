@@ -7,6 +7,8 @@
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
 
@@ -693,5 +695,64 @@ function mass_content_deploy_event_updated_date(&$sandbox) {
   $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
   if ($sandbox['#finished'] >= 1) {
     return t('All Event "Updated date" fields have been set.');
+  }
+}
+
+/**
+ * Migrate Secondary Header field to Related Information field on Search.
+ */
+function mass_content_deploy_search_related_info(&$sandbox) {
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+  $query = \Drupal::entityQuery('paragraph');
+  $query->condition('type', 'collection_search');
+  $query->condition('field_secondary_heading', '', '<>');
+  $query->accessCheck(FALSE);
+
+  if (empty($sandbox)) {
+    // Initialize other variables.
+    $sandbox['current'] = 0;
+    $sandbox['progress'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 50;
+
+  $pids = $query->condition('id', $sandbox['current'], '>')
+    ->sort('id')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $storage_handler = \Drupal::entityTypeManager()->getStorage('paragraph');
+  $entities = $storage_handler->loadMultiple($pids);
+  if (!empty($entities)) {
+    foreach ($entities as $entity) {
+      $sandbox['current'] = $entity->id();
+      $secondary_heading = '<h3>' . $entity->field_secondary_heading->value . '</h3>';
+
+      $entity = $storage_handler->load($entity->id());
+      $see_all_items_link_rendered = '';
+      if ($url_name = $entity->field_collection->referencedEntities()[0]->field_url_name->value) {
+        $see_all_items_link_url = Url::fromUserInput('/collections/' . $url_name);
+        $see_all_items_link_text = $entity->field_see_all_items_link_text->value;
+        $see_all_items_link_rendered = '<p>' . Link::fromTextAndUrl($see_all_items_link_text, $see_all_items_link_url)->toString() . '</p>';
+      }
+
+      $entity->set('field_search_related_info', [
+        'value' => $secondary_heading . $see_all_items_link_rendered,
+        'format' => 'basic_html',
+      ]);
+
+      $entity->set('field_search_type', 'collection');
+
+      $entity->save();
+      $sandbox['progress']++;
+    }
+    Drupal::logger('Mass Content')->info('Migrated !count collection_search paragraphs from !max.', ['!count' => $sandbox['progress'], '!max' => $sandbox['max']]);
+  }
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('Migrated collection_search paragraphs.');
   }
 }

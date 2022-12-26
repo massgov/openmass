@@ -26,7 +26,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $user1 = User::create(['name' => $this->randomMachineName()]);
@@ -233,7 +233,7 @@ class EmergencyAlertsTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function tearDown() {
+  protected function tearDown(): void {
     parent::tearDown();
     $this->editor = NULL;
     $this->orgNode = NULL;

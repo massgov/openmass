@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.section_long_form.field_hide_heading
     - field.field.paragraph.section_long_form.field_section_long_form_addition
     - field.field.paragraph.section_long_form.field_section_long_form_content
     - field.field.paragraph.section_long_form.field_section_long_form_heading
@@ -14,6 +15,16 @@ targetEntityType: paragraph
 bundle: section_long_form
 mode: default
 content:
+  field_hide_heading:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 3
+    region: content
   field_section_long_form_addition:
     type: entity_reference_revisions_entity_view
     label: hidden

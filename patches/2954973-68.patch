@@ -1,0 +1,566 @@
+diff --git a/src/EntityUpdateManager.php b/src/EntityUpdateManager.php
+index 28a91b7e51f5a568a3579dc0283e44513655c3f5..ff0ee8f23431c622f025e053a0108d99ee837bb9 100644
+--- a/src/EntityUpdateManager.php
++++ b/src/EntityUpdateManager.php
+@@ -16,7 +16,7 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
+   /**
+    * The usage track service.
+    *
+-   * @var \Drupal\entity_usage\EntityUsage
++   * @var \Drupal\entity_usage\EntityUsageInterface
+    */
+   protected $usageService;
+
+@@ -37,14 +37,14 @@ class EntityUpdateManager implements EntityUpdateManagerInterface {
+   /**
+    * EntityUpdateManager constructor.
+    *
+-   * @param \Drupal\entity_usage\EntityUsage $usage_service
++   * @param \Drupal\entity_usage\EntityUsageInterface $usage_service
+    *   The usage tracking service.
+    * @param \Drupal\entity_usage\EntityUsageTrackManager $track_manager
+    *   The PluginManager track service.
+    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+    *   The config factory.
+    */
+-  public function __construct(EntityUsage $usage_service, EntityUsageTrackManager $track_manager, ConfigFactoryInterface $config_factory) {
++  public function __construct(EntityUsageInterface $usage_service, EntityUsageTrackManager $track_manager, ConfigFactoryInterface $config_factory) {
+     $this->usageService = $usage_service;
+     $this->trackManager = $track_manager;
+     $this->config = $config_factory->get('entity_usage.settings');
+diff --git a/src/EntityUsageTrackBase.php b/src/EntityUsageTrackBase.php
+index f8aae7fc962a7eaf9551bf8f7adb4894c6d21c25..61c6f436279f0d622c15b0c529d5775ef7bf3f34 100644
+--- a/src/EntityUsageTrackBase.php
++++ b/src/EntityUsageTrackBase.php
+@@ -2,6 +2,7 @@
+
+ namespace Drupal\entity_usage;
+
++use Drupal\Core\Url;
+ use Drupal\Core\Config\ConfigFactoryInterface;
+ use Drupal\Core\Entity\EntityFieldManagerInterface;
+ use Drupal\Core\Entity\EntityInterface;
+@@ -9,8 +10,10 @@ use Drupal\Core\Entity\EntityRepositoryInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Entity\FieldableEntityInterface;
+ use Drupal\Core\Entity\RevisionableInterface;
++use Drupal\Core\Path\PathValidatorInterface;
+ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+ use Drupal\Core\Plugin\PluginBase;
++use Drupal\Core\StreamWrapper\PublicStream;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
+
+ /**
+@@ -21,7 +24,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+   /**
+    * The usage tracking service.
+    *
+-   * @var \Drupal\entity_usage\EntityUsage
++   * @var \Drupal\entity_usage\EntityUsageInterface
+    */
+   protected $usageService;
+
+@@ -52,6 +55,20 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+    * @var \Drupal\Core\Entity\EntityRepositoryInterface
+    */
+   protected $entityRepository;
++
++  /**
++   * The Drupal Path Validator service.
++   *
++   * @var \Drupal\Core\Path\PathValidatorInterface
++   */
++  protected $pathValidator;
++
++  /**
++   * The public file directory.
++   *
++   * @var string
++   */
++  protected $publicFileDirectory;
+
+   /**
+    * Plugin constructor.
+@@ -62,7 +79,7 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+    *   The plugin_id for the plugin instance.
+    * @param mixed $plugin_definition
+    *   The plugin implementation definition.
+-   * @param \Drupal\entity_usage\EntityUsage $usage_service
++   * @param \Drupal\entity_usage\EntityUsageInterface $usage_service
+    *   The usage tracking service.
+    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+    *   The EntityTypeManager service.
+@@ -72,8 +89,12 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+    *   The factory for configuration objects.
+    * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
+    *   The EntityRepositoryInterface service.
++   * @param \Drupal\Core\Path\PathValidatorInterface $path_validator
++   *   The Drupal Path Validator service.
++   * @param \Drupal\Core\StreamWrapper\PublicStream $public_stream
++   *   The Public Stream service.
+    */
+-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityUsage $usage_service, EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, ConfigFactoryInterface $config_factory, EntityRepositoryInterface $entity_repository) {
++  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityUsageInterface $usage_service, EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, ConfigFactoryInterface $config_factory, EntityRepositoryInterface $entity_repository, PathValidatorInterface $path_validator, PublicStream $public_stream) {
+     parent::__construct($configuration, $plugin_id, $plugin_definition);
+     $this->configuration += $this->defaultConfiguration();
+     $this->usageService = $usage_service;
+@@ -81,6 +102,8 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+     $this->entityFieldManager = $entity_field_manager;
+     $this->config = $config_factory->get('entity_usage.settings');
+     $this->entityRepository = $entity_repository;
++    $this->pathValidator = $path_validator;
++    $this->publicFileDirectory = $public_stream->getDirectoryPath();
+   }
+
+   /**
+@@ -95,7 +118,9 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+       $container->get('entity_type.manager'),
+       $container->get('entity_field.manager'),
+       $container->get('config.factory'),
+-      $container->get('entity.repository')
++      $container->get('entity.repository'),
++      $container->get('path.validator'),
++      $container->get('stream_wrapper.public')
+     );
+   }
+
+@@ -246,5 +271,141 @@ abstract class EntityUsageTrackBase extends PluginBase implements EntityUsageTra
+
+     return $referencing_fields_on_bundle;
+   }
++
++  /**
++   * Process the url to a Url object.
++   *
++   * @param string $url
++   *   A relative or absolute URL string.
++   *
++   * @return \Drupal\Core\Url|false
++   *   The Url object
++   */
++  protected function processUrl($url) {
++    // Strip off the scheme and host, so we only get the path.
++    $site_domains = $this->config->get('site_domains') ?: [];
++    foreach ($site_domains as $site_domain) {
++      $site_domain = rtrim($site_domain, "/");
++      $host_pattern = str_replace('.', '\.', $site_domain) . "/";
++      $host_pattern = "/" . str_replace("/", '\/', $host_pattern) . "/";
++      if (preg_match($host_pattern, $url)) {
++        // Strip off everything that is not the internal path.
++        $url = parse_url($url, PHP_URL_PATH);
++
++        if (preg_match('/^[^\/]+(\/.+)/', $site_domain, $matches)) {
++          $sub_directory = $matches[1];
++          if ($sub_directory && substr($url, 0, strlen($sub_directory)) == $sub_directory) {
++            $url = substr($url, strlen($sub_directory));
++          }
++        }
++
++        break;
++      }
++    }
++
++    return $this->pathValidator()->getUrlIfValidWithoutAccessCheck($url);
++  }
++
++  /**
++   * Try to retrieve an entity from an URL string.
++   *
++   * @param string $url
++   *   A relative or absolute URL string.
++   *
++   * @return \Drupal\Core\Entity\EntityInterface|null
++   *   The entity object that corresponds to the received URL, or NULL if no
++   *   entity could be retrieved.
++   */
++  protected function findEntityByUrlString($url) {
++    if (empty($url)) {
++      return NULL;
++    }
++
++    $entity = NULL;
++
++    $url_object = $this->processUrl($url);
++
++    $public_file_pattern = '{^/?' . $this->publicFileDirectory() . '/}';
++
++    if ($url_object && $url_object->isRouted()) {
++      $entity = $this->findEntityByRoutedUrl($url_object);
++    }
++    elseif (preg_match($public_file_pattern, $url)) {
++      // Check if we can map the link to a public file.
++      $file_uri = preg_replace($public_file_pattern, 'public://', urldecode($url));
++      $files = $this->entityTypeManager->getStorage('file')->loadByProperties(['uri' => $file_uri]);
++      if ($files) {
++        // File entity found.
++        $target_type = 'file';
++        $target_id = array_keys($files)[0];
++
++        if ($target_type && $target_id) {
++          $entity = $this->entityTypeManager->getStorage($target_type)->load($target_id);
++        }
++      }
++    }
++
++    return $entity;
++  }
++
++  /**
++   * Try to retrieve an entity from an URL object.
++   *
++   * @param \Drupal\Core\Url $url
++   *   A URL object.
++   *
++   * @return \Drupal\Core\Entity\EntityInterface|null
++   *   The entity object that corresponds to the URL object, or NULL if no
++   *   entity could be retrieved.
++   */
++  protected function findEntityByRoutedUrl(Url $url) {
++    if (!$url || !$url->isRouted()) {
++      return NULL;
++    }
++
++    $entity = NULL;
++    $target_type = NULL;
++    $target_id = NULL;
++
++    $entity_pattern = '/^entity\.([a-z_]*)\./';
++
++    if (preg_match($entity_pattern, $url->getRouteName(), $matches)) {
++      // Ge the target entity type and ID.
++      if ($target_entity_type = $this->entityTypeManager->getDefinition($matches[1])) {
++        $route_parameters = $url->getRouteParameters();
++        $target_type = $target_entity_type->id();
++        $target_id = $route_parameters[$target_type];
++      }
++    }
++
++    if ($target_type && $target_id) {
++      $entity = $this->entityTypeManager->getStorage($target_type)->load($target_id);
++    }
++
++    return $entity;
++  }
++
++  /**
++   * Returns the path validator service.
++   *
++   * @return \Drupal\Core\Path\PathValidatorInterface
++   *   The path validator.
++   */
++  protected function pathValidator() {
++    return $this->pathValidator;
++  }
++
++  /**
++   * Return the public file directory path.
++   *
++   * @return string
++   *   The public file directory path.
++   */
++  protected function publicFileDirectory() {
++    if (!$this->publicFileDirectory) {
++      $this->publicFileDirectory = \Drupal::service('stream_wrapper.public')->getDirectoryPath();
++    }
++    return $this->publicFileDirectory;
++  }
+
+ }
+diff --git a/src/Plugin/EntityUsage/Track/HtmlLink.php b/src/Plugin/EntityUsage/Track/HtmlLink.php
+index 5b1893bd568108ea5cee95ca4f26d1aba84dff53..50f804a6114d08a598f562f57ac5415340b79724 100644
+--- a/src/Plugin/EntityUsage/Track/HtmlLink.php
++++ b/src/Plugin/EntityUsage/Track/HtmlLink.php
+@@ -3,14 +3,6 @@
+ namespace Drupal\entity_usage\Plugin\EntityUsage\Track;
+
+ use Drupal\Component\Utility\Html;
+-use Drupal\Core\Config\ConfigFactoryInterface;
+-use Drupal\Core\Entity\EntityFieldManagerInterface;
+-use Drupal\Core\Entity\EntityRepositoryInterface;
+-use Drupal\Core\Entity\EntityTypeManagerInterface;
+-use Drupal\Core\Path\PathValidatorInterface;
+-use Drupal\Core\StreamWrapper\StreamWrapperInterface;
+-use Drupal\entity_usage\EntityUsage;
+-use Symfony\Component\DependencyInjection\ContainerInterface;
+
+ /**
+  * Tracks usage of entities referenced from regular HTML Links.
+@@ -24,68 +16,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
+  */
+ class HtmlLink extends TextFieldEmbedBase {
+
+-  /**
+-   * The Drupal Path Validator service.
+-   *
+-   * @var \Drupal\Core\Path\PathValidatorInterface
+-   */
+-  protected $pathValidator;
+-
+-  /**
+-   * The public file directory.
+-   *
+-   * @var string
+-   */
+-  protected $publicFileDirectory;
+-
+-  /**
+-   * Constructs the HtmlLink plugin.
+-   *
+-   * @param array $configuration
+-   *   A configuration array containing information about the plugin instance.
+-   * @param string $plugin_id
+-   *   The plugin_id for the plugin instance.
+-   * @param mixed $plugin_definition
+-   *   The plugin implementation definition.
+-   * @param \Drupal\entity_usage\EntityUsage $usage_service
+-   *   The usage tracking service.
+-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+-   *   The EntityTypeManager service.
+-   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+-   *   The EntityFieldManager service.
+-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+-   *   The factory for configuration objects.
+-   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
+-   *   The EntityRepositoryInterface service.
+-   * @param \Drupal\Core\Path\PathValidatorInterface $path_validator
+-   *   The Drupal Path Validator service.
+-   * @param \Drupal\Core\StreamWrapper\StreamWrapperInterface $public_stream
+-   *   The Public Stream service.
+-   */
+-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityUsage $usage_service, EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, ConfigFactoryInterface $config_factory, EntityRepositoryInterface $entity_repository, PathValidatorInterface $path_validator, StreamWrapperInterface $public_stream) {
+-    parent::__construct($configuration, $plugin_id, $plugin_definition, $usage_service, $entity_type_manager, $entity_field_manager, $config_factory, $entity_repository);
+-    $this->pathValidator = $path_validator;
+-    $this->publicFileDirectory = method_exists($public_stream, 'getDirectoryPath') ? $public_stream->getDirectoryPath() : '';
+-  }
+-
+-  /**
+-   * {@inheritdoc}
+-   */
+-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+-    return new static(
+-      $configuration,
+-      $plugin_id,
+-      $plugin_definition,
+-      $container->get('entity_usage.usage'),
+-      $container->get('entity_type.manager'),
+-      $container->get('entity_field.manager'),
+-      $container->get('config.factory'),
+-      $container->get('entity.repository'),
+-      $container->get('path.validator'),
+-      $container->get('stream_wrapper.public')
+-    );
+-  }
+-
+   /**
+    * {@inheritdoc}
+    */
+@@ -101,56 +31,20 @@ class HtmlLink extends TextFieldEmbedBase {
+       try {
+         // Get the href value of the <a> element.
+         $href = $element->getAttribute('href');
+-
+-        // Strip off the scheme and host, so we only get the path.
+-        $site_domains = $this->config->get('site_domains') ?: [];
+-        foreach ($site_domains as $site_domain) {
+-          $host_pattern = '{^https?://' . str_replace('.', '\.', $site_domain) . '/}';
+-          if (\preg_match($host_pattern, $href)) {
+-            $href = preg_replace($host_pattern, '/', $href);
+-            break;
+-          }
+-        }
+-
+-        $target_type = $target_id = NULL;
+-
+-        // Check if the href links to an entity.
+-        $url = $this->pathValidator->getUrlIfValidWithoutAccessCheck($href);
+-        if ($url && $url->isRouted() && preg_match('/^entity\./', $url->getRouteName())) {
+-          // Ge the target entity type and ID.
+-          $route_parameters = $url->getRouteParameters();
+-          $target_type = array_keys($route_parameters)[0];
+-          $target_id = $route_parameters[$target_type];
+-        }
+-        elseif (\preg_match('{^/?' . $this->publicFileDirectory . '/}', $href)) {
+-          // Check if we can map the link to a public file.
+-          $file_uri = preg_replace('{^/?' . $this->publicFileDirectory . '/}', 'public://', urldecode($href));
+-          $files = $this->entityTypeManager->getStorage('file')->loadByProperties(['uri' => $file_uri]);
+-          if ($files) {
+-            // File entity found.
+-            $target_type = 'file';
+-            $target_id = array_keys($files)[0];
+-          }
+-        }
+-
+-        if ($target_type && $target_id) {
+-          $entity = $this->entityTypeManager->getStorage($target_type)->load($target_id);
+-          if ($entity) {
+-
+-            if ($element->hasAttribute('data-entity-uuid')) {
+-              // Normally the Linkit plugin handles when a element has this
+-              // attribute, but sometimes users may change the HREF manually and
+-              // leave behind the wrong UUID.
+-              $data_uuid = $element->getAttribute('data-entity-uuid');
+-              // If the UUID is the same as found in HREF, then skip it because
+-              // it's LinkIt's job to register this usage.
+-              if ($data_uuid == $entity->uuid()) {
+-                continue;
+-              }
++        $entity = $this->findEntityByUrlString($href);
++        if ($entity) {
++          if ($element->hasAttribute('data-entity-uuid')) {
++            // Normally the Linkit plugin handles when a element has this
++            // attribute, but sometimes users may change the HREF manually and
++            // leave behind the wrong UUID.
++            $data_uuid = $element->getAttribute('data-entity-uuid');
++            // If the UUID is the same as found in HREF, then skip it because
++            // it's LinkIt's job to register this usage.
++            if ($data_uuid === $entity->uuid()) {
++              continue;
+             }
+-
+-            $entities[$entity->uuid()] = $target_type;
+           }
++          $entities[$entity->uuid()] = $entity->getEntityTypeId();
+         }
+       }
+       catch (\Exception $e) {
+diff --git a/src/Plugin/EntityUsage/Track/LayoutBuilder.php b/src/Plugin/EntityUsage/Track/LayoutBuilder.php
+index 106abbd0e36ac1b002572c91e74233576ee3d473..3a4af181e3090029835d7cfb2387d5abdb52b43c 100644
+--- a/src/Plugin/EntityUsage/Track/LayoutBuilder.php
++++ b/src/Plugin/EntityUsage/Track/LayoutBuilder.php
+@@ -9,10 +9,12 @@ use Drupal\Core\Entity\EntityFieldManagerInterface;
+ use Drupal\Core\Entity\EntityRepositoryInterface;
+ use Drupal\Core\Entity\EntityTypeManagerInterface;
+ use Drupal\Core\Field\FieldItemInterface;
+-use Drupal\entity_usage\EntityUsage;
++use Drupal\entity_usage\EntityUsageInterface;
+ use Drupal\entity_usage\EntityUsageTrackBase;
+ use Drupal\layout_builder\Plugin\Field\FieldType\LayoutSectionItem;
+ use Symfony\Component\DependencyInjection\ContainerInterface;
++use Drupal\Core\Path\PathValidatorInterface;
++use Drupal\Core\StreamWrapper\PublicStream;
+
+ /**
+  * Tracks usage of entities related in Layout Builder layouts.
+@@ -42,7 +44,7 @@ class LayoutBuilder extends EntityUsageTrackBase {
+    *   The plugin_id for the plugin instance.
+    * @param mixed $plugin_definition
+    *   The plugin implementation definition.
+-   * @param \Drupal\entity_usage\EntityUsage $usage_service
++   * @param \Drupal\entity_usage\EntityUsageInterface $usage_service
+    *   The usage tracking service.
+    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+    *   The EntityTypeManager service.
+@@ -54,9 +56,13 @@ class LayoutBuilder extends EntityUsageTrackBase {
+    *   The EntityRepositoryInterface service.
+    * @param \Drupal\Core\Block\BlockManagerInterface $blockManager
+    *   Block manager.
++   * @param \Drupal\Core\Path\PathValidatorInterface $path_validator
++   *   The Drupal Path Validator service.
++   * @param \Drupal\Core\StreamWrapper\PublicStream $public_stream
++   *   The Public Stream service.
+    */
+-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityUsage $usage_service, EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, ConfigFactoryInterface $config_factory, EntityRepositoryInterface $entity_repository, BlockManagerInterface $blockManager) {
+-    parent::__construct($configuration, $plugin_id, $plugin_definition, $usage_service, $entity_type_manager, $entity_field_manager, $config_factory, $entity_repository);
++  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityUsageInterface $usage_service, EntityTypeManagerInterface $entity_type_manager, EntityFieldManagerInterface $entity_field_manager, ConfigFactoryInterface $config_factory, EntityRepositoryInterface $entity_repository, BlockManagerInterface $blockManager, PathValidatorInterface $path_validator, PublicStream $public_stream) {
++    parent::__construct($configuration, $plugin_id, $plugin_definition, $usage_service, $entity_type_manager, $entity_field_manager, $config_factory, $entity_repository, $path_validator, $public_stream);
+     $this->blockManager = $blockManager;
+   }
+
+@@ -73,7 +79,9 @@ class LayoutBuilder extends EntityUsageTrackBase {
+       $container->get('entity_field.manager'),
+       $container->get('config.factory'),
+       $container->get('entity.repository'),
+-      $container->get('plugin.manager.block')
++      $container->get('plugin.manager.block'),
++      $container->get('path.validator'),
++      $container->get('stream_wrapper.public')
+     );
+   }
+
+diff --git a/src/Plugin/EntityUsage/Track/Link.php b/src/Plugin/EntityUsage/Track/Link.php
+index 288b61861f29cfa0cfe014e6ba89a6cb3f41f692..52836f6cd94c82e8b33985a770f2a0df45d772d3 100644
+--- a/src/Plugin/EntityUsage/Track/Link.php
++++ b/src/Plugin/EntityUsage/Track/Link.php
+@@ -22,28 +22,20 @@ class Link extends EntityUsageTrackBase {
+    */
+   public function getTargetEntities(FieldItemInterface $link) {
+     /** @var \Drupal\link\LinkItemInterface $link */
+-    // Check if the link is referencing an entity.
+-    $url = $link->getUrl();
+-    if (!$url->isRouted() || !preg_match('/^entity\./', $url->getRouteName())) {
+-      return [];
++    if ($link->isExternal()) {
++      $url = $link->getUrl()->toString();
++      $entity = $this->findEntityByUrlString($url);
+     }
+-
+-    // Ge the target entity type and ID.
+-    $route_parameters = $url->getRouteParameters();
+-    $target_type = array_keys($route_parameters)[0];
+-    $target_id = $route_parameters[$target_type];
+-
+-    // Only return a valid result if the target entity exists.
+-    try {
+-      if (!$this->entityTypeManager->getStorage($target_type)->load($target_id)) {
+-        return [];
+-      }
++    else {
++      $url = $link->getUrl();
++      $entity = $this->findEntityByRoutedUrl($url);
+     }
+-    catch (\Exception $exception) {
++
++    if (!$entity) {
+       return [];
+     }
+
+-    return [$target_type . '|' . $target_id];
++    return [$entity->getEntityTypeId() . '|' . $entity->id()];
+   }
+
+ }
+diff --git a/tests/src/FunctionalJavascript/IntegrationTest.php b/tests/src/FunctionalJavascript/IntegrationTest.php
+index 163db83535dec73b36bfd7c122d4cae3073291f6..827e4dcb881c50278d71771fd21db8b33b26e6df 100644
+--- a/tests/src/FunctionalJavascript/IntegrationTest.php
++++ b/tests/src/FunctionalJavascript/IntegrationTest.php
+@@ -434,6 +434,39 @@ class IntegrationTest extends EntityUsageJavascriptTestBase {
+     $node2->delete();
+     $usage = $usage_service->listSources($node1);
+     $this->assertEquals([], $usage);
+-  }
+
++    // Create Node 3 referencing Node 1 with an absolute URL in the link field.
++    // Whitelist the local hostname so we can test absolute URLs.
++    $current_request = \Drupal::request();
++    $config = \Drupal::configFactory()->getEditable('entity_usage.settings');
++    $config->set('site_domains', [$current_request->getHttpHost() . $current_request->getBasePath()]);
++    $config->save();
++    drupal_flush_all_caches();
++    $this->drupalGet('/node/add/eu_test_ct');
++    $page->fillField('title[0][value]', 'Node 3');
++    $page->fillField('field_link1[0][uri]', $node1->toUrl()->setAbsolute()->toString());
++    $assert_session->waitOnAutocomplete();
++    $page->fillField('field_link1[0][title]', "Linked text");
++    $page->pressButton('Save');
++    $session->wait(500);
++    $this->saveHtmlOutput();
++    $assert_session->pageTextContains('eu_test_ct Node 3 has been created.');
++    $node3 = $this->getLastEntityOfType('node', TRUE);
++    // Check that the usage of Node 1 points to Node 2.
++    $usage = $usage_service->listSources($node1);
++    $expected = [
++      'node' => [
++        $node3->id() => [
++          0 => [
++            'source_langcode' => 'en',
++            'source_vid' => $node3->getRevisionId(),
++            'method' => 'link',
++            'field_name' => 'field_link1',
++            'count' => 1,
++          ],
++        ],
++      ],
++    ];
++    $this->assertEquals($expected, $usage);
++  }
+ }
