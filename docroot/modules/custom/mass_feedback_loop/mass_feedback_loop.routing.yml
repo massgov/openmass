@@ -38,7 +38,7 @@ mass_feedback_loop.per_node_feedback_page:
   path: '/node/{node}/feedback'
   defaults:
     _controller: '\Drupal\mass_feedback_loop\Controller\MassFeedbackLoopPerNodeController::build'
-    _title: 'Feedback submitted by constituents for this content'
+    _title: 'Feedback submitted by constituents for this content<p>Also see: <a href="/admin/content/pages_with_negative_feedback">Pages with high negative feedback</a> and <a href=”/admin/ma-dash/feedback”>Feedback Manager</a> where you can view, filter and sort feedback submissions.</p>'
   options:
     _node_operation_route: TRUE
   requirements:

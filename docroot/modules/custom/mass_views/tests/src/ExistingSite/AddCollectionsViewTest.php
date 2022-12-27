@@ -15,7 +15,7 @@ use weitzman\LoginTrait\LoginTrait;
 /**
  * Tests add media to collections bulk.
  */
-class AddDocsCollectionsViewTest extends ExistingSiteBase {
+class AddCollectionsViewTest extends ExistingSiteBase {
 
   use LoginTrait;
   use MediaCreationTrait;
@@ -24,7 +24,7 @@ class AddDocsCollectionsViewTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     // An admin is needed.
     $admin = User::create(['name' => $this->randomMachineName()]);
@@ -98,6 +98,57 @@ class AddDocsCollectionsViewTest extends ExistingSiteBase {
     // Go to each media item and verify the value is set correctly.
     foreach ($mids as $mid) {
       $this->drupalGet("media/$mid/edit");
+      $page = $this->getSession()->getPage();
+      // Verify the value of the "Collections" field.
+      $this->assertEquals($page->find('css', '#edit-field-collections-0-target-id')->getValue(), 'Test 2 (87956)');
+    }
+  }
+
+  /**
+   * Run through test steps.
+   */
+  public function testChangeCollectionsBulk() {
+    $checked = [];
+    $nids = [];
+
+    // Create 3 node items to bulk add collections later.
+    for ($x = 0; $x < 3; $x++) {
+      // Adding one node, to show one result.
+      $node = $this->createNode([
+        'type' => 'service_page',
+        'title' => 'bulktestcollections',
+        'moderation_state' => MassModeration::PUBLISHED,
+      ]);
+      // Store node ids to check the result later.
+      $nids[] = $node->id();
+      // Generate an array of values to submit the form.
+      $checked["views_bulk_operations_bulk_form[$x]"] = TRUE;
+    }
+    $this->drupalGet('admin/ma-dash/reports/change-collections');
+
+    // Trigger search to get some results.
+    $this->submitForm(['title' => 'bulktestcollections'], $this->t('Apply'), 'views-exposed-form-change-collections-page-1');
+    // Trigger the action.
+    $this->submitForm($checked, $this->t('Add Collections'), 'views-form-change-collections-page-1');
+
+    // Check if the "New Collection" element exists.
+    $this->assertSession()->pageTextContains('New Collection');
+    $this->assertSession()->elementExists('css', '.field--widget-term-reference-tree');
+
+    // Use "Test 2 (87956)" collection and trigger the batch.
+    $this->submitForm(['new_collection[0][87861][87861-children][87956][87956]' => TRUE], $this->t('Add collections'), 'views-bulk-operations-configure-action');
+    // Trigger the batch process.
+    $this->submitForm([], $this->t('Execute action'), 'views-bulk-operations-confirm-action');
+    $page = $this->getSession()->getPage();
+
+    // Wait for the batch to finish processing.
+    $page->waitFor(3, function () use ($page) {
+      return $page->hasContent('Your changes have been successfully made.');
+    });
+
+    // Go to each node item and verify the value is set correctly.
+    foreach ($nids as $nid) {
+      $this->drupalGet("node/$nid/edit");
       $page = $this->getSession()->getPage();
       // Verify the value of the "Collections" field.
       $this->assertEquals($page->find('css', '#edit-field-collections-0-target-id')->getValue(), 'Test 2 (87956)');

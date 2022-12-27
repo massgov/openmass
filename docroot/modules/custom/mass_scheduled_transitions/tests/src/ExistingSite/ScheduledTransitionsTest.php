@@ -18,7 +18,7 @@ class ScheduledTransitionsTest extends ExistingSiteBase {
   /**
    * Create the user.
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->author = $this->createUser();
   }
@@ -44,9 +44,9 @@ class ScheduledTransitionsTest extends ExistingSiteBase {
     $transitions = mass_scheduled_transitions_load_by_host_entity($node);
     $this->assertCount(1, $transitions);
     $transition = current($transitions);
-    $this->assertEqual($transition->getAuthor()->id(), 0);
-    $this->assertEqual($transition->getTransitionDate()->format(self::FORMAT), $this->getExpectedDate($node));
-    $this->assertEqual($transition->getState(), MassModeration::UNPUBLISHED);
+    $this->assertEquals($transition->getAuthor()->id(), 0);
+    $this->assertEquals($transition->getTransitionDate()->format(self::FORMAT), $this->getExpectedDate($node));
+    $this->assertEquals($transition->getState(), MassModeration::UNPUBLISHED);
 
     // Make an edit - no new ST.
     $node->setCreatedTime((new DrupalDateTime('now'))->getTimestamp())->save();
@@ -61,7 +61,7 @@ class ScheduledTransitionsTest extends ExistingSiteBase {
     $transitions = mass_scheduled_transitions_load_by_host_entity($node, FALSE, MassModeration::UNPUBLISHED);
     $this->assertCount(1, $transitions);
     $transition = current($transitions);
-    $this->assertEqual($transition->getTransitionDate()->format(self::FORMAT), $this->getExpectedDate($node));
+    $this->assertEquals($transition->getTransitionDate()->format(self::FORMAT), $this->getExpectedDate($node));
   }
 
   /**
