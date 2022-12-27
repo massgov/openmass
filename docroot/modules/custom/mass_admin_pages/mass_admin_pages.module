@@ -274,7 +274,6 @@ function _mass_admin_pages_get_used_categories() {
  * Prepares variables for list of available node type templates.
  */
 function mass_admin_pages_preprocess_node_add_list(&$variables) {
-
   if (!empty($variables['content'])) {
     foreach ($variables['content'] as $type) {
       $cat_id = $type->getThirdPartySetting('mass_admin_pages', 'node_type_category');
