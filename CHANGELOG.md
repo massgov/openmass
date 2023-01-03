@@ -1,5 +1,25 @@
 
 
+## [0.346.0] - January 3, 2023
+
+### Changed
+  - DP-25823: Upgrade a few dependencies like Views Data Export
+  - DP-25967: Improve help text for "Organization(s)" field.
+  - DP-26097: Improve help text under Content tab on Service pages.
+  - DP-26305: Update help text for Guide content type.
+  - DP-26612: Add help text paragraph below H1 on page based feedback for authors.
+  - DP-26766: Remove legacy "Pages Linking Here" tab and show new tab for all authors.
+  - DP-26750: Modifications to the user view used by administrators, including downloadable CSV.
+  
+### Fixed
+  - DP-26222: A11y - Popular searches fix.
+  - DP-26715: Bug - error in bulk job to add items to collection.
+  
+### Security
+  - DP-26767: Bump decode-uri-component from 0.2.0 to 0.2.2.
+  
+
+
 ## [0.345.0] - December 13, 2022
 
 ### Changed
