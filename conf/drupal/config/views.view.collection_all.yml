@@ -21,7 +21,6 @@ dependencies:
     - text
     - user
     - views_autocomplete_filters
-    - views_custom_cache_tag
     - views_porter_stemmer
 id: collection_all
 label: 'Collection All'
@@ -545,9 +544,12 @@ display:
         options:
           perm: 'access content'
       cache:
-        type: custom_tag
+        type: time
         options:
-          custom_tag: 'node:{{ raw_arguments.nid }}'
+          results_lifespan: 1800
+          results_lifespan_custom: 0
+          output_lifespan: 1800
+          output_lifespan_custom: 0
       empty:
         area:
           id: area
