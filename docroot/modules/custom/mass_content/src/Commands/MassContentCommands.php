@@ -218,4 +218,14 @@ class MassContentCommands extends DrushCommands {
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
   }
 
+  /**
+   * Override config when running drush migrate:import.
+   *
+   * @hook pre-command migrate:import
+   */
+  function override() {
+    $GLOBALS['config']['entity_usage.settings']['track_enabled_source_entity_types'] = ['placeholder', 'another'];
+    \Drupal::service('config.factory')->clearStaticCache();
+  }
+
 }
