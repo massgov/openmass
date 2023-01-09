@@ -223,7 +223,7 @@ class MassContentCommands extends DrushCommands {
    *
    * @hook pre-command migrate:import
    */
-  function override() {
+  protected function override() {
     $GLOBALS['config']['entity_usage.settings']['track_enabled_source_entity_types'] = ['placeholder', 'another'];
     \Drupal::service('config.factory')->clearStaticCache();
   }

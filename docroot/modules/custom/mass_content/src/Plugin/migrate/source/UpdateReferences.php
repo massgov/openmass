@@ -126,10 +126,6 @@ class UpdateReferences extends SqlBase {
       // We don't need to process further since we already saved the source (paragraph or node).
       return FALSE;
     }
-//    else {
-//      $this->migration->getIdMap()->saveMessage(['source_id' => $row->getSourceProperty('source_id'), 'source_type' => $row->getSourceProperty('source_type')], 'No fields to change');
-//      return FALSE;
-//    }
   }
 
 }
