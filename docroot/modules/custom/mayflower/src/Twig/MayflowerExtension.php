@@ -2,7 +2,7 @@
 
 namespace Drupal\mayflower\Twig;
 
-use \Twig\TwigFunction;
+use Twig\TwigFunction;
 use Twig\Extension\AbstractExtension;
 
 /**
