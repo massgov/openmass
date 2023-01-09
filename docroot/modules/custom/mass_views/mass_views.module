@@ -190,21 +190,21 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
 /**
  * Implements hook_entity_update().
  */
-function mass_views_entity_update(ContentEntityInterface $entity): void {
+function mass_views_entity_update($entity): void {
   mass_views_do_invalidate($entity);
 }
 
 /**
  * Implements hook_entity_insert().
  */
-function mass_views_entity_insert(ContentEntityInterface $entity): void {
+function mass_views_entity_insert($entity): void {
   mass_views_do_invalidate($entity);
 }
 
 /**
  * Purge any affected collections.
  */
-function mass_views_do_invalidate(ContentEntityInterface $entity): void {
+function mass_views_do_invalidate($entity): void {
   if (method_exists($entity, 'getCollection') && !$entity->getCollection()->isEmpty()) {
     $storage = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
     /** @var \Drupal\taxonomy\Entity\Term $referencedEntity */
