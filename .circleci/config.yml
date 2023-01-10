@@ -14,6 +14,7 @@ references:
       - image: massgov/drupal-container:1.0.20-ci
         environment:
           COMPOSER_ALLOW_SUPERUSER: 1
+          AWS_REGION: us-east-1
 
   # Dynamic hosts mean constantly checking interactively that we mean to connect to an unknown host. We ignore those here.
   no_host_check: &no_host_check
