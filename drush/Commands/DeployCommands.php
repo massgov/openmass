@@ -565,7 +565,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
   public function newRelic($git_ref, $email, $application, $api_key) {
     $cmd = <<<EOT
 curl -X POST 'https://api.newrelic.com/v2/applications/$application/deployments.json' \
-     -H 'X-Api-Key:$api_key' -i \
+     -H 'Api-Key:$api_key' -i \
      -H 'Content-Type: application/json' \
      -d \
 '{
