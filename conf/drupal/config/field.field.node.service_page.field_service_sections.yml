@@ -14,7 +14,7 @@ field_name: field_service_sections
 entity_type: node
 bundle: service_page
 label: 'Service Sections'
-description: ''
+description: 'Choose to add either a <a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/service-page#key-message" target="_blank">Key Message</a> to display a call to action, or a <a href="https://massgovdigital.gitbook.io/knowledge-base/content-types-1/service-page#section-content" target="_blank">Service Section</a>, which can include numerous elements, including Flexible Link Groups, Rich Text, Events, Contact Information, Video, and more. Multiple sections can be added.'
 required: false
 translatable: false
 default_value: {  }
@@ -225,9 +225,6 @@ settings:
       key_message_section:
         weight: 189
         enabled: true
-      link_group:
-        weight: 192
-        enabled: false
       link_group_accordion:
         weight: 193
         enabled: false
@@ -374,6 +371,9 @@ settings:
         enabled: false
       section_with_heading:
         weight: 239
+        enabled: false
+      service_rich_text:
+        weight: 246
         enabled: false
       service_section:
         weight: 241
