@@ -86,33 +86,32 @@ class UpdateReferences extends SqlBase {
     $query->innerJoin('node', 'n', 'mmsd.sourceid1=n.nid');
     $refs = $query->execute()->fetchAll();
     foreach ($refs as $ref) {
+      $values = [];
       $field_name = $ref['field_name'];
       $list = $entity->get($field_name);
       foreach ($list as $delta => $item) {
         switch (get_class($item)) {
           case DynamicLinkItem::class:
+            $values[$delta] = $item->getValue();
             // Only update the delta that was migrated (when there are multiple values).
             if ($item->get('uri')->getString() == 'entity:node/' . $ref['reference_value_old']) {
-              $prop_name = "$field_name/$delta/uri";
-              $row->setDestinationProperty($prop_name, 'entity:node/' . $ref['reference_value_new']);
+              $values[$delta]['uri'] = 'entity:node/' . $ref['reference_value_new'];
               $changed = TRUE;
             }
             break;
           case EntityReferenceItem::class:
+            $values[$delta] = $item->getValue();
             if ($item->get('target_id')->getString() == $ref['reference_value_old']) {
-              $prop_name = "$field_name/$delta/target_id";
-              $row->setDestinationProperty($prop_name, 'entity:node/' . $ref['reference_value_new']);
-              // $entity->get($field_name)[$delta]->set('target_id', $ref['reference_value_new']);
+              $values[$delta]['target_id'] = $ref['reference_value_new'];
               $changed = TRUE;
             }
             break;
           case TextLongItem::class:
           case TextWithSummaryItem::class:
+            $values[$delta] = $item->getValue();
             if (str_contains($item->getString(), $ref['reference_value_old'])) {
               $replaced = str_replace($ref['reference_value_old'], $ref['reference_value_new'], $item->getString());
-              $prop_name = "$field_name/$delta/value";
-              $row->setDestinationProperty($prop_name, $replaced);
-              // $entity->get($field_name)[$delta]->set('value', $replaced);
+              $values[$delta]['value'] = $replaced;
               $changed = TRUE;
             }
             break;
@@ -121,8 +120,10 @@ class UpdateReferences extends SqlBase {
         }
       }
     }
-    if (!$changed) {
-      // $entity->save();
+    if ($changed) {
+      $row->setDestinationProperty($field_name, $values);
+    }
+    else {
       // We don't need to process further since we already saved the source (paragraph or node).
       return FALSE;
     }
