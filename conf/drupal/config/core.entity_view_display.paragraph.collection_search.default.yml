@@ -4,13 +4,16 @@ status: true
 dependencies:
   config:
     - field.field.paragraph.collection_search.field_collection
+    - field.field.paragraph.collection_search.field_search_footer
     - field.field.paragraph.collection_search.field_search_heading
-    - field.field.paragraph.collection_search.field_secondary_heading
-    - field.field.paragraph.collection_search.field_secondary_link
-    - field.field.paragraph.collection_search.field_see_all_items_link_text
+    - field.field.paragraph.collection_search.field_search_query_param_name
+    - field.field.paragraph.collection_search.field_search_related_info
+    - field.field.paragraph.collection_search.field_search_site_url
+    - field.field.paragraph.collection_search.field_search_type
     - paragraphs.paragraphs_type.collection_search
   module:
-    - link
+    - options
+    - text
 id: paragraph.collection_search.default
 targetEntityType: paragraph
 bundle: collection_search
@@ -24,6 +27,13 @@ content:
     third_party_settings: {  }
     weight: 0
     region: content
+  field_search_footer:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 6
+    region: content
   field_search_heading:
     type: string
     label: above
@@ -32,32 +42,34 @@ content:
     third_party_settings: {  }
     weight: 1
     region: content
-  field_secondary_heading:
+  field_search_query_param_name:
     type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    weight: 2
-    region: content
-  field_secondary_link:
-    type: link
-    label: above
-    settings:
-      trim_length: 80
-      url_only: false
-      url_plain: false
-      rel: ''
-      target: ''
-    third_party_settings: {  }
     weight: 4
     region: content
-  field_see_all_items_link_text:
+  field_search_related_info:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_search_site_url:
     type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
     weight: 3
+    region: content
+  field_search_type:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
     region: content
 hidden: {  }

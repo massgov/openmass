@@ -20,7 +20,7 @@ class EventManagerTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     $this->org = $this->createNode([
       'type' => 'org_page',
@@ -63,7 +63,7 @@ class EventManagerTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function tearDown() {
+  protected function tearDown(): void {
     parent::tearDown();
     // Zero out any remaining references to prevent memory leaks.
     $this->org = NULL;

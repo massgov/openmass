@@ -16,6 +16,7 @@ use Drupal\Core\Url;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
+use Drupal\Component\Utility\UrlHelper;
 
 /**
  * Implements hook_help().
@@ -392,8 +393,10 @@ function _mass_validation_service_page_sections_validate(array &$form, FormState
       if (!is_int($key)) {
         continue;
       }
+      $paragraph_error_string = 'field_service_sections][' . $section_key . '][subform][field_service_section_content][' . $key . '][subform]';
       _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $key, 'field_service_sections', 'field_service_section_content');
       _mass_validation_validate_mosaic_items($form_state, $paragraph);
+      _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
     }
   }
 }
@@ -742,6 +745,16 @@ function _mass_validation_form_node_campaign_landing_form_validate(array &$form,
     $unchecked = array_diff($kpi_fields_mapping, $selected_kpi);
     foreach ($unchecked as $unchecked_field_name) {
       $form_state->setValue([$unchecked_field_name, 0, 'value'], NULL);
+    }
+  }
+  if ($form_state->hasValue('field_sections')) {
+    $sections = $form_state->getValue('field_sections');
+    foreach ($sections as $section_key => $section) {
+      if (!is_array($section)) {
+        continue;
+      }
+      $paragraph_error_string = 'field_sections][' . $section_key . '][subform]';
+      _mass_validation_validate_custom_search($form_state, $section, $paragraph_error_string);
     }
   }
 }
@@ -1279,6 +1292,51 @@ function _mass_validation_validate_caspio(FormStateInterface $form_state, $parag
   }
 }
 
+function _mass_validation_validate_custom_search(FormStateInterface $form_state, $paragraph, $paragraph_error_string) {
+  if (!isset($paragraph['subform']['field_search_type'])) {
+    return;
+  }
+
+  $subtype = $paragraph['subform']['field_search_type'][0]['value'];
+
+  switch ($subtype) {
+    case 'collection':
+      if (empty($paragraph['subform']['field_collection'])) {
+        $form_state->setErrorByName(
+          $paragraph_error_string . '[field_collection][0][target_id',
+          t('The "Collection" field required.')
+        );
+      }
+
+      break;
+
+    case 'external':
+      if (!empty($paragraph['subform']['field_search_site_url'][0]['value'])) {
+        if (!UrlHelper::isValid($paragraph['subform']['field_search_site_url'][0]['value'], TRUE)) {
+          $form_state->setErrorByName(
+            $paragraph_error_string . '[field_search_site_url][0][value',
+            t('The value entered for the "Search site URL" field is invalid. See help text on field for more information.')
+          );
+        }
+      }
+      else {
+        $form_state->setErrorByName(
+          $paragraph_error_string . '[field_search_site_url][0][value',
+          t('The "Search site URL" field is required.')
+        );
+      }
+
+      if (empty($paragraph['subform']['field_search_query_param_name'][0]['value'])) {
+        $form_state->setErrorByName(
+          $paragraph_error_string . '[field_search_query_param_name][0][value',
+          t('The "Name for query parameter" field is required.')
+        );
+      }
+
+      break;
+  }
+}
+
 /**
  * Validates submission values in the FORM_ID() form.
  */
@@ -1292,8 +1350,10 @@ function _mass_validation_form_node_org_page_form_validate(array &$form, FormSta
       if (isset($section['subform']['field_section_long_form_content'])) {
         $paragraphs = $section['subform']['field_section_long_form_content'];
         foreach ($paragraphs as $paragraph_key => $paragraph) {
+          $paragraph_error_string = 'field_organization_sections][' . $section_key . '][subform][field_section_long_form_content][' . $paragraph_key . '][subform]';
           _mass_validation_validate_caspio($form_state, $paragraph, $section_key, $paragraph_key, 'field_organization_sections', 'field_section_long_form_content');
           _mass_validation_validate_mosaic_items($form_state, $paragraph);
+          _mass_validation_validate_custom_search($form_state, $paragraph, $paragraph_error_string);
         }
       }
     }

@@ -29,6 +29,11 @@ class MediaDownloadTest extends ExistingSiteBase {
     ]);
     $file->setPermanent();
     $file->save();
+    // Nothing copied the file so we do so.
+    $src = 'core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-23.txt';
+    /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+    $file_system = \Drupal::service('file_system');
+    $file_system->copy($src, $destination, TRUE);
 
     // Create a "Llama" media item.
     $media = $this->createMedia([
@@ -41,20 +46,9 @@ class MediaDownloadTest extends ExistingSiteBase {
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
 
-    $driver = $this->getSession()->getDriver();
-    // Disable redirection so we can capture the redirecting request.
-    if ($driver instanceof GoutteDriver) {
-      $driver->getClient()->followRedirects(FALSE);
-    }
-
-    (new DebugCachability())->requestDebugCachabilityHeaders($this->getSession());
     $this->visit($media->toUrl()->toString() . '/download');
-
-    $location = $this->getSession()->getResponseHeader('Location');
-    // Ensure that the redirect is properly formulated and that it uses the
-    // url.site cache context.
-    $this->assertEquals(file_create_url($file->getFileUri()), $location, 'Download URL is redirected to the file.');
-    $this->assertStringContainsString('url.site', $this->getSession()->getResponseHeader('X-Drupal-Cache-Contexts'), 'url.site cache context is added to the response.');
+    $this->assertEquals(file_create_url($file->getFileUri()), $this->getSession()->getCurrentUrl());
+    $this->assertEquals('text/plain', $this->getSession()->getResponseHeader('Content-Type'), 'url.site cache context is added to the response.');
   }
 
 }

@@ -16,7 +16,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
 
     parent::setUp();
     /** @var \Drupal\Tests\DocumentElement */
