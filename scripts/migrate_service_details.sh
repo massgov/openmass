@@ -12,7 +12,7 @@ drush migrate:import service_details
 drush migrate:import flaggings
 
 # Migrate old redirects and add redirects from old service details alias to new node.
-drush migrate:import update_redirects --update
+drush migrate:import update_redirects
 
 # Insert redirects from old node path aliases to new info details node. Uses node table.
 drush migrate:import insert_redirects

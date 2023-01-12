@@ -22,7 +22,7 @@ use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
 class UpdateReferences extends SqlBase {
 
   /**
-   * Get all the non-service details nodes that reference a service_detail page.
+   * Get all nodes that reference a service_detail page.
    */
   public function query(): SelectInterface {
     $query = $this->select('entity_usage', 'eu')
