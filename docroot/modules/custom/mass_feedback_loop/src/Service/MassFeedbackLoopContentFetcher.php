@@ -432,22 +432,6 @@ class MassFeedbackLoopContentFetcher {
         'class' => ['feedback-medium'],
       ];
     }
-    if (empty($limit_fields) || in_array('text', $limit_fields)) {
-      $table['#header'][] = [
-        'data' => [
-          '#markup' => $this->t('Feedback Text'),
-        ],
-        'class' => ['feedback-wide'],
-      ];
-    }
-    if (empty($limit_fields) || in_array('requested_response', $limit_fields)) {
-      $table['#header'][] = [
-        'data' => [
-          '#markup' => $this->t('Requires Response'),
-        ],
-        'class' => ['feedback-medium'],
-      ];
-    }
     if (empty($limit_fields) || in_array('tags', $limit_fields)) {
       $table['#header'][] = [
         'data' => [
