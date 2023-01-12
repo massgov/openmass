@@ -78,6 +78,9 @@ class ServiceDetails extends SqlBase {
       'field_short_desc' => $node->get('field_service_detail_lede')->getValue(),
       'field_info_details_related' => $node->get('field_service_detail_links_5')->getValue(),
       'field_info_detail_overview' => $node->get('field_service_detail_overview')->getValue(),
+      'revision_timestamp' => $node->getRevisionCreationTime(),
+      'revision_uid' => $node->getRevisionUserId(),
+      'revision_log' => $node->getRevisionLogMessage(),
     ];
     foreach ($map_destination as $key => $value) {
       $row->setDestinationProperty($key, $value);

@@ -58,8 +58,8 @@ class InsertRedirects extends SqlBase {
   public function prepareRow(Row $row) {
     $service_nid = $row->getSourceProperty('nid');
     if ($info_nid = \Drupal::service('migrate.lookup')->lookup('service_details', ['nid' => $service_nid])) {
-      $row->setSourceProperty('redirect_source', $row->getSourceProperty('alias'));
-      $row->setSourceProperty('redirect_redirect', 'entity:node/' . $info_nid[0]['nid']);
+      $row->setDestinationProperty('redirect_source', $row->getSourceProperty('alias'));
+      $row->setDestinationProperty('redirect_redirect', 'entity:node/' . $info_nid[0]['nid']);
     }
     else {
       throw new MigrateSkipRowException('No info details nid found', TRUE);
