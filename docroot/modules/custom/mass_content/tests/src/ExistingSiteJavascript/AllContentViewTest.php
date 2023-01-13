@@ -298,7 +298,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     // @todo Restore this test.
     $this->markTestSkipped('Disabled in https://github.com/massgov/openmass/pull/1153');
 

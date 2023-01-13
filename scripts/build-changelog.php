@@ -150,7 +150,7 @@ $body = file_get_contents('scripts/changelog-body.txt');
 // Get cURL resource
 $ch = curl_init();
 
-$data = array("title" => "Release" . $version, "body" => $body, "head" => "release/" . $version, "base" => "master");
+$data = array("title" => "Release " . $version, "body" => $body, "head" => "release/" . $version, "base" => "master");
 $data_string = json_encode($data);
 
 curl_setopt($ch, CURLOPT_USERNAME, 'massgov-bot');
