@@ -221,7 +221,7 @@ else {
 
 // phpunit.xml.dist sets -1 for memory_limit so just change for other cli requests.
 if (PHP_SAPI === 'cli' && ini_get('memory_limit')) {
-  ini_set('memory_limit', '2048M');
+  ini_set('memory_limit', '4096M');
 }
 
 $settings['entity_usage_tracker'] = 'queue_unique.database';
