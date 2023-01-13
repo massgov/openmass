@@ -156,6 +156,7 @@ jobs:
     working_directory: ~/project/code
     docker:
       - image: cimg/php:8.0-node
+        entrypoint: /bin/sh
     steps:
       - checkout
       - *restore_composer_cache
