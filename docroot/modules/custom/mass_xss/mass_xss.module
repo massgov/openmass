@@ -73,9 +73,6 @@ function mass_xss_ensure_item(ContentEntityInterface $entity, FieldDefinitionInt
       case 'image':
         $item = ['target_id' => 56];
         break;
-
-      case 'link':
-        $item = ['uri' => 'internal:/'];
     }
     $field->appendItem($item);
   }
@@ -111,6 +108,9 @@ function mass_xss_xssify_entity(ContentEntityInterface $entity) {
       case 'google_map_field':
       case 'daterange':
       case 'geofield':
+      case 'map':
+      case 'dynamic_entity_reference':
+      case 'entity_reference_hierarchy':
         break;
 
       // These field types are vulnerable:
@@ -120,7 +120,6 @@ function mass_xss_xssify_entity(ContentEntityInterface $entity) {
       case 'string_long':
       case 'list_string':
       case 'text_long':
-      case 'video_embed_field':
       case 'email':
       case 'telephone':
       case 'video_embed_field':
@@ -177,8 +176,7 @@ function mass_xss_xssify_entity(ContentEntityInterface $entity) {
         break;
 
       case 'link':
-        // We don't ensure link fields because it breaks too much stuff.
-        // @see https://jira.state.ma.us/browse/DP-6957
+        mass_xss_ensure_item($entity, $definition);
         foreach ($entity->get($definition->getName()) as $item) {
           $item->set('title', mass_xss_str($entity, $definition));
         }
