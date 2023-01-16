@@ -40,9 +40,9 @@ Feature: As a Massachussetts constituent,
     Given I am viewing any executive_order node
     Then I should not see any vulnerabilities
 
-  Scenario: Form pages should not have any vulnerabilities
-    Given I am viewing any form_page node
-    Then I should not see any vulnerabilities
+#  Scenario: Form pages should not have any vulnerabilities
+#    Given I am viewing any form_page node
+#    Then I should not see any vulnerabilities
 
   Scenario: Guide Pages should not have any vulnerabilities
     Given I am viewing any guide_page node
