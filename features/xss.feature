@@ -9,7 +9,7 @@ Feature: As a Massachussetts constituent,
   Scenario: Form pages should not have any vulnerabilities
     Given I am viewing any form_page node
     Then I should not see any vulnerabilities
-    
+
   Scenario: Advisory pages should not have any vulnerabilities
     Given I am viewing any advisory node
     Then I should not see any vulnerabilities
