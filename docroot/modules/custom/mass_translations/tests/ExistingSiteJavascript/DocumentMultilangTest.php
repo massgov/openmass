@@ -30,7 +30,7 @@ class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     // Generate and store a random string for tests.
