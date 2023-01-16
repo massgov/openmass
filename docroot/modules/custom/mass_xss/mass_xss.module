@@ -133,7 +133,7 @@ function mass_xss_xssify_entity(ContentEntityInterface $entity) {
         /** @var \Drupal\Core\Field\FieldItemInterface $item */
         foreach ($entity->get($definition->getName()) as $item) {
           $item->set('value', mass_xss_str($entity, $definition));
-          // Set the format so we don't get false positives.
+          // Set the format, so we don't get false positives.
           if (in_array('format', array_keys($item->getProperties()))) {
             $item->set('format', 'basic_html');
           }
@@ -145,7 +145,7 @@ function mass_xss_xssify_entity(ContentEntityInterface $entity) {
         foreach ($entity->get($definition->getName()) as $item) {
           $item->set('value', mass_xss_str($entity, $definition));
           $item->set('summary', mass_xss_str($entity, $definition));
-          // Set the format so we don't get false positives.
+          // Set the format, so we don't get false positives.
           if (in_array('format', array_keys($item->getProperties()))) {
             $item->set('format', 'basic_html');
           }
