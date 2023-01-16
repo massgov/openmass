@@ -71,7 +71,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
     $stack = $this->getStack();
     $client = new \GuzzleHttp\Client(['handler' => $stack]);
     $options = [
-      'auth' => [$this->getTokenCircle()],
+      'auth' => [$this->getTokenCircle(), ''],
       'json' => [
         'branch' => $options['ci-branch'],
         'parameters' => [
@@ -81,7 +81,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
           'reference' => $reference,
           'list' => $options['list'],
           'viewport' => $options['viewport'],
-          'tugboat' => $tugboat_url ?: '',
+          'tugboat' => !empty($tugboat_url) ?: '',
         ],
       ],
     ];
@@ -91,7 +91,7 @@ class DeployCommands extends DrushCommands implements SiteAliasManagerAwareInter
       throw new \Exception('CircleCI API response was a ' . $code . '. Use -v for more Guzzle information.');
     }
 
-    // $body = json_decode((string)$response->getBody(), TRUE);
+    $body = json_decode((string)$response->getBody(), TRUE);
     $this->logger()->success($this->getSuccessMessage($body));
   }
 
