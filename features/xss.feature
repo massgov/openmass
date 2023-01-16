@@ -6,10 +6,6 @@ Feature: As a Massachussetts constituent,
     Given I am on "/"
     Then I should not see any vulnerabilities
 
-  Scenario: Form pages should not have any vulnerabilities
-    Given I am viewing any form_page node
-    Then I should not see any vulnerabilities
-
   Scenario: Advisory pages should not have any vulnerabilities
     Given I am viewing any advisory node
     Then I should not see any vulnerabilities
@@ -42,6 +38,10 @@ Feature: As a Massachussetts constituent,
 
   Scenario: Executive Orders should not have any vulnerabilities
     Given I am viewing any executive_order node
+    Then I should not see any vulnerabilities
+
+  Scenario: Form pages should not have any vulnerabilities
+    Given I am viewing any form_page node
     Then I should not see any vulnerabilities
 
   Scenario: Guide Pages should not have any vulnerabilities
