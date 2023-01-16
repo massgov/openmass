@@ -37,6 +37,9 @@ function mass_xss_str(ContentEntityInterface $entity, FieldDefinitionInterface $
   // about what field the vulnerability's in.
   switch ('behat') {
     case 'behat':
+      print_r($entity->getEntityTypeId() . '   \n');
+      print_r($entity->bundle() . '   \n');
+      print_r($field->getName() . '   \n');
       // Not visible to users - this is useful for Behat testing.
       return sprintf('" /><xss>%s:%s:%s</xss>',
         $entity->getEntityTypeId(),
