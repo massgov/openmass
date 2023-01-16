@@ -23,6 +23,7 @@ function mass_xss_entity_load(array $entities, $entity_type_id) {
   // As a kill switch to stop the madness, add a return here.
   foreach ($entities as $entity) {
     if ($entity instanceof ContentEntityInterface) {
+      print_r($entity->id() . '  ');
       mass_xss_xssify_entity($entity);
     }
   }
