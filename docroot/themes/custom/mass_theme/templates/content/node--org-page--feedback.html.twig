@@ -85,8 +85,10 @@
 {% set current_url = url('<current>')|render|render %}
 {% if "/topics/" in current_url or node.field_feedback_com_link.get(0).getUrl().toString() in current_url  %}
    {% set showHelp = false %}
+   {% set warnmsg = false %}
    {% set helpText = "The feedback will only be used for improving the website." %}
 {% else %}
+  {% set warnmsg = "If you need assistance, please <a href='#{node.field_feedback_com_link.get(0).getUrl().toString()}'>#{node.field_feedback_com_link.title}</a>." %}
   {% set helpText = "The feedback will only be used for improving the website. If you need assistance, please <a href='#{node.field_feedback_com_link.get(0).getUrl().toString()}'>#{node.field_feedback_com_link.title}</a>. <span class='ma__visually-hidden'>Please limit your input to 500 characters. </span>" %}
 {% endif %}
 
@@ -153,7 +155,7 @@
     "expanded": false,
     "isDescription": true
   },
-  "warnMsg": "If you need assistance, please <a href='#{node.field_feedback_com_link.get(0).getUrl().toString()}'>#{node.field_feedback_com_link.title}</a>.",
+  "warnMsg": warnmsg,
   "alertMsg": "Please remove any contact information or personal data from your feedback.",
   "alert": reportMessage,
   "hiddenElements": hiddenElements,
