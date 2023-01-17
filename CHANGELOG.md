@@ -1,5 +1,22 @@
 
 
+## [0.347.0] - January 17, 2023
+
+### Added
+  - DP-24550: Display link to document in multiple languages.
+  - DP-26806: Add apple site icons.
+  
+### Changed
+  - DP-26327: Backend changes to org feedback options.
+  - DP-26864: Change views to not show any results until there are filters added by user and user pushes button.
+  - DP-26965: Related links not showing on News pages with 'news' subtype when there is no contact defined.
+  
+### Fixed
+  - DP-26649: Fix org nav being cut off at the bottom of the screen on mobile.
+  - DP-26973: Fixed Behat XSS test failures for link fields.
+  
+
+
 ## [0.346.0] - January 10, 2023
 
 ### Changed
