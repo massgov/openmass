@@ -99,6 +99,10 @@ class MediaBulkActionTest extends ExistingSiteBase {
   private function runTestSteps($action) {
     $this->createMediaFile();
     $this->drupalGet('admin/ma-dash/documents');
+
+    // Trigger search to get some results.
+    $this->submitForm([], $this->t('Filter'), 'views-exposed-form-all-documents-page-1');
+
     $edit = [
       'action' => $action,
       'views_bulk_operations_bulk_form[0]' => TRUE,
