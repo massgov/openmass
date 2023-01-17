@@ -4,7 +4,6 @@ namespace Drupal\mass_content;
 
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityBase;
-use Drush\Drush;
 
 /**
  * Manages Mass Content batch processing.
