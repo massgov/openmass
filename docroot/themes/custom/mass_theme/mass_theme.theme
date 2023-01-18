@@ -3269,16 +3269,20 @@ function mass_theme_preprocess_node_news_full(&$variables) {
     $cache_tags = array_merge($cache_tags, $author->getCacheTags());
   }
 
+  $is_blog_post = FALSE;
+  $is_news = FALSE;
   switch ($node->field_news_type->value) {
     case 'blog_post':
     case 'guest_post':
       $is_blog_post = TRUE;
       break;
 
-    default:
-      $is_blog_post = FALSE;
+    case 'news':
+      $is_news = TRUE;
+      break;
   }
   $variables['is_blog_post'] = $is_blog_post;
+  $variables['is_news'] = $is_news;
 
   $variables['blogpostCollectionHeader'] = [];
 
