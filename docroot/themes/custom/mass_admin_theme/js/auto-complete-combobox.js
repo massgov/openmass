@@ -49,11 +49,12 @@
         autoCompleteField.setAttribute('aria-describedby', 'comboboxInfo');
 
         // Get ID of the UL.
-        var listId = optionLists[index].getAttribute('id');
-        // Add aria-controls with the UL ID value.
-        // aria-controls doesn't work with VoiceOver.
-        autoCompleteField.setAttribute('aria-activedescendant', listId);
-
+        if (optionLists[index] !== undefined && optionLists[index].hasAttribute('id')) {
+          var listId = optionLists[index].getAttribute('id');
+          // Add aria-controls with the UL ID value.
+          // aria-controls doesn't work with VoiceOver.
+          autoCompleteField.setAttribute('aria-activedescendant', listId);
+        }
         autoCompleteField.addEventListener('change', function (e) {
           // Wait till the options are added to the list container .ui-autocomplete.
           window.onload = function () {
@@ -63,6 +64,7 @@
             });
           };
         });
+
       });
     }
   };
