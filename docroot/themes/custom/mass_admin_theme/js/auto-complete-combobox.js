@@ -49,7 +49,7 @@
         autoCompleteField.setAttribute('aria-describedby', 'comboboxInfo');
 
         // Get ID of the UL.
-        if (optionLists[index] !== undefined && optionLists[index].hasAttribute('id')) {
+        if (optionLists[index] && optionLists[index].hasAttribute('id')) {
           var listId = optionLists[index].getAttribute('id');
           // Add aria-controls with the UL ID value.
           // aria-controls doesn't work with VoiceOver.
