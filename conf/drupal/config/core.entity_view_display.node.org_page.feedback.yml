@@ -5,12 +5,10 @@ dependencies:
   config:
     - core.entity_view_mode.node.feedback
     - field.field.node.org_page.field_application_login_links
-    - field.field.node.org_page.field_approver
     - field.field.node.org_page.field_banner_image
     - field.field.node.org_page.field_bg_wide
     - field.field.node.org_page.field_billing_organization
     - field.field.node.org_page.field_career_opportunities
-    - field.field.node.org_page.field_constituent_communication
     - field.field.node.org_page.field_feedback_com_link
     - field.field.node.org_page.field_get_updates_links
     - field.field.node.org_page.field_hide_short_description
@@ -19,6 +17,7 @@ dependencies:
     - field.field.node.org_page.field_metatags
     - field.field.node.org_page.field_more_about_agency_link
     - field.field.node.org_page.field_more_about_leadership
+    - field.field.node.org_page.field_org_always_show_help_page
     - field.field.node.org_page.field_org_directory_page
     - field.field.node.org_page.field_org_page_thumbnail
     - field.field.node.org_page.field_org_sentence_phrasing
@@ -29,7 +28,6 @@ dependencies:
     - field.field.node.org_page.field_primary_parent
     - field.field.node.org_page.field_public_records_link
     - field.field.node.org_page.field_ref_contact_info_1
-    - field.field.node.org_page.field_response_expectations
     - field.field.node.org_page.field_reusable_label
     - field.field.node.org_page.field_secondary_person_bio
     - field.field.node.org_page.field_short_title
@@ -39,10 +37,9 @@ dependencies:
     - field.field.node.org_page.field_subtype
     - field.field.node.org_page.field_title_sub_text
     - field.field.node.org_page.field_urgent_warning
-    - field.field.node.org_page.field_verification
     - node.type.org_page
   module:
-    - mass_content
+    - link
     - user
 id: node.org_page.feedback
 targetEntityType: node
@@ -78,14 +75,14 @@ content:
     weight: 136
     region: content
   field_feedback_com_link:
-    type: dynamic_link_separate
+    type: link
     label: above
     settings:
-      trim_length: '80'
-      url_only: ''
-      url_plain: ''
-      rel: ''
-      target: ''
+      trim_length: null
+      url_only: false
+      url_plain: false
+      rel: '0'
+      target: '0'
     third_party_settings: {  }
     weight: 1
     region: content
@@ -96,13 +93,6 @@ content:
       link_to_entity: false
     third_party_settings: {  }
     weight: 0
-    region: content
-  field_response_expectations:
-    type: basic_string
-    label: hidden
-    settings: {  }
-    third_party_settings: {  }
-    weight: 2
     region: content
 hidden:
   content_moderation_control: true
@@ -118,7 +108,6 @@ hidden:
   extra_org_nav_news: true
   extra_org_nav_our_organizations: true
   field_application_login_links: true
-  field_approver: true
   field_banner_image: true
   field_bg_wide: true
   field_billing_organization: true
@@ -131,6 +120,7 @@ hidden:
   field_metatags: true
   field_more_about_agency_link: true
   field_more_about_leadership: true
+  field_org_always_show_help_page: true
   field_org_directory_page: true
   field_org_page_thumbnail: true
   field_organization_sections: true
@@ -149,7 +139,6 @@ hidden:
   field_subtype: true
   field_title_sub_text: true
   field_urgent_warning: true
-  field_verification: true
   langcode: true
   links: true
   recent_news: true
