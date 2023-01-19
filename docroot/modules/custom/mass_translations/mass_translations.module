@@ -58,19 +58,22 @@ function mass_translations_preprocess_media(&$variables) {
         if (isset($predefined[$language_id])) {
           $name = $predefined[$language_id][1];
           $name_en = $predefined[$language_id][0];
-          // Build the translation link.
-          $url = Url::fromRoute('media_entity_download.download', ['media' => $translation->id()])
-            ->setOption('language', $lang_default)
-            ->setAbsolute()
-            ->toString();
-          $cache_tags = array_merge($cache_tags, $translation->getCacheTags());
-          if ($url != $current_url) {
-            $languages[] = [
-              "title" => $name,
-              "lang_label" => $name_en,
-              "url" => $url,
-            ];
-          }
+        }
+        else {
+          $name = $name_en = $lang_codes[$language_id]->getName();
+        }
+        // Build the translation link.
+        $url = Url::fromRoute('media_entity_download.download', ['media' => $translation->id()])
+          ->setOption('language', $lang_default)
+          ->setAbsolute()
+          ->toString();
+        $cache_tags = array_merge($cache_tags, $translation->getCacheTags());
+        if ($url != $current_url) {
+          $languages[] = [
+            "title" => $name,
+            "lang_label" => $name_en,
+            "url" => $url,
+          ];
         }
       }
     }
