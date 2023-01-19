@@ -14,7 +14,6 @@ dependencies:
     - node.type.decision_tree
     - node.type.decision_tree_branch
     - node.type.decision_tree_conclusion
-    - node.type.event
     - node.type.executive_order
     - node.type.external_data_resource
     - node.type.fee
@@ -24,7 +23,6 @@ dependencies:
     - node.type.info_details
     - node.type.location
     - node.type.location_details
-    - node.type.news
     - node.type.org_page
     - node.type.person
     - node.type.regulation
@@ -1414,7 +1412,20 @@ display:
           entity_type: node
           plugin_id: standard
           required: false
-      header: {  }
+      header:
+        area:
+          id: area
+          table: views
+          field: area
+          relationship: none
+          group_type: group
+          admin_label: ''
+          plugin_id: text
+          empty: true
+          content:
+            value: "<p>This report shows published pages that aren't linked from other published pages. The report won't show any news or events. The report also won't show items that are in collections.</p>\r\n\r\n<p>If you see items in this report, you probably should either unpublish the page if it is not needed or add a link to the page from another published page.</p>\r\n\r\n<p>Pages that are not linked can still be found by the public through search because published pages are in a sitemap that is made available to search engines.</p>"
+            format: basic_html
+          tokenize: false
       footer: {  }
       display_extenders: {  }
     cache_metadata:
@@ -1436,7 +1447,7 @@ display:
     position: 1
     display_options:
       exposed_form:
-        type: basic
+        type: input_required
         options:
           submit_button: Apply
           reset_button: true
@@ -1445,6 +1456,8 @@ display:
           expose_sort_order: true
           sort_asc_label: Asc
           sort_desc_label: Desc
+          text_input_required: 'Select any filter and click on Apply to see results'
+          text_input_required_format: basic_html
       filters:
         latest_revision:
           id: latest_revision
@@ -1566,7 +1579,6 @@ display:
             decision_tree: decision_tree
             decision_tree_branch: decision_tree_branch
             decision_tree_conclusion: decision_tree_conclusion
-            event: event
             executive_order: executive_order
             external_data_resource: external_data_resource
             fee: fee
@@ -1576,7 +1588,6 @@ display:
             info_details: info_details
             location: location
             location_details: location_details
-            news: news
             org_page: org_page
             person: person
             campaign_landing: campaign_landing
@@ -1639,9 +1650,9 @@ display:
           entity_field: status
           plugin_id: boolean
           operator: '='
-          value: All
+          value: '1'
           group: 1
-          exposed: true
+          exposed: false
           expose:
             operator_id: ''
             label: 'Published?'
@@ -2028,10 +2039,10 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: taxonomy_index_tid
-          operator: or
+          operator: empty
           value: {  }
           group: 1
-          exposed: true
+          exposed: false
           expose:
             operator_id: field_collections_target_id_op
             label: Collections
