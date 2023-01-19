@@ -113,13 +113,23 @@ class Helper {
           case 'org_page':
           case 'info_details':
             if ($style_name == 'action_banner_large_focal_point') {
+              $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
+              $style_uri = $style->buildUri($uri);
               $url = $style->buildUrl($uri);
+              if (!file_exists($style_uri) || !$stream_wrapper_manager->isValidUri($style_uri)) {
+                $style->createDerivative($uri, $style_uri);
+              }
             }
             break;
 
           case 'service_page':
             if ($style_name == 'hero1600x400_fp') {
+              $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
+              $style_uri = $style->buildUri($uri);
               $url = $style->buildUrl($uri);
+              if (!file_exists($style_uri) || !$stream_wrapper_manager->isValidUri($style_uri)) {
+                $style->createDerivative($uri, $style_uri);
+              }
             }
             break;
 
