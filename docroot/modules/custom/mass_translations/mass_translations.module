@@ -68,7 +68,7 @@ function mass_translations_preprocess_media(&$variables) {
           ->setOption('language', $lang_default)
           ->setAbsolute()
           ->toString();
-        $cache_tags = array_merge($cache_tags, $translation->getCacheTags());
+        $cache_tags = array_merge($cache_tags, $translation->getCacheTags(), $access->getCacheTags());
         if ($url != $current_url) {
           $languages[] = [
             "title" => $name,
