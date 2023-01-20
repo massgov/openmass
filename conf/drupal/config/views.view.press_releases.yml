@@ -14,8 +14,6 @@ dependencies:
     - node
     - options
     - user
-    - views_autocomplete_filters
-    - views_porter_stemmer
 id: press_releases
 label: 'Press Releases'
 module: views
@@ -30,7 +28,7 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'Press Releases on Mass.gov'
+      title: 'Recent Press Releases on Mass.gov '
       fields:
         title:
           id: title
@@ -543,7 +541,7 @@ display:
           value:
             min: ''
             max: ''
-            value: '-90 days'
+            value: '-30 days'
             type: date
           group: 1
           exposed: false
@@ -561,127 +559,6 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        title:
-          id: title
-          table: node_field_data
-          field: title
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: node
-          entity_field: title
-          plugin_id: views_porter_stemmer_autocomplete_string
-          operator: contains
-          value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: ''
-            label: 'Press Release Title filter'
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: title
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
-            placeholder: ''
-            autocomplete_filter: 0
-            autocomplete_min_chars: '0'
-            autocomplete_items: '10'
-            autocomplete_field: title
-            autocomplete_raw_suggestion: 1
-            autocomplete_raw_dropdown: 1
-            autocomplete_dependent: 0
-            stem_query: 0
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        field_organizations_target_id:
-          id: field_organizations_target_id
-          table: node__field_organizations
-          field: field_organizations_target_id
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '='
-          value:
-            min: ''
-            max: ''
-            value: ''
-          group: 1
-          exposed: true
-          expose:
-            operator_id: field_organizations_target_id_op
-            label: 'Organization Filter:'
-            description: ''
-            use_operator: false
-            operator: field_organizations_target_id_op
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: field_organizations_target_id
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-              anonymous: '0'
-              author: '0'
-              editor: '0'
-              emergency_alert_publisher: '0'
-              executive_orders: '0'
-              redirect_creators: '0'
-              content_team: '0'
-              developer: '0'
-              administrator: '0'
-              tester: '0'
-              doc_deletion: '0'
-              d2d_redirect_manager: '0'
-              data_administrator: '0'
-              collection_administrator: '0'
             min_placeholder: ''
             max_placeholder: ''
             placeholder: ''
@@ -735,7 +612,7 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: 'This reports shows press releases released in the last 90 days.'
+            value: '<h2>This reports shows press releases released in the last 30 days.</h2>'
             format: basic_html
           tokenize: false
         result:
@@ -755,7 +632,6 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - url
         - url.query_args
         - 'user.node_grants:view'
         - user.permissions
@@ -963,7 +839,6 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - url
         - url.query_args
         - 'user.node_grants:view'
         - user.permissions
