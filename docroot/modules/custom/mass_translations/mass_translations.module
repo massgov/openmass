@@ -26,7 +26,8 @@ function mass_translations_preprocess_media(&$variables) {
   $media = $variables['media'];
   if ($variables["view_mode"] == 'media_download_link' && $media->hasField('field_media_english_version')) {
     $cache_tags[] = 'media-list:document';
-    $lang_default = Drupal::languageManager()->getCurrentLanguage();
+    $languageManager = Drupal::languageManager();
+    $lang_default = $languageManager->getCurrentLanguage();
     $languages = [];
     $media_storage = Drupal::service('entity_type.manager')
       ->getStorage('media');
@@ -34,7 +35,7 @@ function mass_translations_preprocess_media(&$variables) {
     $current_url = Url::fromRoute('media_entity_download.download', ['media' => $media->id()])
       ->setAbsolute()
       ->toString();
-    $lang_codes = Drupal::languageManager()->getLanguages();
+    $lang_codes = $languageManager->getLanguages();
 
     // Get all the translations for this node.
     $all_translations = $translations_controller->getTranslationLanguages($media, $media_storage, 'field_media_english_version');
@@ -53,7 +54,7 @@ function mass_translations_preprocess_media(&$variables) {
         }
 
         $name = NULL;
-        $predefined = LanguageManager::getStandardLanguageList();
+        $predefined = $languageManager->getStandardLanguageList();
         // Get the native name for each language.
         if (isset($predefined[$language_id])) {
           $name = $predefined[$language_id][1];
@@ -96,12 +97,13 @@ function mass_translations_preprocess_node(&$variables) {
 
   // Generate translation links variables.
   if ($variables["view_mode"] == "full" && $node->hasField('field_english_version')) {
-    $lang_default = Drupal::languageManager()->getCurrentLanguage();
+    $languageManager = Drupal::languageManager();
+    $lang_default = $languageManager->getCurrentLanguage();
     $languages = NULL;
     $node_storage = Drupal::service('entity_type.manager')->getStorage('node');
     $translations_controller = new TranslationsController($node_storage);
     $current_url = Drupal::request()->getUri();
-    $lang_codes = Drupal::languageManager()->getLanguages();
+    $lang_codes = $languageManager->getLanguages();
 
     // Get all the translations for this node.
     $all_translations = $translations_controller->getTranslationLanguages($node, $node_storage, 'field_english_version');
@@ -120,7 +122,7 @@ function mass_translations_preprocess_node(&$variables) {
         }
 
         $name = NULL;
-        $predefined = LanguageManager::getStandardLanguageList();
+        $predefined = $languageManager->getStandardLanguageList();
         // Get the native name for each language.
         if (isset($predefined[$language_id])) {
           $name = $predefined[$language_id][1];
