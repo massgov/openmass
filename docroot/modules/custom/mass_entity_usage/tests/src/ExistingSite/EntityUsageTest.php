@@ -31,7 +31,7 @@ class EntityUsageTest extends ExistingSiteBase {
   /**
    * Create the user.
    */
-  protected function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $GLOBALS['config']['entity_usage_queue_tracking.settings']['queue_tracking'] = TRUE;
@@ -50,13 +50,6 @@ class EntityUsageTest extends ExistingSiteBase {
     $user->save();
     $this->user = $user;
     $this->drupalLogin($user);
-  }
-
-  /**
-   * Reset the queue tracking setting.
-   */
-  public function tearDown() {
-    parent::tearDown();
   }
 
   /**

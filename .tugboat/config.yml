@@ -48,6 +48,9 @@ services:
       # Commands that set up the basic preview infrastructure
       init:
         - sudo apt update
+        # Install Node.js 16.x
+        - curl -fsSL https://deb.nodesource.com/setup_16.x | bash -
+        - apt-get install -y nodejs
         # Install imagick
         - apt-get install -y libmagickwand-dev
         # Avoid prompts. https://stackoverflow.com/a/33647515

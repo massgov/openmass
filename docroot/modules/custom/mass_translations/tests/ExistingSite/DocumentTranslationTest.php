@@ -24,7 +24,7 @@ class DocumentTranslationTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
 
     $user = User::create(['name' => $this->randomMachineName()]);
