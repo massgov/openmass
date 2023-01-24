@@ -125,6 +125,9 @@ class UpdateReferences extends SqlBase {
     }
     else {
       // We don't need to process further since we already saved the source (paragraph or node).
+      // Get the unique identifier for the current item
+      $unique_id = $row->getSourceProperty('source_id');
+      $this->migration->getIdMap()->saveIdMapping($row, [], ['source_id' => $unique_id]);
       return FALSE;
     }
   }
