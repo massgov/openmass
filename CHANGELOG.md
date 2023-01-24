@@ -1,5 +1,43 @@
 
 
+## [0.347.0] - January 17, 2023
+
+### Added
+  - DP-24550: Display link to document in multiple languages.
+  - DP-26806: Add apple site icons.
+  
+### Changed
+  - DP-26327: Backend changes to org feedback options.
+  - DP-26864: Change views to not show any results until there are filters added by user and user pushes button.
+  - DP-26965: Related links not showing on News pages with 'news' subtype when there is no contact defined.
+  
+### Fixed
+  - DP-26649: Fix org nav being cut off at the bottom of the screen on mobile.
+  - DP-26973: Fixed Behat XSS test failures for link fields.
+  
+
+
+## [0.346.0] - January 10, 2023
+
+### Changed
+  - DP-25823: Upgrade a few dependencies like Views Data Export
+  - DP-25967: Improve help text for "Organization(s)" field.
+  - DP-26097: Improve help text under Content tab on Service pages.
+  - DP-26305: Update help text for Guide content type.
+  - DP-26612: Add help text paragraph below H1 on page based feedback for authors.
+  - DP-26766: Remove legacy "Pages Linking Here" tab and show new tab for all authors.
+  - DP-26750: Modifications to the user view used by administrators, including downloadable CSV.
+  
+### Fixed
+  - DP-26222: A11y - Popular searches fix.
+  - DP-26715: Bug - error in bulk job to add items to collection.
+  
+### Security
+  - DP-26767: Bump decode-uri-component from 0.2.0 to 0.2.2.
+  - DP-26805: Dependabot - Multiple vulnerabilities.
+  
+
+
 ## [0.345.0] - December 13, 2022
 
 ### Changed
