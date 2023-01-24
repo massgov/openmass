@@ -19,7 +19,7 @@ class UpdateRedirects extends SqlBase {
    */
   public function query(): SelectInterface {
     $subquery = $this->select('redirect', 'r')
-      ->fields('r',['rid', 'redirect_redirect__uri']);
+      ->fields('r', ['rid', 'redirect_redirect__uri']);
     $subquery->addExpression("CASE
     WHEN r.redirect_redirect__uri LIKE 'entity:node/%' THEN SUBSTR(r.redirect_redirect__uri, 13)
     WHEN r.redirect_redirect__uri LIKE 'internal:/node/%' THEN SUBSTR(r.redirect_redirect__uri, 16)
@@ -28,7 +28,7 @@ class UpdateRedirects extends SqlBase {
     $query = $this->select('node', 'n')
       ->fields('n', ['nid'])
       ->condition('n.type', 'service_details');
-    $query->innerJoin($subquery,'s','s.nid=n.nid');
+    $query->innerJoin($subquery, 's', 's.nid=n.nid');
     return $query;
   }
 
