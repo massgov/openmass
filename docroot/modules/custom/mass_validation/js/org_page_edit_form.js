@@ -47,8 +47,6 @@
     $generalRequired: {},
     $generalRequiredTabs: {},
     $conditionallyRequiredFields: {},
-    $constituentOptionsRequiredFields: {},
-
     attach: function (context, settings) {
       var self = this;
 
@@ -56,7 +54,7 @@
       // Update the form based on the value of the Subtype field.
       self.updateElements(context);
 
-      $('#edit-field-subtype, #edit-field-constituent-communication', context).on('change', function () {
+      $('#edit-field-subtype', context).on('change', function () {
         self.updateElements(context);
       });
     },
@@ -82,39 +80,15 @@
         return '.field--name-' + field.replace(/_/g, '-').replace(/--/g, '__') + ' label';
       }).join(', ');
 
-      var conditionallyRequiredFields = [
-        'field_verification',
-        'field_approver',
-        'field_response_expectations',
-        'field_feedback_com_link'
-      ].map(function (field) {
-        return '.field--name-' + field.replace(/_/g, '-').replace(/--/g, '__') + ' label';
-      }).join(', ');
-
-      var constituentOptionsRequiredFields = [
-        'field_org_sentence_phrasing'
-      ].map(function (field) {
-        return '.field--name-' + field.replace(/_/g, '-').replace(/--/g, '__') + ' label';
-      }).join(', ');
-
       this.$generalRequired = $(generalRequiredFields, context);
       this.$electedRequired = $(electedRequiredFields, context);
-      this.$conditionallyRequiredFields = $(conditionallyRequiredFields, context);
-      this.$constituentOptionsRequiredFields = $(constituentOptionsRequiredFields, context);
       this.$generalRequiredTabs = $tabs.find('a[href$="edit-group-actions"]').find('strong');
     },
 
     updateElements: function (context) {
       var subtype = $('#edit-field-subtype option:selected', context).val();
-      var constituentOption = $('#edit-field-constituent-communication option:selected', context).val();
 
       this.$conditionallyRequiredFields.addClass('form-required');
-      if (constituentOption === 'none') {
-        this.$constituentOptionsRequiredFields.removeClass('form-required');
-      }
-      else {
-        this.$constituentOptionsRequiredFields.addClass('form-required');
-      }
 
       if (subtype === 'General Organization') {
         this.$conditionalTabs.addClass('js-hide');

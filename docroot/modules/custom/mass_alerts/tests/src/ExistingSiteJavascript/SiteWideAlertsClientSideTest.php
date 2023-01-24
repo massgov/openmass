@@ -73,7 +73,7 @@ class SiteWideAlertsClientSideTest extends ExistingSiteSelenium2DriverTestBase {
     $jsWebAssert->pageTextContains($node->getTitle());
 
     // Visit an arbitrary page and make sure the alert appears.
-    $this->drupalGet('/orgs/office-of-the-governor');
+    $this->drupalGet('/orgs/qa-org-digital-services');
     $jsWebAssert->waitForElement('css', $locator, self::DURATION);
     $jsWebAssert->pageTextContains($node->getTitle());
 

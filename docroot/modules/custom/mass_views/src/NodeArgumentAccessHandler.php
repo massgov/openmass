@@ -43,7 +43,7 @@ class NodeArgumentAccessHandler {
    */
   public function access(AccountInterface $account) {
     $node = $this->currentRouteMatch->getParameter('node');
-    if ($node->access('view', $account)) {
+    if (!empty($node) && $node->access('view', $account)) {
       return AccessResult::allowed()->addCacheableDependency($node);
     }
     return AccessResult::forbidden()->addCacheableDependency($node);
