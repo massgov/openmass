@@ -3,6 +3,7 @@
 namespace Drupal\mass_content\Entity\Bundle\node;
 
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\mass_fields\MassCollectionTrait;
 use Drupal\mass_fields\MassSearchTrait;
 use Drupal\mass_content_moderation\MassModerationTrait;
 use Drupal\node\Entity\Node;
@@ -12,6 +13,7 @@ use Drupal\node\Entity\Node;
  */
 abstract class NodeBundle extends Node {
   use MassSearchTrait;
+  use MassCollectionTrait;
   use MassModerationTrait;
 
   /**

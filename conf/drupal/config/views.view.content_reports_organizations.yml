@@ -1,11 +1,10 @@
 uuid: 4bdfff46-0b4b-4c2f-a410-dd19b9af6b67
 langcode: en
-status: true
+status: false
 dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.storage.node.field_billing_organization
-    - field.storage.node.field_constituent_communication
     - field.storage.node.field_organizations
     - field.storage.node.field_parent
     - field.storage.node.field_subtype
@@ -47,6 +46,7 @@ dependencies:
     - user
     - views_autocomplete_filters
     - views_data_export
+    - views_porter_stemmer
 id: content_reports_organizations
 label: 'Content Reports: Organizations'
 module: views
@@ -1207,7 +1207,6 @@ display:
             status: status
             field_parent: field_parent
             field_billing_organization: field_billing_organization
-            field_constituent_communication: field_constituent_communication
             field_urgent_warning: field_urgent_warning
             org_social_media_count: org_social_media_count
             org_featured_messages_count_1: org_featured_messages_count_1
@@ -1274,13 +1273,6 @@ display:
               empty_column: false
               responsive: ''
             field_billing_organization:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            field_constituent_communication:
               sortable: false
               default_sort_order: asc
               align: ''
@@ -1973,68 +1965,6 @@ display:
           settings:
             link: true
           group_column: entity_id
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        field_constituent_communication:
-          id: field_constituent_communication
-          table: node__field_constituent_communication
-          field: field_constituent_communication
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: field
-          label: 'Constituent communication options'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: list_default
-          settings: {  }
-          group_column: value
           group_columns: {  }
           group_rows: true
           delta_limit: 0
@@ -3293,7 +3223,6 @@ display:
         - user.permissions
       tags:
         - 'config:field.storage.node.field_billing_organization'
-        - 'config:field.storage.node.field_constituent_communication'
         - 'config:field.storage.node.field_organizations'
         - 'config:field.storage.node.field_parent'
         - 'config:field.storage.node.field_subtype'
@@ -3878,68 +3807,6 @@ display:
           settings:
             link: true
           group_column: entity_id
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
-        field_constituent_communication:
-          id: field_constituent_communication
-          table: node__field_constituent_communication
-          field: field_constituent_communication
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: field
-          label: 'Constituent communication options'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-            replace_spaces: false
-            path_case: none
-            trim_whitespace: false
-            alt: ''
-            rel: ''
-            link_class: ''
-            prefix: ''
-            suffix: ''
-            target: ''
-            nl2br: false
-            max_length: 0
-            word_boundary: true
-            ellipsis: true
-            more_link: false
-            more_link_text: ''
-            more_link_path: ''
-            strip_tags: false
-            trim: false
-            preserve_tags: ''
-            html: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: list_default
-          settings: {  }
-          group_column: value
           group_columns: {  }
           group_rows: true
           delta_limit: 0
@@ -5174,7 +5041,6 @@ display:
         - user.permissions
       tags:
         - 'config:field.storage.node.field_billing_organization'
-        - 'config:field.storage.node.field_constituent_communication'
         - 'config:field.storage.node.field_organizations'
         - 'config:field.storage.node.field_parent'
         - 'config:field.storage.node.field_subtype'

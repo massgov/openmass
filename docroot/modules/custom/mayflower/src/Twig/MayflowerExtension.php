@@ -2,12 +2,15 @@
 
 namespace Drupal\mayflower\Twig;
 
+use Twig\TwigFunction;
+use Twig\Extension\AbstractExtension;
+
 /**
  * Twig Extension to connect Mayflower.
  *
  * This extension should be kept in sync with the functions used in Mayflower.
  */
-class MayflowerExtension extends \Twig_Extension {
+class MayflowerExtension extends AbstractExtension {
 
   private $iconDirectory;
 
@@ -32,7 +35,7 @@ class MayflowerExtension extends \Twig_Extension {
    */
   public function getFunctions() {
     return [
-      new \Twig_SimpleFunction('icon',
+      new TwigFunction('icon',
         [$this, 'displayIcon'],
         ['is_safe' => ['html']]
       ),
