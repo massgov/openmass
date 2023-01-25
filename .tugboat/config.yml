@@ -4,6 +4,9 @@ services:
     # Use PHP 8.x with Apache; this syntax pulls in the latest version of PHP 8
     image: tugboatqa/php:8.0-apache
 
+    # Helps with Azure login https://docs.tugboatqa.com/reference/tugboat-configuration/#subpath
+    subpath: true
+
     # Set this as the default service. This does a few things
     #   1. Clones the git repository into the service container
     #   2. Exposes port 80 to the Tugboat HTTP proxy
