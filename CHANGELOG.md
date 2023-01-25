@@ -1,5 +1,25 @@
 
 
+## [0.348.0] - January 24, 2023
+
+### Changed
+  - DP-26309: Remove empty more link for related guides section.
+  - DP-26328: Updated Collections view to use active cache invalidation.
+  - DP-26840: Updated the Entity Usage Queue Tracking module with improvements to the cleaning command.
+  - DP-26854: Fixed small bugs and removed unused code related to CircleCI jobs
+  
+### Added
+  - DP-26736: Updates to orphan view.
+  
+### Fixed
+  - DP-26999: Reset feedback form text area validation on radio button change.
+  - DP-27003: Bug - not seeing all document language links shown.
+  
+### Security
+  - DP-27004: Drupal core and Entity Browser module security update.
+  
+
+
 ## [0.347.0] - January 17, 2023
 
 ### Added
