@@ -704,35 +704,6 @@ function mass_content_field_widget_paragraphs_form_alter(&$element, &$form_state
 }
 
 /**
- * Implements hook_ENTITY_TYPE_update().
- */
-function mass_content_node_update(EntityInterface $node) {
-  // Compare the entity cache-stored vid to the vid stored in the database.
-  // @see https://jira.mass.gov/browse/DP-19570
-  $nid = $node->id();
-
-  // Retrieve the vid value via Node::load to get the currently cached value.
-  $vid_cache = Node::load($nid)->getRevisionId();
-
-  // Query for vid.
-  $database = \Drupal::database();
-  $query = $database->select('node', 'n');
-  $vid_db = $query
-    ->fields('n', ['vid'])
-    ->condition('n.nid', $nid)
-    ->execute()
-    ->fetchField();
-
-  if ($vid_db !== $vid_cache) {
-    Drupal::logger('content')->info('Node @nid updated to revision @vid_db in the database, but revision @vid_cache was retrieved from cache.', [
-      '@nid' => $nid,
-      '@vid_db' => $vid_db,
-      '@vid_cache' => $vid_cache,
-    ]);
-  }
-}
-
-/**
  * Implements hook_field_widget_WIDGET_TYPE_form_alter().
  */
 function mass_content_field_widget_entity_reference_paragraphs_form_alter(&$element, &$form_state, $context) {

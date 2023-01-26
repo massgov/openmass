@@ -3387,6 +3387,18 @@ display:
           empty_zero: false
           hide_alter_empty: true
           destination: false
+      exposed_form:
+        type: input_required_on_request
+        options:
+          submit_button: Filter
+          reset_button: 1
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: 1
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+          text_input_required: 'Select any filter and click on Apply to see results'
+          text_input_required_format: basic_html
       filters:
         bundle:
           id: bundle
@@ -4018,6 +4030,7 @@ display:
         groups:
           1: AND
       defaults:
+        exposed_form: false
         fields: false
         filters: false
         filter_groups: false
