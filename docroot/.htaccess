@@ -114,6 +114,14 @@ AddType application/octet-stream .rte
 <IfModule mod_rewrite.c>
   RewriteEngine on
 
+  # Modify the RewriteBase if you are using Drupal in a subdirectory or in a
+  # VirtualDocumentRoot and the rewrite rules are not working properly.
+  # For example if your site is at http://example.com/drupal uncomment and
+  # modify the following line:
+  # For Tugboat
+  #RewriteCond %{ENV:TUGBOAT_DEFAULT_SERVICE} !^$ [NC]
+  #RewriteBase %{ENV:TUGBOAT_DEFAULT_SERVICE_URL_PATH}
+
 
   # Redirect HTTP to HTTPS in all Acquia environments.
   RewriteCond %{ENV:AH_SITE_ENVIRONMENT} !^$ [NC]

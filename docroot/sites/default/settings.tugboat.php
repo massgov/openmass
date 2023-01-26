@@ -1,5 +1,12 @@
 <?php
 
+if(isset($GLOBALS['request'])) {
+  $scriptName = $GLOBALS['request']->server->get('SCRIPT_NAME');
+  $path = getenv('TUGBOAT_DEFAULT_SERVICE_URL_PATH');
+  $scriptName = preg_match("#^/$path/#", $scriptName) ? : $path . $scriptName;
+  $GLOBALS['request']->server->set('SCRIPT_NAME', $scriptName);
+}
+
 /**
  * Password protect Tugboat environments.
  *
