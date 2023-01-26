@@ -507,7 +507,14 @@ class MassFeedbackLoopContentFetcher {
               ];
             }
           }
-
+          if (empty($limit_fields) || in_array('text', $limit_fields)) {
+            // Builds "Feedback Text".
+            $feedback_text = (!empty($feedback['text'])) ? $feedback['text'] : '';
+            $row['text'] = [
+              '#markup' => '<span class="survey-text">' . Html::escape($feedback_text) . '</span><span class="feedback-text-toggle">Show More</span>',
+              '#wrapper_attributes' => ['class' => 'survey-response'],
+            ];
+          }
           if (empty($limit_fields) || in_array('requested_response', $limit_fields)) {
             $response_info = 'N/A';
             if (!empty($feedback['requested_response'])) {
