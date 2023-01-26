@@ -73,24 +73,22 @@
 %}
 
 <div{{ attributes.addClass(classes) }}>
+  <div class="ma__page-header">
+    <h1>
+      {{ title }}
+    </h1>
+    {% if header.area is not empty %}
+      {{ header.area }}
+    {% endif %}
+    {% if header.result %}
+      <div class="ma__results-heading__container">
+        <h2 class="ma__results-heading__title">
+          {{ header.result }}
+        </h2>
+      </div>
+    {% endif %}
+  </div>
   <section class="page-content">
-    <div class="ma__page-header">
-      <h1 class="page-header__title">
-        {{ title }}
-      </h1>
-      {% if header.area is not empty %}
-        <div class="ma__page-header__content">
-          {{ header.area }}
-        </div>
-      {% endif %}
-      {% if header.result %}
-        <div class="ma__results-heading__container">
-          <h2 class="ma__results-heading__title">
-            {{ header.result }}
-          </h2>
-        </div>
-      {% endif %}
-    </div>
     {{ attachment_before }}
 
     {% if rows -%}
