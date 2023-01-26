@@ -1,11 +1,11 @@
 <?php
 
-if (isset($GLOBALS['request'])) {
-  $scriptName = $GLOBALS['request']->server->get('SCRIPT_NAME');
-  $path = getenv('TUGBOAT_DEFAULT_SERVICE_URL_PATH');
-  $scriptName = $path . $scriptName;
-  $GLOBALS['request']->server->set('SCRIPT_NAME', $scriptName);
-}
+//if (isset($GLOBALS['request'])) {
+//  $scriptName = $GLOBALS['request']->server->get('SCRIPT_NAME');
+//  $path = getenv('TUGBOAT_DEFAULT_SERVICE_URL_PATH');
+//  $scriptName = $path . $scriptName;
+//  $GLOBALS['request']->server->set('SCRIPT_NAME', $scriptName);
+//}
 
 /**
  * No longer recommended. See https://docs.tugboatqa.com/faq/common-questions/#can-i-password-protect-my-preview-urls
