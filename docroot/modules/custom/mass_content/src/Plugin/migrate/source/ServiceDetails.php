@@ -80,7 +80,7 @@ class ServiceDetails extends SqlBase {
       'field_info_detail_overview' => $node->get('field_service_detail_overview')->getValue(),
       'revision_timestamp' => $node->getRevisionCreationTime(),
       'revision_uid' => $node->getRevisionUserId(),
-      'revision_log' => $node->getRevisionLogMessage(),
+      'revision_log' => $this->t("Migrated from service details"),
     ];
     foreach ($map_destination as $key => $value) {
       $row->setDestinationProperty($key, $value);
