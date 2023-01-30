@@ -427,6 +427,30 @@ jobs:
       - store_artifacts:
           path: /tmp/results
 
+  backstop_reference:
+    parameters:
+      target:
+        type: string
+        default: prod
+      list:
+        type: string
+        default: all
+      viewport:
+        type: string
+        default: all
+    resource_class: xlarge
+    docker:
+      - image: backstopjs/backstopjs
+    steps:
+      - checkout
+      - run:
+          name: Backstop reference
+          working_directory: backstop
+          command: backstop --config=backstop.js reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+      - store_artifacts:
+          path: backstop/reference
+          destination: backstop-<< parameters.target >>-latest
+
   backstop:
     parameters:
       reference:
@@ -564,6 +588,13 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
+
+      - temp_backstop:
+          name: test-backstop
+          command: backstop_reference
+          filters:
+            branches:
+              only: dp-26913-run-backstop-js-locally
 
 
   # This is to automate the creation of the release branch.
