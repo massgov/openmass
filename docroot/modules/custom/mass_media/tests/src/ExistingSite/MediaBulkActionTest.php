@@ -15,10 +15,10 @@ use weitzman\LoginTrait\LoginTrait;
  * Tests "All Content" view requires input to show content to speed up login.
  */
 class MediaBulkActionTest extends ExistingSiteBase {
-  const RESTRICT_ACTION = '2';
-  const UNPUBLISH_ACTION = '3';
-  const TRASH_ACTION = '4';
-  const PUBLISH_ACTION = '5';
+  const PUBLISH_ACTION = '3';
+  const RESTRICT_ACTION = '4';
+  const TRASH_ACTION = '5';
+  const UNPUBLISH_ACTION = '6';
 
   use LoginTrait;
   use MediaCreationTrait;
