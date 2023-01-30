@@ -444,10 +444,15 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Collection Backstop Reference Screenshots
+          name: Capture Backstop Reference Screenshots
           working_directory: backstop
           command: |
             backstop --config=backstop.js reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+      - run:
+          name: Archive Reference Screenshots
+          command: |
+            apt-get update
+            apt-get install zip -y
             zip -r references.zip backstop/reference
       - store_artifacts:
           path: references.zip
