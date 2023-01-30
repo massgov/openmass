@@ -65,7 +65,6 @@ class MassFeedbackLoopPerNodeController extends ControllerBase {
       'info_found',
       'text',
       'requested_response',
-      'survey',
     ];
     $output['feedback_table'] = $this->contentFetcher->buildFeedbackTable($response['results'], [], $response['is_watching_content'], $fields);
     $output['pager'] = $this->contentFetcher->buildPager($response['total'], $response['per_page']);
