@@ -444,12 +444,49 @@ jobs:
     steps:
       - checkout
       - run:
-          name: Backstop reference
+          name: Collection Backstop Reference Screenshots
           working_directory: backstop
-          command: backstop --config=backstop.js reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+          command: |
+            backstop --config=backstop.js reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+            zip -r references.zip backstop/reference
+      - store_artifacts:
+          path: references.zip
+          destination: backstop-<< parameters.target >>-latest
       - store_artifacts:
           path: backstop/reference
-          destination: backstop-<< parameters.target >>-latest
+      - run:
+          name: Save Build Number
+          command: |
+            curl --request POST \
+              --url https://circleci.com/api/v2/project/gh/massgov/openmass/envvar \
+              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN"
+              --header 'content-type: application/json' \
+              --data "{\"name\":\"BACKSTOP_REF_<< parameters.target >>\",\"value\":\"$CIRCLE_JOB\"}"
+
+  backstop_test:
+    parameters:
+      target:
+        type: string
+        default: prod
+      list:
+        type: string
+        default: all
+      viewport:
+        type: string
+        default: all
+    resource_class: xlarge
+    docker:
+      - image: backstopjs/backstopjs
+    steps:
+      - checkout
+      - run:
+          name: Restore Artifacts
+          command: |
+            BACKSTOP_REF="BACKSTOP_REF_<< parameters.target >>""
+            curl --request GET \
+              --url https://circleci.com/api/v2/project/gh/massgov/openmass/${!BACKSTOP_REF}/artifacts \
+              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN"
+            ls
 
   backstop:
     parameters:
