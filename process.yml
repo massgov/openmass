@@ -1,0 +1,3597 @@
+# Orb 'circleci/jira@1.3.1' resolved to 'circleci/jira@1.3.1'
+# Orb 'circleci/node@4.7.0' resolved to 'circleci/node@4.7.0'
+version: 2
+jobs:
+  test-super-behat:
+    working_directory: /var/www/code
+    resource_class: xlarge
+    docker:
+    - image: massgov/drupal-container:1.0.20-ci
+      environment:
+        COMPOSER_ALLOW_SUPERUSER: 1
+        DOCKER_ENV: ci
+        APACHE_DOCROOT: /var/www/code/docroot
+        MYSQL_USER: circle
+        MYSQL_PASSWORD: circle
+        MYSQL_DATABASE: circle
+        MYSQL_HOST: 127.0.0.1
+        MEMCACHED_HOST: 127.0.0.1
+        DTT_BASE_URL: http://mass.local
+        DTT_API_URL: http://mass.local:9222
+        BROWSERTEST_OUTPUT_DIRECTORY: /tmp
+    - image: massgov/mysql-sanitized:super
+      auth:
+        username: $DOCKER_USER
+        password: $DOCKER_API_KEY
+      environment:
+        MYSQL_USER: circle
+        MYSQL_PASSWORD: circle
+        MYSQL_DATABASE: circle
+        MYSQL_RANDOM_ROOT_PASSWORD: 1
+      command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
+    - image: memcached:1-alpine
+      command: memcached -m 128
+    - image: seleniarm/standalone-chromium:4.1.4-20220429
+    steps:
+    - attach_workspace:
+        at: /var/www
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        name: Start Apache
+        command: /usr/local/bin/apache2-foreground-enhanced
+        background: true
+    - run:
+        name: Update host file
+        command: echo '127.0.0.1 mass.local' >> /etc/hosts
+    - run:
+        name: Wait for mysql
+        command: dockerize -wait tcp://localhost:3306 -timeout 2m
+    - run:
+        command: drush deploy
+    - run:
+        command: drush status
+    - run:
+        command: cat /proc/cpuinfo
+    - run:
+        command: cat /proc/meminfo
+    - run:
+        name: Ensure no differences between between config on disk and config in Drupal.
+        command: drush --no config:export --diff
+    - run:
+        command: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
+    - run:
+        command: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+    - run:
+        command: behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+    - store_test_results:
+        path: /tmp/test-results
+    - store_artifacts:
+        path: /var/www/code/output
+    - store_artifacts:
+        path: /var/www/code/docroot/sites/simpletest/browser_output
+    - store_artifacts:
+        path: /tmp/test-results
+  build_with_latest_mayflower:
+    working_directory: ~/project/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - checkout
+    - restore_cache:
+        name: Restore Composer Cache
+        keys:
+        - site-composer-v15-{{ checksum "composer.lock" }}
+    - run:
+        name: Composer install
+        command: composer install --no-interaction --optimize-autoloader
+    - run:
+        name: Update Mayflower to latest develop
+        command: composer -n require massgov/mayflower-artifacts:dev-develop --update-with-dependencies
+    - save_cache:
+        name: Save Composer cache
+        key: site-composer-v15-{{ checksum "composer.lock" }}
+        paths:
+        - vendor
+        - docroot/core
+        - docroot/modules/contrib
+        - docroot/themes/contrib
+    - run:
+        command: |
+          if [ ! -f "package.json" ]; then
+            echo
+            echo "---"
+            echo "Unable to find your package.json file. Did you forget to set the app-dir parameter?"
+            echo "---"
+            echo
+            echo "Current directory: $(pwd)"
+            echo
+            echo
+            echo "List directory: "
+            echo
+            ls
+            exit 1
+          fi
+        name: Checking for package.json
+        working_directory: .
+    - run:
+        command: |
+          if [ -f "package-lock.json" ]; then
+            echo "Found package-lock.json file, assuming lockfile"
+            ln package-lock.json /tmp/node-project-lockfile
+          elif [ -f "npm-shrinkwrap.json" ]; then
+            echo "Found npm-shrinkwrap.json file, assuming lockfile"
+            ln npm-shrinkwrap.json /tmp/node-project-lockfile
+          elif [ -f "yarn.lock" ]; then
+            echo "Found yarn.lock file, assuming lockfile"
+            ln yarn.lock /tmp/node-project-lockfile
+          fi
+          ln package.json /tmp/node-project-package.json
+        name: Determine lockfile
+        working_directory: .
+    - restore_cache:
+        keys:
+        - node-deps-{{ arch }}-v1001-{{ .Branch }}-{{ checksum "/tmp/node-project-package.json" }}-{{ checksum "/tmp/node-project-lockfile" }}
+        - node-deps-{{ arch }}-v1001-{{ .Branch }}-{{ checksum "/tmp/node-project-package.json" }}-
+        - node-deps-{{ arch }}-v1001-{{ .Branch }}-
+    - run:
+        command: "if [[ ! -z \"\" ]]; then\n  echo \"Running override package installation command:\"\n  \nelse\n  yarn install --frozen-lockfile\nfi\n"
+        name: Installing YARN packages
+        working_directory: .
+    - save_cache:
+        key: node-deps-{{ arch }}-v1001-{{ .Branch }}-{{ checksum "/tmp/node-project-package.json" }}-{{ checksum "/tmp/node-project-lockfile" }}
+        paths:
+        - ./node_modules
+    - run:
+        name: Enable Drupal HTTP debug cacheability headers
+        command: cp -f docroot/core/assets/scaffold/files/development.services.yml docroot/sites
+    - persist_to_workspace:
+        root: ..
+        paths:
+        - code
+  deploy-test-refresh-db:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - run:
+        name: Disable SSH timeout
+        command: echo "ServerAliveInterval 30" >> ~/.ssh/config
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        command: curl -f -o ./drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: drush ma:deploy -v -y  --refresh-db test $CIRCLE_BRANCH
+        no_output_timeout: 60m
+    - run:
+        command: |
+          # Quietly try to make the install directory.
+          mkdir -p ~/bin | true
+
+          # Selectively export the SUDO command, depending if we have permission
+          # for a directory and whether we're running alpine.
+          if [[ $EUID == 0 ]]; then export SUDO=""; else # Check if we're root
+            if cat /etc/issue | grep Alpine > /dev/null 2>&1 || ! [[ -w "~/bin" ]]; then
+              export SUDO="sudo";
+            fi
+          fi
+
+          # If our first mkdir didn't succeed, we needed to run as sudo.
+          if [ ! -w ~/bin ]; then
+            $SUDO mkdir -p ~/bin
+          fi
+
+          echo 'export PATH=$PATH:~/bin' >> $BASH_ENV
+          source $BASH_ENV
+
+          # check if jq needs to be installed
+          if command -v jq >> /dev/null 2>&1; then
+
+              echo "jq is already installed..."
+
+            if [[ false == true ]]; then
+              echo "removing it."
+              $SUDO rm -f $(command -v jq)
+            else
+              echo "ignoring install request."
+              exit 0
+            fi
+          fi
+
+          # Set jq version
+          if [[ latest == "latest" ]]; then
+            JQ_VERSION=$(curl -Ls -o /dev/null -w %{url_effective} "https://github.com/stedolan/jq/releases/latest" | sed 's:.*/::')
+            echo "Latest version of jq is $JQ_VERSION"
+          else
+            JQ_VERSION=latest
+          fi
+
+          # extract version number
+          JQ_VERSION_NUMBER_STRING=$(echo $JQ_VERSION | sed -E 's/-/ /')
+          arrJQ_VERSION_NUMBER=($JQ_VERSION_NUMBER_STRING)
+          JQ_VERSION_NUMBER="${arrJQ_VERSION_NUMBER[1]}"
+
+          # Set binary download URL for specified version
+          # handle mac version
+          if uname -a | grep Darwin > /dev/null 2>&1; then
+            JQ_BINARY_URL="https://github.com/stedolan/jq/releases/download/${JQ_VERSION}/jq-osx-amd64"
+          else
+            # linux version
+            JQ_BINARY_URL="https://github.com/stedolan/jq/releases/download/${JQ_VERSION}/jq-linux64"
+          fi
+
+          jqBinary="jq-$PLATFORM"
+
+          if [ -d "$JQ_VERSION/sig" ]; then
+            # import jq sigs
+
+            if uname -a | grep Darwin > /dev/null 2>&1; then
+              HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
+
+              PLATFORM=osx-amd64
+            else
+              if cat /etc/issue | grep Alpine > /dev/null 2>&1; then
+                $SUDO apk add gnupg > /dev/null 2>&1
+              fi
+              PLATFORM=linux64
+            fi
+
+            gpg --import "$JQ_VERSION/sig/jq-release.key" > /dev/null
+
+            curl --output "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM" \
+                --silent --show-error --location --fail --retry 3 \
+                "$JQ_BINARY_URL"
+
+            # verify sha256sum, sig, install
+
+            gpg --verify "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM.asc"
+
+            pushd "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER" && grep "jq-$PLATFORM" "sha256sum.txt" | \
+            sha256sum -c -
+            popd
+            jqBinary="$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM"
+
+          else
+            curl --output "$jqBinary" \
+              --silent --show-error --location --fail --retry 3 \
+              "$JQ_BINARY_URL"
+          fi
+
+          $SUDO mv "$jqBinary" ~/bin/jq
+          $SUDO chmod +x ~/bin/jq
+
+          # cleanup
+          [[ -d "./$JQ_VERSION" ]] && rm -rf "./$JQ_VERSION"
+
+          # verify version
+          echo "jq has been installed to $(which jq)"
+          echo "jq version:"
+          echo "$(jq --version)"
+        name: Install jq
+        when: always
+    - run:
+        command: |
+          echo 'JIRA_BUILD_STATUS="failed"' > ./circleci-orb-jira.status
+        name: JIRA - Setting Failure Condition
+        when: on_fail
+    - run:
+        command: |
+          echo 'JIRA_BUILD_STATUS="successful"' > ./circleci-orb-jira.status
+        name: JIRA - Setting Success Condition
+        when: on_success
+    - run:
+        command: |
+          : ${CIRCLE_PERSONAL_TOKEN:?"Please provide a CircleCI API token for this orb to work!"} >&2
+          if [[ $(echo $CIRCLE_REPOSITORY_URL | grep github.com) ]]; then
+            VCS_TYPE=github
+          else
+            VCS_TYPE=bitbucket
+          fi
+
+          run () {
+            verify_api_key
+            parse_jira_key_array
+            HAS_JSD_SERVICE_ID=""
+              # If you have either an issue key or a service ID
+            if [[ -n "${ISSUE_KEYS}" || -n "${HAS_JSD_SERVICE_ID}" ]]; then
+              check_workflow_status
+              generate_json_payload_deployment
+              post_to_jira
+            else
+                # If no service is or issue key is found.
+              echo "No Jira issue keys found in commit subjects or branch name, skipping."
+              echo "No service ID selected. Please add the service_id parameter for JSD deployments."
+              exit 0
+            fi
+          }
+
+          verify_api_key () {
+            URL="https://circleci.com/api/v2/me?circle-token=${CIRCLE_PERSONAL_TOKEN}"
+            fetch $URL /tmp/me.json
+            jq -e '.login' /tmp/me.json
+          }
+
+          fetch () {
+            URL="$1"
+            OFILE="$2"
+            RESP=$(curl -w "%{http_code}" -s  --user "${CIRCLE_PERSONAL_TOKEN}:"  \
+            -o "${OFILE}" \
+            "${URL}")
+
+            if [[ "$RESP" != "20"* ]]; then
+              echo "Curl failed with code ${RESP}. full response below."
+              cat $OFILE
+              exit 1
+            fi
+          }
+
+          parse_jira_key_array () {
+            # must save as ISSUE_KEYS='["CC-4"]'
+            fetch https://circleci.com/api/v1.1/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM} /tmp/job_info.json
+            # see https://jqplay.org/s/TNq7c5ctot
+            ISSUE_KEYS=$(cat /tmp/job_info.json | jq '[.all_commit_details[].subject | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ] + [.all_commit_details[].branch | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ] + [if .branch then .branch else "" end | scan("([A-Z]{2,30}-[0-9]+)")  | . [] ] + [if false then .all_commit_details[].body else "" end | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ]')
+            if [ -z "$ISSUE_KEYS" ]; then
+              # No issue keys found.
+              echo "No issue keys found. This build does not contain a match for a Jira Issue. Please add your issue ID to the commit message or within the branch name."
+              exit 0
+            fi
+          }
+
+          check_workflow_status () {
+            URL="https://circleci.com/api/v2/workflow/${CIRCLE_WORKFLOW_ID}"
+            fetch $URL /tmp/workflow.json
+            export WORKFLOW_STATUS=$(jq -r '.status' /tmp/workflow.json)
+            export CIRCLE_PIPELINE_NUMBER=$(jq -r '.pipeline_number' /tmp/workflow.json)
+            echo "This job is passing, however another job in workflow is ${WORKFLOW_STATUS}"
+
+            if [ "deployment" != "deployment" ]; then
+                # deployments are special, cause they pass or fail alone.
+                # but jobs are stuck togehter, and they must respect status of workflow
+                if [[ "$WORKFLOW_STATUS" == "fail"* ]]; then
+                  export JIRA_BUILD_STATUS="failed"
+                fi
+            fi
+          }
+
+          generate_json_payload_build () {
+            iso_time=$(date '+%Y-%m-%dT%T%z'| sed -e 's/\([0-9][0-9]\)$/:\1/g')
+            echo {} | jq \
+            --arg time_str "$(date +%s)" \
+            --arg lastUpdated "${iso_time}" \
+            --arg pipelineNumber "${CIRCLE_PIPELINE_NUMBER}" \
+            --arg projectName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg state "${JIRA_BUILD_STATUS}" \
+            --arg jobName "${CIRCLE_JOB}" \
+            --arg buildNumber "${CIRCLE_BUILD_NUM}" \
+            --arg url "${CIRCLE_BUILD_URL}" \
+            --arg workflowUrl "https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}" \
+            --arg commit "${CIRCLE_SHA1}" \
+            --arg refUri "${CIRCLE_REPOSITORY_URL}/tree/${CIRCLE_BRANCH}" \
+            --arg repositoryUri "${CIRCLE_REPOSITORY_URL}" \
+            --arg branchName "${CIRCLE_BRANCH}" \
+            --arg workflowId "${CIRCLE_WORKFLOW_ID}" \
+            --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg display "${CIRCLE_PROJECT_REPONAME}"  \
+            --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_BUILD_NUM} ${CIRCLE_JOB}" \
+            --argjson issueKeys "${ISSUE_KEYS}" \
+            '
+            ($time_str | tonumber) as $time_num |
+            {
+              "builds": [
+                {
+                  "schemaVersion": "1.0",
+                  "pipelineId": $projectName,
+                  "buildNumber": $pipelineNumber,
+                  "updateSequenceNumber": $time_str,
+                  "displayName": $display,
+                  "description": $description,
+                  "url": $workflowUrl,
+                  "state": $state,
+                  "lastUpdated": $lastUpdated,
+                  "issueKeys": $issueKeys
+                }
+              ]
+            }
+            ' > /tmp/jira-status.json
+          }
+
+          generate_json_payload_deployment () {
+            echo "Update Jira with status: ${JIRA_BUILD_STATUS} for ${CIRCLE_PIPELINE_NUMBER}"
+            iso_time=$(date '+%Y-%m-%dT%T%z'| sed -e 's/\([0-9][0-9]\)$/:\1/g')
+            echo {} | jq \
+            --arg time_str "$(date +%s)" \
+            --arg lastUpdated "${iso_time}" \
+            --arg state "${JIRA_BUILD_STATUS}" \
+            --arg buildNumber "${CIRCLE_BUILD_NUM}" \
+            --arg pipelineNumber "${CIRCLE_PIPELINE_NUMBER}" \
+            --arg projectName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg url "${CIRCLE_BUILD_URL}" \
+            --arg commit "${CIRCLE_SHA1}" \
+            --arg refUri "${CIRCLE_REPOSITORY_URL}/tree/${CIRCLE_BRANCH}" \
+            --arg repositoryUri "${CIRCLE_REPOSITORY_URL}" \
+            --arg branchName "${CIRCLE_BRANCH}" \
+            --arg workflowId "${CIRCLE_WORKFLOW_ID}" \
+            --arg workflowUrl "https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}" \
+            --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg pipelineDisplay "#${CIRCLE_PIPELINE_NUMBER} ${CIRCLE_PROJECT_REPONAME}"  \
+            --arg deployDisplay "#${CIRCLE_PIPELINE_NUMBER}  ${CIRCLE_PROJECT_REPONAME} - test"  \
+            --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_PIPELINE_NUMBER} ${CIRCLE_JOB} test" \
+            --arg envId "${CIRCLE_WORKFLOW_ID}-test" \
+            --arg envName "test" \
+            --arg envType "development" \
+            --argjson issueKeys "${ISSUE_KEYS}" \
+            '
+            ($time_str | tonumber) as $time_num |
+            {
+              "deployments": [
+                {
+                  "schemaVersion": "1.0",
+                  "pipeline": {
+                    "id": $repoName,
+                    "displayName": $pipelineDisplay,
+                    "url": $workflowUrl
+                  },
+                  "deploymentSequenceNumber": $pipelineNumber,
+                  "updateSequenceNumber": $time_str,
+                  "displayName": $deployDisplay,
+                  "description": $description,
+                  "url": $url,
+                  "state": $state,
+                  "lastUpdated": $lastUpdated,
+                  "associations": [
+                    {
+                      "associationType": "issueKeys",
+                      "values": $issueKeys
+                    },
+                    {
+                      "associationType": "serviceIdOrKeys",
+                      "values": [""]
+                    }
+                  ],
+                  "environment":{
+                    "id": $envId,
+                    "displayName": $envName,
+                    "type": $envType
+                  }
+                }
+              ]
+            }
+            ' > /tmp/jira-status.json
+          }
+
+
+          post_to_jira () {
+            HTTP_STATUS=$(curl \
+            -u "${CIRCLE_PERSONAL_TOKEN}:" \
+            -s -w "%{http_code}" -o /tmp/curl_response.txt \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            -X POST "https://circleci.com/api/v1.1/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/jira/deployment" --data @/tmp/jira-status.json)
+
+            echo "Results from Jira: "
+            if [ "${HTTP_STATUS}" != "200" ];then
+              echo "Error calling Jira, result: ${HTTP_STATUS}" >&2
+              jq '.' /tmp/curl_response.txt
+              exit 0
+            fi
+
+            case "deployment" in
+              "build")
+                if jq -e '.unknownIssueKeys[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: unknown issue key"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+              ;;
+              "deployment")
+                if jq -e '.unknownAssociations[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: unknown association"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+                if jq -e '.rejectedDeployments[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: Deployment rejected"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+              ;;
+            esac
+
+            # If reached this point, the deployment was a success.
+            echo
+            jq '.' /tmp/curl_response.txt
+            echo
+            echo
+            echo "Success!"
+          }
+
+          # kick off
+          source ./circleci-orb-jira.status
+          run
+          rm -f ./circleci-orb-jira.status
+        name: Update status in Atlassian Jira
+        when: always
+  crawl-deploy-900:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - run:
+        name: Disable SSH timeout
+        command: echo "ServerAliveInterval 30" >> ~/.ssh/config
+    - run:
+        command: curl -f -o ./drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: mkdir -p /tmp/results/junit
+    - run:
+        name: Nightcrawler
+        command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=cd --samples=900
+        no_output_timeout: 300m
+    - store_test_results:
+        path: /tmp/results
+    - store_artifacts:
+        path: /tmp/results
+  backstop:
+    resource_class: xlarge
+    docker:
+    - image: backstopjs/backstopjs
+    steps:
+    - checkout
+    - run:
+        name: Backstop reference
+        working_directory: backstop
+        command: backstop --config=backstop.js reference --target=prod --list=all --viewport=all
+    - run:
+        name: Backstop test (non Tugboat target)
+        working_directory: backstop
+        command: backstop --config=backstop.js test --target=cd --list=all --viewport=all
+        no_output_timeout: 300m
+    - store_test_results:
+        path: backstop/report
+    - store_artifacts:
+        path: backstop
+  tagging_github:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - run:
+        command: git config --global user.email "circleci@example.com"
+    - run:
+        command: git config --global user.name "CircleCI Deployment Bot"
+    - run:
+        command: php scripts/tag-github.php
+  master-to-develop-prod-no-maint:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - checkout
+    - run:
+        command: git config --global user.email "circleci@example.com"
+    - run:
+        command: git config --global user.name "CircleCI Deployment Bot"
+    - run:
+        command: scripts/master-to-develop
+  backstop-prod-maint:
+    resource_class: xlarge
+    docker:
+    - image: backstopjs/backstopjs
+    steps:
+    - checkout
+    - run:
+        name: Backstop reference
+        working_directory: backstop
+        command: backstop --config=backstop.js reference --target=test --list=post-release --viewport=desktop
+    - run:
+        name: Backstop test (non Tugboat target)
+        working_directory: backstop
+        command: backstop --config=backstop.js test --target=prod --list=post-release --viewport=desktop
+        no_output_timeout: 300m
+    - store_test_results:
+        path: backstop/report
+    - store_artifacts:
+        path: backstop
+  tagging_acquia:
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - checkout
+    - run:
+        command: git config --global user.email "circleci@example.com"
+    - run:
+        command: git config --global user.name "CircleCI Deployment Bot"
+    - run:
+        command: scripts/tag-release-deploy
+  validate:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        command: composer -n validate
+    - run:
+        command: php scripts/directory-yaml-parse.php
+    - run:
+        command: yarn run eslint --debug --ignore-path '.eslintignore' 'docroot/modules/custom/**/*.js' 'docroot/themes/custom/**/*.js' 2>&1
+    - run:
+        command: vendor/bin/phpcs -v -n -s
+  massgov.populate --sanitize:
+    working_directory: /home/circleci/code/.circleci/mysql-rebuild
+    resource_class: large
+    machine:
+      image: ubuntu-2004:202101-01
+    steps:
+    - attach_workspace:
+        at: /home/circleci
+    - run:
+        command: curl -f -o /home/circleci/code/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: docker-compose up -d
+    - run:
+        command: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www/html
+    - run:
+        name: Wait for mysql
+        command: sleep 5
+    - run:
+        command: docker-compose exec drupal sudo apk add --no-cache --upgrade grep
+    - run:
+        command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
+        no_output_timeout: 60m
+    - run:
+        command: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
+    - run:
+        command: docker-compose exec drupal scripts/ma-refresh-local --sanitize
+        no_output_timeout: 30m
+    - run:
+        command: docker-compose exec drupal drush cr
+    - run:
+        command: docker-compose stop --timeout 60 mysql
+    - run:
+        command: docker commit $(docker-compose ps -q mysql) massgov/mysql-sanitized:latest
+    - run:
+        command: docker push massgov/mysql-sanitized:latest
+  massgov.populate.arm --super-sanitize:
+    working_directory: /home/circleci/code/.circleci/mysql-rebuild
+    resource_class: arm.large
+    machine:
+      image: ubuntu-2004:202101-01
+    steps:
+    - attach_workspace:
+        at: /home/circleci
+    - run:
+        command: curl -f -o /home/circleci/code/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: docker-compose up -d
+    - run:
+        command: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www/html
+    - run:
+        name: Wait for mysql
+        command: sleep 5
+    - run:
+        command: docker-compose exec drupal sudo apk add --no-cache --upgrade grep
+    - run:
+        command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
+        no_output_timeout: 60m
+    - run:
+        command: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
+    - run:
+        command: docker-compose exec drupal scripts/ma-refresh-local --super-sanitize
+        no_output_timeout: 30m
+    - run:
+        command: docker-compose exec drupal drush cr
+    - run:
+        command: docker-compose stop --timeout 60 mysql
+    - run:
+        command: docker commit $(docker-compose ps -q mysql) massgov/mysql-sanitized:super.arm
+    - run:
+        command: docker push massgov/mysql-sanitized:super.arm
+  backstop-prod-no-maint:
+    resource_class: xlarge
+    docker:
+    - image: backstopjs/backstopjs
+    steps:
+    - checkout
+    - run:
+        name: Backstop reference
+        working_directory: backstop
+        command: backstop --config=backstop.js reference --target=test --list=post-release --viewport=desktop
+    - run:
+        name: Backstop test (non Tugboat target)
+        working_directory: backstop
+        command: backstop --config=backstop.js test --target=prod --list=post-release --viewport=desktop
+        no_output_timeout: 300m
+    - store_test_results:
+        path: backstop/report
+    - store_artifacts:
+        path: backstop
+  master-to-develop-prod-maint:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - checkout
+    - run:
+        command: git config --global user.email "circleci@example.com"
+    - run:
+        command: git config --global user.name "CircleCI Deployment Bot"
+    - run:
+        command: scripts/master-to-develop
+  deploy-tag-stage-acquia:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - run:
+        name: Disable SSH timeout
+        command: echo "ServerAliveInterval 30" >> ~/.ssh/config
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        command: curl -f -o ./drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: drush ma:deploy -v -y   test tags/$CIRCLE_TAG
+        no_output_timeout: 60m
+    - run:
+        command: |
+          # Quietly try to make the install directory.
+          mkdir -p ~/bin | true
+
+          # Selectively export the SUDO command, depending if we have permission
+          # for a directory and whether we're running alpine.
+          if [[ $EUID == 0 ]]; then export SUDO=""; else # Check if we're root
+            if cat /etc/issue | grep Alpine > /dev/null 2>&1 || ! [[ -w "~/bin" ]]; then
+              export SUDO="sudo";
+            fi
+          fi
+
+          # If our first mkdir didn't succeed, we needed to run as sudo.
+          if [ ! -w ~/bin ]; then
+            $SUDO mkdir -p ~/bin
+          fi
+
+          echo 'export PATH=$PATH:~/bin' >> $BASH_ENV
+          source $BASH_ENV
+
+          # check if jq needs to be installed
+          if command -v jq >> /dev/null 2>&1; then
+
+              echo "jq is already installed..."
+
+            if [[ false == true ]]; then
+              echo "removing it."
+              $SUDO rm -f $(command -v jq)
+            else
+              echo "ignoring install request."
+              exit 0
+            fi
+          fi
+
+          # Set jq version
+          if [[ latest == "latest" ]]; then
+            JQ_VERSION=$(curl -Ls -o /dev/null -w %{url_effective} "https://github.com/stedolan/jq/releases/latest" | sed 's:.*/::')
+            echo "Latest version of jq is $JQ_VERSION"
+          else
+            JQ_VERSION=latest
+          fi
+
+          # extract version number
+          JQ_VERSION_NUMBER_STRING=$(echo $JQ_VERSION | sed -E 's/-/ /')
+          arrJQ_VERSION_NUMBER=($JQ_VERSION_NUMBER_STRING)
+          JQ_VERSION_NUMBER="${arrJQ_VERSION_NUMBER[1]}"
+
+          # Set binary download URL for specified version
+          # handle mac version
+          if uname -a | grep Darwin > /dev/null 2>&1; then
+            JQ_BINARY_URL="https://github.com/stedolan/jq/releases/download/${JQ_VERSION}/jq-osx-amd64"
+          else
+            # linux version
+            JQ_BINARY_URL="https://github.com/stedolan/jq/releases/download/${JQ_VERSION}/jq-linux64"
+          fi
+
+          jqBinary="jq-$PLATFORM"
+
+          if [ -d "$JQ_VERSION/sig" ]; then
+            # import jq sigs
+
+            if uname -a | grep Darwin > /dev/null 2>&1; then
+              HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
+
+              PLATFORM=osx-amd64
+            else
+              if cat /etc/issue | grep Alpine > /dev/null 2>&1; then
+                $SUDO apk add gnupg > /dev/null 2>&1
+              fi
+              PLATFORM=linux64
+            fi
+
+            gpg --import "$JQ_VERSION/sig/jq-release.key" > /dev/null
+
+            curl --output "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM" \
+                --silent --show-error --location --fail --retry 3 \
+                "$JQ_BINARY_URL"
+
+            # verify sha256sum, sig, install
+
+            gpg --verify "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM.asc"
+
+            pushd "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER" && grep "jq-$PLATFORM" "sha256sum.txt" | \
+            sha256sum -c -
+            popd
+            jqBinary="$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM"
+
+          else
+            curl --output "$jqBinary" \
+              --silent --show-error --location --fail --retry 3 \
+              "$JQ_BINARY_URL"
+          fi
+
+          $SUDO mv "$jqBinary" ~/bin/jq
+          $SUDO chmod +x ~/bin/jq
+
+          # cleanup
+          [[ -d "./$JQ_VERSION" ]] && rm -rf "./$JQ_VERSION"
+
+          # verify version
+          echo "jq has been installed to $(which jq)"
+          echo "jq version:"
+          echo "$(jq --version)"
+        name: Install jq
+        when: always
+    - run:
+        command: |
+          echo 'JIRA_BUILD_STATUS="failed"' > ./circleci-orb-jira.status
+        name: JIRA - Setting Failure Condition
+        when: on_fail
+    - run:
+        command: |
+          echo 'JIRA_BUILD_STATUS="successful"' > ./circleci-orb-jira.status
+        name: JIRA - Setting Success Condition
+        when: on_success
+    - run:
+        command: |
+          : ${CIRCLE_PERSONAL_TOKEN:?"Please provide a CircleCI API token for this orb to work!"} >&2
+          if [[ $(echo $CIRCLE_REPOSITORY_URL | grep github.com) ]]; then
+            VCS_TYPE=github
+          else
+            VCS_TYPE=bitbucket
+          fi
+
+          run () {
+            verify_api_key
+            parse_jira_key_array
+            HAS_JSD_SERVICE_ID=""
+              # If you have either an issue key or a service ID
+            if [[ -n "${ISSUE_KEYS}" || -n "${HAS_JSD_SERVICE_ID}" ]]; then
+              check_workflow_status
+              generate_json_payload_deployment
+              post_to_jira
+            else
+                # If no service is or issue key is found.
+              echo "No Jira issue keys found in commit subjects or branch name, skipping."
+              echo "No service ID selected. Please add the service_id parameter for JSD deployments."
+              exit 0
+            fi
+          }
+
+          verify_api_key () {
+            URL="https://circleci.com/api/v2/me?circle-token=${CIRCLE_PERSONAL_TOKEN}"
+            fetch $URL /tmp/me.json
+            jq -e '.login' /tmp/me.json
+          }
+
+          fetch () {
+            URL="$1"
+            OFILE="$2"
+            RESP=$(curl -w "%{http_code}" -s  --user "${CIRCLE_PERSONAL_TOKEN}:"  \
+            -o "${OFILE}" \
+            "${URL}")
+
+            if [[ "$RESP" != "20"* ]]; then
+              echo "Curl failed with code ${RESP}. full response below."
+              cat $OFILE
+              exit 1
+            fi
+          }
+
+          parse_jira_key_array () {
+            # must save as ISSUE_KEYS='["CC-4"]'
+            fetch https://circleci.com/api/v1.1/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM} /tmp/job_info.json
+            # see https://jqplay.org/s/TNq7c5ctot
+            ISSUE_KEYS=$(cat /tmp/job_info.json | jq '[.all_commit_details[].subject | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ] + [.all_commit_details[].branch | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ] + [if .branch then .branch else "" end | scan("([A-Z]{2,30}-[0-9]+)")  | . [] ] + [if false then .all_commit_details[].body else "" end | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ]')
+            if [ -z "$ISSUE_KEYS" ]; then
+              # No issue keys found.
+              echo "No issue keys found. This build does not contain a match for a Jira Issue. Please add your issue ID to the commit message or within the branch name."
+              exit 0
+            fi
+          }
+
+          check_workflow_status () {
+            URL="https://circleci.com/api/v2/workflow/${CIRCLE_WORKFLOW_ID}"
+            fetch $URL /tmp/workflow.json
+            export WORKFLOW_STATUS=$(jq -r '.status' /tmp/workflow.json)
+            export CIRCLE_PIPELINE_NUMBER=$(jq -r '.pipeline_number' /tmp/workflow.json)
+            echo "This job is passing, however another job in workflow is ${WORKFLOW_STATUS}"
+
+            if [ "deployment" != "deployment" ]; then
+                # deployments are special, cause they pass or fail alone.
+                # but jobs are stuck togehter, and they must respect status of workflow
+                if [[ "$WORKFLOW_STATUS" == "fail"* ]]; then
+                  export JIRA_BUILD_STATUS="failed"
+                fi
+            fi
+          }
+
+          generate_json_payload_build () {
+            iso_time=$(date '+%Y-%m-%dT%T%z'| sed -e 's/\([0-9][0-9]\)$/:\1/g')
+            echo {} | jq \
+            --arg time_str "$(date +%s)" \
+            --arg lastUpdated "${iso_time}" \
+            --arg pipelineNumber "${CIRCLE_PIPELINE_NUMBER}" \
+            --arg projectName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg state "${JIRA_BUILD_STATUS}" \
+            --arg jobName "${CIRCLE_JOB}" \
+            --arg buildNumber "${CIRCLE_BUILD_NUM}" \
+            --arg url "${CIRCLE_BUILD_URL}" \
+            --arg workflowUrl "https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}" \
+            --arg commit "${CIRCLE_SHA1}" \
+            --arg refUri "${CIRCLE_REPOSITORY_URL}/tree/${CIRCLE_BRANCH}" \
+            --arg repositoryUri "${CIRCLE_REPOSITORY_URL}" \
+            --arg branchName "${CIRCLE_BRANCH}" \
+            --arg workflowId "${CIRCLE_WORKFLOW_ID}" \
+            --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg display "${CIRCLE_PROJECT_REPONAME}"  \
+            --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_BUILD_NUM} ${CIRCLE_JOB}" \
+            --argjson issueKeys "${ISSUE_KEYS}" \
+            '
+            ($time_str | tonumber) as $time_num |
+            {
+              "builds": [
+                {
+                  "schemaVersion": "1.0",
+                  "pipelineId": $projectName,
+                  "buildNumber": $pipelineNumber,
+                  "updateSequenceNumber": $time_str,
+                  "displayName": $display,
+                  "description": $description,
+                  "url": $workflowUrl,
+                  "state": $state,
+                  "lastUpdated": $lastUpdated,
+                  "issueKeys": $issueKeys
+                }
+              ]
+            }
+            ' > /tmp/jira-status.json
+          }
+
+          generate_json_payload_deployment () {
+            echo "Update Jira with status: ${JIRA_BUILD_STATUS} for ${CIRCLE_PIPELINE_NUMBER}"
+            iso_time=$(date '+%Y-%m-%dT%T%z'| sed -e 's/\([0-9][0-9]\)$/:\1/g')
+            echo {} | jq \
+            --arg time_str "$(date +%s)" \
+            --arg lastUpdated "${iso_time}" \
+            --arg state "${JIRA_BUILD_STATUS}" \
+            --arg buildNumber "${CIRCLE_BUILD_NUM}" \
+            --arg pipelineNumber "${CIRCLE_PIPELINE_NUMBER}" \
+            --arg projectName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg url "${CIRCLE_BUILD_URL}" \
+            --arg commit "${CIRCLE_SHA1}" \
+            --arg refUri "${CIRCLE_REPOSITORY_URL}/tree/${CIRCLE_BRANCH}" \
+            --arg repositoryUri "${CIRCLE_REPOSITORY_URL}" \
+            --arg branchName "${CIRCLE_BRANCH}" \
+            --arg workflowId "${CIRCLE_WORKFLOW_ID}" \
+            --arg workflowUrl "https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}" \
+            --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg pipelineDisplay "#${CIRCLE_PIPELINE_NUMBER} ${CIRCLE_PROJECT_REPONAME}"  \
+            --arg deployDisplay "#${CIRCLE_PIPELINE_NUMBER}  ${CIRCLE_PROJECT_REPONAME} - test"  \
+            --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_PIPELINE_NUMBER} ${CIRCLE_JOB} test" \
+            --arg envId "${CIRCLE_WORKFLOW_ID}-test" \
+            --arg envName "test" \
+            --arg envType "development" \
+            --argjson issueKeys "${ISSUE_KEYS}" \
+            '
+            ($time_str | tonumber) as $time_num |
+            {
+              "deployments": [
+                {
+                  "schemaVersion": "1.0",
+                  "pipeline": {
+                    "id": $repoName,
+                    "displayName": $pipelineDisplay,
+                    "url": $workflowUrl
+                  },
+                  "deploymentSequenceNumber": $pipelineNumber,
+                  "updateSequenceNumber": $time_str,
+                  "displayName": $deployDisplay,
+                  "description": $description,
+                  "url": $url,
+                  "state": $state,
+                  "lastUpdated": $lastUpdated,
+                  "associations": [
+                    {
+                      "associationType": "issueKeys",
+                      "values": $issueKeys
+                    },
+                    {
+                      "associationType": "serviceIdOrKeys",
+                      "values": [""]
+                    }
+                  ],
+                  "environment":{
+                    "id": $envId,
+                    "displayName": $envName,
+                    "type": $envType
+                  }
+                }
+              ]
+            }
+            ' > /tmp/jira-status.json
+          }
+
+
+          post_to_jira () {
+            HTTP_STATUS=$(curl \
+            -u "${CIRCLE_PERSONAL_TOKEN}:" \
+            -s -w "%{http_code}" -o /tmp/curl_response.txt \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            -X POST "https://circleci.com/api/v1.1/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/jira/deployment" --data @/tmp/jira-status.json)
+
+            echo "Results from Jira: "
+            if [ "${HTTP_STATUS}" != "200" ];then
+              echo "Error calling Jira, result: ${HTTP_STATUS}" >&2
+              jq '.' /tmp/curl_response.txt
+              exit 0
+            fi
+
+            case "deployment" in
+              "build")
+                if jq -e '.unknownIssueKeys[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: unknown issue key"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+              ;;
+              "deployment")
+                if jq -e '.unknownAssociations[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: unknown association"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+                if jq -e '.rejectedDeployments[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: Deployment rejected"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+              ;;
+            esac
+
+            # If reached this point, the deployment was a success.
+            echo
+            jq '.' /tmp/curl_response.txt
+            echo
+            echo
+            echo "Success!"
+          }
+
+          # kick off
+          source ./circleci-orb-jira.status
+          run
+          rm -f ./circleci-orb-jira.status
+        name: Update status in Atlassian Jira
+        when: always
+  pending_security:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        command: drush pm:security
+    - run:
+        command: drush pm:security-php
+  build:
+    working_directory: ~/project/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - checkout
+    - restore_cache:
+        name: Restore Composer Cache
+        keys:
+        - site-composer-v15-{{ checksum "composer.lock" }}
+    - run:
+        name: Composer install
+        command: composer install --no-interaction --optimize-autoloader
+    - save_cache:
+        name: Save Composer cache
+        key: site-composer-v15-{{ checksum "composer.lock" }}
+        paths:
+        - vendor
+        - docroot/core
+        - docroot/modules/contrib
+        - docroot/themes/contrib
+    - run:
+        command: |
+          if [ ! -f "package.json" ]; then
+            echo
+            echo "---"
+            echo "Unable to find your package.json file. Did you forget to set the app-dir parameter?"
+            echo "---"
+            echo
+            echo "Current directory: $(pwd)"
+            echo
+            echo
+            echo "List directory: "
+            echo
+            ls
+            exit 1
+          fi
+        name: Checking for package.json
+        working_directory: .
+    - run:
+        command: |
+          if [ -f "package-lock.json" ]; then
+            echo "Found package-lock.json file, assuming lockfile"
+            ln package-lock.json /tmp/node-project-lockfile
+          elif [ -f "npm-shrinkwrap.json" ]; then
+            echo "Found npm-shrinkwrap.json file, assuming lockfile"
+            ln npm-shrinkwrap.json /tmp/node-project-lockfile
+          elif [ -f "yarn.lock" ]; then
+            echo "Found yarn.lock file, assuming lockfile"
+            ln yarn.lock /tmp/node-project-lockfile
+          fi
+          ln package.json /tmp/node-project-package.json
+        name: Determine lockfile
+        working_directory: .
+    - restore_cache:
+        keys:
+        - node-deps-{{ arch }}-v1001-{{ .Branch }}-{{ checksum "/tmp/node-project-package.json" }}-{{ checksum "/tmp/node-project-lockfile" }}
+        - node-deps-{{ arch }}-v1001-{{ .Branch }}-{{ checksum "/tmp/node-project-package.json" }}-
+        - node-deps-{{ arch }}-v1001-{{ .Branch }}-
+    - run:
+        command: "if [[ ! -z \"\" ]]; then\n  echo \"Running override package installation command:\"\n  \nelse\n  yarn install --frozen-lockfile\nfi\n"
+        name: Installing YARN packages
+        working_directory: .
+    - save_cache:
+        key: node-deps-{{ arch }}-v1001-{{ .Branch }}-{{ checksum "/tmp/node-project-package.json" }}-{{ checksum "/tmp/node-project-lockfile" }}
+        paths:
+        - ./node_modules
+    - run:
+        name: Enable Drupal HTTP debug cacheability headers
+        command: cp -f docroot/core/assets/scaffold/files/development.services.yml docroot/sites
+    - persist_to_workspace:
+        root: ..
+        paths:
+        - code
+  danger:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        command: '[ -n "$CIRCLE_PULL_REQUEST" ] && DANGER_GITHUB_API_TOKEN=$GITHUB_MASSGOV_BOT_TOKEN yarn danger ci --failOnErrors'
+  deploy-tag-prod-acquia-maint:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - run:
+        name: Disable SSH timeout
+        command: echo "ServerAliveInterval 30" >> ~/.ssh/config
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        command: curl -f -o ./drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: drush ma:deploy -v -y   prod tags/$CIRCLE_TAG
+        no_output_timeout: 60m
+    - run:
+        command: |
+          # Quietly try to make the install directory.
+          mkdir -p ~/bin | true
+
+          # Selectively export the SUDO command, depending if we have permission
+          # for a directory and whether we're running alpine.
+          if [[ $EUID == 0 ]]; then export SUDO=""; else # Check if we're root
+            if cat /etc/issue | grep Alpine > /dev/null 2>&1 || ! [[ -w "~/bin" ]]; then
+              export SUDO="sudo";
+            fi
+          fi
+
+          # If our first mkdir didn't succeed, we needed to run as sudo.
+          if [ ! -w ~/bin ]; then
+            $SUDO mkdir -p ~/bin
+          fi
+
+          echo 'export PATH=$PATH:~/bin' >> $BASH_ENV
+          source $BASH_ENV
+
+          # check if jq needs to be installed
+          if command -v jq >> /dev/null 2>&1; then
+
+              echo "jq is already installed..."
+
+            if [[ false == true ]]; then
+              echo "removing it."
+              $SUDO rm -f $(command -v jq)
+            else
+              echo "ignoring install request."
+              exit 0
+            fi
+          fi
+
+          # Set jq version
+          if [[ latest == "latest" ]]; then
+            JQ_VERSION=$(curl -Ls -o /dev/null -w %{url_effective} "https://github.com/stedolan/jq/releases/latest" | sed 's:.*/::')
+            echo "Latest version of jq is $JQ_VERSION"
+          else
+            JQ_VERSION=latest
+          fi
+
+          # extract version number
+          JQ_VERSION_NUMBER_STRING=$(echo $JQ_VERSION | sed -E 's/-/ /')
+          arrJQ_VERSION_NUMBER=($JQ_VERSION_NUMBER_STRING)
+          JQ_VERSION_NUMBER="${arrJQ_VERSION_NUMBER[1]}"
+
+          # Set binary download URL for specified version
+          # handle mac version
+          if uname -a | grep Darwin > /dev/null 2>&1; then
+            JQ_BINARY_URL="https://github.com/stedolan/jq/releases/download/${JQ_VERSION}/jq-osx-amd64"
+          else
+            # linux version
+            JQ_BINARY_URL="https://github.com/stedolan/jq/releases/download/${JQ_VERSION}/jq-linux64"
+          fi
+
+          jqBinary="jq-$PLATFORM"
+
+          if [ -d "$JQ_VERSION/sig" ]; then
+            # import jq sigs
+
+            if uname -a | grep Darwin > /dev/null 2>&1; then
+              HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
+
+              PLATFORM=osx-amd64
+            else
+              if cat /etc/issue | grep Alpine > /dev/null 2>&1; then
+                $SUDO apk add gnupg > /dev/null 2>&1
+              fi
+              PLATFORM=linux64
+            fi
+
+            gpg --import "$JQ_VERSION/sig/jq-release.key" > /dev/null
+
+            curl --output "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM" \
+                --silent --show-error --location --fail --retry 3 \
+                "$JQ_BINARY_URL"
+
+            # verify sha256sum, sig, install
+
+            gpg --verify "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM.asc"
+
+            pushd "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER" && grep "jq-$PLATFORM" "sha256sum.txt" | \
+            sha256sum -c -
+            popd
+            jqBinary="$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM"
+
+          else
+            curl --output "$jqBinary" \
+              --silent --show-error --location --fail --retry 3 \
+              "$JQ_BINARY_URL"
+          fi
+
+          $SUDO mv "$jqBinary" ~/bin/jq
+          $SUDO chmod +x ~/bin/jq
+
+          # cleanup
+          [[ -d "./$JQ_VERSION" ]] && rm -rf "./$JQ_VERSION"
+
+          # verify version
+          echo "jq has been installed to $(which jq)"
+          echo "jq version:"
+          echo "$(jq --version)"
+        name: Install jq
+        when: always
+    - run:
+        command: |
+          echo 'JIRA_BUILD_STATUS="failed"' > ./circleci-orb-jira.status
+        name: JIRA - Setting Failure Condition
+        when: on_fail
+    - run:
+        command: |
+          echo 'JIRA_BUILD_STATUS="successful"' > ./circleci-orb-jira.status
+        name: JIRA - Setting Success Condition
+        when: on_success
+    - run:
+        command: |
+          : ${CIRCLE_PERSONAL_TOKEN:?"Please provide a CircleCI API token for this orb to work!"} >&2
+          if [[ $(echo $CIRCLE_REPOSITORY_URL | grep github.com) ]]; then
+            VCS_TYPE=github
+          else
+            VCS_TYPE=bitbucket
+          fi
+
+          run () {
+            verify_api_key
+            parse_jira_key_array
+            HAS_JSD_SERVICE_ID=""
+              # If you have either an issue key or a service ID
+            if [[ -n "${ISSUE_KEYS}" || -n "${HAS_JSD_SERVICE_ID}" ]]; then
+              check_workflow_status
+              generate_json_payload_deployment
+              post_to_jira
+            else
+                # If no service is or issue key is found.
+              echo "No Jira issue keys found in commit subjects or branch name, skipping."
+              echo "No service ID selected. Please add the service_id parameter for JSD deployments."
+              exit 0
+            fi
+          }
+
+          verify_api_key () {
+            URL="https://circleci.com/api/v2/me?circle-token=${CIRCLE_PERSONAL_TOKEN}"
+            fetch $URL /tmp/me.json
+            jq -e '.login' /tmp/me.json
+          }
+
+          fetch () {
+            URL="$1"
+            OFILE="$2"
+            RESP=$(curl -w "%{http_code}" -s  --user "${CIRCLE_PERSONAL_TOKEN}:"  \
+            -o "${OFILE}" \
+            "${URL}")
+
+            if [[ "$RESP" != "20"* ]]; then
+              echo "Curl failed with code ${RESP}. full response below."
+              cat $OFILE
+              exit 1
+            fi
+          }
+
+          parse_jira_key_array () {
+            # must save as ISSUE_KEYS='["CC-4"]'
+            fetch https://circleci.com/api/v1.1/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM} /tmp/job_info.json
+            # see https://jqplay.org/s/TNq7c5ctot
+            ISSUE_KEYS=$(cat /tmp/job_info.json | jq '[.all_commit_details[].subject | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ] + [.all_commit_details[].branch | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ] + [if .branch then .branch else "" end | scan("([A-Z]{2,30}-[0-9]+)")  | . [] ] + [if false then .all_commit_details[].body else "" end | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ]')
+            if [ -z "$ISSUE_KEYS" ]; then
+              # No issue keys found.
+              echo "No issue keys found. This build does not contain a match for a Jira Issue. Please add your issue ID to the commit message or within the branch name."
+              exit 0
+            fi
+          }
+
+          check_workflow_status () {
+            URL="https://circleci.com/api/v2/workflow/${CIRCLE_WORKFLOW_ID}"
+            fetch $URL /tmp/workflow.json
+            export WORKFLOW_STATUS=$(jq -r '.status' /tmp/workflow.json)
+            export CIRCLE_PIPELINE_NUMBER=$(jq -r '.pipeline_number' /tmp/workflow.json)
+            echo "This job is passing, however another job in workflow is ${WORKFLOW_STATUS}"
+
+            if [ "deployment" != "deployment" ]; then
+                # deployments are special, cause they pass or fail alone.
+                # but jobs are stuck togehter, and they must respect status of workflow
+                if [[ "$WORKFLOW_STATUS" == "fail"* ]]; then
+                  export JIRA_BUILD_STATUS="failed"
+                fi
+            fi
+          }
+
+          generate_json_payload_build () {
+            iso_time=$(date '+%Y-%m-%dT%T%z'| sed -e 's/\([0-9][0-9]\)$/:\1/g')
+            echo {} | jq \
+            --arg time_str "$(date +%s)" \
+            --arg lastUpdated "${iso_time}" \
+            --arg pipelineNumber "${CIRCLE_PIPELINE_NUMBER}" \
+            --arg projectName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg state "${JIRA_BUILD_STATUS}" \
+            --arg jobName "${CIRCLE_JOB}" \
+            --arg buildNumber "${CIRCLE_BUILD_NUM}" \
+            --arg url "${CIRCLE_BUILD_URL}" \
+            --arg workflowUrl "https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}" \
+            --arg commit "${CIRCLE_SHA1}" \
+            --arg refUri "${CIRCLE_REPOSITORY_URL}/tree/${CIRCLE_BRANCH}" \
+            --arg repositoryUri "${CIRCLE_REPOSITORY_URL}" \
+            --arg branchName "${CIRCLE_BRANCH}" \
+            --arg workflowId "${CIRCLE_WORKFLOW_ID}" \
+            --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg display "${CIRCLE_PROJECT_REPONAME}"  \
+            --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_BUILD_NUM} ${CIRCLE_JOB}" \
+            --argjson issueKeys "${ISSUE_KEYS}" \
+            '
+            ($time_str | tonumber) as $time_num |
+            {
+              "builds": [
+                {
+                  "schemaVersion": "1.0",
+                  "pipelineId": $projectName,
+                  "buildNumber": $pipelineNumber,
+                  "updateSequenceNumber": $time_str,
+                  "displayName": $display,
+                  "description": $description,
+                  "url": $workflowUrl,
+                  "state": $state,
+                  "lastUpdated": $lastUpdated,
+                  "issueKeys": $issueKeys
+                }
+              ]
+            }
+            ' > /tmp/jira-status.json
+          }
+
+          generate_json_payload_deployment () {
+            echo "Update Jira with status: ${JIRA_BUILD_STATUS} for ${CIRCLE_PIPELINE_NUMBER}"
+            iso_time=$(date '+%Y-%m-%dT%T%z'| sed -e 's/\([0-9][0-9]\)$/:\1/g')
+            echo {} | jq \
+            --arg time_str "$(date +%s)" \
+            --arg lastUpdated "${iso_time}" \
+            --arg state "${JIRA_BUILD_STATUS}" \
+            --arg buildNumber "${CIRCLE_BUILD_NUM}" \
+            --arg pipelineNumber "${CIRCLE_PIPELINE_NUMBER}" \
+            --arg projectName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg url "${CIRCLE_BUILD_URL}" \
+            --arg commit "${CIRCLE_SHA1}" \
+            --arg refUri "${CIRCLE_REPOSITORY_URL}/tree/${CIRCLE_BRANCH}" \
+            --arg repositoryUri "${CIRCLE_REPOSITORY_URL}" \
+            --arg branchName "${CIRCLE_BRANCH}" \
+            --arg workflowId "${CIRCLE_WORKFLOW_ID}" \
+            --arg workflowUrl "https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}" \
+            --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg pipelineDisplay "#${CIRCLE_PIPELINE_NUMBER} ${CIRCLE_PROJECT_REPONAME}"  \
+            --arg deployDisplay "#${CIRCLE_PIPELINE_NUMBER}  ${CIRCLE_PROJECT_REPONAME} - prod"  \
+            --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_PIPELINE_NUMBER} ${CIRCLE_JOB} prod" \
+            --arg envId "${CIRCLE_WORKFLOW_ID}-prod" \
+            --arg envName "prod" \
+            --arg envType "development" \
+            --argjson issueKeys "${ISSUE_KEYS}" \
+            '
+            ($time_str | tonumber) as $time_num |
+            {
+              "deployments": [
+                {
+                  "schemaVersion": "1.0",
+                  "pipeline": {
+                    "id": $repoName,
+                    "displayName": $pipelineDisplay,
+                    "url": $workflowUrl
+                  },
+                  "deploymentSequenceNumber": $pipelineNumber,
+                  "updateSequenceNumber": $time_str,
+                  "displayName": $deployDisplay,
+                  "description": $description,
+                  "url": $url,
+                  "state": $state,
+                  "lastUpdated": $lastUpdated,
+                  "associations": [
+                    {
+                      "associationType": "issueKeys",
+                      "values": $issueKeys
+                    },
+                    {
+                      "associationType": "serviceIdOrKeys",
+                      "values": [""]
+                    }
+                  ],
+                  "environment":{
+                    "id": $envId,
+                    "displayName": $envName,
+                    "type": $envType
+                  }
+                }
+              ]
+            }
+            ' > /tmp/jira-status.json
+          }
+
+
+          post_to_jira () {
+            HTTP_STATUS=$(curl \
+            -u "${CIRCLE_PERSONAL_TOKEN}:" \
+            -s -w "%{http_code}" -o /tmp/curl_response.txt \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            -X POST "https://circleci.com/api/v1.1/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/jira/deployment" --data @/tmp/jira-status.json)
+
+            echo "Results from Jira: "
+            if [ "${HTTP_STATUS}" != "200" ];then
+              echo "Error calling Jira, result: ${HTTP_STATUS}" >&2
+              jq '.' /tmp/curl_response.txt
+              exit 0
+            fi
+
+            case "deployment" in
+              "build")
+                if jq -e '.unknownIssueKeys[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: unknown issue key"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+              ;;
+              "deployment")
+                if jq -e '.unknownAssociations[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: unknown association"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+                if jq -e '.rejectedDeployments[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: Deployment rejected"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+              ;;
+            esac
+
+            # If reached this point, the deployment was a success.
+            echo
+            jq '.' /tmp/curl_response.txt
+            echo
+            echo
+            echo "Success!"
+          }
+
+          # kick off
+          source ./circleci-orb-jira.status
+          run
+          rm -f ./circleci-orb-jira.status
+        name: Update status in Atlassian Jira
+        when: always
+  deploy-tag-prod-acquia-no-maint:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - run:
+        name: Disable SSH timeout
+        command: echo "ServerAliveInterval 30" >> ~/.ssh/config
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        command: curl -f -o ./drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: drush ma:deploy -v -y --skip-maint  prod tags/$CIRCLE_TAG
+        no_output_timeout: 60m
+    - run:
+        command: |
+          # Quietly try to make the install directory.
+          mkdir -p ~/bin | true
+
+          # Selectively export the SUDO command, depending if we have permission
+          # for a directory and whether we're running alpine.
+          if [[ $EUID == 0 ]]; then export SUDO=""; else # Check if we're root
+            if cat /etc/issue | grep Alpine > /dev/null 2>&1 || ! [[ -w "~/bin" ]]; then
+              export SUDO="sudo";
+            fi
+          fi
+
+          # If our first mkdir didn't succeed, we needed to run as sudo.
+          if [ ! -w ~/bin ]; then
+            $SUDO mkdir -p ~/bin
+          fi
+
+          echo 'export PATH=$PATH:~/bin' >> $BASH_ENV
+          source $BASH_ENV
+
+          # check if jq needs to be installed
+          if command -v jq >> /dev/null 2>&1; then
+
+              echo "jq is already installed..."
+
+            if [[ false == true ]]; then
+              echo "removing it."
+              $SUDO rm -f $(command -v jq)
+            else
+              echo "ignoring install request."
+              exit 0
+            fi
+          fi
+
+          # Set jq version
+          if [[ latest == "latest" ]]; then
+            JQ_VERSION=$(curl -Ls -o /dev/null -w %{url_effective} "https://github.com/stedolan/jq/releases/latest" | sed 's:.*/::')
+            echo "Latest version of jq is $JQ_VERSION"
+          else
+            JQ_VERSION=latest
+          fi
+
+          # extract version number
+          JQ_VERSION_NUMBER_STRING=$(echo $JQ_VERSION | sed -E 's/-/ /')
+          arrJQ_VERSION_NUMBER=($JQ_VERSION_NUMBER_STRING)
+          JQ_VERSION_NUMBER="${arrJQ_VERSION_NUMBER[1]}"
+
+          # Set binary download URL for specified version
+          # handle mac version
+          if uname -a | grep Darwin > /dev/null 2>&1; then
+            JQ_BINARY_URL="https://github.com/stedolan/jq/releases/download/${JQ_VERSION}/jq-osx-amd64"
+          else
+            # linux version
+            JQ_BINARY_URL="https://github.com/stedolan/jq/releases/download/${JQ_VERSION}/jq-linux64"
+          fi
+
+          jqBinary="jq-$PLATFORM"
+
+          if [ -d "$JQ_VERSION/sig" ]; then
+            # import jq sigs
+
+            if uname -a | grep Darwin > /dev/null 2>&1; then
+              HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
+
+              PLATFORM=osx-amd64
+            else
+              if cat /etc/issue | grep Alpine > /dev/null 2>&1; then
+                $SUDO apk add gnupg > /dev/null 2>&1
+              fi
+              PLATFORM=linux64
+            fi
+
+            gpg --import "$JQ_VERSION/sig/jq-release.key" > /dev/null
+
+            curl --output "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM" \
+                --silent --show-error --location --fail --retry 3 \
+                "$JQ_BINARY_URL"
+
+            # verify sha256sum, sig, install
+
+            gpg --verify "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM.asc"
+
+            pushd "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER" && grep "jq-$PLATFORM" "sha256sum.txt" | \
+            sha256sum -c -
+            popd
+            jqBinary="$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM"
+
+          else
+            curl --output "$jqBinary" \
+              --silent --show-error --location --fail --retry 3 \
+              "$JQ_BINARY_URL"
+          fi
+
+          $SUDO mv "$jqBinary" ~/bin/jq
+          $SUDO chmod +x ~/bin/jq
+
+          # cleanup
+          [[ -d "./$JQ_VERSION" ]] && rm -rf "./$JQ_VERSION"
+
+          # verify version
+          echo "jq has been installed to $(which jq)"
+          echo "jq version:"
+          echo "$(jq --version)"
+        name: Install jq
+        when: always
+    - run:
+        command: |
+          echo 'JIRA_BUILD_STATUS="failed"' > ./circleci-orb-jira.status
+        name: JIRA - Setting Failure Condition
+        when: on_fail
+    - run:
+        command: |
+          echo 'JIRA_BUILD_STATUS="successful"' > ./circleci-orb-jira.status
+        name: JIRA - Setting Success Condition
+        when: on_success
+    - run:
+        command: |
+          : ${CIRCLE_PERSONAL_TOKEN:?"Please provide a CircleCI API token for this orb to work!"} >&2
+          if [[ $(echo $CIRCLE_REPOSITORY_URL | grep github.com) ]]; then
+            VCS_TYPE=github
+          else
+            VCS_TYPE=bitbucket
+          fi
+
+          run () {
+            verify_api_key
+            parse_jira_key_array
+            HAS_JSD_SERVICE_ID=""
+              # If you have either an issue key or a service ID
+            if [[ -n "${ISSUE_KEYS}" || -n "${HAS_JSD_SERVICE_ID}" ]]; then
+              check_workflow_status
+              generate_json_payload_deployment
+              post_to_jira
+            else
+                # If no service is or issue key is found.
+              echo "No Jira issue keys found in commit subjects or branch name, skipping."
+              echo "No service ID selected. Please add the service_id parameter for JSD deployments."
+              exit 0
+            fi
+          }
+
+          verify_api_key () {
+            URL="https://circleci.com/api/v2/me?circle-token=${CIRCLE_PERSONAL_TOKEN}"
+            fetch $URL /tmp/me.json
+            jq -e '.login' /tmp/me.json
+          }
+
+          fetch () {
+            URL="$1"
+            OFILE="$2"
+            RESP=$(curl -w "%{http_code}" -s  --user "${CIRCLE_PERSONAL_TOKEN}:"  \
+            -o "${OFILE}" \
+            "${URL}")
+
+            if [[ "$RESP" != "20"* ]]; then
+              echo "Curl failed with code ${RESP}. full response below."
+              cat $OFILE
+              exit 1
+            fi
+          }
+
+          parse_jira_key_array () {
+            # must save as ISSUE_KEYS='["CC-4"]'
+            fetch https://circleci.com/api/v1.1/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM} /tmp/job_info.json
+            # see https://jqplay.org/s/TNq7c5ctot
+            ISSUE_KEYS=$(cat /tmp/job_info.json | jq '[.all_commit_details[].subject | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ] + [.all_commit_details[].branch | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ] + [if .branch then .branch else "" end | scan("([A-Z]{2,30}-[0-9]+)")  | . [] ] + [if false then .all_commit_details[].body else "" end | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ]')
+            if [ -z "$ISSUE_KEYS" ]; then
+              # No issue keys found.
+              echo "No issue keys found. This build does not contain a match for a Jira Issue. Please add your issue ID to the commit message or within the branch name."
+              exit 0
+            fi
+          }
+
+          check_workflow_status () {
+            URL="https://circleci.com/api/v2/workflow/${CIRCLE_WORKFLOW_ID}"
+            fetch $URL /tmp/workflow.json
+            export WORKFLOW_STATUS=$(jq -r '.status' /tmp/workflow.json)
+            export CIRCLE_PIPELINE_NUMBER=$(jq -r '.pipeline_number' /tmp/workflow.json)
+            echo "This job is passing, however another job in workflow is ${WORKFLOW_STATUS}"
+
+            if [ "deployment" != "deployment" ]; then
+                # deployments are special, cause they pass or fail alone.
+                # but jobs are stuck togehter, and they must respect status of workflow
+                if [[ "$WORKFLOW_STATUS" == "fail"* ]]; then
+                  export JIRA_BUILD_STATUS="failed"
+                fi
+            fi
+          }
+
+          generate_json_payload_build () {
+            iso_time=$(date '+%Y-%m-%dT%T%z'| sed -e 's/\([0-9][0-9]\)$/:\1/g')
+            echo {} | jq \
+            --arg time_str "$(date +%s)" \
+            --arg lastUpdated "${iso_time}" \
+            --arg pipelineNumber "${CIRCLE_PIPELINE_NUMBER}" \
+            --arg projectName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg state "${JIRA_BUILD_STATUS}" \
+            --arg jobName "${CIRCLE_JOB}" \
+            --arg buildNumber "${CIRCLE_BUILD_NUM}" \
+            --arg url "${CIRCLE_BUILD_URL}" \
+            --arg workflowUrl "https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}" \
+            --arg commit "${CIRCLE_SHA1}" \
+            --arg refUri "${CIRCLE_REPOSITORY_URL}/tree/${CIRCLE_BRANCH}" \
+            --arg repositoryUri "${CIRCLE_REPOSITORY_URL}" \
+            --arg branchName "${CIRCLE_BRANCH}" \
+            --arg workflowId "${CIRCLE_WORKFLOW_ID}" \
+            --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg display "${CIRCLE_PROJECT_REPONAME}"  \
+            --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_BUILD_NUM} ${CIRCLE_JOB}" \
+            --argjson issueKeys "${ISSUE_KEYS}" \
+            '
+            ($time_str | tonumber) as $time_num |
+            {
+              "builds": [
+                {
+                  "schemaVersion": "1.0",
+                  "pipelineId": $projectName,
+                  "buildNumber": $pipelineNumber,
+                  "updateSequenceNumber": $time_str,
+                  "displayName": $display,
+                  "description": $description,
+                  "url": $workflowUrl,
+                  "state": $state,
+                  "lastUpdated": $lastUpdated,
+                  "issueKeys": $issueKeys
+                }
+              ]
+            }
+            ' > /tmp/jira-status.json
+          }
+
+          generate_json_payload_deployment () {
+            echo "Update Jira with status: ${JIRA_BUILD_STATUS} for ${CIRCLE_PIPELINE_NUMBER}"
+            iso_time=$(date '+%Y-%m-%dT%T%z'| sed -e 's/\([0-9][0-9]\)$/:\1/g')
+            echo {} | jq \
+            --arg time_str "$(date +%s)" \
+            --arg lastUpdated "${iso_time}" \
+            --arg state "${JIRA_BUILD_STATUS}" \
+            --arg buildNumber "${CIRCLE_BUILD_NUM}" \
+            --arg pipelineNumber "${CIRCLE_PIPELINE_NUMBER}" \
+            --arg projectName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg url "${CIRCLE_BUILD_URL}" \
+            --arg commit "${CIRCLE_SHA1}" \
+            --arg refUri "${CIRCLE_REPOSITORY_URL}/tree/${CIRCLE_BRANCH}" \
+            --arg repositoryUri "${CIRCLE_REPOSITORY_URL}" \
+            --arg branchName "${CIRCLE_BRANCH}" \
+            --arg workflowId "${CIRCLE_WORKFLOW_ID}" \
+            --arg workflowUrl "https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}" \
+            --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg pipelineDisplay "#${CIRCLE_PIPELINE_NUMBER} ${CIRCLE_PROJECT_REPONAME}"  \
+            --arg deployDisplay "#${CIRCLE_PIPELINE_NUMBER}  ${CIRCLE_PROJECT_REPONAME} - prod"  \
+            --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_PIPELINE_NUMBER} ${CIRCLE_JOB} prod" \
+            --arg envId "${CIRCLE_WORKFLOW_ID}-prod" \
+            --arg envName "prod" \
+            --arg envType "development" \
+            --argjson issueKeys "${ISSUE_KEYS}" \
+            '
+            ($time_str | tonumber) as $time_num |
+            {
+              "deployments": [
+                {
+                  "schemaVersion": "1.0",
+                  "pipeline": {
+                    "id": $repoName,
+                    "displayName": $pipelineDisplay,
+                    "url": $workflowUrl
+                  },
+                  "deploymentSequenceNumber": $pipelineNumber,
+                  "updateSequenceNumber": $time_str,
+                  "displayName": $deployDisplay,
+                  "description": $description,
+                  "url": $url,
+                  "state": $state,
+                  "lastUpdated": $lastUpdated,
+                  "associations": [
+                    {
+                      "associationType": "issueKeys",
+                      "values": $issueKeys
+                    },
+                    {
+                      "associationType": "serviceIdOrKeys",
+                      "values": [""]
+                    }
+                  ],
+                  "environment":{
+                    "id": $envId,
+                    "displayName": $envName,
+                    "type": $envType
+                  }
+                }
+              ]
+            }
+            ' > /tmp/jira-status.json
+          }
+
+
+          post_to_jira () {
+            HTTP_STATUS=$(curl \
+            -u "${CIRCLE_PERSONAL_TOKEN}:" \
+            -s -w "%{http_code}" -o /tmp/curl_response.txt \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            -X POST "https://circleci.com/api/v1.1/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/jira/deployment" --data @/tmp/jira-status.json)
+
+            echo "Results from Jira: "
+            if [ "${HTTP_STATUS}" != "200" ];then
+              echo "Error calling Jira, result: ${HTTP_STATUS}" >&2
+              jq '.' /tmp/curl_response.txt
+              exit 0
+            fi
+
+            case "deployment" in
+              "build")
+                if jq -e '.unknownIssueKeys[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: unknown issue key"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+              ;;
+              "deployment")
+                if jq -e '.unknownAssociations[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: unknown association"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+                if jq -e '.rejectedDeployments[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: Deployment rejected"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+              ;;
+            esac
+
+            # If reached this point, the deployment was a success.
+            echo
+            jq '.' /tmp/curl_response.txt
+            echo
+            echo
+            echo "Success!"
+          }
+
+          # kick off
+          source ./circleci-orb-jira.status
+          run
+          rm -f ./circleci-orb-jira.status
+        name: Update status in Atlassian Jira
+        when: always
+  cut_release_branch:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - checkout
+    - run:
+        command: git config --global user.email "circleci@example.com"
+    - run:
+        command: git config --global user.name "CircleCI Deployment Bot"
+    - run:
+        command: php scripts/build-changelog.php
+  deploy-cd-refresh-db:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - run:
+        name: Disable SSH timeout
+        command: echo "ServerAliveInterval 30" >> ~/.ssh/config
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        command: curl -f -o ./drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: drush ma:deploy -v -y  --refresh-db cd $CIRCLE_BRANCH
+        no_output_timeout: 60m
+    - run:
+        command: |
+          # Quietly try to make the install directory.
+          mkdir -p ~/bin | true
+
+          # Selectively export the SUDO command, depending if we have permission
+          # for a directory and whether we're running alpine.
+          if [[ $EUID == 0 ]]; then export SUDO=""; else # Check if we're root
+            if cat /etc/issue | grep Alpine > /dev/null 2>&1 || ! [[ -w "~/bin" ]]; then
+              export SUDO="sudo";
+            fi
+          fi
+
+          # If our first mkdir didn't succeed, we needed to run as sudo.
+          if [ ! -w ~/bin ]; then
+            $SUDO mkdir -p ~/bin
+          fi
+
+          echo 'export PATH=$PATH:~/bin' >> $BASH_ENV
+          source $BASH_ENV
+
+          # check if jq needs to be installed
+          if command -v jq >> /dev/null 2>&1; then
+
+              echo "jq is already installed..."
+
+            if [[ false == true ]]; then
+              echo "removing it."
+              $SUDO rm -f $(command -v jq)
+            else
+              echo "ignoring install request."
+              exit 0
+            fi
+          fi
+
+          # Set jq version
+          if [[ latest == "latest" ]]; then
+            JQ_VERSION=$(curl -Ls -o /dev/null -w %{url_effective} "https://github.com/stedolan/jq/releases/latest" | sed 's:.*/::')
+            echo "Latest version of jq is $JQ_VERSION"
+          else
+            JQ_VERSION=latest
+          fi
+
+          # extract version number
+          JQ_VERSION_NUMBER_STRING=$(echo $JQ_VERSION | sed -E 's/-/ /')
+          arrJQ_VERSION_NUMBER=($JQ_VERSION_NUMBER_STRING)
+          JQ_VERSION_NUMBER="${arrJQ_VERSION_NUMBER[1]}"
+
+          # Set binary download URL for specified version
+          # handle mac version
+          if uname -a | grep Darwin > /dev/null 2>&1; then
+            JQ_BINARY_URL="https://github.com/stedolan/jq/releases/download/${JQ_VERSION}/jq-osx-amd64"
+          else
+            # linux version
+            JQ_BINARY_URL="https://github.com/stedolan/jq/releases/download/${JQ_VERSION}/jq-linux64"
+          fi
+
+          jqBinary="jq-$PLATFORM"
+
+          if [ -d "$JQ_VERSION/sig" ]; then
+            # import jq sigs
+
+            if uname -a | grep Darwin > /dev/null 2>&1; then
+              HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
+
+              PLATFORM=osx-amd64
+            else
+              if cat /etc/issue | grep Alpine > /dev/null 2>&1; then
+                $SUDO apk add gnupg > /dev/null 2>&1
+              fi
+              PLATFORM=linux64
+            fi
+
+            gpg --import "$JQ_VERSION/sig/jq-release.key" > /dev/null
+
+            curl --output "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM" \
+                --silent --show-error --location --fail --retry 3 \
+                "$JQ_BINARY_URL"
+
+            # verify sha256sum, sig, install
+
+            gpg --verify "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM.asc"
+
+            pushd "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER" && grep "jq-$PLATFORM" "sha256sum.txt" | \
+            sha256sum -c -
+            popd
+            jqBinary="$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM"
+
+          else
+            curl --output "$jqBinary" \
+              --silent --show-error --location --fail --retry 3 \
+              "$JQ_BINARY_URL"
+          fi
+
+          $SUDO mv "$jqBinary" ~/bin/jq
+          $SUDO chmod +x ~/bin/jq
+
+          # cleanup
+          [[ -d "./$JQ_VERSION" ]] && rm -rf "./$JQ_VERSION"
+
+          # verify version
+          echo "jq has been installed to $(which jq)"
+          echo "jq version:"
+          echo "$(jq --version)"
+        name: Install jq
+        when: always
+    - run:
+        command: |
+          echo 'JIRA_BUILD_STATUS="failed"' > ./circleci-orb-jira.status
+        name: JIRA - Setting Failure Condition
+        when: on_fail
+    - run:
+        command: |
+          echo 'JIRA_BUILD_STATUS="successful"' > ./circleci-orb-jira.status
+        name: JIRA - Setting Success Condition
+        when: on_success
+    - run:
+        command: |
+          : ${CIRCLE_PERSONAL_TOKEN:?"Please provide a CircleCI API token for this orb to work!"} >&2
+          if [[ $(echo $CIRCLE_REPOSITORY_URL | grep github.com) ]]; then
+            VCS_TYPE=github
+          else
+            VCS_TYPE=bitbucket
+          fi
+
+          run () {
+            verify_api_key
+            parse_jira_key_array
+            HAS_JSD_SERVICE_ID=""
+              # If you have either an issue key or a service ID
+            if [[ -n "${ISSUE_KEYS}" || -n "${HAS_JSD_SERVICE_ID}" ]]; then
+              check_workflow_status
+              generate_json_payload_deployment
+              post_to_jira
+            else
+                # If no service is or issue key is found.
+              echo "No Jira issue keys found in commit subjects or branch name, skipping."
+              echo "No service ID selected. Please add the service_id parameter for JSD deployments."
+              exit 0
+            fi
+          }
+
+          verify_api_key () {
+            URL="https://circleci.com/api/v2/me?circle-token=${CIRCLE_PERSONAL_TOKEN}"
+            fetch $URL /tmp/me.json
+            jq -e '.login' /tmp/me.json
+          }
+
+          fetch () {
+            URL="$1"
+            OFILE="$2"
+            RESP=$(curl -w "%{http_code}" -s  --user "${CIRCLE_PERSONAL_TOKEN}:"  \
+            -o "${OFILE}" \
+            "${URL}")
+
+            if [[ "$RESP" != "20"* ]]; then
+              echo "Curl failed with code ${RESP}. full response below."
+              cat $OFILE
+              exit 1
+            fi
+          }
+
+          parse_jira_key_array () {
+            # must save as ISSUE_KEYS='["CC-4"]'
+            fetch https://circleci.com/api/v1.1/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM} /tmp/job_info.json
+            # see https://jqplay.org/s/TNq7c5ctot
+            ISSUE_KEYS=$(cat /tmp/job_info.json | jq '[.all_commit_details[].subject | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ] + [.all_commit_details[].branch | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ] + [if .branch then .branch else "" end | scan("([A-Z]{2,30}-[0-9]+)")  | . [] ] + [if false then .all_commit_details[].body else "" end | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ]')
+            if [ -z "$ISSUE_KEYS" ]; then
+              # No issue keys found.
+              echo "No issue keys found. This build does not contain a match for a Jira Issue. Please add your issue ID to the commit message or within the branch name."
+              exit 0
+            fi
+          }
+
+          check_workflow_status () {
+            URL="https://circleci.com/api/v2/workflow/${CIRCLE_WORKFLOW_ID}"
+            fetch $URL /tmp/workflow.json
+            export WORKFLOW_STATUS=$(jq -r '.status' /tmp/workflow.json)
+            export CIRCLE_PIPELINE_NUMBER=$(jq -r '.pipeline_number' /tmp/workflow.json)
+            echo "This job is passing, however another job in workflow is ${WORKFLOW_STATUS}"
+
+            if [ "deployment" != "deployment" ]; then
+                # deployments are special, cause they pass or fail alone.
+                # but jobs are stuck togehter, and they must respect status of workflow
+                if [[ "$WORKFLOW_STATUS" == "fail"* ]]; then
+                  export JIRA_BUILD_STATUS="failed"
+                fi
+            fi
+          }
+
+          generate_json_payload_build () {
+            iso_time=$(date '+%Y-%m-%dT%T%z'| sed -e 's/\([0-9][0-9]\)$/:\1/g')
+            echo {} | jq \
+            --arg time_str "$(date +%s)" \
+            --arg lastUpdated "${iso_time}" \
+            --arg pipelineNumber "${CIRCLE_PIPELINE_NUMBER}" \
+            --arg projectName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg state "${JIRA_BUILD_STATUS}" \
+            --arg jobName "${CIRCLE_JOB}" \
+            --arg buildNumber "${CIRCLE_BUILD_NUM}" \
+            --arg url "${CIRCLE_BUILD_URL}" \
+            --arg workflowUrl "https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}" \
+            --arg commit "${CIRCLE_SHA1}" \
+            --arg refUri "${CIRCLE_REPOSITORY_URL}/tree/${CIRCLE_BRANCH}" \
+            --arg repositoryUri "${CIRCLE_REPOSITORY_URL}" \
+            --arg branchName "${CIRCLE_BRANCH}" \
+            --arg workflowId "${CIRCLE_WORKFLOW_ID}" \
+            --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg display "${CIRCLE_PROJECT_REPONAME}"  \
+            --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_BUILD_NUM} ${CIRCLE_JOB}" \
+            --argjson issueKeys "${ISSUE_KEYS}" \
+            '
+            ($time_str | tonumber) as $time_num |
+            {
+              "builds": [
+                {
+                  "schemaVersion": "1.0",
+                  "pipelineId": $projectName,
+                  "buildNumber": $pipelineNumber,
+                  "updateSequenceNumber": $time_str,
+                  "displayName": $display,
+                  "description": $description,
+                  "url": $workflowUrl,
+                  "state": $state,
+                  "lastUpdated": $lastUpdated,
+                  "issueKeys": $issueKeys
+                }
+              ]
+            }
+            ' > /tmp/jira-status.json
+          }
+
+          generate_json_payload_deployment () {
+            echo "Update Jira with status: ${JIRA_BUILD_STATUS} for ${CIRCLE_PIPELINE_NUMBER}"
+            iso_time=$(date '+%Y-%m-%dT%T%z'| sed -e 's/\([0-9][0-9]\)$/:\1/g')
+            echo {} | jq \
+            --arg time_str "$(date +%s)" \
+            --arg lastUpdated "${iso_time}" \
+            --arg state "${JIRA_BUILD_STATUS}" \
+            --arg buildNumber "${CIRCLE_BUILD_NUM}" \
+            --arg pipelineNumber "${CIRCLE_PIPELINE_NUMBER}" \
+            --arg projectName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg url "${CIRCLE_BUILD_URL}" \
+            --arg commit "${CIRCLE_SHA1}" \
+            --arg refUri "${CIRCLE_REPOSITORY_URL}/tree/${CIRCLE_BRANCH}" \
+            --arg repositoryUri "${CIRCLE_REPOSITORY_URL}" \
+            --arg branchName "${CIRCLE_BRANCH}" \
+            --arg workflowId "${CIRCLE_WORKFLOW_ID}" \
+            --arg workflowUrl "https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}" \
+            --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg pipelineDisplay "#${CIRCLE_PIPELINE_NUMBER} ${CIRCLE_PROJECT_REPONAME}"  \
+            --arg deployDisplay "#${CIRCLE_PIPELINE_NUMBER}  ${CIRCLE_PROJECT_REPONAME} - cd"  \
+            --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_PIPELINE_NUMBER} ${CIRCLE_JOB} cd" \
+            --arg envId "${CIRCLE_WORKFLOW_ID}-cd" \
+            --arg envName "cd" \
+            --arg envType "development" \
+            --argjson issueKeys "${ISSUE_KEYS}" \
+            '
+            ($time_str | tonumber) as $time_num |
+            {
+              "deployments": [
+                {
+                  "schemaVersion": "1.0",
+                  "pipeline": {
+                    "id": $repoName,
+                    "displayName": $pipelineDisplay,
+                    "url": $workflowUrl
+                  },
+                  "deploymentSequenceNumber": $pipelineNumber,
+                  "updateSequenceNumber": $time_str,
+                  "displayName": $deployDisplay,
+                  "description": $description,
+                  "url": $url,
+                  "state": $state,
+                  "lastUpdated": $lastUpdated,
+                  "associations": [
+                    {
+                      "associationType": "issueKeys",
+                      "values": $issueKeys
+                    },
+                    {
+                      "associationType": "serviceIdOrKeys",
+                      "values": [""]
+                    }
+                  ],
+                  "environment":{
+                    "id": $envId,
+                    "displayName": $envName,
+                    "type": $envType
+                  }
+                }
+              ]
+            }
+            ' > /tmp/jira-status.json
+          }
+
+
+          post_to_jira () {
+            HTTP_STATUS=$(curl \
+            -u "${CIRCLE_PERSONAL_TOKEN}:" \
+            -s -w "%{http_code}" -o /tmp/curl_response.txt \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            -X POST "https://circleci.com/api/v1.1/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/jira/deployment" --data @/tmp/jira-status.json)
+
+            echo "Results from Jira: "
+            if [ "${HTTP_STATUS}" != "200" ];then
+              echo "Error calling Jira, result: ${HTTP_STATUS}" >&2
+              jq '.' /tmp/curl_response.txt
+              exit 0
+            fi
+
+            case "deployment" in
+              "build")
+                if jq -e '.unknownIssueKeys[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: unknown issue key"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+              ;;
+              "deployment")
+                if jq -e '.unknownAssociations[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: unknown association"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+                if jq -e '.rejectedDeployments[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: Deployment rejected"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+              ;;
+            esac
+
+            # If reached this point, the deployment was a success.
+            echo
+            jq '.' /tmp/curl_response.txt
+            echo
+            echo
+            echo "Success!"
+          }
+
+          # kick off
+          source ./circleci-orb-jira.status
+          run
+          rm -f ./circleci-orb-jira.status
+        name: Update status in Atlassian Jira
+        when: always
+  crawl-test-200:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - run:
+        name: Disable SSH timeout
+        command: echo "ServerAliveInterval 30" >> ~/.ssh/config
+    - run:
+        command: curl -f -o ./drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: mkdir -p /tmp/results/junit
+    - run:
+        name: Nightcrawler
+        command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=test --samples=200
+        no_output_timeout: 300m
+    - store_test_results:
+        path: /tmp/results
+    - store_artifacts:
+        path: /tmp/results
+  test-phpunit-super:
+    working_directory: /var/www/code
+    resource_class: xlarge
+    docker:
+    - image: massgov/drupal-container:1.0.20-ci
+      environment:
+        COMPOSER_ALLOW_SUPERUSER: 1
+        DOCKER_ENV: ci
+        APACHE_DOCROOT: /var/www/code/docroot
+        MYSQL_USER: circle
+        MYSQL_PASSWORD: circle
+        MYSQL_DATABASE: circle
+        MYSQL_HOST: 127.0.0.1
+        MEMCACHED_HOST: 127.0.0.1
+        DTT_BASE_URL: http://mass.local
+        DTT_API_URL: http://mass.local:9222
+        BROWSERTEST_OUTPUT_DIRECTORY: /tmp
+    - image: massgov/mysql-sanitized:super
+      auth:
+        username: $DOCKER_USER
+        password: $DOCKER_API_KEY
+      environment:
+        MYSQL_USER: circle
+        MYSQL_PASSWORD: circle
+        MYSQL_DATABASE: circle
+        MYSQL_RANDOM_ROOT_PASSWORD: 1
+      command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
+    - image: memcached:1-alpine
+      command: memcached -m 128
+    - image: seleniarm/standalone-chromium:4.1.4-20220429
+    steps:
+    - attach_workspace:
+        at: /var/www
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        name: Start Apache
+        command: /usr/local/bin/apache2-foreground-enhanced
+        background: true
+    - run:
+        name: Update host file
+        command: echo '127.0.0.1 mass.local' >> /etc/hosts
+    - run:
+        name: Wait for mysql
+        command: dockerize -wait tcp://localhost:3306 -timeout 2m
+    - run:
+        command: drush deploy
+    - run:
+        command: drush status
+    - run:
+        command: cat /proc/cpuinfo
+    - run:
+        command: cat /proc/meminfo
+    - run:
+        name: Ensure no differences between between config on disk and config in Drupal.
+        command: drush --no config:export --diff
+    - run:
+        command: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
+    - run:
+        command: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+    - run:
+        command: su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"
+    - store_test_results:
+        path: /tmp/test-results
+    - store_artifacts:
+        path: /var/www/code/output
+    - store_artifacts:
+        path: /var/www/code/docroot/sites/simpletest/browser_output
+    - store_artifacts:
+        path: /tmp/test-results
+  backstop_reference:
+    resource_class: xlarge
+    docker:
+    - image: backstopjs/backstopjs
+    steps:
+    - checkout
+    - run:
+        name: Backstop reference
+        working_directory: backstop
+        command: backstop --config=backstop.js reference --target=prod --list=all --viewport=all
+    - store_artifacts:
+        path: backstop/reference
+  deploy-test-no-refresh-db:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - run:
+        name: Disable SSH timeout
+        command: echo "ServerAliveInterval 30" >> ~/.ssh/config
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        command: curl -f -o ./drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: drush ma:deploy -v -y   test $CIRCLE_BRANCH
+        no_output_timeout: 60m
+    - run:
+        command: |
+          # Quietly try to make the install directory.
+          mkdir -p ~/bin | true
+
+          # Selectively export the SUDO command, depending if we have permission
+          # for a directory and whether we're running alpine.
+          if [[ $EUID == 0 ]]; then export SUDO=""; else # Check if we're root
+            if cat /etc/issue | grep Alpine > /dev/null 2>&1 || ! [[ -w "~/bin" ]]; then
+              export SUDO="sudo";
+            fi
+          fi
+
+          # If our first mkdir didn't succeed, we needed to run as sudo.
+          if [ ! -w ~/bin ]; then
+            $SUDO mkdir -p ~/bin
+          fi
+
+          echo 'export PATH=$PATH:~/bin' >> $BASH_ENV
+          source $BASH_ENV
+
+          # check if jq needs to be installed
+          if command -v jq >> /dev/null 2>&1; then
+
+              echo "jq is already installed..."
+
+            if [[ false == true ]]; then
+              echo "removing it."
+              $SUDO rm -f $(command -v jq)
+            else
+              echo "ignoring install request."
+              exit 0
+            fi
+          fi
+
+          # Set jq version
+          if [[ latest == "latest" ]]; then
+            JQ_VERSION=$(curl -Ls -o /dev/null -w %{url_effective} "https://github.com/stedolan/jq/releases/latest" | sed 's:.*/::')
+            echo "Latest version of jq is $JQ_VERSION"
+          else
+            JQ_VERSION=latest
+          fi
+
+          # extract version number
+          JQ_VERSION_NUMBER_STRING=$(echo $JQ_VERSION | sed -E 's/-/ /')
+          arrJQ_VERSION_NUMBER=($JQ_VERSION_NUMBER_STRING)
+          JQ_VERSION_NUMBER="${arrJQ_VERSION_NUMBER[1]}"
+
+          # Set binary download URL for specified version
+          # handle mac version
+          if uname -a | grep Darwin > /dev/null 2>&1; then
+            JQ_BINARY_URL="https://github.com/stedolan/jq/releases/download/${JQ_VERSION}/jq-osx-amd64"
+          else
+            # linux version
+            JQ_BINARY_URL="https://github.com/stedolan/jq/releases/download/${JQ_VERSION}/jq-linux64"
+          fi
+
+          jqBinary="jq-$PLATFORM"
+
+          if [ -d "$JQ_VERSION/sig" ]; then
+            # import jq sigs
+
+            if uname -a | grep Darwin > /dev/null 2>&1; then
+              HOMEBREW_NO_AUTO_UPDATE=1 brew install gnupg coreutils
+
+              PLATFORM=osx-amd64
+            else
+              if cat /etc/issue | grep Alpine > /dev/null 2>&1; then
+                $SUDO apk add gnupg > /dev/null 2>&1
+              fi
+              PLATFORM=linux64
+            fi
+
+            gpg --import "$JQ_VERSION/sig/jq-release.key" > /dev/null
+
+            curl --output "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM" \
+                --silent --show-error --location --fail --retry 3 \
+                "$JQ_BINARY_URL"
+
+            # verify sha256sum, sig, install
+
+            gpg --verify "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM.asc"
+
+            pushd "$JQ_VERSION/sig/v$JQ_VERSION_NUMBER" && grep "jq-$PLATFORM" "sha256sum.txt" | \
+            sha256sum -c -
+            popd
+            jqBinary="$JQ_VERSION/sig/v$JQ_VERSION_NUMBER/jq-$PLATFORM"
+
+          else
+            curl --output "$jqBinary" \
+              --silent --show-error --location --fail --retry 3 \
+              "$JQ_BINARY_URL"
+          fi
+
+          $SUDO mv "$jqBinary" ~/bin/jq
+          $SUDO chmod +x ~/bin/jq
+
+          # cleanup
+          [[ -d "./$JQ_VERSION" ]] && rm -rf "./$JQ_VERSION"
+
+          # verify version
+          echo "jq has been installed to $(which jq)"
+          echo "jq version:"
+          echo "$(jq --version)"
+        name: Install jq
+        when: always
+    - run:
+        command: |
+          echo 'JIRA_BUILD_STATUS="failed"' > ./circleci-orb-jira.status
+        name: JIRA - Setting Failure Condition
+        when: on_fail
+    - run:
+        command: |
+          echo 'JIRA_BUILD_STATUS="successful"' > ./circleci-orb-jira.status
+        name: JIRA - Setting Success Condition
+        when: on_success
+    - run:
+        command: |
+          : ${CIRCLE_PERSONAL_TOKEN:?"Please provide a CircleCI API token for this orb to work!"} >&2
+          if [[ $(echo $CIRCLE_REPOSITORY_URL | grep github.com) ]]; then
+            VCS_TYPE=github
+          else
+            VCS_TYPE=bitbucket
+          fi
+
+          run () {
+            verify_api_key
+            parse_jira_key_array
+            HAS_JSD_SERVICE_ID=""
+              # If you have either an issue key or a service ID
+            if [[ -n "${ISSUE_KEYS}" || -n "${HAS_JSD_SERVICE_ID}" ]]; then
+              check_workflow_status
+              generate_json_payload_deployment
+              post_to_jira
+            else
+                # If no service is or issue key is found.
+              echo "No Jira issue keys found in commit subjects or branch name, skipping."
+              echo "No service ID selected. Please add the service_id parameter for JSD deployments."
+              exit 0
+            fi
+          }
+
+          verify_api_key () {
+            URL="https://circleci.com/api/v2/me?circle-token=${CIRCLE_PERSONAL_TOKEN}"
+            fetch $URL /tmp/me.json
+            jq -e '.login' /tmp/me.json
+          }
+
+          fetch () {
+            URL="$1"
+            OFILE="$2"
+            RESP=$(curl -w "%{http_code}" -s  --user "${CIRCLE_PERSONAL_TOKEN}:"  \
+            -o "${OFILE}" \
+            "${URL}")
+
+            if [[ "$RESP" != "20"* ]]; then
+              echo "Curl failed with code ${RESP}. full response below."
+              cat $OFILE
+              exit 1
+            fi
+          }
+
+          parse_jira_key_array () {
+            # must save as ISSUE_KEYS='["CC-4"]'
+            fetch https://circleci.com/api/v1.1/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/${CIRCLE_BUILD_NUM} /tmp/job_info.json
+            # see https://jqplay.org/s/TNq7c5ctot
+            ISSUE_KEYS=$(cat /tmp/job_info.json | jq '[.all_commit_details[].subject | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ] + [.all_commit_details[].branch | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ] + [if .branch then .branch else "" end | scan("([A-Z]{2,30}-[0-9]+)")  | . [] ] + [if false then .all_commit_details[].body else "" end | scan("([A-Z]{2,30}-[0-9]+)")   | .[] ]')
+            if [ -z "$ISSUE_KEYS" ]; then
+              # No issue keys found.
+              echo "No issue keys found. This build does not contain a match for a Jira Issue. Please add your issue ID to the commit message or within the branch name."
+              exit 0
+            fi
+          }
+
+          check_workflow_status () {
+            URL="https://circleci.com/api/v2/workflow/${CIRCLE_WORKFLOW_ID}"
+            fetch $URL /tmp/workflow.json
+            export WORKFLOW_STATUS=$(jq -r '.status' /tmp/workflow.json)
+            export CIRCLE_PIPELINE_NUMBER=$(jq -r '.pipeline_number' /tmp/workflow.json)
+            echo "This job is passing, however another job in workflow is ${WORKFLOW_STATUS}"
+
+            if [ "deployment" != "deployment" ]; then
+                # deployments are special, cause they pass or fail alone.
+                # but jobs are stuck togehter, and they must respect status of workflow
+                if [[ "$WORKFLOW_STATUS" == "fail"* ]]; then
+                  export JIRA_BUILD_STATUS="failed"
+                fi
+            fi
+          }
+
+          generate_json_payload_build () {
+            iso_time=$(date '+%Y-%m-%dT%T%z'| sed -e 's/\([0-9][0-9]\)$/:\1/g')
+            echo {} | jq \
+            --arg time_str "$(date +%s)" \
+            --arg lastUpdated "${iso_time}" \
+            --arg pipelineNumber "${CIRCLE_PIPELINE_NUMBER}" \
+            --arg projectName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg state "${JIRA_BUILD_STATUS}" \
+            --arg jobName "${CIRCLE_JOB}" \
+            --arg buildNumber "${CIRCLE_BUILD_NUM}" \
+            --arg url "${CIRCLE_BUILD_URL}" \
+            --arg workflowUrl "https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}" \
+            --arg commit "${CIRCLE_SHA1}" \
+            --arg refUri "${CIRCLE_REPOSITORY_URL}/tree/${CIRCLE_BRANCH}" \
+            --arg repositoryUri "${CIRCLE_REPOSITORY_URL}" \
+            --arg branchName "${CIRCLE_BRANCH}" \
+            --arg workflowId "${CIRCLE_WORKFLOW_ID}" \
+            --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg display "${CIRCLE_PROJECT_REPONAME}"  \
+            --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_BUILD_NUM} ${CIRCLE_JOB}" \
+            --argjson issueKeys "${ISSUE_KEYS}" \
+            '
+            ($time_str | tonumber) as $time_num |
+            {
+              "builds": [
+                {
+                  "schemaVersion": "1.0",
+                  "pipelineId": $projectName,
+                  "buildNumber": $pipelineNumber,
+                  "updateSequenceNumber": $time_str,
+                  "displayName": $display,
+                  "description": $description,
+                  "url": $workflowUrl,
+                  "state": $state,
+                  "lastUpdated": $lastUpdated,
+                  "issueKeys": $issueKeys
+                }
+              ]
+            }
+            ' > /tmp/jira-status.json
+          }
+
+          generate_json_payload_deployment () {
+            echo "Update Jira with status: ${JIRA_BUILD_STATUS} for ${CIRCLE_PIPELINE_NUMBER}"
+            iso_time=$(date '+%Y-%m-%dT%T%z'| sed -e 's/\([0-9][0-9]\)$/:\1/g')
+            echo {} | jq \
+            --arg time_str "$(date +%s)" \
+            --arg lastUpdated "${iso_time}" \
+            --arg state "${JIRA_BUILD_STATUS}" \
+            --arg buildNumber "${CIRCLE_BUILD_NUM}" \
+            --arg pipelineNumber "${CIRCLE_PIPELINE_NUMBER}" \
+            --arg projectName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg url "${CIRCLE_BUILD_URL}" \
+            --arg commit "${CIRCLE_SHA1}" \
+            --arg refUri "${CIRCLE_REPOSITORY_URL}/tree/${CIRCLE_BRANCH}" \
+            --arg repositoryUri "${CIRCLE_REPOSITORY_URL}" \
+            --arg branchName "${CIRCLE_BRANCH}" \
+            --arg workflowId "${CIRCLE_WORKFLOW_ID}" \
+            --arg workflowUrl "https://circleci.com/workflow-run/${CIRCLE_WORKFLOW_ID}" \
+            --arg repoName "${CIRCLE_PROJECT_REPONAME}" \
+            --arg pipelineDisplay "#${CIRCLE_PIPELINE_NUMBER} ${CIRCLE_PROJECT_REPONAME}"  \
+            --arg deployDisplay "#${CIRCLE_PIPELINE_NUMBER}  ${CIRCLE_PROJECT_REPONAME} - test"  \
+            --arg description "${CIRCLE_PROJECT_REPONAME} #${CIRCLE_PIPELINE_NUMBER} ${CIRCLE_JOB} test" \
+            --arg envId "${CIRCLE_WORKFLOW_ID}-test" \
+            --arg envName "test" \
+            --arg envType "development" \
+            --argjson issueKeys "${ISSUE_KEYS}" \
+            '
+            ($time_str | tonumber) as $time_num |
+            {
+              "deployments": [
+                {
+                  "schemaVersion": "1.0",
+                  "pipeline": {
+                    "id": $repoName,
+                    "displayName": $pipelineDisplay,
+                    "url": $workflowUrl
+                  },
+                  "deploymentSequenceNumber": $pipelineNumber,
+                  "updateSequenceNumber": $time_str,
+                  "displayName": $deployDisplay,
+                  "description": $description,
+                  "url": $url,
+                  "state": $state,
+                  "lastUpdated": $lastUpdated,
+                  "associations": [
+                    {
+                      "associationType": "issueKeys",
+                      "values": $issueKeys
+                    },
+                    {
+                      "associationType": "serviceIdOrKeys",
+                      "values": [""]
+                    }
+                  ],
+                  "environment":{
+                    "id": $envId,
+                    "displayName": $envName,
+                    "type": $envType
+                  }
+                }
+              ]
+            }
+            ' > /tmp/jira-status.json
+          }
+
+
+          post_to_jira () {
+            HTTP_STATUS=$(curl \
+            -u "${CIRCLE_PERSONAL_TOKEN}:" \
+            -s -w "%{http_code}" -o /tmp/curl_response.txt \
+            -H "Content-Type: application/json" \
+            -H "Accept: application/json" \
+            -X POST "https://circleci.com/api/v1.1/project/${VCS_TYPE}/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}/jira/deployment" --data @/tmp/jira-status.json)
+
+            echo "Results from Jira: "
+            if [ "${HTTP_STATUS}" != "200" ];then
+              echo "Error calling Jira, result: ${HTTP_STATUS}" >&2
+              jq '.' /tmp/curl_response.txt
+              exit 0
+            fi
+
+            case "deployment" in
+              "build")
+                if jq -e '.unknownIssueKeys[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: unknown issue key"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+              ;;
+              "deployment")
+                if jq -e '.unknownAssociations[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: unknown association"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+                if jq -e '.rejectedDeployments[0]' /tmp/curl_response.txt > /dev/null; then
+                  echo "ERROR: Deployment rejected"
+                  jq '.' /tmp/curl_response.txt
+                  exit 0
+                fi
+              ;;
+            esac
+
+            # If reached this point, the deployment was a success.
+            echo
+            jq '.' /tmp/curl_response.txt
+            echo
+            echo
+            echo "Success!"
+          }
+
+          # kick off
+          source ./circleci-orb-jira.status
+          run
+          rm -f ./circleci-orb-jira.status
+        name: Update status in Atlassian Jira
+        when: always
+  test-behat:
+    working_directory: /var/www/code
+    resource_class: xlarge
+    docker:
+    - image: massgov/drupal-container:1.0.20-ci
+      environment:
+        COMPOSER_ALLOW_SUPERUSER: 1
+        DOCKER_ENV: ci
+        APACHE_DOCROOT: /var/www/code/docroot
+        MYSQL_USER: circle
+        MYSQL_PASSWORD: circle
+        MYSQL_DATABASE: circle
+        MYSQL_HOST: 127.0.0.1
+        MEMCACHED_HOST: 127.0.0.1
+        DTT_BASE_URL: http://mass.local
+        DTT_API_URL: http://mass.local:9222
+        BROWSERTEST_OUTPUT_DIRECTORY: /tmp
+    - image: massgov/mysql-sanitized:latest
+      auth:
+        username: $DOCKER_USER
+        password: $DOCKER_API_KEY
+      environment:
+        MYSQL_USER: circle
+        MYSQL_PASSWORD: circle
+        MYSQL_DATABASE: circle
+        MYSQL_RANDOM_ROOT_PASSWORD: 1
+      command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
+    - image: memcached:1-alpine
+      command: memcached -m 128
+    - image: seleniarm/standalone-chromium:4.1.4-20220429
+    steps:
+    - attach_workspace:
+        at: /var/www
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        name: Start Apache
+        command: /usr/local/bin/apache2-foreground-enhanced
+        background: true
+    - run:
+        name: Update host file
+        command: echo '127.0.0.1 mass.local' >> /etc/hosts
+    - run:
+        name: Wait for mysql
+        command: dockerize -wait tcp://localhost:3306 -timeout 2m
+    - run:
+        command: drush deploy
+    - run:
+        command: drush status
+    - run:
+        command: cat /proc/cpuinfo
+    - run:
+        command: cat /proc/meminfo
+    - run:
+        name: Ensure no differences between between config on disk and config in Drupal.
+        command: drush --no config:export --diff
+    - run:
+        command: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
+    - run:
+        command: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+    - run:
+        command: behat --profile=ci --strict --format=junit --out=/tmp/test-results/behat --format=pretty --out=std
+    - store_test_results:
+        path: /tmp/test-results
+    - store_artifacts:
+        path: /var/www/code/output
+    - store_artifacts:
+        path: /var/www/code/docroot/sites/simpletest/browser_output
+    - store_artifacts:
+        path: /tmp/test-results
+  crawl-test-700:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - run:
+        name: Disable SSH timeout
+        command: echo "ServerAliveInterval 30" >> ~/.ssh/config
+    - run:
+        command: curl -f -o ./drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: mkdir -p /tmp/results/junit
+    - run:
+        name: Nightcrawler
+        command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=test --samples=700
+        no_output_timeout: 300m
+    - store_test_results:
+        path: /tmp/results
+    - store_artifacts:
+        path: /tmp/results
+  crawl-test-500:
+    working_directory: /tmp/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - attach_workspace:
+        at: /tmp
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - run:
+        name: Disable SSH timeout
+        command: echo "ServerAliveInterval 30" >> ~/.ssh/config
+    - run:
+        command: curl -f -o ./drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: mkdir -p /tmp/results/junit
+    - run:
+        name: Nightcrawler
+        command: nightcrawler --config=./.circleci/nightcrawler/nightcrawler.js crawl --concurrency 1 --json /tmp/results/results.json --junit /tmp/results/junit/crawler.xml --target=test --samples=500
+        no_output_timeout: 300m
+    - store_test_results:
+        path: /tmp/results
+    - store_artifacts:
+        path: /tmp/results
+  backstop-test:
+    resource_class: xlarge
+    docker:
+    - image: backstopjs/backstopjs
+    steps:
+    - checkout
+    - run:
+        name: Backstop reference
+        working_directory: backstop
+        command: backstop --config=backstop.js reference --target=prod --list=all --viewport=all
+    - run:
+        name: Backstop test (non Tugboat target)
+        working_directory: backstop
+        command: backstop --config=backstop.js test --target=test --list=all --viewport=all
+        no_output_timeout: 300m
+    - store_test_results:
+        path: backstop/report
+    - store_artifacts:
+        path: backstop
+  test-phpunit:
+    working_directory: /var/www/code
+    resource_class: xlarge
+    docker:
+    - image: massgov/drupal-container:1.0.20-ci
+      environment:
+        COMPOSER_ALLOW_SUPERUSER: 1
+        DOCKER_ENV: ci
+        APACHE_DOCROOT: /var/www/code/docroot
+        MYSQL_USER: circle
+        MYSQL_PASSWORD: circle
+        MYSQL_DATABASE: circle
+        MYSQL_HOST: 127.0.0.1
+        MEMCACHED_HOST: 127.0.0.1
+        DTT_BASE_URL: http://mass.local
+        DTT_API_URL: http://mass.local:9222
+        BROWSERTEST_OUTPUT_DIRECTORY: /tmp
+    - image: massgov/mysql-sanitized:latest
+      auth:
+        username: $DOCKER_USER
+        password: $DOCKER_API_KEY
+      environment:
+        MYSQL_USER: circle
+        MYSQL_PASSWORD: circle
+        MYSQL_DATABASE: circle
+        MYSQL_RANDOM_ROOT_PASSWORD: 1
+      command: --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --query_cache_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
+    - image: memcached:1-alpine
+      command: memcached -m 128
+    - image: seleniarm/standalone-chromium:4.1.4-20220429
+    steps:
+    - attach_workspace:
+        at: /var/www
+    - run:
+        command: echo 'export PATH=vendor/bin:node_modules/.bin:$PATH' >> $BASH_ENV
+    - run:
+        name: Start Apache
+        command: /usr/local/bin/apache2-foreground-enhanced
+        background: true
+    - run:
+        name: Update host file
+        command: echo '127.0.0.1 mass.local' >> /etc/hosts
+    - run:
+        name: Wait for mysql
+        command: dockerize -wait tcp://localhost:3306 -timeout 2m
+    - run:
+        command: drush deploy
+    - run:
+        command: drush status
+    - run:
+        command: cat /proc/cpuinfo
+    - run:
+        command: cat /proc/meminfo
+    - run:
+        name: Ensure no differences between between config on disk and config in Drupal.
+        command: drush --no config:export --diff
+    - run:
+        command: mkdir -p output/behat docroot/sites/default/files docroot/sites/simpletest/browser_output
+    - run:
+        command: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+    - run:
+        command: su -s /bin/bash root -c "phpunit docroot/modules/custom --verbose --log-junit /tmp/test-results/dtt/junit.xml"
+    - store_test_results:
+        path: /tmp/test-results
+    - store_artifacts:
+        path: /var/www/code/output
+    - store_artifacts:
+        path: /var/www/code/docroot/sites/simpletest/browser_output
+    - store_artifacts:
+        path: /tmp/test-results
+  push_acquia:
+    working_directory: ~/project/code
+    docker:
+    - image: cimg/php:8.0-node
+    steps:
+    - run:
+        name: Disable StrictHostKeyChecking
+        command: mkdir -p $HOME/.ssh && echo "StrictHostKeyChecking no" > ~/.ssh/config
+    - run:
+        name: Disable SSH timeout
+        command: echo "ServerAliveInterval 30" >> ~/.ssh/config
+    - checkout
+    - run:
+        command: curl -f -o ./drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: git add -f ./drush/sites/self.site.yml
+    - restore_cache:
+        name: Restore Composer Cache
+        keys:
+        - site-composer-v15-{{ checksum "composer.lock" }}
+    - run:
+        name: Composer install
+        command: composer install --no-dev --no-interaction --optimize-autoloader
+    - run:
+        command: git config --global user.email "circleci@example.com"
+    - run:
+        command: git config --global user.name "CircleCI Deployment Bot"
+    - run:
+        command: ( find docroot -type d -name .git && find docroot -type f -name .gitmodules ) | xargs rm -rf
+    - run:
+        command: git add -A -f .
+    - run:
+        command: git commit -m "Add vendor code and drush alias."
+    - run:
+        command: scripts/stamp-and-deploy
+  massgov.populate --super-sanitize:
+    working_directory: /home/circleci/code/.circleci/mysql-rebuild
+    resource_class: large
+    machine:
+      image: ubuntu-2004:202101-01
+    steps:
+    - attach_workspace:
+        at: /home/circleci
+    - run:
+        command: curl -f -o /home/circleci/code/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: docker-compose up -d
+    - run:
+        command: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www/html
+    - run:
+        name: Wait for mysql
+        command: sleep 5
+    - run:
+        command: docker-compose exec drupal sudo apk add --no-cache --upgrade grep
+    - run:
+        command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
+        no_output_timeout: 60m
+    - run:
+        command: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
+    - run:
+        command: docker-compose exec drupal scripts/ma-refresh-local --super-sanitize
+        no_output_timeout: 30m
+    - run:
+        command: docker-compose exec drupal drush cr
+    - run:
+        command: docker-compose stop --timeout 60 mysql
+    - run:
+        command: docker commit $(docker-compose ps -q mysql) massgov/mysql-sanitized:super
+    - run:
+        command: docker push massgov/mysql-sanitized:super
+  massgov.populate.arm --sanitize:
+    working_directory: /home/circleci/code/.circleci/mysql-rebuild
+    resource_class: arm.large
+    machine:
+      image: ubuntu-2004:202101-01
+    steps:
+    - attach_workspace:
+        at: /home/circleci
+    - run:
+        command: curl -f -o /home/circleci/code/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
+    - run:
+        command: docker-compose up -d
+    - run:
+        command: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www/html
+    - run:
+        name: Wait for mysql
+        command: sleep 5
+    - run:
+        command: docker-compose exec drupal sudo apk add --no-cache --upgrade grep
+    - run:
+        command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
+        no_output_timeout: 60m
+    - run:
+        command: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
+    - run:
+        command: docker-compose exec drupal scripts/ma-refresh-local --sanitize
+        no_output_timeout: 30m
+    - run:
+        command: docker-compose exec drupal drush cr
+    - run:
+        command: docker-compose stop --timeout 60 mysql
+    - run:
+        command: docker commit $(docker-compose ps -q mysql) massgov/mysql-sanitized:latest.arm
+    - run:
+        command: docker push massgov/mysql-sanitized:latest.arm
+workflows:
+  version: 2
+  build_test:
+    jobs:
+    - build:
+        filters:
+          branches:
+            ignore:
+            - /^release\/.*$/
+            - /^hotfix\/.*$/
+            - master
+            - /^mayflower-dev-.*/
+    - validate:
+        filters:
+          branches:
+            ignore:
+            - /^release\/.*$/
+            - /^hotfix\/.*$/
+            - /^mayflower\/.*$/
+            - master
+            - /^mayflower-dev-.*/
+        requires:
+        - build
+    - danger:
+        filters:
+          branches:
+            ignore:
+            - develop
+        requires:
+        - build
+    - push_acquia:
+        filters:
+          branches:
+            ignore:
+            - /^release\/.*$/
+            - /^hotfix\/.*$/
+            - /^mayflower\/.*$/
+            - master
+            - /^mayflower-dev-.*/
+    - test-phpunit:
+        filters:
+          branches:
+            ignore:
+            - /^release\/.*$/
+            - /^hotfix\/.*$/
+            - /^mayflower\/.*$/
+            - master
+            - /^mayflower-dev-.*/
+        requires:
+        - build
+    - test-behat:
+        filters:
+          branches:
+            ignore:
+            - /^release\/.*$/
+            - /^hotfix\/.*$/
+            - /^mayflower\/.*$/
+            - master
+            - /^mayflower-dev-.*/
+        requires:
+        - build
+  release_branch:
+    jobs:
+    - build
+    - cut_release_branch:
+        requires:
+        - build
+    triggers:
+    - schedule:
+        cron: 00 17 * * 2
+        filters:
+          branches:
+            only:
+            - develop
+  release:
+    jobs:
+    - build:
+        filters:
+          branches:
+            only: /^release\/.*$/
+    - push_acquia:
+        filters:
+          branches:
+            only: /^release\/.*$/
+    - test-phpunit:
+        filters:
+          branches:
+            only: /^release\/.*$/
+        requires:
+        - build
+    - test-behat:
+        filters:
+          branches:
+            only: /^release\/.*$/
+        requires:
+        - build
+    - hold - Release manager only:
+        filters:
+          branches:
+            only: /^release\/.*$/
+        type: approval
+        requires:
+        - build
+        - push_acquia
+    - deploy-test-refresh-db:
+        filters:
+          branches:
+            only: /^release\/.*$/
+        requires:
+        - hold - Release manager only
+    - crawl-test-700:
+        filters:
+          branches:
+            only: /^release\/.*$/
+        requires:
+        - deploy-test-refresh-db
+    - backstop-test:
+        filters:
+          branches:
+            only: /^release\/.*$/
+        requires:
+        - deploy-test-refresh-db
+    - hold-qa-approval:
+        filters:
+          branches:
+            only: /^release\/.*$/
+        type: approval
+        requires:
+        - deploy-test-refresh-db
+  hotfix:
+    jobs:
+    - build:
+        filters:
+          branches:
+            only: /^hotfix\/.*$/
+    - push_acquia:
+        filters:
+          branches:
+            only: /^hotfix\/.*$/
+    - test-phpunit:
+        filters:
+          branches:
+            only: /^hotfix\/.*$/
+        requires:
+        - build
+    - test-behat:
+        filters:
+          branches:
+            only: /^hotfix\/.*$/
+        requires:
+        - build
+    - hold - Release manager only:
+        filters:
+          branches:
+            only: /^hotfix\/.*$/
+        type: approval
+        requires:
+        - build
+        - push_acquia
+    - deploy-test-no-refresh-db:
+        filters:
+          branches:
+            only: /^hotfix\/.*$/
+        requires:
+        - hold - Release manager only
+    - crawl-test-200:
+        filters:
+          branches:
+            only: /^hotfix\/.*$/
+        requires:
+        - deploy-test-no-refresh-db
+    - backstop-test:
+        filters:
+          branches:
+            only: /^hotfix\/.*$/
+        requires:
+        - deploy-test-no-refresh-db
+    - hold-qa-approval:
+        filters:
+          branches:
+            only: /^hotfix\/.*$/
+        type: approval
+        requires:
+        - push_acquia
+  mayflower:
+    jobs:
+    - build:
+        filters:
+          branches:
+            only: /^mayflower\/.*$/
+    - validate:
+        filters:
+          branches:
+            only: /^mayflower\/.*$/
+        requires:
+        - build
+    - danger:
+        filters:
+          branches:
+            only: /^mayflower\/.*$/
+        requires:
+        - build
+    - push_acquia:
+        filters:
+          branches:
+            only: /^mayflower\/.*$/
+    - test-phpunit:
+        filters:
+          branches:
+            only: /^mayflower\/.*$/
+        requires:
+        - build
+    - test-behat:
+        filters:
+          branches:
+            only: /^mayflower\/.*$/
+        requires:
+        - build
+    - hold - Release manager only:
+        filters:
+          branches:
+            only: /^mayflower\/.*$/
+        type: approval
+        requires:
+        - build
+        - push_acquia
+    - deploy-test-refresh-db:
+        filters:
+          branches:
+            only: /^mayflower\/.*$/
+        requires:
+        - hold - Release manager only
+    - crawl-test-500:
+        filters:
+          branches:
+            only: /^mayflower\/.*$/
+        requires:
+        - deploy-test-refresh-db
+    - backstop-test:
+        filters:
+          branches:
+            only: /^mayflower\/.*$/
+        requires:
+        - deploy-test-refresh-db
+  build_github_tag:
+    jobs:
+    - build:
+        filters:
+          branches:
+            only: master
+    - push_acquia:
+        filters:
+          branches:
+            only: master
+    - test-phpunit:
+        filters:
+          branches:
+            only: master
+        requires:
+        - build
+    - test-behat:
+        filters:
+          branches:
+            only: master
+        requires:
+        - build
+    - hold - Release manager only:
+        filters:
+          branches:
+            only: master
+        type: approval
+        requires:
+        - build
+        - push_acquia
+    - tagging_github:
+        filters:
+          branches:
+            only: master
+        requires:
+        - hold - Release manager only
+  build_tag:
+    jobs:
+    - build:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /.*/
+    - tagging_acquia:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /.*/
+    - hold_for_stage Release manager only:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /.*/
+        type: approval
+        requires:
+        - build
+        - tagging_acquia
+    - deploy-tag-stage-acquia:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /.*/
+        requires:
+        - build
+        - tagging_acquia
+        - hold_for_stage Release manager only
+    - hold_for_prod_maint Release manager only:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /.*/
+        type: approval
+        requires:
+        - build
+        - tagging_acquia
+    - deploy-tag-prod-acquia-maint:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /.*/
+        requires:
+        - build
+        - tagging_acquia
+        - hold_for_prod_maint Release manager only
+    - hold_for_prod_no_maint Release manager only:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /.*/
+        type: approval
+        requires:
+        - build
+        - tagging_acquia
+    - deploy-tag-prod-acquia-no-maint:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /.*/
+        requires:
+        - build
+        - tagging_acquia
+        - hold_for_prod_no_maint Release manager only
+    - backstop-prod-maint:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /.*/
+        requires:
+        - deploy-tag-prod-acquia-maint
+    - backstop-prod-no-maint:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /.*/
+        requires:
+        - deploy-tag-prod-acquia-no-maint
+    - master-to-develop-prod-maint:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /.*/
+        requires:
+        - deploy-tag-prod-acquia-maint
+    - master-to-develop-prod-no-maint:
+        filters:
+          branches:
+            ignore: /.*/
+          tags:
+            only: /.*/
+        requires:
+        - deploy-tag-prod-acquia-no-maint
+  build_test_super:
+    jobs:
+    - build
+    - test-phpunit-super:
+        requires:
+        - build
+    - test-super-behat:
+        requires:
+        - build
+    triggers:
+    - schedule:
+        cron: 49 20 * * *
+        filters:
+          branches:
+            only:
+            - develop
+  mysql_rebuild:
+    jobs:
+    - build
+    - massgov.populate --sanitize:
+        requires:
+        - build
+    - massgov.populate --super-sanitize:
+        requires:
+        - build
+    - massgov.populate.arm --sanitize:
+        requires:
+        - build
+    - massgov.populate.arm --super-sanitize:
+        requires:
+        - build
+    triggers:
+    - schedule:
+        cron: 20 00 * * *
+        filters:
+          branches:
+            only:
+            - develop
+  deploy_cd:
+    jobs:
+    - build_with_latest_mayflower
+    - deploy-cd-refresh-db:
+        requires:
+        - build_with_latest_mayflower
+    - crawl-deploy-900:
+        requires:
+        - deploy-cd-refresh-db
+    - backstop_reference:
+        requires:
+        - deploy-cd-refresh-db
+    - backstop
+    triggers:
+    - schedule:
+        cron: 00 04 * * *
+        filters:
+          branches:
+            only:
+            - develop
+  nightly_pending_security:
+    jobs:
+    - build
+    - pending_security:
+        requires:
+        - build
+    triggers:
+    - schedule:
+        cron: 05 07 * * *
+        filters:
+          branches:
+            only:
+            - develop

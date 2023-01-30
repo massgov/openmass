@@ -589,14 +589,6 @@ workflows:
             branches:
               <<: *branch_ignore
 
-      - temp_backstop:
-          name: test-backstop
-          command: backstop_reference
-          filters:
-            branches:
-              only: dp-26913-run-backstop-js-locally
-
-
   # This is to automate the creation of the release branch.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   release_branch:
@@ -1105,3 +1097,18 @@ workflows:
               branches:
                   only:
                       - develop
+
+  nightly_backstop_snapshot:
+    #triggers:
+    #  - schedule:
+    #      cron: "05 04 * * *"
+    #      filters:
+    #        branches:
+    #          only:
+    #            - development
+    jobs:
+      - backstop_reference:
+          target: prod
+        filters:
+          branches:
+            only: dp-26913-run-backstop-js-locally
