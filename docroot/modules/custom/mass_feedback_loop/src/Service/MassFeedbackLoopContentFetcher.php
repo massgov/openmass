@@ -448,13 +448,6 @@ class MassFeedbackLoopContentFetcher {
         'class' => ['feedback-medium'],
       ];
     }
-    if (empty($limit_fields) || in_array('survey', $limit_fields)) {
-      $table['#header'][] = [
-        'data' => [
-          '#markup' => $this->t('Survey'),
-        ],
-      ];
-    }
     if (empty($limit_fields) || in_array('tags', $limit_fields)) {
       $table['#header'][] = [
         'data' => [
@@ -514,7 +507,6 @@ class MassFeedbackLoopContentFetcher {
               ];
             }
           }
-
           if (empty($limit_fields) || in_array('text', $limit_fields)) {
             // Builds "Feedback Text".
             $feedback_text = (!empty($feedback['text'])) ? $feedback['text'] : '';
@@ -523,7 +515,6 @@ class MassFeedbackLoopContentFetcher {
               '#wrapper_attributes' => ['class' => 'survey-response'],
             ];
           }
-
           if (empty($limit_fields) || in_array('requested_response', $limit_fields)) {
             $response_info = 'N/A';
             if (!empty($feedback['requested_response'])) {
@@ -550,20 +541,6 @@ class MassFeedbackLoopContentFetcher {
             $row['requires_response'] = [
               '#markup' => $response_info,
             ];
-          }
-
-          if (empty($limit_fields) || in_array('survey', $limit_fields)) {
-            if (!empty($feedback['survey_id'])) {
-              $row['survey'] = [
-                '#markup' => '<span class="survey-toggle">Yes</span>',
-                '#wrapper_attributes' => ['class' => 'survey-yes'],
-              ];
-            }
-            else {
-              $row['survey'] = [
-                '#markup' => 'No',
-              ];
-            }
           }
 
           if (empty($limit_fields) || in_array('tags', $limit_fields)) {
@@ -646,26 +623,6 @@ class MassFeedbackLoopContentFetcher {
 
           $table[$key] = $row;
 
-          if (empty($limit_fields) || in_array('survey', $limit_fields)) {
-            if (!empty($feedback['survey_id'])) {
-              $table[$key . '_details']['details'] = [
-                '#theme' => 'mass_survey_row',
-                '#wrapper_attributes' => ['colspan' => 8, 'class' => ['survey-results-cell']],
-                '#data' => [
-                  'helpful' => $feedback['helpful'],
-                  'easy' => $feedback['easy_to_use'],
-                  'findable' => $feedback['confident'],
-                  'reason' => $feedback['professional_or_personal'],
-                  'email' => $feedback['survey_email'],
-                  'purpose' => $feedback['visit_purpose'],
-                  'other' => $feedback['other_feedback'],
-                ],
-              ];
-              $table[$key . '_details']['#attributes'] = [
-                'class' => ['survey-results-row'],
-              ];
-            }
-          }
         }
       }
     }
