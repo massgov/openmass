@@ -45,7 +45,13 @@ class UpdateRedirects extends SqlBase {
       $new_nid = \Drupal::service('migrate.lookup')->lookup('service_details', ['nid' => $source_nid])[0]['nid'];
       $redirects = \Drupal::service('redirect.repository')->findByDestinationUri(["internal:/node/$source_nid", "entity:node/$source_nid"]);
       foreach ($redirects as $redirect) {
-        $rows[] = ['rid' => $redirect->id(), 'uri' => "entity:node/$new_nid"];
+        if (str_contains($redirect->getRedirect()['uri'], 'internal:/node/')) {
+          $rows[] = ['rid' => $redirect->id(), 'uri' => "internal:/node/$new_nid"];
+        }
+        elseif (str_contains($redirect->getRedirect()['uri'], 'entity:node/')) {
+          $rows[] = ['rid' => $redirect->id(), 'uri' => "entity:node/$new_nid"];
+        }
+
       }
     }
 
