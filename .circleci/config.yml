@@ -493,7 +493,7 @@ jobs:
           command: |
             apt-get update
             apt-get install jq -y
-            BACKSTOP_REF="BACKSTOP_REF_<< parameters.target >>""
+            BACKSTOP_REF="BACKSTOP_REF_<< parameters.target >>"
             URL=(curl --request GET \
               --fail
               --url https://circleci.com/api/v2/project/gh/massgov/openmass/${!BACKSTOP_REF}/artifacts \
