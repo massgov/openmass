@@ -467,6 +467,7 @@ jobs:
               --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" \
               --header 'content-type: application/json' \
               --data "{\"name\":\"BACKSTOP_REF_<< parameters.target >>\",\"value\":\"$CIRCLE_JOB\"}"
+            echo "Saved $CIRCLE_JOB to $BACKSTOP_REF_<<parameters.target >>"
 
   backstop_test:
     parameters:
