@@ -6,8 +6,9 @@ use Drupal\Core\Field\FieldItemListInterface;
 
 trait MassTranslationsTrait {
 
-  public function getEnglishVersion(): FieldItemListInterface {
-    return $this->get($this->getEnglishFieldName());
+  public function getEnglishVersion(): ?FieldItemListInterface {
+    $name = $this->getEnglishFieldName();
+    return $this->hasField($name) ? $this->get($name) : NULL;
   }
 
   public function getEnglishFieldName(): string {
