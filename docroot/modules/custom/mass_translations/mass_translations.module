@@ -276,13 +276,14 @@ function mass_translations_process_language_select(array $element): array {
  * Implements hook_entity_presave().
  */
 function mass_translations_entity_presave(EntityInterface $entity) {
-  if (method_exists($entity, 'getEnglishFieldName') && $entity->get('langcode')->value == 'en') {
+  $supports_english_version = method_exists($entity, 'supportsEnglishFieldName') && $entity->supportsEnglishFieldName();
+  if ($supports_english_version && $entity->get('langcode')->value == 'en') {
     // If the Language is English, there isn't a separate English version.
     $entity->set($entity->getEnglishFieldName(), '');
   }
 
   // Invalidate the English version as that has the list of translation links.
-  if (method_exists($entity, 'getEnglishVersion') && $ref = $entity->getEnglishVersion()->getString()) {
+  if ($supports_english_version && $ref = $entity->getEnglishVersion()->getString()) {
     Cache::invalidateTags([$entity->getEntityTypeId() . ':' . $ref]);
   }
 }
