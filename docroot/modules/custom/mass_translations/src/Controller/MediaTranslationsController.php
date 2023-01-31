@@ -15,21 +15,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class MediaTranslationsController extends TranslationsController {
 
   protected $mediaStorage;
-  protected $englishFieldName;
 
   /**
    * {@inheritdoc}
    */
   public function __construct(MediaStorage $media_storage) {
     $this->mediaStorage = $media_storage;
-    $this->englishFieldName = 'field_media_english_version';
   }
 
   /**
    * {@inheritdoc}
    */
   public function access(EntityInterface $media) {
-    $languages = parent::getTranslationLanguages($media, $this->mediaStorage, $this->englishFieldName);
+    $languages = parent::getTranslationLanguages($media, $this->mediaStorage, $media->getEnglishFieldName());
 
     return AccessResult::allowedIf(count($languages) > 1);
   }
@@ -47,7 +45,7 @@ class MediaTranslationsController extends TranslationsController {
    * {@inheritdoc}
    */
   public function content(EntityInterface $media) {
-    return parent::markup($media, $this->mediaStorage, $this->englishFieldName);
+    return parent::markup($media, $this->mediaStorage, $media->getEnglishFieldName());
   }
 
 }
