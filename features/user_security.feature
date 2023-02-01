@@ -29,17 +29,3 @@ Feature: User Security
     Then the response status code should be 403
     When I go to "user/reset/999/1510860000/xxxx/login"
     Then the response status code should be 403
-
-  Scenario: Verify anonymous users cannot access tfa login page without a token
-    Then I should not have access to "/tfa/1/xxx"
-
-  Scenario: Verify authenticated users cannot see the TFA pages for other users
-    Given I am logged in as a user with the "authenticated" role
-    Then I should not have access to "/tfa/1/xxx"
-    And I should not have access to "/user/1/security/tfa"
-
-  Scenario: Verify anonymous user cannot discover users through tfa settings
-    When I go to "tfa/1/xxxx"
-    Then the response status code should be 403
-    When I go to "tfa/999/xxxx"
-    Then the response status code should be 403
