@@ -1,13 +1,10 @@
 // Determine the list of urls to use with backstop
-const opt = process.argv.filter(arg=>arg.match(/^--list=/))
-const file = opt.length ? opt[0].replace('--list=', '') : 'page';
+const opt = process.argv.filter(arg=>arg.match(/^--list=/));
+const file = opt.length ? opt[0].replace('--list=', '') : 'all';
 
 let pages;
 
 switch (file) {
-  case 'page':
-    pages = require('./pages');
-    break;
   case 'all':
     pages = require('./all');
     break;
