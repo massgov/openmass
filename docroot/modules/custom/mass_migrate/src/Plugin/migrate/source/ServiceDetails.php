@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\mass_content\Plugin\migrate\source;
+namespace Drupal\mass_migrate\Plugin\migrate\source;
 
 use Drupal\migrate\MigrateSkipRowException;
 use Drupal\migrate\Plugin\migrate\source\SqlBase;

@@ -1,15 +1,15 @@
 <?php
 
-namespace Drupal\mass_content\EventSubscriber;
+namespace Drupal\mass_migrate\EventSubscriber;
 
 use Drupal\migrate\Event\MigratePostRowSaveEvent;
 use Drupal\migrate\Event\MigrateEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
- * Class MyCustomMigrationSubscriber.
+ * Class MigrationSubscriber.
  */
-class ServiceMigrationSubscriber implements EventSubscriberInterface {
+class MigrationSubscriber implements EventSubscriberInterface {
 
   /**
    * {@inheritdoc}
@@ -17,7 +17,6 @@ class ServiceMigrationSubscriber implements EventSubscriberInterface {
   public static function getSubscribedEvents() {
     return [
       MigrateEvents::POST_ROW_SAVE => 'afterRowImport',
-
     ];
   }
 

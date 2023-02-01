@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\mass_content\Plugin\migrate\source;
+namespace Drupal\mass_migrate\Plugin\migrate\source;
 
 use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem;

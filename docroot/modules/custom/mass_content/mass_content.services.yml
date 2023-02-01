@@ -15,7 +15,3 @@ services:
   mass_content.image_style_warmer:
     class: Drupal\mass_content\ImageStylesWarmer
     arguments: ['@entity_type.manager', '@image.factory','@entity_type.manager']
-  mass_content.service_migration_subscriber:
-    class: Drupal\mass_content\EventSubscriber\ServiceMigrationSubscriber
-    tags:
-      - { name: event_subscriber }
