@@ -46,14 +46,9 @@
     {% endif %}
 
     <div{{ description.attributes.addClass('description') }}>
-      {% if multiple and description.content %}
-        <ul>
-          <li>{{ media_list_help }} {{ media_list_link }} {{ allowed_types_help }}</li>
-          <li>{{ description.content }}</li>
-        </ul>
-      {% else %}
-        {{ media_list_help }} {{ media_list_link }} {{ allowed_types_help }}
-      {% endif %}
+      <ul>
+        <li>{{ description.content }}</li>
+      </ul>
       {% if multiple and button %}
         <div class="clearfix">{{ button }}</div>
       {% endif %}
