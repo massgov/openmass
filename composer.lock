@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fbfed1359cab7393c0c619353aded74a",
+    "content-hash": "1484eb5868c1a9f68beb9d7135791f40",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -2699,28 +2699,28 @@
         },
         {
             "name": "drupal/acquia_purge",
-            "version": "1.1.0",
+            "version": "1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/acquia_purge.git",
-                "reference": "8.x-1.1"
+                "reference": "8.x-1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/acquia_purge-8.x-1.1.zip",
-                "reference": "8.x-1.1",
-                "shasum": "6e4b819262f5ed82fa1bfd533cd7a35b70242e9b"
+                "url": "https://ftp.drupal.org/files/projects/acquia_purge-8.x-1.2.zip",
+                "reference": "8.x-1.2",
+                "shasum": "104cfe40c37ac9786d31306b76b39a115c6bf724"
             },
             "require": {
-                "drupal/core": "^8.8.6 || ^9",
-                "drupal/purge": "^3.0.0",
-                "php": ">=7.2"
+                "drupal/core": "^8.9 || ^9",
+                "drupal/purge": "^3.2",
+                "drupal/purge_queuer_coretags": "*"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.1",
-                    "datestamp": "1590768773",
+                    "version": "8.x-1.2",
+                    "datestamp": "1635964899",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2909,17 +2909,11 @@
         },
         {
             "name": "drupal/akamai",
-            "version": "4.0.1",
+            "version": "dev-4.x",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/akamai.git",
-                "reference": "4.0.1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/akamai-4.0.1.zip",
-                "reference": "4.0.1",
-                "shasum": "e65b90e325637fc9bfc8ad0aa39e0c4296478459"
+                "reference": "0dfc25d616dcd20e94468d24eef18ec5925a3bd3"
             },
             "require": {
                 "drupal/core": "~8.5 || ^9",
@@ -2932,17 +2926,20 @@
             },
             "type": "drupal-module",
             "extra": {
+                "branch-alias": {
+                    "dev-4.x": "4.x-dev"
+                },
                 "drupal": {
-                    "version": "4.0.1",
-                    "datestamp": "1635965186",
+                    "version": "4.0.2+1-dev",
+                    "datestamp": "1674831250",
                     "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
                     }
                 },
                 "drush": {
                     "services": {
-                        "drush.services.yml": "^9"
+                        "drush.services.yml": "^9 || ^10 || ^11"
                     }
                 }
             },
@@ -8511,27 +8508,26 @@
         },
         {
             "name": "drupal/purge",
-            "version": "3.2.0",
+            "version": "3.4.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/purge.git",
-                "reference": "8.x-3.2"
+                "reference": "8.x-3.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/purge-8.x-3.2.zip",
-                "reference": "8.x-3.2",
-                "shasum": "eb025762097e5435d11f8b5bcb1b0ef32a6b72fe"
+                "url": "https://ftp.drupal.org/files/projects/purge-8.x-3.4.zip",
+                "reference": "8.x-3.4",
+                "shasum": "deb4eccfe88af35445e8064a9a4a8a056bfb917f"
             },
             "require": {
-                "drupal/core": "^8.7.7 || ^9",
-                "php": ">=7.2"
+                "drupal/core": "^9.2 || ^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-3.2",
-                    "datestamp": "1633428281",
+                    "version": "8.x-3.4",
+                    "datestamp": "1663189449",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -8564,6 +8560,52 @@
                 }
             ],
             "description": "Provides a generic external cache invalidation API and queue service.",
+            "homepage": "https://www.drupal.org/project/purge",
+            "support": {
+                "source": "https://git.drupalcode.org/project/purge"
+            }
+        },
+        {
+            "name": "drupal/purge_queuer_coretags",
+            "version": "3.4.0",
+            "require": {
+                "drupal/core": "^9.2 || ^10",
+                "drupal/purge": "*"
+            },
+            "type": "metapackage",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-3.4",
+                    "datestamp": "1663189449",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Niels van Mourik",
+                    "homepage": "http://www.nielsvm.org"
+                },
+                {
+                    "name": "japerry",
+                    "homepage": "https://www.drupal.org/user/45640"
+                },
+                {
+                    "name": "nielsvm",
+                    "homepage": "https://www.drupal.org/user/163285"
+                },
+                {
+                    "name": "SqyD",
+                    "homepage": "https://www.drupal.org/user/106525"
+                }
+            ],
+            "description": "Queues every tag that Drupal invalidates internally.",
             "homepage": "https://www.drupal.org/project/purge",
             "support": {
                 "source": "https://git.drupalcode.org/project/purge"
@@ -23030,6 +23072,7 @@
     ],
     "minimum-stability": "dev",
     "stability-flags": {
+        "drupal/akamai": 20,
         "drupal/better_exposed_filters": 10,
         "drupal/conditional_fields": 15,
         "drupal/config_ignore": 20,

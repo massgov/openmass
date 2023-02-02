@@ -1,5 +1,24 @@
 
 
+## [0.349.0] - January 31, 2023
+
+### Removed
+  - DP-25783: Remove feedback survey UI from edit.mass.gov.
+  
+### Changed
+  - DP-26177: Update Purge, Acquia purge, Akamai modules
+  
+### Added
+  - DP-26735: New view showing recent press releases. Not linked at this time.
+  - DP-26959: Add bulk edit to the "All documents" view for administrators.
+  - DP-27072: New administrative view showing who has flagged what content to watch it. This will help testing of content migrations.
+  
+### Fixed
+  - DP-27000: Fix radio button and checkbox sizes in collection view.
+  - DP-27077: Remove config warnings for Azure AD
+  
+
+
 ## [0.348.0] - January 24, 2023
 
 ### Changed
