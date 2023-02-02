@@ -21,11 +21,10 @@ class Flaggings extends SqlBase {
    */
   public function query(): SelectInterface {
     $query = $this->select('flagging', 'f')
-      ->fields('f', ['id', 'uid'])
-      ->fields('mmsd', ['destid1'])
-      ->condition('nfd.type', 'service_details');
-    $query->innerJoin('node_field_data', 'nfd', "nfd.nid=f.entity_id AND f.entity_type='node'");
-    $query->innerJoin('migrate_map_service_details', 'mmsd', "mmsd.sourceid1=f.entity_id AND f.entity_type='node'");
+      ->fields('f', ['id', 'uid']);
+    $query->innerJoin('migrate_map_service_details', 'mmsd', "f.entity_id=mmsd.sourceid1 AND f.entity_type='node'");
+    $query->addField('mmsd', 'destid1');
+    var_dump($query->execute()->fetchAssoc());
     return $query;
   }
 
