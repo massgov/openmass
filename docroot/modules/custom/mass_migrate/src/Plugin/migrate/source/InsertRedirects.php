@@ -22,11 +22,17 @@ class InsertRedirects extends SqlBase {
    * Get all the service details pages.
    */
   public function query(): SelectInterface {
+    $subquery = $this->select('path_alias', 'p')
+      ->fields('p', ['path', 'alias']);
+    $subquery->addExpression("CASE
+    WHEN p.path LIKE '/node/%' THEN SUBSTR(p.path, 7)
+    ELSE NULL
+  END", 'nid');
     $query = $this->select('node', 'n')
       ->fields('n', ['nid'])
-      ->fields('p', ['alias'])
       ->condition('n.type', 'service_details');
-    $query->innerJoin('path_alias', 'p', 'p.id=n.nid');
+    $query->addField('s','alias');
+    $query->innerJoin($subquery, 's', 's.nid=n.nid');
     return $query;
   }
 
@@ -57,7 +63,7 @@ class InsertRedirects extends SqlBase {
   public function prepareRow(Row $row) {
     $service_nid = $row->getSourceProperty('nid');
     if ($info_nid = \Drupal::service('migrate.lookup')->lookup('service_details', ['nid' => $service_nid])) {
-      $row->setDestinationProperty('redirect_source', $row->getSourceProperty('alias'));
+      $row->setDestinationProperty('redirect_source', preg_replace('/^\//', '', $row->getSourceProperty('alias')));
       $row->setDestinationProperty('redirect_redirect', 'entity:node/' . $info_nid[0]['nid']);
     }
     else {
