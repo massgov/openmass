@@ -31,7 +31,7 @@ class InsertRedirects extends SqlBase {
     $query = $this->select('node', 'n')
       ->fields('n', ['nid'])
       ->condition('n.type', 'service_details');
-    $query->addField('s','alias');
+    $query->addField('s', 'alias');
     $query->innerJoin($subquery, 's', 's.nid=n.nid');
     return $query;
   }
