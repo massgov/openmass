@@ -27,7 +27,7 @@ class MediaBulkActionTest extends ExistingSiteBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  protected function setUp(): void {
     parent::setUp();
     // An admin is needed.
     $admin = User::create(['name' => $this->randomMachineName()]);
@@ -99,6 +99,10 @@ class MediaBulkActionTest extends ExistingSiteBase {
   private function runTestSteps($action) {
     $this->createMediaFile();
     $this->drupalGet('admin/ma-dash/documents');
+
+    // Trigger search to get some results.
+    $this->submitForm([], $this->t('Filter'), 'views-exposed-form-all-documents-page-1');
+
     $edit = [
       'action' => $action,
       'views_bulk_operations_bulk_form[0]' => TRUE,

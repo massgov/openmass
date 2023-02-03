@@ -12,7 +12,7 @@
  * @ingroup themeable
  */
 #}
-{% include "@molecules/download-link.twig" with {
+{% include "@molecules/download-link-multilang.twig" with {
   "downloadLink": {
     "iconSize": '',
     "icon": content.extra_file_icon['#markup'],
@@ -22,8 +22,10 @@
       "info": '',
       "property": '',
     },
+    "language": content.langcode[0]['#plain_text'],
     "size": content.calculated_file_size,
-    "format": content.extra_file_extension
+    "format": content.extra_file_extension,
+    "inlineLinks": translationLinks
   }
 } %}
-{{ content | without('field_title', 'calculated_file_size', 'extra_file_extension', 'extra_file_icon') }}
+{{ content | without('field_title', 'calculated_file_size', 'extra_file_extension', 'extra_file_icon', 'langcode') }}
