@@ -17,10 +17,9 @@ Following release, we smoke test by checking the same production URLS to ensure 
 ```
 --target=local  # Choose an enviornment to target(feature#, test, or prod)
                 # `local` is default
---list=page	    # Choose a json page to run with backstop (page or all)
-                # `page` is default and will run 36 scenarios
-                # `all` will run 54 scenarios
-                # post-relase
+--list=all	    # Choose a json page to run with backstop (all or post-release)
+                # `all` is default
+                # `post-release` runs fewer scenarios, and is run automatically after a release
 ```
 
 #### Capturing reference screenshots
@@ -44,6 +43,4 @@ open backstop/report/index.html
 
 ## Modifying Tests
 
-You can change the pages that are captured by editing the `pages.json` file in this directory.  We _do not_ want to test every page on the site, as this type of testing is very slow, but it is good to have one or two "representative samples" of all the different page variations on the site.
-
-If you need other "representative samples" of content types, please use the `all.json` file. By `Copy + Paste` all or some of the lines into the `pages.json`. The `all.json` file includes a few more of the QAG pages that were created for testing purposes.
+If you need test "representative samples" of content types, please use the `all.json`, which includes QAG pages that were created for testing purposes.

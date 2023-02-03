@@ -1,0 +1,69 @@
+/**
+ * CSS overrides for the View for External data resource content type.
+ */
+
+.press-releases-wrapper {
+  padding-top: 2rem;
+}
+
+.press-releases-wrapper .page-content > .ma__general-teaser {
+  margin-top: 20px;
+  padding-top: 15px;
+  padding-left: 0;
+  max-width: 1240px;
+}
+
+.press-releases-wrapper .page-content > .ma__general-teaser:first-child {
+  margin-top: 0;
+}
+
+.press-releases-wrapper .page-content > .ma__pagination {
+  margin-top: 20px;
+}
+
+/* form fields style overrides */
+
+#edit-title {
+  width: 100%;
+  margin-top: 10px;
+}
+
+/* Custom breadcrumb styles */
+.ma__results-heading__container ol {
+  display: none;
+}
+
+.ma__breadcrumb--views ol {
+  list-style: none;
+  padding-left: 0;
+  display: flex;
+  flex-direction: row;
+}
+
+.ma__breadcrumb--views ol li + li {
+  position: relative;
+  padding-left: 1rem;
+  margin-left: 1rem;
+}
+
+.ma__breadcrumb--views ol li + li:before {
+  content: "";
+  display: block;
+  position: absolute;
+  top: 2px;
+  bottom: 0px;
+  left: -5px;
+  width: 8px;
+  height: 8px;
+  margin: auto 0;
+  -webkit-transform: rotate(45deg);
+  -ms-transform: rotate(45deg);
+  transform: rotate(45deg);
+  border: solid;
+  border-width: 1px 1px 0 0;
+  border-color: #707070;
+}
+
+.ma__breadcrumb--views ol a {
+  text-decoration: underline;
+}
