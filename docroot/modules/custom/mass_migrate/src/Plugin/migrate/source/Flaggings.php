@@ -24,7 +24,6 @@ class Flaggings extends SqlBase {
       ->fields('f', ['id', 'uid']);
     $query->innerJoin('migrate_map_service_details', 'mmsd', "f.entity_id=mmsd.sourceid1 AND f.entity_type='node'");
     $query->addField('mmsd', 'destid1');
-    var_dump($query->execute()->fetchAssoc());
     return $query;
   }
 
