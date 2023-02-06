@@ -16,21 +16,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class NodeTranslationsController extends TranslationsController {
 
   protected $nodeStorage;
-  protected $englishFieldName;
 
   /**
    * {@inheritdoc}
    */
   public function __construct(NodeStorageInterface $node_storage) {
     $this->nodeStorage = $node_storage;
-    $this->englishFieldName = 'field_english_version';
   }
 
   /**
    * {@inheritdoc}
    */
   public function access(EntityInterface $node) {
-    $languages = parent::getTranslationLanguages($node, $this->nodeStorage, $this->englishFieldName);
+    $languages = parent::getTranslationLanguages($node, $this->nodeStorage, $node->getEnglishFieldName());
 
     return AccessResult::allowedIf(count($languages) > 1);
   }
@@ -48,7 +46,7 @@ class NodeTranslationsController extends TranslationsController {
    * {@inheritdoc}
    */
   public function content(EntityInterface $node) {
-    return parent::markup($node, $this->nodeStorage, $this->englishFieldName);
+    return parent::markup($node, $this->nodeStorage, $node->getEnglishFieldName());
   }
 
 }
