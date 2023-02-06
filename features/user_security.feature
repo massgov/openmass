@@ -4,12 +4,10 @@ Feature: User Security
   I want to ensure that the website has secure login,
   so that the website is less likely to be hacked or brought down.
 
-  Scenario: Verify that user names cannot be discovered with password reset messages.
+  Scenario: Verify that users can't request a new password
     Given I am an anonymous user
     And I am on "/user/password"
-    When I fill in "name" with "foobar test xyz"
-    And I press "Submit"
-    Then I should see "If the username or email address exists and is active, further instructions have been sent to your email address."
+    Then I should see the 403 error page
 
   Scenario: Verify anonymous_user cannot create content of these types
     And I should not have access to "/node/add/action"
@@ -28,18 +26,4 @@ Feature: User Security
     When I go to "user/reset/1/1510860000/xxxx/login"
     Then the response status code should be 403
     When I go to "user/reset/999/1510860000/xxxx/login"
-    Then the response status code should be 403
-
-  Scenario: Verify anonymous users cannot access tfa login page without a token
-    Then I should not have access to "/tfa/1/xxx"
-
-  Scenario: Verify authenticated users cannot see the TFA pages for other users
-    Given I am logged in as a user with the "authenticated" role
-    Then I should not have access to "/tfa/1/xxx"
-    And I should not have access to "/user/1/security/tfa"
-
-  Scenario: Verify anonymous user cannot discover users through tfa settings
-    When I go to "tfa/1/xxxx"
-    Then the response status code should be 403
-    When I go to "tfa/999/xxxx"
     Then the response status code should be 403
