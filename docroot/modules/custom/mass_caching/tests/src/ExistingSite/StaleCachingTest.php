@@ -4,11 +4,14 @@ namespace Drupal\Tests\mass_caching\ExistingSite;
 
 use Drupal\mass_caching\EventSubscriber\StaleResponseSubscriber;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
+use weitzman\LoginTrait\LoginTrait;
 
 /**
  * Tests the stale caching functionality.
  */
 class StaleCachingTest extends ExistingSiteBase {
+
+  use LoginTrait;
 
   /**
    * {@inheritdoc}
