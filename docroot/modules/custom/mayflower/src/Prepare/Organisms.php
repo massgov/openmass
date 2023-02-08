@@ -806,7 +806,6 @@ class Organisms {
     if ($links) {
       return [
         'ariaLabel' => $options['ariaLabel'],
-        'background' => $options['background'] ?? '',
         'links' => $links,
       ];
     }

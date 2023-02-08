@@ -144,7 +144,7 @@ function mass_translations_preprocess_node(&$variables) {
     }
 
     if (count($languages) > 1) {
-      $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations", "background" => "gray"]);
+      $inlineLinks = Organisms::prepareInlineLinksForLanguages($languages, ["ariaLabel" => "Available Translations"]);
       $variables += ["translationLinks" => $inlineLinks];
     }
     // Bubble cache tag to the current render. Based on template_preprocess_pager()
