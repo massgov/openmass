@@ -6,6 +6,15 @@ use Drupal\Core\Entity\EntityPublishedInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 
+/**
+ * Implements hook_form_alter().
+ */
+function mass_gin_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+  if (isset($form['revision'])) {
+    $form['revision']['#access'] = FALSE;
+  }
+}
+
 function mass_gin_toolbar_alter(&$items) {
   unset($items['acquia_connector']);
 
