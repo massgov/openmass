@@ -19,6 +19,7 @@ dependencies:
   module:
     - conditional_fields
     - content_moderation
+    - entity_reference_tree
     - field_group
     - link
     - term_reference_tree
@@ -70,15 +71,22 @@ bundle: external_data_resource
 mode: default
 content:
   field_collections:
-    type: term_reference_tree
+    type: entity_reference_tree
     weight: 19
     region: content
     settings:
-      start_minimized: true
-      leaves_only: false
-      select_parents: false
-      cascading_selection: 0
-      max_depth: 0
+      theme: default
+      dots: 0
+      size: 60
+      placeholder: ''
+      match_operator: CONTAINS
+      match_limit: 10
+      dialog_title: 'Browse collections and topics'
+      auto_check_ancestors: true
+      auto_check_descendants: false
+      auto_uncheck_ancestors: false
+      auto_uncheck_descendants: true
+      label: 'Browse collections and topics'
     third_party_settings: {  }
   field_data_flag:
     type: options_buttons
