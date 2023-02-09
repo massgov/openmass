@@ -11,4 +11,5 @@ namespace Drupal\mass_migrate\Plugin\migrate\source;
  */
 class UpdateReferencesNode extends UpdateReferences {
   const SOURCE_TYPE = 'node';
+
 }
