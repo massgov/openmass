@@ -9,7 +9,6 @@ use Drupal\mass_content\Field\FieldType\DynamicLinkItem;
 use Drupal\migrate\MigrateSkipRowException;
 use Drupal\migrate\Plugin\migrate\source\SqlBase;
 use Drupal\migrate\Row;
-use Drupal\node\Entity\Node;
 use Drupal\text\Plugin\Field\FieldType\TextLongItem;
 use Drupal\text\Plugin\Field\FieldType\TextWithSummaryItem;
 
@@ -18,7 +17,7 @@ class UpdateReferences extends SqlBase {
   const SOURCE_TYPE = '';
 
   /**
-   * Get all nodes that reference a service_detail page. Uses entity usage to determine that.
+   * Use entity usage to get all nodes that reference a service_detail page.
    */
   public function query(): SelectInterface {
     $query = $this->select('entity_usage', 'eu')
@@ -84,7 +83,7 @@ class UpdateReferences extends SqlBase {
       ->condition('eu.source_id', $row->getSourceProperty('source_id'))
       ->condition('eu.source_type', static::SOURCE_TYPE);
     // MW: This is eliminating entities that we want to update.
-    //   ->condition('eu.source_vid', $entity->getLoadedRevisionId());
+    // ->condition('eu.source_vid', $entity->getLoadedRevisionId());
     $query->addField('eu', 'target_id', 'reference_value_old');
     $query->addField('mmsd', 'destid1', 'reference_value_new');
     // $query->addField('n', 'type', 'content_type');
@@ -92,7 +91,8 @@ class UpdateReferences extends SqlBase {
     // $query->innerJoin('node', 'n', 'mmsd.sourceid1=n.nid');
     $refs = $query->execute()->fetchAll();
 
-    // Now update those fields. Different field types have different approach for updating.
+    // Now update those fields. Different field types have
+    // different approach for updating.
     foreach ($refs as $ref) {
       $values = [];
       $field_name = $ref['field_name'];
@@ -103,7 +103,8 @@ class UpdateReferences extends SqlBase {
         switch (get_class($item)) {
           case DynamicLinkItem::class:
             $values[$delta] = $item->getValue();
-            // Only update the delta that was migrated (when there are multiple values).
+            // Only update the delta that was migrated
+            // (when there are multiple values).
             // Each if() is a different type of DynamicLinkItem
             $item_uri = $item->get('uri')->getString();
             $item_uri_path = parse_url($item_uri, PHP_URL_PATH);
@@ -132,12 +133,13 @@ class UpdateReferences extends SqlBase {
               $values[$delta]['value'] = $replaced;
               $changed = TRUE;
             }
-           // Next check for the link. We want relative links not absolute so domain mismatch isnt an issue.
-           if (str_contains($item->getString(),  Url::fromUri($uri_old)->toString())) {
-             $replaced = str_replace(Url::fromUri($uri_old)->toString(),  Url::fromUri($uri_new)->toString(), $item->getString());
-             $values[$delta]['value'] = $replaced;
-             $changed = TRUE;
-           }
+            // Next check for the link. We want relative links not
+            // absolute so domain mismatch isn't an issue.
+            if (str_contains($item->getString(), Url::fromUri($uri_old)->toString())) {
+              $replaced = str_replace(Url::fromUri($uri_old)->toString(), Url::fromUri($uri_new)->toString(), $item->getString());
+              $values[$delta]['value'] = $replaced;
+              $changed = TRUE;
+            }
             break;
           default:
             throw new MigrateSkipRowException('Unhandled item');
@@ -148,7 +150,8 @@ class UpdateReferences extends SqlBase {
       $row->setDestinationProperty($field_name, $values);
     }
     else {
-      // We don't need to process further since we already saved the source (paragraph or node).
+      // We don't need to process further since we already
+      // saved the source (paragraph or node).
       // Get the unique identifier for the current item
       $unique_id = $row->getSourceProperty('source_id');
       $this->migration->getIdMap()->saveIdMapping($row, [], ['source_id' => $unique_id, 'source_type' => static::SOURCE_TYPE]);
