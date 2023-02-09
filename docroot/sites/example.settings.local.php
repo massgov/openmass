@@ -162,7 +162,7 @@ $settings['skip_permissions_hardening'] = TRUE;
 /**
  * Enable queue tracking.
  *
- * Entity usage queue tracking is enabled by default. Disable if you would need
- * to test regenerating the entity usage table.
+ * Entity usage queue tracking is enabled by default. Disable if you need to
+ * test regenerating the entity usage table.
  */
 $config['entity_usage_queue_tracking.settings']['queue_tracking'] = TRUE;
