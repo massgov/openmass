@@ -170,7 +170,7 @@ $settings['mass_caching.hosts'] = [
 
 // Entity Usage settings and config
 $config['entity_usage_queue_tracking.settings']['queue_tracking'] = TRUE;
-$settings['entity_usage_tracker'] = 'queue_unique.database';
+$settings['queue_service_entity_usage_tracker'] = 'queue_unique.database';
 
 // If in an Acquia Cloud environment
 if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
