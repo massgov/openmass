@@ -15,8 +15,10 @@ class MassMigrateCommands extends DrushCommands {
    * @hook pre-command migrate:import
    */
   public function overrideMigrateImportPreCommand() {
-    $GLOBALS['config']['entity_usage.settings']['track_enabled_source_entity_types'] = ['placeholder', 'another'];
-    \Drupal::service('config.factory')->clearStaticCache();
+    // Usage updates now gfo into a queue which we will process at end of migration.
+    // $GLOBALS['config']['entity_usage.settings']['track_enabled_source_entity_types'] = ['placeholder', 'another'];
+    // \Drupal::service('config.factory')->clearStaticCache();
+
     // Turn off entity_hierarchy writes after processing the item.
     \Drupal::state()->set('entity_hierarchy_disable_writes', TRUE);
   }

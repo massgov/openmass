@@ -1,8 +1,10 @@
 #Pre-migration checklist
 # - Ensure you have a backup before running on Prod.
 
+# Disable entity hierarchy. Not needed as the migration does ther disable itself.
+# drush sset entity_hierarchy_disable_writes 1
 
-#Show starting status. Re-run this as desired to see status.
+#Show migration status. Re-run anytime to see the current status.
 drush migrate:status
 
 #This is the long migration that creates info_details nodes.
@@ -22,6 +24,12 @@ drush migrate:import flaggings
 
 #Delete all service details nodes.
 drush entity:delete node --bundle=service_details
+
+# Enable entity hierarchy and rebuild the tree.
+drush sset entity_hierarchy_disable_writes 0
+drush entity-hierarchy-rebuild-tree field_primary_parent node
+
+# Entity usage updates are queued up. Just let cron process them.
 
 #Regenerate sitemap (optional - we can just wait for next run)
 drush simple-sitemap:rebuild-queue
