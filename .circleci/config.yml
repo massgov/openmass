@@ -494,6 +494,7 @@ jobs:
             apt-get update
             apt-get install jq -y
             BACKSTOP_REF="BACKSTOP_REF_<< parameters.target >>"
+            echo "Fetching https://circleci.com/api/v2/project/gh/massgov/openmass/${!BACKSTOP_REF}/artifacts"
             URL=$(curl --request GET \
               --fail \
               --url https://circleci.com/api/v2/project/gh/massgov/openmass/${!BACKSTOP_REF}/artifacts \
@@ -1179,11 +1180,11 @@ workflows:
     #          only:
     #            - development
     jobs:
-      - backstop_reference:
-          target: prod
-          filters:
-            branches:
-              only: dp-26913-run-backstop-js-locally
+      #- backstop_reference:
+      #    target: prod
+      #    filters:
+      #      branches:
+      #        only: dp-26913-run-backstop-js-locally
       - backstop_test:
           target: test
           filters:
