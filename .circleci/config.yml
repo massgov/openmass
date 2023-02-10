@@ -1173,7 +1173,7 @@ workflows:
   nightly_backstop_snapshot:
     #triggers:
     #  - schedule:
-    #      cron: "05 04 * * *"
+    #      cron: "05 08 * * *"
     #      filters:
     #        branches:
     #          only:
@@ -1189,3 +1189,4 @@ workflows:
           filters:
             branches:
               only: dp-26913-run-backstop-js-locally
+          requires: [backstop_reference]
