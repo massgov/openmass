@@ -497,10 +497,23 @@ jobs:
             apt-get update
             apt-get install jq -y
             BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>"
-            echo "Fetching https://circleci.com/api/v2/project/gh/massgov/openmass/${!BACKSTOP_REF}/artifacts"
+            if [ "${!BACKSTOP_REF}" == "" ]; then
+              echo "No artifacts found for << parameters.reference >>"
+              exit 1
+            fi
+            STOPPED_AT=$(curl --request GET \
+              --fail \
+              --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/job/${!BACKSTOP_REF} \
+              --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.stopped_at')
+            LAST_SUCCESS=$(date -d "$STOPPED_AT" +%s)
+            STALE_TIME=$(date -d "-25 hours" +%s)
+            if [ $LAST_SUCCESS -lte $STALE_TIME ]; then
+              echo "Reference images are stale, please re-run the backstop_reference job"
+              exit 1
+            fi
             URL=$(curl --request GET \
               --fail \
-              --url https://circleci.com/api/v2/project/gh/massgov/openmass/${!BACKSTOP_REF}/artifacts \
+              --url https://circleci.com/api/v2/project/gh/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME/${!BACKSTOP_REF}/artifacts \
               --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.items | .[] | select(.path=="backstop-prod-latest") | .url')
             curl --fail --location --url $URL --output backstop_ref.zip
             unzip backstop_ref.zip
