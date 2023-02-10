@@ -494,7 +494,7 @@ jobs:
             apt-get update
             apt-get install jq -y
             BACKSTOP_REF="BACKSTOP_REF_<< parameters.target >>"
-            URL=(curl --request GET \
+            URL=$(curl --request GET \
               --fail \
               --url https://circleci.com/api/v2/project/gh/massgov/openmass/${!BACKSTOP_REF}/artifacts \
               --header "Circle-Token: $CIRCLE_PERSONAL_TOKEN" | jq -r '.items | .[] | select(.path=="backstop-prod-latest") | .url')
