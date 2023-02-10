@@ -37,5 +37,13 @@
 #    issue: DP-19843
 #
 Changed:
-  - description: Fixes running BackstopJS locally in DDEV and updates documentation
+  - description: Adds a DDEV command to allow BackstopJS to be run locally
+    issue: DP-26913
+  - description: Increases shm_size to 2gb to avoid the browser crashing inside a docker container. See https://bugs.chromium.org/p/chromium/issues/detail?id=519952 and https://github.com/SeleniumHQ/docker-selenium#--shm-size2g
+    issue: DP-26913
+  - description: Updated the documentation and adds instructions for running the backstop job using CircleCI's local CLI
+    issue: DP-26913
+  - description: Adds a CircleCI job which collects Backstop reference images nightly and stores them as an artifact
+    issue: DP-26913
+  - description: Adds an additional backstop test during the deploy_cd CirlceCI job which uses reference images from the above job
     issue: DP-26913
