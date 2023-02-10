@@ -427,6 +427,50 @@ jobs:
       - store_artifacts:
           path: /tmp/results
 
+  backstop:
+    parameters:
+      reference:
+        type: string
+      target:
+        type: string
+      list:
+        type: string
+        default: all
+      viewport:
+        type: string
+        default: all
+      tugboat:
+        type: string
+        default: ""
+    resource_class: xlarge
+    docker:
+      - image: backstopjs/backstopjs
+    steps:
+      - checkout
+      - run:
+          name: Backstop reference
+          working_directory: backstop
+          command: backstop --config=backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+      - when:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Backstop test (Tugboat target)
+                working_directory: backstop
+                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
+      - unless:
+          condition: << parameters.tugboat >>
+          steps:
+            - run:
+                name: Backstop test (non Tugboat target)
+                working_directory: backstop
+                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
+                no_output_timeout: 300m
+      - store_test_results:
+          path: backstop/report
+      - store_artifacts:
+          path: backstop
+
   backstop_reference:
     parameters:
       target:
@@ -522,51 +566,6 @@ jobs:
             curl --fail --location --url $URL --output backstop_ref.zip
             unzip backstop_ref.zip
             rm backstop_ref.zip
-      - when:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Backstop test (Tugboat target)
-                working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >>
-      - unless:
-          condition: << parameters.tugboat >>
-          steps:
-            - run:
-                name: Backstop test (non Tugboat target)
-                working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
-                no_output_timeout: 300m
-      - store_test_results:
-          path: backstop/report
-      - store_artifacts:
-          path: backstop
-
-
-  backstop:
-    parameters:
-      reference:
-        type: string
-      target:
-        type: string
-      list:
-        type: string
-        default: all
-      viewport:
-        type: string
-        default: all
-      tugboat:
-        type: string
-        default: ""
-    resource_class: xlarge
-    docker:
-      - image: backstopjs/backstopjs
-    steps:
-      - checkout
-      - run:
-          name: Backstop reference
-          working_directory: backstop
-          command: backstop --config=backstop.js reference --target=<< parameters.reference >> --list=<< parameters.list >> --viewport=<< parameters.viewport >>
       - when:
           condition: << parameters.tugboat >>
           steps:
