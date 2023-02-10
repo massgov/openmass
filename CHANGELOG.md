@@ -1,5 +1,65 @@
 
 
+## [0.350.0] - February 7, 2023
+
+### Changed
+  - DP-26237: Correct invalid markup, cleaned up confusing aria-label, add context for screenr reader users for collapsible headers.
+  - DP-26696: Change location of 'Associated pages' field on Events.
+  - DP-27088: Active cache invalidation for language link list.
+  - DP-27097.yml: Remove and block non-Azure logins for Drupal
+  - DP-27143: Disallow bot traffic from Semrush.
+  - DP-27176: More fields added to CSV export files for the All Content view.
+  
+### Fixed
+  - DP-27002: Fix form display for Collection selection on External link for Collections
+  - DP-27163: Fix style issue with press release view.
+  - DP-27164: Fix Google Translate styles caused by a classname change by Google.
+  
+### Removed
+  - DP-27049: Removed real pages from Backstop
+  - DP-27157: Remove the background image from the form requirements section in form pages.
+  
+
+
+## [0.349.0] - January 31, 2023
+
+### Removed
+  - DP-25783: Remove feedback survey UI from edit.mass.gov.
+  
+### Changed
+  - DP-26177: Update Purge, Acquia purge, Akamai modules
+  
+### Added
+  - DP-26735: New view showing recent press releases. Not linked at this time.
+  - DP-26959: Add bulk edit to the "All documents" view for administrators.
+  - DP-27072: New administrative view showing who has flagged what content to watch it. This will help testing of content migrations.
+  
+### Fixed
+  - DP-27000: Fix radio button and checkbox sizes in collection view.
+  - DP-27077: Remove config warnings for Azure AD
+  
+
+
+## [0.348.0] - January 24, 2023
+
+### Changed
+  - DP-26309: Remove empty more link for related guides section.
+  - DP-26328: Updated Collections view to use active cache invalidation.
+  - DP-26840: Updated the Entity Usage Queue Tracking module with improvements to the cleaning command.
+  - DP-26854: Fixed small bugs and removed unused code related to CircleCI jobs
+  
+### Added
+  - DP-26736: Updates to orphan view.
+  
+### Fixed
+  - DP-26999: Reset feedback form text area validation on radio button change.
+  - DP-27003: Bug - not seeing all document language links shown.
+  
+### Security
+  - DP-27004: Drupal core and Entity Browser module security update.
+  
+
+
 ## [0.347.0] - January 17, 2023
 
 ### Added

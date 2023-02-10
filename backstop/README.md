@@ -25,10 +25,9 @@ they look the same.
 ```
 --target=local   # Choose an enviornment to target(feature#, test, or prod)
                  # `local` is default
---list=page	     # Choose a json page to run with backstop (page or all)
-                 # `page` is default and will run 36 scenarios
-                 # `all` will run 54 scenarios
-                 # post-relase
+--list=all	    # Choose a json page to run with backstop (all or post-release)
+                # `all` is default
+                # `post-release` runs fewer scenarios, and is run automatically after a release
 --viewport=all   # Options are desktop, tablet, phone, or all (default)
 ```
 
@@ -63,6 +62,7 @@ they look the same.
 
 ## Modifying Tests
 
+<<<<<<< HEAD
 You can change the pages that are captured by editing the `pages.json` file in
 this directory. We _do not_ want to test every page on the site, as this type of
 testing is very slow, but it is good to have one or two "representative samples"
@@ -88,3 +88,6 @@ with `circleci local execute backstop -e LOWER_ENVIR_AUTH_USER="<USER>" -e LOWER
 
 The `store_test_results` and `store_artifacts` steps are not supported, so you
 may wish to comment those out temporarily.
+=======
+If you need test "representative samples" of content types, please use the `all.json`, which includes QAG pages that were created for testing purposes.
+>>>>>>> master
