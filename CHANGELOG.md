@@ -1,5 +1,26 @@
 
 
+## [0.350.0] - February 7, 2023
+
+### Changed
+  - DP-26237: Correct invalid markup, cleaned up confusing aria-label, add context for screenr reader users for collapsible headers.
+  - DP-26696: Change location of 'Associated pages' field on Events.
+  - DP-27088: Active cache invalidation for language link list.
+  - DP-27097.yml: Remove and block non-Azure logins for Drupal
+  - DP-27143: Disallow bot traffic from Semrush.
+  - DP-27176: More fields added to CSV export files for the All Content view.
+  
+### Fixed
+  - DP-27002: Fix form display for Collection selection on External link for Collections
+  - DP-27163: Fix style issue with press release view.
+  - DP-27164: Fix Google Translate styles caused by a classname change by Google.
+  
+### Removed
+  - DP-27049: Removed real pages from Backstop
+  - DP-27157: Remove the background image from the form requirements section in form pages.
+  
+
+
 ## [0.349.0] - January 31, 2023
 
 ### Removed
