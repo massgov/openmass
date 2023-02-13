@@ -141,6 +141,10 @@ $settings['mass_caching.hosts'] = [
   'edit.stage.mass.gov',
 ];
 
+// Entity Usage settings and config
+$config['entity_usage_queue_tracking.settings']['queue_tracking'] = TRUE;
+$settings['queue_service_entity_usage_tracker'] = 'queue_unique.database';
+
 // If in an Acquia Cloud environment
 if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
   // if in acquia...
@@ -196,4 +200,3 @@ if (PHP_SAPI === 'cli' && ini_get('memory_limit')) {
   ini_set('memory_limit', '2048M');
 }
 
-$settings['entity_usage_tracker'] = 'queue_unique.database';
