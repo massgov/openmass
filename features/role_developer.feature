@@ -29,4 +29,4 @@ Feature: Developer
     # Developer can administer security settings and checks
     Then I should not have the "administer modules, administer software updates, administer themes, administer users" permissions
     # Developer user does not have permission to change site code or administer users
-    Then I should have the "access security review list, run security checks, administer seckit" permissions
+    Then I should have the "access security review list, run security checks" permissions
