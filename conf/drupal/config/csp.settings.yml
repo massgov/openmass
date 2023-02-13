@@ -7,26 +7,46 @@ report-only:
       base: none
     script-src:
       base: self
+      sources:
+        - translate.google.com
+        - browser-update.org
+        - www.gstatic.com
+        - translate.googleapis.com
+        - 'https://translate-pa.googleapis.com'
+        - www.google-analytics.com
+        - www.googleoptimize.com
     script-src-attr:
       base: self
     script-src-elem:
       base: self
+      sources:
+        - translate.google.com
+        - browser-update.org
+        - www.gstatic.com
+        - translate.googleapis.com
+        - 'https://translate-pa.googleapis.com'
+        - www.google-analytics.com
+        - www.googleoptimize.com
     style-src:
       base: self
+      sources:
+        - www.gstatic.com
     style-src-attr:
       base: self
     style-src-elem:
       base: self
+      sources:
+        - www.gstatic.com
     frame-ancestors:
       base: self
   reporting:
-    plugin: none
+    plugin: sitelog
 enforce:
   enable: true
   directives:
-    frame-ancestors:
-      base: self
     object-src:
       base: none
+    frame-ancestors:
+      base: self
   reporting:
     plugin: sitelog
