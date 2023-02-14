@@ -3887,10 +3887,6 @@ function mass_theme_preprocess_node(&$variables) {
     // region).
     $allowed_regions = ['pre_content', 'post_content', 'section_topics'];
     mass_theme_add_regions_to_node($allowed_regions, $variables);
-
-    // Now that precontent is available, add in the contextual nav element
-    // for this page (if present).
-    \Drupal::service('mass_content.log_in_links_builder')->buildContextualLogInLinks($variables, $node);
   }
 
   // Optionally, run node-type-specific preprocess functions, like
