@@ -19,11 +19,6 @@ use Drupal\user\Entity\User;
  * Implements hook_token_info().
  */
 function mass_metatag_token_info() {
-  $info['tokens']['node']['dm_organizations'] = [
-    'name' => t('Related organization pages'),
-    'description' => t("The organization pages related to the current node."),
-    'type' => 'node',
-  ];
   $info['tokens']['node']['mass_external_organizations'] = [
     'name' => t('Related external organizations'),
     'description' => t("The external organizations related to the current node."),
@@ -37,21 +32,6 @@ function mass_metatag_token_info() {
   $info['tokens']['node']['mass_labels'] = [
     'name' => t('Node labels'),
     'description' => t('The labels related to the current node.'),
-    'type' => 'node',
-  ];
-  $info['tokens']['node']['dm_services'] = [
-    'name' => t('Related service pages'),
-    'description' => t("The service pages related to the current node."),
-    'type' => 'node',
-  ];
-  $info['tokens']['node']['dm_topics'] = [
-    'name' => t('Related topic pages'),
-    'description' => t("The topic pages related to the current node."),
-    'type' => 'node',
-  ];
-  $info['tokens']['node']['dm_locations'] = [
-    'name' => t('Related location pages'),
-    'description' => t("The location pages related to the current node."),
     'type' => 'node',
   ];
   $info['tokens']['string']['mass_urlencode'] = [
@@ -84,98 +64,6 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
   if ($type == 'node') {
     foreach ($tokens as $name => $original) {
       switch ($name) {
-        case 'dm_organizations':
-          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
-          $descendant_manager = \Drupal::service('descendant_manager');
-          $org_ids = $descendant_manager->getOrganizations($data['node']->id());
-          $organizations = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($org_ids);
-          foreach ($organizations as $organization) {
-            $values[] = [
-              'name' => $organization->getTitle(),
-              'url' => $organization->toUrl('canonical', ['absolute' => TRUE])
-                ->toString(),
-            ];
-            $replacements[$original] = json_encode($values);
-          }
-          break;
-
-        case 'dm_services':
-          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
-          $descendant_manager = \Drupal::service('descendant_manager');
-          $service_ids = $descendant_manager->getServices($data['node']->id());
-          $services = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($service_ids);
-          foreach ($services as $service) {
-            $values[] = [
-              'name' => $service->getTitle(),
-              'url' => $service->toUrl('canonical', ['absolute' => TRUE])
-                ->toString(),
-            ];
-            $replacements[$original] = json_encode($values);
-          }
-          break;
-
-        case 'dm_topics':
-          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
-          $descendant_manager = \Drupal::service('descendant_manager');
-          $topics_array = $descendant_manager->getTopics($data['node']->id());
-          // Collect all topic ids so we can batch load them.
-          $topic_ids = array_reduce($topics_array, function ($ids, $level_ids) {
-            return array_merge($ids, $level_ids);
-          }, []);
-          $topics = \Drupal::entityTypeManager()
-            ->getStorage('node')
-            ->loadMultiple($topic_ids);
-          foreach ($topics as $topic) {
-            $values[] = [
-              'name' => $topic->label(),
-              'url' => $topic->toUrl('canonical', ['absolute' => TRUE])->toString(),
-            ];
-            $replacements[$original] = json_encode($values);
-          }
-          break;
-
-        case 'dm_locations':
-          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
-          $descendant_manager = \Drupal::service('descendant_manager');
-          $ancestors_array = $descendant_manager->getParents($data['node']->id());
-          // Flatten the multilevel ancestors array by merging each set. This
-          // produces a single array ordered by level.
-          $ancestors_flat = array_reduce($ancestors_array, function ($flattened, $set) {
-            return array_merge($flattened, $set);
-          }, []);
-          // Filter to only locations, then grab the 'id' from each.
-          $location_ids = array_column(array_filter($ancestors_flat, function ($record) {
-            return $record['type'] === 'location';
-          }), 'id');
-          $locations = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($location_ids);
-          foreach ($locations as $location) {
-            $values[] = [
-              'name' => $location->label(),
-              'url' => $location->toUrl('canonical', ['absolute' => TRUE])->toString(),
-            ];
-            $replacements[$original] = json_encode($values);
-          }
-          break;
-
-        case 'dm_child_locations':
-          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
-          $descendant_manager = \Drupal::service('descendant_manager');
-          $descendants_array = $descendant_manager->getChildrenTree($data['node']->id(), 1);
-          $direct_location_descendants = array_filter($descendants_array, function ($descendant) {
-            return $descendant['type'] === 'location';
-          });
-          // If there are child locations, link to the Locations listing page.
-          if (count($direct_location_descendants)) {
-            $org_name = $data['node']->label();
-            $values[] = [
-              'name' => t('@org_name Locations', ['@org_name' => $org_name]),
-              'url' => $data['node']->toUrl('canonical', ['absolute' => TRUE])
-                ->toString() . '/locations',
-            ];
-            $replacements[$original] = json_encode($values);
-          }
-          break;
-
         case 'mass_external_organizations':
           /** @var \Drupal\Core\Entity\EntityFieldManager $entity_field_manager */
           $entity_field_manager = \Drupal::service('entity_field.manager');

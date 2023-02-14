@@ -18,6 +18,22 @@ use Drupal\taxonomy\Entity\Term;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function mass_content_form_node_form_alter(&$form, FormStateInterface $form_state) {
+  $title = $form_state->getValue('title');
+  if (isset($title[0]['value'])) {
+    $looking_for = 'Clone of ';
+    $chunk = substr($title[0]['value'], 0, strlen($looking_for));
+    if (strcasecmp($looking_for, $chunk) == 0) {
+      $form_state->setErrorByName('title', t("Please change the title to something different from the cloned page and remove 'Clone of ' from the beginning of it."));
+    }
+  }
+}
+
+
 /**
  * Implements hook_entity_bundle_field_info().
  *
@@ -295,29 +311,6 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
       $fields['computed_related_to'] = $field_definition;
     }
 
-    // Add computed log in links field onto child content types.
-    $log_in_link_bundles = [
-      'binder',
-      'curated_list',
-      'decision_tree',
-      'form_page',
-      'guide_page',
-      'how_to_page',
-      'info_details',
-      'location',
-      'location_details',
-      'service_details',
-    ];
-    if (in_array($bundle, $log_in_link_bundles)) {
-      $fields['computed_log_in_links'] = BaseFieldDefinition::create('link')
-        ->setLabel(t('Computed Log in links'))
-        ->setComputed(TRUE)
-        ->setSetting('link_type', 17)
-        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
-        ->setClass('\Drupal\mass_content\Field\LogInLinks')
-        ->setDisplayConfigurable('view', TRUE);
-    }
-
     if ($bundle === 'org_page') {
       $fields['recent_news'] = BaseFieldDefinition::create('entity_reference')
         ->setLabel(t('Recent news'))
@@ -364,17 +357,6 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
         ->setLabel(t('Person Is Featured'))
         ->setComputed(TRUE)
         ->setClass('\Drupal\mass_content\Field\PersonIsFeatured')
-        ->setDisplayConfigurable('view', TRUE);
-    }
-    elseif ($bundle === 'location') {
-      $fields['computed_related_locations'] = BaseFieldDefinition::create('entity_reference')
-        ->setLabel(t('Computed related locations'))
-        ->setComputed(TRUE)
-        ->setSetting('target_type', 'node')
-        ->setSetting('ancestor_allowed_types', ['org_page', 'service_page'])
-        ->setSetting('ancestor_allowed_fields', ['field_organization_sections>field_section_long_form_content>field_org_ref_locations', 'field_service_sections>field_service_section_content>field_org_ref_locations'])
-        ->setClass('\Drupal\mass_content\Field\RelatedLocations')
-        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
         ->setDisplayConfigurable('view', TRUE);
     }
   }
