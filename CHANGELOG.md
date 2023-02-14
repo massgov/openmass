@@ -1,5 +1,21 @@
 
 
+## [0.351.0] - February 14, 2023
+
+### Added
+  - DP-24435: Add option to toggle language bar labels.
+  
+### Fixed
+  - DP-26967: Style issue with header iframe on visual story info detail page.
+  
+### Security
+  - DP-27215: Drupal core major version (9.5.3) and DangerJS update.
+  
+### Changed
+  - DP-27227: Added default settings for entity usage queue tracking that can be overridden.
+  
+
+
 ## [0.350.0] - February 7, 2023
 
 ### Changed
