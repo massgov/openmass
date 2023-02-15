@@ -339,6 +339,17 @@ function mass_content_entity_bundle_field_info(EntityTypeInterface $entity_type,
         ->setClass('\Drupal\mass_content\Field\LinksOnParagraphs')
         ->setDisplayConfigurable('view', TRUE);
     }
+    elseif ($bundle === 'location') {
+      $fields['computed_related_locations'] = BaseFieldDefinition::create('entity_reference')
+        ->setLabel(t('Computed related locations'))
+        ->setComputed(TRUE)
+        ->setSetting('target_type', 'node')
+        ->setSetting('ancestor_allowed_types', ['org_page', 'service_page'])
+        ->setSetting('ancestor_allowed_fields', ['field_organization_sections>field_section_long_form_content>field_org_ref_locations', 'field_service_sections>field_service_section_content>field_org_ref_locations'])
+        ->setClass('\Drupal\mass_content\Field\RelatedLocations')
+        ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+        ->setDisplayConfigurable('view', TRUE);
+    }
     elseif ($bundle === 'person') {
       $fields['position_is_vacant'] = BaseFieldDefinition::create('boolean')
         ->setLabel(t('Position is vacant'))
