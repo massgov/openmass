@@ -20,6 +20,8 @@
 {% endblock %}
 
 {% block preContent %}
+  {# If the contextual navigation should be set for this node, then add it. #}
+  {{ contextual_log_in_links }}
 
   {# Check if primary indicator content exists. #}
   {% set primaryIndicators = null %}
