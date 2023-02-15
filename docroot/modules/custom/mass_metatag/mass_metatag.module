@@ -147,7 +147,6 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
           $location_ids = array_column(array_filter($ancestors_flat, function ($record) {
             return $record['type'] === 'location';
           }), 'id');
-          ksm($location_ids);
           $locations = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($location_ids);
           foreach ($locations as $location) {
             $values[] = [
