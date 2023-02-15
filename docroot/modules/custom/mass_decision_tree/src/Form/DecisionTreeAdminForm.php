@@ -147,7 +147,6 @@ class DecisionTreeAdminForm extends FormBase {
       }
     }
 
-
     $form['actions'] = ['#type' => 'actions'];
     $form['actions']['submit'] = [
       '#type' => 'submit',

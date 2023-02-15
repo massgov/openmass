@@ -65,7 +65,7 @@ function mass_decision_tree_preprocess_node(&$variables) {
     // This depth is arbitrarily set here to 20. If decision trees are created with a depth greater than 20, the
     // nodes past 20 will be marked as orphans and have a message about not being reachable.
     $direct_descendants = $descendant_manager->getChildrenFlat($root_nid, 20);
-    
+
     // Iterate through the tree's descendants and format them.
     $steps = [];
     foreach (Node::loadMultiple($descendant_ids) as $descendant_node) {
