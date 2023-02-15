@@ -147,6 +147,7 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
           $location_ids = array_column(array_filter($ancestors_flat, function ($record) {
             return $record['type'] === 'location';
           }), 'id');
+          ksm($location_ids);
           $locations = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($location_ids);
           foreach ($locations as $location) {
             $values[] = [
@@ -158,7 +159,6 @@ function mass_metatag_tokens($type, $tokens, array $data, array $options, Bubble
           break;
 
         case 'dm_child_locations':
-          /** @var \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager */
           $location_nodes = Helper::getReferencedEntitiesFromSectionField($data['node'], [
             'field_organization_sections',
             'field_section_long_form_content',
