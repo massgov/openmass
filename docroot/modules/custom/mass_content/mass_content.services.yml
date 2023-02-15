@@ -9,6 +9,8 @@ services:
     tags:
       - { name: event_subscriber }
     weight: 200
+  mass_content.log_in_links_builder:
+    class: Drupal\mass_content\LogInLinksBuilder
   mass_content.image_style_warmer:
     class: Drupal\mass_content\ImageStylesWarmer
     arguments: ['@entity_type.manager', '@image.factory','@entity_type.manager']
