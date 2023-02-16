@@ -11,7 +11,6 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\Url;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
-use Drupal\mass_content_api\DescendantManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -27,13 +26,6 @@ class DecisionTreeAdminForm extends FormBase {
   protected $renderer;
 
   /**
-   * Drupal\mass_content_api\DescendantManager definition.
-   *
-   * @var \Drupal\mass_content_api\DescendantManagerInterface
-   */
-  protected $descendantManager;
-
-  /**
    * Drupal\Core\Entity\EntityTypeManager definition.
    *
    * @var \Drupal\Core\Entity\EntityTypeManager
@@ -45,14 +37,11 @@ class DecisionTreeAdminForm extends FormBase {
    *
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer.
-   * @param \Drupal\mass_content_api\DescendantManagerInterface $descendant_manager
-   *   The content api descendant manager.
    * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
    *   Entity type manager.
    */
-  public function __construct(RendererInterface $renderer, DescendantManagerInterface $descendant_manager, EntityTypeManager $entity_type_manager) {
+  public function __construct(RendererInterface $renderer, EntityTypeManager $entity_type_manager) {
     $this->renderer = $renderer;
-    $this->descendantManager = $descendant_manager;
     $this->entityTypeManager = $entity_type_manager;
   }
 
@@ -62,7 +51,6 @@ class DecisionTreeAdminForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('renderer'),
-      $container->get('descendant_manager'),
       $container->get('entity_type.manager')
     );
   }
@@ -302,7 +290,7 @@ class DecisionTreeAdminForm extends FormBase {
             $node->field_multiple_answers[] = $order[$nid];
           }
           else {
-            $paragraph = \Drupal::entityTypeManager()
+            $paragraph = $this->entityTypeManager
               ->getStorage('paragraph')
               ->loadByProperties(['field_answer_path' => $nid]);
             $p_tmp = reset($paragraph);
