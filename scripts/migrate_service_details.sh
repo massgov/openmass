@@ -11,7 +11,10 @@ drush migrate:status
 drush migrate:import service_details
 
 #This updates entity refs and link fields and other usages of the old service_detail nodes
-drush migrate:import update_references
+drush migrate:import update_references_node
+
+#This updates entity refs and link fields and other usages of the old service_detail paragraphs
+drush migrate:import update_references_paragraph
 
 # Migrate old redirects and add redirects from old service details alias to new node.
 drush migrate:import update_redirects
