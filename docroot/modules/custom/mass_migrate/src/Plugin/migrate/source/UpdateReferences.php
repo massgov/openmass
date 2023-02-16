@@ -30,9 +30,11 @@ class UpdateReferences extends SqlBase {
     // @todo Limit to just the most revision in the entity_usage table
     // $query->innerJoin('node', 'nt', 'eu.target_id=nt.nid');
     // Don't care about service detail nodes, as those are not in use.
-    $query->innerJoin('node', 'ns', 'eu.source_id=ns.nid');
-    $query->condition('ns.type', 'service_details', '!=');
-    $query->fields('ns', ['type']);
+    if (static::SOURCE_TYPE == 'node') {
+      $query->innerJoin('node', 'ns', 'eu.source_id=ns.nid');
+      $query->condition('ns.type', 'service_details', '!=');
+      $query->fields('ns', ['type']);
+    }
 
     $query->addExpression('COUNT(eu.field_name)', 'count');
     $query->addExpression('MAX(eu.source_vid)', 'source_vid_max');
