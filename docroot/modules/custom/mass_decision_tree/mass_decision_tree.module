@@ -58,7 +58,7 @@ function mass_decision_tree_preprocess_node(&$variables) {
       ->condition('type', $allowed_bundles, 'IN')
       ->condition('field_decision_root_ref', $root_nid);
     $descendant_ids = $query->execute();
-    
+
     // Iterate through the tree's descendants and format them.
     $steps = [];
     foreach (Node::loadMultiple($descendant_ids) as $descendant_node) {
