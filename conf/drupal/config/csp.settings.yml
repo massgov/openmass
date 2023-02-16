@@ -1,0 +1,54 @@
+_core:
+  default_config_hash: yOPH6uEZYRHbg2OFP-bze0jGr06fI-Gr_66W-vA8Faw
+report-only:
+  enable: true
+  directives:
+    object-src:
+      base: none
+    script-src:
+      base: self
+      sources:
+        - translate.google.com
+        - browser-update.org
+        - www.gstatic.com
+        - translate.googleapis.com
+        - translate-pa.googleapis.com
+        - www.google-analytics.com
+        - www.googleoptimize.com
+        - '''sha256-Oia9qNb+juCBG5GbIq7Z1W+EgLieto4CnZEXO9Hl4RU='''
+    script-src-attr:
+      base: self
+    script-src-elem:
+      base: self
+      sources:
+        - translate.google.com
+        - browser-update.org
+        - www.gstatic.com
+        - translate.googleapis.com
+        - translate-pa.googleapis.com
+        - www.google-analytics.com
+        - www.googleoptimize.com
+        - '''sha256-Oia9qNb+juCBG5GbIq7Z1W+EgLieto4CnZEXO9Hl4RU='''
+    style-src:
+      base: self
+      sources:
+        - www.gstatic.com
+    style-src-attr:
+      base: self
+    style-src-elem:
+      base: self
+      sources:
+        - www.gstatic.com
+    frame-ancestors:
+      base: self
+  reporting:
+    plugin: sitelog
+enforce:
+  enable: true
+  directives:
+    object-src:
+      base: none
+    frame-ancestors:
+      base: self
+  reporting:
+    plugin: sitelog
