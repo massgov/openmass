@@ -455,7 +455,7 @@ function mass_content_deploy_data_topic_url_name() {
   $query = \Drupal::entityQuery('taxonomy_term');
   $query->condition('vid', 'data_topic');
 
-  $tids = $query->sort('tid')->execute();
+  $tids = $query->sort('tid')->accessCheck(FALSE)->execute();
 
   $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
 
@@ -713,7 +713,7 @@ function mass_content_deploy_search_related_info(&$sandbox) {
     $sandbox['current'] = 0;
     $sandbox['progress'] = 0;
     $count = clone $query;
-    $sandbox['max'] = $count->count()->execute();
+    $sandbox['max'] = $count->count()->accessCheck(FALSE)->execute();
   }
 
   $batch_size = 50;

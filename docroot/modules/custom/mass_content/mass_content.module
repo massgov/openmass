@@ -682,7 +682,7 @@ function mass_content_get_collection_from_current_page() {
   $collection_param = $route_match->getParameter('collection');
   $query = \Drupal::entityQuery('taxonomy_term');
   $query->condition('field_url_name', $collection_param);
-  $ids = $query->execute();
+  $ids = $query->accessCheck(FALSE)->execute();
   $collection_id = reset($ids);
   if (!$collection_id) {
     return FALSE;

@@ -73,7 +73,7 @@ class MassContentCommands extends DrushCommands {
         $query->range(0, $limit);
       }
 
-      $nids = $query->execute()->accessCheck(FALSE);
+      $nids = $query->accessCheck(FALSE)->execute();
     }
     catch (\Exception $e) {
       $this->output()->writeln($e);
@@ -148,7 +148,7 @@ class MassContentCommands extends DrushCommands {
       $query->sort('nid');
       $query->range($offset, $limit);
 
-      $nids = $query->execute()->accessCheck(FALSE);
+      $nids = $query->accessCheck(FALSE)->execute();
     }
     catch (\Exception $e) {
       $this->output()->writeln($e);
