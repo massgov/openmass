@@ -1,5 +1,43 @@
 <?php
 
+use Drupal\mass_content\Entity\Bundle\node\ActionBundle;
+use Drupal\mass_content\Entity\Bundle\node\AdvisoryBundle;
+use Drupal\mass_content\Entity\Bundle\node\AlertBundle;
+use Drupal\mass_content\Entity\Bundle\node\BinderBundle;
+use Drupal\mass_content\Entity\Bundle\node\CampaignLandingBundle;
+use Drupal\mass_content\Entity\Bundle\node\ContactInformationBundle;
+use Drupal\mass_content\Entity\Bundle\node\CuratedListBundle;
+use Drupal\mass_content\Entity\Bundle\node\DecisionBundle;
+use Drupal\mass_content\Entity\Bundle\node\DecisionTreeBundle;
+use Drupal\mass_content\Entity\Bundle\node\DecisionTreeBranchBundle;
+use Drupal\mass_content\Entity\Bundle\node\DecisionTreeConclusionBundle;
+use Drupal\mass_content\Entity\Bundle\node\ErrorPageBundle;
+use Drupal\mass_content\Entity\Bundle\node\EventBundle;
+use Drupal\mass_content\Entity\Bundle\node\ExecutiveOrderBundle;
+use Drupal\mass_content\Entity\Bundle\node\ExternalDataResourceBundle;
+use Drupal\mass_content\Entity\Bundle\node\FeeBundle;
+use Drupal\mass_content\Entity\Bundle\node\FormPageBundle;
+use Drupal\mass_content\Entity\Bundle\node\GuidePageBundle;
+use Drupal\mass_content\Entity\Bundle\node\HowToPageBundle;
+use Drupal\mass_content\Entity\Bundle\node\InfoDetailsBundle;
+use Drupal\mass_content\Entity\Bundle\node\InterstitialBundle;
+use Drupal\mass_content\Entity\Bundle\node\LocationBundle;
+use Drupal\mass_content\Entity\Bundle\node\LocationDetailsBundle;
+use Drupal\mass_content\Entity\Bundle\node\NewsBundle;
+use Drupal\mass_content\Entity\Bundle\node\OrgPageBundle;
+use Drupal\mass_content\Entity\Bundle\node\PageBundle;
+use Drupal\mass_content\Entity\Bundle\node\PersonBundle;
+use Drupal\mass_content\Entity\Bundle\node\RegulationBundle;
+use Drupal\mass_content\Entity\Bundle\node\RulesBundle;
+use Drupal\mass_content\Entity\Bundle\node\ServiceDetailsBundle;
+use Drupal\mass_content\Entity\Bundle\node\ServicePageBundle;
+use Drupal\mass_content\Entity\Bundle\node\SitewideAlertBundle;
+use Drupal\mass_content\Entity\Bundle\node\StackedLayoutBundle;
+use Drupal\mass_content\Entity\Bundle\node\TopicPageBundle;
+use Drupal\mass_content\Entity\Bundle\node\UtilityDrawerBundle;
+use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
+use Drupal\mass_content\Entity\Bundle\media\MediaVideoBundle;
+use Drupal\mass_content\Entity\Bundle\user\UserBundle;
 /**
  * @file
  * Contains mass_content.module.
@@ -944,122 +982,122 @@ function mass_content_views_data() {
  */
 function mass_content_entity_bundle_info_alter(array &$bundles): void {
   if (isset($bundles['node']['action'])) {
-    $bundles['node']['action']['class'] = \Drupal\mass_content\Entity\Bundle\node\ActionBundle::class;
+    $bundles['node']['action']['class'] = ActionBundle::class;
   }
   if (isset($bundles['node']['advisory'])) {
-    $bundles['node']['advisory']['class'] = \Drupal\mass_content\Entity\Bundle\node\AdvisoryBundle::class;
+    $bundles['node']['advisory']['class'] = AdvisoryBundle::class;
   }
   if (isset($bundles['node']['alert'])) {
-    $bundles['node']['alert']['class'] = \Drupal\mass_content\Entity\Bundle\node\AlertBundle::class;
+    $bundles['node']['alert']['class'] = AlertBundle::class;
   }
   if (isset($bundles['node']['binder'])) {
-    $bundles['node']['binder']['class'] = \Drupal\mass_content\Entity\Bundle\node\BinderBundle::class;
+    $bundles['node']['binder']['class'] = BinderBundle::class;
   }
   if (isset($bundles['node']['campaign_landing'])) {
-    $bundles['node']['campaign_landing']['class'] = \Drupal\mass_content\Entity\Bundle\node\CampaignLandingBundle::class;
+    $bundles['node']['campaign_landing']['class'] = CampaignLandingBundle::class;
   }
   if (isset($bundles['node']['contact_information'])) {
-    $bundles['node']['contact_information']['class'] = \Drupal\mass_content\Entity\Bundle\node\ContactInformationBundle::class;
+    $bundles['node']['contact_information']['class'] = ContactInformationBundle::class;
   }
   if (isset($bundles['node']['curated_list'])) {
-    $bundles['node']['curated_list']['class'] = \Drupal\mass_content\Entity\Bundle\node\CuratedListBundle::class;
+    $bundles['node']['curated_list']['class'] = CuratedListBundle::class;
   }
   if (isset($bundles['node']['decision'])) {
-    $bundles['node']['decision']['class'] = \Drupal\mass_content\Entity\Bundle\node\DecisionBundle::class;
+    $bundles['node']['decision']['class'] = DecisionBundle::class;
   }
   if (isset($bundles['node']['decision_tree'])) {
-    $bundles['node']['decision_tree']['class'] = \Drupal\mass_content\Entity\Bundle\node\DecisionTreeBundle::class;
+    $bundles['node']['decision_tree']['class'] = DecisionTreeBundle::class;
   }
   if (isset($bundles['node']['decision_tree_branch'])) {
-    $bundles['node']['decision_tree_branch']['class'] = \Drupal\mass_content\Entity\Bundle\node\DecisionTreeBranchBundle::class;
+    $bundles['node']['decision_tree_branch']['class'] = DecisionTreeBranchBundle::class;
   }
   if (isset($bundles['node']['decision_tree_conclusion'])) {
-    $bundles['node']['decision_tree_conclusion']['class'] = \Drupal\mass_content\Entity\Bundle\node\DecisionTreeConclusionBundle::class;
+    $bundles['node']['decision_tree_conclusion']['class'] = DecisionTreeConclusionBundle::class;
   }
   if (isset($bundles['node']['error_page'])) {
-    $bundles['node']['error_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\ErrorPageBundle::class;
+    $bundles['node']['error_page']['class'] = ErrorPageBundle::class;
   }
   if (isset($bundles['node']['event'])) {
-    $bundles['node']['event']['class'] = \Drupal\mass_content\Entity\Bundle\node\EventBundle::class;
+    $bundles['node']['event']['class'] = EventBundle::class;
   }
   if (isset($bundles['node']['executive_order'])) {
-    $bundles['node']['executive_order']['class'] = \Drupal\mass_content\Entity\Bundle\node\ExecutiveOrderBundle::class;
+    $bundles['node']['executive_order']['class'] = ExecutiveOrderBundle::class;
   }
   if (isset($bundles['node']['external_data_resource'])) {
-    $bundles['node']['external_data_resource']['class'] = \Drupal\mass_content\Entity\Bundle\node\ExternalDataResourceBundle::class;
+    $bundles['node']['external_data_resource']['class'] = ExternalDataResourceBundle::class;
   }
   if (isset($bundles['node']['fee'])) {
-    $bundles['node']['fee']['class'] = \Drupal\mass_content\Entity\Bundle\node\FeeBundle::class;
+    $bundles['node']['fee']['class'] = FeeBundle::class;
   }
   if (isset($bundles['node']['form_page'])) {
-    $bundles['node']['form_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\FormPageBundle::class;
+    $bundles['node']['form_page']['class'] = FormPageBundle::class;
   }
   if (isset($bundles['node']['guide_page'])) {
-    $bundles['node']['guide_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\GuidePageBundle::class;
+    $bundles['node']['guide_page']['class'] = GuidePageBundle::class;
   }
   if (isset($bundles['node']['how_to_page'])) {
-    $bundles['node']['how_to_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\HowToPageBundle::class;
+    $bundles['node']['how_to_page']['class'] = HowToPageBundle::class;
   }
   if (isset($bundles['node']['info_details'])) {
-    $bundles['node']['info_details']['class'] = \Drupal\mass_content\Entity\Bundle\node\InfoDetailsBundle::class;
+    $bundles['node']['info_details']['class'] = InfoDetailsBundle::class;
   }
   if (isset($bundles['node']['interstitial'])) {
-    $bundles['node']['interstitial']['class'] = \Drupal\mass_content\Entity\Bundle\node\InterstitialBundle::class;
+    $bundles['node']['interstitial']['class'] = InterstitialBundle::class;
   }
   if (isset($bundles['node']['location'])) {
-    $bundles['node']['location']['class'] = \Drupal\mass_content\Entity\Bundle\node\LocationBundle::class;
+    $bundles['node']['location']['class'] = LocationBundle::class;
   }
   if (isset($bundles['node']['location_details'])) {
-    $bundles['node']['location_details']['class'] = \Drupal\mass_content\Entity\Bundle\node\LocationDetailsBundle::class;
+    $bundles['node']['location_details']['class'] = LocationDetailsBundle::class;
   }
   if (isset($bundles['node']['news'])) {
-    $bundles['node']['news']['class'] = \Drupal\mass_content\Entity\Bundle\node\NewsBundle::class;
+    $bundles['node']['news']['class'] = NewsBundle::class;
   }
   if (isset($bundles['node']['org_page'])) {
-    $bundles['node']['org_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\OrgPageBundle::class;
+    $bundles['node']['org_page']['class'] = OrgPageBundle::class;
   }
   if (isset($bundles['node']['page'])) {
-    $bundles['node']['page']['class'] = \Drupal\mass_content\Entity\Bundle\node\PageBundle::class;
+    $bundles['node']['page']['class'] = PageBundle::class;
   }
   if (isset($bundles['node']['person'])) {
-    $bundles['node']['person']['class'] = \Drupal\mass_content\Entity\Bundle\node\PersonBundle::class;
+    $bundles['node']['person']['class'] = PersonBundle::class;
   }
   if (isset($bundles['node']['regulation'])) {
-    $bundles['node']['regulation']['class'] = \Drupal\mass_content\Entity\Bundle\node\RegulationBundle::class;
+    $bundles['node']['regulation']['class'] = RegulationBundle::class;
   }
   if (isset($bundles['node']['rules'])) {
-    $bundles['node']['rules']['class'] = \Drupal\mass_content\Entity\Bundle\node\RulesBundle::class;
+    $bundles['node']['rules']['class'] = RulesBundle::class;
   }
   if (isset($bundles['node']['service_details'])) {
-    $bundles['node']['service_details']['class'] = \Drupal\mass_content\Entity\Bundle\node\ServiceDetailsBundle::class;
+    $bundles['node']['service_details']['class'] = ServiceDetailsBundle::class;
   }
   if (isset($bundles['node']['service_page'])) {
-    $bundles['node']['service_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\ServicePageBundle::class;
+    $bundles['node']['service_page']['class'] = ServicePageBundle::class;
   }
   if (isset($bundles['node']['sitewide_alert'])) {
-    $bundles['node']['sitewide_alert']['class'] = \Drupal\mass_content\Entity\Bundle\node\SitewideAlertBundle::class;
+    $bundles['node']['sitewide_alert']['class'] = SitewideAlertBundle::class;
   }
   if (isset($bundles['node']['stacked_layout'])) {
-    $bundles['node']['stacked_layout']['class'] = \Drupal\mass_content\Entity\Bundle\node\StackedLayoutBundle::class;
+    $bundles['node']['stacked_layout']['class'] = StackedLayoutBundle::class;
   }
   if (isset($bundles['node']['topic_page'])) {
-    $bundles['node']['topic_page']['class'] = \Drupal\mass_content\Entity\Bundle\node\TopicPageBundle::class;
+    $bundles['node']['topic_page']['class'] = TopicPageBundle::class;
   }
   if (isset($bundles['node']['utility_drawer'])) {
-    $bundles['node']['utility_drawer']['class'] = \Drupal\mass_content\Entity\Bundle\node\UtilityDrawerBundle::class;
+    $bundles['node']['utility_drawer']['class'] = UtilityDrawerBundle::class;
   }
 
   // Media
   if (isset($bundles['media']['document'])) {
-    $bundles['media']['document']['class'] = \Drupal\mass_content\Entity\Bundle\media\DocumentBundle::class;
+    $bundles['media']['document']['class'] = DocumentBundle::class;
   }
   if (isset($bundles['media']['media_video'])) {
-    $bundles['media']['media_video']['class'] = \Drupal\mass_content\Entity\Bundle\media\MediaVideoBundle::class;
+    $bundles['media']['media_video']['class'] = MediaVideoBundle::class;
   }
 
   // User
   if (isset($bundles['user']['user'])) {
-    $bundles['user']['user']['class'] = \Drupal\mass_content\Entity\Bundle\user\UserBundle::class;
+    $bundles['user']['user']['class'] = UserBundle::class;
   }
 
 }

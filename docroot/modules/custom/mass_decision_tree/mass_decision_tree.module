@@ -36,7 +36,7 @@ function mass_decision_tree_preprocess_node(&$variables) {
       // We have to render() this value explicitly since it does not pass
       // through Twig.
       $details = Helper::fieldFullView($node, 'field_description');
-      $root_values['details'] = render($details);
+      $root_values['details'] = \Drupal::service('renderer')->render($details);
     }
     if (Helper::isFieldPopulated($node, 'field_start_button')) {
       $start = Helper::getReferencedEntitiesFromField($node, 'field_start_button');
@@ -96,7 +96,7 @@ function mass_decision_tree_preprocess_node(&$variables) {
         // We have to render() this value explicitly since it does not pass
         // through Twig.
         $details = Helper::fieldFullView($descendant_node, 'field_description');
-        $descendant['details'] = render($details);
+        $descendant['details'] = \Drupal::service('renderer')->render($details);
       }
 
       // Key actions on conclusions.
@@ -142,7 +142,7 @@ function mass_decision_tree_preprocess_node(&$variables) {
         $details = Helper::fieldFullView($more_value, 'field_more_info_text');
         $descendant['moreInfo'] = [
           'title' => Helper::fieldValue($more_value, 'field_more_info_title'),
-          'details' => render($details),
+          'details' => \Drupal::service('renderer')->render($details),
         ];
       }
 

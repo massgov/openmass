@@ -107,7 +107,7 @@ class MassMediaDownloadController extends ControllerBase {
     // @see https://www.drupal.org/project/drupal/issues/2867355
     $context = new RenderContext();
     $uri = $this->renderer->executeInRenderContext($context, function () use ($uri) {
-      return file_create_url($uri);
+      return \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
     });
 
     // Returns a 301 Moved Permanently redirect response.

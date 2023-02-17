@@ -28,7 +28,7 @@ class DescendantStorageTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
     Database::addConnectionInfo('test', 'test', [
       'driver' => 'sqlite',
@@ -72,7 +72,7 @@ class DescendantStorageTest extends UnitTestCase {
   /**
    * {@inheritdoc}
    */
-  public function tearDown() {
+  public function tearDown(): void {
     parent::tearDown();
     // Close the connection so we can reset for the next test.
     unset($this->storage);

@@ -410,8 +410,8 @@ class AlertsController extends ControllerBase implements ContainerInjectionInter
    * @throws \Exception
    */
   public function addRevalidateHeaders(CacheableResponse $response) {
-    $response->setLastModified(new \DateTime(gmdate(DateTimePlus::RFC7231, REQUEST_TIME)));
-    $response->setEtag(REQUEST_TIME);
+    $response->setLastModified(new \DateTime(gmdate(DateTimePlus::RFC7231, \Drupal::time()->getRequestTime())));
+    $response->setEtag(\Drupal::time()->getRequestTime());
   }
 
 }

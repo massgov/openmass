@@ -211,8 +211,8 @@ class ImageMultiStyleFormatter extends ImageFormatterBase implements ContainerFa
       /** @var \Drupal\file\FileInterface[] $images */
       foreach ($images as $delta => $image) {
         $image_uri = $image->getFileUri();
-        $url = $image_style ? $image_style->buildUrl($image_uri) : file_create_url($image_uri);
-        $url = file_url_transform_relative($url);
+        $url = $image_style ? $image_style->buildUrl($image_uri) : \Drupal::service('file_url_generator')->generateAbsoluteString($image_uri);
+        $url = \Drupal::service('file_url_generator')->transformRelative($url);
 
         // Add cacheability metadata from the image and image style.
         $cacheability = CacheableMetadata::createFromObject($image);

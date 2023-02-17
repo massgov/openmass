@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\mass_schema_web_page;
 
+use Drupal\media\MediaInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\EntityReferenceFieldItemListInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
@@ -145,7 +146,7 @@ final class DecisionTokenRenderer {
   /**
    * Add absolute URLs to all referenced files to the filepaths array.
    */
-  private function getUploadedFileValues(\Drupal\media\MediaInterface $media_entity, array &$filepaths): void {
+  private function getUploadedFileValues(MediaInterface $media_entity, array &$filepaths): void {
     foreach ($media_entity->get('field_upload_file')->getValue() as $file) {
       if (!empty($file['target_id'])) {
         $file_id = $file['target_id'];
