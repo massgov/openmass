@@ -1530,7 +1530,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
  * Implements hook_preprocess_node().
  */
 function mass_theme_preprocess_node_error_page(&$variables) {
-  $variables['sealImage'] = file_create_url(mayflower_get_path() . '/assets/images/logo/stateseal.png');
+  $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
 }
 
 /**
@@ -4349,7 +4349,7 @@ function mass_theme_preprocess_html(&$variables) {
 
   // The colored state seal to be used by search engines.
   // Normally we would use theme_get_setting('logo.url')
-  $logo = file_create_url(mayflower_get_path() . '/assets/images/logo/stateseal-color.png');
+  $logo = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal-color.png');
   $hostname = \Drupal::request()->getSchemeAndHttpHost();
   // Pass Schema.org markup data to page-meta.html.twig.
   $metadata = [
@@ -4386,7 +4386,7 @@ function mass_theme_preprocess_page(&$variables) {
   if (theme_get_setting('languages', 'mass_theme')) {
     $variables['languages'] = implode(',', array_filter(theme_get_setting('languages', 'mass_theme')));
   }
-  $variables['sealImage'] = file_create_url(mayflower_get_path() . '/assets/images/logo/stateseal.png');
+  $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
 
   if ($node = \Drupal::routeMatch()->getParameter('node')) {
     $node = $variables['node'];
@@ -5343,7 +5343,7 @@ function mass_theme_preprocess_paragraph__3_up_content(&$variables) {
     foreach ($items as $id => $item) {
       $field_content = $item->get('field_content')->view('full');
       // Break out our paragraphs and render the field - it might have an image.
-      $paragraph_tags = explode("<p>", str_replace("</p>", "", render($field_content)));
+      $paragraph_tags = explode("<p>", str_replace("</p>", "", \Drupal::service('renderer')->render($field_content)));
 
       // Reset our array.
       $paragraphs = [];
@@ -5852,7 +5852,7 @@ function mass_theme_preprocess_file_link(&$variables) {
   }
 
   // Set the file link variable.
-  $variables['download']['link'] = file_create_url($file_entity->getFileUri());
+  $variables['download']['link'] = \Drupal::service('file_url_generator')->generateAbsoluteString($file_entity->getFileUri());
 
   // Get the file extension.
   // see: http://php.net/manual/en/splfileinfo.getextension.php
