@@ -49,7 +49,7 @@
   {% endif %}
 
   {% if translationLinks %}
-    {% include "@organisms/by-author/inline-links.twig" with {
+    {% include "@organisms/by-author/inline-links-language.twig" with {
       "inlineLinks": translationLinks
     } %}
   {% endif %}
@@ -127,7 +127,7 @@
 
     {% set aside_has_content =
       (not is_blog_post and sidebar.contactList) or
-      show_blogpost_author
+      show_blogpost_author or is_news
     %}
 
     {% set author_section %}

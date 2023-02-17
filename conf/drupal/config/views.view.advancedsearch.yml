@@ -2102,15 +2102,17 @@ display:
     position: 1
     display_options:
       exposed_form:
-        type: basic
+        type: input_required_on_request
         options:
           submit_button: Apply
-          reset_button: true
+          reset_button: 1
           reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
-          expose_sort_order: true
+          expose_sort_order: 1
           sort_asc_label: Asc
           sort_desc_label: Desc
+          text_input_required: 'Select any filter and click on Apply to see results'
+          text_input_required_format: basic_html
       defaults:
         exposed_form: false
         filters: true

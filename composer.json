@@ -138,7 +138,7 @@
                 "source": {
                     "type": "git",
                     "url": "https://git.drupalcode.org/project/entity_usage_queue_tracking.git",
-                    "reference": "9290c86e9c1ed10a3f976c9090c7108e8fcc487e"
+                    "reference": "62a9b5c27b425ae4db745608e38a0b9e621e9712"
                 }
             }
         }
@@ -159,7 +159,7 @@
         "drupal/acquia_purge": "^1",
         "drupal/address": "^1.9",
         "drupal/admin_toolbar": "^3.0",
-        "drupal/akamai": "^4",
+        "drupal/akamai": "dev-4.x",
         "drupal/allowed_formats": "^1.1",
         "drupal/asset_cache_bust": "^1.0",
         "drupal/auto_entitylabel": "3.0-beta3",
@@ -172,9 +172,9 @@
         "drupal/composer_deploy": "^1.4",
         "drupal/conditional_fields": "^4.0@alpha",
         "drupal/config_ignore": "3.x-dev",
-        "drupal/core-composer-scaffold": "^9.4",
-        "drupal/core-project-message": "^9.4",
-        "drupal/core-recommended": "^9.4",
+        "drupal/core-composer-scaffold": "^9.5",
+        "drupal/core-project-message": "^9.5",
+        "drupal/core-recommended": "^9.5",
         "drupal/csv_field": "^1.0@beta",
         "drupal/csv_serialization": "^2.1",
         "drupal/datalayer": "^1",
@@ -276,12 +276,12 @@
         "monolog/monolog": "^2.6",
         "phlak/semver": "^2.0",
         "symfony/dom-crawler": "^3.4 || ^4",
-        "typhonius/acquia-php-sdk-v2": "~1.1"
+        "typhonius/acquia-php-sdk-v2": "^2"
     },
     "require-dev": {
         "behat/behat": "^3",
         "behat/mink-extension": "^2.2",
-        "drupal/core-dev": "^9.4",
+        "drupal/core-dev": "^9.5",
         "drupal/drupal-extension": "^4.0.0beta1",
         "drupaltest/queue-runner-trait": "^1",
         "friends-of-behat/mink-debug-extension": "^2",
@@ -352,7 +352,7 @@
                 "3075454 - combine fields filter doesn't recognise taxonomy description field":  "https://www.drupal.org/files/issues/2019-08-20/3075454-3.patch",
                 "2993688 - Views relationships with multi-valued entity reference fields invalidate Distinct query option": "https://www.drupal.org/files/issues/2022-06-16/2993688-99.patch",
                 "Store table drag object in the table data" : "patches/DP-23411_store-object-in-draggable-table.patch",
-                "2329253 - Allow the ChangedItem to skip updating when synchronizing (f.e. when migrating)": "https://www.drupal.org/files/issues/2021-09-29/2329253-drupal-allow-changeditem-skipping-78-9.3.patch",
+                "2329253 - Allow the ChangedItem to skip updating when synchronizing (f.e. when migrating)": "https://www.drupal.org/files/issues/2022-12-07/2329253-97.patch",
                 "Avoid warnings when getting permissions for roles that do not have permissions and are not administrators": "patches/DP-23561-avoid-warnings-on-roles-without-permissions.patch",
                 "2845144 - User can't reference unpublished content even when they have access to it" : "https://www.drupal.org/files/issues/2022-06-17/2845144-67.patch",
                 "Link error The internal path component is invalid (https://www.drupal.org/project/drupal/issues/2943135)":  "https://www.drupal.org/files/issues/2021-12-01/2943135-31.patch",
@@ -444,9 +444,6 @@
                 "Can't edit user profile because password policy validates even when password unchanged": "https://www.drupal.org/files/issues/2020-03-19/password_policy-empty-password-skip-validation-2971079-37.patch"
             },
             "drupal/purge": {
-                "Remove exception during first run in p:queue-work (https://www.drupal.org/project/purge/issues/3101392)": "https://www.drupal.org/files/issues/2019-12-16/empty.patch",
-                "purge_drush hides errors in child drush processes (https://www.drupal.org/project/purge/issues/3219194#comment-14267327)": "https://git.drupalcode.org/project/purge/-/merge_requests/8.diff",
-                "PurgersService does not release lock if an exception is thrown (https://www.drupal.org/project/purge/issues/3219189)": "https://git.drupalcode.org/project/purge/-/merge_requests/7.diff",
                 "Add alter hooks for plugin definitions - purger, queue, queuer (https://www.drupal.org/project/purge/issues/2757155#comment-14335663)": "https://www.drupal.org/files/issues/2021-12-10/alters.diff"
             },
             "drupal/real_aes": {

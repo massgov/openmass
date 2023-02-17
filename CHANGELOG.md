@@ -1,5 +1,119 @@
 
 
+## [0.351.0] - February 14, 2023
+
+### Added
+  - DP-24435: Add option to toggle language bar labels.
+  
+### Fixed
+  - DP-26967: Style issue with header iframe on visual story info detail page.
+  
+### Security
+  - DP-27215: Drupal core major version (9.5.3) and DangerJS update.
+  
+### Changed
+  - DP-27227: Added default settings for entity usage queue tracking that can be overridden.
+  
+
+
+## [0.350.0] - February 7, 2023
+
+### Changed
+  - DP-26237: Correct invalid markup, cleaned up confusing aria-label, add context for screenr reader users for collapsible headers.
+  - DP-26696: Change location of 'Associated pages' field on Events.
+  - DP-27088: Active cache invalidation for language link list.
+  - DP-27097.yml: Remove and block non-Azure logins for Drupal
+  - DP-27143: Disallow bot traffic from Semrush.
+  - DP-27176: More fields added to CSV export files for the All Content view.
+  
+### Fixed
+  - DP-27002: Fix form display for Collection selection on External link for Collections
+  - DP-27163: Fix style issue with press release view.
+  - DP-27164: Fix Google Translate styles caused by a classname change by Google.
+  
+### Removed
+  - DP-27049: Removed real pages from Backstop
+  - DP-27157: Remove the background image from the form requirements section in form pages.
+  
+
+
+## [0.349.0] - January 31, 2023
+
+### Removed
+  - DP-25783: Remove feedback survey UI from edit.mass.gov.
+  
+### Changed
+  - DP-26177: Update Purge, Acquia purge, Akamai modules
+  
+### Added
+  - DP-26735: New view showing recent press releases. Not linked at this time.
+  - DP-26959: Add bulk edit to the "All documents" view for administrators.
+  - DP-27072: New administrative view showing who has flagged what content to watch it. This will help testing of content migrations.
+  
+### Fixed
+  - DP-27000: Fix radio button and checkbox sizes in collection view.
+  - DP-27077: Remove config warnings for Azure AD
+  
+
+
+## [0.348.0] - January 24, 2023
+
+### Changed
+  - DP-26309: Remove empty more link for related guides section.
+  - DP-26328: Updated Collections view to use active cache invalidation.
+  - DP-26840: Updated the Entity Usage Queue Tracking module with improvements to the cleaning command.
+  - DP-26854: Fixed small bugs and removed unused code related to CircleCI jobs
+  
+### Added
+  - DP-26736: Updates to orphan view.
+  
+### Fixed
+  - DP-26999: Reset feedback form text area validation on radio button change.
+  - DP-27003: Bug - not seeing all document language links shown.
+  
+### Security
+  - DP-27004: Drupal core and Entity Browser module security update.
+  
+
+
+## [0.347.0] - January 17, 2023
+
+### Added
+  - DP-24550: Display link to document in multiple languages.
+  - DP-26806: Add apple site icons.
+  
+### Changed
+  - DP-26327: Backend changes to org feedback options.
+  - DP-26864: Change views to not show any results until there are filters added by user and user pushes button.
+  - DP-26965: Related links not showing on News pages with 'news' subtype when there is no contact defined.
+  
+### Fixed
+  - DP-26649: Fix org nav being cut off at the bottom of the screen on mobile.
+  - DP-26973: Fixed Behat XSS test failures for link fields.
+  
+
+
+## [0.346.0] - January 10, 2023
+
+### Changed
+  - DP-25823: Upgrade a few dependencies like Views Data Export
+  - DP-25967: Improve help text for "Organization(s)" field.
+  - DP-26097: Improve help text under Content tab on Service pages.
+  - DP-26305: Update help text for Guide content type.
+  - DP-26612: Add help text paragraph below H1 on page based feedback for authors.
+  - DP-26766: Remove legacy "Pages Linking Here" tab and show new tab for all authors.
+  - DP-26750: Modifications to the user view used by administrators, including downloadable CSV.
+  
+### Fixed
+  - DP-26222: A11y - Popular searches fix.
+  - DP-26715: Bug - error in bulk job to add items to collection.
+  
+### Security
+  - DP-26767: Bump decode-uri-component from 0.2.0 to 0.2.2.
+  - DP-26805: Dependabot - Multiple vulnerabilities.
+  
+
+
 ## [0.345.0] - December 13, 2022
 
 ### Changed

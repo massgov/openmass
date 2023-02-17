@@ -15,10 +15,10 @@ use weitzman\LoginTrait\LoginTrait;
  * Tests "All Content" view requires input to show content to speed up login.
  */
 class MediaBulkActionTest extends ExistingSiteBase {
-  const RESTRICT_ACTION = '2';
-  const UNPUBLISH_ACTION = '3';
-  const TRASH_ACTION = '4';
-  const PUBLISH_ACTION = '5';
+  const PUBLISH_ACTION = '3';
+  const RESTRICT_ACTION = '4';
+  const TRASH_ACTION = '5';
+  const UNPUBLISH_ACTION = '6';
 
   use LoginTrait;
   use MediaCreationTrait;
@@ -99,6 +99,10 @@ class MediaBulkActionTest extends ExistingSiteBase {
   private function runTestSteps($action) {
     $this->createMediaFile();
     $this->drupalGet('admin/ma-dash/documents');
+
+    // Trigger search to get some results.
+    $this->submitForm([], $this->t('Filter'), 'views-exposed-form-all-documents-page-1');
+
     $edit = [
       'action' => $action,
       'views_bulk_operations_bulk_form[0]' => TRUE,
