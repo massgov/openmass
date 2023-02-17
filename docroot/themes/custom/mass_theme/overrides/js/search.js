@@ -13,25 +13,25 @@
   // There are 2 sets of search components per page, one on the page for desktop version,
   // the other on the flyout of the hamburger menu for mobile version though only one set is visible at a time with css.
   // Find the one user is on.
-  searchInputs.forEach((input) => {
+  searchInputs.forEach(function (input) {
 
-    input.addEventListener("keyup", (e) => {
-      let activeInput = e.target;
-      let suggestionContainer = e.target.nextElementSibling;
+    input.addEventListener('keyup', function (e) {
+      var activeInput = e.target;
+      var suggestionContainer = e.target.nextElementSibling;
 
       if (suggestionContainer.classList.contains('ma__suggestions')) {
         // Adjust the timing that suggestions get inserted.
-        setTimeout(() => {
+        setTimeout(function () {
           // div#suggestions-list remains after its child elements are removed.
           // Check it has child elements or not.
-          let suggestionList = suggestionContainer.querySelector("#suggestions-list").hasChildNodes();
+          var suggestionList = suggestionContainer.querySelector('#suggestions-list').hasChildNodes();
 
           if (suggestionList) {
-            activeInput.setAttribute("aria-expanded", true);
+            activeInput.setAttribute('aria-expanded', true);
           }
 
           if (!suggestionList) {
-            activeInput.setAttribute("aria-expanded", false);
+            activeInput.setAttribute('aria-expanded', false);
           }
         }, 900);
       }
