@@ -8,7 +8,7 @@
 (function () {
   'use strict';
 
-  const searchInputs = document.querySelectorAll('.ma__header-search__input');
+  var searchInputs = document.querySelectorAll('.ma__header-search__input');
 
   // There are 2 sets of search components per page, one on the page for desktop version,
   // the other on the flyout of the hamburger menu for mobile version though only one set is visible at a time with css.
